@@ -8,5 +8,19 @@
     "web": "expo start --web",
     "export:web": "expo export --platform web"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@expo-google-fonts/eb-garamond": "^0.4.3",
+    "@expo/metro-runtime": "~57.0.16",
+    "@shopify/react-native-skia": "2.6.2",
+    "expo": "^57.0.27",
+    "expo-audio": "~57.0.5",
+    "expo-font": "~57.0.4",
+    "expo-speech": "~57.0.3",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-web": "^0.21.2"
+  }
 }

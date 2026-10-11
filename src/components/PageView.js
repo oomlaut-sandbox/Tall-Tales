@@ -1,6 +1,6 @@
 // One story page: illustration on top, words below. Each word can be tapped.
 import React, { forwardRef, useMemo } from 'react';
-import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme';
 import { tokenize } from '../story';
 
@@ -42,7 +42,7 @@ export const PageView = forwardRef(function PageView(
         {end ? (
           <View style={styles.theEnd}><Text style={styles.theEndText}>The End</Text></View>
         ) : (
-          <Image source={page.image} style={StyleSheet.absoluteFill} resizeMode="cover" />
+          <Image source={page.image} style={styles.fill} resizeMode="cover" />
         )}
         {showHotspots
           ? spots.map((h, i) => (
@@ -81,6 +81,7 @@ export const PageView = forwardRef(function PageView(
 
 const styles = StyleSheet.create({
   page: { backgroundColor: colors.paper, overflow: 'hidden' },
+  fill: { position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' },
   art: { width: '100%', backgroundColor: '#7d7d7d', overflow: 'hidden' },
   theEnd: { ...StyleSheet.absoluteFillObject, backgroundColor: colors.red, alignItems: 'center', justifyContent: 'center' },
   theEndText: { color: colors.white, fontFamily: fonts.story, fontSize: 52 },
