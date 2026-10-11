@@ -11,21 +11,23 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Check
-        run: |
-          mkdir -p ci
-          echo "Build ran at $(date -u) for ${GITHUB_SHA}" > ci/status.txt
+      - name: Install and bundle
+        run: bash ci/build.sh
       - name: Save results to ci-output branch
         run: |
           git config user.name "build-bot"
           git config user.email "build-bot@users.noreply.github.com"
+          mv out /tmp/out
           git checkout --orphan ci-output
-          git rm -rfq --cached . >/dev/null
-          git add -f ci
+          git rm -rfq --cached . > /dev/null
+          rm -rf ./* .gitignore 2>/dev/null || true
+          cp -r /tmp/out ./out
+          git add -f out
           git commit -qm "Build output for ${GITHUB_SHA}"
           git push -f origin ci-output

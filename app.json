@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "oomlaut Reader",
+    "slug": "tall-tales",
+    "scheme": "oomlaut",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#000000",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.oomlaut.reader",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "oomlaut Reader records your voice so you can read stories aloud for your child."
+      }
+    },
+    "android": {
+      "package": "com.oomlaut.reader",
+      "permissions": ["RECORD_AUDIO"]
+    },
+    "web": {
+      "output": "single",
+      "bundler": "metro"
+    }
+  }
+}

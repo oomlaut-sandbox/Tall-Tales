@@ -1,0 +1,12 @@
+{
+  "name": "tall-tales",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "web": "expo start --web",
+    "export:web": "expo export --platform web"
+  },
+  "dependencies": {}
+}
