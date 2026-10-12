@@ -1,0 +1,67 @@
+# Builds the iPhone app on Expo and sends it to TestFlight.
+# Runs when a commit message on main contains [testflight].
+name: TestFlight
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  ios:
+    if: contains(github.event.head_commit.message, '[testflight]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      EXPO_ASC_API_KEY_PATH: ${{ github.workspace }}/asc-api-key.p8
+      EXPO_ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      EXPO_ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      EXPO_APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      EXPO_APPLE_TEAM_TYPE: INDIVIDUAL
+      ASC_APP_ID: ${{ vars.ASC_APP_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Prepare Apple key and submit settings
+        env:
+          ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+        run: |
+          mkdir -p ios-out
+          {
+            echo "secret EXPO_TOKEN: $([ -n "$EXPO_TOKEN" ] && echo set || echo MISSING)"
+            echo "secret ASC_API_KEY_P8: $([ -n "$ASC_API_KEY_P8" ] && echo set || echo MISSING)"
+            echo "secret ASC_KEY_ID: $([ -n "$EXPO_ASC_KEY_ID" ] && echo set || echo MISSING)"
+            echo "secret ASC_ISSUER_ID: $([ -n "$EXPO_ASC_ISSUER_ID" ] && echo set || echo MISSING)"
+            echo "secret APPLE_TEAM_ID: $([ -n "$EXPO_APPLE_TEAM_ID" ] && echo set || echo MISSING)"
+          } > ios-out/checks.txt
+          printf '%s\n' "$ASC_API_KEY_P8" > asc-api-key.p8
+          APP_ID="${ASC_APP_ID:-$(cat ci/asc-app-id.txt 2>/dev/null)}"
+          node -e '
+            const fs=require("fs"); const j=JSON.parse(fs.readFileSync("eas.json","utf8"));
+            const s=j.submit.production.ios; s.ascAppId=process.argv[1]; s.ascApiKeyId=process.env.EXPO_ASC_KEY_ID; s.ascApiKeyIssuerId=process.env.EXPO_ASC_ISSUER_ID;
+            fs.writeFileSync("eas.json", JSON.stringify(j,null,2));' "$APP_ID"
+          echo "app id: ${APP_ID:-MISSING}" >> ios-out/checks.txt
+      - name: Install
+        run: npm ci --no-audit --no-fund
+      - name: Build on Expo and send to TestFlight
+        run: |
+          set -o pipefail
+          npx --yes eas-cli@latest build --platform ios --profile production --non-interactive --auto-submit 2>&1 | tee ios-out/build.txt
+          echo "exit $?" >> ios-out/build.txt
+      - name: Save results to ios-output branch
+        if: always()
+        run: |
+          rm -f asc-api-key.p8
+          git config user.name "build-bot"
+          git config user.email "build-bot@users.noreply.github.com"
+          echo "commit ${GITHUB_SHA} at $(date -u)" >> ios-out/checks.txt
+          mv ios-out /tmp/ios-out
+          git checkout --orphan ios-output
+          git rm -rfq --cached . > /dev/null
+          rm -rf ./* .gitignore 2>/dev/null || true
+          cp -r /tmp/ios-out ./ios-out
+          git add -f ios-out
+          git commit -qm "TestFlight run for ${GITHUB_SHA}"
+          git push -f origin ios-output

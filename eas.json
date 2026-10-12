@@ -6,6 +6,13 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "ascAppId": "SET_BY_CI",
+        "ascApiKeyPath": "./asc-api-key.p8",
+        "ascApiKeyId": "SET_BY_CI",
+        "ascApiKeyIssuerId": "SET_BY_CI"
+      }
+    }
   }
 }

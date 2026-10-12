@@ -7,3 +7,5 @@ out/
 web-build/
 *.log
 .DS_Store
+asc-api-key.p8
+*.p8

@@ -11,7 +11,11 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.oomlaut.reader",
       "infoPlist": {
-        "NSMicrophoneUsageDescription": "oomlaut Reader records your voice so you can read stories aloud for your child."
+        "NSMicrophoneUsageDescription": "oomlaut Reader records your voice so you can read stories aloud for your child.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "config": {
+        "usesNonExemptEncryption": false
       }
     },
     "android": {
@@ -46,6 +50,7 @@
         "projectId": "c1175638-16e5-4be5-b443-b93246c7ec7f"
       }
     },
-    "owner": "oomlaut-code"
+    "owner": "oomlaut-code",
+    "icon": "./assets/icon.png"
   }
 }
