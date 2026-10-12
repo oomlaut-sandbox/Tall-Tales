@@ -12,7 +12,7 @@ import { Bar, BarMeta, Burger, DogEar, Option, Panel, PauseButton, PlayButton, R
 import { playPaper, setPageSound } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { pauseVoice, playVoice, resumeVoice, stopVoice } from '../voice';
-import { getRecording, listRecordings, removeRecording, saveRecording } from '../recordings';
+import { getRecording, listRecordings, pageKey, removeRecording, saveRecording } from '../recordings';
 
 const MODES = [
   ['»', 'auto', 'Auto Play', 'Reads the full story with audio'],
@@ -117,7 +117,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       }
     };
     if (prefs.voice === 'mine') {
-      getRecording(story.id, pageIndex).then((rec) => {
+      getRecording(story.id, pageKey(p, pageIndex)).then((rec) => {
         if (st.current.idx !== pageIndex) return;
         if (rec && playVoice(rec.uri, { onProgress: (f) => hlChar(Math.floor(f * p.text.length)), onDone: afterPage })) {
           usingVoice.current = true;
@@ -174,7 +174,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       await recorder.stop();
       await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
       if (save && recorder.uri && seconds > 0.7) {
-        await saveRecording(story.id, page, recorder.uri, seconds);
+        await saveRecording(story.id, pageKey(story.pages[page], page), recorder.uri, seconds);
         if (prefsRef.current.voice !== 'mine') setPrefs((p) => ({ ...p, voice: 'mine' }));
         toast(`Saved your voice for page ${page + 1}.`);
       }
@@ -185,7 +185,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   };
 
   const openRecList = async () => {
-    setRecList(await listRecordings(story.id, story.pages.length));
+    setRecList(await listRecordings(story));
     setRecView('list');
   };
 
@@ -434,10 +434,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         )}
         {recView === 'list' ? (
           recList.length ? recList.map((r) => (
-            <View key={r.page} style={styles.row}>
+            <View key={r.pid} style={styles.row}>
               <Text style={styles.rowText}>Page {r.page + 1} · {Math.round(r.seconds)}s</Text>
               <Pressable style={styles.rowBtn} onPress={() => { stopReading(); playVoice(r.uri); }}><Text style={styles.rowBtnText}>Play</Text></Pressable>
-              <Pressable style={styles.rowBtn} onPress={async () => { stopVoice(); await removeRecording(story.id, r.page); openRecList(); toast(`Removed your recording of page ${r.page + 1}.`); }}><Text style={styles.rowBtnText}>Remove</Text></Pressable>
+              <Pressable style={styles.rowBtn} onPress={async () => { stopVoice(); await removeRecording(story.id, r.pid); openRecList(); toast(`Removed your recording of page ${r.page + 1}.`); }}><Text style={styles.rowBtnText}>Remove</Text></Pressable>
             </View>
           )) : <Text style={styles.help}>Nothing recorded yet. Tap Start Recording to read this story in your own voice.</Text>
         ) : null}

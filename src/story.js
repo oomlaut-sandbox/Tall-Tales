@@ -11,7 +11,7 @@ export const SAMPLE_STORY = {
   },
   pages: [
     {
-      image: require('../assets/pages/p1.jpg'), w: 900, h: 1053,
+      pid: 'p1', image: require('../assets/pages/p1.jpg'), w: 900, h: 1053,
       text: 'Pip the turtle swam in a pond full of stars. The stars bobbed around him like bright little boats. “Where do you all go in the morning?” Pip asked. The stars only twinkled.',
       hotspots: [
         { x: 0.57, y: 0.66, say: 'Pip the turtle', word: 'turtle' },
@@ -20,7 +20,7 @@ export const SAMPLE_STORY = {
       ],
     },
     {
-      image: require('../assets/pages/p2.jpg'), w: 900, h: 975,
+      pid: 'p2', image: require('../assets/pages/p2.jpg'), w: 900, h: 975,
       text: 'When the sun came up, the stars were gone. Pip climbed out of the pond to look for them. A leopard sat high on a warm rock. “The stars are not lost,” said Leopard. “They are only hiding behind the sky.”',
       hotspots: [
         { x: 0.69, y: 0.39, say: 'Leopard, resting on a rock', word: 'leopard' },
@@ -29,7 +29,7 @@ export const SAMPLE_STORY = {
       ],
     },
     {
-      image: require('../assets/pages/p3.jpg'), w: 900, h: 817,
+      pid: 'p3', image: require('../assets/pages/p3.jpg'), w: 900, h: 817,
       text: 'Next, Pip met a man on a very tall bicycle. It had five wheels and a horn. “Climb up!” said the man. “From up here, you can almost touch the sky.” Pip held on tight.',
       hotspots: [
         { x: 0.42, y: 0.42, say: 'Toot toot! The horn', word: 'horn' },
@@ -38,7 +38,7 @@ export const SAMPLE_STORY = {
       ],
     },
     {
-      image: require('../assets/pages/p4.jpg'), w: 900, h: 1053,
+      pid: 'p4', image: require('../assets/pages/p4.jpg'), w: 900, h: 1053,
       text: 'They rode until the day grew tired. Pip curled up on a soft bed of pine needles. Above the trees, one star blinked, then two, then a hundred. “There you are,” Pip whispered, and he fell asleep.',
       hotspots: [{ x: 0.5, y: 0.5, say: 'Soft pine needles', word: 'needles' }],
     },

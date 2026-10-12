@@ -58,7 +58,7 @@ function Root() {
           <Library u={u} stories={[...STORIES, ...userStories]} openStory={openStory} openMenu={openMenu} onCreate={() => openPublisher(null)} onEdit={openPublisher} />
         )}
         {screen === 'publisher' && draft && (
-          <Publisher key={draft.id} u={u} initial={draft} openMenu={openMenu} toast={toast} onSaved={(list) => { setUserStories(list); go('library'); }} />
+          <Publisher key={draft.id} u={u} initial={draft} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} />
         )}
         {screen === 'store' && <Store u={u} openStory={openStory} openMenu={openMenu} />}
         {screen === 'reader' && story && (
