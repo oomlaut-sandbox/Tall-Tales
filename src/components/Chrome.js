@@ -137,6 +137,6 @@ const styles = StyleSheet.create({
   optGlyph: { color: colors.white, fontSize: 22, fontWeight: '700', fontFamily: fonts.ui },
   optTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20, marginBottom: 3 },
   optSub: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 14 },
-  toastWrap: { position: 'absolute', left: 0, right: 0, bottom: 110, alignItems: 'center', zIndex: 60, paddingHorizontal: 24 },
+  toastWrap: { position: 'absolute', left: 0, right: 0, top: 64, alignItems: 'center', zIndex: 60, paddingHorizontal: 24 },
   toast: { backgroundColor: colors.white, color: colors.ink, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, paddingHorizontal: 16, paddingVertical: 12, textAlign: 'center', overflow: 'hidden' },
 });
