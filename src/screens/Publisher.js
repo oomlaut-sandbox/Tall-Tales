@@ -8,6 +8,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { colors, fonts } from '../theme';
 import { Bar, Burger, DogEar, Panel } from '../components/Chrome';
 import { deleteUserStory, dropPicture, keepPicture, newPageId, saveUserStory } from '../userStories';
+import StoryGuide from '../components/StoryGuide';
+import { loadJSON, saveJSON } from '../storage';
 
 const blank = () => ({ pid: newPageId(), text: '', uri: null, w: 1, h: 1 });
 
@@ -27,6 +29,11 @@ export default function Publisher({ u, initial, openMenu, toast, onChange, onDon
   const [pagesOpen, setPagesOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [saved, setSaved] = useState(true);
+  const [guide, setGuide] = useState(false);
+  useEffect(() => {
+    loadJSON('guide', {}).then((g) => { if (!g.seen) setGuide(true); });
+  }, []);
+  const closeGuide = () => { setGuide(false); saveJSON('guide', { seen: true }); };
   const timer = useRef(null);
   const first = useRef(true);
   const latest = useRef(draft);
@@ -148,6 +155,9 @@ export default function Publisher({ u, initial, openMenu, toast, onChange, onDon
           />
         </View>
         <DogEar u={u} onPress={next} label="Next page" />
+        <Pressable onPress={() => setGuide(true)} style={[styles.help, { top: insets.top + 10 }]} hitSlop={8} accessibilityLabel="How to make a story">
+          <Text style={styles.helpText}>?</Text>
+        </Pressable>
       </View>
       <Bar u={u}>
         <Burger u={u} onPress={openMenu} />
@@ -191,12 +201,15 @@ export default function Publisher({ u, initial, openMenu, toast, onChange, onDon
           <Pressable onPress={() => setConfirmDelete(true)} hitSlop={6}><Text style={styles.deleteLink}>Delete this story…</Text></Pressable>
         )}
       </Panel>
+      <StoryGuide visible={guide} onClose={closeGuide} />
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
+  help: { position: 'absolute', top: 14, right: 14, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', zIndex: 5 },
+  helpText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
   page: { flex: 1, backgroundColor: colors.paper },
   art: { height: '50%', backgroundColor: '#808080', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   fill: { position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' },
