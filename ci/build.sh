@@ -20,6 +20,7 @@ else
     expo-status-bar expo-speech expo-audio expo-font react-native-safe-area-context \
     @shopify/react-native-skia @expo-google-fonts/eb-garamond
 fi
+step fix-versions npx expo install --fix
 step doctor-versions npx expo install --check
 
 # Expo account link (needs the EXPO_TOKEN secret). Never prints the token.
