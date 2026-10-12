@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   help: { position: 'absolute', top: 14, right: 14, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', zIndex: 5 },
   helpText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
   page: { flex: 1, backgroundColor: colors.paper },
-  art: { height: '50%', backgroundColor: '#808080', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  art: { width: '100%', aspectRatio: 1, maxHeight: '68%', backgroundColor: '#808080', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   fill: { position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' },
   plus: { color: colors.white, fontWeight: '200', fontFamily: fonts.ui },
   addImage: { color: colors.white, fontWeight: '700', fontSize: 22, fontFamily: fonts.ui, marginTop: 4 },

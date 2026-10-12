@@ -4,9 +4,13 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme';
 import { tokenize } from '../story';
 
+// The picture area is a perfect square (as wide as the screen). Only on unusually short
+// screens is it capped, so the words always keep at least a third of the page.
+export const artHeight = (width, height) => Math.min(width, height * 0.68);
+
 function fitFontSize(text, width, height) {
   let fs = Math.min(30, Math.max(19, width * 0.066));
-  const tw = width * 0.82, th = height * 0.5 - width * 0.12;
+  const tw = width * 0.82, th = height - artHeight(width, height) - width * 0.12;
   for (let i = 0; i < 30 && fs > 13; i++) {
     const perLine = Math.max(8, Math.floor(tw / (fs * 0.47)));
     const lines = Math.ceil(text.length / perLine) + 1;
@@ -21,7 +25,7 @@ export const PageView = forwardRef(function PageView(
   ref,
 ) {
   const words = useMemo(() => (page && page.text ? tokenize(page.text) : []), [page]);
-  const artH = height * 0.5;
+  const artH = artHeight(width, height);
   const fs = useMemo(() => fitFontSize(page?.text || '', width, height), [page, width, height]);
 
   // Map hotspot fractions onto the image as drawn with "cover".
