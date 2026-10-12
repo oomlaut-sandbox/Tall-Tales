@@ -40,7 +40,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit }) {
       <ScrollView contentContainerStyle={styles.grid}>
         {stories.map((s) => (
           <Tile key={s.id} u={u} cover={s.pages[0] && s.pages[0].image} title={s.title}
-            sub={s.mine ? `${s.pages.length} page${s.pages.length === 1 ? '' : 's'} · made by you · hold to edit` : `${s.pages.length} pages · read-along`}
+            sub={s.mine ? `${s.pages.length} page${s.pages.length === 1 ? '' : 's'} · made by you · hold to edit` : `${s.author ? `by ${s.author} · ` : ''}${s.pages.length} pages · read-along`}
             onPress={() => openStory(s)} onLongPress={s.mine ? () => onEdit(s) : undefined} />
         ))}
         <Tile u={u} plus title="Create a story" sub="Add pictures and words" onPress={onCreate} />
@@ -57,7 +57,7 @@ export function Store({ u, openStory, openMenu }) {
       <ScrollView contentContainerStyle={styles.grid}>
         <Text style={styles.note}>Buying and downloading stories arrives in a later build. For now, the sample story is free to read.</Text>
         {STORIES.map((s) => (
-          <Tile key={s.id} u={u} cover={s.pages[0].image} title={s.title} sub="Free sample · in your library" onPress={() => openStory(s)} />
+          <Tile key={s.id} u={u} cover={s.pages[0].image} title={s.title} sub={s.author ? `by ${s.author} · in your library` : 'Free sample · in your library'} onPress={() => openStory(s)} />
         ))}
       </ScrollView>
       <Bar u={u}><Burger u={u} onPress={openMenu} /><BarMeta title="Book Store" /></Bar>
