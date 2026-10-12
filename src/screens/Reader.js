@@ -1,8 +1,9 @@
 // The reader: page curl, read-aloud with highlighting, learn-to-read, interactive pictures.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, PanResponder, Platform, StyleSheet, View } from 'react-native';
+import { Animated, PanResponder, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors } from '../theme';
+import { colors, fonts } from '../theme';
 import { tokenize, cleanWord, syllablesFor } from '../story';
 import { computeFold, ease } from '../fold';
 import { CurlCanvas, snapshot, supportsCurl } from '../components/Curl';
@@ -10,6 +11,8 @@ import { PageView } from '../components/PageView';
 import { Bar, BarMeta, Burger, DogEar, Option, Panel, PauseButton, PlayButton, RecordButton } from '../components/Chrome';
 import { playPaper, setPageSound } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
+import { pauseVoice, playVoice, resumeVoice, stopVoice } from '../voice';
+import { getRecording, listRecordings, removeRecording, saveRecording } from '../recordings';
 
 const MODES = [
   ['»', 'auto', 'Auto Play', 'Reads the full story with audio'],
@@ -18,6 +21,18 @@ const MODES = [
   ['◇', 'self', 'Read Yourself', 'Page by page with no audio'],
   ['✦', 'interactive', 'Interactive', 'Image interaction with touch'],
 ];
+
+function Seg({ value, options, onChange }) {
+  return (
+    <View style={{ flexDirection: 'row', gap: 8 }}>
+      {options.map(([v, l]) => (
+        <Pressable key={v} onPress={() => onChange(v)} style={[styles.seg, value === v && { backgroundColor: colors.highlight }]}>
+          <Text style={styles.segText}>{l}</Text>
+        </Pressable>
+      ))}
+    </View>
+  );
+}
 
 export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary, toast, menuRequest }) {
   const insets = useSafeAreaInsets();
@@ -31,11 +46,20 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const [panel, setPanel] = useState(null); // 'play' | 'rec' | null
   const [turn, setTurn] = useState(null); // native curl: {dir, C, fold, under, turning}
   const [webDir, setWebDir] = useState(0);
+  const [recording, setRecording] = useState(false);
+  const [recView, setRecView] = useState('main'); // main | list | settings | help
+  const [recList, setRecList] = useState([]);
+  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const recStart = useRef(0);
+  const pendingRec = useRef(false);
+  const usingVoice = useRef(false);
+  const prefsRef = useRef(prefs);
+  prefsRef.current = prefs;
   const webX = useRef(new Animated.Value(0)).current;
 
   const refs = { prev: useRef(null), cur: useRef(null), next: useRef(null) };
   const st = useRef({});
-  st.current = { idx, size, reading, paused, mode: prefs.mode, turning: !!turn || webDir !== 0, pages };
+  st.current = { idx, size, reading, paused, mode: prefs.mode, turning: !!turn || webDir !== 0, pages, recording };
   const cache = useRef({}); // page index -> snapshot image
   const pendingRead = useRef(false);
   const autoTimer = useRef(null);
@@ -66,6 +90,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   /* ---------- reading ---------- */
   const stopReading = useCallback(() => {
     stopSpeech();
+    stopVoice();
+    usingVoice.current = false;
     clearTimeout(autoTimer.current);
     setReading(false); setPaused(false); setHl(-1);
   }, []);
@@ -80,6 +106,27 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (!p || p.end) { setReading(false); return; }
     const toks = tokenize(p.text);
     setReading(true); setPaused(false);
+    const hlChar = (ch) => {
+      for (let i = 0; i < toks.length; i++) if (toks[i].start <= ch && ch < toks[i].end + 1) { setHl(i); break; }
+    };
+    const afterPage = () => {
+      usingVoice.current = false;
+      setHl(-1); setReading(false);
+      if (st.current.mode === 'auto' && pageIndex < st.current.pages.length - 1) {
+        autoTimer.current = setTimeout(() => { pendingRead.current = true; flip(1); }, 800);
+      }
+    };
+    if (prefs.voice === 'mine') {
+      getRecording(story.id, pageIndex).then((rec) => {
+        if (st.current.idx !== pageIndex) return;
+        if (rec && playVoice(rec.uri, { onProgress: (f) => hlChar(Math.floor(f * p.text.length)), onDone: afterPage })) {
+          usingVoice.current = true;
+        } else {
+          speakTracked(p.text, { rate: prefs.speed === 'slow' ? 0.72 : 0.92, onWord: hlChar, onDone: afterPage });
+        }
+      });
+      return;
+    }
     speakTracked(p.text, {
       rate: prefs.speed === 'slow' ? 0.72 : 0.92,
       onWord: (ch) => {
@@ -92,7 +139,57 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         }
       },
     });
-  }, [prefs.speed]);
+  }, [prefs.speed, prefs.voice, story]);
+
+  useEffect(() => {
+    if (pendingRec.current) { pendingRec.current = false; setTimeout(startRec, 350); }
+  }, [idx]);
+
+  /* ---------- recording ---------- */
+  const startRec = async () => {
+    if (st.current.idx >= story.pages.length) return;
+    stopReading();
+    setPanel(null);
+    try {
+      const perm = await AudioModule.requestRecordingPermissionsAsync();
+      if (!perm.granted) return toast('oomlaut Reader needs the microphone to record. You can allow it in Settings.');
+      await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
+      await recorder.prepareToRecordAsync();
+      recorder.record();
+      recStart.current = Date.now();
+      setPageSound(false);
+      setRecording(true);
+    } catch (e) {
+      toast('Recording couldn’t start. Try again.');
+    }
+  };
+
+  const stopRec = async (save) => {
+    if (!st.current.recording) return;
+    const page = st.current.idx;
+    const seconds = (Date.now() - recStart.current) / 1000;
+    setRecording(false);
+    st.current.recording = false;
+    try {
+      await recorder.stop();
+      await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
+      if (save && recorder.uri && seconds > 0.7) {
+        await saveRecording(story.id, page, recorder.uri, seconds);
+        if (prefsRef.current.voice !== 'mine') setPrefs((p) => ({ ...p, voice: 'mine' }));
+        toast(`Saved your voice for page ${page + 1}.`);
+      }
+    } catch (e) {
+      toast('That recording couldn’t be saved.');
+    }
+    setPageSound(prefsRef.current.sound !== false);
+  };
+
+  const openRecList = async () => {
+    setRecList(await listRecordings(story.id, story.pages.length));
+    setRecView('list');
+  };
+
+  useEffect(() => () => { if (st.current.recording) recorder.stop().catch(() => {}); }, []);
 
   useEffect(() => {
     // after a page turn, continue reading in Auto and Page-by-Page modes
@@ -107,18 +204,20 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     const mode = st.current.mode;
     if (!mode) return setPanel('play');
     if (mode === 'self') return toast('Read Yourself is on, so there’s no audio. Pick another mode to listen.');
-    if (paused) { resumeSpeech(); setPaused(false); return; }
+    if (st.current.recording) return;
+    if (paused) { usingVoice.current ? resumeVoice() : resumeSpeech(); setPaused(false); return; }
     if (!reading) readPage(idx);
   };
   const onPause = () => {
     if (!reading) return;
+    if (usingVoice.current) { pauseVoice(); setPaused(true); return; }
     if (Platform.OS === 'android') return stopReading(); // Android voices can't pause mid-sentence
     pauseSpeech(); setPaused(true);
   };
 
   const onWord = (i, raw) => {
     const mode = st.current.mode;
-    if (mode === 'self' || st.current.turning) return;
+    if (mode === 'self' || st.current.turning || st.current.recording) return;
     const w = cleanWord(raw);
     if (!w) return;
     stopReading();
@@ -145,7 +244,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   };
 
   /* ---------- page turning ---------- */
-  const canTurn = (dir) => (dir > 0 ? st.current.idx < st.current.pages.length - 1 : st.current.idx > 0);
+  const canTurn = (dir) => {
+    if (dir < 0 && st.current.recording) return false;
+    return dir > 0 ? st.current.idx < st.current.pages.length - 1 : st.current.idx > 0;
+  };
 
   const finishTurn = (dir, done) => {
     if (done) {
@@ -185,7 +287,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 
   const flip = async (dir) => {
     if (st.current.turning || !canTurn(dir) || !st.current.size) return false;
-    if (!pendingRead.current) stopReading();
+    if (st.current.recording && dir > 0) { await stopRec(true); pendingRec.current = st.current.idx + 1 < story.pages.length; }
+    else if (!pendingRead.current) stopReading();
     const { w: W, h: H } = st.current.size;
     playPaper('turn', 1);
     if (supportsCurl) {
@@ -241,6 +344,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (!d.dir) return;
     const { w: W } = st.current.size;
     const commit = d.dir > 0 ? g.dx * 1.7 < -W * 0.65 || g.vx < -0.35 : g.dx * 1.7 > W * 0.75 || g.vx > 0.35;
+    if (commit && st.current.recording) {
+      const keepGoing = st.current.idx + 1 < story.pages.length;
+      stopRec(true).then(() => { pendingRec.current = keepGoing; });
+    }
     playPaper(commit ? 'drop' : 'lift', commit ? 0.9 : 0.35);
     if (supportsCurl) {
       const from = d.P || (d.dir > 0 ? d.C : [-W, d.C[1]]);
@@ -282,13 +389,19 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         {size ? layers : null}
         {turn && turn.fold ? <CurlCanvas width={W} height={H} under={turn.under} turning={turn.turning} fold={turn.fold} /> : null}
         {idx < pages.length - 1 ? <DogEar u={u} onPress={() => flip(1)} /> : null}
+        {recording ? (
+          <View style={styles.recBanner} pointerEvents="none">
+            <View style={styles.recDot} />
+            <Text style={styles.recText}>Recording page {idx + 1}. Turn the page to keep going, or tap ● to stop.</Text>
+          </View>
+        ) : null}
       </View>
       <Bar u={u}>
         <Burger u={u} onPress={openMenu} />
         <BarMeta title={story.title} sub={idx < n ? `Page ${idx + 1} of ${n}` : 'The End'} />
-        <RecordButton onPress={() => setPanel('rec')} />
-        <PauseButton onPress={onPause} />
-        <PlayButton onPress={onPlay} active={reading && !paused} />
+        <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
+        <PauseButton onPress={onPause} disabled={recording} />
+        <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
       </Bar>
 
       <Panel open={panel === 'play'} side="right" title="Playback Options" bottom={barH} onClose={() => setPanel(null)}>
@@ -309,10 +422,40 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       </Panel>
 
       <Panel open={panel === 'rec'} side="right" title="Recording Options" bottom={barH} onClose={() => setPanel(null)}>
-        <Option glyph="●" title="Start Recording" sub="Read this story in your own voice" onPress={() => { setPanel(null); toast('Recording your voice comes in the next build.'); }} />
-        <Option glyph="≡" title="Your Recordings" sub="Listen to or remove the pages you recorded" onPress={() => toast('No recordings yet.')} />
-        <Option glyph="⚙" title="Recording Settings" sub="Choose whose voice reads the story" onPress={() => toast('Coming with recording in the next build.')} />
-        <Option glyph="?" title="Help" sub="How recording works" onPress={() => toast('Record each page in your own voice; it plays back when your child reads.')} />
+        {recView === 'main' ? (
+          <>
+            <Option glyph="●" title="Start Recording" sub={`Read this story in your own voice, starting on page ${Math.min(idx + 1, n)}`} disabled={idx >= n} onPress={startRec} />
+            <Option glyph="≡" title="Your Recordings" sub="Listen to or remove the pages you recorded" onPress={openRecList} />
+            <Option glyph="⚙" title="Recording Settings" sub="Choose whose voice reads the story" onPress={() => setRecView('settings')} />
+            <Option glyph="?" title="Help" sub="How recording works" onPress={() => setRecView('help')} />
+          </>
+        ) : (
+          <Pressable onPress={() => setRecView('main')} hitSlop={8}><Text style={styles.back}>‹ Back</Text></Pressable>
+        )}
+        {recView === 'list' ? (
+          recList.length ? recList.map((r) => (
+            <View key={r.page} style={styles.row}>
+              <Text style={styles.rowText}>Page {r.page + 1} · {Math.round(r.seconds)}s</Text>
+              <Pressable style={styles.rowBtn} onPress={() => { stopReading(); playVoice(r.uri); }}><Text style={styles.rowBtnText}>Play</Text></Pressable>
+              <Pressable style={styles.rowBtn} onPress={async () => { stopVoice(); await removeRecording(story.id, r.page); openRecList(); toast(`Removed your recording of page ${r.page + 1}.`); }}><Text style={styles.rowBtnText}>Remove</Text></Pressable>
+            </View>
+          )) : <Text style={styles.help}>Nothing recorded yet. Tap Start Recording to read this story in your own voice.</Text>
+        ) : null}
+        {recView === 'settings' ? (
+          <>
+            <Text style={styles.help}>Who reads the story aloud</Text>
+            <Seg value={prefs.voice || 'narrator'} options={[['narrator', 'Narrator'], ['mine', 'Your voice']]} onChange={(v) => { stopReading(); setPrefs((p) => ({ ...p, voice: v })); }} />
+            <Text style={styles.help}>Narrator speed</Text>
+            <Seg value={prefs.speed || 'normal'} options={[['normal', 'Normal'], ['slow', 'Slow']]} onChange={(v) => { stopReading(); setPrefs((p) => ({ ...p, speed: v })); }} />
+            <Text style={styles.help}>Pages you haven’t recorded use the narrator.</Text>
+          </>
+        ) : null}
+        {recView === 'help' ? (
+          <>
+            <Text style={styles.help}>Tap Start Recording and read the page out loud. Turn the page and keep reading: each page saves on its own.</Text>
+            <Text style={styles.help}>Tap the red button to stop. Your recordings stay on this phone, and the story will read back in your voice.</Text>
+          </>
+        ) : null}
       </Panel>
     </View>
   );
@@ -321,4 +464,15 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   book: { flex: 1, overflow: 'hidden', backgroundColor: colors.paper },
+  recBanner: { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 25, backgroundColor: colors.highlight, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingVertical: 10 },
+  recDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.white },
+  recText: { flex: 1, color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
+  back: { color: colors.muted, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
+  help: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#2a2a2a', padding: 12 },
+  rowText: { flex: 1, color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  rowBtn: { backgroundColor: colors.tile, paddingHorizontal: 12, paddingVertical: 8 },
+  rowBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
+  seg: { backgroundColor: '#333', paddingHorizontal: 14, paddingVertical: 10 },
+  segText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
 });

@@ -18,6 +18,10 @@
       "package": "com.oomlaut.reader",
       "permissions": ["RECORD_AUDIO"]
     },
+    "plugins": [
+      ["expo-audio", { "microphonePermission": "oomlaut Reader records your voice so you can read stories aloud for your child." }],
+      ["expo-image-picker", { "photosPermission": "oomlaut Reader uses your photos as pictures in the stories you make." }]
+    ],
     "web": {
       "output": "single",
       "bundler": "metro"

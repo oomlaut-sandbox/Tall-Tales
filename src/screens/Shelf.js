@@ -6,10 +6,10 @@ import { colors, fonts } from '../theme';
 import { Bar, BarMeta, Burger } from '../components/Chrome';
 import { STORIES } from '../story';
 
-function Tile({ u, cover, title, sub, onPress, plus }) {
+function Tile({ u, cover, title, sub, onPress, onLongPress, plus }) {
   const ear = u * 3;
   return (
-    <Pressable onPress={onPress} style={{ width: '47%', gap: 8 }} accessibilityRole="button">
+    <Pressable onPress={onPress} onLongPress={onLongPress} style={{ width: '47%', gap: 8 }} accessibilityRole="button">
       <View style={{ aspectRatio: 3 / 4, backgroundColor: '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
         {cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }} resizeMode="cover" /> : null}
         {plus ? <Text style={{ color: colors.white, fontSize: 64, fontWeight: '300' }}>+</Text> : null}
@@ -33,15 +33,17 @@ function Band({ color, dark, title, sub }) {
   );
 }
 
-export function Library({ u, openStory, openMenu, toast }) {
+export function Library({ u, stories, openStory, openMenu, onCreate, onEdit }) {
   return (
     <View style={styles.screen}>
       <Band color={colors.orange} dark title="My Library" sub="Your stories, ready to read" />
       <ScrollView contentContainerStyle={styles.grid}>
-        {STORIES.map((s) => (
-          <Tile key={s.id} u={u} cover={s.pages[0].image} title={s.title} sub={`${s.pages.length} pages · read-along`} onPress={() => openStory(s)} />
+        {stories.map((s) => (
+          <Tile key={s.id} u={u} cover={s.pages[0] && s.pages[0].image} title={s.title}
+            sub={s.mine ? `${s.pages.length} page${s.pages.length === 1 ? '' : 's'} · made by you · hold to edit` : `${s.pages.length} pages · read-along`}
+            onPress={() => openStory(s)} onLongPress={s.mine ? () => onEdit(s) : undefined} />
         ))}
-        <Tile u={u} plus title="Create a story" sub="Add pictures and words" onPress={() => toast('Creating stories comes in the next build.')} />
+        <Tile u={u} plus title="Create a story" sub="Add pictures and words" onPress={onCreate} />
       </ScrollView>
       <Bar u={u}><Burger u={u} onPress={openMenu} /><BarMeta title="My Library" /></Bar>
     </View>

@@ -42,7 +42,7 @@ export const PageView = forwardRef(function PageView(
         {end ? (
           <View style={styles.theEnd}><Text style={styles.theEndText}>The End</Text></View>
         ) : (
-          <Image source={page.image} style={styles.fill} resizeMode="cover" />
+          page.image ? <Image source={page.image} style={styles.fill} resizeMode="cover" /> : null
         )}
         {showHotspots
           ? spots.map((h, i) => (
