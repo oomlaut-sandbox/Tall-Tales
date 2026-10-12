@@ -23,11 +23,12 @@ export default function Home({ u, go, openMenu }) {
   return (
     <View style={styles.screen}>
       <View style={{ flexBasis: u * 100, flexShrink: 1, minHeight: u * 52, backgroundColor: colors.red, justifyContent: 'center' }}>
+        {/* Red felt with the logo already in the picture (Jörg's artwork). */}
         <Image
-          source={require('../../assets/logo.png')}
+          source={require('../../assets/home-felt.jpg')}
           accessibilityLabel="oomlaut Reader"
-          style={{ position: 'absolute', left: '18.2%', width: u * 62.5, height: u * 62.5 * (225 / 746), top: '54%', marginTop: -(u * 62.5 * (225 / 746)) / 2 }}
-          resizeMode="contain"
+          style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }}
+          resizeMode="cover"
         />
       </View>
       <View style={{ flexGrow: 1, flexShrink: 0, gap: u * 10, paddingTop: u * 12.5, paddingBottom: u * 10.5, paddingLeft: u * 11.8, paddingRight: u * 8, backgroundColor: colors.paper }}>
