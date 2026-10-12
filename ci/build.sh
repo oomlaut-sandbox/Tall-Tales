@@ -21,6 +21,17 @@ else
     @shopify/react-native-skia @expo-google-fonts/eb-garamond
 fi
 step doctor-versions npx expo install --check
+
+# Expo account link (needs the EXPO_TOKEN secret). Never prints the token.
+if [ -n "${EXPO_TOKEN:-}" ]; then
+  if npx --yes eas-cli@latest whoami > out/expo-account.txt 2>&1; then echo "PASS expo-login" >> "$summary"; else echo "FAIL expo-login" >> "$summary"; fi
+  if ! grep -q '"projectId"' app.json; then
+    step expo-init npx --yes eas-cli@latest init --non-interactive --force
+  fi
+  cp app.json out/app.json
+else
+  echo "SKIP expo-login (no EXPO_TOKEN secret)" >> "$summary"
+fi
 step bundle-ios npx expo export --platform ios --output-dir build-ios
 step bundle-android npx expo export --platform android --output-dir build-android
 step bundle-web npx expo export --platform web --output-dir out/web

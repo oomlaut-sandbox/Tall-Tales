@@ -19,6 +19,8 @@ jobs:
           node-version: 22
       - name: Install and bundle
         run: bash ci/build.sh
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       - name: Save results to ci-output branch
         run: |
           git config user.name "build-bot"
