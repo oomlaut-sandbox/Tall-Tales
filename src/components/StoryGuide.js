@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme';
 
 export const GUIDE_STEPS = [
-  { title: 'Add a picture', body: 'Tap the grey area to choose a picture from your photos. Keep faces and important details near the middle, since the edges may be trimmed on some phones.' },
+  { title: 'Add a picture', body: 'Tap the grey area to choose a picture from your photos. Square pictures work best: they fill the page and show in full. For a sharp result, use at least 1500 × 1500 pixels. You can crop a photo to a square right after picking it.' },
   { title: 'Write the words', body: 'Type below the picture. Two or three short sentences per page is easiest for young readers to follow.' },
   { title: 'Turn the page', body: 'Tap the folded corner at the bottom right to add the next page. Tap ‹ in the bottom bar to go back a page.' },
   { title: 'Arrange your pages', body: 'Tap Pages to jump to any page, move it up or down, or delete it.' },

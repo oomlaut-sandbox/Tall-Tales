@@ -55,7 +55,7 @@ export default function Publisher({ u, initial, openMenu, toast, onChange, onDon
 
   const pickImage = async () => {
     try {
-      const r = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'images', quality: 0.85 });
+      const r = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'images', quality: 0.9, allowsEditing: true, aspect: [1, 1] });
       if (r.canceled || !r.assets || !r.assets[0]) return;
       const a = r.assets[0];
       const uri = await keepPicture(draft.id, a.uri);
