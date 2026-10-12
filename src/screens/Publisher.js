@@ -9,6 +9,8 @@ import { colors, fonts } from '../theme';
 import { Bar, Burger, DogEar, Panel } from '../components/Chrome';
 import { deleteUserStory, dropPicture, keepPicture, newPageId, saveUserStory } from '../userStories';
 import StoryGuide from '../components/StoryGuide';
+import ParentGate from '../components/ParentGate';
+import { shareStoryPdf } from '../pdf';
 import { loadJSON, saveJSON } from '../storage';
 
 const blank = () => ({ pid: newPageId(), text: '', uri: null, w: 1, h: 1 });
@@ -28,6 +30,24 @@ export default function Publisher({ u, initial, openMenu, toast, onChange, onDon
   const [i, setI] = useState(0);
   const [pagesOpen, setPagesOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [pdfChoice, setPdfChoice] = useState(false);
+  const [gateFor, setGateFor] = useState(null); // layout waiting for the grown-up check
+  const [making, setMaking] = useState(false);
+
+  const makePdf = async (layout) => {
+    setGateFor(null);
+    const d = latest.current;
+    const pages = d.pages.filter((p) => p.text.trim() || p.uri);
+    if (!pages.length) return toast('Add a page with a picture or words first.');
+    setMaking(true);
+    toast('Making your PDF…');
+    try {
+      await shareStoryPdf({ title: d.title.trim() || 'My story', pages: pages.map((p) => ({ text: p.text.trim(), image: p.uri ? { uri: p.uri } : null })) }, layout);
+    } catch (e) {
+      toast(e && e.message ? e.message : 'Couldn’t make the PDF. Try again.');
+    }
+    setMaking(false);
+  };
   const [saved, setSaved] = useState(true);
   const [guide, setGuide] = useState(false);
   useEffect(() => {
@@ -168,7 +188,7 @@ export default function Publisher({ u, initial, openMenu, toast, onChange, onDon
         <Pressable onPress={() => setI(Math.max(0, i - 1))} disabled={i === 0} hitSlop={8} style={{ opacity: i === 0 ? 0.35 : 1 }} accessibilityLabel="Previous page">
           <Text style={[styles.btn, { fontSize: 22 }]}>‹</Text>
         </Pressable>
-        <Pressable onPress={() => { setConfirmDelete(false); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
+        <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(false); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
         <Pressable onPress={finish} hitSlop={8}><Text style={[styles.btn, { color: colors.highlight }]}>Done</Text></Pressable>
       </Bar>
 
@@ -189,6 +209,21 @@ export default function Publisher({ u, initial, openMenu, toast, onChange, onDon
             </View>
           ))}
         </ScrollView>
+        {pdfChoice ? (
+          <View style={{ gap: 10 }}>
+            <Text style={styles.warn}>Choose a layout for your PDF:</Text>
+            <Pressable onPress={() => { setPdfChoice(false); setPagesOpen(false); setGateFor('stacked'); }} style={styles.wide}>
+              <Text style={styles.wideText}>Picture above the words</Text>
+            </Pressable>
+            <Pressable onPress={() => { setPdfChoice(false); setPagesOpen(false); setGateFor('spreads'); }} style={styles.wide}>
+              <Text style={styles.wideText}>Book spreads (picture, then words)</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(true); }} disabled={making} style={[styles.wide, { backgroundColor: colors.bar }]}>
+            <Text style={styles.wideText}>{making ? 'Making PDF…' : 'Share as PDF…'}</Text>
+          </Pressable>
+        )}
         {confirmDelete ? (
           <View style={{ gap: 10 }}>
             <Text style={styles.warn}>Delete “{draft.title}”, its pictures and any voice recordings? This can’t be undone.</Text>
@@ -198,10 +233,11 @@ export default function Publisher({ u, initial, openMenu, toast, onChange, onDon
             </View>
           </View>
         ) : (
-          <Pressable onPress={() => setConfirmDelete(true)} hitSlop={6}><Text style={styles.deleteLink}>Delete this story…</Text></Pressable>
+          <Pressable onPress={() => { setPdfChoice(false); setConfirmDelete(true); }} hitSlop={6}><Text style={styles.deleteLink}>Delete this story…</Text></Pressable>
         )}
       </Panel>
       <StoryGuide visible={guide} onClose={closeGuide} />
+      <ParentGate visible={!!gateFor} reason="Sharing sends this story outside the app." onPass={() => makePdf(gateFor)} onCancel={() => setGateFor(null)} />
     </KeyboardAvoidingView>
   );
 }

@@ -1,0 +1,94 @@
+// Turns a story into a PDF on the phone and opens the share sheet (Files, Mail, AirDrop, print shop…).
+// Two layouts: "stacked" (picture above the words, one page each) and "spreads"
+// (picture page, then a words page, like a printed picture book).
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
+import { Asset } from 'expo-asset';
+import { File, Paths } from 'expo-file-system';
+import { EBGaramond_400Regular } from '@expo-google-fonts/eb-garamond';
+
+const SIZE = 576; // 8 × 8 inch pages (72 per inch), like a square picture book
+
+const esc = (s) => String(s || '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+async function imageData(image) {
+  if (!image) return null;
+  try {
+    let uri = image.uri;
+    if (!uri) {
+      const a = Asset.fromModule(image);
+      await a.downloadAsync();
+      uri = a.localUri || a.uri;
+    }
+    const b64 = await new File(uri).base64();
+    const type = /\.png($|\?)/i.test(uri) ? 'image/png' : 'image/jpeg';
+    return `data:${type};base64,${b64}`;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function fontFace() {
+  try {
+    const a = Asset.fromModule(EBGaramond_400Regular);
+    await a.downloadAsync();
+    const b64 = await new File(a.localUri || a.uri).base64();
+    return `@font-face{font-family:Story;src:url(data:font/ttf;base64,${b64}) format('truetype');}`;
+  } catch (e) {
+    return '';
+  }
+}
+
+function css(face) {
+  return `${face}
+@page{size:${SIZE}px ${SIZE}px;margin:0}
+html,body{margin:0;padding:0;background:#fff}
+*{box-sizing:border-box}
+.pg{width:${SIZE}px;height:${SIZE}px;overflow:hidden;position:relative;page-break-after:always;break-after:page;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Story,Georgia,'Times New Roman',serif;color:#2b2b2b}
+.pg:last-child{page-break-after:auto;break-after:auto}
+.title h1{font-weight:400;font-size:64px;margin:0 48px;text-align:center;line-height:1.1}
+.title .by{font-size:18px;margin-top:18px;color:#555}
+.title .made{position:absolute;bottom:28px;font-size:12px;color:#888;font-family:Helvetica,Arial,sans-serif}
+.full img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.words p{font-size:28px;line-height:1.5;margin:0 64px;text-align:center}
+.stack{justify-content:flex-start;padding-top:36px}
+.stack .pic{width:396px;height:396px;background:#eee;overflow:hidden;flex:0 0 auto}
+.stack .pic img{width:100%;height:100%;object-fit:cover;display:block}
+.stack p{font-size:19px;line-height:1.5;margin:22px 64px 0;text-align:center}
+.num{position:absolute;bottom:18px;font-size:11px;color:#999;font-family:Helvetica,Arial,sans-serif}`;
+}
+
+export async function buildStoryHtml(story, layout = 'stacked') {
+  const face = await fontFace();
+  const pics = [];
+  for (const p of story.pages) pics.push(await imageData(p.image));
+  const out = [];
+  out.push(`<div class="pg title"><h1>${esc(story.title)}</h1>${story.author ? `<div class="by">by ${esc(story.author)}</div>` : ''}<div class="made">Made with oomlaut Reader</div></div>`);
+  story.pages.forEach((p, i) => {
+    const pic = pics[i];
+    if (layout === 'spreads') {
+      if (pic) out.push(`<div class="pg full"><img src="${pic}"/></div>`);
+      if (p.text && p.text.trim()) out.push(`<div class="pg words"><p>${esc(p.text)}</p></div>`);
+    } else {
+      out.push(`<div class="pg stack"><div class="pic">${pic ? `<img src="${pic}"/>` : ''}</div>${p.text ? `<p>${esc(p.text)}</p>` : ''}<div class="num">${i + 1}</div></div>`);
+    }
+  });
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${css(face)}</style></head><body>${out.join('')}</body></html>`;
+}
+
+export async function shareStoryPdf(story, layout) {
+  const html = await buildStoryHtml(story, layout);
+  const { uri } = await Print.printToFileAsync({ html, width: SIZE, height: SIZE, margins: { top: 0, right: 0, bottom: 0, left: 0 } });
+  let shareUri = uri;
+  try {
+    const name = (story.title || 'My story').replace(/[^\w\- ]+/g, '').trim().slice(0, 60) || 'My story';
+    const target = new File(Paths.cache, `${name}.pdf`);
+    if (target.exists) target.delete();
+    const f = new File(uri);
+    await f.move(target);
+    shareUri = f.uri;
+  } catch (e) {}
+  if (!(await Sharing.isAvailableAsync())) throw new Error('Sharing is not available on this device.');
+  await Sharing.shareAsync(shareUri, { UTI: 'com.adobe.pdf', mimeType: 'application/pdf', dialogTitle: story.title });
+}
