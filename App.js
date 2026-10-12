@@ -72,8 +72,8 @@ function Root() {
             if (screen === 'reader') setPlayMenu((x) => x + 1); else toast('Open a story first, then choose how it plays.');
           }} />
           <Option glyph="+" title="Create a Story" sub="Add your own pictures and words" onPress={() => openPublisher(null)} />
-          <Option glyph="i" title="About" sub="Learn more about the app" onPress={() => toast('oomlaut Reader: illustrated stories that read aloud and help children learn to read.')} />
           <Option glyph="○" title="Profile" sub="Manage your oomlaut account" onPress={() => toast('Accounts arrive in a later build.')} />
+          <Option glyph="i" title="About" sub="Learn more about the app" onPress={() => toast('oomlaut Reader: illustrated stories that read aloud and help children learn to read.')} />
         </Panel>
         <Toast message={message} />
       </View>
