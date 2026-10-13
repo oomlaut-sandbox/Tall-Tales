@@ -392,8 +392,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     const { a, b } = flipPair;
     const artH = pageLayout(W, H).artH, textH = H - artH;
     const view = (i, k) => <PageView key={k} {...pageProps(i)} />;
-    const front = flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: ['0deg', '-90deg', '-90deg'] });
-    const back = flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: ['90deg', '90deg', '0deg'] });
+    const front = flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: ['0deg', '90deg', '90deg'] });
+    const back = flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: ['-90deg', '-90deg', '0deg'] });
     layers.push(
       // underneath: the page being turned to (b), whole
       <View key="fb" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
