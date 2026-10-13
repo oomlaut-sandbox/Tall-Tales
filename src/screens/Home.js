@@ -25,7 +25,7 @@ export default function Home({ u, go, openMenu }) {
       <View style={{ flexBasis: u * 100, flexShrink: 1, minHeight: u * 52, backgroundColor: colors.red, justifyContent: 'center' }}>
         {/* Red felt with the logo already in the picture (Jörg's artwork). */}
         <Image
-          source={require('../../assets/home-felt.jpg')}
+          source={require('../../assets/home-pebbles.jpg')}
           accessibilityLabel="oomlaut Reader"
           style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }}
           resizeMode="cover"
