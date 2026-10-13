@@ -414,9 +414,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     const view = (i, k) => <PageView key={k} {...pageProps(i)} />;
     const ip = (arr) => flipP.interpolate({ inputRange: tables.input, outputRange: arr });
     const shadow = flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 1, 0] });
+    // The normal pages stay mounted underneath (the finger's touch belongs to them; removing them
+    // would lose the rest of a swipe). The turning layers are drawn on top.
+    layers.push(abs(prevEl, 'p'), abs(nextEl, 'n'), abs(curEl, 'c'));
     layers.push(
-      <View key="fb" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
-      <View key="fat" style={[styles.half, { top: 0, height: artH }]}>{view(a, `t${a}`)}</View>,
+      <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
+      <View key="fat" pointerEvents="none" style={[styles.half, { top: 0, height: artH }]}>{view(a, `t${a}`)}</View>,
       <Animated.View key="sh1" pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: artH, height: textH * 0.6, opacity: shadow }}>
         <Fade edge="top" size={textH * 0.6} max={0.32} />
       </Animated.View>,
