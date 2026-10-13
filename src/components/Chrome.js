@@ -1,6 +1,6 @@
 // Shared pieces of Jörg's design: black control bar, hamburger, dog-ear corner, slide-in panels.
 import React, { useEffect, useRef } from 'react';
-import { Animated, PanResponder, Pressable, StyleSheet, Text, View, ScrollView } from 'react-native';
+import { Animated, PanResponder, Pressable, StyleSheet, Text, View, ScrollView, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 
@@ -97,12 +97,17 @@ export function Panel({ open, side = 'right', title, onClose, bottom, inset = 0,
     Animated.timing(x, { toValue: open ? 0 : 1, duration: 300, useNativeDriver: true }).start();
   }, [open]);
   const sign = side === 'right' ? 1 : -1;
+  // Never taller than about 80% of the screen, so it stays clear of the camera and status bar.
+  const { height: winH } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  // The top of the menu sits at about 20% of the screen height.
+  const maxHeight = Math.max(240, Math.min(winH * 0.8 - (bottom || 0), winH - (bottom || 0) - insets.top - 24));
   return (
     <>
       {open ? <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close menu" /> : null}
       <Animated.View
         pointerEvents={open ? 'auto' : 'none'}
-        style={[styles.panel, { bottom, [side]: inset, transform: [{ translateX: x.interpolate({ inputRange: [0, 1], outputRange: [0, sign * 500] }) }] }]}
+        style={[styles.panel, { bottom, maxHeight, [side]: inset, transform: [{ translateX: x.interpolate({ inputRange: [0, 1], outputRange: [0, sign * 500] }) }] }]}
       >
         <View style={styles.panelHead}>
           <Text style={[styles.panelTitle, { flex: 1 }]}>{title}</Text>
@@ -189,7 +194,7 @@ const styles = StyleSheet.create({
   metaSub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 13, marginTop: 2 },
   ctl: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   ear: { position: 'absolute', right: 0, bottom: 0, width: 48, height: 48, zIndex: 20 },
-  panel: { position: 'absolute', width: '82%', maxWidth: 440, maxHeight: '88%', zIndex: 41 },
+  panel: { position: 'absolute', width: '82%', maxWidth: 440, zIndex: 41 },
   panelHead: { backgroundColor: colors.panelHead, paddingLeft: 24, paddingRight: 12, paddingTop: 24, paddingBottom: 20, flexDirection: 'row', alignItems: 'center' },
   closeBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   chev: { width: 22, height: 12 },

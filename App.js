@@ -9,7 +9,8 @@ import { Library, Store } from './src/screens/Shelf';
 import Reader from './src/screens/Reader';
 import Publisher, { draftFrom } from './src/screens/Publisher';
 import { STORIES } from './src/story';
-import { loadUserStories } from './src/userStories';
+import { deleteUserStory, loadUserStories } from './src/userStories';
+import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
 import { Option, Panel, Toast } from './src/components/Chrome';
 import { stopSpeech } from './src/speech';
@@ -27,6 +28,9 @@ function Root() {
   const [drawer, setDrawer] = useState(false);
   const [prefs, setPrefs] = useState({ mode: null, sound: false, speed: 'normal', voice: 'narrator' });
   const [userStories, setUserStories] = useState([]);
+  const [removed, setRemoved] = useState([]); // built-in books taken off the shelf (can be restored)
+  useEffect(() => { loadJSON('removedBooks', []).then((r) => Array.isArray(r) && setRemoved(r)); }, []);
+  const setRemovedSaved = (r) => { setRemoved(r); saveJSON('removedBooks', r); };
   const [draft, setDraft] = useState(null);
   const prefsLoaded = useRef(false);
 
@@ -35,6 +39,8 @@ function Root() {
     loadJSON('prefs', null).then((p) => {
       // Page sound is now off by default: switch it off once for anyone who had the old default.
       if (p && !p.soundOffDefault) p = { ...p, sound: false, soundOffDefault: true };
+      // Interactive mode was removed: anyone who had it gets Page by Page instead.
+      if (p && p.mode === 'interactive') p = { ...p, mode: 'page' };
       if (p) setPrefs((x) => ({ ...x, ...p }));
       else setPrefs((x) => ({ ...x, soundOffDefault: true }));
       prefsLoaded.current = true;
@@ -63,7 +69,21 @@ function Root() {
       <View style={[styles.app, { width: W }]}>
         {screen === 'home' && <Home u={u} go={go} openMenu={openMenu} />}
         {screen === 'library' && (
-          <Library u={u} stories={[...STORIES, ...userStories]} openStory={openStory} openMenu={openMenu} onCreate={() => openPublisher(null)} onEdit={openPublisher} />
+          <Library u={u} stories={[...STORIES.filter((s) => !removed.includes(s.id)), ...userStories]} openStory={openStory} openMenu={openMenu}
+            onCreate={() => openPublisher(null)} onEdit={openPublisher}
+            removedCount={removed.length} onRestore={() => setRemovedSaved([])}
+            onShare={async (s) => {
+              toast('Making the PDF…');
+              try { await shareStoryPdf(s, 'stacked', prefs.font); } catch (e) { toast(e && e.message ? e.message : 'Couldn’t make the PDF. Try again.'); }
+            }}
+            onDelete={async (list) => {
+              const builtIn = list.filter((s) => !s.mine).map((s) => s.id);
+              if (builtIn.length) setRemovedSaved([...new Set([...removed, ...builtIn])]);
+              let mine = null;
+              for (const s of list.filter((x) => x.mine)) mine = await deleteUserStory(s.id);
+              if (mine) setUserStories(mine);
+              toast(list.length === 1 ? 'Book deleted.' : `${list.length} books deleted.`);
+            }} />
         )}
         {screen === 'publisher' && draft && (
           <Publisher key={draft.id} u={u} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} />

@@ -29,7 +29,7 @@ const MODES = [
   ['›', 'page', 'Page by Page Play', 'Reads a page at a time with audio'],
   ['Aa', 'learn', 'Learn to Read', 'Sounds out a word when touched'],
   ['◇', 'self', 'Read Yourself', 'Page by page with no audio'],
-  ['✦', 'interactive', 'Interactive', 'Image interaction with touch'],
+  // ['✦', 'interactive', 'Interactive', 'Image interaction with touch'],  (hidden for now; hotspot code kept)
 ];
 
 function Seg({ value, options, onChange }) {
@@ -378,7 +378,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     page: pages[i], end: !!pages[i]?.end, width: W, height: H, textScale: prefs.textScale || 1, fontKey: prefs.font || 'serif',
     onReadAgain: () => { stopReading(); setIdx(0); }, onLibrary: goLibrary,
   });
-  const showHot = prefs.mode === 'interactive';
+  const showHot = false; // Interactive mode is switched off for now
   const layers = [];
   const prevEl = idx > 0 ? <PageView key={`p${idx - 1}`} ref={refs.prev} {...pageProps(idx - 1)} /> : null;
   const nextEl = idx < pages.length - 1 ? <PageView key={`p${idx + 1}`} ref={refs.next} {...pageProps(idx + 1)} /> : null;
