@@ -10,6 +10,9 @@ import { tokenize } from '../story';
 export const artHeight = (width, height) => Math.min(width, height * 0.68);
 
 // Text sizes the reader can choose (Playback Options → Text size).
+// The last page's picture: "The End" embroidered on grey felt (Jörg's artwork).
+const THE_END = require('../../assets/the-end.jpg');
+
 export const TEXT_SIZES = [['Small', 0.85], ['Medium', 1], ['Large', 1.25]];
 
 // Where the picture and the words go. Upright: square picture on top, words below.
@@ -82,7 +85,7 @@ export const PageView = forwardRef(function PageView(
       <View style={[L.wide ? { width: artW, height, justifyContent: 'center' } : styles.artShadow, { zIndex: 1 }]}>
       <View style={[styles.art, { width: artW, height: artH }]}>
         {end ? (
-          <View style={styles.theEnd}><Text style={styles.theEndText}>The End</Text></View>
+          <Image source={THE_END} style={styles.fill} resizeMode="cover" accessibilityLabel="The End" />
         ) : (
           page?.image ? <Image source={page.image} style={styles.fill} resizeMode="cover" /> : null
         )}
