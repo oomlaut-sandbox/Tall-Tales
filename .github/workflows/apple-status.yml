@@ -1,0 +1,34 @@
+# Reads build status and TestFlight crash reports from App Store Connect. Run on demand.
+name: Apple status
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  status:
+    runs-on: ubuntu-latest
+    env:
+      EXPO_ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      EXPO_ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read from App Store Connect
+        env:
+          ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+        run: |
+          mkdir -p ios-out
+          printf '%s\n' "$ASC_API_KEY_P8" > asc-api-key.p8
+          node ci/crash-logs.js asc-api-key.p8 "$(cat ci/asc-app-id.txt)" || true
+          rm -f asc-api-key.p8
+      - name: Save to apple-status branch
+        run: |
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          echo "run at $(date -u)" >> ios-out/crash-summary.txt
+          mv ios-out /tmp/ios-out
+          git checkout --orphan apple-status
+          git rm -rfq --cached . > /dev/null
+          rm -rf ./* .gitignore 2>/dev/null || true
+          cp -r /tmp/ios-out ./ios-out
+          git add -f ios-out
+          git commit -qm "Apple status"
+          git push -f origin apple-status
