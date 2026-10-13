@@ -22,8 +22,9 @@ const PACE = 0.75;
 // The voices Jörg picked. `find` is what we look for by name. (Michael Caine was considered; Lily only for now.)
 const VOICES = [
   // id: ElevenLabs' standard voice ID, used if the key isn't allowed to look voices up.
-  { key: 'lily', label: 'Lily', find: ['lily'], id: 'pFZP5JQG7iQjIQuC4Bku' },
-  { key: 'gregory', label: 'Gregory Grumble', find: ['gregory grumble', 'grumble'] },
+  // pace: how fast each voice speaks at the app's default speed (Lily a little slower; Gregory as he is).
+  { key: 'lily', label: 'Lily', find: ['lily'], id: 'pFZP5JQG7iQjIQuC4Bku', pace: 0.75 },
+  { key: 'gregory', label: 'Gregory Grumble', find: ['gregory grumble', 'grumble'], pace: 1 },
 ];
 
 const log = [];
@@ -126,7 +127,7 @@ async function makeWords(v, voiceId) {
   let n = 0, kept = 0;
   for (const kind of ['words', 'parts']) {
     for (const [key, text] of want[kind]) {
-      const speed = kind === 'words' ? PACE : 0.7;
+      const speed = kind === 'words' ? (v.pace || PACE) : 0.7;
       const fp = crypto.createHash('sha1').update(`${MODEL}|${voiceId}|${speed}|${text}`).digest('hex').slice(0, 12);
       const file = path.join('assets/narration', v.key, kind, `${slug(key)}.mp3`);
       const have = words[v.key][kind][key];
@@ -161,14 +162,14 @@ async function makeWords(v, voiceId) {
       data[v.key][story.id] = data[v.key][story.id] || {};
       for (const page of story.pages) {
         if (!page.text || !page.text.trim()) continue;
-        const fp = crypto.createHash('sha1').update(`${MODEL}|${voiceId}|${PACE}|${page.text}`).digest('hex').slice(0, 12);
+        const fp = crypto.createHash('sha1').update(`${MODEL}|${voiceId}|${v.pace || PACE}|${page.text}`).digest('hex').slice(0, 12);
         const file = path.join('assets/narration', v.key, story.id, `${page.pid}.mp3`);
         const have = data[v.key][story.id][page.pid];
         if (have && have.fp === fp && fs.existsSync(file)) { kept++; continue; }
         const r = await api('POST', `/v1/text-to-speech/${voiceId}/with-timestamps?output_format=mp3_44100_128`, {
           text: page.text,
           model_id: MODEL,
-          voice_settings: { stability: 0.55, similarity_boost: 0.8, style: 0.15, use_speaker_boost: true, speed: PACE },
+          voice_settings: { stability: 0.55, similarity_boost: 0.8, style: 0.15, use_speaker_boost: true, speed: v.pace || PACE },
         });
         if (r.status !== 200 || !r.json || !r.json.audio_base64) {
           failed++; say(`FAILED ${v.key}/${story.id}/${page.pid}: HTTP ${r.status} ${r.text.slice(0, 300)}`);
