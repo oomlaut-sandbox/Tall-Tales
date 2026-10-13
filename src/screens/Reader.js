@@ -16,7 +16,7 @@ import { Bar, BarMeta, Burger, DogEar, Option, Panel, PauseButton, PlayButton, R
 export const DEFAULT_SPEED = 0.75;
 export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : DEFAULT_SPEED);
 // Book narrators (ElevenLabs). Lily is the default.
-export const NARRATORS = [['lily', 'Lily']]; // add more voices here (and in ci/narrate.js)
+export const NARRATORS = [['lily', 'Lily'], ['gregory', 'Gregory Grumble']]; // add more voices here (and in ci/narrate.js)
 const narratorOf = (prefs) => (NARRATORS.some(([k]) => k === prefs.narrator) ? prefs.narrator : 'lily');
 const NARRATOR = 0.92; // the phone voice's normal pace
 const VOICE_RECORDING = {

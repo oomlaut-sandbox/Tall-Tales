@@ -23,6 +23,7 @@ const PACE = 0.75;
 const VOICES = [
   // id: ElevenLabs' standard voice ID, used if the key isn't allowed to look voices up.
   { key: 'lily', label: 'Lily', find: ['lily'], id: 'pFZP5JQG7iQjIQuC4Bku' },
+  { key: 'gregory', label: 'Gregory Grumble', find: ['gregory grumble', 'grumble'] },
 ];
 
 const log = [];
