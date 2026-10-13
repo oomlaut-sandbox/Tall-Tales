@@ -68,6 +68,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const [recording, setRecording] = useState(false);
   const [recView, setRecView] = useState('main'); // main | list | settings | help
   const [recList, setRecList] = useState([]);
+  const [playView, setPlayView] = useState('main'); // 'main' | 'voices' inside Playback Options
   const [speedDraft, setSpeedDraft] = useState(null); // speed while the slider is being dragged
   const [printChoice, setPrintChoice] = useState(false);
   const [printGate, setPrintGate] = useState(null); // layout waiting for the grown-up check
@@ -487,9 +488,21 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
       </Bar>
 
-      <Panel open={panel === 'play'} side="right" title="Playback Options" {...panelPos} onClose={() => setPanel(null)}>
+      <Panel open={panel === 'play'} side="right" title={playView === 'voices' ? 'Voices' : 'Playback Options'} {...panelPos} onClose={() => { setPanel(null); setPlayView('main'); }}>
+        {playView === 'voices' ? (
+          <>
+            {NARRATORS.map(([k, label]) => (
+              <Option key={k} glyph="♫" title={label} sub={k === 'lily' ? 'Warm and gentle' : 'A grandfatherly storyteller'} selected={narratorOf(prefs) === k}
+                onPress={() => { stopReading(); setPrefs((p) => ({ ...p, narrator: k })); toast(`${label} will read the stories.`); }} />
+            ))}
+            <Text style={styles.help}>The voice reads the stories aloud and sounds out words in Learn to Read. Pages you recorded in your own voice still play in yours.</Text>
+            <Pressable onPress={() => setPlayView('main')} hitSlop={8}><Text style={styles.backlink}>‹ Back to Playback Options</Text></Pressable>
+          </>
+        ) : (
+          <>
         {MODES.map(([g, id, t, s]) => (
-          <Option key={id} glyph={g} title={t} sub={s} selected={prefs.mode === id} onPress={() => {
+          <React.Fragment key={id}>
+          <Option glyph={g} title={t} sub={s} selected={prefs.mode === id} onPress={() => {
             stopReading();
             setPrefs((p) => ({ ...p, mode: id }));
             st.current.mode = id;
@@ -499,23 +512,25 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             else if (id === 'self') toast('Reading on your own. Turn the page when you’re ready.');
             else toast('Tap the glowing circles in the picture.');
           }} />
+          {id === 'learn' ? (
+            <Option glyph="♫" title="Voices" sub={`Narrator: ${(NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1]}`} onPress={() => setPlayView('voices')} />
+          ) : null}
+          </React.Fragment>
         ))}
         <Option glyph="♪" title={`Page turn sound: ${prefs.sound ? 'On' : 'Off'}`} sub="Tap to switch"
           onPress={() => { const on = !prefs.sound; setPrefs((p) => ({ ...p, sound: on })); setPageSound(on); if (on) playPaper('turn', 0.8); }} />
-        <View style={{ gap: 8, paddingVertical: 6 }}>
+        <View style={styles.setting}>
           <Text style={styles.help}>Text size</Text>
           <Seg value={prefs.textScale || 1} options={TEXT_SIZES.map(([label, v]) => [v, label])} onChange={(v) => setPrefs((p) => ({ ...p, textScale: v }))} />
+        </View>
+        <View style={styles.setting}>
           <Text style={styles.help}>Playback speed</Text>
           <Slider value={speedDraft ?? speedOf(prefs)} min={0.5} max={1.5} step={0.05} leftLabel="Slower" rightLabel="Faster"
             format={(v) => `${v.toFixed(2).replace(/0$/, '')}×`}
             onChange={setSpeedDraft}
             onDone={(v) => { setSpeedDraft(null); setPrefs((p) => ({ ...p, rate: Math.round(v * 100) / 100 })); }} />
-          {NARRATORS.length > 1 ? (
-            <>
-              <Text style={styles.help}>Narrator</Text>
-              <Seg value={narratorOf(prefs)} options={NARRATORS} onChange={(v) => { stopReading(); setPrefs((p) => ({ ...p, narrator: v })); }} />
-            </>
-          ) : null}
+        </View>
+        <View style={styles.setting}>
           <Text style={styles.help}>Book font</Text>
           <Seg value={prefs.font || 'serif'} options={Object.entries(BOOK_FONTS).map(([k, f]) => [k, f.label, f.family])} onChange={(v) => setPrefs((p) => ({ ...p, font: v }))} />
         </View>
@@ -526,6 +541,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           </>
         ) : (
           <Option glyph="⎙" title={printing ? 'Getting ready to print…' : 'Print this book'} sub="Print on paper with AirPrint" disabled={printing} onPress={() => setPrintChoice(true)} />
+        )}
+          </>
         )}
       </Panel>
       <ParentGate visible={!!printGate} reason="Printing opens your phone’s print options." onPass={() => doPrint(printGate)} onCancel={() => setPrintGate(null)} />
@@ -578,6 +595,8 @@ const styles = StyleSheet.create({
   recDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.white },
   recText: { flex: 1, color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
   back: { color: colors.muted, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
+  setting: { gap: 8, paddingTop: 10, paddingBottom: 8 },
+  backlink: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, fontWeight: '700', paddingVertical: 6 },
   help: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#2a2a2a', padding: 12 },
   rowText: { flex: 1, color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
