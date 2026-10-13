@@ -47,14 +47,14 @@ const VOICE_RECORDING = {
 import { playPaper, setPageSound } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { pauseVoice, playClips, playVoice, resumeVoice, stopVoice } from '../voice';
-import { PARTS, WORDS } from '../narration/words';
+import { WORDS } from '../narration/words';
 import { getRecording, listRecordings, pageKey, removeRecording, saveRecording } from '../recordings';
 import { AUDIO, TIMINGS } from '../narration';
 
 const MODES = [
   ['»', 'auto', 'Auto Play', 'Reads the full story with audio'],
   ['›', 'page', 'Page by Page Play', 'Reads a page at a time with audio'],
-  ['Aa', 'learn', 'Learn to Read', 'Sounds out a word when touched'],
+  ['Aa', 'learn', 'Learn to Read', 'Says a word when you touch it'],
   ['◇', 'self', 'Read Yourself', 'Page by page with no audio'],
   // ['✦', 'interactive', 'Interactive', 'Image interaction with touch'],  (hidden for now; hotspot code kept)
 ];
@@ -285,17 +285,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     setHl(i);
     const done = () => setTimeout(() => setHl(-1), 400);
     if (mode === 'learn') {
-      const parts = syllablesFor(story, w);
-      // Lily's voice when we have her clips for this word (and its parts); otherwise the phone's voice.
-      const voice = narratorOf(prefsRef.current);
-      const wordClip = WORDS[voice]?.[w.toLowerCase()];
-      const partClips = parts.length > 1 ? parts.map((s) => PARTS[voice]?.[s.toLowerCase()]) : [];
-      if (wordClip && partClips.every(Boolean)) {
-        playClips([...partClips, wordClip], { gap: 260, onDone: done });
-        return;
-      }
-      const items = parts.length > 1 ? parts.map((s) => ({ text: s, rate: 0.5, pause: 220 })) : [];
-      speakQueue([...items, { text: w, rate: 0.7 }], done);
+      // Say the whole word once, clearly, in the chosen narrator's voice (the phone's voice if needed).
+      const wordClip = WORDS[narratorOf(prefsRef.current)]?.[w.toLowerCase()];
+      if (wordClip) { playClips([wordClip], { onDone: done }); return; }
+      speakQueue([{ text: w, rate: 0.7 }], done);
     } else {
       speakQueue([{ text: w, rate: 0.8 }], done);
     }
@@ -587,7 +580,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             st.current.mode = id;
             setPanel(null);
             if (id === 'auto' || id === 'page') setTimeout(() => readPage(st.current.idx), 300);
-            else if (id === 'learn') toast('Tap any word to hear it sounded out.');
+            else if (id === 'learn') toast('Tap any word to hear it.');
             else if (id === 'self') toast('Reading on your own. Turn the page when you’re ready.');
             else toast('Tap the glowing circles in the picture.');
           }} />

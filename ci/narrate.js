@@ -125,7 +125,8 @@ async function makeWords(v, voiceId) {
   }
   words[v.key] = words[v.key] || { words: {}, parts: {} };
   let n = 0, kept = 0;
-  for (const kind of ['words', 'parts']) {
+  words[v.key].parts = {}; // Learn to Read says whole words only (no word parts)
+  for (const kind of ['words']) {
     for (const [key, text] of want[kind]) {
       const speed = kind === 'words' ? (v.pace || PACE) : 0.7;
       const fp = crypto.createHash('sha1').update(`${MODEL}|${voiceId}|${speed}|${text}`).digest('hex').slice(0, 12);
