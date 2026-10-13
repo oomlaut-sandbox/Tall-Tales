@@ -4,7 +4,6 @@ import { StatusBar } from 'expo-status-bar';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFonts, EBGaramond_400Regular } from '@expo-google-fonts/eb-garamond';
-import { DancingScript_400Regular } from '@expo-google-fonts/dancing-script';
 import { colors, MAX_WIDTH } from './src/theme';
 import Home from './src/screens/Home';
 import { Library, Store } from './src/screens/Shelf';
@@ -94,7 +93,7 @@ function Root() {
 }
 
 export default function App() {
-  const [loaded] = useFonts({ EBGaramond_400Regular, DancingScript_400Regular });
+  const [loaded] = useFonts({ EBGaramond_400Regular });
   if (!loaded) return <View style={{ flex: 1, backgroundColor: colors.red }} />;
   return (
     <SafeAreaProvider>

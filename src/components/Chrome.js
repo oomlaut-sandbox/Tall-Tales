@@ -1,6 +1,6 @@
 // Shared pieces of Jörg's design: black control bar, hamburger, dog-ear corner, slide-in panels.
 import React, { useEffect, useRef } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View, ScrollView } from 'react-native';
+import { Animated, PanResponder, Pressable, StyleSheet, Text, View, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 
@@ -121,6 +121,46 @@ export function Option({ glyph, title, sub, onPress, selected, disabled }) {
         <Text style={styles.optSub}>{sub}</Text>
       </View>
     </Pressable>
+  );
+}
+
+// A simple slider: drag the knob or tap the track. Values snap to `step`.
+export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLabel, rightLabel, format = (v) => v }) {
+  const [w, setW] = React.useState(0);
+  const geo = useRef({ w: 0, x0: 0 });
+  const cb = useRef({});
+  cb.current = { onChange, onDone, min, max, step };
+  const toValue = (x) => {
+    const { min: lo, max: hi, step: st } = cb.current;
+    const f = Math.max(0, Math.min(1, x / Math.max(1, geo.current.w)));
+    return Math.round((lo + f * (hi - lo)) / st) * st;
+  };
+  const last = useRef(value);
+  const pan = useRef(PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderTerminationRequest: () => false,
+    onPanResponderGrant: (e) => { geo.current.x0 = e.nativeEvent.locationX; last.current = toValue(geo.current.x0); cb.current.onChange(last.current); },
+    onPanResponderMove: (_, g) => { last.current = toValue(geo.current.x0 + g.dx); cb.current.onChange(last.current); },
+    onPanResponderRelease: () => cb.current.onDone && cb.current.onDone(last.current),
+    onPanResponderTerminate: () => cb.current.onDone && cb.current.onDone(last.current),
+  })).current;
+  const f = (value - min) / (max - min);
+  return (
+    <View>
+      <View style={{ height: 44, justifyContent: 'center' }} onLayout={(e) => { geo.current.w = e.nativeEvent.layout.width; setW(e.nativeEvent.layout.width); }} {...pan.panHandlers}
+        accessibilityRole="adjustable" accessibilityValue={{ text: String(format(value)) }}>
+        <View pointerEvents="none" style={{ height: 6, backgroundColor: '#444' }}>
+          <View style={{ width: f * w, height: 6, backgroundColor: colors.highlight }} />
+        </View>
+        <View pointerEvents="none" style={{ position: 'absolute', left: f * w - 13, width: 26, height: 26, borderRadius: 13, backgroundColor: colors.white }} />
+      </View>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Text style={styles.optSub}>{leftLabel}</Text>
+        <Text style={[styles.optSub, { color: colors.white, fontWeight: '700' }]}>{format(value)}</Text>
+        <Text style={styles.optSub}>{rightLabel}</Text>
+      </View>
+    </View>
   );
 }
 

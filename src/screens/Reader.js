@@ -10,7 +10,11 @@ import { CurlCanvas, snapshot, supportsCurl } from '../components/Curl';
 import { PageView, TEXT_SIZES } from '../components/PageView';
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { Bar, BarMeta, Burger, DogEar, Option, Panel, PauseButton, PlayButton, RecordButton } from '../components/Chrome';
+import { Bar, BarMeta, Burger, DogEar, Option, Panel, PauseButton, PlayButton, RecordButton, Slider } from '../components/Chrome';
+
+// Reading speed: 1 = normal. Older settings only had Normal/Slow.
+export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : 1);
+const NARRATOR = 0.92; // the narrator's normal pace
 import { playPaper, setPageSound } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { pauseVoice, playVoice, resumeVoice, stopVoice } from '../voice';
@@ -51,6 +55,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const [recording, setRecording] = useState(false);
   const [recView, setRecView] = useState('main'); // main | list | settings | help
   const [recList, setRecList] = useState([]);
+  const [speedDraft, setSpeedDraft] = useState(null); // speed while the slider is being dragged
   const [printChoice, setPrintChoice] = useState(false);
   const [printGate, setPrintGate] = useState(null); // layout waiting for the grown-up check
   const [printing, setPrinting] = useState(false);
@@ -139,16 +144,16 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (prefs.voice === 'mine') {
       getRecording(story.id, pageKey(p, pageIndex)).then((rec) => {
         if (st.current.idx !== pageIndex) return;
-        if (rec && playVoice(rec.uri, { onProgress: (f) => hlChar(Math.floor(f * p.text.length)), onDone: afterPage })) {
+        if (rec && playVoice(rec.uri, { rate: speedOf(prefs), onProgress: (f) => hlChar(Math.floor(f * p.text.length)), onDone: afterPage })) {
           usingVoice.current = true;
         } else {
-          speakTracked(p.text, { rate: prefs.speed === 'slow' ? 0.72 : 0.92, onWord: hlChar, onDone: afterPage });
+          speakTracked(p.text, { rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage });
         }
       });
       return;
     }
     speakTracked(p.text, {
-      rate: prefs.speed === 'slow' ? 0.72 : 0.92,
+      rate: NARRATOR * speedOf(prefs),
       onWord: (ch) => {
         for (let i = 0; i < toks.length; i++) if (toks[i].start <= ch && ch < toks[i].end + 1) { setHl(i); break; }
       },
@@ -159,7 +164,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         }
       },
     });
-  }, [prefs.speed, prefs.voice, story]);
+  }, [prefs.speed, prefs.rate, prefs.voice, story]);
 
   useEffect(() => {
     if (pendingRec.current) { pendingRec.current = false; setTimeout(startRec, 350); }
@@ -452,6 +457,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         <View style={{ gap: 8, paddingVertical: 6 }}>
           <Text style={styles.help}>Text size</Text>
           <Seg value={prefs.textScale || 1} options={TEXT_SIZES.map(([label, v]) => [v, label])} onChange={(v) => setPrefs((p) => ({ ...p, textScale: v }))} />
+          <Text style={styles.help}>Playback speed</Text>
+          <Slider value={speedDraft ?? speedOf(prefs)} min={0.5} max={1.5} step={0.05} leftLabel="Slower" rightLabel="Faster"
+            format={(v) => `${v.toFixed(2).replace(/0$/, '')}×`}
+            onChange={setSpeedDraft}
+            onDone={(v) => { setSpeedDraft(null); setPrefs((p) => ({ ...p, rate: Math.round(v * 100) / 100 })); }} />
           <Text style={styles.help}>Book font</Text>
           <Seg value={prefs.font || 'serif'} options={Object.entries(BOOK_FONTS).map(([k, f]) => [k, f.label, f.family])} onChange={(v) => setPrefs((p) => ({ ...p, font: v }))} />
         </View>
@@ -490,8 +500,6 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <>
             <Text style={styles.help}>Who reads the story aloud</Text>
             <Seg value={prefs.voice || 'narrator'} options={[['narrator', 'Narrator'], ['mine', 'Your voice']]} onChange={(v) => { stopReading(); setPrefs((p) => ({ ...p, voice: v })); }} />
-            <Text style={styles.help}>Narrator speed</Text>
-            <Seg value={prefs.speed || 'normal'} options={[['normal', 'Normal'], ['slow', 'Slow']]} onChange={(v) => { stopReading(); setPrefs((p) => ({ ...p, speed: v })); }} />
             <Text style={styles.help}>Pages you haven’t recorded use the narrator.</Text>
           </>
         ) : null}

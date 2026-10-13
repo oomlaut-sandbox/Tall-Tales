@@ -7,10 +7,9 @@ import * as Sharing from 'expo-sharing';
 import { Asset } from 'expo-asset';
 import { File, Paths } from 'expo-file-system';
 import { EBGaramond_400Regular } from '@expo-google-fonts/eb-garamond';
-import { DancingScript_400Regular } from '@expo-google-fonts/dancing-script';
 import { bookFont } from './theme';
 
-const FONT_FILES = { serif: EBGaramond_400Regular, cursive: DancingScript_400Regular };
+const FONT_FILES = { serif: EBGaramond_400Regular };
 
 const SIZE = 576; // 8 × 8 inch pages (72 per inch), like a square picture book
 
@@ -34,8 +33,8 @@ async function imageData(image) {
 }
 
 async function fontFace(fontKey) {
-  const file = FONT_FILES[fontKey || 'serif'];
-  if (!file) return ''; // Helvetica is built into the phone
+  if (fontKey === 'sans') return ''; // Helvetica is built into the phone
+  const file = FONT_FILES[fontKey] || FONT_FILES.serif;
   try {
     const a = Asset.fromModule(file);
     await a.downloadAsync();

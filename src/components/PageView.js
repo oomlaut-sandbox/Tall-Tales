@@ -10,6 +10,9 @@ import { tokenize } from '../story';
 export const artHeight = (width, height) => Math.min(width, height * 0.68);
 
 // Text sizes the reader can choose (Playback Options → Text size).
+// Subtle paper texture behind the words (Jörg's scan).
+const PAPER = require('../../assets/paper.jpg');
+
 export const TEXT_SIZES = [['Small', 0.85], ['Medium', 1], ['Large', 1.25], ['Huge', 1.55]];
 
 // Where the picture and the words go. Upright: square picture on top, words below.
@@ -60,10 +63,11 @@ export const PageView = forwardRef(function PageView(
   }, [page, artW, artH]);
 
   // A page that doesn't exist (shouldn't happen) is drawn as blank paper instead of crashing.
-  if (!page && !end) return <View ref={ref} collapsable={false} style={[styles.page, { width, height }]} />;
+  if (!page && !end) return <View ref={ref} collapsable={false} style={[styles.page, { width, height }]}><Image source={PAPER} style={styles.fill} resizeMode="cover" /></View>;
 
   return (
     <View ref={ref} collapsable={false} style={[styles.page, { width, height }, L.wide && styles.row]}>
+      <Image source={PAPER} style={styles.fill} resizeMode="cover" />
       <View style={L.wide ? { width: artW, height, justifyContent: 'center' } : null}>
       <View style={[styles.art, { width: artW, height: artH }]}>
         {end ? (
@@ -108,7 +112,7 @@ export const PageView = forwardRef(function PageView(
 });
 
 const styles = StyleSheet.create({
-  page: { backgroundColor: colors.paper, overflow: 'hidden' },
+  page: { backgroundColor: '#f2f2f0', overflow: 'hidden' },
   fill: { position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' },
   art: { backgroundColor: '#7d7d7d', overflow: 'hidden' },
   row: { flexDirection: 'row' },

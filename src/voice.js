@@ -18,7 +18,7 @@ export function pauseVoice() { try { player && player.pause(); } catch (e) {} }
 export function resumeVoice() { try { player && player.play(); } catch (e) {} }
 
 // onProgress(fraction 0..1), onDone()
-export function playVoice(uri, { onProgress, onDone } = {}) {
+export function playVoice(uri, { onProgress, onDone, rate = 1 } = {}) {
   stopVoice();
   const my = session;
   try {
@@ -31,6 +31,7 @@ export function playVoice(uri, { onProgress, onDone } = {}) {
         onDone && onDone();
       }
     });
+    if (rate !== 1) { try { player.setPlaybackRate(rate, 'high'); } catch (e) {} }
     player.play();
     return true;
   } catch (e) {

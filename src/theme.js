@@ -21,11 +21,11 @@ export const fonts = {
 };
 
 // Fonts for the words in a book (Playback Options → Book font). Serif is the default.
-// width: how wide the letters run (for fitting text); size: nudges the cursive up a little so it reads as easily.
+// width: how wide the letters run (for fitting text); size: fine-tunes how big each font looks.
+// (A third, cursive font was tried and dropped; any saved "cursive" choice falls back to Serif.)
 export const BOOK_FONTS = {
   sans: { label: 'Helvetica', family: fonts.ui, css: 'Helvetica, Arial, sans-serif', width: 0.52, size: 0.92 },
   serif: { label: 'Serif', family: 'EBGaramond_400Regular', css: 'Story, Georgia, serif', width: 0.47, size: 1 },
-  cursive: { label: 'Cursive', family: 'DancingScript_400Regular', css: 'Story, cursive', width: 0.44, size: 1.12 },
 };
 export const bookFont = (key) => BOOK_FONTS[key] || BOOK_FONTS.serif;
 
