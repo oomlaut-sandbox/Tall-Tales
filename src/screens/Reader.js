@@ -492,7 +492,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         {playView === 'voices' ? (
           <>
             {NARRATORS.map(([k, label]) => (
-              <Option key={k} glyph="♫" title={label} sub={k === 'lily' ? 'Warm and gentle' : 'A grandfatherly storyteller'} selected={narratorOf(prefs) === k}
+              <Option key={k} glyph="♫" title={label} sub={k === 'lily' ? 'Warm and gentle' : 'A lovable old bedtime bear'} selected={narratorOf(prefs) === k}
                 onPress={() => { stopReading(); setPrefs((p) => ({ ...p, narrator: k })); toast(`${label} will read the stories.`); }} />
             ))}
             <Text style={styles.help}>The voice reads the stories aloud and sounds out words in Learn to Read. Pages you recorded in your own voice still play in yours.</Text>
