@@ -13,7 +13,7 @@ step() { # step <name> <command...>
 
 if [ -f package-lock.json ]; then
   step install npm ci --no-audit --no-fund
-  step install-new npx expo install expo-file-system expo-image-picker expo-print expo-sharing expo-asset @expo-google-fonts/dancing-script
+  step install-new npx expo install expo-file-system expo-image-picker expo-print expo-sharing expo-asset @expo-google-fonts/dancing-script react-native-reanimated react-native-worklets
 else
   step install-expo npm install --no-audit --no-fund expo@latest
   step install-deps npx --yes expo install react react-dom react-native react-native-web @expo/metro-runtime \
