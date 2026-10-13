@@ -8,7 +8,7 @@ permissions:
   contents: write
 jobs:
   ios:
-    if: contains(github.event.head_commit.message, '[testflight]')
+    if: contains(github.event.head_commit.message, '[testflight]') || contains(github.event.head_commit.message, '[submit]')
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
@@ -47,7 +47,17 @@ jobs:
         run: node ci/check-apple.js asc-api-key.p8 || true
       - name: Install
         run: npm ci --no-audit --no-fund
+      - name: Send an existing build to TestFlight
+        if: contains(github.event.head_commit.message, '[submit]')
+        timeout-minutes: 80
+        run: |
+          set +e
+          npx --yes eas-cli@latest submit --platform ios --profile production --id "$(cat ci/submit-build-id.txt)" --non-interactive --wait > ios-out/submit.txt 2>&1
+          code=$?
+          echo "exit $code" >> ios-out/submit.txt
+          exit $code
       - name: Build on Expo and send to TestFlight
+        if: contains(github.event.head_commit.message, '[testflight]')
         timeout-minutes: 25
         env:
           EAS_BUILD_NO_EXPO_GO_WARNING: "true"
