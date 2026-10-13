@@ -46,10 +46,27 @@ jobs:
       - name: Install
         run: npm ci --no-audit --no-fund
       - name: Build on Expo and send to TestFlight
+        env:
+          EAS_BUILD_NO_EXPO_GO_WARNING: "true"
         run: |
-          set -o pipefail
-          npx --yes eas-cli@latest build --platform ios --profile production --non-interactive --auto-submit 2>&1 | tee ios-out/build.txt
-          echo "exit $?" >> ios-out/build.txt
+          # The first iOS build has to create the signing certificate and profile, which Expo
+          # only does in interactive mode. expect answers each prompt with its default (Enter).
+          sudo apt-get install -y -qq expect > /dev/null
+          cat > /tmp/build.exp <<'EOF'
+          set timeout 4800
+          spawn npx --yes eas-cli@latest build --platform ios --profile production --auto-submit
+          set n 0
+          expect {
+            -re {\(Y/n\)|\(y/N\)|› $|\? .*›} { incr n; if {$n > 60} {exit 3}; sleep 1; send "\r"; exp_continue }
+            eof
+          }
+          catch wait r
+          exit [lindex $r 3]
+          EOF
+          set +e
+          expect /tmp/build.exp 2>&1 | sed -e 's/\x1b\[[0-9;?]*[A-Za-z]//g' | tee ios-out/build.txt
+          echo "exit ${PIPESTATUS[0]}" >> ios-out/build.txt
+          grep -q '^exit 0' ios-out/build.txt
       - name: Save results to ios-output branch
         if: always()
         run: |
