@@ -36,6 +36,19 @@ function fitFontSize(text, L, scale = 1, font = bookFont()) {
   return fs;
 }
 
+// A soft shadow made of thin bands that fade out, so it works everywhere without extra libraries.
+// Used along the seam between picture and words, so the page seems to curve into a book's spine.
+function Fade({ edge, size, max }) {
+  const n = 12, h = size / n;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, [edge]: 0, height: size }}>
+      {Array.from({ length: n }, (_, i) => (
+        <View key={i} style={{ position: 'absolute', left: 0, right: 0, height: h + 0.5, [edge]: i * h, backgroundColor: '#000', opacity: max * Math.pow(1 - i / n, 2) }} />
+      ))}
+    </View>
+  );
+}
+
 export const PageView = forwardRef(function PageView(
   { page, width, height, textScale = 1, fontKey = 'serif', highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary },
   ref,
@@ -83,9 +96,11 @@ export const PageView = forwardRef(function PageView(
             <Text style={styles.bubbleText}>{bubble.say}</Text>
           </View>
         ) : null}
+        {!L.wide ? <Fade edge="bottom" size={Math.round(artH * 0.05)} max={0.2} /> : null}
       </View>
       </View>
       <View style={[styles.textBox, { paddingHorizontal: L.padX, paddingVertical: L.padY }]}>
+        {!L.wide ? <Fade edge="top" size={Math.round(L.textH * 0.09)} max={0.13} /> : null}
         {end ? (
           <View style={{ alignItems: 'center' }}>
             <Text style={storyStyle}>Thank you for reading.</Text>
@@ -112,7 +127,7 @@ const styles = StyleSheet.create({
   page: { backgroundColor: colors.paper, overflow: 'hidden' },
   fill: { position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' },
   art: { backgroundColor: '#7d7d7d', overflow: 'hidden' },
-  artShadow: { backgroundColor: '#7d7d7d', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.16, shadowRadius: 8, elevation: 4 },
+  artShadow: { backgroundColor: '#7d7d7d', shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.12, shadowRadius: 6, elevation: 3 },
   row: { flexDirection: 'row' },
   theEnd: { ...StyleSheet.absoluteFillObject, backgroundColor: colors.red, alignItems: 'center', justifyContent: 'center' },
   theEndText: { color: colors.white, fontFamily: fonts.story, fontSize: 52 },
