@@ -37,6 +37,8 @@ step bundle-ios npx expo export --platform ios --output-dir build-ios
 step bundle-android npx expo export --platform android --output-dir build-android
 step bundle-web npx expo export --platform web --output-dir out/web
 
+# reference: Skia's drawing component settings (used by the page curl)
+grep -rn -A12 "interface VerticesProps\|interface ImageShaderProps" node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/ > out/skia-props.txt 2>&1 || true
 cp package.json out/package.json
 [ -f package-lock.json ] && cp package-lock.json out/package-lock.json
 npm ls --depth=0 > out/packages.txt 2>&1 || true
