@@ -16,6 +16,9 @@ const https = require('https');
 
 const KEY = (process.env.ELEVENLABS_API_KEY || '').trim();
 const MODEL = 'eleven_multilingual_v2';
+// Lily speaks at this pace (ElevenLabs allows 0.7–1.2). The app's default speed (0.75) plays it
+// as-is, so the audio is never slowed down on the phone at the default setting.
+const PACE = 0.75;
 // The voices Jörg picked. `find` is what we look for by name. (Michael Caine was considered; Lily only for now.)
 const VOICES = [
   // id: ElevenLabs' standard voice ID, used if the key isn't allowed to look voices up.
@@ -109,14 +112,14 @@ async function findVoice(v) {
       data[v.key][story.id] = data[v.key][story.id] || {};
       for (const page of story.pages) {
         if (!page.text || !page.text.trim()) continue;
-        const fp = crypto.createHash('sha1').update(`${MODEL}|${voiceId}|${page.text}`).digest('hex').slice(0, 12);
+        const fp = crypto.createHash('sha1').update(`${MODEL}|${voiceId}|${PACE}|${page.text}`).digest('hex').slice(0, 12);
         const file = path.join('assets/narration', v.key, story.id, `${page.pid}.mp3`);
         const have = data[v.key][story.id][page.pid];
         if (have && have.fp === fp && fs.existsSync(file)) { kept++; continue; }
         const r = await api('POST', `/v1/text-to-speech/${voiceId}/with-timestamps?output_format=mp3_44100_128`, {
           text: page.text,
           model_id: MODEL,
-          voice_settings: { stability: 0.55, similarity_boost: 0.8, style: 0.15, use_speaker_boost: true },
+          voice_settings: { stability: 0.55, similarity_boost: 0.8, style: 0.15, use_speaker_boost: true, speed: PACE },
         });
         if (r.status !== 200 || !r.json || !r.json.audio_base64) {
           failed++; say(`FAILED ${v.key}/${story.id}/${page.pid}: HTTP ${r.status} ${r.text.slice(0, 300)}`);

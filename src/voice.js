@@ -1,6 +1,6 @@
 // Plays a page's audio: a parent's recording (a file uri) or ElevenLabs narration (a bundled file).
 // Reports progress so the words can be highlighted.
-import { createAudioPlayer } from 'expo-audio';
+import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
 
 let player = null;
 let sub = null;
@@ -24,6 +24,8 @@ export function resumeVoice() { try { player && player.play(); } catch (e) {} }
 export function playVoice(source, { onProgress, onTime, onDone, rate = 1 } = {}) {
   stopVoice();
   const my = session;
+  // Make sure the phone is in playback mode (full speaker), not left in recording mode.
+  setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true }).catch(() => {});
   try {
     player = createAudioPlayer(typeof source === 'string' ? { uri: source } : source);
     sub = player.addListener('playbackStatusUpdate', (s) => {

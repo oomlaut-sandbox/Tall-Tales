@@ -18,7 +18,15 @@ export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : 
 // Book narrators (ElevenLabs). Lily is the default.
 export const NARRATORS = [['lily', 'Lily']]; // add more voices here (and in ci/narrate.js)
 const narratorOf = (prefs) => (NARRATORS.some(([k]) => k === prefs.narrator) ? prefs.narrator : 'lily');
-const NARRATOR = 0.92; // the narrator's normal pace
+const NARRATOR = 0.92; // the phone voice's normal pace
+const VOICE_RECORDING = {
+  ...RecordingPresets.HIGH_QUALITY,
+  sampleRate: 48000,
+  numberOfChannels: 1,
+  bitRate: 192000,
+  ios: { ...RecordingPresets.HIGH_QUALITY.ios, audioQuality: 127, sampleRate: 48000 },
+  android: { ...RecordingPresets.HIGH_QUALITY.android, sampleRate: 48000 },
+};
 import { playPaper, setPageSound } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { pauseVoice, playVoice, resumeVoice, stopVoice } from '../voice';
@@ -74,7 +82,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     }
     setPrinting(false);
   };
-  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  // Voice recording: mono (one voice), 48 kHz, high-bitrate AAC — fuller than the stereo preset.
+  const recorder = useAudioRecorder(VOICE_RECORDING);
   const recStart = useRef(0);
   const pendingRec = useRef(false);
   const usingVoice = useRef(false);
@@ -142,7 +151,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       const audio = AUDIO[voiceKey]?.[story.id]?.[p.pid] || AUDIO.lily?.[story.id]?.[p.pid];
       const times = (TIMINGS[AUDIO[voiceKey]?.[story.id]?.[p.pid] ? voiceKey : 'lily']?.[story.id]?.[p.pid] || {}).words;
       if (audio && times && times.length === toks.length && playVoice(audio, {
-        rate: speedOf(prefs),
+        rate: speedOf(prefs) / DEFAULT_SPEED, // narration is already made at the default pace
         onTime: (t) => {
           let i = -1;
           while (i + 1 < times.length && times[i + 1] <= t + 0.05) i++;
