@@ -7,7 +7,7 @@ const sources = {
   drop: require('../assets/drop.wav'),
 };
 const players = {};
-let enabled = true;
+let enabled = false; // off until the reader turns it on
 let ready = false;
 
 async function init() {

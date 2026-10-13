@@ -34,14 +34,20 @@ function Root() {
   }, [screen]);
   const [story, setStory] = useState(null);
   const [drawer, setDrawer] = useState(false);
-  const [prefs, setPrefs] = useState({ mode: null, sound: true, speed: 'normal', voice: 'narrator' });
+  const [prefs, setPrefs] = useState({ mode: null, sound: false, speed: 'normal', voice: 'narrator' });
   const [userStories, setUserStories] = useState([]);
   const [draft, setDraft] = useState(null);
   const prefsLoaded = useRef(false);
 
   useEffect(() => {
     loadUserStories().then(setUserStories).catch(() => {});
-    loadJSON('prefs', null).then((p) => { if (p) setPrefs((x) => ({ ...x, ...p })); prefsLoaded.current = true; });
+    loadJSON('prefs', null).then((p) => {
+      // Page sound is now off by default: switch it off once for anyone who had the old default.
+      if (p && !p.soundOffDefault) p = { ...p, sound: false, soundOffDefault: true };
+      if (p) setPrefs((x) => ({ ...x, ...p }));
+      else setPrefs((x) => ({ ...x, soundOffDefault: true }));
+      prefsLoaded.current = true;
+    });
   }, []);
   useEffect(() => { if (prefsLoaded.current) saveJSON('prefs', prefs); }, [prefs]);
   const [message, setMessage] = useState('');

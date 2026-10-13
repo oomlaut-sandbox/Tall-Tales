@@ -94,7 +94,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const n = story.pages.length;
   const tokens = useMemo(() => (pages[idx] && pages[idx].text ? tokenize(pages[idx].text) : []), [pages, idx]);
 
-  useEffect(() => setPageSound(prefs.sound !== false), [prefs.sound]);
+  useEffect(() => setPageSound(prefs.sound === true), [prefs.sound]);
   useEffect(() => {
     if (!prefs.mode) setTimeout(() => setPanel('play'), 350);
     return () => { stopSpeech(); clearTimeout(autoTimer.current); cancelAnimationFrame(anim.current); };
@@ -206,7 +206,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     } catch (e) {
       toast('That recording couldn’t be saved.');
     }
-    setPageSound(prefsRef.current.sound !== false);
+    setPageSound(prefsRef.current.sound === true);
   };
 
   const openRecList = async () => {
@@ -452,8 +452,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             else toast('Tap the glowing circles in the picture.');
           }} />
         ))}
-        <Option glyph="♪" title={`Page turn sound: ${prefs.sound === false ? 'Off' : 'On'}`} sub="Tap to switch"
-          onPress={() => { const on = prefs.sound === false; setPrefs((p) => ({ ...p, sound: on })); setPageSound(on); if (on) playPaper('turn', 0.8); }} />
+        <Option glyph="♪" title={`Page turn sound: ${prefs.sound ? 'On' : 'Off'}`} sub="Tap to switch"
+          onPress={() => { const on = !prefs.sound; setPrefs((p) => ({ ...p, sound: on })); setPageSound(on); if (on) playPaper('turn', 0.8); }} />
         <View style={{ gap: 8, paddingVertical: 6 }}>
           <Text style={styles.help}>Text size</Text>
           <Seg value={prefs.textScale || 1} options={TEXT_SIZES.map(([label, v]) => [v, label])} onChange={(v) => setPrefs((p) => ({ ...p, textScale: v }))} />
