@@ -76,6 +76,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const refs = { prev: useRef(null), cur: useRef(null), next: useRef(null) };
   const st = useRef({});
   st.current = { idx, size, reading, paused, mode: prefs.mode, turning: !!turn || webDir !== 0, pages, recording };
+  if (idx > pages.length - 1) setIdx(pages.length - 1);
   const cache = useRef({}); // page index -> snapshot image
   const pendingRead = useRef(false);
   const autoTimer = useRef(null);
@@ -260,6 +261,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   };
 
   /* ---------- page turning ---------- */
+  // Only one turn at a time: taps and swipes that arrive mid-turn are ignored.
+  const busy = useRef(false);
+  const stepPage = (dir) => setIdx((i) => Math.max(0, Math.min(pages.length - 1, i + dir)));
   const canTurn = (dir) => {
     if (dir < 0 && st.current.recording) return false;
     return dir > 0 ? st.current.idx < st.current.pages.length - 1 : st.current.idx > 0;
@@ -267,11 +271,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 
   const finishTurn = (dir, done) => {
     if (done) {
-      setIdx((i) => i + dir);
+      stepPage(dir);
       setHl(-1); setBubble(null);
     }
     // let the new page render under the curl before removing it
-    setTimeout(() => { setTurn(null); }, done ? 60 : 0);
+    setTimeout(() => { setTurn(null); busy.current = false; }, done ? 60 : 0);
   };
 
   const animateFold = (dir, C, from, to, ms, lift, done) => {
@@ -302,7 +306,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   };
 
   const flip = async (dir) => {
-    if (st.current.turning || !canTurn(dir) || !st.current.size) return false;
+    if (busy.current || st.current.turning || !canTurn(dir) || !st.current.size) return false;
+    busy.current = true;
     if (st.current.recording && dir > 0) { await stopRec(true); pendingRec.current = st.current.idx + 1 < story.pages.length; }
     else if (!pendingRead.current) stopReading();
     const { w: W, h: H } = st.current.size;
@@ -317,7 +322,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       setWebDir(dir);
       webX.setValue(dir > 0 ? 0 : -W);
       Animated.timing(webX, { toValue: dir > 0 ? -W : 0, duration: 520, useNativeDriver: Platform.OS !== 'web' }).start(() => {
-        setIdx((x) => x + dir); setHl(-1); setBubble(null); setWebDir(0); webX.setValue(0);
+        stepPage(dir); setHl(-1); setBubble(null); setWebDir(0); webX.setValue(0); busy.current = false;
       });
     }
     return true;
@@ -325,16 +330,22 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 
   const drag = useRef({});
   const pan = useMemo(() => PanResponder.create({
-    onMoveShouldSetPanResponderCapture: (_, g) => !st.current.turning && Math.abs(g.dx) > 10 && Math.abs(g.dx) > Math.abs(g.dy) * 1.2 && canTurn(g.dx < 0 ? 1 : -1),
+    onMoveShouldSetPanResponderCapture: (_, g) => !busy.current && !st.current.turning && Math.abs(g.dx) > 10 && Math.abs(g.dx) > Math.abs(g.dy) * 1.2 && canTurn(g.dx < 0 ? 1 : -1),
     onPanResponderGrant: (e, g) => {
       const dir = g.dx < 0 ? 1 : -1;
       const { w: W, h: H } = st.current.size;
       const y0 = e.nativeEvent.locationY;
-      drag.current = { dir, C: [W, y0 < H / 2 ? 0 : H], ready: false, P: null, vx: 0 };
+      busy.current = true;
+      const d = { dir, C: [W, y0 < H / 2 ? 0 : H], ready: false, P: null, vx: 0 };
+      drag.current = d;
       stopReading();
       playPaper('lift', 0.5);
-      if (supportsCurl) beginNativeTurn(dir, drag.current.C).then(() => { drag.current.ready = true; });
-      else { setWebDir(dir); webX.setValue(dir > 0 ? 0 : -W); drag.current.ready = true; }
+      if (supportsCurl) {
+        beginNativeTurn(dir, d.C).then(() => {
+          // the finger was lifted before the page was ready: put it back
+          if (drag.current !== d) { setTurn(null); busy.current = false; } else d.ready = true;
+        });
+      } else { setWebDir(dir); webX.setValue(dir > 0 ? 0 : -W); d.ready = true; }
     },
     onPanResponderMove: (_, g) => {
       const d = drag.current;
@@ -368,13 +379,13 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (supportsCurl) {
       const from = d.P || (d.dir > 0 ? d.C : [-W, d.C[1]]);
       const target = d.dir > 0 ? (commit ? [-W, d.C[1]] : d.C) : (commit ? d.C : [-W, d.C[1]]);
-      if (!d.ready) { setTurn(null); drag.current = {}; return; }
+      if (!d.ready) { drag.current = {}; return; } // cleared once the page is ready (see above)
       animateFold(d.dir, d.C, from, target, commit ? 420 : 300, false, commit);
     } else {
       const to = d.dir > 0 ? (commit ? -W : 0) : (commit ? 0 : -W);
       Animated.timing(webX, { toValue: to, duration: 300, useNativeDriver: Platform.OS !== 'web' }).start(() => {
-        if (commit) { setIdx((x) => x + d.dir); setHl(-1); setBubble(null); }
-        setWebDir(0); webX.setValue(0);
+        if (commit) { stepPage(d.dir); setHl(-1); setBubble(null); }
+        setWebDir(0); webX.setValue(0); busy.current = false;
       });
     }
     drag.current = {};

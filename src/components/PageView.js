@@ -46,13 +46,16 @@ export const PageView = forwardRef(function PageView(
     }));
   }, [page, width, artH]);
 
+  // A page that doesn't exist (shouldn't happen) is drawn as blank paper instead of crashing.
+  if (!page && !end) return <View ref={ref} collapsable={false} style={[styles.page, { width, height }]} />;
+
   return (
     <View ref={ref} collapsable={false} style={[styles.page, { width, height }]}>
       <View style={[styles.art, { height: artH }]}>
         {end ? (
           <View style={styles.theEnd}><Text style={styles.theEndText}>The End</Text></View>
         ) : (
-          page.image ? <Image source={page.image} style={styles.fill} resizeMode="cover" /> : null
+          page?.image ? <Image source={page.image} style={styles.fill} resizeMode="cover" /> : null
         )}
         {showHotspots
           ? spots.map((h, i) => (
