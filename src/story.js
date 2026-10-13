@@ -78,7 +78,37 @@ export const DIFFERENT = {
   ],
 };
 
-export const STORIES = [DIFFERENT, SAMPLE_STORY];
+// "Falling" by Jörg Schmidt: converted from his PDF (cover, then words page + picture page pairs).
+export const FALLING = {
+  id: 'falling',
+  title: 'Falling',
+  author: 'Jörg Schmidt',
+  syllables: {
+    falling: ['fall', 'ing'], raindrop: ['rain', 'drop'], raindrops: ['rain', 'drops'], shining: ['shin', 'ing'],
+    rolling: ['roll', 'ing'], appeared: ['ap', 'peared'], beauty: ['beau', 'ty'], swallow: ['swal', 'low'],
+    suddenly: ['sud', 'den', 'ly'], bumblebee: ['bum', 'ble', 'bee'], hiding: ['hid', 'ing'], afraid: ['a', 'fraid'],
+    closer: ['clos', 'er'], opened: ['o', 'pened'], different: ['dif', 'fer', 'ent'], returned: ['re', 'turned'],
+    illustrated: ['il', 'lus', 'trat', 'ed'], written: ['writ', 'ten'], happy: ['hap', 'py'], along: ['a', 'long'],
+  },
+  pages: [
+    { pid: 'f01', image: require('../assets/books/falling/f01.jpg'), w: 1600, h: 1600, text: "Falling. Written and illustrated by Jörg Schmidt." },
+    { pid: 'f02', image: require('../assets/books/falling/f02.jpg'), w: 1600, h: 1600, text: "The sun was shining bright over the rolling hills." },
+    { pid: 'f03', image: require('../assets/books/falling/f03.jpg'), w: 1600, h: 1600, text: "Then the sky turned grey and a dark storm cloud appeared." },
+    { pid: 'f04', image: require('../assets/books/falling/f04.jpg'), w: 1600, h: 1600, text: "From it fell a tiny raindrop." },
+    { pid: 'f05', image: require('../assets/books/falling/f05.jpg'), w: 1600, h: 1600, text: "The raindrop looked out over the fields below and smiled at all the beauty." },
+    { pid: 'f06', image: require('../assets/books/falling/f06.jpg'), w: 1600, h: 1600, text: "Soon she met other raindrops and they laughed and played." },
+    { pid: 'f07', image: require('../assets/books/falling/f07.jpg'), w: 1600, h: 1600, text: "Then, along came a swallow." },
+    { pid: 'f08', image: require('../assets/books/falling/f08.jpg'), w: 1600, h: 1600, text: "The swallow said, “How can you be so happy?” “What do you mean?” asked the raindrop. “You’re falling!”" },
+    { pid: 'f09', image: require('../assets/books/falling/f09.jpg'), w: 1600, h: 1600, text: "The raindrop suddenly became very sad." },
+    { pid: 'f10', image: require('../assets/books/falling/f10.jpg'), w: 1600, h: 1600, text: "Then the raindrop then met a bumblebee, hiding under the leaves of an old oak tree." },
+    { pid: 'f11', image: require('../assets/books/falling/f11.jpg'), w: 1600, h: 1600, text: "“Why so sad?” asked the bumblebee. “I’m scared,” said the raindrop. “Don’t be afraid. You’re not alone. I’ll be with you.”" },
+    { pid: 'f12', image: require('../assets/books/falling/f12.jpg'), w: 1600, h: 1600, text: "As the ground came closer and closer, the raindrop closed her eyes and… BLOOP!" },
+    { pid: 'f13', image: require('../assets/books/falling/f13.jpg'), w: 1600, h: 1600, text: "When she opened her eyes, she saw she wasn’t alone. She felt different. But it felt good." },
+    { pid: 'f14', image: require('../assets/books/falling/f14.jpg'), w: 1600, h: 1600, text: "The sun returned and the sky was bright and blue." },
+  ],
+};
+
+export const STORIES = [DIFFERENT, FALLING, SAMPLE_STORY];
 
 // Split text into words with their character ranges, so read-aloud progress can be mapped to a word.
 export function tokenize(text) {
