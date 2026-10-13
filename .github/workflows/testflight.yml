@@ -8,7 +8,7 @@ permissions:
   contents: write
 jobs:
   ios:
-    if: contains(github.event.head_commit.message, '[testflight]') || contains(github.event.head_commit.message, '[submit]')
+    if: contains(github.event.head_commit.message, '[testflight]') || contains(github.event.head_commit.message, '[submit]') || contains(github.event.head_commit.message, '[crashlog]')
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
@@ -45,6 +45,9 @@ jobs:
           echo "app id: ${APP_ID:-MISSING}" >> ios-out/checks.txt
       - name: Check Apple key
         run: node ci/check-apple.js asc-api-key.p8 || true
+      - name: Fetch crash reports
+        if: contains(github.event.head_commit.message, '[crashlog]')
+        run: node ci/crash-logs.js asc-api-key.p8 "$(cat ci/asc-app-id.txt)" || true
       - name: Install
         run: npm ci --no-audit --no-fund
       - name: Send an existing build to TestFlight
