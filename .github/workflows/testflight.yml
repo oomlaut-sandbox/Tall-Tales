@@ -52,7 +52,16 @@ jobs:
         timeout-minutes: 80
         run: |
           set +e
-          npx --yes eas-cli@latest submit --platform ios --profile production --id "$(cat ci/submit-build-id.txt)" --non-interactive --wait > ios-out/submit.txt 2>&1
+          ID="$(cat ci/submit-build-id.txt)"
+          for i in $(seq 1 60); do
+            npx --yes eas-cli@latest build:view "$ID" --json > ios-out/build-view.json 2>/dev/null
+            st=$(node -e 'try{console.log(JSON.parse(require("fs").readFileSync("ios-out/build-view.json","utf8")).status)}catch{console.log("unknown")}')
+            echo "$(date -u +%H:%M) build status: $st" >> ios-out/submit.txt
+            case "$st" in FINISHED|ERRORED|CANCELED) break;; esac
+            sleep 60
+          done
+          [ "$st" = FINISHED ] || { echo "exit 2 (build not finished)" >> ios-out/submit.txt; exit 2; }
+          npx --yes eas-cli@latest submit --platform ios --profile production --id "$(cat ci/submit-build-id.txt)" --non-interactive --wait >> ios-out/submit.txt 2>&1
           code=$?
           echo "exit $code" >> ios-out/submit.txt
           exit $code
