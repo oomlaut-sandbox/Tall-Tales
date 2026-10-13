@@ -315,23 +315,37 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (!horiz && !vert) return null;
     return { horiz, dir: horiz ? (g.dx < 0 ? 1 : -1) : (g.dy < 0 ? 1 : -1) };
   };
+  const beginDrag = (sd) => {
+    busy.current = true;
+    drag.current = { ...sd, p: sd.dir > 0 ? 0 : 1 };
+    stopReading();
+    playPaper('lift', 0.5);
+    startFlip(sd.dir);
+  };
   const pan = useMemo(() => PanResponder.create({
+    // Touches that start on empty paper come here straight away; touches that start on a word or
+    // button are only taken over once they turn into a swipe.
+    onStartShouldSetPanResponder: () => !busy.current && !st.current.turning,
     onMoveShouldSetPanResponderCapture: (_, g) => {
       if (busy.current || st.current.turning) return false;
       const sd = swipeDir(g);
       return !!sd && canTurn(sd.dir);
     },
     onPanResponderGrant: (_, g) => {
-      const sd = swipeDir(g) || { horiz: true, dir: g.dx < 0 ? 1 : -1 };
-      busy.current = true;
-      drag.current = { ...sd, p: sd.dir > 0 ? 0 : 1 };
-      stopReading();
-      playPaper('lift', 0.5);
-      startFlip(sd.dir);
+      drag.current = {};
+      const sd = swipeDir(g);
+      if (sd && canTurn(sd.dir)) beginDrag(sd);
     },
     onPanResponderMove: (_, g) => {
-      const d = drag.current;
-      if (!d.dir) return;
+      let d = drag.current;
+      if (!d.dir) {
+        // decide on the first real movement whether this is a page-turning swipe
+        if (busy.current || st.current.turning) return;
+        const sd = swipeDir(g);
+        if (!sd || !canTurn(sd.dir)) return;
+        beginDrag(sd);
+        d = drag.current;
+      }
       const { w: W, h: H } = st.current.size;
       const amount = d.horiz ? -g.dx / (W * 0.8) : -g.dy / (H * 0.55);
       const p = d.dir > 0 ? Math.max(0, Math.min(1, amount)) : 1 - Math.max(0, Math.min(1, -amount));
