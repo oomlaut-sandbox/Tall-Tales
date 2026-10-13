@@ -100,7 +100,7 @@ export const FALLING = {
     { pid: 'f07', image: require('../assets/books/falling/f07.jpg'), w: 1600, h: 1600, text: "Then, along came a swallow." },
     { pid: 'f08', image: require('../assets/books/falling/f08.jpg'), w: 1600, h: 1600, text: "The swallow said, “How can you be so happy?” “What do you mean?” asked the raindrop. “You’re falling!”" },
     { pid: 'f09', image: require('../assets/books/falling/f09.jpg'), w: 1600, h: 1600, text: "The raindrop suddenly became very sad." },
-    { pid: 'f10', image: require('../assets/books/falling/f10.jpg'), w: 1600, h: 1600, text: "Then the raindrop then met a bumblebee, hiding under the leaves of an old oak tree." },
+    { pid: 'f10', image: require('../assets/books/falling/f10.jpg'), w: 1600, h: 1600, text: "Then the raindrop met a bumblebee, hiding under the leaves of an old oak tree." },
     { pid: 'f11', image: require('../assets/books/falling/f11.jpg'), w: 1600, h: 1600, text: "“Why so sad?” asked the bumblebee. “I’m scared,” said the raindrop. “Don’t be afraid. You’re not alone. I’ll be with you.”" },
     { pid: 'f12', image: require('../assets/books/falling/f12.jpg'), w: 1600, h: 1600, text: "As the ground came closer and closer, the raindrop closed her eyes and… BLOOP!" },
     { pid: 'f13', image: require('../assets/books/falling/f13.jpg'), w: 1600, h: 1600, text: "When she opened her eyes, she saw she wasn’t alone. She felt different. But it felt good." },
