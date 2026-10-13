@@ -7,6 +7,23 @@ import { BOOK_FONTS, colors, fonts } from '../theme';
 import { tokenize, cleanWord, syllablesFor } from '../story';
 import { Fade, PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
 import { FLAP_PERSPECTIVE, flapTables } from '../flapStrips';
+import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
+
+// The paper peel needs pictures of the pages (phone only). If drawing it ever fails, or the
+// pictures can't be taken, the page turns with the hinged strips instead.
+const peelWorks = { ok: true };
+class PeelGuard extends React.Component {
+  state = { failed: false };
+  static getDerivedStateFromError() { peelWorks.ok = false; return { failed: true }; }
+  render() { return this.state.failed ? null : this.props.children; }
+}
+// Redraws only the peel as the turn moves (not the whole reader).
+const peelSubs = new Set();
+function PeelLayer({ start, ...props }) {
+  const [t, setT] = React.useState(start);
+  React.useEffect(() => { peelSubs.add(setT); return () => { peelSubs.delete(setT); }; }, []);
+  return <FlapPeel {...props} t={t} />;
+}
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
 import { Bar, BarMeta, Burger, DogEar, Option, Panel, PauseButton, PlayButton, RecordButton, Slider } from '../components/Chrome';
@@ -93,6 +110,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   prefsRef.current = prefs;
   const flipP = useRef(new Animated.Value(0)).current; // 0 = page a showing, 1 = page b (a + 1)
   const prog = useRef(0); // the same progress, as a plain number
+  const [peel, setPeel] = useState(null); // {front, back, corner}: pictures for the paper peel
+  const peelOn = useRef(false);
+  const cache = useRef({}); // page index -> picture of that page
+  const pageX0 = useRef(0); // the book's left edge on screen (for which corner to peel)
 
 
   const refs = { prev: useRef(null), cur: useRef(null), next: useRef(null) };
@@ -308,18 +329,42 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const setProgress = (p) => {
     prog.current = p;
     flipP.setValue(p);
+    if (peelOn.current) peelSubs.forEach((f) => f(p));
   };
-  const startFlip = (dir) => {
-    const a = dir > 0 ? st.current.idx : st.current.idx - 1;
+  const startFlip = async (dir, corner = 'right') => {
+    const i = st.current.idx;
+    const a = dir > 0 ? i : i - 1;
+    let pics = null;
+    if (supportsCurl && peelWorks.ok) {
+      // pictures of both pages for the paper peel
+      const fa = dir > 0 ? await snapshot(refs.cur) : (cache.current[a] || (await snapshot(refs.prev)));
+      const fb = dir > 0 ? (cache.current[a + 1] || (await snapshot(refs.next))) : await snapshot(refs.cur);
+      if (fa && fb) pics = { front: fa, back: fb, corner };
+    }
+    peelOn.current = !!pics;
+    setPeel(pics);
     setProgress(dir > 0 ? 0 : 1);
     setFlipPair({ a, b: a + 1, dir });
   };
   const endFlip = (dir, commit) => {
     if (commit) { stepPage(dir); setHl(-1); setBubble(null); }
     // let the new page draw underneath before taking the turning layers away
-    setTimeout(() => { setFlipPair(null); busy.current = false; }, 40);
+    setTimeout(() => { setFlipPair(null); setPeel(null); peelOn.current = false; busy.current = false; }, 40);
   };
   const runFlip = (to, ms, then) => {
+    if (peelOn.current) {
+      // the peel is redrawn from the progress, frame by frame
+      const from = prog.current, t0 = Date.now();
+      const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+      const step = () => {
+        const x = Math.min(1, (Date.now() - t0) / Math.max(1, ms));
+        setProgress(from + (to - from) * ease(x));
+        if (x < 1) anim.current = requestAnimationFrame(step);
+        else then && then();
+      };
+      anim.current = requestAnimationFrame(step);
+      return;
+    }
     requestAnimationFrame(() => {
       Animated.timing(flipP, { toValue: to, duration: ms, easing: Easing.inOut(Easing.cubic), useNativeDriver: Platform.OS !== 'web' })
         .start(() => { prog.current = to; then && then(); });
@@ -332,8 +377,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (st.current.recording && dir > 0) { await stopRec(true); pendingRec.current = st.current.idx + 1 < story.pages.length; }
     else if (!pendingRead.current) stopReading();
     playPaper('turn', 1);
-    startFlip(dir);
-    runFlip(dir > 0 ? 1 : 0, 820, () => endFlip(dir, true));
+    await startFlip(dir);
+    runFlip(dir > 0 ? 1 : 0, 900, () => endFlip(dir, true));
     return true;
   };
 
@@ -345,12 +390,19 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (!horiz && !vert) return null;
     return { horiz, dir: horiz ? (g.dx < 0 ? 1 : -1) : (g.dy < 0 ? 1 : -1) };
   };
-  const beginDrag = (sd) => {
+  const beginDrag = (sd, x0) => {
     busy.current = true;
-    drag.current = { ...sd, p: sd.dir > 0 ? 0 : 1, ready: true };
+    const d = { ...sd, p: sd.dir > 0 ? 0 : 1, ready: false, ended: null };
+    drag.current = d;
     stopReading();
     playPaper('lift', 0.5);
-    startFlip(sd.dir);
+    // peel from the bottom corner on the side the finger started
+    const corner = st.current.size && x0 < st.current.size.w / 2 ? 'left' : 'right';
+    startFlip(sd.dir, corner).then(() => {
+      d.ready = true;
+      if (d.ended) finishDrag(d, d.ended); // finger already lifted while the pages were being prepared
+      else setProgress(d.p);
+    });
   };
   const pan = useMemo(() => PanResponder.create({
     // Touches that start on empty paper come here straight away; touches that start on a word or
@@ -364,7 +416,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     onPanResponderGrant: (_, g) => {
       drag.current = {};
       const sd = swipeDir(g);
-      if (sd && canTurn(sd.dir)) beginDrag(sd);
+      if (sd && canTurn(sd.dir)) beginDrag(sd, g.x0 - (pageX0.current || 0));
     },
     onPanResponderMove: (_, g) => {
       let d = drag.current;
@@ -373,7 +425,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         if (busy.current || st.current.turning) return;
         const sd = swipeDir(g);
         if (!sd || !canTurn(sd.dir)) return;
-        beginDrag(sd);
+        beginDrag(sd, g.x0 - (pageX0.current || 0));
         d = drag.current;
       }
       const { w: W, h: H } = st.current.size;
@@ -390,6 +442,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (!d.dir) return;
     drag.current = {};
     const end = { vx: g.vx, vy: g.vy };
+    if (!d.ready) { d.ended = end; return; }
     finishDrag(d, end);
   };
   const finishDrag = (d, g) => {
@@ -403,6 +456,17 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     const target = commit ? (d.dir > 0 ? 1 : 0) : (d.dir > 0 ? 0 : 1);
     runFlip(target, 240 + 420 * Math.abs(target - prog.current), () => endFlip(d.dir, commit));
   };
+
+  // Keep fresh pictures of the neighbouring pages ready, so a turn starts without a delay.
+  useEffect(() => {
+    cache.current = {};
+    if (!supportsCurl || !size || flipPair) return;
+    const t = setTimeout(async () => {
+      if (refs.next.current) cache.current[idx + 1] = await snapshot(refs.next);
+      if (refs.prev.current) cache.current[idx - 1] = await snapshot(refs.prev);
+    }, 500);
+    return () => clearTimeout(t);
+  }, [idx, size, prefs.textScale, prefs.font, !!flipPair]);
 
   /* ---------- render ---------- */
   const W = size?.w || 0, H = size?.h || 0;
@@ -425,7 +489,17 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       showHotspots={showHot} onHotspot={onHotspot} bubble={bubble} />
   );
   const abs = (el, k, style) => (el ? <Animated.View key={k} style={[StyleSheet.absoluteFill, style]}>{el}</Animated.View> : null);
-  if (flipPair && size && flipT) {
+  if (flipPair && size && flipT && peel) {
+    // phone: the words half peels up like paper (drawn from pictures of both pages)
+    const { a, b } = flipPair;
+    const view = (i, k) => <PageView key={k} {...pageProps(i)} />;
+    layers.push(abs(prevEl, 'p'), abs(nextEl, 'n'), abs(curEl, 'c'));
+    layers.push(
+      <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
+      <View key="fat" pointerEvents="none" style={[styles.half, { top: 0, height: flipT.artH }]}>{view(a, `t${a}`)}</View>,
+      <PeelGuard key="peel"><PeelLayer start={prog.current} width={W} height={H} artH={flipT.artH} corner={peel.corner} front={peel.front} back={peel.back} /></PeelGuard>,
+    );
+  } else if (flipPair && size && flipT) {
     // A page turn in progress (see "page turning" above): page b underneath, page a's picture on
     // top, a soft shadow, and the words half of page a curling up as hinged strips.
     const { a, b } = flipPair;

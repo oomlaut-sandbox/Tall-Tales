@@ -85,14 +85,13 @@ export function PlayButton({ onPress, active, disabled }) {
 export function DogEar({ u, onPress, label = 'Next page' }) {
   const e = Math.max(24, u * 7.5);
   const tri = (size, color, off = 0) => (
-    <View style={{ position: 'absolute', right: off * 0.4, bottom: off * 0.4, width: 0, height: 0, borderRightWidth: size, borderTopWidth: size, borderRightColor: 'transparent', borderTopColor: color }} />
+    <View key={`${size}-${off}`} style={{ position: 'absolute', right: off * 0.4, bottom: off * 0.4, width: 0, height: 0, borderRightWidth: size, borderTopWidth: size, borderRightColor: 'transparent', borderTopColor: color }} />
   );
   return (
     <Pressable onPress={onPress} accessibilityLabel={label} style={[styles.ear, { width: Math.max(48, e + 16), height: Math.max(48, e + 16) }]}>
       <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderLeftWidth: e, borderBottomWidth: e, borderLeftColor: 'transparent', borderBottomColor: '#262626' }} />
-      {tri(e + 9, 'rgba(0,0,0,0.05)', 9)}
-      {tri(e + 6, 'rgba(0,0,0,0.07)', 6)}
-      {tri(e + 3, 'rgba(0,0,0,0.1)', 3)}
+      {/* soft shadow: many faint layers, each a little larger, so it fades smoothly */}
+      {Array.from({ length: 12 }, (_, i) => 12 - i).map((d) => tri(e + d, 'rgba(0,0,0,0.022)', d))}
       {tri(e, colors.white)}
     </Pressable>
   );

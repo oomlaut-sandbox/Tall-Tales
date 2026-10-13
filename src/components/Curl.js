@@ -7,6 +7,6 @@ export async function snapshot() {
 export function CurlCanvas() {
   return null;
 }
-export function FlapCurl() {
+export function FlapPeel() {
   return null;
 }
