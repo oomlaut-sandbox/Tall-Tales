@@ -39,11 +39,12 @@ function fitFontSize(text, L, scale = 1, font = bookFont()) {
 // A soft shadow made of thin bands that fade out, so it works everywhere without extra libraries.
 // Used along the seam between picture and words, so the page seems to curve into a book's spine.
 function Fade({ edge, size, max }) {
-  const n = 12, h = size / n;
+  // Layers of the same faint grey, each a little shorter, stack up into a smooth fade with no seams.
+  const n = 16, a = 1 - Math.pow(1 - max, 1 / n);
   return (
     <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, [edge]: 0, height: size }}>
       {Array.from({ length: n }, (_, i) => (
-        <View key={i} style={{ position: 'absolute', left: 0, right: 0, height: h + 0.5, [edge]: i * h, backgroundColor: '#000', opacity: max * Math.pow(1 - i / n, 2) }} />
+        <View key={i} style={{ position: 'absolute', left: 0, right: 0, [edge]: 0, height: size * Math.pow(1 - i / n, 1.6), backgroundColor: '#000', opacity: a }} />
       ))}
     </View>
   );
