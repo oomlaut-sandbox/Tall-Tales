@@ -43,6 +43,8 @@ jobs:
             const s=j.submit.production.ios; s.ascAppId=process.argv[1]; s.ascApiKeyId=process.env.EXPO_ASC_KEY_ID; s.ascApiKeyIssuerId=process.env.EXPO_ASC_ISSUER_ID;
             fs.writeFileSync("eas.json", JSON.stringify(j,null,2));' "$APP_ID"
           echo "app id: ${APP_ID:-MISSING}" >> ios-out/checks.txt
+      - name: Check Apple key
+        run: node ci/check-apple.js asc-api-key.p8 || true
       - name: Install
         run: npm ci --no-audit --no-fund
       - name: Build on Expo and send to TestFlight
