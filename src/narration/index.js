@@ -2,6 +2,48 @@
 import data from './data.json';
 
 export const AUDIO = {
+  lily: {
+    "different": {
+      "d01": require("../../assets/narration/lily/different/d01.mp3"),
+      "d02": require("../../assets/narration/lily/different/d02.mp3"),
+      "d03": require("../../assets/narration/lily/different/d03.mp3"),
+      "d04": require("../../assets/narration/lily/different/d04.mp3"),
+      "d05": require("../../assets/narration/lily/different/d05.mp3"),
+      "d06": require("../../assets/narration/lily/different/d06.mp3"),
+      "d07": require("../../assets/narration/lily/different/d07.mp3"),
+      "d08": require("../../assets/narration/lily/different/d08.mp3"),
+      "d09": require("../../assets/narration/lily/different/d09.mp3"),
+      "d10": require("../../assets/narration/lily/different/d10.mp3"),
+      "d11": require("../../assets/narration/lily/different/d11.mp3"),
+      "d12": require("../../assets/narration/lily/different/d12.mp3"),
+      "d13": require("../../assets/narration/lily/different/d13.mp3"),
+      "d14": require("../../assets/narration/lily/different/d14.mp3"),
+      "d15": require("../../assets/narration/lily/different/d15.mp3"),
+      "d16": require("../../assets/narration/lily/different/d16.mp3"),
+    },
+    "falling": {
+      "f01": require("../../assets/narration/lily/falling/f01.mp3"),
+      "f02": require("../../assets/narration/lily/falling/f02.mp3"),
+      "f03": require("../../assets/narration/lily/falling/f03.mp3"),
+      "f04": require("../../assets/narration/lily/falling/f04.mp3"),
+      "f05": require("../../assets/narration/lily/falling/f05.mp3"),
+      "f06": require("../../assets/narration/lily/falling/f06.mp3"),
+      "f07": require("../../assets/narration/lily/falling/f07.mp3"),
+      "f08": require("../../assets/narration/lily/falling/f08.mp3"),
+      "f09": require("../../assets/narration/lily/falling/f09.mp3"),
+      "f10": require("../../assets/narration/lily/falling/f10.mp3"),
+      "f11": require("../../assets/narration/lily/falling/f11.mp3"),
+      "f12": require("../../assets/narration/lily/falling/f12.mp3"),
+      "f13": require("../../assets/narration/lily/falling/f13.mp3"),
+      "f14": require("../../assets/narration/lily/falling/f14.mp3"),
+    },
+    "pip": {
+      "p1": require("../../assets/narration/lily/pip/p1.mp3"),
+      "p2": require("../../assets/narration/lily/pip/p2.mp3"),
+      "p3": require("../../assets/narration/lily/pip/p3.mp3"),
+      "p4": require("../../assets/narration/lily/pip/p4.mp3"),
+    },
+  },
 };
 
 export const TIMINGS = data;
