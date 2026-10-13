@@ -46,27 +46,34 @@ jobs:
       - name: Install
         run: npm ci --no-audit --no-fund
       - name: Build on Expo and send to TestFlight
+        timeout-minutes: 25
         env:
           EAS_BUILD_NO_EXPO_GO_WARNING: "true"
         run: |
           # The first iOS build has to create the signing certificate and profile, which Expo
-          # only does in interactive mode. expect answers each prompt with its default (Enter).
+          # only does in interactive mode. expect answers each prompt with its default (Enter)
+          # and writes everything it sees to ios-out/raw.txt as it happens.
+          # --no-wait hands the build to Expo and returns; Expo then sends it to TestFlight itself.
           sudo apt-get install -y -qq expect > /dev/null
           cat > /tmp/build.exp <<'EOF'
-          set timeout 4800
-          spawn env -u CI -u GITHUB_ACTIONS -u CONTINUOUS_INTEGRATION npx --yes eas-cli@latest build --platform ios --profile production --auto-submit
+          log_file -a ios-out/raw.txt
+          set timeout 600
+          spawn env -u CI -u GITHUB_ACTIONS -u CONTINUOUS_INTEGRATION npx --yes eas-cli@latest build --platform ios --profile production --auto-submit --no-wait
           set n 0
           expect {
-            -re {\(Y/n\)|\(y/N\)|› $|\? .*›} { incr n; if {$n > 60} {exit 3}; sleep 1; send "\r"; exp_continue }
+            -re {›|\(Y/n\)|\(y/N\)} { incr n; if {$n > 40} {send_log "\nGAVE UP after 40 answers\n"; exit 3}; sleep 2; send "\r"; exp_continue }
+            timeout { send_log "\nTIMEOUT: no output for 10 minutes\n"; exit 4 }
             eof
           }
           catch wait r
           exit [lindex $r 3]
           EOF
           set +e
-          expect /tmp/build.exp 2>&1 | sed -e 's/\x1b\[[0-9;?]*[A-Za-z]//g' | tee ios-out/build.txt
-          echo "exit ${PIPESTATUS[0]}" >> ios-out/build.txt
-          grep -q '^exit 0' ios-out/build.txt
+          expect /tmp/build.exp > /dev/null 2>&1
+          code=$?
+          sed -e 's/\x1b\[[0-9;?]*[A-Za-z]//g' ios-out/raw.txt | tr '\r' '\n' | grep -v '^\s*$' | grep -v 'npm warn' > ios-out/build.txt
+          echo "exit $code" >> ios-out/build.txt
+          exit $code
       - name: Save results to ios-output branch
         if: always()
         run: |
