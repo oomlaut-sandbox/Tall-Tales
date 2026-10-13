@@ -18,7 +18,8 @@ const KEY = (process.env.ELEVENLABS_API_KEY || '').trim();
 const MODEL = 'eleven_multilingual_v2';
 // The voices Jörg picked. `find` is what we look for by name. (Michael Caine was considered; Lily only for now.)
 const VOICES = [
-  { key: 'lily', label: 'Lily', find: ['lily'] },
+  // id: ElevenLabs' standard voice ID, used if the key isn't allowed to look voices up.
+  { key: 'lily', label: 'Lily', find: ['lily'], id: 'pFZP5JQG7iQjIQuC4Bku' },
 ];
 
 const log = [];
@@ -64,7 +65,11 @@ function tokenize(text) {
 
 async function findVoice(v) {
   const mine = await api('GET', '/v1/voices');
-  if (mine.status !== 200) { say(`Could not list voices: HTTP ${mine.status} ${mine.text.slice(0, 200)}`); return null; }
+  if (mine.status !== 200) {
+    say(`Could not list voices: HTTP ${mine.status} ${mine.text.slice(0, 160)}`);
+    if (v.id) { say(`${v.label}: using the standard voice ID instead`); return v.id; }
+    return null;
+  }
   const list = mine.json.voices || [];
   const match = (name) => v.find.some((f) => (name || '').toLowerCase().includes(f));
   let hit = list.find((x) => match(x.name));
