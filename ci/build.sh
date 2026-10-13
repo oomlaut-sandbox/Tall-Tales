@@ -33,7 +33,7 @@ if [ -n "${EXPO_TOKEN:-}" ]; then
 else
   echo "SKIP expo-login (no EXPO_TOKEN secret)" >> "$summary"
 fi
-step embed-ios npx expo export:embed --platform ios --dev false --entry-file index.js --bundle-output out/main.jsbundle --assets-dest /tmp/assets
+step embed-ios npx expo export:embed --platform ios --dev false --minify false --entry-file index.js --bundle-output out/main.jsbundle --assets-dest /tmp/assets
 
 cp package.json out/package.json
 [ -f package-lock.json ] && cp package-lock.json out/package-lock.json
