@@ -9,6 +9,7 @@
     "export:web": "expo export --platform web"
   },
   "dependencies": {
+    "@expo-google-fonts/dancing-script": "^0.4.2",
     "@expo-google-fonts/eb-garamond": "^0.4.3",
     "@expo/metro-runtime": "~57.0.16",
     "@shopify/react-native-skia": "2.6.2",
