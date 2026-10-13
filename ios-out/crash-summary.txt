@@ -1,0 +1,17 @@
+build 6: VALID (id b878ca84-072d-4d00-9581-b6060f310388)
+crash submissions: HTTP 200
+0 found
+{
+  "data" : [ ],
+  "links" : {
+    "self" : "https://api.appstoreconnect.apple.com/v1/apps/6822165068/betaFeedbackCrashSubmissions?limit=20"
+  },
+  "meta" : {
+    "paging" : {
+      "total" : 0,
+      "limit" : 20
+    }
+  }
+}
+diagnostics for build 6: HTTP 404 
+run at Tue Oct 13 15:09:24 UTC 2026
