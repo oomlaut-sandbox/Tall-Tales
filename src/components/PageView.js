@@ -64,7 +64,8 @@ export const PageView = forwardRef(function PageView(
 
   return (
     <View ref={ref} collapsable={false} style={[styles.page, { width, height }, L.wide && styles.row]}>
-      <View style={L.wide ? { width: artW, height, justifyContent: 'center' } : null}>
+      {/* The picture square, with a very soft shadow falling below it. */}
+      <View style={[L.wide ? { width: artW, height, justifyContent: 'center' } : styles.artShadow, { zIndex: 1 }]}>
       <View style={[styles.art, { width: artW, height: artH }]}>
         {end ? (
           <View style={styles.theEnd}><Text style={styles.theEndText}>The End</Text></View>
@@ -111,6 +112,7 @@ const styles = StyleSheet.create({
   page: { backgroundColor: colors.paper, overflow: 'hidden' },
   fill: { position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' },
   art: { backgroundColor: '#7d7d7d', overflow: 'hidden' },
+  artShadow: { backgroundColor: '#7d7d7d', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.16, shadowRadius: 8, elevation: 4 },
   row: { flexDirection: 'row' },
   theEnd: { ...StyleSheet.absoluteFillObject, backgroundColor: colors.red, alignItems: 'center', justifyContent: 'center' },
   theEndText: { color: colors.white, fontFamily: fonts.story, fontSize: 52 },
