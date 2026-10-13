@@ -417,6 +417,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 
   /* ---------- render ---------- */
   const W = size?.w || 0, H = size?.h || 0;
+  const edgeW = Math.max(44, W * 0.12); // width of the tap-to-turn strips along each edge
   const pageProps = (i) => ({
     page: pages[i], end: !!pages[i]?.end, width: W, height: H, textScale: prefs.textScale || 1, fontKey: prefs.font || 'serif',
     onReadAgain: () => { stopReading(); setIdx(0); }, onLibrary: goLibrary,
@@ -439,6 +440,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       <View style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...pan.panHandlers}>
         {size ? layers : null}
         {turn && turn.fold ? <CurlCanvas width={W} height={H} under={turn.under} turning={turn.turning} fold={turn.fold} /> : null}
+        {/* Tap anywhere along the left or right edge to turn back or forward (swipes work anywhere). */}
+        {size && idx > 0 ? <Pressable onPress={() => flip(-1)} accessibilityLabel="Previous page" style={[styles.edge, { left: 0, width: edgeW }]} /> : null}
+        {size && idx < pages.length - 1 ? <Pressable onPress={() => flip(1)} accessibilityLabel="Next page" style={[styles.edge, { right: 0, width: edgeW }]} /> : null}
         {idx < pages.length - 1 ? <DogEar u={u} onPress={() => flip(1)} /> : null}
         {recording ? (
           <View style={styles.recBanner} pointerEvents="none">
@@ -535,6 +539,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   book: { flex: 1, overflow: 'hidden', backgroundColor: colors.paper },
+  edge: { position: 'absolute', top: 0, bottom: 0, zIndex: 15 },
   recBanner: { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 25, backgroundColor: colors.highlight, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingVertical: 10 },
   recDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.white },
   recText: { flex: 1, color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },

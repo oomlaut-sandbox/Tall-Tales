@@ -37,7 +37,7 @@ export function CurlCanvas({ width: W, height: H, under, turning, fold }) {
   const g0 = vec(M[0], M[1]);
   return (
     <Canvas style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} pointerEvents="none">
-      {under ? <Image image={under} x={0} y={0} width={W} height={H} fit="fill" /> : <Rect x={0} y={0} width={W} height={H} color="#f2f2f0" />}
+      {under ? <Image image={under} x={0} y={0} width={W} height={H} fit="fill" /> : <Rect x={0} y={0} width={W} height={H} color="#c9c9c9" />}
       <Rect x={0} y={0} width={W} height={H}>
         <LinearGradient start={g0} end={vec(M[0] + nx * shadeW, M[1] + ny * shadeW)} colors={[`rgba(0,0,0,${shadeA})`, 'rgba(0,0,0,0)']} />
       </Rect>

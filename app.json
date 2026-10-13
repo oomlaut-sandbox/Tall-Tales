@@ -4,7 +4,7 @@
     "slug": "tall-tales",
     "scheme": "oomlaut",
     "version": "0.1.0",
-    "orientation": "default",
+    "orientation": "portrait",
     "userInterfaceStyle": "light",
     "backgroundColor": "#000000",
     "ios": {

@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import * as ScreenOrientation from 'expo-screen-orientation';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFonts, EBGaramond_400Regular } from '@expo-google-fonts/eb-garamond';
 import { colors, MAX_WIDTH } from './src/theme';
@@ -20,18 +19,10 @@ function Root() {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const [screen, setScreen] = useState('home');
-  // Only the book can turn sideways; every other screen stays upright.
-  const landscape = screen === 'reader' && width > height;
-  const W = landscape ? width : Math.min(width, MAX_WIDTH);
-  const u = Math.min(landscape ? height : W, MAX_WIDTH) / 100;
-  useEffect(() => {
-    (async () => {
-      try {
-        if (screen === 'reader') await ScreenOrientation.unlockAsync();
-        else await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-      } catch (e) {}
-    })();
-  }, [screen]);
+  // The app stays upright (sideways reading was tried and turned off; the layout code remains).
+  const landscape = false;
+  const W = Math.min(width, MAX_WIDTH);
+  const u = W / 100;
   const [story, setStory] = useState(null);
   const [drawer, setDrawer] = useState(false);
   const [prefs, setPrefs] = useState({ mode: null, sound: false, speed: 'normal', voice: 'narrator' });
