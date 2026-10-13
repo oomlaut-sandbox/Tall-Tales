@@ -3,6 +3,7 @@ import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFonts, EBGaramond_400Regular } from '@expo-google-fonts/eb-garamond';
+import { DancingScript_400Regular } from '@expo-google-fonts/dancing-script';
 import { colors, MAX_WIDTH } from './src/theme';
 import Home from './src/screens/Home';
 import { Library, Store } from './src/screens/Shelf';
@@ -58,7 +59,7 @@ function Root() {
           <Library u={u} stories={[...STORIES, ...userStories]} openStory={openStory} openMenu={openMenu} onCreate={() => openPublisher(null)} onEdit={openPublisher} />
         )}
         {screen === 'publisher' && draft && (
-          <Publisher key={draft.id} u={u} initial={draft} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} />
+          <Publisher key={draft.id} u={u} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} />
         )}
         {screen === 'store' && <Store u={u} openStory={openStory} openMenu={openMenu} />}
         {screen === 'reader' && story && (
@@ -82,7 +83,7 @@ function Root() {
 }
 
 export default function App() {
-  const [loaded] = useFonts({ EBGaramond_400Regular });
+  const [loaded] = useFonts({ EBGaramond_400Regular, DancingScript_400Regular });
   if (!loaded) return <View style={{ flex: 1, backgroundColor: colors.red }} />;
   return (
     <SafeAreaProvider>

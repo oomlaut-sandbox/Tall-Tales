@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Animated, PanResponder, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fonts } from '../theme';
+import { BOOK_FONTS, colors, fonts } from '../theme';
 import { tokenize, cleanWord, syllablesFor } from '../story';
 import { computeFold, ease } from '../fold';
 import { CurlCanvas, snapshot, supportsCurl } from '../components/Curl';
@@ -27,9 +27,9 @@ const MODES = [
 function Seg({ value, options, onChange }) {
   return (
     <View style={{ flexDirection: 'row', gap: 8 }}>
-      {options.map(([v, l]) => (
+      {options.map(([v, l, family]) => (
         <Pressable key={v} onPress={() => onChange(v)} style={[styles.seg, value === v && { backgroundColor: colors.highlight }]}>
-          <Text style={styles.segText}>{l}</Text>
+          <Text style={[styles.segText, family && { fontFamily: family, fontWeight: '400', fontSize: 17 }]}>{l}</Text>
         </Pressable>
       ))}
     </View>
@@ -59,7 +59,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     setPrinting(true);
     toast('Getting the book ready to print…');
     try {
-      await printStory({ title: story.title, author: story.author, pages: story.pages.map((p) => ({ text: p.text, image: p.image })) }, layout);
+      await printStory({ title: story.title, author: story.author, pages: story.pages.map((p) => ({ text: p.text, image: p.image })) }, layout, prefs.font);
     } catch (e) {
       toast(e && e.message ? e.message : 'Couldn’t print. Try again.');
     }
@@ -383,7 +383,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   /* ---------- render ---------- */
   const W = size?.w || 0, H = size?.h || 0;
   const pageProps = (i) => ({
-    page: pages[i], end: !!pages[i]?.end, width: W, height: H, textScale: prefs.textScale || 1,
+    page: pages[i], end: !!pages[i]?.end, width: W, height: H, textScale: prefs.textScale || 1, fontKey: prefs.font || 'serif',
     onReadAgain: () => { stopReading(); setIdx(0); }, onLibrary: goLibrary,
   });
   const showHot = prefs.mode === 'interactive';
@@ -438,6 +438,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         <View style={{ gap: 8, paddingVertical: 6 }}>
           <Text style={styles.help}>Text size</Text>
           <Seg value={prefs.textScale || 1} options={TEXT_SIZES.map(([label, v]) => [v, label])} onChange={(v) => setPrefs((p) => ({ ...p, textScale: v }))} />
+          <Text style={styles.help}>Book font</Text>
+          <Seg value={prefs.font || 'serif'} options={Object.entries(BOOK_FONTS).map(([k, f]) => [k, f.label, f.family])} onChange={(v) => setPrefs((p) => ({ ...p, font: v }))} />
         </View>
         {printChoice ? (
           <>

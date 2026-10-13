@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
-import { colors, fonts } from '../theme';
+import { bookFont, colors, fonts } from '../theme';
 import { Bar, Burger, DogEar, Panel } from '../components/Chrome';
 import { deleteUserStory, dropPicture, keepPicture, newPageId, saveUserStory } from '../userStories';
 import StoryGuide from '../components/StoryGuide';
@@ -24,7 +24,7 @@ export function draftFrom(story) {
   };
 }
 
-export default function Publisher({ u, initial, openMenu, toast, onChange, onDone }) {
+export default function Publisher({ u, initial, fontKey, openMenu, toast, onChange, onDone }) {
   const insets = useSafeAreaInsets();
   const [draft, setDraft] = useState(initial);
   const [i, setI] = useState(0);
@@ -43,8 +43,8 @@ export default function Publisher({ u, initial, openMenu, toast, onChange, onDon
     toast(mode === 'print' ? 'Getting your story ready to print…' : 'Making your PDF…');
     try {
       const st = { title: d.title.trim() || 'My story', pages: pages.map((p) => ({ text: p.text.trim(), image: p.uri ? { uri: p.uri } : null })) };
-      if (mode === 'print') await printStory(st, layout);
-      else await shareStoryPdf(st, layout);
+      if (mode === 'print') await printStory(st, layout, fontKey);
+      else await shareStoryPdf(st, layout, fontKey);
     } catch (e) {
       toast(e && e.message ? e.message : mode === 'print' ? 'Couldn’t print. Try again.' : 'Couldn’t make the PDF. Try again.');
     }
@@ -172,7 +172,7 @@ export default function Publisher({ u, initial, openMenu, toast, onChange, onDon
             placeholder="Type the words for this page. Two or three sentences reads best."
             placeholderTextColor="#666"
             multiline
-            style={styles.input}
+            style={[styles.input, { fontFamily: bookFont(fontKey).family }]}
             accessibilityLabel={`Words for page ${i + 1}`}
           />
         </View>

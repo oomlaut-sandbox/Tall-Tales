@@ -1,7 +1,7 @@
 // One story page: illustration on top, words below. Each word can be tapped.
 import React, { forwardRef, useMemo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, fonts } from '../theme';
+import { bookFont, colors, fonts } from '../theme';
 import { tokenize } from '../story';
 
 // The picture area is a perfect square (as wide as the screen). Only on unusually short
@@ -12,11 +12,11 @@ export const artHeight = (width, height) => Math.min(width, height * 0.68);
 export const TEXT_SIZES = [['Small', 0.85], ['Medium', 1], ['Large', 1.25], ['Huge', 1.55]];
 
 // Starts at the chosen size and only shrinks if the words wouldn't fit under the picture.
-function fitFontSize(text, width, height, scale = 1) {
-  let fs = Math.min(30, Math.max(19, width * 0.066)) * scale;
+function fitFontSize(text, width, height, scale = 1, font = bookFont()) {
+  let fs = Math.min(30, Math.max(19, width * 0.066)) * scale * font.size;
   const tw = width * 0.82, th = height - artHeight(width, height) - width * 0.12;
   for (let i = 0; i < 60 && fs > 13; i++) {
-    const perLine = Math.max(4, Math.floor(tw / (fs * 0.47)));
+    const perLine = Math.max(4, Math.floor(tw / (fs * font.width)));
     const lines = Math.ceil(text.length / perLine) + (scale > 1 ? 0.5 : 1);
     if (lines * fs * 1.62 <= th) break;
     fs -= 1;
@@ -25,12 +25,14 @@ function fitFontSize(text, width, height, scale = 1) {
 }
 
 export const PageView = forwardRef(function PageView(
-  { page, width, height, textScale = 1, highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary },
+  { page, width, height, textScale = 1, fontKey = 'serif', highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary },
   ref,
 ) {
   const words = useMemo(() => (page && page.text ? tokenize(page.text) : []), [page]);
   const artH = artHeight(width, height);
-  const fs = useMemo(() => fitFontSize(page?.text || '', width, height, textScale), [page, width, height, textScale]);
+  const font = bookFont(fontKey);
+  const fs = useMemo(() => fitFontSize(page?.text || '', width, height, textScale, font), [page, width, height, textScale, font]);
+  const storyStyle = [styles.story, { fontFamily: font.family, fontSize: fs, lineHeight: fs * 1.62 }];
 
   // Map hotspot fractions onto the image as drawn with "cover".
   const spots = useMemo(() => {
@@ -67,14 +69,14 @@ export const PageView = forwardRef(function PageView(
       <View style={[styles.textBox, { paddingHorizontal: width * 0.09, paddingTop: width * 0.06, paddingBottom: width * 0.06 }]}>
         {end ? (
           <View style={{ alignItems: 'center' }}>
-            <Text style={[styles.story, { fontSize: fs, lineHeight: fs * 1.62 }]}>Thank you for reading.</Text>
+            <Text style={storyStyle}>Thank you for reading.</Text>
             <View style={{ flexDirection: 'row', gap: 12, marginTop: 22, flexWrap: 'wrap', justifyContent: 'center' }}>
               <Pressable onPress={onReadAgain} style={styles.endBtn}><Text style={styles.endBtnText}>Read again</Text></Pressable>
               <Pressable onPress={onLibrary} style={styles.endBtn}><Text style={styles.endBtnText}>My Library</Text></Pressable>
             </View>
           </View>
         ) : (
-          <Text style={[styles.story, { fontSize: fs, lineHeight: fs * 1.62 }]}>
+          <Text style={storyStyle}>
             {words.map((w, i) => (
               <Text key={i} onPress={onWord ? () => onWord(i, w.word) : undefined} style={i === highlight ? styles.hl : null}>
                 {w.word}{i < words.length - 1 ? ' ' : ''}

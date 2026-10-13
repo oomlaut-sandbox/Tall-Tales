@@ -7,6 +7,10 @@ import * as Sharing from 'expo-sharing';
 import { Asset } from 'expo-asset';
 import { File, Paths } from 'expo-file-system';
 import { EBGaramond_400Regular } from '@expo-google-fonts/eb-garamond';
+import { DancingScript_400Regular } from '@expo-google-fonts/dancing-script';
+import { bookFont } from './theme';
+
+const FONT_FILES = { serif: EBGaramond_400Regular, cursive: DancingScript_400Regular };
 
 const SIZE = 576; // 8 × 8 inch pages (72 per inch), like a square picture book
 
@@ -29,9 +33,11 @@ async function imageData(image) {
   }
 }
 
-async function fontFace() {
+async function fontFace(fontKey) {
+  const file = FONT_FILES[fontKey || 'serif'];
+  if (!file) return ''; // Helvetica is built into the phone
   try {
-    const a = Asset.fromModule(EBGaramond_400Regular);
+    const a = Asset.fromModule(file);
     await a.downloadAsync();
     const b64 = await new File(a.localUri || a.uri).base64();
     return `@font-face{font-family:Story;src:url(data:font/ttf;base64,${b64}) format('truetype');}`;
@@ -40,13 +46,13 @@ async function fontFace() {
   }
 }
 
-function css(face) {
+function css(face, family) {
   return `${face}
 @page{size:${SIZE}px ${SIZE}px;margin:0}
 html,body{margin:0;padding:0;background:#fff}
 *{box-sizing:border-box}
 .pg{width:${SIZE}px;height:${SIZE}px;overflow:hidden;position:relative;page-break-after:always;break-after:page;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Story,Georgia,'Times New Roman',serif;color:#2b2b2b}
+  display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:${family};color:#2b2b2b}
 .pg:last-child{page-break-after:auto;break-after:auto}
 .title h1{font-weight:400;font-size:64px;margin:0 48px;text-align:center;line-height:1.1}
 .title .by{font-size:18px;margin-top:18px;color:#555}
@@ -61,8 +67,8 @@ html,body{margin:0;padding:0;background:#fff}
 .num{position:absolute;bottom:18px;font-size:11px;color:#999;font-family:Helvetica,Arial,sans-serif}`;
 }
 
-export async function buildStoryHtml(story, layout = 'stacked') {
-  const face = await fontFace();
+export async function buildStoryHtml(story, layout = 'stacked', fontKey = 'serif') {
+  const face = await fontFace(fontKey);
   const pics = [];
   for (const p of story.pages) pics.push(await imageData(p.image));
   const out = [];
@@ -76,18 +82,18 @@ export async function buildStoryHtml(story, layout = 'stacked') {
       out.push(`<div class="pg stack"><div class="pic">${pic ? `<img src="${pic}"/>` : ''}</div><div class="txt">${p.text ? `<p>${esc(p.text)}</p>` : ''}</div><div class="num">${i + 1}</div></div>`);
     }
   });
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${css(face)}</style></head><body>${out.join('')}</body></html>`;
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${css(face, bookFont(fontKey).css)}</style></head><body>${out.join('')}</body></html>`;
 }
 
-async function makePdf(story, layout) {
-  const html = await buildStoryHtml(story, layout);
+async function makePdf(story, layout, fontKey) {
+  const html = await buildStoryHtml(story, layout, fontKey);
   const { uri } = await Print.printToFileAsync({ html, width: SIZE, height: SIZE, margins: { top: 0, right: 0, bottom: 0, left: 0 } });
   return uri;
 }
 
 // Makes the same PDF as sharing, then opens the phone's print options (AirPrint on iPhone).
-export async function printStory(story, layout) {
-  const uri = await makePdf(story, layout);
+export async function printStory(story, layout, fontKey) {
+  const uri = await makePdf(story, layout, fontKey);
   try {
     await Print.printAsync({ uri });
   } catch (e) {
@@ -95,8 +101,8 @@ export async function printStory(story, layout) {
   }
 }
 
-export async function shareStoryPdf(story, layout) {
-  const uri = await makePdf(story, layout);
+export async function shareStoryPdf(story, layout, fontKey) {
+  const uri = await makePdf(story, layout, fontKey);
   let shareUri = uri;
   try {
     const name = (story.title || 'My story').replace(/[^\w\- ]+/g, '').trim().slice(0, 60) || 'My story';
