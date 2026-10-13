@@ -36,7 +36,7 @@ function Seg({ value, options, onChange }) {
   );
 }
 
-export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary, toast, menuRequest }) {
+export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary, toast, menuRequest, landscape }) {
   const insets = useSafeAreaInsets();
   const pages = useMemo(() => [...story.pages, { end: true }], [story]);
   const [idx, setIdx] = useState(0);
@@ -83,6 +83,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const anim = useRef(null);
 
   const barH = u * 17 + insets.bottom;
+  // Sideways: the bar runs down the right edge and the menus open beside it.
+  const barW = u * 17 + insets.right;
+  const panelPos = landscape ? { bottom: 0, inset: barW } : { bottom: barH };
   const n = story.pages.length;
   const tokens = useMemo(() => (pages[idx] && pages[idx].text ? tokenize(pages[idx].text) : []), [pages, idx]);
 
@@ -411,7 +414,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   else layers.push(abs(prevEl, 'p'), abs(nextEl, 'n'), abs(curEl, 'c'));
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, landscape && { flexDirection: 'row', paddingLeft: insets.left }]}>
       <View style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...pan.panHandlers}>
         {size ? layers : null}
         {turn && turn.fold ? <CurlCanvas width={W} height={H} under={turn.under} turning={turn.turning} fold={turn.fold} /> : null}
@@ -423,15 +426,15 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           </View>
         ) : null}
       </View>
-      <Bar u={u}>
+      <Bar u={u} vertical={landscape}>
         <Burger u={u} onPress={openMenu} />
-        <BarMeta title={story.title} sub={idx < n ? `Page ${idx + 1} of ${n}` : 'The End'} />
+        <BarMeta vertical={landscape} title={story.title} sub={idx < n ? (landscape ? `${idx + 1} / ${n}` : `Page ${idx + 1} of ${n}`) : 'The End'} />
         <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
         <PauseButton onPress={onPause} disabled={recording} />
         <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
       </Bar>
 
-      <Panel open={panel === 'play'} side="right" title="Playback Options" bottom={barH} onClose={() => setPanel(null)}>
+      <Panel open={panel === 'play'} side="right" title="Playback Options" {...panelPos} onClose={() => setPanel(null)}>
         {MODES.map(([g, id, t, s]) => (
           <Option key={id} glyph={g} title={t} sub={s} selected={prefs.mode === id} onPress={() => {
             stopReading();
@@ -463,7 +466,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       </Panel>
       <ParentGate visible={!!printGate} reason="Printing opens your phone’s print options." onPass={() => doPrint(printGate)} onCancel={() => setPrintGate(null)} />
 
-      <Panel open={panel === 'rec'} side="right" title="Recording Options" bottom={barH} onClose={() => setPanel(null)}>
+      <Panel open={panel === 'rec'} side="right" title="Recording Options" {...panelPos} onClose={() => setPanel(null)}>
         {recView === 'main' ? (
           <>
             <Option glyph="●" title="Start Recording" sub={`Read this story in your own voice, starting on page ${Math.min(idx + 1, n)}`} disabled={idx >= n} onPress={startRec} />

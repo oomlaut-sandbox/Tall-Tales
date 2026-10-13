@@ -12,8 +12,9 @@ function MenuItem({ u, color, title, sub, onPress }) {
         <View style={{ flex: 1, backgroundColor: colors.white }} />
       </View>
       <View style={{ flex: 1, minWidth: 0 }}>
-        <Text style={{ fontFamily: fonts.ui, fontWeight: '700', fontSize: u * 4.5, lineHeight: u * 5, color: colors.ink, marginBottom: u * 2.2 }}>{title}</Text>
-        <Text style={{ fontFamily: fonts.ui, fontSize: u * 3.15, lineHeight: u * 3.8, color: colors.ink }}>{sub}</Text>
+        {/* Same sizes as the menu titles (20) and their descriptions (14). */}
+        <Text style={{ fontFamily: fonts.ui, fontWeight: '700', fontSize: 20, lineHeight: 24, color: colors.ink, marginBottom: u * 2 }}>{title}</Text>
+        <Text style={{ fontFamily: fonts.ui, fontSize: 14, lineHeight: 18, color: colors.ink }}>{sub}</Text>
       </View>
     </Pressable>
   );
@@ -23,7 +24,7 @@ export default function Home({ u, go, openMenu }) {
   return (
     <View style={styles.screen}>
       <View style={{ flexBasis: u * 100, flexShrink: 1, minHeight: u * 52, backgroundColor: colors.red, justifyContent: 'center' }}>
-        {/* Red felt with the logo already in the picture (Jörg's artwork). */}
+        {/* Felt pebbles (Jörg's artwork). */}
         <Image
           source={require('../../assets/home-pebbles.jpg')}
           accessibilityLabel="oomlaut Reader"

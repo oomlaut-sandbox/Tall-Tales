@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFonts, EBGaramond_400Regular } from '@expo-google-fonts/eb-garamond';
 import { DancingScript_400Regular } from '@expo-google-fonts/dancing-script';
@@ -17,11 +18,21 @@ import { stopSpeech } from './src/speech';
 import { stopVoice } from './src/voice';
 
 function Root() {
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const W = Math.min(width, MAX_WIDTH);
-  const u = W / 100;
   const [screen, setScreen] = useState('home');
+  // Only the book can turn sideways; every other screen stays upright.
+  const landscape = screen === 'reader' && width > height;
+  const W = landscape ? width : Math.min(width, MAX_WIDTH);
+  const u = Math.min(landscape ? height : W, MAX_WIDTH) / 100;
+  useEffect(() => {
+    (async () => {
+      try {
+        if (screen === 'reader') await ScreenOrientation.unlockAsync();
+        else await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+      } catch (e) {}
+    })();
+  }, [screen]);
   const [story, setStory] = useState(null);
   const [drawer, setDrawer] = useState(false);
   const [prefs, setPrefs] = useState({ mode: null, sound: true, speed: 'normal', voice: 'narrator' });
@@ -63,9 +74,9 @@ function Root() {
         )}
         {screen === 'store' && <Store u={u} openStory={openStory} openMenu={openMenu} />}
         {screen === 'reader' && story && (
-          <Reader u={u} story={story} prefs={prefs} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => go('library')} toast={toast} menuRequest={playMenu} />
+          <Reader u={u} story={story} prefs={prefs} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => go('library')} toast={toast} menuRequest={playMenu} landscape={landscape} />
         )}
-        <Panel open={drawer} side="left" title="Settings" bottom={barH} onClose={() => setDrawer(false)}>
+        <Panel open={drawer} side="left" title="Settings" bottom={landscape ? 0 : barH} onClose={() => setDrawer(false)}>
           <Option glyph="▤" title="My Library" sub="View purchased stories" onPress={() => go('library')} />
           <Option glyph="◫" title="Book Store" sub="Buy more stories" onPress={() => go('store')} />
           <Option glyph="▸" title="Playback Settings" sub="Reader controls" onPress={() => {

@@ -1,6 +1,6 @@
 // Shared pieces of Jörg's design: black control bar, hamburger, dog-ear corner, slide-in panels.
 import React, { useEffect, useRef } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, Text, View, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 
@@ -15,14 +15,24 @@ export function Burger({ onPress, u }) {
   );
 }
 
-export function Bar({ u, children }) {
+// The black bar. Upright it runs along the bottom; sideways (vertical) it runs down the right edge.
+export function Bar({ u, children, vertical }) {
   const insets = useSafeAreaInsets();
+  if (vertical) {
+    return (
+      <View style={[styles.bar, styles.barV, { width: u * 17 + insets.right, paddingRight: insets.right, paddingTop: Math.max(14, insets.top), paddingBottom: Math.max(14, insets.bottom) }]}>{children}</View>
+    );
+  }
   return (
     <View style={[styles.bar, { minHeight: u * 17 + insets.bottom, paddingBottom: insets.bottom, paddingHorizontal: u * 5.4 }]}>{children}</View>
   );
 }
 
-export function BarMeta({ title, sub }) {
+export function BarMeta({ title, sub, vertical }) {
+  if (vertical) {
+    // Only room for the page number when the bar runs down the side.
+    return sub ? <Text style={[styles.metaSub, { textAlign: 'center', marginTop: 0 }]}>{sub}</Text> : null;
+  }
   return (
     <View style={{ flex: 1, minWidth: 0, paddingLeft: 18 }}>
       <Text numberOfLines={1} style={styles.metaTitle}>{title}</Text>
@@ -81,7 +91,7 @@ export function DogEar({ u, onPress, label = 'Next page' }) {
 }
 
 // Dark panel that slides in from the left or right and grows upward from the bar.
-export function Panel({ open, side = 'right', title, onClose, bottom, children }) {
+export function Panel({ open, side = 'right', title, onClose, bottom, inset = 0, children }) {
   const x = useRef(new Animated.Value(open ? 0 : 1)).current;
   useEffect(() => {
     Animated.timing(x, { toValue: open ? 0 : 1, duration: 300, useNativeDriver: true }).start();
@@ -92,10 +102,11 @@ export function Panel({ open, side = 'right', title, onClose, bottom, children }
       {open ? <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close menu" /> : null}
       <Animated.View
         pointerEvents={open ? 'auto' : 'none'}
-        style={[styles.panel, { bottom, [side]: 0, transform: [{ translateX: x.interpolate({ inputRange: [0, 1], outputRange: [0, sign * 500] }) }] }]}
+        style={[styles.panel, { bottom, [side]: inset, transform: [{ translateX: x.interpolate({ inputRange: [0, 1], outputRange: [0, sign * 500] }) }] }]}
       >
         <View style={styles.panelHead}><Text style={styles.panelTitle}>{title}</Text></View>
-        <View style={styles.panelList}>{children}</View>
+        {/* Only scrolls when it can't fit (e.g. sideways on a phone). */}
+        <ScrollView style={{ flexGrow: 0, flexShrink: 1, backgroundColor: colors.panel }} contentContainerStyle={styles.panelList} bounces={false}>{children}</ScrollView>
       </Animated.View>
     </>
   );
@@ -124,11 +135,12 @@ export function Toast({ message }) {
 
 const styles = StyleSheet.create({
   bar: { backgroundColor: colors.bar, flexDirection: 'row', alignItems: 'center', gap: 16, zIndex: 30 },
+  barV: { flexDirection: 'column', justifyContent: 'space-between', gap: 10 },
   metaTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   metaSub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 13, marginTop: 2 },
   ctl: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   ear: { position: 'absolute', right: 0, bottom: 0, width: 48, height: 48, zIndex: 20 },
-  panel: { position: 'absolute', width: '82%', maxHeight: '88%', zIndex: 41 },
+  panel: { position: 'absolute', width: '82%', maxWidth: 440, maxHeight: '88%', zIndex: 41 },
   panelHead: { backgroundColor: colors.panelHead, paddingHorizontal: 24, paddingTop: 24, paddingBottom: 20 },
   panelTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 28 },
   panelList: { backgroundColor: colors.panel, paddingHorizontal: 22, paddingTop: 20, paddingBottom: 22, gap: 16 },
