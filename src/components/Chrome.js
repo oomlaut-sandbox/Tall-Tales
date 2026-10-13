@@ -104,7 +104,16 @@ export function Panel({ open, side = 'right', title, onClose, bottom, inset = 0,
         pointerEvents={open ? 'auto' : 'none'}
         style={[styles.panel, { bottom, [side]: inset, transform: [{ translateX: x.interpolate({ inputRange: [0, 1], outputRange: [0, sign * 500] }) }] }]}
       >
-        <View style={styles.panelHead}><Text style={styles.panelTitle}>{title}</Text></View>
+        <View style={styles.panelHead}>
+          <Text style={[styles.panelTitle, { flex: 1 }]}>{title}</Text>
+          {/* Close: a small downward chevron. Tapping outside the menu still closes it too. */}
+          <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close menu" style={styles.closeBtn}>
+            <View style={styles.chev}>
+              <View style={[styles.chevBar, { left: 0, transform: [{ rotate: '40deg' }] }]} />
+              <View style={[styles.chevBar, { right: 0, transform: [{ rotate: '-40deg' }] }]} />
+            </View>
+          </Pressable>
+        </View>
         {/* Only scrolls when it can't fit (e.g. sideways on a phone). */}
         <ScrollView style={{ flexGrow: 0, flexShrink: 1, backgroundColor: colors.panel }} contentContainerStyle={styles.panelList} bounces={false}>{children}</ScrollView>
       </Animated.View>
@@ -181,7 +190,10 @@ const styles = StyleSheet.create({
   ctl: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   ear: { position: 'absolute', right: 0, bottom: 0, width: 48, height: 48, zIndex: 20 },
   panel: { position: 'absolute', width: '82%', maxWidth: 440, maxHeight: '88%', zIndex: 41 },
-  panelHead: { backgroundColor: colors.panelHead, paddingHorizontal: 24, paddingTop: 24, paddingBottom: 20 },
+  panelHead: { backgroundColor: colors.panelHead, paddingLeft: 24, paddingRight: 12, paddingTop: 24, paddingBottom: 20, flexDirection: 'row', alignItems: 'center' },
+  closeBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  chev: { width: 22, height: 12 },
+  chevBar: { position: 'absolute', top: 4, width: 14, height: 3, borderRadius: 1.5, backgroundColor: colors.white },
   panelTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 28 },
   panelList: { backgroundColor: colors.panel, paddingHorizontal: 22, paddingTop: 20, paddingBottom: 22, gap: 16 },
   opt: { flexDirection: 'row', alignItems: 'center', gap: 18 },
