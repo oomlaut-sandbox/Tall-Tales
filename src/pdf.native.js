@@ -1,4 +1,5 @@
-// Turns a story into a PDF on the phone and opens the share sheet (Files, Mail, AirDrop, print shop…).
+// Turns a story into a PDF on the phone and opens the share sheet (Files, Mail, AirDrop, print shop…)
+// or the print options.
 // Two layouts: "stacked" (picture above the words, one page each) and "spreads"
 // (picture page, then a words page, like a printed picture book).
 import * as Print from 'expo-print';
@@ -55,7 +56,8 @@ html,body{margin:0;padding:0;background:#fff}
 .stack{justify-content:flex-start;padding-top:36px}
 .stack .pic{width:396px;height:396px;background:#eee;overflow:hidden;flex:0 0 auto}
 .stack .pic img{width:100%;height:100%;object-fit:cover;display:block}
-.stack p{font-size:19px;line-height:1.5;margin:22px 64px 0;text-align:center}
+.stack .txt{flex:1;width:100%;display:flex;align-items:center;justify-content:center;padding:0 64px 30px}
+.stack p{font-size:19px;line-height:1.5;margin:0;text-align:center}
 .num{position:absolute;bottom:18px;font-size:11px;color:#999;font-family:Helvetica,Arial,sans-serif}`;
 }
 
@@ -71,15 +73,30 @@ export async function buildStoryHtml(story, layout = 'stacked') {
       if (pic) out.push(`<div class="pg full"><img src="${pic}"/></div>`);
       if (p.text && p.text.trim()) out.push(`<div class="pg words"><p>${esc(p.text)}</p></div>`);
     } else {
-      out.push(`<div class="pg stack"><div class="pic">${pic ? `<img src="${pic}"/>` : ''}</div>${p.text ? `<p>${esc(p.text)}</p>` : ''}<div class="num">${i + 1}</div></div>`);
+      out.push(`<div class="pg stack"><div class="pic">${pic ? `<img src="${pic}"/>` : ''}</div><div class="txt">${p.text ? `<p>${esc(p.text)}</p>` : ''}</div><div class="num">${i + 1}</div></div>`);
     }
   });
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${css(face)}</style></head><body>${out.join('')}</body></html>`;
 }
 
-export async function shareStoryPdf(story, layout) {
+async function makePdf(story, layout) {
   const html = await buildStoryHtml(story, layout);
   const { uri } = await Print.printToFileAsync({ html, width: SIZE, height: SIZE, margins: { top: 0, right: 0, bottom: 0, left: 0 } });
+  return uri;
+}
+
+// Makes the same PDF as sharing, then opens the phone's print options (AirPrint on iPhone).
+export async function printStory(story, layout) {
+  const uri = await makePdf(story, layout);
+  try {
+    await Print.printAsync({ uri });
+  } catch (e) {
+    if (!/cancel/i.test(String(e && e.message))) throw e;
+  }
+}
+
+export async function shareStoryPdf(story, layout) {
+  const uri = await makePdf(story, layout);
   let shareUri = uri;
   try {
     const name = (story.title || 'My story').replace(/[^\w\- ]+/g, '').trim().slice(0, 60) || 'My story';

@@ -8,12 +8,16 @@ import { tokenize } from '../story';
 // screens is it capped, so the words always keep at least a third of the page.
 export const artHeight = (width, height) => Math.min(width, height * 0.68);
 
-function fitFontSize(text, width, height) {
-  let fs = Math.min(30, Math.max(19, width * 0.066));
+// Text sizes the reader can choose (Playback Options → Text size).
+export const TEXT_SIZES = [['Small', 0.85], ['Medium', 1], ['Large', 1.25], ['Huge', 1.55]];
+
+// Starts at the chosen size and only shrinks if the words wouldn't fit under the picture.
+function fitFontSize(text, width, height, scale = 1) {
+  let fs = Math.min(30, Math.max(19, width * 0.066)) * scale;
   const tw = width * 0.82, th = height - artHeight(width, height) - width * 0.12;
-  for (let i = 0; i < 30 && fs > 13; i++) {
-    const perLine = Math.max(8, Math.floor(tw / (fs * 0.47)));
-    const lines = Math.ceil(text.length / perLine) + 1;
+  for (let i = 0; i < 60 && fs > 13; i++) {
+    const perLine = Math.max(4, Math.floor(tw / (fs * 0.47)));
+    const lines = Math.ceil(text.length / perLine) + (scale > 1 ? 0.5 : 1);
     if (lines * fs * 1.62 <= th) break;
     fs -= 1;
   }
@@ -21,12 +25,12 @@ function fitFontSize(text, width, height) {
 }
 
 export const PageView = forwardRef(function PageView(
-  { page, width, height, highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary },
+  { page, width, height, textScale = 1, highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary },
   ref,
 ) {
   const words = useMemo(() => (page && page.text ? tokenize(page.text) : []), [page]);
   const artH = artHeight(width, height);
-  const fs = useMemo(() => fitFontSize(page?.text || '', width, height), [page, width, height]);
+  const fs = useMemo(() => fitFontSize(page?.text || '', width, height, textScale), [page, width, height, textScale]);
 
   // Map hotspot fractions onto the image as drawn with "cover".
   const spots = useMemo(() => {
@@ -62,9 +66,9 @@ export const PageView = forwardRef(function PageView(
       </View>
       <View style={[styles.textBox, { paddingHorizontal: width * 0.09, paddingTop: width * 0.06, paddingBottom: width * 0.06 }]}>
         {end ? (
-          <View>
+          <View style={{ alignItems: 'center' }}>
             <Text style={[styles.story, { fontSize: fs, lineHeight: fs * 1.62 }]}>Thank you for reading.</Text>
-            <View style={{ flexDirection: 'row', gap: 12, marginTop: 22, flexWrap: 'wrap' }}>
+            <View style={{ flexDirection: 'row', gap: 12, marginTop: 22, flexWrap: 'wrap', justifyContent: 'center' }}>
               <Pressable onPress={onReadAgain} style={styles.endBtn}><Text style={styles.endBtnText}>Read again</Text></Pressable>
               <Pressable onPress={onLibrary} style={styles.endBtn}><Text style={styles.endBtnText}>My Library</Text></Pressable>
             </View>
@@ -89,8 +93,8 @@ const styles = StyleSheet.create({
   art: { width: '100%', backgroundColor: '#7d7d7d', overflow: 'hidden' },
   theEnd: { ...StyleSheet.absoluteFillObject, backgroundColor: colors.red, alignItems: 'center', justifyContent: 'center' },
   theEndText: { color: colors.white, fontFamily: fonts.story, fontSize: 52 },
-  textBox: { flex: 1 },
-  story: { fontFamily: fonts.story, color: colors.ink },
+  textBox: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  story: { fontFamily: fonts.story, color: colors.ink, textAlign: 'center' },
   hl: { color: colors.highlight },
   hot: { position: 'absolute', width: 46, height: 46, borderRadius: 23, borderWidth: 3, borderColor: 'rgba(255,255,255,0.9)', backgroundColor: 'rgba(255,255,255,0.12)' },
   bubble: { position: 'absolute', width: 220, alignItems: 'center' },

@@ -10,7 +10,7 @@ import { Bar, Burger, DogEar, Panel } from '../components/Chrome';
 import { deleteUserStory, dropPicture, keepPicture, newPageId, saveUserStory } from '../userStories';
 import StoryGuide from '../components/StoryGuide';
 import ParentGate from '../components/ParentGate';
-import { shareStoryPdf } from '../pdf';
+import { printStory, shareStoryPdf } from '../pdf';
 import { loadJSON, saveJSON } from '../storage';
 
 const blank = () => ({ pid: newPageId(), text: '', uri: null, w: 1, h: 1 });
@@ -30,21 +30,23 @@ export default function Publisher({ u, initial, openMenu, toast, onChange, onDon
   const [i, setI] = useState(0);
   const [pagesOpen, setPagesOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [pdfChoice, setPdfChoice] = useState(false);
-  const [gateFor, setGateFor] = useState(null); // layout waiting for the grown-up check
+  const [pdfChoice, setPdfChoice] = useState(null); // 'share' | 'print' | null: choosing a layout
+  const [gateFor, setGateFor] = useState(null); // {mode, layout} waiting for the grown-up check
   const [making, setMaking] = useState(false);
 
-  const makePdf = async (layout) => {
+  const makePdf = async ({ mode, layout }) => {
     setGateFor(null);
     const d = latest.current;
     const pages = d.pages.filter((p) => p.text.trim() || p.uri);
     if (!pages.length) return toast('Add a page with a picture or words first.');
     setMaking(true);
-    toast('Making your PDF…');
+    toast(mode === 'print' ? 'Getting your story ready to print…' : 'Making your PDF…');
     try {
-      await shareStoryPdf({ title: d.title.trim() || 'My story', pages: pages.map((p) => ({ text: p.text.trim(), image: p.uri ? { uri: p.uri } : null })) }, layout);
+      const st = { title: d.title.trim() || 'My story', pages: pages.map((p) => ({ text: p.text.trim(), image: p.uri ? { uri: p.uri } : null })) };
+      if (mode === 'print') await printStory(st, layout);
+      else await shareStoryPdf(st, layout);
     } catch (e) {
-      toast(e && e.message ? e.message : 'Couldn’t make the PDF. Try again.');
+      toast(e && e.message ? e.message : mode === 'print' ? 'Couldn’t print. Try again.' : 'Couldn’t make the PDF. Try again.');
     }
     setMaking(false);
   };
@@ -188,7 +190,7 @@ export default function Publisher({ u, initial, openMenu, toast, onChange, onDon
         <Pressable onPress={() => setI(Math.max(0, i - 1))} disabled={i === 0} hitSlop={8} style={{ opacity: i === 0 ? 0.35 : 1 }} accessibilityLabel="Previous page">
           <Text style={[styles.btn, { fontSize: 22 }]}>‹</Text>
         </Pressable>
-        <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(false); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
+        <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
         <Pressable onPress={finish} hitSlop={8}><Text style={[styles.btn, { color: colors.highlight }]}>Done</Text></Pressable>
       </Bar>
 
@@ -211,18 +213,23 @@ export default function Publisher({ u, initial, openMenu, toast, onChange, onDon
         </ScrollView>
         {pdfChoice ? (
           <View style={{ gap: 10 }}>
-            <Text style={styles.warn}>Choose a layout for your PDF:</Text>
-            <Pressable onPress={() => { setPdfChoice(false); setPagesOpen(false); setGateFor('stacked'); }} style={styles.wide}>
+            <Text style={styles.warn}>{pdfChoice === 'print' ? 'Choose a layout to print:' : 'Choose a layout for your PDF:'}</Text>
+            <Pressable onPress={() => { setGateFor({ mode: pdfChoice, layout: 'stacked' }); setPdfChoice(null); setPagesOpen(false); }} style={styles.wide}>
               <Text style={styles.wideText}>Picture above the words</Text>
             </Pressable>
-            <Pressable onPress={() => { setPdfChoice(false); setPagesOpen(false); setGateFor('spreads'); }} style={styles.wide}>
+            <Pressable onPress={() => { setGateFor({ mode: pdfChoice, layout: 'spreads' }); setPdfChoice(null); setPagesOpen(false); }} style={styles.wide}>
               <Text style={styles.wideText}>Book spreads (picture, then words)</Text>
             </Pressable>
           </View>
         ) : (
-          <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(true); }} disabled={making} style={[styles.wide, { backgroundColor: colors.bar }]}>
-            <Text style={styles.wideText}>{making ? 'Making PDF…' : 'Share as PDF…'}</Text>
-          </Pressable>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('share'); }} disabled={making} style={[styles.wide, { flex: 1, backgroundColor: colors.bar }]}>
+              <Text style={styles.wideText}>{making ? 'Working…' : 'Share as PDF…'}</Text>
+            </Pressable>
+            <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('print'); }} disabled={making} style={[styles.wide, { flex: 1, backgroundColor: colors.bar }]}>
+              <Text style={styles.wideText}>Print…</Text>
+            </Pressable>
+          </View>
         )}
         {confirmDelete ? (
           <View style={{ gap: 10 }}>
@@ -233,11 +240,11 @@ export default function Publisher({ u, initial, openMenu, toast, onChange, onDon
             </View>
           </View>
         ) : (
-          <Pressable onPress={() => { setPdfChoice(false); setConfirmDelete(true); }} hitSlop={6}><Text style={styles.deleteLink}>Delete this story…</Text></Pressable>
+          <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} hitSlop={6}><Text style={styles.deleteLink}>Delete this story…</Text></Pressable>
         )}
       </Panel>
       <StoryGuide visible={guide} onClose={closeGuide} />
-      <ParentGate visible={!!gateFor} reason="Sharing sends this story outside the app." onPass={() => makePdf(gateFor)} onCancel={() => setGateFor(null)} />
+      <ParentGate visible={!!gateFor} reason={gateFor?.mode === 'print' ? 'Printing opens your phone’s print options.' : 'Sharing sends this story outside the app.'} onPass={() => makePdf(gateFor)} onCancel={() => setGateFor(null)} />
     </KeyboardAvoidingView>
   );
 }
@@ -255,7 +262,7 @@ const styles = StyleSheet.create({
   chip: { backgroundColor: 'rgba(0,0,0,0.6)', color: colors.white, fontWeight: '700', fontSize: 15, paddingHorizontal: 14, paddingVertical: 8, overflow: 'hidden', fontFamily: fonts.ui },
   textBox: { flex: 1, paddingBottom: 24 },
   addText: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.ink, marginBottom: 6 },
-  input: { flex: 1, fontFamily: fonts.story, fontSize: 21, lineHeight: 34, color: colors.ink, textAlignVertical: 'top', padding: 0 },
+  input: { flex: 1, fontFamily: fonts.story, fontSize: 21, lineHeight: 34, color: colors.ink, textAlign: 'center', textAlignVertical: 'top', padding: 0 },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, padding: 0 },
   sub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 12, marginTop: 2 },
   btn: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, paddingHorizontal: 3 },

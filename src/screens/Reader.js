@@ -7,7 +7,9 @@ import { colors, fonts } from '../theme';
 import { tokenize, cleanWord, syllablesFor } from '../story';
 import { computeFold, ease } from '../fold';
 import { CurlCanvas, snapshot, supportsCurl } from '../components/Curl';
-import { PageView } from '../components/PageView';
+import { PageView, TEXT_SIZES } from '../components/PageView';
+import ParentGate from '../components/ParentGate';
+import { printStory } from '../pdf';
 import { Bar, BarMeta, Burger, DogEar, Option, Panel, PauseButton, PlayButton, RecordButton } from '../components/Chrome';
 import { playPaper, setPageSound } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
@@ -49,6 +51,20 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const [recording, setRecording] = useState(false);
   const [recView, setRecView] = useState('main'); // main | list | settings | help
   const [recList, setRecList] = useState([]);
+  const [printChoice, setPrintChoice] = useState(false);
+  const [printGate, setPrintGate] = useState(null); // layout waiting for the grown-up check
+  const [printing, setPrinting] = useState(false);
+  const doPrint = async (layout) => {
+    setPrintGate(null);
+    setPrinting(true);
+    toast('Getting the book ready to print…');
+    try {
+      await printStory({ title: story.title, author: story.author, pages: story.pages.map((p) => ({ text: p.text, image: p.image })) }, layout);
+    } catch (e) {
+      toast(e && e.message ? e.message : 'Couldn’t print. Try again.');
+    }
+    setPrinting(false);
+  };
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recStart = useRef(0);
   const pendingRec = useRef(false);
@@ -367,7 +383,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   /* ---------- render ---------- */
   const W = size?.w || 0, H = size?.h || 0;
   const pageProps = (i) => ({
-    page: pages[i], end: !!pages[i]?.end, width: W, height: H,
+    page: pages[i], end: !!pages[i]?.end, width: W, height: H, textScale: prefs.textScale || 1,
     onReadAgain: () => { stopReading(); setIdx(0); }, onLibrary: goLibrary,
   });
   const showHot = prefs.mode === 'interactive';
@@ -419,7 +435,20 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         ))}
         <Option glyph="♪" title={`Page turn sound: ${prefs.sound === false ? 'Off' : 'On'}`} sub="Tap to switch"
           onPress={() => { const on = prefs.sound === false; setPrefs((p) => ({ ...p, sound: on })); setPageSound(on); if (on) playPaper('turn', 0.8); }} />
+        <View style={{ gap: 8, paddingVertical: 6 }}>
+          <Text style={styles.help}>Text size</Text>
+          <Seg value={prefs.textScale || 1} options={TEXT_SIZES.map(([label, v]) => [v, label])} onChange={(v) => setPrefs((p) => ({ ...p, textScale: v }))} />
+        </View>
+        {printChoice ? (
+          <>
+            <Option glyph="⎙" title="Print: picture above the words" sub="One page each, like the app" onPress={() => { setPrintChoice(false); setPanel(null); setPrintGate('stacked'); }} />
+            <Option glyph="⎙" title="Print: book spreads" sub="Picture page, then a words page" onPress={() => { setPrintChoice(false); setPanel(null); setPrintGate('spreads'); }} />
+          </>
+        ) : (
+          <Option glyph="⎙" title={printing ? 'Getting ready to print…' : 'Print this book'} sub="Print on paper with AirPrint" disabled={printing} onPress={() => setPrintChoice(true)} />
+        )}
       </Panel>
+      <ParentGate visible={!!printGate} reason="Printing opens your phone’s print options." onPass={() => doPrint(printGate)} onCancel={() => setPrintGate(null)} />
 
       <Panel open={panel === 'rec'} side="right" title="Recording Options" bottom={barH} onClose={() => setPanel(null)}>
         {recView === 'main' ? (
@@ -473,6 +502,6 @@ const styles = StyleSheet.create({
   rowText: { flex: 1, color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   rowBtn: { backgroundColor: colors.tile, paddingHorizontal: 12, paddingVertical: 8 },
   rowBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
-  seg: { backgroundColor: '#333', paddingHorizontal: 14, paddingVertical: 10 },
+  seg: { flex: 1, alignItems: 'center', backgroundColor: '#333', paddingHorizontal: 8, paddingVertical: 10 },
   segText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
 });
