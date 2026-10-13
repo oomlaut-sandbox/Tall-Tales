@@ -10,7 +10,7 @@ import { tokenize } from '../story';
 export const artHeight = (width, height) => Math.min(width, height * 0.68);
 
 // Text sizes the reader can choose (Playback Options → Text size).
-export const TEXT_SIZES = [['Small', 0.85], ['Medium', 1], ['Large', 1.25], ['Huge', 1.55]];
+export const TEXT_SIZES = [['Small', 0.85], ['Medium', 1], ['Large', 1.25]];
 
 // Where the picture and the words go. Upright: square picture on top, words below.
 // Sideways (much wider than tall): square picture on the left, words on the right.

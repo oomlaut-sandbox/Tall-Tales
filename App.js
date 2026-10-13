@@ -41,6 +41,8 @@ function Root() {
       if (p && !p.soundOffDefault) p = { ...p, sound: false, soundOffDefault: true };
       // Interactive mode was removed: anyone who had it gets Page by Page instead.
       if (p && p.mode === 'interactive') p = { ...p, mode: 'page' };
+      // Huge text was removed: Large is the biggest now.
+      if (p && p.textScale > 1.25) p = { ...p, textScale: 1.25 };
       if (p) setPrefs((x) => ({ ...x, ...p }));
       else setPrefs((x) => ({ ...x, soundOffDefault: true }));
       prefsLoaded.current = true;

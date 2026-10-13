@@ -60,8 +60,8 @@ export function flapTables({ textH, artH, n = FLAP_STRIPS, samples = FLAP_SAMPLE
       s.opF.push(front ? 1 : 0);
       s.opB.push(front ? 0 : 1);
       // light from the reader's side: darker as a strip turns edge-on
-      s.shadeF.push(0.32 * Math.sin(g.angle));
-      s.shadeB.push(0.28 * Math.max(0, Math.sin(g.angle)));
+      s.shadeF.push(0.2 * Math.sin(g.angle));
+      s.shadeB.push(0.18 * Math.max(0, Math.sin(g.angle)));
     });
   }
   return { input, strips };
