@@ -54,7 +54,7 @@ jobs:
           sudo apt-get install -y -qq expect > /dev/null
           cat > /tmp/build.exp <<'EOF'
           set timeout 4800
-          spawn npx --yes eas-cli@latest build --platform ios --profile production --auto-submit
+          spawn env -u CI -u GITHUB_ACTIONS -u CONTINUOUS_INTEGRATION npx --yes eas-cli@latest build --platform ios --profile production --auto-submit
           set n 0
           expect {
             -re {\(Y/n\)|\(y/N\)|› $|\? .*›} { incr n; if {$n > 60} {exit 3}; sleep 1; send "\r"; exp_continue }
