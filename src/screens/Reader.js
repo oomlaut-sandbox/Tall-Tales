@@ -17,7 +17,7 @@ import { Bar, BarMeta, Burger, DogEar, Option, Panel, PauseButton, PlayButton, R
 export const DEFAULT_SPEED = 0.85;
 export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : DEFAULT_SPEED);
 // Book narrators (ElevenLabs). Lily is the default.
-export const NARRATORS = [['lily', 'Lily'], ['michael', 'Michael Caine']];
+export const NARRATORS = [['lily', 'Lily']]; // add more voices here (and in ci/narrate.js)
 const narratorOf = (prefs) => (NARRATORS.some(([k]) => k === prefs.narrator) ? prefs.narrator : 'lily');
 const NARRATOR = 0.92; // the narrator's normal pace
 import { playPaper, setPageSound } from '../sound';
@@ -482,8 +482,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             format={(v) => `${v.toFixed(2).replace(/0$/, '')}×`}
             onChange={setSpeedDraft}
             onDone={(v) => { setSpeedDraft(null); setPrefs((p) => ({ ...p, rate: Math.round(v * 100) / 100 })); }} />
-          <Text style={styles.help}>Narrator</Text>
-          <Seg value={narratorOf(prefs)} options={NARRATORS} onChange={(v) => { stopReading(); setPrefs((p) => ({ ...p, narrator: v })); }} />
+          {NARRATORS.length > 1 ? (
+            <>
+              <Text style={styles.help}>Narrator</Text>
+              <Seg value={narratorOf(prefs)} options={NARRATORS} onChange={(v) => { stopReading(); setPrefs((p) => ({ ...p, narrator: v })); }} />
+            </>
+          ) : null}
           <Text style={styles.help}>Book font</Text>
           <Seg value={prefs.font || 'serif'} options={Object.entries(BOOK_FONTS).map(([k, f]) => [k, f.label, f.family])} onChange={(v) => setPrefs((p) => ({ ...p, font: v }))} />
         </View>

@@ -16,10 +16,9 @@ const https = require('https');
 
 const KEY = (process.env.ELEVENLABS_API_KEY || '').trim();
 const MODEL = 'eleven_multilingual_v2';
-// The voices Jörg picked. Lily is the default. `find` is what we look for by name.
+// The voices Jörg picked. `find` is what we look for by name. (Michael Caine was considered; Lily only for now.)
 const VOICES = [
   { key: 'lily', label: 'Lily', find: ['lily'] },
-  { key: 'michael', label: 'Michael Caine', find: ['michael caine', 'michael cane', 'caine'] },
 ];
 
 const log = [];
