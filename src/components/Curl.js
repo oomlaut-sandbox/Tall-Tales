@@ -7,3 +7,6 @@ export async function snapshot() {
 export function CurlCanvas() {
   return null;
 }
+export function FlapCurl() {
+  return null;
+}

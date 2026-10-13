@@ -1,7 +1,8 @@
 // Draws a turning page with Skia: the page underneath, a soft shadow along the fold,
 // the flat part of the turning page, and its lifted back (mirrored, paper-tinted).
 import React from 'react';
-import { Canvas, Group, Image, Path, Rect, LinearGradient, BlurMask, Skia, vec, makeImageFromView } from '@shopify/react-native-skia';
+import { Canvas, Group, Image, ImageShader, Path, Rect, LinearGradient, BlurMask, Skia, Vertices, vec, rect, makeImageFromView } from '@shopify/react-native-skia';
+import { flapMesh, FLAP_INDICES } from '../flapCurl';
 
 export const supportsCurl = true;
 
@@ -61,6 +62,36 @@ export function CurlCanvas({ width: W, height: H, under, turning, fold }) {
           </Rect>
         </Group>
       </Group>
+    </Canvas>
+  );
+}
+
+// The flip-up page turn, drawn as a bending sheet (see src/flapCurl.js for the shape).
+// front: a picture of the page being turned away from; back: a picture of the page being turned to.
+// Also casts a soft shadow onto the pages beneath it.
+export function FlapCurl({ width: W, height: H, artH, p, front, back }) {
+  if (!front || !back || !W || !H) return null;
+  const strips = flapMesh({ W, H, artH, p });
+  const sh = Math.sin(Math.PI * Math.max(0, Math.min(1, p)));
+  const area = rect(0, 0, W, H);
+  return (
+    <Canvas style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} pointerEvents="none">
+      <Rect x={0} y={artH} width={W} height={(H - artH) * 0.6}>
+        <LinearGradient start={vec(0, artH)} end={vec(0, artH + (H - artH) * 0.6)} colors={[`rgba(0,0,0,${(0.3 * sh).toFixed(3)})`, 'rgba(0,0,0,0)']} />
+      </Rect>
+      <Rect x={0} y={artH * 0.4} width={W} height={artH * 0.6}>
+        <LinearGradient start={vec(0, artH)} end={vec(0, artH * 0.4)} colors={[`rgba(0,0,0,${(0.3 * sh * (p > 0.5 ? 1 : 0.3)).toFixed(3)})`, 'rgba(0,0,0,0)']} />
+      </Rect>
+      {strips.map((st, i) => {
+        const g = Math.round(255 * st.light);
+        const c = `rgb(${g},${g},${g})`;
+        return (
+          <Vertices key={i} vertices={st.verts.map((v) => vec(v.x, v.y))} textures={st.tex.map((t) => vec(t.x, t.y))}
+            colors={[c, c, c, c]} indices={FLAP_INDICES} mode="triangles" blendMode="modulate">
+            <ImageShader image={st.face === 'front' ? front : back} fit="fill" rect={area} />
+          </Vertices>
+        );
+      })}
     </Canvas>
   );
 }

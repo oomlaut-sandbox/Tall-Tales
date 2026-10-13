@@ -6,6 +6,23 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOOK_FONTS, colors, fonts } from '../theme';
 import { tokenize, cleanWord, syllablesFor } from '../story';
 import { PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
+import { FlapCurl, snapshot, supportsCurl } from '../components/Curl';
+
+// If drawing the bending sheet ever fails on a phone, fall back to the stiff flap from then on.
+const curlWorks = { ok: true };
+class CurlGuard extends React.Component {
+  state = { failed: false };
+  static getDerivedStateFromError() { curlWorks.ok = false; return { failed: true }; }
+  render() { return this.state.failed ? null : this.props.children; }
+}
+
+// Redraws only the bending sheet as the turn moves (not the whole reader).
+const progSubs = new Set();
+function CurlLayer({ start, ...props }) {
+  const [p, setP] = useState(start);
+  useEffect(() => { progSubs.add(setP); return () => progSubs.delete(setP); }, []);
+  return <FlapCurl {...props} p={p} />;
+}
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
 import { Bar, BarMeta, Burger, DogEar, Option, Panel, PauseButton, PlayButton, RecordButton, Slider } from '../components/Chrome';
@@ -80,6 +97,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const prefsRef = useRef(prefs);
   prefsRef.current = prefs;
   const flipP = useRef(new Animated.Value(0)).current; // 0 = page a showing, 1 = page b (a + 1)
+  const prog = useRef(0); // the same progress, as a plain number
+  const [curl, setCurl] = useState(null); // {front, back}: pictures of both pages for the bending sheet
+  const curlOn = useRef(false);
+  const cache = useRef({}); // page index -> picture of that page
 
   const refs = { prev: useRef(null), cur: useRef(null), next: useRef(null) };
   const st = useRef({});
@@ -271,8 +292,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 
   /* ---------- page turning ---------- */
   // Like a flip calendar: the words half lifts up along the spine (showing the next page's words
-  // underneath), then the next page's picture swings down onto the top half. Going back plays it
-  // in reverse. flipP runs from 0 (page a) to 1 (page b = a + 1).
+  // underneath), then the next page's picture comes down onto the top half. Going back plays it in
+  // reverse. Progress runs from 0 (page a) to 1 (page b = a + 1).
+  // On the phone the lifting half bends like paper (FlapCurl, drawn from pictures of the two pages);
+  // the web preview, or a phone where that drawing fails, uses a stiff flap instead.
   // Only one turn at a time: taps and swipes that arrive mid-turn are ignored.
   const busy = useRef(false);
   const stepPage = (dir) => setIdx((i) => Math.max(0, Math.min(pages.length - 1, i + dir)));
@@ -280,20 +303,44 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (dir < 0 && st.current.recording) return false;
     return dir > 0 ? st.current.idx < st.current.pages.length - 1 : st.current.idx > 0;
   };
-  const nativeDriver = Platform.OS !== 'web';
 
-  const startFlip = (dir) => {
-    const a = dir > 0 ? st.current.idx : st.current.idx - 1;
-    flipP.setValue(dir > 0 ? 0 : 1);
+  const setProgress = (p) => {
+    prog.current = p;
+    flipP.setValue(p);
+    if (curlOn.current) progSubs.forEach((f) => f(p));
+  };
+  const startFlip = async (dir) => {
+    const i = st.current.idx;
+    const a = dir > 0 ? i : i - 1;
+    let imgs = null;
+    if (supportsCurl && curlWorks.ok) {
+      // pictures of both pages, taken before the turning layers replace them
+      const fa = dir > 0 ? await snapshot(refs.cur) : (cache.current[a] || (await snapshot(refs.prev)));
+      const fb = dir > 0 ? (cache.current[a + 1] || (await snapshot(refs.next))) : await snapshot(refs.cur);
+      if (fa && fb) imgs = { front: fa, back: fb };
+    }
+    const p0 = dir > 0 ? 0 : 1;
+    prog.current = p0;
+    flipP.setValue(p0);
+    curlOn.current = !!imgs;
+    setCurl(imgs);
     setFlipPair({ a, b: a + 1, dir });
   };
   const endFlip = (dir, commit) => {
     if (commit) { stepPage(dir); setHl(-1); setBubble(null); }
     // let the new page draw underneath before taking the turning layers away
-    setTimeout(() => { setFlipPair(null); busy.current = false; }, 40);
+    setTimeout(() => { setFlipPair(null); setCurl(null); curlOn.current = false; busy.current = false; }, 40);
   };
   const runFlip = (to, ms, then) => {
-    Animated.timing(flipP, { toValue: to, duration: ms, easing: Easing.inOut(Easing.cubic), useNativeDriver: nativeDriver }).start(then);
+    const from = prog.current, t0 = Date.now();
+    const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const step = () => {
+      const t = Math.min(1, (Date.now() - t0) / Math.max(1, ms));
+      setProgress(from + (to - from) * ease(t));
+      if (t < 1) anim.current = requestAnimationFrame(step);
+      else then && then();
+    };
+    anim.current = requestAnimationFrame(step);
   };
 
   const flip = async (dir) => {
@@ -302,8 +349,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (st.current.recording && dir > 0) { await stopRec(true); pendingRec.current = st.current.idx + 1 < story.pages.length; }
     else if (!pendingRead.current) stopReading();
     playPaper('turn', 1);
-    startFlip(dir);
-    requestAnimationFrame(() => runFlip(dir > 0 ? 1 : 0, 680, () => endFlip(dir, true)));
+    await startFlip(dir);
+    runFlip(dir > 0 ? 1 : 0, 760, () => endFlip(dir, true));
     return true;
   };
 
@@ -317,10 +364,15 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   };
   const beginDrag = (sd) => {
     busy.current = true;
-    drag.current = { ...sd, p: sd.dir > 0 ? 0 : 1 };
+    const d = { ...sd, p: sd.dir > 0 ? 0 : 1, ready: false, ended: null };
+    drag.current = d;
     stopReading();
     playPaper('lift', 0.5);
-    startFlip(sd.dir);
+    startFlip(sd.dir).then(() => {
+      d.ready = true;
+      if (d.ended) finishDrag(d, d.ended); // finger already lifted while the pages were being prepared
+      else setProgress(d.p);
+    });
   };
   const pan = useMemo(() => PanResponder.create({
     // Touches that start on empty paper come here straight away; touches that start on a word or
@@ -348,9 +400,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       }
       const { w: W, h: H } = st.current.size;
       const amount = d.horiz ? -g.dx / (W * 0.8) : -g.dy / (H * 0.55);
-      const p = d.dir > 0 ? Math.max(0, Math.min(1, amount)) : 1 - Math.max(0, Math.min(1, -amount));
-      d.p = p;
-      flipP.setValue(p);
+      d.p = d.dir > 0 ? Math.max(0, Math.min(1, amount)) : 1 - Math.max(0, Math.min(1, -amount));
+      if (d.ready) setProgress(d.p);
     },
     onPanResponderRelease: (_, g) => endDrag(g),
     onPanResponderTerminate: (_, g) => endDrag(g),
@@ -360,6 +411,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     const d = drag.current;
     if (!d.dir) return;
     drag.current = {};
+    const end = { vx: g.vx, vy: g.vy };
+    if (!d.ready) { d.ended = end; return; }
+    finishDrag(d, end);
+  };
+  const finishDrag = (d, g) => {
     const vel = d.horiz ? g.vx : g.vy;
     const commit = d.dir > 0 ? d.p > 0.4 || vel < -0.35 : d.p < 0.6 || vel > 0.35;
     if (commit && st.current.recording) {
@@ -368,8 +424,19 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     }
     playPaper(commit ? 'drop' : 'lift', commit ? 0.9 : 0.35);
     const target = commit ? (d.dir > 0 ? 1 : 0) : (d.dir > 0 ? 0 : 1);
-    runFlip(target, 220 + 380 * Math.abs(target - d.p), () => endFlip(d.dir, commit));
+    runFlip(target, 240 + 420 * Math.abs(target - prog.current), () => endFlip(d.dir, commit));
   };
+
+  // Keep fresh pictures of the neighbouring pages ready, so a turn starts without a delay.
+  useEffect(() => {
+    cache.current = {};
+    if (!supportsCurl || !size || flipPair) return;
+    const t = setTimeout(async () => {
+      if (refs.next.current) cache.current[idx + 1] = await snapshot(refs.next);
+      if (refs.prev.current) cache.current[idx - 1] = await snapshot(refs.prev);
+    }, 500);
+    return () => clearTimeout(t);
+  }, [idx, size, prefs.textScale, prefs.font, !!flipPair]);
 
   /* ---------- render ---------- */
   const W = size?.w || 0, H = size?.h || 0;
@@ -394,7 +461,14 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     const view = (i, k) => <PageView key={k} {...pageProps(i)} />;
     const front = flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: ['0deg', '90deg', '90deg'] });
     const back = flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: ['-90deg', '-90deg', '0deg'] });
-    layers.push(
+    if (curl) {
+      // phone: the words half bends like paper as it lifts (drawn from pictures of both pages)
+      layers.push(
+        <View key="fb" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
+        <View key="fat" style={[styles.half, { top: 0, height: artH }]}>{view(a, `t${a}`)}</View>,
+        <CurlGuard key="curl"><CurlLayer width={W} height={H} artH={artH} start={prog.current} front={curl.front} back={curl.back} /></CurlGuard>,
+      );
+    } else layers.push(
       // underneath: the page being turned to (b), whole
       <View key="fb" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
       // page a's picture stays on the top half until b's picture swings down over it
