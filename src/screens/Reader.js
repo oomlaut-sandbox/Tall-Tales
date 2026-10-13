@@ -12,13 +12,19 @@ import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
 import { Bar, BarMeta, Burger, DogEar, Option, Panel, PauseButton, PlayButton, RecordButton, Slider } from '../components/Chrome';
 
-// Reading speed: 1 = normal. Older settings only had Normal/Slow.
-export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : 1);
+// Reading speed: 1 = the voice's natural pace. The default is moderately slow.
+// Older settings only had Normal/Slow.
+export const DEFAULT_SPEED = 0.85;
+export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : DEFAULT_SPEED);
+// Book narrators (ElevenLabs). Lily is the default.
+export const NARRATORS = [['lily', 'Lily'], ['michael', 'Michael Caine']];
+const narratorOf = (prefs) => (NARRATORS.some(([k]) => k === prefs.narrator) ? prefs.narrator : 'lily');
 const NARRATOR = 0.92; // the narrator's normal pace
 import { playPaper, setPageSound } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { pauseVoice, playVoice, resumeVoice, stopVoice } from '../voice';
 import { getRecording, listRecordings, pageKey, removeRecording, saveRecording } from '../recordings';
+import { AUDIO, TIMINGS } from '../narration';
 
 const MODES = [
   ['»', 'auto', 'Auto Play', 'Reads the full story with audio'],
@@ -141,30 +147,40 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         autoTimer.current = setTimeout(() => { pendingRead.current = true; flip(1); }, 800);
       }
     };
+    // The book's narrator: ElevenLabs audio when the book has it (exact word timings),
+    // otherwise the phone's own voice.
+    const narrate = () => {
+      const voiceKey = narratorOf(prefs);
+      const audio = AUDIO[voiceKey]?.[story.id]?.[p.pid] || AUDIO.lily?.[story.id]?.[p.pid];
+      const times = (TIMINGS[AUDIO[voiceKey]?.[story.id]?.[p.pid] ? voiceKey : 'lily']?.[story.id]?.[p.pid] || {}).words;
+      if (audio && times && times.length === toks.length && playVoice(audio, {
+        rate: speedOf(prefs),
+        onTime: (t) => {
+          let i = -1;
+          while (i + 1 < times.length && times[i + 1] <= t + 0.05) i++;
+          setHl(i);
+        },
+        onDone: afterPage,
+      })) {
+        usingVoice.current = true;
+        return;
+      }
+      speakTracked(p.text, { rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage });
+    };
     if (prefs.voice === 'mine') {
       getRecording(story.id, pageKey(p, pageIndex)).then((rec) => {
         if (st.current.idx !== pageIndex) return;
-        if (rec && playVoice(rec.uri, { rate: speedOf(prefs), onProgress: (f) => hlChar(Math.floor(f * p.text.length)), onDone: afterPage })) {
+        if (rec && playVoice(rec.uri, { rate: speedOf(prefs) / DEFAULT_SPEED, // a parent's own pace at the default setting
+           onProgress: (f) => hlChar(Math.floor(f * p.text.length)), onDone: afterPage })) {
           usingVoice.current = true;
         } else {
-          speakTracked(p.text, { rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage });
+          narrate();
         }
       });
       return;
     }
-    speakTracked(p.text, {
-      rate: NARRATOR * speedOf(prefs),
-      onWord: (ch) => {
-        for (let i = 0; i < toks.length; i++) if (toks[i].start <= ch && ch < toks[i].end + 1) { setHl(i); break; }
-      },
-      onDone: () => {
-        setHl(-1); setReading(false);
-        if (st.current.mode === 'auto' && pageIndex < st.current.pages.length - 1) {
-          autoTimer.current = setTimeout(() => { pendingRead.current = true; flip(1); }, 800);
-        }
-      },
-    });
-  }, [prefs.speed, prefs.rate, prefs.voice, story]);
+    narrate();
+  }, [prefs.speed, prefs.rate, prefs.voice, prefs.narrator, story]);
 
   useEffect(() => {
     if (pendingRec.current) { pendingRec.current = false; setTimeout(startRec, 350); }
@@ -462,6 +478,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             format={(v) => `${v.toFixed(2).replace(/0$/, '')}×`}
             onChange={setSpeedDraft}
             onDone={(v) => { setSpeedDraft(null); setPrefs((p) => ({ ...p, rate: Math.round(v * 100) / 100 })); }} />
+          <Text style={styles.help}>Narrator</Text>
+          <Seg value={narratorOf(prefs)} options={NARRATORS} onChange={(v) => { stopReading(); setPrefs((p) => ({ ...p, narrator: v })); }} />
           <Text style={styles.help}>Book font</Text>
           <Seg value={prefs.font || 'serif'} options={Object.entries(BOOK_FONTS).map(([k, f]) => [k, f.label, f.family])} onChange={(v) => setPrefs((p) => ({ ...p, font: v }))} />
         </View>
