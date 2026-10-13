@@ -7,6 +7,23 @@ import { BOOK_FONTS, colors, fonts } from '../theme';
 import { tokenize, cleanWord, syllablesFor } from '../story';
 import { Fade, PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
 import { FLAP_PERSPECTIVE, flapTables } from '../flapStrips';
+import ParentGate from '../components/ParentGate';
+import { printStory } from '../pdf';
+import { Bar, BarMeta, Burger, DogEar, Option, Panel, PauseButton, PlayButton, RecordButton, Slider } from '../components/Chrome';
+
+// Reading speed: 1 = the voice's natural pace. The default is moderately slow.
+// Older settings only had Normal/Slow.
+export const DEFAULT_SPEED = 0.75;
+export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : DEFAULT_SPEED);
+// Book narrators (ElevenLabs). Lily is the default.
+export const NARRATORS = [['lily', 'Lily']]; // add more voices here (and in ci/narrate.js)
+const narratorOf = (prefs) => (NARRATORS.some(([k]) => k === prefs.narrator) ? prefs.narrator : 'lily');
+const NARRATOR = 0.92; // the narrator's normal pace
+import { playPaper, setPageSound } from '../sound';
+import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
+import { pauseVoice, playVoice, resumeVoice, stopVoice } from '../voice';
+import { getRecording, listRecordings, pageKey, removeRecording, saveRecording } from '../recordings';
+import { AUDIO, TIMINGS } from '../narration';
 
 const MODES = [
   ['»', 'auto', 'Auto Play', 'Reads the full story with audio'],
