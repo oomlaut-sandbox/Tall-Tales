@@ -6,6 +6,7 @@ import { useFonts, EBGaramond_400Regular } from '@expo-google-fonts/eb-garamond'
 import { colors, MAX_WIDTH } from './src/theme';
 import Home from './src/screens/Home';
 import { Library, Store } from './src/screens/Shelf';
+import About from './src/screens/About';
 import Reader from './src/screens/Reader';
 import Publisher, { draftFrom } from './src/screens/Publisher';
 import { STORIES } from './src/story';
@@ -91,6 +92,7 @@ function Root() {
           <Publisher key={draft.id} u={u} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} />
         )}
         {screen === 'store' && <Store u={u} openStory={openStory} openMenu={openMenu} />}
+        {screen === 'about' && <About u={u} openMenu={openMenu} />}
         {screen === 'reader' && story && (
           <Reader u={u} story={story} prefs={prefs} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => go('library')} toast={toast} menuRequest={playMenu} landscape={landscape} />
         )}
@@ -103,7 +105,7 @@ function Root() {
           }} />
           <Option glyph="+" title="Create a Story" sub="Add your own pictures and words" onPress={() => openPublisher(null)} />
           <Option glyph="○" title="Profile" sub="Manage your oomlaut account" onPress={() => toast('Accounts arrive in a later build.')} />
-          <Option glyph="i" title="About" sub="Learn more about the app" onPress={() => toast('oomlaut Reader: illustrated stories that read aloud and help children learn to read.')} />
+          <Option glyph="i" title="About" sub="Learn more about the app" onPress={() => go('about')} />
         </Panel>
         <Toast message={message} />
       </View>
