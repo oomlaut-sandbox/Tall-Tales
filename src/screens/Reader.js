@@ -5,41 +5,8 @@ import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } fr
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOOK_FONTS, colors, fonts } from '../theme';
 import { tokenize, cleanWord, syllablesFor } from '../story';
-import { PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
-import { FlapCurl, snapshot, supportsCurl } from '../components/Curl';
-
-// If drawing the bending sheet ever fails on a phone, fall back to the stiff flap from then on.
-const curlWorks = { ok: true };
-class CurlGuard extends React.Component {
-  state = { failed: false };
-  static getDerivedStateFromError() { curlWorks.ok = false; return { failed: true }; }
-  render() { return this.state.failed ? null : this.props.children; }
-}
-
-// Redraws only the bending sheet as the turn moves (not the whole reader).
-const progSubs = new Set();
-function CurlLayer({ start, ...props }) {
-  const [p, setP] = useState(start);
-  useEffect(() => { progSubs.add(setP); return () => progSubs.delete(setP); }, []);
-  return <FlapCurl {...props} p={p} />;
-}
-import ParentGate from '../components/ParentGate';
-import { printStory } from '../pdf';
-import { Bar, BarMeta, Burger, DogEar, Option, Panel, PauseButton, PlayButton, RecordButton, Slider } from '../components/Chrome';
-
-// Reading speed: 1 = the voice's natural pace. The default is moderately slow.
-// Older settings only had Normal/Slow.
-export const DEFAULT_SPEED = 0.75;
-export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : DEFAULT_SPEED);
-// Book narrators (ElevenLabs). Lily is the default.
-export const NARRATORS = [['lily', 'Lily']]; // add more voices here (and in ci/narrate.js)
-const narratorOf = (prefs) => (NARRATORS.some(([k]) => k === prefs.narrator) ? prefs.narrator : 'lily');
-const NARRATOR = 0.92; // the narrator's normal pace
-import { playPaper, setPageSound } from '../sound';
-import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
-import { pauseVoice, playVoice, resumeVoice, stopVoice } from '../voice';
-import { getRecording, listRecordings, pageKey, removeRecording, saveRecording } from '../recordings';
-import { AUDIO, TIMINGS } from '../narration';
+import { Fade, PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
+import { FLAP_PERSPECTIVE, flapTables } from '../flapStrips';
 
 const MODES = [
   ['»', 'auto', 'Auto Play', 'Reads the full story with audio'],
@@ -98,9 +65,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   prefsRef.current = prefs;
   const flipP = useRef(new Animated.Value(0)).current; // 0 = page a showing, 1 = page b (a + 1)
   const prog = useRef(0); // the same progress, as a plain number
-  const [curl, setCurl] = useState(null); // {front, back}: pictures of both pages for the bending sheet
-  const curlOn = useRef(false);
-  const cache = useRef({}); // page index -> picture of that page
+
 
   const refs = { prev: useRef(null), cur: useRef(null), next: useRef(null) };
   const st = useRef({});
@@ -307,40 +272,22 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const setProgress = (p) => {
     prog.current = p;
     flipP.setValue(p);
-    if (curlOn.current) progSubs.forEach((f) => f(p));
   };
-  const startFlip = async (dir) => {
-    const i = st.current.idx;
-    const a = dir > 0 ? i : i - 1;
-    let imgs = null;
-    if (supportsCurl && curlWorks.ok) {
-      // pictures of both pages, taken before the turning layers replace them
-      const fa = dir > 0 ? await snapshot(refs.cur) : (cache.current[a] || (await snapshot(refs.prev)));
-      const fb = dir > 0 ? (cache.current[a + 1] || (await snapshot(refs.next))) : await snapshot(refs.cur);
-      if (fa && fb) imgs = { front: fa, back: fb };
-    }
-    const p0 = dir > 0 ? 0 : 1;
-    prog.current = p0;
-    flipP.setValue(p0);
-    curlOn.current = !!imgs;
-    setCurl(imgs);
+  const startFlip = (dir) => {
+    const a = dir > 0 ? st.current.idx : st.current.idx - 1;
+    setProgress(dir > 0 ? 0 : 1);
     setFlipPair({ a, b: a + 1, dir });
   };
   const endFlip = (dir, commit) => {
     if (commit) { stepPage(dir); setHl(-1); setBubble(null); }
     // let the new page draw underneath before taking the turning layers away
-    setTimeout(() => { setFlipPair(null); setCurl(null); curlOn.current = false; busy.current = false; }, 40);
+    setTimeout(() => { setFlipPair(null); busy.current = false; }, 40);
   };
   const runFlip = (to, ms, then) => {
-    const from = prog.current, t0 = Date.now();
-    const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-    const step = () => {
-      const t = Math.min(1, (Date.now() - t0) / Math.max(1, ms));
-      setProgress(from + (to - from) * ease(t));
-      if (t < 1) anim.current = requestAnimationFrame(step);
-      else then && then();
-    };
-    anim.current = requestAnimationFrame(step);
+    requestAnimationFrame(() => {
+      Animated.timing(flipP, { toValue: to, duration: ms, easing: Easing.inOut(Easing.cubic), useNativeDriver: Platform.OS !== 'web' })
+        .start(() => { prog.current = to; then && then(); });
+    });
   };
 
   const flip = async (dir) => {
@@ -349,8 +296,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (st.current.recording && dir > 0) { await stopRec(true); pendingRec.current = st.current.idx + 1 < story.pages.length; }
     else if (!pendingRead.current) stopReading();
     playPaper('turn', 1);
-    await startFlip(dir);
-    runFlip(dir > 0 ? 1 : 0, 760, () => endFlip(dir, true));
+    startFlip(dir);
+    runFlip(dir > 0 ? 1 : 0, 820, () => endFlip(dir, true));
     return true;
   };
 
@@ -364,15 +311,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   };
   const beginDrag = (sd) => {
     busy.current = true;
-    const d = { ...sd, p: sd.dir > 0 ? 0 : 1, ready: false, ended: null };
-    drag.current = d;
+    drag.current = { ...sd, p: sd.dir > 0 ? 0 : 1, ready: true };
     stopReading();
     playPaper('lift', 0.5);
-    startFlip(sd.dir).then(() => {
-      d.ready = true;
-      if (d.ended) finishDrag(d, d.ended); // finger already lifted while the pages were being prepared
-      else setProgress(d.p);
-    });
+    startFlip(sd.dir);
   };
   const pan = useMemo(() => PanResponder.create({
     // Touches that start on empty paper come here straight away; touches that start on a word or
@@ -412,7 +354,6 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (!d.dir) return;
     drag.current = {};
     const end = { vx: g.vx, vy: g.vy };
-    if (!d.ready) { d.ended = end; return; }
     finishDrag(d, end);
   };
   const finishDrag = (d, g) => {
@@ -427,20 +368,14 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     runFlip(target, 240 + 420 * Math.abs(target - prog.current), () => endFlip(d.dir, commit));
   };
 
-  // Keep fresh pictures of the neighbouring pages ready, so a turn starts without a delay.
-  useEffect(() => {
-    cache.current = {};
-    if (!supportsCurl || !size || flipPair) return;
-    const t = setTimeout(async () => {
-      if (refs.next.current) cache.current[idx + 1] = await snapshot(refs.next);
-      if (refs.prev.current) cache.current[idx - 1] = await snapshot(refs.prev);
-    }, 500);
-    return () => clearTimeout(t);
-  }, [idx, size, prefs.textScale, prefs.font, !!flipPair]);
-
   /* ---------- render ---------- */
   const W = size?.w || 0, H = size?.h || 0;
   const edgeW = Math.max(44, W * 0.12); // width of the tap-to-turn strips along each edge
+  const flipT = useMemo(() => {
+    if (!W || !H) return null;
+    const artH = pageLayout(W, H).artH, textH = H - artH;
+    return { artH, textH, tables: flapTables({ textH, artH }) };
+  }, [W, H]);
   const pageProps = (i) => ({
     page: pages[i], end: !!pages[i]?.end, width: W, height: H, textScale: prefs.textScale || 1, fontKey: prefs.font || 'serif',
     onReadAgain: () => { stopReading(); setIdx(0); }, onLibrary: goLibrary,
@@ -454,40 +389,41 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       showHotspots={showHot} onHotspot={onHotspot} bubble={bubble} />
   );
   const abs = (el, k, style) => (el ? <Animated.View key={k} style={[StyleSheet.absoluteFill, style]}>{el}</Animated.View> : null);
-  if (flipPair && size) {
-    // A page turn in progress (see "page turning" above).
+  if (flipPair && size && flipT) {
+    // A page turn in progress (see "page turning" above): page b underneath, page a's picture on
+    // top, a soft shadow, and the words half of page a curling up as hinged strips.
     const { a, b } = flipPair;
-    const artH = pageLayout(W, H).artH, textH = H - artH;
+    const { artH, textH, tables } = flipT;
     const view = (i, k) => <PageView key={k} {...pageProps(i)} />;
-    const front = flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: ['0deg', '90deg', '90deg'] });
-    const back = flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: ['-90deg', '-90deg', '0deg'] });
-    if (curl) {
-      // phone: the words half bends like paper as it lifts (drawn from pictures of both pages)
-      layers.push(
-        <View key="fb" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
-        <View key="fat" style={[styles.half, { top: 0, height: artH }]}>{view(a, `t${a}`)}</View>,
-        <CurlGuard key="curl"><CurlLayer width={W} height={H} artH={artH} start={prog.current} front={curl.front} back={curl.back} /></CurlGuard>,
-      );
-    } else layers.push(
-      // underneath: the page being turned to (b), whole
+    const ip = (arr) => flipP.interpolate({ inputRange: tables.input, outputRange: arr });
+    const shadow = flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 1, 0] });
+    layers.push(
       <View key="fb" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
-      // page a's picture stays on the top half until b's picture swings down over it
       <View key="fat" style={[styles.half, { top: 0, height: artH }]}>{view(a, `t${a}`)}</View>,
-      // page a's words half, lifting up along the spine
-      <Animated.View key="faw" style={[styles.half, { top: artH, height: textH, transformOrigin: 'top',
-        opacity: flipP.interpolate({ inputRange: [0, 0.499, 0.5, 1], outputRange: [1, 1, 0, 0] }),
-        transform: [{ perspective: 1400 }, { rotateX: front }] }]}>
-        <View style={{ position: 'absolute', left: 0, top: -artH, width: W, height: H }}>{view(a, `w${a}`)}</View>
-        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.3, 0.3] }) }]} />
+      <Animated.View key="sh1" pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: artH, height: textH * 0.6, opacity: shadow }}>
+        <Fade edge="top" size={textH * 0.6} max={0.32} />
       </Animated.View>,
-      // page b's picture, swinging down onto the top half
-      <Animated.View key="fbt" style={[styles.half, { top: 0, height: artH, transformOrigin: 'bottom',
-        opacity: flipP.interpolate({ inputRange: [0, 0.5, 0.501, 1], outputRange: [0, 0, 1, 1] }),
-        transform: [{ perspective: 1400 }, { rotateX: back }] }]}>
-        {view(b, `u${b}`)}
-        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0.3, 0.3, 0] }) }]} />
+      <Animated.View key="sh2" pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: artH * 0.4, height: artH * 0.6, opacity: flipP.interpolate({ inputRange: [0, 0.5, 0.75, 1], outputRange: [0, 0.2, 1, 0] }) }}>
+        <Fade edge="bottom" size={artH * 0.6} max={0.32} />
       </Animated.View>,
     );
+    tables.strips.forEach((s) => {
+      const move = (ty, sy) => [{ translateY: ip(ty) }, { scale: ip(s.scale) }, { perspective: FLAP_PERSPECTIVE }, { rotateX: ip(s.rot) }, { scaleY: ip(sy) }];
+      layers.push(
+        // front of the strip: a slice of page a's words
+        <Animated.View key={`sf${s.k}`} pointerEvents="none" style={[styles.strip, { top: s.restF, height: s.natF, opacity: ip(s.opF), transform: move(s.tyF, s.syF) }]}>
+          <View style={{ position: 'absolute', left: 0, top: -s.restF, width: W, height: H }}>{view(a, `f${s.k}`)}</View>
+          <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: ip(s.shadeF) }]} />
+        </Animated.View>,
+        // back of the strip: a slice of page b's picture (mirrored, so it reads right once turned over)
+        <Animated.View key={`sb${s.k}`} pointerEvents="none" style={[styles.strip, { top: s.restB, height: s.natB, opacity: ip(s.opB), transform: move(s.tyB, s.syB) }]}>
+          <View style={{ position: 'absolute', left: 0, top: 0, width: W, height: s.natB, overflow: 'hidden', transform: [{ scaleY: -1 }] }}>
+            <View style={{ position: 'absolute', left: 0, top: -(artH - (s.k + 1) * s.natB), width: W, height: H }}>{view(b, `g${s.k}`)}</View>
+          </View>
+          <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: ip(s.shadeB) }]} />
+        </Animated.View>,
+      );
+    });
   } else layers.push(abs(prevEl, 'p'), abs(nextEl, 'n'), abs(curEl, 'c'));
 
   return (
@@ -599,6 +535,7 @@ const styles = StyleSheet.create({
   book: { flex: 1, overflow: 'hidden', backgroundColor: colors.paper },
   edge: { position: 'absolute', top: 0, bottom: 0, zIndex: 15 },
   half: { position: 'absolute', left: 0, right: 0, overflow: 'hidden', backfaceVisibility: 'hidden' },
+  strip: { position: 'absolute', left: 0, right: 0, overflow: 'hidden', transformOrigin: 'top' },
   recBanner: { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 25, backgroundColor: colors.highlight, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingVertical: 10 },
   recDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.white },
   recText: { flex: 1, color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },

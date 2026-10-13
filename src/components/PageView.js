@@ -38,7 +38,7 @@ function fitFontSize(text, L, scale = 1, font = bookFont()) {
 
 // A soft shadow made of thin bands that fade out, so it works everywhere without extra libraries.
 // Used along the seam between picture and words, so the page seems to curve into a book's spine.
-function Fade({ edge, size, max }) {
+export function Fade({ edge, size, max }) {
   // Layers of the same faint grey, each a little shorter, stack up into a smooth fade with no seams.
   const n = 16, a = 1 - Math.pow(1 - max, 1 / n);
   return (
