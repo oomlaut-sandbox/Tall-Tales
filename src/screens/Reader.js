@@ -1,20 +1,18 @@
 // The reader: page curl, read-aloud with highlighting, learn-to-read, interactive pictures.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, PanResponder, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, PanResponder, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOOK_FONTS, colors, fonts } from '../theme';
 import { tokenize, cleanWord, syllablesFor } from '../story';
-import { computeFold, ease } from '../fold';
-import { CurlCanvas, snapshot, supportsCurl } from '../components/Curl';
-import { PageView, TEXT_SIZES } from '../components/PageView';
+import { PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
 import { Bar, BarMeta, Burger, DogEar, Option, Panel, PauseButton, PlayButton, RecordButton, Slider } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
-export const DEFAULT_SPEED = 0.85;
+export const DEFAULT_SPEED = 0.75;
 export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : DEFAULT_SPEED);
 // Book narrators (ElevenLabs). Lily is the default.
 export const NARRATORS = [['lily', 'Lily']]; // add more voices here (and in ci/narrate.js)
@@ -56,8 +54,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const [reading, setReading] = useState(false);
   const [paused, setPaused] = useState(false);
   const [panel, setPanel] = useState(null); // 'play' | 'rec' | null
-  const [turn, setTurn] = useState(null); // native curl: {dir, C, fold, under, turning}
-  const [webDir, setWebDir] = useState(0);
+  const [flipPair, setFlipPair] = useState(null); // {a, b, dir} while a page turn is on screen
   const [recording, setRecording] = useState(false);
   const [recView, setRecView] = useState('main'); // main | list | settings | help
   const [recList, setRecList] = useState([]);
@@ -82,13 +79,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const usingVoice = useRef(false);
   const prefsRef = useRef(prefs);
   prefsRef.current = prefs;
-  const webX = useRef(new Animated.Value(0)).current;
+  const flipP = useRef(new Animated.Value(0)).current; // 0 = page a showing, 1 = page b (a + 1)
 
   const refs = { prev: useRef(null), cur: useRef(null), next: useRef(null) };
   const st = useRef({});
-  st.current = { idx, size, reading, paused, mode: prefs.mode, turning: !!turn || webDir !== 0, pages, recording };
+  st.current = { idx, size, reading, paused, mode: prefs.mode, turning: !!flipPair, pages, recording };
   if (idx > pages.length - 1) setIdx(pages.length - 1);
-  const cache = useRef({}); // page index -> snapshot image
   const pendingRead = useRef(false);
   const autoTimer = useRef(null);
   const anim = useRef(null);
@@ -106,17 +102,6 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     return () => { stopSpeech(); clearTimeout(autoTimer.current); cancelAnimationFrame(anim.current); };
   }, []);
   useEffect(() => { if (menuRequest) setPanel('play'); }, [menuRequest]);
-
-  // Keep fresh pictures of the neighbouring pages ready for the curl.
-  useEffect(() => {
-    if (!supportsCurl || !size) return;
-    cache.current = {};
-    const t = setTimeout(async () => {
-      if (refs.next.current) cache.current[idx + 1] = await snapshot(refs.next);
-      if (refs.prev.current) cache.current[idx - 1] = await snapshot(refs.prev);
-    }, 450);
-    return () => clearTimeout(t);
-  }, [idx, size]);
 
   /* ---------- reading ---------- */
   const stopReading = useCallback(() => {
@@ -285,6 +270,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   };
 
   /* ---------- page turning ---------- */
+  // Like a flip calendar: the words half lifts up along the spine (showing the next page's words
+  // underneath), then the next page's picture swings down onto the top half. Going back plays it
+  // in reverse. flipP runs from 0 (page a) to 1 (page b = a + 1).
   // Only one turn at a time: taps and swipes that arrive mid-turn are ignored.
   const busy = useRef(false);
   const stepPage = (dir) => setIdx((i) => Math.max(0, Math.min(pages.length - 1, i + dir)));
@@ -292,41 +280,20 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (dir < 0 && st.current.recording) return false;
     return dir > 0 ? st.current.idx < st.current.pages.length - 1 : st.current.idx > 0;
   };
+  const nativeDriver = Platform.OS !== 'web';
 
-  const finishTurn = (dir, done) => {
-    if (done) {
-      stepPage(dir);
-      setHl(-1); setBubble(null);
-    }
-    // let the new page render under the curl before removing it
-    setTimeout(() => { setTurn(null); busy.current = false; }, done ? 60 : 0);
+  const startFlip = (dir) => {
+    const a = dir > 0 ? st.current.idx : st.current.idx - 1;
+    flipP.setValue(dir > 0 ? 0 : 1);
+    setFlipPair({ a, b: a + 1, dir });
   };
-
-  const animateFold = (dir, C, from, to, ms, lift, done) => {
-    const { w: W, h: H } = st.current.size;
-    const sg = C[1] === 0 ? 1 : -1;
-    const t0 = Date.now();
-    const step = () => {
-      const t = Math.min(1, (Date.now() - t0) / ms), e = ease(t);
-      const x = from[0] + (to[0] - from[0]) * e;
-      const y = from[1] + (to[1] - from[1]) * e + (lift ? sg * H * 0.1 * Math.sin(Math.PI * e) : 0);
-      setTurn((tr) => (tr ? { ...tr, fold: computeFold([x, y], C, W, H) } : tr));
-      if (t < 1) anim.current = requestAnimationFrame(step);
-      else finishTurn(dir, done);
-    };
-    anim.current = requestAnimationFrame(step);
+  const endFlip = (dir, commit) => {
+    if (commit) { stepPage(dir); setHl(-1); setBubble(null); }
+    // let the new page draw underneath before taking the turning layers away
+    setTimeout(() => { setFlipPair(null); busy.current = false; }, 40);
   };
-
-  const beginNativeTurn = async (dir, C) => {
-    const { idx: i } = st.current;
-    const { w: W, h: H } = st.current.size;
-    const current = await snapshot(refs.cur);
-    const other = cache.current[i + dir] || (await snapshot(dir > 0 ? refs.next : refs.prev));
-    const tr = dir > 0
-      ? { dir, C, under: other, turning: current, fold: computeFold(C, C, W, H) }
-      : { dir, C, under: current, turning: other, fold: computeFold([-W, C[1]], C, W, H) };
-    setTurn(tr);
-    return tr;
+  const runFlip = (to, ms, then) => {
+    Animated.timing(flipP, { toValue: to, duration: ms, easing: Easing.inOut(Easing.cubic), useNativeDriver: nativeDriver }).start(then);
   };
 
   const flip = async (dir) => {
@@ -334,57 +301,42 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     busy.current = true;
     if (st.current.recording && dir > 0) { await stopRec(true); pendingRec.current = st.current.idx + 1 < story.pages.length; }
     else if (!pendingRead.current) stopReading();
-    const { w: W, h: H } = st.current.size;
     playPaper('turn', 1);
-    if (supportsCurl) {
-      const C = [W, H];
-      const tr = await beginNativeTurn(dir, C);
-      if (!tr.turning) { finishTurn(dir, true); return true; }
-      if (dir > 0) animateFold(dir, C, C, [-W, H], 720, true, true);
-      else animateFold(dir, C, [-W, H], C, 720, true, true);
-    } else {
-      setWebDir(dir);
-      webX.setValue(dir > 0 ? 0 : -W);
-      Animated.timing(webX, { toValue: dir > 0 ? -W : 0, duration: 520, useNativeDriver: Platform.OS !== 'web' }).start(() => {
-        stepPage(dir); setHl(-1); setBubble(null); setWebDir(0); webX.setValue(0); busy.current = false;
-      });
-    }
+    startFlip(dir);
+    requestAnimationFrame(() => runFlip(dir > 0 ? 1 : 0, 680, () => endFlip(dir, true)));
     return true;
   };
 
+  // Swipes: left or up turns forward, right or down turns back. The page follows the finger.
   const drag = useRef({});
+  const swipeDir = (g) => {
+    const horiz = Math.abs(g.dx) > 10 && Math.abs(g.dx) > Math.abs(g.dy) * 1.2;
+    const vert = Math.abs(g.dy) > 10 && Math.abs(g.dy) > Math.abs(g.dx) * 1.2;
+    if (!horiz && !vert) return null;
+    return { horiz, dir: horiz ? (g.dx < 0 ? 1 : -1) : (g.dy < 0 ? 1 : -1) };
+  };
   const pan = useMemo(() => PanResponder.create({
-    onMoveShouldSetPanResponderCapture: (_, g) => !busy.current && !st.current.turning && Math.abs(g.dx) > 10 && Math.abs(g.dx) > Math.abs(g.dy) * 1.2 && canTurn(g.dx < 0 ? 1 : -1),
-    onPanResponderGrant: (e, g) => {
-      const dir = g.dx < 0 ? 1 : -1;
-      const { w: W, h: H } = st.current.size;
-      const y0 = e.nativeEvent.locationY;
+    onMoveShouldSetPanResponderCapture: (_, g) => {
+      if (busy.current || st.current.turning) return false;
+      const sd = swipeDir(g);
+      return !!sd && canTurn(sd.dir);
+    },
+    onPanResponderGrant: (_, g) => {
+      const sd = swipeDir(g) || { horiz: true, dir: g.dx < 0 ? 1 : -1 };
       busy.current = true;
-      const d = { dir, C: [W, y0 < H / 2 ? 0 : H], ready: false, P: null, vx: 0 };
-      drag.current = d;
+      drag.current = { ...sd, p: sd.dir > 0 ? 0 : 1 };
       stopReading();
       playPaper('lift', 0.5);
-      if (supportsCurl) {
-        beginNativeTurn(dir, d.C).then(() => {
-          // the finger was lifted before the page was ready: put it back
-          if (drag.current !== d) { setTurn(null); busy.current = false; } else d.ready = true;
-        });
-      } else { setWebDir(dir); webX.setValue(dir > 0 ? 0 : -W); d.ready = true; }
+      startFlip(sd.dir);
     },
     onPanResponderMove: (_, g) => {
       const d = drag.current;
-      if (!d.ready) return;
+      if (!d.dir) return;
       const { w: W, h: H } = st.current.size;
-      d.vx = g.vx;
-      if (supportsCurl) {
-        const sg = d.C[1] === 0 ? 1 : -1;
-        const lift = sg * Math.min(Math.abs(g.dx) * 0.12, H * 0.1);
-        const x = d.dir > 0 ? W + g.dx * 1.7 : -W + g.dx * 1.7;
-        d.P = [x, d.C[1] + g.dy * 0.5 + lift];
-        setTurn((tr) => (tr ? { ...tr, fold: computeFold(d.P, d.C, W, H) } : tr));
-      } else {
-        webX.setValue(d.dir > 0 ? Math.min(0, g.dx) : Math.min(0, -W + g.dx));
-      }
+      const amount = d.horiz ? -g.dx / (W * 0.8) : -g.dy / (H * 0.55);
+      const p = d.dir > 0 ? Math.max(0, Math.min(1, amount)) : 1 - Math.max(0, Math.min(1, -amount));
+      d.p = p;
+      flipP.setValue(p);
     },
     onPanResponderRelease: (_, g) => endDrag(g),
     onPanResponderTerminate: (_, g) => endDrag(g),
@@ -393,26 +345,16 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const endDrag = (g) => {
     const d = drag.current;
     if (!d.dir) return;
-    const { w: W } = st.current.size;
-    const commit = d.dir > 0 ? g.dx * 1.7 < -W * 0.65 || g.vx < -0.35 : g.dx * 1.7 > W * 0.75 || g.vx > 0.35;
+    drag.current = {};
+    const vel = d.horiz ? g.vx : g.vy;
+    const commit = d.dir > 0 ? d.p > 0.4 || vel < -0.35 : d.p < 0.6 || vel > 0.35;
     if (commit && st.current.recording) {
       const keepGoing = st.current.idx + 1 < story.pages.length;
       stopRec(true).then(() => { pendingRec.current = keepGoing; });
     }
     playPaper(commit ? 'drop' : 'lift', commit ? 0.9 : 0.35);
-    if (supportsCurl) {
-      const from = d.P || (d.dir > 0 ? d.C : [-W, d.C[1]]);
-      const target = d.dir > 0 ? (commit ? [-W, d.C[1]] : d.C) : (commit ? d.C : [-W, d.C[1]]);
-      if (!d.ready) { drag.current = {}; return; } // cleared once the page is ready (see above)
-      animateFold(d.dir, d.C, from, target, commit ? 420 : 300, false, commit);
-    } else {
-      const to = d.dir > 0 ? (commit ? -W : 0) : (commit ? 0 : -W);
-      Animated.timing(webX, { toValue: to, duration: 300, useNativeDriver: Platform.OS !== 'web' }).start(() => {
-        if (commit) { stepPage(d.dir); setHl(-1); setBubble(null); }
-        setWebDir(0); webX.setValue(0); busy.current = false;
-      });
-    }
-    drag.current = {};
+    const target = commit ? (d.dir > 0 ? 1 : 0) : (d.dir > 0 ? 0 : 1);
+    runFlip(target, 220 + 380 * Math.abs(target - d.p), () => endFlip(d.dir, commit));
   };
 
   /* ---------- render ---------- */
@@ -431,15 +373,39 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       showHotspots={showHot} onHotspot={onHotspot} bubble={bubble} />
   );
   const abs = (el, k, style) => (el ? <Animated.View key={k} style={[StyleSheet.absoluteFill, style]}>{el}</Animated.View> : null);
-  if (webDir < 0) layers.push(abs(nextEl, 'n'), abs(curEl, 'c'), abs(prevEl, 'p', { transform: [{ translateX: webX }] }));
-  else if (webDir > 0) layers.push(abs(prevEl, 'p'), abs(nextEl, 'n'), abs(curEl, 'c', { transform: [{ translateX: webX }] }));
-  else layers.push(abs(prevEl, 'p'), abs(nextEl, 'n'), abs(curEl, 'c'));
+  if (flipPair && size) {
+    // A page turn in progress (see "page turning" above).
+    const { a, b } = flipPair;
+    const artH = pageLayout(W, H).artH, textH = H - artH;
+    const view = (i, k) => <PageView key={k} {...pageProps(i)} />;
+    const front = flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: ['0deg', '-90deg', '-90deg'] });
+    const back = flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: ['90deg', '90deg', '0deg'] });
+    layers.push(
+      // underneath: the page being turned to (b), whole
+      <View key="fb" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
+      // page a's picture stays on the top half until b's picture swings down over it
+      <View key="fat" style={[styles.half, { top: 0, height: artH }]}>{view(a, `t${a}`)}</View>,
+      // page a's words half, lifting up along the spine
+      <Animated.View key="faw" style={[styles.half, { top: artH, height: textH, transformOrigin: 'top',
+        opacity: flipP.interpolate({ inputRange: [0, 0.499, 0.5, 1], outputRange: [1, 1, 0, 0] }),
+        transform: [{ perspective: 1400 }, { rotateX: front }] }]}>
+        <View style={{ position: 'absolute', left: 0, top: -artH, width: W, height: H }}>{view(a, `w${a}`)}</View>
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.3, 0.3] }) }]} />
+      </Animated.View>,
+      // page b's picture, swinging down onto the top half
+      <Animated.View key="fbt" style={[styles.half, { top: 0, height: artH, transformOrigin: 'bottom',
+        opacity: flipP.interpolate({ inputRange: [0, 0.5, 0.501, 1], outputRange: [0, 0, 1, 1] }),
+        transform: [{ perspective: 1400 }, { rotateX: back }] }]}>
+        {view(b, `u${b}`)}
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0.3, 0.3, 0] }) }]} />
+      </Animated.View>,
+    );
+  } else layers.push(abs(prevEl, 'p'), abs(nextEl, 'n'), abs(curEl, 'c'));
 
   return (
     <View style={[styles.screen, landscape && { flexDirection: 'row', paddingLeft: insets.left }]}>
       <View style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...pan.panHandlers}>
         {size ? layers : null}
-        {turn && turn.fold ? <CurlCanvas width={W} height={H} under={turn.under} turning={turn.turning} fold={turn.fold} /> : null}
         {/* Tap anywhere along the left or right edge to turn back or forward (swipes work anywhere). */}
         {size && idx > 0 ? <Pressable onPress={() => flip(-1)} accessibilityLabel="Previous page" style={[styles.edge, { left: 0, width: edgeW }]} /> : null}
         {size && idx < pages.length - 1 ? <Pressable onPress={() => flip(1)} accessibilityLabel="Next page" style={[styles.edge, { right: 0, width: edgeW }]} /> : null}
@@ -544,6 +510,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   book: { flex: 1, overflow: 'hidden', backgroundColor: colors.paper },
   edge: { position: 'absolute', top: 0, bottom: 0, zIndex: 15 },
+  half: { position: 'absolute', left: 0, right: 0, overflow: 'hidden', backfaceVisibility: 'hidden' },
   recBanner: { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 25, backgroundColor: colors.highlight, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingVertical: 10 },
   recDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.white },
   recText: { flex: 1, color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
