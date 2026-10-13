@@ -34,6 +34,7 @@ else
   echo "SKIP expo-login (no EXPO_TOKEN secret)" >> "$summary"
 fi
 step bundle-ios npx expo export --platform ios --output-dir build-ios
+step embed-ios npx expo export:embed --platform ios --dev false --entry-file index.js --bundle-output out/main.jsbundle --assets-dest /tmp/assets
 step bundle-android npx expo export --platform android --output-dir build-android
 step bundle-web npx expo export --platform web --output-dir out/web
 
