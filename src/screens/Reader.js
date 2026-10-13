@@ -29,7 +29,8 @@ const VOICE_RECORDING = {
 };
 import { playPaper, setPageSound } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
-import { pauseVoice, playVoice, resumeVoice, stopVoice } from '../voice';
+import { pauseVoice, playClips, playVoice, resumeVoice, stopVoice } from '../voice';
+import { PARTS, WORDS } from '../narration/words';
 import { getRecording, listRecordings, pageKey, removeRecording, saveRecording } from '../recordings';
 import { AUDIO, TIMINGS } from '../narration';
 
@@ -263,6 +264,14 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     const done = () => setTimeout(() => setHl(-1), 400);
     if (mode === 'learn') {
       const parts = syllablesFor(story, w);
+      // Lily's voice when we have her clips for this word (and its parts); otherwise the phone's voice.
+      const voice = narratorOf(prefsRef.current);
+      const wordClip = WORDS[voice]?.[w.toLowerCase()];
+      const partClips = parts.length > 1 ? parts.map((s) => PARTS[voice]?.[s.toLowerCase()]) : [];
+      if (wordClip && partClips.every(Boolean)) {
+        playClips([...partClips, wordClip], { gap: 260, onDone: done });
+        return;
+      }
       const items = parts.length > 1 ? parts.map((s) => ({ text: s, rate: 0.5, pause: 220 })) : [];
       speakQueue([...items, { text: w, rate: 0.7 }], done);
     } else {

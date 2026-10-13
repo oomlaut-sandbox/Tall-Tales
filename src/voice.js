@@ -48,3 +48,24 @@ export function playVoice(source, { onProgress, onTime, onDone, rate = 1 } = {})
     return false;
   }
 }
+
+// Play several short clips one after another (Learn to Read: word parts, then the whole word).
+// Anything else that plays or stops audio in between ends the chain.
+export function playClips(clips, { gap = 220, onDone } = {}) {
+  const step = (i) => {
+    if (i >= clips.length) { onDone && onDone(); return; }
+    let mine;
+    const ok = playVoice(clips[i], {
+      onDone: () => {
+        // playVoice stops itself when a clip finishes, which moves the session on by one
+        const after = session;
+        if (after !== mine + 1) return;
+        if (i + 1 >= clips.length) { onDone && onDone(); return; }
+        setTimeout(() => { if (session === after) step(i + 1); }, gap);
+      },
+    });
+    mine = session;
+    if (!ok) onDone && onDone();
+  };
+  step(0);
+}
