@@ -483,9 +483,14 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       <Bar u={u} vertical={landscape}>
         <Burger u={u} onPress={openMenu} />
         <BarMeta vertical={landscape} title={story.title} sub={idx < n ? (landscape ? `${idx + 1} / ${n}` : `Page ${idx + 1} of ${n}`) : 'The End'} />
-        <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
-        <PauseButton onPress={onPause} disabled={recording} />
-        <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
+        {/* Read Yourself is quiet reading: no record, pause or play buttons (Playback Settings in the menu switches modes). */}
+        {prefs.mode !== 'self' || recording ? (
+          <>
+            <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
+            <PauseButton onPress={onPause} disabled={recording} />
+            <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
+          </>
+        ) : null}
       </Bar>
 
       <Panel open={panel === 'play'} side="right" title={playView === 'voices' ? 'Voices' : 'Playback Options'} {...panelPos} onClose={() => { setPanel(null); setPlayView('main'); }}>
