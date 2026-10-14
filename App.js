@@ -151,7 +151,7 @@ function Root() {
           ? { position: 'absolute', left: 0, top: 0, bottom: 0, width: camBar, backgroundColor: colors.bar, zIndex: 200, alignItems: 'center', paddingTop: 18 }
           : { position: 'absolute', left: 0, right: 0, top: 0, height: camBar, backgroundColor: colors.bar, zIndex: 200, alignItems: 'flex-end', justifyContent: 'center', paddingRight: 20 }}>
           <Pressable onPress={toggleSound} hitSlop={14} accessibilityRole="switch" accessibilityState={{ checked: !muted }} accessibilityLabel={muted ? 'Sound is off. Turn sound on' : 'Sound is on. Turn sound off'}>
-            <SpeakerIcon size={20} muted={muted} />
+            <SpeakerIcon size={22} muted={muted} />
           </Pressable>
         </View>
       </View>
