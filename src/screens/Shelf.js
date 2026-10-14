@@ -1,6 +1,6 @@
 // My Library and Book Store.
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { Bar, BarMeta, Burger, Panel, WithBar } from '../components/Chrome';
@@ -158,14 +158,21 @@ export function Store({ u, openStory, openMenu }) {
   const featured = cat ? cat.books.find((b) => b.featured) : null;
   const tileW = Math.min(170, Math.max(120, winW * 0.36));
   const read = (b) => { const st = bundledStory(b.id); if (st) { setOpen(null); openStory(st); } };
+  // remember where the tapped cover is, so the card can grow out of it
+  const refs = useRef({});
+  const choose = (key, b) => {
+    const r = refs.current[key];
+    if (r && r.measureInWindow) r.measureInWindow((x, y, w, h) => setOpen({ book: b, rect: { x, y, w, h } }));
+    else setOpen({ book: b, rect: null });
+  };
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <Band color={colors.blue} title="Book Store" sub="Find and buy new stories" />
       <ScrollView contentContainerStyle={{ paddingTop: 26, paddingBottom: 20, gap: 26 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.white} />}>
         {featured ? (
-          <Pressable onPress={() => setOpen(featured)} style={styles.feature} accessibilityRole="button" accessibilityLabel={`${featured.title}, featured`}>
-            <View style={[styles.tileShadow, { width: tileW * 1.15, aspectRatio: 1 }]}>
+          <Pressable onPress={() => choose('featured', featured)} style={styles.feature} accessibilityRole="button" accessibilityLabel={`${featured.title}, featured`}>
+            <View ref={(r) => { refs.current.featured = r; }} collapsable={false} style={[styles.tileShadow, { width: tileW * 1.15, aspectRatio: 1 }]}>
               {coverFor(featured) ? <Image source={coverFor(featured)} style={styles.coverImg} resizeMode="cover" /> : null}
             </View>
             <View style={{ flex: 1, minWidth: 0, gap: 6 }}>
@@ -181,8 +188,8 @@ export function Store({ u, openStory, openMenu }) {
             <Text style={styles.shelfTitle}>{sh.title}</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}>
               {sh.books.map((b) => (
-                <Pressable key={b.id} onPress={() => setOpen(b)} style={{ width: tileW, gap: 8 }} accessibilityRole="button" accessibilityLabel={b.title}>
-                  <View style={[styles.tileShadow, { width: tileW, height: tileW }]}>
+                <Pressable key={b.id} onPress={() => choose(sh.id + '/' + b.id, b)} style={{ width: tileW, gap: 8 }} accessibilityRole="button" accessibilityLabel={b.title}>
+                  <View ref={(r) => { refs.current[sh.id + '/' + b.id] = r; }} collapsable={false} style={[styles.tileShadow, { width: tileW, height: tileW }]}>
                     {coverFor(b) ? <Image source={coverFor(b)} style={styles.coverImg} resizeMode="cover" /> : null}
                     <View style={styles.badgeAt}><Badge book={b} /></View>
                   </View>
@@ -193,21 +200,108 @@ export function Store({ u, openStory, openMenu }) {
           </View>
         ))}
       </ScrollView>
-      <Panel open={!!open} side="right" title={open ? open.title : ''} bottom={sideways ? 0 : u * 17 + insets.bottom} inset={sideways ? Math.round(u * 17 * 1.15) : 0} onClose={() => setOpen(null)}>
-        {open ? (
-          <View style={{ gap: 12 }}>
-            {open.author ? <Text style={styles.sheetSub}>by {open.author}</Text> : null}
-            {open.blurb ? <Text style={styles.sheetText}>{open.blurb}</Text> : null}
-            <Text style={styles.sheetSub}>{[open.page_count ? `${open.page_count} pages` : null, open.age_range ? `ages ${open.age_range}` : null, accessLabel(open)].filter(Boolean).join(' · ')}</Text>
-            {open.access === 'free' && bundledStory(open.id) ? (
-              <Pressable onPress={() => read(open)} style={styles.sheetBtn} accessibilityRole="button"><Text style={styles.sheetBtnText}>Read now</Text></Pressable>
-            ) : (
-              <Text style={styles.sheetText}>{open.access === 'free' ? 'Downloading new books arrives in the next update.' : 'Memberships and buying single books arrive in the next update.'}</Text>
-            )}
-          </View>
-        ) : null}
-      </Panel>
+      {open ? (
+        <BookCard key={open.book.id} u={u} book={open.book} rect={open.rect} sideways={sideways}
+          barH={sideways ? 0 : u * 17 + insets.bottom} barW={sideways ? Math.round(u * 17 * 1.15) : 0}
+          onClose={() => setOpen(null)} onRead={() => read(open.book)} />
+      ) : null}
     </WithBar>
+  );
+}
+
+// A book's details as a floating card in the middle of the screen. The tapped cover first slides
+// and grows into the card's top-left corner, then the card fades in around it, with the title and
+// details underneath (beside it when the phone is sideways). Closing runs it backwards.
+function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
+  const { width: winW, height: winH } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const areaW = winW - barW, areaH = winH - barH;
+  const across = sideways; // cover on the left, details beside it
+  const boxW = Math.min(areaW - 40, across ? 600 : 400);
+  const cs = Math.round(across ? Math.min(boxW * 0.42, areaH - Math.max(insets.top, 20) - 40) : boxW * 0.55); // cover size
+  const [boxH, setBoxH] = useState(0);
+  const boxX = Math.round((areaW - boxW) / 2);
+  const boxY = Math.round(Math.max(insets.top + 10, (areaH - boxH) / 2));
+  const mv = useRef(new Animated.Value(0)).current; // cover: 0 at the tile, 1 in the card
+  const fade = useRef(new Animated.Value(0)).current; // the card around it
+  const started = useRef(false);
+  useEffect(() => {
+    if (!boxH || started.current) return;
+    started.current = true;
+    Animated.sequence([
+      Animated.timing(mv, { toValue: 1, duration: rect ? 480 : 1, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
+      Animated.timing(fade, { toValue: 1, duration: 260, useNativeDriver: true }),
+    ]).start();
+  }, [boxH]);
+  const closing = useRef(false);
+  const close = (then) => {
+    if (closing.current) return;
+    closing.current = true;
+    Animated.sequence([
+      Animated.timing(fade, { toValue: 0, duration: 200, useNativeDriver: true }),
+      Animated.timing(mv, { toValue: 0, duration: rect && !then ? 400 : 1, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
+    ]).start(() => (then ? then() : onClose()));
+  };
+  const r = rect || { x: boxX, y: boxY, w: cs, h: cs };
+  const dx = r.x + r.w / 2 - (boxX + cs / 2), dy = r.y + r.h / 2 - (boxY + cs / 2), k = r.w / cs;
+  const coverMove = [
+    { translateX: mv.interpolate({ inputRange: [0, 1], outputRange: [dx, 0] }) },
+    { translateY: mv.interpolate({ inputRange: [0, 1], outputRange: [dy, 0] }) },
+    { scale: mv.interpolate({ inputRange: [0, 1], outputRange: [k, 1] }) },
+  ];
+  const dim = Animated.add(mv.interpolate({ inputRange: [0, 1], outputRange: [0, 0.3] }), fade.interpolate({ inputRange: [0, 1], outputRange: [0, 0.25] }));
+  const cover = coverFor(book);
+  const meta = [book.page_count ? `${book.page_count} pages` : null, book.age_range ? `ages ${book.age_range}` : null, accessLabel(book)].filter(Boolean).join(' · ');
+  const canRead = book.access === 'free' && bundledStory(book.id);
+  const info = (
+    <View style={{ gap: 10 }}>
+      <Text style={styles.cardTitle}>{book.title}</Text>
+      {book.author ? <Text style={styles.sheetSub}>by {book.author}</Text> : null}
+      {book.blurb ? <Text style={styles.sheetText}>{book.blurb}</Text> : null}
+      <Text style={styles.sheetSub}>{meta}</Text>
+      {canRead ? (
+        <Pressable onPress={() => close(onRead)} style={[styles.sheetBtn, { marginTop: 6 }]} accessibilityRole="button"><Text style={styles.sheetBtnText}>Read now</Text></Pressable>
+      ) : (
+        <Text style={styles.sheetText}>{book.access === 'free' ? 'Downloading new books arrives in the next update.' : 'Memberships and buying single books arrive in the next update.'}</Text>
+      )}
+    </View>
+  );
+  return (
+    <View style={[StyleSheet.absoluteFill, { zIndex: 60 }]}>
+      <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: dim }]}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={() => close()} accessibilityLabel="Close" />
+      </Animated.View>
+      {/* the card (it also measures itself so it can sit in the middle) */}
+      <Animated.View onLayout={(e) => setBoxH(e.nativeEvent.layout.height)}
+        style={[styles.card, { left: boxX, top: boxY, width: boxW, maxHeight: areaH - boxY - 16, opacity: fade, flexDirection: across ? 'row' : 'column' }]}>
+        <View style={{ flexDirection: 'row' }}>
+          <View style={{ width: cs, height: cs }} />
+          {!across ? (
+            <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'space-between', padding: 14 }}>
+              <CloseX onPress={() => close()} />
+              <Badge book={book} />
+            </View>
+          ) : null}
+        </View>
+        <View style={{ flex: 1, padding: 20, paddingTop: across ? 18 : 18 }}>
+          {across ? <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}><Badge book={book} /><CloseX onPress={() => close()} /></View> : null}
+          {info}
+        </View>
+      </Animated.View>
+      {/* the cover, flying from its tile into the card's top-left corner */}
+      <Animated.View pointerEvents="none" style={[styles.tileShadow, { position: 'absolute', left: boxX, top: boxY, width: cs, height: cs, opacity: boxH ? 1 : 0, transform: coverMove }]}>
+        {cover ? <Image source={cover} style={styles.coverImg} resizeMode="cover" /> : null}
+      </Animated.View>
+    </View>
+  );
+}
+
+function CloseX({ onPress }) {
+  return (
+    <Pressable onPress={onPress} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close" style={{ width: 22, height: 22 }}>
+      <View style={[styles.xBar, { transform: [{ rotate: '45deg' }] }]} />
+      <View style={[styles.xBar, { transform: [{ rotate: '-45deg' }] }]} />
+    </Pressable>
   );
 }
 
@@ -247,6 +341,9 @@ const styles = StyleSheet.create({
   badgeAt: { position: 'absolute', left: 6, top: 6 },
   badge: { alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3 },
   badgeText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 12 },
+  card: { position: 'absolute', backgroundColor: colors.panel, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.45, shadowRadius: 18, elevation: 12 },
+  cardTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 26 },
+  xBar: { position: 'absolute', left: 0, top: 10, width: 22, height: 2.5, backgroundColor: colors.white },
   sheetSub: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15 },
   sheetText: { color: colors.white, fontFamily: fonts.ui, fontSize: 16, lineHeight: 23 },
   sheetBtn: { backgroundColor: colors.green, paddingVertical: 14, alignItems: 'center' },
