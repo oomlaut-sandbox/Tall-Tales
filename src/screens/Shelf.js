@@ -175,7 +175,7 @@ export function Store({ u, openStory, openMenu }) {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.white} />}>
         {featured ? (
           <Pressable onPress={() => choose('featured', featured)} style={styles.feature} accessibilityRole="button" accessibilityLabel={`${featured.title}, featured`}>
-            <View ref={(r) => { refs.current.featured = r; }} collapsable={false} style={[styles.tileShadow, { width: tileW * 1.15, aspectRatio: 1 }]}>
+            <View ref={(r) => { refs.current.featured = r; }} collapsable={false} style={[styles.tileShadow, { width: tileW, height: tileW }]}>
               {coverFor(featured) ? <Image source={coverFor(featured)} style={styles.coverImg} resizeMode="cover" /> : null}
             </View>
             <View style={{ flex: 1, minWidth: 0, gap: 6 }}>
