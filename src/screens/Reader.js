@@ -9,6 +9,7 @@ import { Fade, PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
 import { FLAP_PERSPECTIVE, flapTables } from '../flapStrips';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
 import { bookLayout } from '../components/BookFrame';
+import { artGesture } from '../components/ZoomArt';
 
 // The paper peel needs pictures of the pages (phone only). If drawing it ever fails, or the
 // pictures can't be taken, the page turns with the hinged strips instead.
@@ -413,6 +414,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     onStartShouldSetPanResponder: () => !busy.current && !st.current.turning,
     onMoveShouldSetPanResponderCapture: (_, g) => {
       if (busy.current || st.current.turning) return false;
+      if (artGesture.active || g.numberActiveTouches > 1) return false; // zooming or magnifying the picture
       const sd = swipeDir(g);
       return !!sd && canTurn(sd.dir);
     },
@@ -488,7 +490,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const prevEl = idx > 0 ? <PageView key={`p${idx - 1}`} ref={refs.prev} {...pageProps(idx - 1)} /> : null;
   const nextEl = idx < pages.length - 1 ? <PageView key={`p${idx + 1}`} ref={refs.next} {...pageProps(idx + 1)} /> : null;
   const curEl = (
-    <PageView key={`p${idx}`} ref={refs.cur} {...pageProps(idx)} highlight={hl} onWord={onWord}
+    <PageView key={`p${idx}`} ref={refs.cur} {...pageProps(idx)} zoomable highlight={hl} onWord={onWord}
       showHotspots={showHot} onHotspot={onHotspot} bubble={bubble} />
   );
   const abs = (el, k, style) => (el ? <Animated.View key={k} style={[StyleSheet.absoluteFill, style]}>{el}</Animated.View> : null);

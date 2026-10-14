@@ -4,6 +4,7 @@ import React, { forwardRef, useMemo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { bookFont, colors, fonts } from '../theme';
 import { tokenize } from '../story';
+import ZoomArt from './ZoomArt';
 
 // The picture area is a perfect square (as wide as the screen). Only on unusually short
 // screens is it capped, so the words always keep at least a third of the page.
@@ -52,7 +53,7 @@ export function Fade({ edge, size, max }) {
 }
 
 export const PageView = forwardRef(function PageView(
-  { page, width, height, bottomInset = 0, textScale = 1, fontKey = 'serif', highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary, onShare },
+  { page, width, height, bottomInset = 0, textScale = 1, fontKey = 'serif', highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary, onShare, zoomable },
   ref,
 ) {
   const words = useMemo(() => (page && page.text ? tokenize(page.text) : []), [page]);
@@ -89,7 +90,7 @@ export const PageView = forwardRef(function PageView(
             <Text style={[styles.endTitle, { fontFamily: font.family, fontSize: Math.round(artW * 0.1) }]}>The End</Text>
           </View>
         ) : (
-          page?.image ? <Image source={page.image} style={styles.fill} resizeMode="cover" /> : null
+          page?.image ? (zoomable ? <ZoomArt source={page.image} width={artW} height={artH} /> : <Image source={page.image} style={styles.fill} resizeMode="cover" />) : null
         )}
         {showHotspots
           ? spots.map((h, i) => (
