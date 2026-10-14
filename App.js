@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Intro from './src/components/Intro';
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Dimensions, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { StatusBar } from 'expo-status-bar';
 import { Asset } from 'expo-asset';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,10 +24,11 @@ function Root() {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const [screen, setScreen] = useState('home');
-  // The app stays upright (sideways reading was tried and turned off; the layout code remains).
-  const landscape = false;
-  const W = Math.min(width, MAX_WIDTH);
-  const u = W / 100;
+  // Phones stay upright. iPads (and other tablets) can turn: the book goes side by side when sideways.
+  const landscape = false; // (the old sideways layout with the bar down the side stays off)
+  // The app fills the screen; controls are sized from a phone-sized width so they don't balloon on an iPad.
+  const W = width;
+  const u = Math.min(width, MAX_WIDTH) / 100;
   const [story, setStory] = useState(null);
   const [drawer, setDrawer] = useState(false);
   const [prefs, setPrefs] = useState({ mode: null, sound: false, speed: 'normal', voice: 'narrator' });
@@ -118,6 +120,9 @@ function Root() {
 // While the app gets ready (fonts, and the home picture so it appears in one go), show plain dark grey
 // to match the launch screen and the logo animation, instead of a flash of colour.
 const HOME_PICTURE = require('./assets/home-pebbles.jpg');
+const IS_TABLET = (Platform.OS === 'ios' && Platform.isPad) || Math.min(Dimensions.get('screen').width, Dimensions.get('screen').height) >= 600;
+if (!IS_TABLET && Platform.OS !== 'web') ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP).catch(() => {});
+
 export default function App() {
   const [loaded] = useFonts({ EBGaramond_400Regular });
   const [pictureReady, setPictureReady] = useState(false);

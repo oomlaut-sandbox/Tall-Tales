@@ -1,16 +1,23 @@
 // My Library and Book Store.
 import React, { useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { Bar, BarMeta, Burger } from '../components/Chrome';
 import ParentGate from '../components/ParentGate';
 import { STORIES } from '../story';
 
+// Two covers across on a phone; more on an iPad.
+const COLS = (w) => (w >= 900 ? 4 : w >= 600 ? 3 : 2);
+const TILE = { 2: 47, 3: 31, 4: 22.5 };
+const tileWidth = (w) => `${TILE[COLS(w)]}%`;
+const gridGap = (w) => { const n = COLS(w); return `${(100 - n * TILE[n]) / (n - 1)}%`; };
+
 function Tile({ u, cover, title, sub, onPress, onLongPress, plus, selecting, selected }) {
+  const { width: winW } = useWindowDimensions();
   const ear = u * 3;
   return (
-    <Pressable onPress={onPress} onLongPress={onLongPress} style={{ width: '47%', gap: 8 }} accessibilityRole="button">
+    <Pressable onPress={onPress} onLongPress={onLongPress} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button">
       {/* a very subtle drop shadow under the square cover */}
       <View style={styles.tileShadow}>
       <View style={{ aspectRatio: 1, backgroundColor: '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
@@ -54,6 +61,7 @@ function Band({ color, dark, title, sub, action, onAction }) {
 // Your own stories are deleted for good; the built-in books are only removed from the shelf
 // and can be brought back with "Show removed books".
 export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onShare, onDelete, removedCount, onRestore }) {
+  const { width: winW } = useWindowDimensions();
   const [selecting, setSelecting] = useState(false);
   const [picked, setPicked] = useState([]);
   const [confirm, setConfirm] = useState(false);
@@ -67,7 +75,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
       <Band color={colors.orange} title={selecting ? 'Select books' : 'My Library'}
         sub={selecting ? (picked.length ? `${picked.length} selected` : 'Tap books to select them') : 'Your stories, ready to read'}
         action={selecting ? 'Cancel' : 'Select'} onAction={selecting ? stop : () => setSelecting(true)} />
-      <ScrollView contentContainerStyle={styles.grid}>
+      <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]}>
         {stories.map((s) => (
           <Tile key={s.id} u={u} cover={s.pages[0] && s.pages[0].image} title={s.title}
             selecting={selecting} selected={picked.includes(s.id)}
@@ -120,10 +128,11 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
 }
 
 export function Store({ u, openStory, openMenu }) {
+  const { width: winW } = useWindowDimensions();
   return (
     <View style={styles.screen}>
       <Band color={colors.blue} title="Book Store" sub="Find and buy new stories" />
-      <ScrollView contentContainerStyle={styles.grid}>
+      <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]}>
         <Text style={styles.note}>Buying and downloading stories arrives in a later build. For now, the sample story is free to read.</Text>
         {STORIES.map((s) => (
           <Tile key={s.id} u={u} cover={s.pages[0].image} title={s.title} sub={s.author ? `by ${s.author} · in your library` : 'Free sample · in your library'} onPress={() => openStory(s)} />
@@ -136,7 +145,7 @@ export function Store({ u, openStory, openMenu }) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
-  grid: { padding: 20, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 22 },
+  grid: { padding: 20, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
   tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.16, shadowRadius: 4, elevation: 2 },
   tileTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, color: colors.ink },
   tileSub: { fontFamily: fonts.ui, fontSize: 13, color: '#444' },

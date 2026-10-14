@@ -108,7 +108,7 @@ export const PageView = forwardRef(function PageView(
       <View style={[styles.textBox, { paddingHorizontal: L.padX, paddingTop: L.padY, paddingBottom: L.padY + bottomInset }]}>
         {!L.wide ? <Fade edge="top" size={Math.round(L.textH * 0.09)} max={0.13} /> : null}
         {/* the spine: a thin dark grey line where the two squares meet */}
-        {!L.wide ? <View pointerEvents="none" style={styles.spine} /> : null}
+        <View pointerEvents="none" style={L.wide ? styles.spineV : styles.spine} />
         {end ? (
           <View style={{ alignItems: 'center' }}>
             <Text style={storyStyle}>Thank you for reading.</Text>
@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
   art: { backgroundColor: '#7d7d7d', overflow: 'hidden' },
   artShadow: { backgroundColor: '#7d7d7d', shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.12, shadowRadius: 6, elevation: 3 },
   row: { flexDirection: 'row' },
+  spineV: { position: 'absolute', top: 0, bottom: 0, left: 0, width: StyleSheet.hairlineWidth * 2, backgroundColor: '#4a4a4a' },
   spine: { position: 'absolute', left: 0, right: 0, top: 0, height: StyleSheet.hairlineWidth * 2, backgroundColor: '#4a4a4a' },
   theEnd: { ...StyleSheet.absoluteFillObject, backgroundColor: colors.red, alignItems: 'center', justifyContent: 'center' },
   theEndText: { color: colors.white, fontFamily: fonts.story, fontSize: 52 },

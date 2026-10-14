@@ -8,6 +8,7 @@ import { tokenize, cleanWord, syllablesFor } from '../story';
 import { Fade, PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
 import { FLAP_PERSPECTIVE, flapTables } from '../flapStrips';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
+import { bookLayout } from '../components/BookFrame';
 
 // The paper peel needs pictures of the pages (phone only). If drawing it ever fails, or the
 // pictures can't be taken, the page turns with the hinged strips instead.
@@ -126,18 +127,15 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 
   // A plain black strip over the camera area (so pictures aren't hidden), and the solid black bar
   // at the bottom with the menu, title and play controls (no play controls in Read Yourself).
-  // The book floats on dark grey: two equal squares (picture above words), about 30 points of grey
-  // all round. The squares are sized from the screen width; the black bars take what height is
-  // left (never less than the camera area at the top and the controls at the bottom). On a short
-  // screen the squares shrink instead.
+  // The book floats on dark grey (see BookFrame): two equal squares, about 30 points of grey all
+  // round; the black bars take what height is left. Stacked upright; side by side on a sideways iPad.
   const { width: winW, height: winH } = useWindowDimensions();
-  const GAP = 30;
-  const minTop = insets.top, minBar = u * 13 + insets.bottom;
-  const side = Math.floor(Math.max(120, Math.min(winW - 2 * GAP, (winH - minTop - minBar - 2 * GAP) / 2)));
-  const spare = Math.max(0, winH - minTop - minBar - 2 * GAP - 2 * side);
-  const topH = minTop + spare / 2;
+  const BL = bookLayout(winW, winH, insets, u * 13);
+  const wide = BL.wide;
+  st.current.wide = wide;
+  const topH = BL.topH;
   const showControls = prefs.mode !== 'self' || recording;
-  const barH = minBar + spare / 2;
+  const barH = BL.barH;
   const panelPos = { bottom: barH };
   const n = story.pages.length;
   const tokens = useMemo(() => (pages[idx] && pages[idx].text ? tokenize(pages[idx].text) : []), [pages, idx]);
@@ -339,7 +337,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     const i = st.current.idx;
     const a = dir > 0 ? i : i - 1;
     let pics = null;
-    if (supportsCurl && peelWorks.ok) {
+    if (supportsCurl && peelWorks.ok && !st.current.wide) { // sideways iPad: the page turns like a book's instead
       // pictures of both pages for the paper peel
       const fa = dir > 0 ? await snapshot(refs.cur) : (cache.current[a] || (await snapshot(refs.prev)));
       const fb = dir > 0 ? (cache.current[a + 1] || (await snapshot(refs.next))) : await snapshot(refs.cur);
@@ -493,7 +491,31 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       showHotspots={showHot} onHotspot={onHotspot} bubble={bubble} />
   );
   const abs = (el, k, style) => (el ? <Animated.View key={k} style={[StyleSheet.absoluteFill, style]}>{el}</Animated.View> : null);
-  if (flipPair && size && flipT && peel) {
+  if (flipPair && size && wide) {
+    // Sideways iPad: the words page (right) turns over the spine like a real book's page. Its back
+    // shows the next page's picture, which ends up on the left.
+    const { a, b } = flipPair;
+    const half = W / 2;
+    const view = (i, k) => <PageView key={k} {...pageProps(i)} />;
+    layers.push(abs(prevEl, 'p'), abs(nextEl, 'n'), abs(curEl, 'c'));
+    const turn = flipP.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '-180deg'] });
+    const frontOp = flipP.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [1, 1, 0, 0] });
+    const backOp = flipP.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] });
+    const shade = flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.22, 0] });
+    layers.push(
+      <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
+      <View key="fal" pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: half, height: H, overflow: 'hidden' }}>{view(a, `l${a}`)}</View>,
+      <Animated.View key="leaf" pointerEvents="none" style={{ position: 'absolute', left: half, top: 0, width: half, height: H, transformOrigin: 'left', transform: [{ perspective: 2400 }, { rotateY: turn }] }}>
+        <Animated.View style={{ ...StyleSheet.absoluteFillObject, overflow: 'hidden', opacity: frontOp, backfaceVisibility: 'hidden' }}>
+          <View style={{ position: 'absolute', left: -half, top: 0, width: W, height: H }}>{view(a, `r${a}`)}</View>
+        </Animated.View>
+        <Animated.View style={{ ...StyleSheet.absoluteFillObject, overflow: 'hidden', opacity: backOp, transform: [{ scaleX: -1 }] }}>
+          <View style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }}>{view(b, `b${b}`)}</View>
+        </Animated.View>
+        <Animated.View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: '#000', opacity: shade }} />
+      </Animated.View>,
+    );
+  } else if (flipPair && size && flipT && peel) {
     // phone: the words half peels up like paper (drawn from pictures of both pages)
     const { a, b } = flipPair;
     const view = (i, k) => <PageView key={k} {...pageProps(i)} />;
@@ -546,7 +568,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     <View style={styles.screen}>
       <View style={{ height: topH, backgroundColor: colors.bar }} />
       <View style={styles.desk}>
-      <View style={[styles.bookShadow, { width: side, height: side * 2 }]}>
+      <View style={[styles.bookShadow, { width: BL.bookW, height: BL.bookH }]}>
       <View style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...pan.panHandlers}>
         {size ? layers : null}
         {/* Tap anywhere along the left or right edge to turn back or forward (swipes work anywhere). */}

@@ -8,6 +8,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { bookFont, colors, fonts } from '../theme';
 import { Bar, Burger, DogEar, Panel } from '../components/Chrome';
 import { Fade } from '../components/PageView';
+import { Spine, bookLayout } from '../components/BookFrame';
 import { deleteUserStory, dropPicture, keepPicture, newPageId, saveUserStory } from '../userStories';
 import StoryGuide from '../components/StoryGuide';
 import ParentGate from '../components/ParentGate';
@@ -151,17 +152,19 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   // The book is sized from the space it actually has, so it shrinks while the keyboard is up.
   const GAP = 30;
   const { width: winW, height: winH } = useWindowDimensions();
-  const fit = Math.max(120, Math.min(winW - 2 * GAP, (winH - insets.top - barH - 2 * GAP) / 2));
-  const spare = Math.max(0, winH - insets.top - barH - 2 * GAP - 2 * fit);
+  const BL = bookLayout(winW, winH, insets, u * 17);
+  const wide = BL.wide, spare = BL.spare;
   const [desk, setDesk] = useState(null);
-  const side = Math.floor(desk ? Math.max(80, Math.min(desk.w - 2 * GAP, (desk.h - 2 * GAP) / 2)) : fit);
+  const side = Math.floor(desk
+    ? Math.max(80, Math.min(BL.side, wide ? Math.min((desk.w - 2 * GAP) / 2, desk.h - 2 * GAP) : Math.min(desk.w - 2 * GAP, (desk.h - 2 * GAP) / 2)))
+    : BL.side);
   return (
     <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={{ height: insets.top + spare / 2, backgroundColor: colors.bar }} />
       <View style={styles.desk} onLayout={(e) => setDesk({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
-      <View style={[styles.bookShadow, { width: side, height: side * 2 }]}>
-      <View style={styles.page}>
-        <Pressable onPress={pickImage} style={[styles.art, { height: side }]} accessibilityRole="button" accessibilityLabel={page.uri ? 'Change image' : 'Add image'}>
+      <View style={[styles.bookShadow, wide ? { width: side * 2, height: side } : { width: side, height: side * 2 }]}>
+      <View style={[styles.page, wide && { flexDirection: 'row' }]}>
+        <Pressable onPress={pickImage} style={[styles.art, { width: side, height: side }]} accessibilityRole="button" accessibilityLabel={page.uri ? 'Change image' : 'Add image'}>
           {page.uri ? (
             <>
               <Image source={{ uri: page.uri }} style={styles.fill} resizeMode="cover" />
@@ -176,11 +179,11 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               <Text style={styles.addImage}>Add Image</Text>
             </View>
           )}
-          <Fade edge="bottom" size={Math.round(side * 0.05)} max={0.2} />
+          {!wide ? <Fade edge="bottom" size={Math.round(side * 0.05)} max={0.2} /> : null}
         </Pressable>
-        <View style={[styles.textBox, { height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>
-          <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} />
-          <View pointerEvents="none" style={styles.spine} />
+        <View style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>
+          {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
+          <Spine wide={wide} />
           <Text style={styles.addText}>Add Text</Text>
           <TextInput
             value={page.text}
@@ -277,7 +280,7 @@ const styles = StyleSheet.create({
   help: { position: 'absolute', top: 14, right: 14, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', zIndex: 5 },
   helpText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
   page: { flex: 1, backgroundColor: colors.paper, overflow: 'hidden' },
-  art: { width: '100%', backgroundColor: '#808080', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  art: { backgroundColor: '#808080', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   fill: { position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' },
   plus: { color: colors.white, fontWeight: '200', fontFamily: fonts.ui },
   addImage: { color: colors.white, fontWeight: '700', fontSize: 22, fontFamily: fonts.ui, marginTop: 4 },
