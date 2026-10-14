@@ -26,7 +26,7 @@ function PeelLayer({ start, ...props }) {
 }
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { Bar, BarMeta, Burger, DogEar, Option, Panel, PauseButton, PlayButton, RecordButton, Slider } from '../components/Chrome';
+import { Bar, BarMeta, Burger, DogEar, GearIcon, Option, Panel, PauseButton, PlayButton, RecordButton, Slider } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
@@ -646,7 +646,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <>
             <Option glyph="●" title="Start Recording" sub={`Read this story in your own voice, starting on page ${Math.min(idx + 1, n)}`} disabled={idx >= n} onPress={startRec} />
             <Option glyph="≡" title="Your Recordings" sub="Listen to or remove the pages you recorded" onPress={openRecList} />
-            <Option glyph="⚙" title="Recording Settings" sub="Choose whose voice reads the story" onPress={() => setRecView('settings')} />
+            <Option glyph={<GearIcon />} title="Recording Settings" sub="Choose whose voice reads the story" onPress={() => setRecView('settings')} />
             <Option glyph="?" title="Help" sub="How recording works" onPress={() => setRecView('help')} />
           </>
         ) : (

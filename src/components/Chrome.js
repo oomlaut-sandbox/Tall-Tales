@@ -135,10 +135,22 @@ export function Panel({ open, side = 'right', title, onClose, bottom, inset = 0,
   );
 }
 
+// A small, flat gear (for settings): three crossed bars make six teeth, a disc and a hole on top.
+export function GearIcon({ size = 18, color = colors.white, hole = colors.tile }) {
+  const bar = { position: 'absolute', left: (size - size * 0.24) / 2, top: 0, width: size * 0.24, height: size, backgroundColor: color, borderRadius: size * 0.04 };
+  return (
+    <View style={{ width: size, height: size }}>
+      {[0, 60, 120].map((r) => <View key={r} style={[bar, { transform: [{ rotate: `${r}deg` }] }]} />)}
+      <View style={{ position: 'absolute', left: size * 0.14, top: size * 0.14, width: size * 0.72, height: size * 0.72, borderRadius: size, backgroundColor: color }} />
+      <View style={{ position: 'absolute', left: size * 0.34, top: size * 0.34, width: size * 0.32, height: size * 0.32, borderRadius: size, backgroundColor: hole }} />
+    </View>
+  );
+}
+
 export function Option({ glyph, title, sub, onPress, selected, disabled }) {
   return (
     <Pressable onPress={onPress} disabled={disabled} style={[styles.opt, disabled && { opacity: 0.45 }]} accessibilityRole="button">
-      <View style={[styles.optIc, selected && { backgroundColor: colors.highlight }]}><Text style={styles.optGlyph}>{glyph}</Text></View>
+      <View style={[styles.optIc, selected && { backgroundColor: colors.highlight }]}>{typeof glyph === 'string' ? <Text style={styles.optGlyph}>{glyph}</Text> : glyph}</View>
       <View style={{ flex: 1, minWidth: 0 }}>
         <Text style={styles.optTitle}>{title}</Text>
         <Text style={styles.optSub}>{sub}</Text>

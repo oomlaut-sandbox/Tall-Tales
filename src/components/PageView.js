@@ -112,9 +112,16 @@ export const PageView = forwardRef(function PageView(
         {end ? (
           <View style={{ alignItems: 'center' }}>
             <Text style={storyStyle}>Thank you for reading.</Text>
-            <View style={{ flexDirection: 'row', gap: 12, marginTop: 22, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Pressable onPress={onReadAgain} style={styles.endBtn}><Text style={styles.endBtnText}>Read again</Text></Pressable>
-              <Pressable onPress={onLibrary} style={styles.endBtn}><Text style={styles.endBtnText}>My Library</Text></Pressable>
+            {/* stacked, styled like the menu rows: a grey icon tile and a bold label */}
+            <View style={{ gap: 10, marginTop: 20, alignSelf: 'stretch', alignItems: 'center' }}>
+              <Pressable onPress={onReadAgain} style={styles.endBtn} accessibilityRole="button">
+                <View style={styles.endIc}><Text style={styles.endGlyph}>↺</Text></View>
+                <Text style={styles.endBtnText}>Read Again</Text>
+              </Pressable>
+              <Pressable onPress={onLibrary} style={styles.endBtn} accessibilityRole="button">
+                <View style={styles.endIc}><Text style={styles.endGlyph}>▤</Text></View>
+                <Text style={styles.endBtnText}>My Library</Text>
+              </Pressable>
             </View>
           </View>
         ) : (
@@ -148,6 +155,8 @@ const styles = StyleSheet.create({
   bubbleText: { backgroundColor: colors.white, color: colors.ink, fontFamily: fonts.story, fontSize: 22, paddingHorizontal: 14, paddingVertical: 6, overflow: 'hidden' },
   endArt: { backgroundColor: '#5a5a5a', alignItems: 'center', justifyContent: 'center' },
   endTitle: { color: '#f2f2f2', textAlign: 'center' },
-  endBtn: { backgroundColor: colors.bar, paddingHorizontal: 18, paddingVertical: 12 },
-  endBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
+  endBtn: { width: 200, flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: colors.bar, padding: 6, paddingRight: 16 },
+  endIc: { width: 36, height: 36, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
+  endGlyph: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
+  endBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
 });
