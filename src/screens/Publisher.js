@@ -2,11 +2,12 @@
 // Everything saves automatically. "Pages" opens a list to reorder or delete pages,
 // or to delete the whole story.
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { bookFont, colors, fonts } from '../theme';
 import { Bar, Burger, DogEar, Panel } from '../components/Chrome';
+import { Fade } from '../components/PageView';
 import { deleteUserStory, dropPicture, keepPicture, newPageId, saveUserStory } from '../userStories';
 import StoryGuide from '../components/StoryGuide';
 import ParentGate from '../components/ParentGate';
@@ -145,10 +146,22 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   };
 
   const barH = u * 17 + insets.bottom;
+  // Same look as reading: the page floats on dark grey (two equal squares, about 30 points of grey
+  // all round, a soft drop shadow, the spine line and shading). The bars take the spare height.
+  // The book is sized from the space it actually has, so it shrinks while the keyboard is up.
+  const GAP = 30;
+  const { width: winW, height: winH } = useWindowDimensions();
+  const fit = Math.max(120, Math.min(winW - 2 * GAP, (winH - insets.top - barH - 2 * GAP) / 2));
+  const spare = Math.max(0, winH - insets.top - barH - 2 * GAP - 2 * fit);
+  const [desk, setDesk] = useState(null);
+  const side = Math.floor(desk ? Math.max(80, Math.min(desk.w - 2 * GAP, (desk.h - 2 * GAP) / 2)) : fit);
   return (
     <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <View style={{ height: insets.top + spare / 2, backgroundColor: colors.bar }} />
+      <View style={styles.desk} onLayout={(e) => setDesk({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
+      <View style={[styles.bookShadow, { width: side, height: side * 2 }]}>
       <View style={styles.page}>
-        <Pressable onPress={pickImage} style={styles.art} accessibilityRole="button" accessibilityLabel={page.uri ? 'Change image' : 'Add image'}>
+        <Pressable onPress={pickImage} style={[styles.art, { height: side }]} accessibilityRole="button" accessibilityLabel={page.uri ? 'Change image' : 'Add image'}>
           {page.uri ? (
             <>
               <Image source={{ uri: page.uri }} style={styles.fill} resizeMode="cover" />
@@ -163,8 +176,11 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               <Text style={styles.addImage}>Add Image</Text>
             </View>
           )}
+          <Fade edge="bottom" size={Math.round(side * 0.05)} max={0.2} />
         </Pressable>
-        <View style={[styles.textBox, { paddingHorizontal: u * 9, paddingTop: u * 6 }]}>
+        <View style={[styles.textBox, { height: side, paddingHorizontal: side * 0.09, paddingTop: side * 0.06 }]}>
+          <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} />
+          <View pointerEvents="none" style={styles.spine} />
           <Text style={styles.addText}>Add Text</Text>
           <TextInput
             value={page.text}
@@ -176,11 +192,14 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             accessibilityLabel={`Words for page ${i + 1}`}
           />
         </View>
-        <DogEar u={u} onPress={next} label="Next page" />
-        <Pressable onPress={() => setGuide(true)} style={[styles.help, { top: insets.top + 10 }]} hitSlop={8} accessibilityLabel="How to make a story">
+        <DogEar u={u} under={colors.desk} onPress={next} label="Next page" />
+        <Pressable onPress={() => setGuide(true)} style={[styles.help, { top: 10, right: 10 }]} hitSlop={8} accessibilityLabel="How to make a story">
           <Text style={styles.helpText}>?</Text>
         </Pressable>
       </View>
+      </View>
+      </View>
+      <View style={{ backgroundColor: colors.bar, paddingTop: spare / 2 }}>
       <Bar u={u}>
         <Burger u={u} onPress={openMenu} />
         <View style={{ flex: 1, minWidth: 0, paddingLeft: 12 }}>
@@ -193,6 +212,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
         <Pressable onPress={finish} hitSlop={8}><Text style={[styles.btn, { color: colors.highlight }]}>Done</Text></Pressable>
       </Bar>
+      </View>
 
       <Panel open={pagesOpen} side="right" title="Pages" bottom={barH} onClose={() => setPagesOpen(false)}>
         <ScrollView style={{ maxHeight: 380 }} contentContainerStyle={{ gap: 10 }}>
@@ -250,17 +270,20 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.paper },
+  screen: { flex: 1, backgroundColor: colors.desk },
+  desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.desk },
+  bookShadow: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
+  spine: { position: 'absolute', left: 0, right: 0, top: 0, height: StyleSheet.hairlineWidth * 2, backgroundColor: '#4a4a4a' },
   help: { position: 'absolute', top: 14, right: 14, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', zIndex: 5 },
   helpText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
-  page: { flex: 1, backgroundColor: colors.paper },
-  art: { width: '100%', aspectRatio: 1, maxHeight: '68%', backgroundColor: '#808080', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  page: { flex: 1, backgroundColor: colors.paper, overflow: 'hidden' },
+  art: { width: '100%', backgroundColor: '#808080', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   fill: { position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' },
   plus: { color: colors.white, fontWeight: '200', fontFamily: fonts.ui },
   addImage: { color: colors.white, fontWeight: '700', fontSize: 22, fontFamily: fonts.ui, marginTop: 4 },
   artBtns: { position: 'absolute', left: 12, bottom: 12, flexDirection: 'row', gap: 8 },
   chip: { backgroundColor: 'rgba(0,0,0,0.6)', color: colors.white, fontWeight: '700', fontSize: 15, paddingHorizontal: 14, paddingVertical: 8, overflow: 'hidden', fontFamily: fonts.ui },
-  textBox: { flex: 1, paddingBottom: 24 },
+  textBox: { paddingBottom: 24 },
   addText: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.ink, marginBottom: 6, textAlign: 'center' },
   input: { flex: 1, fontFamily: fonts.story, fontSize: 21, lineHeight: 34, color: colors.ink, textAlign: 'center', textAlignVertical: 'top', padding: 0 },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, padding: 0 },
