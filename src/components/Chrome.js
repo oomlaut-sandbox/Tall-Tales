@@ -121,6 +121,13 @@ export function DogEar({ u, onPress, label = 'Next page', under = colors.earUnde
 // The height of the menu stripes from the top when sideways: fixed, a little down from the top
 // right corner, clear of the iPad's status icons (battery etc.).
 export const SIDE_MENU_TOP = 46;
+// Where the middle stripe of the menu icon sits (sideways), so a menu's close arrow can line up with it.
+function sideMenuMiddle(winW) {
+  const u = Math.min(winW, 460) / 100;
+  const t = Math.max(3, u * 1), gap = u * 1.7;
+  return SIDE_MENU_TOP + (3 * t + 2 * gap) / 2;
+}
+const HEAD_ARROW_WIDE = 14 + 22; // sideways head: top padding + half the 44-point close button
 
 // Dark menu panel that comes out of the black menu bar.
 // Upright: it slides UP out of the bottom bar, at the bottom left.
@@ -137,7 +144,8 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children }) {
   // Sideways (wider than tall) the menu is wide and short: its items sit in two columns.
   const wide = winW > winH * 1.1;
   const rightW = inset || Math.round((Math.min(winW, 460) / 100) * 17 * 1.15);
-  const maxHeight = wide ? winH - SIDE_MENU_TOP - 34 : Math.max(240, Math.min(winH * 0.8 - (bottom || 0), winH - (bottom || 0) - insets.top - 24));
+  const wideTop = Math.round(sideMenuMiddle(winW) - HEAD_ARROW_WIDE); // the close arrow level with the icon's middle stripe
+  const maxHeight = wide ? winH - wideTop - 34 : Math.max(240, Math.min(winH * 0.8 - (bottom || 0), winH - (bottom || 0) - insets.top - 24));
   const room = winW - insets.left - rightW;
   const panelW = wide ? Math.min(760, room - 24) : null;
   const colW = wide ? (panelW - 44 - 22) / 2 : null;
@@ -150,7 +158,7 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children }) {
       <View pointerEvents="box-none" style={[styles.panelClip, wide ? { right: rightW } : { bottom: bottom || 0 }]}>
         <Animated.View
           pointerEvents={open ? 'auto' : 'none'}
-          style={[styles.panel, wide ? { width: panelW, maxWidth: panelW, top: SIDE_MENU_TOP, right: 0 } : { bottom: 0, left: 0 },
+          style={[styles.panel, wide ? { width: panelW, maxWidth: panelW, top: wideTop, right: 0 } : { bottom: 0, left: 0 },
             { maxHeight, transform: [wide ? { translateX: shift } : { translateY: shift }] }]}
         >
           <View style={[styles.panelHead, wide && { paddingTop: 14, paddingBottom: 12 }]}>
