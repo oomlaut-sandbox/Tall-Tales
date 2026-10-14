@@ -306,7 +306,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 
   const onWord = (i, raw) => {
     const mode = st.current.mode;
-    if (mode === 'self' || st.current.turning || st.current.recording) return;
+    // Tapping a word only does something in Learn to Read (it no longer interrupts narration).
+    if (mode !== 'learn' || st.current.turning || st.current.recording) return;
     const w = cleanWord(raw);
     if (!w) return;
     stopReading();
@@ -317,8 +318,6 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       const wordClip = WORDS[narratorOf(prefsRef.current)]?.[w.toLowerCase()];
       if (wordClip) { playClips([wordClip], { onDone: done }); return; }
       speakQueue([{ text: w, rate: 0.7 }], done);
-    } else {
-      speakQueue([{ text: w, rate: 0.8 }], done);
     }
   };
 
