@@ -62,6 +62,8 @@ export function CurlCanvas({ width: W, height: H, under, turning, fold }) {
           </Rect>
         </Group>
       </Group>
+      </Group>
+      </Group>
     </Canvas>
   );
 }
@@ -70,8 +72,26 @@ export function CurlCanvas({ width: W, height: H, under, turning, fold }) {
 // corner along a diagonal crease, folds over the spine and settles onto the top half.
 // front: picture of the page being turned away from (a); back: picture of the page turned to (b).
 // The page's own views sit underneath (b whole, and a's picture on the top half).
-export function FlapPeel({ width: W, height: H, artH, t, corner, front, back }) {
+// The lifted flap rises toward the reader: a perspective that leaves the crease where it is and
+// makes the paper further from it look bigger (strongest mid-turn, none at the start and end).
+// Returned as a row-major 4x4 matrix for a Skia Group.
+export function liftMatrix(M, nx, ny, t, textH) {
+  const c = (0.3 * Math.sin(Math.PI * Math.max(0, Math.min(1, t)))) / Math.max(1, textH);
+  if (c < 1e-6) return null;
+  const fx = -ny, fy = nx; // along the crease; the flap lies on the -n side
+  const A = [[fx, fy, -(fx * M[0] + fy * M[1])], [-nx, -ny, nx * M[0] + ny * M[1]], [0, 0, 1]];
+  const P = [[1, 0, 0], [0, 1, 0], [0, -c, 1]];
+  const B = [[fx, -nx, M[0]], [fy, -ny, M[1]], [0, 0, 1]];
+  const mul = (X, Y) => X.map((r) => [0, 1, 2].map((j) => r[0] * Y[0][j] + r[1] * Y[1][j] + r[2] * Y[2][j]));
+  const h = mul(B, mul(P, A));
+  return [h[0][0], h[0][1], 0, h[0][2], h[1][0], h[1][1], 0, h[1][2], 0, 0, 1, 0, h[2][0], h[2][1], 0, h[2][2]];
+}
+
+// ox, oy: where the book sits inside the canvas. The canvas covers the whole screen, so the
+// lifted paper can swing out over the grey and past the screen edges.
+export function FlapPeel({ width: W, height: H, artH, t, corner, front, back, ox = 0, oy = 0, canvasW, canvasH }) {
   if (!front || !back || !W || !H) return null;
+  const CW = canvasW || W, CH = canvasH || H, at = [{ translateX: ox }, { translateY: oy }];
   const textH = H - artH;
   const C = corner === 'left' ? [0, H] : [W, H];
   const fold = computePeel(peelCorner(t, C, W, H, artH), C, W, H, artH);
@@ -80,8 +100,8 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back }) 
   const fadeIn = Math.max(0, Math.min(1, (t - 0.75) / 0.25)); // the top strip the flap can't reach
   if (!fold) {
     return (
-      <Canvas style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} pointerEvents="none">
-        <Group clip={flap}><Image image={front} {...full} /></Group>
+      <Canvas style={{ position: 'absolute', left: 0, top: 0, width: CW, height: CH }} pointerEvents="none">
+        <Group transform={at}><Group clip={flap}><Image image={front} {...full} /></Group></Group>
       </Canvas>
     );
   }
@@ -100,8 +120,10 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back }) 
   // flat flap position → the spot of the next page's picture it lands on (mirrored over the spine,
   // at true size, so the last frame matches the finished page exactly)
   const spine = [{ translateY: artH }, { scaleY: -1 }, { translateY: -artH }];
+  const lift = liftMatrix(M, nx, ny, t, textH);
   return (
-    <Canvas style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} pointerEvents="none">
+    <Canvas style={{ position: 'absolute', left: 0, top: 0, width: CW, height: CH }} pointerEvents="none">
+      <Group transform={at}>
       {/* shadow on the uncovered words area, along the crease */}
       <Group clip={flap}>
         <Rect x={0} y={artH} width={W} height={textH}>
@@ -115,11 +137,15 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back }) 
       ) : null}
       {/* the part of the words half still lying flat */}
       <Group clip={frontPath}><Image image={front} {...full} /></Group>
-      {/* the lifted part, folded over: its back shows the next page's picture */}
+      {/* the lifted part's shadow on the page */}
       <Group transform={reflect}>
         <Path path={cut} color={`rgba(0,0,0,${(0.28 * settle).toFixed(3)})`}>
           <BlurMask blur={8} style="normal" />
         </Path>
+      </Group>
+      {/* the lifted part, folded over and rising toward the reader: its back shows the next page's picture */}
+      <Group matrix={lift || undefined}>
+      <Group transform={reflect}>
         <Group clip={cut}>
           <Group transform={spine}><Image image={back} {...full} /></Group>
           <Rect x={0} y={0} width={W} height={H}>

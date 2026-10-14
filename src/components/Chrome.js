@@ -73,7 +73,7 @@ export function PauseButton({ onPress, disabled }) {
 }
 
 export function PlayButton({ onPress, active, disabled }) {
-  const c = active ? colors.highlight : colors.white;
+  const c = colors.white; // always white, playing or not
   return (
     <Pressable onPress={onPress} disabled={disabled} hitSlop={8} style={[styles.ctl, disabled && { opacity: 0.35 }]} accessibilityLabel="Play">
       <View style={{ width: 0, height: 0, marginLeft: 6, borderLeftWidth: 26, borderTopWidth: 16, borderBottomWidth: 16, borderLeftColor: c, borderTopColor: 'transparent', borderBottomColor: 'transparent' }} />

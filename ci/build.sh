@@ -39,6 +39,7 @@ step bundle-web npx expo export --platform web --output-dir out/web
 
 # reference: Skia's drawing component settings (used by the page curl)
 grep -rn -A12 "interface VerticesProps\|interface ImageShaderProps" node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/ > out/skia-props.txt 2>&1 || true
+grep -rn "matrix?:\|type InputMatrix\|type Matrix4 \|export type Transforms3d" node_modules/@shopify/react-native-skia/lib/typescript/src/ >> out/skia-props.txt 2>&1 || true
 cp package.json out/package.json
 [ -f package-lock.json ] && cp package-lock.json out/package-lock.json
 npm ls --depth=0 > out/packages.txt 2>&1 || true

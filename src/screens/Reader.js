@@ -501,7 +501,6 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     layers.push(
       <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
       <View key="fat" pointerEvents="none" style={[styles.half, { top: 0, height: flipT.artH }]}>{view(a, `t${a}`)}</View>,
-      <PeelGuard key="peel"><PeelLayer start={prog.current} width={W} height={H} artH={flipT.artH} corner={peel.corner} front={peel.front} back={peel.back} /></PeelGuard>,
     );
   } else if (flipPair && size && flipT) {
     // A page turn in progress (see "page turning" above): page b underneath, page a's picture on
@@ -575,6 +574,13 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         ) : null}
       </View>
 
+      {/* The peeling page is drawn over the whole screen, so it can lift past the book's edges. */}
+      {flipPair && size && flipT && peel ? (
+        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 40 }]}>
+          <PeelGuard><PeelLayer start={prog.current} width={W} height={H} artH={flipT.artH} corner={peel.corner} front={peel.front} back={peel.back}
+            ox={(winW - W) / 2} oy={topH + (winH - topH - barH - H) / 2} canvasW={winW} canvasH={winH} /></PeelGuard>
+        </View>
+      ) : null}
       <Panel open={panel === 'play'} side="right" title={playView === 'voices' ? 'Voices' : 'Playback Options'} {...panelPos} onClose={() => { setPanel(null); setPlayView('main'); }}>
         {playView === 'voices' ? (
           <>

@@ -10,7 +10,7 @@ export const colors = {
   panel: '#1c1c1c',
   panelHead: 'rgba(0,0,0,0.78)',
   tile: '#5f5f5f',
-  orange: '#ffa500',
+  orange: '#ff9a00', // a little more orange than #ffa500
   blue: '#006aea',
   white: '#ffffff',
   muted: '#bdbdbd',

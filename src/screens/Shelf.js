@@ -59,7 +59,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
   const mineCount = chosen.filter((s) => s.mine).length;
   return (
     <View style={styles.screen}>
-      <Band color={colors.orange} dark title={selecting ? 'Select books' : 'My Library'}
+      <Band color={colors.orange} title={selecting ? 'Select books' : 'My Library'}
         sub={selecting ? (picked.length ? `${picked.length} selected` : 'Tap books to select them') : 'Your stories, ready to read'}
         action={selecting ? 'Cancel' : 'Select'} onAction={selecting ? stop : () => setSelecting(true)} />
       <ScrollView contentContainerStyle={styles.grid}>
