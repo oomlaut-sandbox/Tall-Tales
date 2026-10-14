@@ -5,20 +5,13 @@
 // Turning it (tap, or swipe up / sideways) opens the cover over the spine like a real book, and its
 // inside (also brown) lands in the picture square.
 import React, { useRef, useState } from 'react';
-import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
 import { Bar, Burger, DogEar } from '../components/Chrome';
 import BookFrame, { Spine } from '../components/BookFrame';
 import { Fade } from '../components/PageView';
 import { playPaper } from '../sound';
-import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
 
-// If drawing the peel ever fails, just skip it (the page still fades through to My Library).
-class PeelSafe extends React.Component {
-  state = { failed: false };
-  static getDerivedStateFromError() { return { failed: true }; }
-  render() { return this.state.failed ? null : this.props.children; }
-}
 
 export const COVER_BROWN = '#6f4b32';
 
@@ -40,42 +33,23 @@ function MenuItem({ u, color, title, sub, onPress }) {
 
 export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
   const p = useRef(new Animated.Value(0)).current; // 0 = cover shut, 1 = cover fully open
-  // The menu page's dog-ear: the page turns over and My Library shows through.
-  const q = useRef(new Animated.Value(0)).current;
-  const peeling = useRef(false);
-  // On the phone the page peels from the corner exactly like a reader page (pictures of the page
-  // drawn by Skia); elsewhere, or sideways, it simply turns over the spine.
-  const bookRef = useRef(null), blankRef = useRef(null);
-  const [skiaPeel, setSkiaPeel] = useState(null); // { front, back, t }
-  const wideNow = useRef(false);
-  const peel = async () => {
-    if (peeling.current) return;
-    peeling.current = true;
-    let pics = null;
-    if (supportsCurl && !wideNow.current) {
-      try {
-        const front = await snapshot(bookRef), back = await snapshot(blankRef);
-        if (front && back) pics = { front, back };
-      } catch (e) { pics = null; }
-    }
-    onPeek && onPeek(); // My Library is drawn underneath while the page turns
-    playPaper('turn', 1);
-    if (!pics) {
-      Animated.timing(q, { toValue: 1, duration: 950, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => go('library'));
-      return;
-    }
-    const t0 = Date.now(), ms = 1000;
-    const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
-    const step = () => {
-      const x = Math.min(1, (Date.now() - t0) / ms);
-      const t = ease(x);
-      setSkiaPeel({ ...pics, t });
-      q.setValue(t); // drives the fade to My Library
-      if (x < 1) requestAnimationFrame(step); else go('library');
-    };
-    requestAnimationFrame(step);
+  // Choosing My Library or the Book Store: the book slides off to the left, and the chosen screen
+  // (drawn underneath) takes its place on the grey.
+  const { width: winW } = useWindowDimensions();
+  const slide = useRef(new Animated.Value(0)).current; // 0 = in place, 1 = gone off the left
+  const fade = useRef(new Animated.Value(1)).current;
+  const leaving = useRef(false);
+  const goTo = (target) => {
+    if (leaving.current) return;
+    leaving.current = true;
+    onPeek && onPeek(target);
+    playPaper('turn', 0.6);
+    Animated.sequence([
+      Animated.timing(slide, { toValue: 1, duration: 420, easing: Easing.in(Easing.cubic), useNativeDriver: true }),
+      Animated.timing(fade, { toValue: 0, duration: 220, useNativeDriver: true }),
+    ]).start(() => go(target));
   };
-  const fadeAway = q.interpolate({ inputRange: [0, 0.45, 1], outputRange: [1, 1, 0] });
+  const slideX = slide.interpolate({ inputRange: [0, 1], outputRange: [0, -winW] });
   const [opening, setOpening] = useState(false);
   const busy = useRef(false);
   const open = () => {
@@ -91,10 +65,9 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
   })).current;
 
   return (
-    <Animated.View style={{ flex: 1, opacity: fadeAway }}>
-    <BookFrame bare bookProps={{ ref: bookRef, collapsable: false }} barMin={u * 17} bar={(L) => <Bar u={u} vertical={L.wide}><Burger u={u} onPress={openMenu} /></Bar>}>
+    <Animated.View style={{ flex: 1, opacity: fade }}>
+    <BookFrame bare barMin={u * 17} bar={(L) => <Bar u={u} vertical={L.wide}><Burger u={u} onPress={openMenu} /></Bar>}>
       {({ side, wide }) => {
-        wideNow.current = wide;
         const k = side / 100; // sizes inside the book scale with the squares
         // where the two squares sit: picture first (top, or left when sideways), then the words
         const at1 = { position: 'absolute', left: 0, top: 0, width: side, height: side };
@@ -113,35 +86,18 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
         const leaf = wide
           ? { transformOrigin: 'left', transform: [{ perspective: 1600 }, { rotateY: turn }] }
           : { transformOrigin: 'top', transform: [{ perspective: 1600 }, { rotateX: turn }] };
-        const qTurn = q.interpolate({ inputRange: [0, 1], outputRange: wide ? ['0deg', '-180deg'] : ['0deg', '180deg'] });
-        const qBack = q.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] });
-        const qShade = q.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.25, 0.1] });
-        const pageTurn = skiaPeel ? { zIndex: 6, opacity: 0 } : wide
-          ? { zIndex: 6, transformOrigin: 'left', transform: [{ perspective: 1600 }, { rotateY: qTurn }] }
-          : { zIndex: 6, transformOrigin: 'top', transform: [{ perspective: 1600 }, { rotateX: qTurn }] };
         return (
-          <>
-            {/* plain paper under the pages: what the peeling page uncovers (and the back of the page) */}
-            {!closed ? <View ref={blankRef} collapsable={false} style={{ position: 'absolute', left: 0, top: 0, width: wide ? side * 2 : side, height: wide ? side : side * 2, backgroundColor: colors.paper, zIndex: -1 }} /> : null}
-            {skiaPeel ? (
-              <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: side, height: side * 2, zIndex: 9 }}>
-                <PeelSafe><FlapPeel width={side} height={side * 2} artH={side} t={skiaPeel.t} corner="right" front={skiaPeel.front} back={skiaPeel.back} /></PeelSafe>
-              </View>
-            ) : null}
+          <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: wide ? side * 2 : side, height: wide ? side : side * 2, transform: [{ translateX: slideX }] }}>
             {/* the picture square: only once the book is open */}
             {!closed ? <View style={[at1, styles.page]}>{pebbles}</View> : null}
             {/* the words square: the menu */}
-            <Animated.View style={[at2, styles.page, { justifyContent: 'center', gap: k * 8, paddingLeft: k * 13, paddingRight: k * 6, // two items of 33 + gap 8 leave 13 above and below: same 13 on the left
-             backgroundColor: colors.paper }, pageTurn]}>
+            <View style={[at2, styles.page, { justifyContent: 'center', gap: k * 8, paddingLeft: k * 13, paddingRight: k * 6, // two items of 33 + gap 8 leave 13 above and below: same 13 on the left
+             backgroundColor: colors.paper }]}>
               {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
               <Spine wide={wide} />
-              <MenuItem u={k} color={colors.green} title="My Library" sub="Find and read purchased stories" onPress={() => go('library')} />
-              <MenuItem u={k} color={colors.blue} title="Book Store" sub="Find and buy new stories" onPress={() => go('store')} />
-              {!closed ? <DogEar u={u} onPress={peel} label="Open my library" /> : null}
-              {/* back of the menu page, seen once it has turned past upright */}
-              <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: colors.paper, opacity: qBack }]} />
-              <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: qShade }]} />
-            </Animated.View>
+              <MenuItem u={k} color={colors.green} title="My Library" sub="Find and read purchased stories" onPress={() => goTo('library')} />
+              <MenuItem u={k} color={colors.blue} title="Book Store" sub="Find and buy new stories" onPress={() => goTo('store')} />
+            </View>
             {/* the cover */}
             {closed ? (
               <Animated.View {...swipe.panHandlers} style={[at2, styles.page, { zIndex: 8 }, leaf]}>
@@ -154,7 +110,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
                 <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: shade }]} />
               </Animated.View>
             ) : null}
-          </>
+          </Animated.View>
         );
       }}
     </BookFrame>
