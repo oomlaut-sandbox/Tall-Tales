@@ -619,8 +619,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         // sideways: the menu bar runs down the right side; same icons, page tag shortened to "2/16"
         <View style={[styles.sideBar, { width: BL.rightW, paddingTop: SIDE_MENU_TOP /* fixed a little down from the top corner */, paddingBottom: Math.max(16, insets.bottom) }]}>
           <View style={{ width: BL.rightW, alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
-            <View style={{ alignItems: 'center', gap: 18 }}>
+            <View style={{ alignItems: 'center' }}>
               <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
+            </View>
+            <View style={{ alignItems: 'center' }}>
+            {/* the page count sits above the record button, with a good gap between them */}
+            <View style={{ alignItems: 'center', gap: 8, marginBottom: showControls ? 30 : 0 }}>
               <BarMeta vertical sub={idx < n ? `${idx + 1}/${n}` : 'End'} />
               {mineHere ? <View style={styles.mineDot} accessibilityLabel="This page plays your own recording" /> : null}
             </View>
@@ -631,6 +635,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
                 <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
               </View>
             ) : null}
+            </View>
           </View>
         </View>
       ) : (
