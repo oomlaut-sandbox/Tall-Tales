@@ -129,7 +129,9 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
 
 // The Book Store: shelves of books from the catalog you curate in Supabase (see src/catalog.js).
 export function Store({ u, openStory, openMenu }) {
-  const { width: winW } = useWindowDimensions();
+  const { width: winW, height: winH } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const sideways = winW > winH * 1.1;
   const [cat, setCat] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [open, setOpen] = useState(null); // the book whose details are showing
@@ -178,7 +180,7 @@ export function Store({ u, openStory, openMenu }) {
           </View>
         ))}
       </ScrollView>
-      <Panel open={!!open} side="right" title={open ? open.title : ''} bottom={0} onClose={() => setOpen(null)}>
+      <Panel open={!!open} side="right" title={open ? open.title : ''} bottom={sideways ? 0 : u * 17 + insets.bottom} inset={sideways ? u * 17 + insets.right : 0} onClose={() => setOpen(null)}>
         {open ? (
           <View style={{ gap: 12 }}>
             {open.author ? <Text style={styles.sheetSub}>by {open.author}</Text> : null}
