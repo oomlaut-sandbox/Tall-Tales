@@ -37,8 +37,18 @@ These measurements come from the screenshot at 3x, about 395 points wide.
   "Page X of Y" in small bold Helvetica still goes in, as the note above says.
 
 ## Sizing notes
-- Square side = the smaller of (screen width minus a margin on each side) and (height between
-  the top and bottom bars minus margins, divided by 2). On an iPhone 15 that's about 330–340
-  points, so the book sits a little in from the sides, with dark grey all round.
+- **Even 30 pt grey border (Jörg, 13 Oct):** about 30 points of dark grey on every side of the
+  book, top and bottom as well as left and right.
+  - Square side = screen width − 60.
+  - The book sits 30 pt below the top bar and 30 pt above the bottom bar.
+  - The black bars take whatever height is left. The top bar always covers at least the camera
+    area, and the bottom bar is never shorter than it needs to be for its buttons.
+  - On an iPhone 15 (393 × 852), 30 pt sides would give squares of 333 pt, a book 666 pt tall,
+    and 126 pt left for the two bars. But the bars need about 59 pt at the top (camera) and
+    about 34 pt of home-indicator area plus a slim bar of about 45 pt at the bottom, which is
+    about 138 pt. So the squares come out at about 327 pt, about 33 pt from the sides.
+    Taller iPhones get the full 30 pt.
+  - On a short screen where the bars wouldn't fit, the squares shrink instead, keeping the
+    30 pt grey border.
 - Text size: words are fitted inside the words square, so long pages may use a slightly
   smaller size than now.
