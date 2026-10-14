@@ -12,7 +12,7 @@ export const colors = {
   panelHead: 'rgba(0,0,0,0.78)',
   tile: '#5f5f5f',
   orange: '#ffa500',
-  green: '#1f6b45', // deep green: My Library
+  green: '#487d49', // My Library green (Jörg's swatch)
   blue: '#006aea',
   white: '#ffffff',
   muted: '#bdbdbd',
