@@ -35,6 +35,19 @@ import { Bar, BarMeta, Burger, DogEar, GearIcon, Option, Panel, PauseButton, Pla
 export const DEFAULT_SPEED = 0.75;
 export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : DEFAULT_SPEED);
 // Book narrators (ElevenLabs). Hannah (voice key 'lily') is the default.
+// A tiny printed page: white sheet with the picture and words squares, upright or sideways.
+function PageShape({ wide }) {
+  const W = wide ? 40 : 30, H = wide ? 30 : 40, q = 15;
+  return (
+    <View style={{ width: W, height: H, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ flexDirection: wide ? 'row' : 'column' }}>
+        <View style={{ width: q, height: q, borderWidth: 1.5, borderColor: '#333', backgroundColor: '#9a9a9a' }} />
+        <View style={{ width: q, height: q, borderWidth: 1.5, borderColor: '#333', [wide ? 'borderLeftWidth' : 'borderTopWidth']: 0 }} />
+      </View>
+    </View>
+  );
+}
+
 export const NARRATORS = [['lily', 'Hannah'], ['gregory', 'Frank']]; // add more voices here (and in ci/narrate.js)
 const narratorOf = (prefs) => (NARRATORS.some(([k]) => k === prefs.narrator) ? prefs.narrator : 'lily');
 const NARRATOR = 0.92; // the phone voice's normal pace
@@ -691,15 +704,17 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <Seg value={prefs.sound ? 'on' : 'off'} options={[['off', 'Off'], ['on', 'On']]}
             onChange={(v) => { const on = v === 'on'; setPrefs((p) => ({ ...p, sound: on })); setEffects(on); if (on) playSound('flick'); }} />
         </View>
-        <View style={{ marginTop: 10, gap: 16 }}>
-        {printChoice ? (
-          <>
-            <Option glyph="⎙" title="Print: picture above the words" sub="One page each, like the app" onPress={() => { setPrintChoice(false); setPanel(null); setPrintGate('stacked'); }} />
-            <Option glyph="⎙" title="Print: book spreads" sub="Picture page, then a words page" onPress={() => { setPrintChoice(false); setPanel(null); setPrintGate('spreads'); }} />
-          </>
-        ) : (
-          <Option glyph="⎙" title={printing ? 'Getting ready to print…' : 'Print this book'} sub="Print on paper with AirPrint" disabled={printing} onPress={() => setPrintChoice(true)} />
-        )}
+        {/* Print: two choices, each a little picture of the page */}
+        <View style={styles.setting}>
+          <Text style={styles.help}>{printing ? 'Getting ready to print…' : 'Print this book'}</Text>
+          <View style={{ flexDirection: 'row', gap: 14, opacity: printing ? 0.4 : 1 }}>
+            {[['stacked', 'Portrait'], ['landscape', 'Landscape']].map(([lay, label]) => (
+              <Pressable key={lay} disabled={printing} onPress={() => { setPanel(null); setPrintGate(lay); }} accessibilityRole="button" accessibilityLabel={`Print, ${label.toLowerCase()} pages`} style={styles.printBtn}>
+                <View style={styles.printIc}><PageShape wide={lay === 'landscape'} /></View>
+                <Text style={styles.printLabel}>{label}</Text>
+              </Pressable>
+            ))}
+          </View>
         </View>
           </>
         )}
@@ -768,6 +783,9 @@ const styles = StyleSheet.create({
   recText: { flex: 1, color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
   back: { color: colors.muted, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
   setting: { gap: 8, paddingTop: 10, paddingBottom: 8 },
+  printBtn: { alignItems: 'center', gap: 6 },
+  printIc: { width: 64, height: 64, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
+  printLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
   backlink: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, fontWeight: '700', paddingVertical: 6 },
   help: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#2a2a2a', padding: 12 },

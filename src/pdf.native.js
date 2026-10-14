@@ -48,7 +48,8 @@ async function fontFace(fontKey) {
 // "stacked" pages are 8 × 11 inches with the book drawn like the app: two squares, the picture
 // above the words, each with a thin black outline, the words centred in theirs.
 const PAGE_W = 576, PAGE_H = 792, SQ = 360;
-const pageSize = (layout) => (layout === 'spreads' ? { w: SIZE, h: SIZE } : { w: PAGE_W, h: PAGE_H });
+// "landscape" pages are 11 × 8 inches with the two squares side by side, like the app held sideways.
+const pageSize = (layout) => (layout === 'spreads' ? { w: SIZE, h: SIZE } : layout === 'landscape' ? { w: PAGE_H, h: PAGE_W } : { w: PAGE_W, h: PAGE_H });
 
 function css(face, family, layout) {
   const { w, h } = pageSize(layout);
@@ -68,6 +69,9 @@ html,body{margin:0;padding:0;background:#fff}
 .book{width:${SQ}px;display:flex;flex-direction:column}
 .sq{width:${SQ}px;height:${SQ}px;border:1.5px solid #000;overflow:hidden;position:relative}
 .sq + .sq{border-top:none}
+.book.row{flex-direction:row;width:auto}
+.book.row .sq{width:330px;height:330px}
+.book.row .sq + .sq{border-top:1.5px solid #000;border-left:none}
 .sq img{width:100%;height:100%;object-fit:cover;display:block}
 .sq.txt{display:flex;align-items:center;justify-content:center;padding:0 ${Math.round(SQ * 0.09)}px}
 .sq.txt p{font-size:22px;line-height:1.55;margin:0;text-align:center}
@@ -86,7 +90,7 @@ export async function buildStoryHtml(story, layout = 'stacked', fontKey = 'serif
       if (pic) out.push(`<div class="pg full"><img src="${pic}"/></div>`);
       if (p.text && p.text.trim()) out.push(`<div class="pg words"><p>${esc(p.text)}</p></div>`);
     } else {
-      out.push(`<div class="pg"><div class="book"><div class="sq">${pic ? `<img src="${pic}"/>` : ''}</div><div class="sq txt">${p.text ? `<p>${esc(p.text)}</p>` : ''}</div></div><div class="num">${i + 1}</div></div>`);
+      out.push(`<div class="pg"><div class="book${layout === 'landscape' ? ' row' : ''}"><div class="sq">${pic ? `<img src="${pic}"/>` : ''}</div><div class="sq txt">${p.text ? `<p>${esc(p.text)}</p>` : ''}</div></div><div class="num">${i + 1}</div></div>`);
     }
   });
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${css(face, bookFont(fontKey).css, layout)}</style></head><body>${out.join('')}</body></html>`;
