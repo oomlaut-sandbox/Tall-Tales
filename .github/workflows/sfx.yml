@@ -1,0 +1,31 @@
+# Makes sound-effect candidates with ElevenLabs for review. Saves them to the sfx-output branch.
+name: Sound effects
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  sfx:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Generate
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: node ci/sfx.js 2>&1 | tee /tmp/sfx.txt
+      - name: Save
+        if: always()
+        run: |
+          cp -r sfx-out /tmp/sfx-out 2>/dev/null || mkdir -p /tmp/sfx-out
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          git checkout -q --orphan sfx-output
+          git rm -rfq --cached . > /dev/null
+          rm -rf ./* .gitignore 2>/dev/null || true
+          cp -r /tmp/sfx-out sfx; cp /tmp/sfx.txt report.txt
+          git add -f sfx report.txt
+          git commit -qm "Sound effect candidates"
+          git push -qf origin sfx-output
