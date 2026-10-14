@@ -1,0 +1,47 @@
+name: Account check
+# Checks the Supabase connection from the SUPABASE_URL / SUPABASE_ANON_KEY secrets without
+# printing them: which sign-in methods are switched on, and whether the delete-account function exists.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/account-check.yml']
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          mkdir -p out
+          node -e '
+            const u=(process.env.URL||"").trim().replace(/\/$/,""), k=(process.env.KEY||"").trim();
+            const out=[];
+            (async()=>{
+              out.push("url secret: "+(u?"set ("+(/^https:\/\/[a-z0-9]+\.supabase\.co$/.test(u)?"looks right":"unexpected format")+")":"MISSING"));
+              out.push("key secret: "+(k?"set (length "+k.length+")":"MISSING"));
+              if(u&&k){
+                try{const r=await fetch(u+"/auth/v1/settings",{headers:{apikey:k}});const j=await r.json();
+                  out.push("auth settings: HTTP "+r.status);
+                  if(j.external) out.push("email: "+j.external.email+", apple: "+j.external.apple);
+                  if(j.mailer_autoconfirm!==undefined) out.push("email autoconfirm: "+j.mailer_autoconfirm);
+                }catch(e){out.push("auth settings: error "+e.message)}
+                try{const r=await fetch(u+"/rest/v1/rpc/delete_my_account",{method:"POST",headers:{apikey:k,Authorization:"Bearer "+k,"Content-Type":"application/json"},body:"{}"});
+                  const t=await r.text();
+                  out.push("delete_my_account: HTTP "+r.status+" "+(r.status===404||/Could not find/.test(t)?"(function NOT found: run docs/supabase-setup.sql)":"(function exists; anonymous call refused as expected)"));
+                }catch(e){out.push("delete_my_account: error "+e.message)}
+              }
+              require("fs").writeFileSync("out/account-check.txt",out.join("\n")+"\n");console.log(out.join("\n"));
+            })();'
+      - name: Save result
+        run: |
+          git config user.name ci; git config user.email ci@example.com
+          git checkout --orphan account-output
+          git rm -rfq . >/dev/null 2>&1 || true
+          git add -f out/account-check.txt
+          git commit -qm "account check $(date -u +%FT%TZ)"
+          git push -f origin account-output
