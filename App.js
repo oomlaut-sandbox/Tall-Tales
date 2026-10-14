@@ -52,10 +52,8 @@ function Root() {
     loadJSON('prefs', null).then((p) => {
       // Sound effects start off every time the app opens (they can be switched on in the Playback menu).
       if (p) p = { ...p, sound: false, soundOffDefault: true };
-      // Interactive mode was removed: anyone who had it gets Page by Page instead.
-      if (p && p.mode === 'interactive') p = { ...p, mode: 'page' };
-      // No playback option chosen yet: Page by Page narration.
-      if (p && !p.mode) p = { ...p, mode: 'page' };
+      // Every time the app opens, playback starts as Page by Page (it can be changed in Playback Options).
+      if (p) p = { ...p, mode: 'page' };
       // Huge text was removed: Large is the biggest now.
       if (p && p.textScale > 1.25) p = { ...p, textScale: 1.25 };
       if (p) setPrefs((x) => ({ ...x, ...p }));
