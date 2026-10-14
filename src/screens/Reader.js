@@ -113,6 +113,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   prefsRef.current = prefs;
   const flipP = useRef(new Animated.Value(0)).current; // 0 = page a showing, 1 = page b (a + 1)
   const prog = useRef(0); // the same progress, as a plain number
+  const [recPages, setRecPages] = useState([]); // pages that have a recording of the parent's voice
+  const refreshRecPages = useCallback(() => { listRecordings(story).then((l) => setRecPages(l.map((r) => r.page))).catch(() => {}); }, [story]);
+  useEffect(() => { refreshRecPages(); }, [refreshRecPages]);
   const [shareGate, setShareGate] = useState(false); // 'Share Book' on the last page, behind the parent gate
   const [peel, setPeel] = useState(null); // {front, back, corner}: pictures for the paper peel
   const peelOn = useRef(false);
@@ -139,6 +142,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const topH = BL.topH;
   const showControls = prefs.mode !== 'self' || recording;
   const barH = BL.barH;
+  // a small 'Your voice' mark when this page will play the parent's recording
+  const mineHere = prefs.voice === 'mine' && recPages.includes(idx) && prefs.mode !== 'self' && !recording;
   const panelPos = wide ? { bottom: 0, inset: BL.rightW } : { bottom: barH };
   const n = story.pages.length;
   const tokens = useMemo(() => (pages[idx] && pages[idx].text ? tokenize(pages[idx].text) : []), [pages, idx]);
@@ -257,6 +262,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         await saveRecording(story.id, pageKey(story.pages[page], page), recorder.uri, seconds);
         if (prefsRef.current.voice !== 'mine') setPrefs((p) => ({ ...p, voice: 'mine' }));
         toast(`Saved your voice for page ${page + 1}.`);
+        refreshRecPages();
       }
     } catch (e) {
       toast('That recording couldn’t be saved.');
@@ -266,6 +272,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 
   const openRecList = async () => {
     setRecList(await listRecordings(story));
+    refreshRecPages();
     setRecView('list');
   };
 
@@ -605,6 +612,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             <View style={{ alignItems: 'center', gap: 18 }}>
               <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
               <BarMeta vertical sub={idx < n ? `${idx + 1}/${n}` : 'End'} />
+              {mineHere ? <View style={styles.mineDot} accessibilityLabel="This page plays your own recording" /> : null}
             </View>
             {showControls ? (
               <View style={[styles.small, { alignItems: 'center', gap: 14 }]}>
@@ -618,7 +626,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       ) : (
       <View style={[styles.bottomBar, { height: barH, paddingBottom: insets.bottom }]}>
         <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
-        <BarMeta page={idx < n ? `Page ${idx + 1} of ${n}` : 'The End'} />
+        <View style={{ flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center' }}>
+          <BarMeta page={idx < n ? `Page ${idx + 1} of ${n}` : 'The End'} />
+          {mineHere ? <View style={styles.mine} accessibilityLabel="This page plays your own recording"><View style={styles.mineDot} /><Text style={styles.mineText}>Your voice</Text></View> : null}
+        </View>
         {showControls ? (
           <View style={[styles.small, { flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
             <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
@@ -746,6 +757,9 @@ const styles = StyleSheet.create({
   desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.desk },
   bookShadow: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
   book: { flex: 1, overflow: 'hidden', backgroundColor: colors.paper },
+  mine: { flexDirection: 'row', alignItems: 'center', gap: 6, marginLeft: 10 },
+  mineDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.highlight },
+  mineText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 12 },
   sideBar: { backgroundColor: colors.bar, alignItems: 'flex-end', zIndex: 30 },
   bottomBar: { backgroundColor: colors.bar, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, gap: 10, zIndex: 30 },
   small: { transform: [{ scale: 0.86 }] },

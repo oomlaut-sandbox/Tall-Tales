@@ -43,7 +43,7 @@ export function WithBar({ bar, children, style }) {
 
 export function BarMeta({ title, sub, vertical, serif, page }) {
   // The reader's bar: just "Page X of Y", small bold Helvetica.
-  if (page) return <View style={{ flex: 1, minWidth: 0, paddingLeft: 14 }}><Text numberOfLines={1} style={styles.metaPage}>{page}</Text></View>;
+  if (page) return <View style={{ flexShrink: 1, minWidth: 0, paddingLeft: 14 }}><Text numberOfLines={1} style={styles.metaPage}>{page}</Text></View>;
   if (vertical) {
     // Only room for the page number when the bar runs down the side.
     return sub ? <Text style={[styles.metaPage, { textAlign: 'center' }]}>{sub}</Text> : null;
