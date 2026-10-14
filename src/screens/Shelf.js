@@ -122,7 +122,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
           </View>
         </View>
       ) : null}
-      <ParentGate visible={!!gate} reason={gate === 'share' ? 'Sharing sends this book outside the app as a PDF.' : 'Deleting books from the library.'}
+      <ParentGate visible={!!gate} reason={gate === 'share' ? 'Sharing sends an invitation to oomlaut Reader by message or email.' : 'Deleting books from the library.'}
         onCancel={() => setGate(null)}
         onPass={() => {
           const g = gate; setGate(null);

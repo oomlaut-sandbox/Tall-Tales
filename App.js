@@ -14,6 +14,7 @@ import ParentGate from './src/components/ParentGate';
 import Reader from './src/screens/Reader';
 import Publisher, { draftFrom } from './src/screens/Publisher';
 import { STORIES } from './src/story';
+import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
@@ -90,10 +91,7 @@ function Root() {
           <Library u={u} stories={[...STORIES.filter((s) => !removed.includes(s.id)), ...userStories]} openStory={openStory} openMenu={openMenu}
             onCreate={() => openPublisher(null)} onEdit={openPublisher}
             removedCount={removed.length} onRestore={() => setRemovedSaved([])}
-            onShare={async (s) => {
-              toast('Making the PDF…');
-              try { await shareStoryPdf(s, 'stacked', prefs.font); } catch (e) { toast(e && e.message ? e.message : 'Couldn’t make the PDF. Try again.'); }
-            }}
+            onShare={(s) => shareInvite(s.title)} // an invitation to the app, not the book
             onDelete={async (list) => {
               const builtIn = list.filter((s) => !s.mine).map((s) => s.id);
               if (builtIn.length) setRemovedSaved([...new Set([...removed, ...builtIn])]);

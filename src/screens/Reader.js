@@ -48,6 +48,7 @@ const VOICE_RECORDING = {
 };
 import { playPaper, setPageSound } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
+import { shareInvite } from '../invite';
 import { audioModeChanged, pauseVoice, playClips, playVoice, resumeVoice, stopVoice } from '../voice';
 import { WORDS } from '../narration/words';
 import { getRecording, listRecordings, pageKey, removeRecording, saveRecording } from '../recordings';
@@ -691,7 +692,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       <ParentGate visible={shareGate} reason="Sharing opens your phone’s messages and email." onCancel={() => setShareGate(false)}
         onPass={() => {
           setShareGate(false);
-          Share.share({ message: `We’ve been reading “${story.title}” together in oomlaut Reader: picture books in your voice. Come and read with us!` }).catch(() => {});
+          shareInvite(story.title);
         }} />
       <ParentGate visible={!!printGate} reason="Printing opens your phone’s print options." onPass={() => doPrint(printGate)} onCancel={() => setPrintGate(null)} />
 
