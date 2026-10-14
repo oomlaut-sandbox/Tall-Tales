@@ -20,7 +20,7 @@ import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
-import { LibraryIcon, Option, Panel, Toast } from './src/components/Chrome';
+import { LibraryIcon, Option, Panel, SIDE_MENU_TOP, Toast } from './src/components/Chrome';
 import { playSound, setEffects } from './src/sound';
 import { stopSpeech } from './src/speech';
 import { stopVoice } from './src/voice';
@@ -98,7 +98,7 @@ function Root() {
     const reader = screen === 'reader';
     if (sideways) {
       const barW = reader ? bookLayout(width, height, { ...insets, left: camBar }, u * 13).rightW : Math.round(u * 17 * 1.15);
-      return { side: true, right: barW, y: Math.max(14, insets.top) + u * 3.7 };
+      return { side: true, right: barW, y: SIDE_MENU_TOP + u * 3.2 };
     }
     const ins = { ...insets, top: camBar };
     const bottom = reader ? bookLayout(width, height, ins, u * 13).barH : u * 17 + insets.bottom;
