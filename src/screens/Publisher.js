@@ -178,7 +178,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           )}
           <Fade edge="bottom" size={Math.round(side * 0.05)} max={0.2} />
         </Pressable>
-        <View style={[styles.textBox, { height: side, paddingHorizontal: side * 0.09, paddingTop: side * 0.06 }]}>
+        <View style={[styles.textBox, { height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>
           <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} />
           <View pointerEvents="none" style={styles.spine} />
           <Text style={styles.addText}>Add Text</Text>
@@ -188,7 +188,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             placeholder="Type the words for this page. Two or three sentences reads best."
             placeholderTextColor="#666"
             multiline
-            style={[styles.input, { fontFamily: bookFont(fontKey).family }]}
+            style={[styles.input, { fontFamily: bookFont(fontKey).family, maxHeight: side * 0.7 }]}
             accessibilityLabel={`Words for page ${i + 1}`}
           />
         </View>
@@ -283,9 +283,9 @@ const styles = StyleSheet.create({
   addImage: { color: colors.white, fontWeight: '700', fontSize: 22, fontFamily: fonts.ui, marginTop: 4 },
   artBtns: { position: 'absolute', left: 12, bottom: 12, flexDirection: 'row', gap: 8 },
   chip: { backgroundColor: 'rgba(0,0,0,0.6)', color: colors.white, fontWeight: '700', fontSize: 15, paddingHorizontal: 14, paddingVertical: 8, overflow: 'hidden', fontFamily: fonts.ui },
-  textBox: { paddingBottom: 24 },
+  textBox: { justifyContent: 'center' }, // "Add Text" and the words sit in the middle of the square
   addText: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.ink, marginBottom: 6, textAlign: 'center' },
-  input: { flex: 1, fontFamily: fonts.story, fontSize: 21, lineHeight: 34, color: colors.ink, textAlign: 'center', textAlignVertical: 'top', padding: 0 },
+  input: { fontFamily: fonts.story, fontSize: 21, lineHeight: 34, color: colors.ink, textAlign: 'center', textAlignVertical: 'center', padding: 0, minHeight: 68 },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, padding: 0 },
   sub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 12, marginTop: 2 },
   btn: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, paddingHorizontal: 3 },
