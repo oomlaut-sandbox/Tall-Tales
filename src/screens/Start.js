@@ -11,6 +11,14 @@ import { Bar, Burger, DogEar } from '../components/Chrome';
 import BookFrame, { Spine } from '../components/BookFrame';
 import { Fade } from '../components/PageView';
 import { playPaper } from '../sound';
+import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
+
+// If drawing the peel ever fails, just skip it (the page still fades through to My Library).
+class PeelSafe extends React.Component {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  render() { return this.state.failed ? null : this.props.children; }
+}
 
 const PEBBLES = require('../../assets/home-pebbles.jpg');
 export const COVER_BROWN = '#6f4b32';
@@ -36,12 +44,37 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
   // The menu page's dog-ear: the page turns over and My Library shows through.
   const q = useRef(new Animated.Value(0)).current;
   const peeling = useRef(false);
-  const peel = () => {
+  // On the phone the page peels from the corner exactly like a reader page (pictures of the page
+  // drawn by Skia); elsewhere, or sideways, it simply turns over the spine.
+  const bookRef = useRef(null), blankRef = useRef(null);
+  const [skiaPeel, setSkiaPeel] = useState(null); // { front, back, t }
+  const wideNow = useRef(false);
+  const peel = async () => {
     if (peeling.current) return;
     peeling.current = true;
+    let pics = null;
+    if (supportsCurl && !wideNow.current) {
+      try {
+        const front = await snapshot(bookRef), back = await snapshot(blankRef);
+        if (front && back) pics = { front, back };
+      } catch (e) { pics = null; }
+    }
     onPeek && onPeek(); // My Library is drawn underneath while the page turns
     playPaper('turn', 1);
-    Animated.timing(q, { toValue: 1, duration: 950, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => go('library'));
+    if (!pics) {
+      Animated.timing(q, { toValue: 1, duration: 950, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => go('library'));
+      return;
+    }
+    const t0 = Date.now(), ms = 1000;
+    const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+    const step = () => {
+      const x = Math.min(1, (Date.now() - t0) / ms);
+      const t = ease(x);
+      setSkiaPeel({ ...pics, t });
+      q.setValue(t); // drives the fade to My Library
+      if (x < 1) requestAnimationFrame(step); else go('library');
+    };
+    requestAnimationFrame(step);
   };
   const fadeAway = q.interpolate({ inputRange: [0, 0.45, 1], outputRange: [1, 1, 0] });
   const [opening, setOpening] = useState(false);
@@ -60,8 +93,9 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
 
   return (
     <Animated.View style={{ flex: 1, opacity: fadeAway }}>
-    <BookFrame bare barMin={u * 17} bar={(L) => <Bar u={u} vertical={L.wide}><Burger u={u} onPress={openMenu} /></Bar>}>
+    <BookFrame bare bookProps={{ ref: bookRef, collapsable: false }} barMin={u * 17} bar={(L) => <Bar u={u} vertical={L.wide}><Burger u={u} onPress={openMenu} /></Bar>}>
       {({ side, wide }) => {
+        wideNow.current = wide;
         const k = side / 100; // sizes inside the book scale with the squares
         // where the two squares sit: picture first (top, or left when sideways), then the words
         const at1 = { position: 'absolute', left: 0, top: 0, width: side, height: side };
@@ -83,11 +117,18 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
         const qTurn = q.interpolate({ inputRange: [0, 1], outputRange: wide ? ['0deg', '-180deg'] : ['0deg', '180deg'] });
         const qBack = q.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] });
         const qShade = q.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.25, 0.1] });
-        const pageTurn = wide
+        const pageTurn = skiaPeel ? { zIndex: 6, opacity: 0 } : wide
           ? { zIndex: 6, transformOrigin: 'left', transform: [{ perspective: 1600 }, { rotateY: qTurn }] }
           : { zIndex: 6, transformOrigin: 'top', transform: [{ perspective: 1600 }, { rotateX: qTurn }] };
         return (
           <>
+            {/* plain paper under the pages: what the peeling page uncovers (and the back of the page) */}
+            {!closed ? <View ref={blankRef} collapsable={false} style={{ position: 'absolute', left: 0, top: 0, width: wide ? side * 2 : side, height: wide ? side : side * 2, backgroundColor: colors.paper, zIndex: -1 }} /> : null}
+            {skiaPeel ? (
+              <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: side, height: side * 2, zIndex: 9 }}>
+                <PeelSafe><FlapPeel width={side} height={side * 2} artH={side} t={skiaPeel.t} corner="right" front={skiaPeel.front} back={skiaPeel.back} /></PeelSafe>
+              </View>
+            ) : null}
             {/* the picture square: only once the book is open */}
             {!closed ? <View style={[at1, styles.page]}>{pebbles}</View> : null}
             {/* the words square: the menu */}
