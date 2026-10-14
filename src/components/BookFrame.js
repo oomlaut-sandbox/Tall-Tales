@@ -23,7 +23,8 @@ export function bookLayout(winW, winH, insets, barMin) {
     const roomW = winW - minLeft - minRight - 2 * G, roomH = winH - Math.max(insets.top, 0) - insets.bottom - 2 * G;
     const side = Math.floor(Math.max(120, Math.min(roomW / 2, roomH)));
     const spare = Math.max(0, roomW - 2 * side);
-    return { side, wide, bookW: side * 2, bookH: side, leftW: minLeft + spare / 2, rightW: minRight + spare / 2, topH: 0, barH: 0, spare };
+    // sideways the bars keep their own width at the screen edges; any spare room is grey around the book
+    return { side, wide, bookW: side * 2, bookH: side, leftW: minLeft, rightW: minRight, topH: 0, barH: 0, spare };
   }
   const minTop = insets.top, minBar = barMin + insets.bottom;
   const room = winH - minTop - minBar - 2 * G;

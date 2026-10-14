@@ -670,6 +670,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <Seg value={prefs.sound ? 'on' : 'off'} options={[['off', 'Off'], ['on', 'On']]}
             onChange={(v) => { const on = v === 'on'; setPrefs((p) => ({ ...p, sound: on })); setPageSound(on); if (on) playPaper('turn', 0.8); }} />
         </View>
+        <View style={{ marginTop: 10, gap: 16 }}>
         {printChoice ? (
           <>
             <Option glyph="⎙" title="Print: picture above the words" sub="One page each, like the app" onPress={() => { setPrintChoice(false); setPanel(null); setPrintGate('stacked'); }} />
@@ -678,6 +679,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         ) : (
           <Option glyph="⎙" title={printing ? 'Getting ready to print…' : 'Print this book'} sub="Print on paper with AirPrint" disabled={printing} onPress={() => setPrintChoice(true)} />
         )}
+        </View>
           </>
         )}
       </Panel>
@@ -688,7 +690,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <>
             <Option glyph="●" title="Start Recording" sub={`Read this story in your own voice, starting on page ${Math.min(idx + 1, n)}`} disabled={idx >= n} onPress={startRec} />
             <Option glyph="≡" title="Your Recordings" sub="Listen to or remove the pages you recorded" onPress={openRecList} />
-            <Option glyph={<GearIcon />} title="Recording Settings" sub="Choose whose voice reads the story" onPress={() => setRecView('settings')} />
+            <Option glyph={<GearIcon size={14} />} title="Recording Settings" sub="Choose whose voice reads the story" onPress={() => setRecView('settings')} />
             <Option glyph="?" title="Help" sub="How recording works" onPress={() => setRecView('help')} />
           </>
         ) : (

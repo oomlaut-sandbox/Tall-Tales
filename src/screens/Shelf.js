@@ -44,16 +44,18 @@ function Band({ color, dark, title, sub, action, onAction }) {
   const fg = dark ? colors.ink : colors.white;
   return (
     <View style={{ backgroundColor: color, paddingTop: insets.top + 40, paddingBottom: 22, paddingHorizontal: 24 }}>
-      {/* the title, with the action (Select / Done) on the same line at the right */}
+      {/* the title block, with the action (Select / Cancel) centred beside the whole block */}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={{ flex: 1, color: fg, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32 }}>{title}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={{ color: fg, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32 }}>{title}</Text>
+          <Text style={{ color: fg, fontFamily: fonts.ui, fontSize: 15, marginTop: 6, opacity: 0.9 }}>{sub}</Text>
+        </View>
         {action ? (
           <Pressable onPress={onAction} hitSlop={10} accessibilityRole="button">
             <Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 17 }}>{action}</Text>
           </Pressable>
         ) : null}
       </View>
-      <Text style={{ color: fg, fontFamily: fonts.ui, fontSize: 15, marginTop: 6, opacity: 0.9 }}>{sub}</Text>
     </View>
   );
 }
