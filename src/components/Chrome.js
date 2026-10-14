@@ -216,7 +216,11 @@ export function Toast({ message }) {
   if (!message) return null;
   return (
     <View pointerEvents="none" style={styles.toastWrap}>
-      <Text style={styles.toast}>{message}</Text>
+      {/* a white speech bubble: big rounded corners, roomy padding, a soft shadow and a little tail */}
+      <View style={styles.bubble}>
+        <Text style={styles.toast}>{message}</Text>
+        <View style={styles.bubbleTail} />
+      </View>
     </View>
   );
 }
@@ -245,5 +249,9 @@ const styles = StyleSheet.create({
   optTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20, marginBottom: 3 },
   optSub: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 14 },
   toastWrap: { position: 'absolute', left: 0, right: 0, top: 64, alignItems: 'center', zIndex: 60, paddingHorizontal: 24 },
-  toast: { backgroundColor: colors.white, color: colors.ink, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, paddingHorizontal: 16, paddingVertical: 12, textAlign: 'center', overflow: 'hidden' },
+  bubble: { backgroundColor: colors.white, borderRadius: 26, paddingHorizontal: 30, paddingVertical: 22, maxWidth: 360,
+    shadowColor: '#000', shadowOpacity: 0.22, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 6 },
+  bubbleTail: { position: 'absolute', left: 38, bottom: -13, width: 0, height: 0, borderTopWidth: 16, borderTopColor: colors.white,
+    borderLeftWidth: 4, borderLeftColor: 'transparent', borderRightWidth: 14, borderRightColor: 'transparent' },
+  toast: { color: colors.ink, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, lineHeight: 22, textAlign: 'center' },
 });
