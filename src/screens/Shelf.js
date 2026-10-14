@@ -142,15 +142,15 @@ export function Store({ u, openStory, openMenu }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.paper },
+  screen: { flex: 1, backgroundColor: colors.desk }, // same dark grey as reading
   grid: { padding: 20, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
-  tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.16, shadowRadius: 4, elevation: 2 },
-  tileTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, color: colors.ink },
-  tileSub: { fontFamily: fonts.ui, fontSize: 13, color: '#444' },
+  tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 4 },
+  tileTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, color: colors.white },
+  tileSub: { fontFamily: fonts.ui, fontSize: 13, color: '#d0d0d0' },
   check: { position: 'absolute', top: 8, left: 8, width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: colors.white, backgroundColor: 'rgba(0,0,0,0.25)', alignItems: 'center', justifyContent: 'center', zIndex: 2 },
   checkOn: { backgroundColor: colors.highlight, borderColor: colors.white },
   checkMark: { color: colors.white, fontWeight: '800', fontSize: 16, lineHeight: 18 },
-  restore: { fontFamily: fonts.ui, fontSize: 15, color: '#333', textDecorationLine: 'underline', textAlign: 'center' },
+  restore: { fontFamily: fonts.ui, fontSize: 15, color: '#d0d0d0', textDecorationLine: 'underline', textAlign: 'center' },
   confirm: { position: 'absolute', left: 16, right: 16, bottom: 150, backgroundColor: colors.panel, padding: 18, gap: 14, zIndex: 40 },
   confirmText: { color: colors.white, fontFamily: fonts.ui, fontSize: 16, lineHeight: 22 },
   actBtn: { flex: 1, paddingVertical: 12, alignItems: 'center' },
@@ -159,5 +159,5 @@ const styles = StyleSheet.create({
   barBtnOff: { opacity: 0.35 },
   barBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
   barHint: { flex: 1, textAlign: 'right', color: colors.muted, fontFamily: fonts.ui, fontSize: 12 },
-  note: { width: '100%', backgroundColor: '#bdbdbd', padding: 16, fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, color: colors.ink },
+  note: { width: '100%', backgroundColor: '#4a4a4a', padding: 16, fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, color: colors.white },
 });
