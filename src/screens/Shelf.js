@@ -1,9 +1,10 @@
 // My Library and Book Store.
-import React, { useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
-import { Bar, BarMeta, Burger, WithBar } from '../components/Chrome';
+import { Bar, BarMeta, Burger, Panel, WithBar } from '../components/Chrome';
+import { accessLabel, bundledStory, cachedCatalog, coverFor, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
 import { STORIES } from '../story';
 
@@ -126,18 +127,81 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
   );
 }
 
+// The Book Store: shelves of books from the catalog you curate in Supabase (see src/catalog.js).
 export function Store({ u, openStory, openMenu }) {
   const { width: winW } = useWindowDimensions();
+  const [cat, setCat] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [open, setOpen] = useState(null); // the book whose details are showing
+  const load = async (pull) => {
+    if (pull) setRefreshing(true);
+    try { const c = await refreshCatalog(); if (c) setCat(c); } catch (e) { /* offline: keep the saved copy */ }
+    if (pull) setRefreshing(false);
+  };
+  useEffect(() => { cachedCatalog().then((c) => setCat((cur) => cur || c)); load(false); }, []);
+  const rows = cat ? shelvesWithBooks(cat) : [];
+  const featured = cat ? cat.books.find((b) => b.featured) : null;
+  const tileW = Math.min(170, Math.max(120, winW * 0.36));
+  const read = (b) => { const st = bundledStory(b.id); if (st) { setOpen(null); openStory(st); } };
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <Band color={colors.blue} title="Book Store" sub="Find and buy new stories" />
-      <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]}>
-        <Text style={styles.note}>Buying and downloading stories arrives in a later build. For now, the sample story is free to read.</Text>
-        {STORIES.map((s) => (
-          <Tile key={s.id} u={u} cover={s.pages[0].image} title={s.title} sub={s.author ? `by ${s.author} · in your library` : 'Free sample · in your library'} onPress={() => openStory(s)} />
+      <ScrollView contentContainerStyle={{ paddingVertical: 20, gap: 26 }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.white} />}>
+        {featured ? (
+          <Pressable onPress={() => setOpen(featured)} style={styles.feature} accessibilityRole="button" accessibilityLabel={`${featured.title}, featured`}>
+            <View style={[styles.tileShadow, { width: tileW * 1.15, aspectRatio: 1 }]}>
+              {coverFor(featured) ? <Image source={coverFor(featured)} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
+            </View>
+            <View style={{ flex: 1, minWidth: 0, gap: 6 }}>
+              <Text style={styles.kicker}>Featured</Text>
+              <Text style={styles.featureTitle}>{featured.title}</Text>
+              {featured.author ? <Text style={styles.tileSub}>by {featured.author}</Text> : null}
+              <Badge book={featured} />
+            </View>
+          </Pressable>
+        ) : null}
+        {rows.map((sh) => (
+          <View key={sh.id} style={{ gap: 12 }}>
+            <Text style={styles.shelfTitle}>{sh.title}</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}>
+              {sh.books.map((b) => (
+                <Pressable key={b.id} onPress={() => setOpen(b)} style={{ width: tileW, gap: 8 }} accessibilityRole="button" accessibilityLabel={b.title}>
+                  <View style={[styles.tileShadow, { width: tileW, height: tileW }]}>
+                    {coverFor(b) ? <Image source={coverFor(b)} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
+                    <View style={styles.badgeAt}><Badge book={b} /></View>
+                  </View>
+                  <Text numberOfLines={2} style={styles.tileTitle}>{b.title}</Text>
+                </Pressable>
+              ))}
+            </ScrollView>
+          </View>
         ))}
       </ScrollView>
+      <Panel open={!!open} side="right" title={open ? open.title : ''} bottom={0} onClose={() => setOpen(null)}>
+        {open ? (
+          <View style={{ gap: 12 }}>
+            {open.author ? <Text style={styles.sheetSub}>by {open.author}</Text> : null}
+            {open.blurb ? <Text style={styles.sheetText}>{open.blurb}</Text> : null}
+            <Text style={styles.sheetSub}>{[open.page_count ? `${open.page_count} pages` : null, open.age_range ? `ages ${open.age_range}` : null, accessLabel(open)].filter(Boolean).join(' · ')}</Text>
+            {open.access === 'free' && bundledStory(open.id) ? (
+              <Pressable onPress={() => read(open)} style={styles.sheetBtn} accessibilityRole="button"><Text style={styles.sheetBtnText}>Read now</Text></Pressable>
+            ) : (
+              <Text style={styles.sheetText}>{open.access === 'free' ? 'Downloading new books arrives in the next update.' : 'Memberships and buying single books arrive in the next update.'}</Text>
+            )}
+          </View>
+        ) : null}
+      </Panel>
     </WithBar>
+  );
+}
+
+function Badge({ book }) {
+  const free = book.access === 'free';
+  return (
+    <View style={[styles.badge, free ? { backgroundColor: colors.green } : book.access === 'member' ? { backgroundColor: colors.blue } : { backgroundColor: colors.orange }]}>
+      <Text style={[styles.badgeText, book.access === 'paid' && { color: colors.ink }]}>{accessLabel(book)}</Text>
+    </View>
   );
 }
 
@@ -159,5 +223,16 @@ const styles = StyleSheet.create({
   barBtnOff: { opacity: 0.35 },
   barBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
   barHint: { flex: 1, textAlign: 'right', color: colors.muted, fontFamily: fonts.ui, fontSize: 12 },
+  feature: { flexDirection: 'row', gap: 16, alignItems: 'center', paddingHorizontal: 20 },
+  kicker: { color: '#d0d0d0', fontFamily: fonts.ui, fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 },
+  featureTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 22 },
+  shelfTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 19, paddingHorizontal: 20 },
+  badgeAt: { position: 'absolute', left: 6, top: 6 },
+  badge: { alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3 },
+  badgeText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 12 },
+  sheetSub: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15 },
+  sheetText: { color: colors.white, fontFamily: fonts.ui, fontSize: 16, lineHeight: 23 },
+  sheetBtn: { backgroundColor: colors.green, paddingVertical: 14, alignItems: 'center' },
+  sheetBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   note: { width: '100%', backgroundColor: '#4a4a4a', padding: 16, fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, color: colors.white },
 });
