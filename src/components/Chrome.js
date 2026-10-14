@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
   optSub: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 14 },
   toastWrap: { position: 'absolute', left: 0, right: 0, top: 64, alignItems: 'center', zIndex: 60, paddingHorizontal: 24 },
   bubble: { backgroundColor: colors.white, borderRadius: 26, paddingHorizontal: 30, paddingVertical: 22, maxWidth: 360,
-    shadowColor: '#000', shadowOpacity: 0.22, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 6 },
+    shadowColor: '#000', shadowOpacity: 0.34, shadowRadius: 12, shadowOffset: { width: 0, height: 5 }, elevation: 9 },
   bubbleTail: { position: 'absolute', left: 38, bottom: -13, width: 0, height: 0, borderTopWidth: 16, borderTopColor: colors.white,
     borderLeftWidth: 4, borderLeftColor: 'transparent', borderRightWidth: 14, borderRightColor: 'transparent' },
   toast: { color: colors.ink, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, lineHeight: 22, textAlign: 'center' },
