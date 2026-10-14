@@ -84,7 +84,7 @@ export function PlayButton({ onPress, active, disabled }) {
 // Folded corner at the bottom right. The drawn fold is small; the tap area stays thumb-sized.
 // The folded corner: a dark triangle (the page behind) and the white folded flap, which casts a
 // soft shadow onto the page (a few faint, slightly larger triangles behind it).
-export function DogEar({ u, onPress, label = 'Next page', under = '#262626' }) {
+export function DogEar({ u, onPress, label = 'Next page', under = colors.earUnder }) {
   const e = Math.max(24, u * 7.5);
   const tri = (size, color, off = 0) => (
     <View key={`${size}-${off}`} style={{ position: 'absolute', right: off * 0.4, bottom: off * 0.4, width: 0, height: 0, borderRightWidth: size, borderTopWidth: size, borderRightColor: 'transparent', borderTopColor: color }} />
