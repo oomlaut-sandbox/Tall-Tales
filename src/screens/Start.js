@@ -19,7 +19,8 @@ const LEATHER = require('../../assets/leather.jpg'); // Jörg's brown leather, o
 function MenuItem({ u, color, title, sub, onPress }) {
   return (
     <Pressable onPress={onPress} accessibilityRole="button" style={{ flexDirection: 'row', gap: u * 4.6 }}>
-      <View style={{ width: u * 16.5, height: u * 33 }}>
+      {/* the icon, with a slight drop shadow */}
+      <View style={{ width: u * 16.5, height: u * 33, backgroundColor: colors.white, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 3 }}>
         <View style={{ flex: 1, backgroundColor: color }} />
         <View style={{ flex: 1, backgroundColor: colors.white }} />
       </View>
