@@ -552,7 +552,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         {/* Tap anywhere along the left or right edge to turn back or forward (swipes work anywhere). */}
         {size && idx > 0 ? <Pressable onPress={() => flip(-1)} accessibilityLabel="Previous page" style={[styles.edge, { left: 0, width: edgeW }]} /> : null}
         {size && idx < pages.length - 1 ? <Pressable onPress={() => flip(1)} accessibilityLabel="Next page" style={[styles.edge, { right: 0, width: edgeW }]} /> : null}
-        {idx < pages.length - 1 ? <View style={{ position: 'absolute', right: 0, bottom: 0, zIndex: 20 }}><DogEar u={u} under={colors.desk} onPress={() => flip(1)} /></View> : null}
+        {idx < pages.length - 1 ? <View style={{ position: 'absolute', right: 0, bottom: 0, zIndex: 20 }}><DogEar u={u} under={colors.earUnder} onPress={() => flip(1)} /></View> : null}
         {recording ? (
           <View style={styles.recBanner} pointerEvents="none">
             <View style={styles.recDot} />

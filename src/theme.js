@@ -7,6 +7,7 @@ export const colors = {
   ink: '#111111',
   bar: '#000000',
   desk: '#3b3b3b', // the dark grey the book floats on in the reader
+  earUnder: '#878787', // rgb(135,135,135): the page showing under the dog-ear in books
   panel: '#1c1c1c',
   panelHead: 'rgba(0,0,0,0.78)',
   tile: '#5f5f5f',

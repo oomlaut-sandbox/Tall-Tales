@@ -192,7 +192,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             accessibilityLabel={`Words for page ${i + 1}`}
           />
         </View>
-        <DogEar u={u} under={colors.desk} onPress={next} label="Next page" />
+        <DogEar u={u} under={colors.earUnder} onPress={next} label="Next page" />
         <Pressable onPress={() => setGuide(true)} style={[styles.help, { top: 10, right: 10 }]} hitSlop={8} accessibilityLabel="How to make a story">
           <Text style={styles.helpText}>?</Text>
         </Pressable>
