@@ -33,6 +33,8 @@ if [ -n "${EXPO_TOKEN:-}" ]; then
 else
   echo "SKIP expo-login (no EXPO_TOKEN secret)" >> "$summary"
 fi
+# catches names used but never defined (a launch crash the bundler doesn't notice)
+step undefined-names npx --yes eslint@8.57.0 --no-eslintrc --parser-options=ecmaVersion:2022 --parser-options=sourceType:module --parser-options=ecmaFeatures:{jsx:true} --env browser,es2022,node --global __DEV__ --rule 'no-undef:error' App.js src
 step bundle-ios npx expo export --platform ios --output-dir build-ios
 step bundle-android npx expo export --platform android --output-dir build-android
 step bundle-web npx expo export --platform web --output-dir out/web

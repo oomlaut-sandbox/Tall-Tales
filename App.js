@@ -102,6 +102,10 @@ function Root() {
     const bottom = reader ? bookLayout(width, height, ins, u * 13).barH : u * 17 + insets.bottom;
     return { left: 0, right: 0, top: camBar, bottom };
   }, [screen, sideways, width, height, insets, camBar, u]);
+  // upright the menu comes up out of the bottom bar, whose height depends on the screen
+  const drawerBottom = sideways ? 0 : screen === 'reader' ? bookLayout(width, height, { ...insets, top: camBar }, u * 13).barH
+    : screen === 'start' ? bookLayout(width, height, { ...insets, top: camBar }, u * 17).barH : barH;
+  const drawerRight = sideways ? (screen === 'reader' ? bookLayout(width, height, { ...insets, left: camBar }, u * 13).rightW : Math.round(u * 17 * 1.15)) : 0;
   const screenInsets = useMemo(() => (sideways ? { ...insets, left: camBar } : { ...insets, top: camBar }), [insets, sideways, camBar]);
   return (
     <View style={styles.outer}>
