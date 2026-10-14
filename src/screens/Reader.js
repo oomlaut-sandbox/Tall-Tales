@@ -1,6 +1,6 @@
 // The reader: page curl, read-aloud with highlighting, learn-to-read, interactive pictures.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, PanResponder, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, PanResponder, Platform, Pressable, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOOK_FONTS, colors, fonts } from '../theme';
@@ -111,6 +111,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   prefsRef.current = prefs;
   const flipP = useRef(new Animated.Value(0)).current; // 0 = page a showing, 1 = page b (a + 1)
   const prog = useRef(0); // the same progress, as a plain number
+  const [shareGate, setShareGate] = useState(false); // 'Share Book' on the last page, behind the parent gate
   const [peel, setPeel] = useState(null); // {front, back, corner}: pictures for the paper peel
   const peelOn = useRef(false);
   const cache = useRef({}); // page index -> picture of that page
@@ -480,7 +481,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   }, [W, H]);
   const pageProps = (i) => ({
     page: pages[i], end: !!pages[i]?.end, width: W, height: H, textScale: prefs.textScale || 1, fontKey: prefs.font || 'serif',
-    onReadAgain: () => { stopReading(); setIdx(0); }, onLibrary: goLibrary,
+    onReadAgain: () => { stopReading(); setIdx(0); }, onLibrary: goLibrary, onShare: () => setShareGate(true),
   });
   const showHot = false; // Interactive mode is switched off for now
   const layers = [];
@@ -683,6 +684,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           </>
         )}
       </Panel>
+      <ParentGate visible={shareGate} reason="Sharing opens your phone’s messages and email." onCancel={() => setShareGate(false)}
+        onPass={() => {
+          setShareGate(false);
+          Share.share({ message: `We’ve been reading “${story.title}” together in oomlaut Reader: picture books in your voice. Come and read with us!` }).catch(() => {});
+        }} />
       <ParentGate visible={!!printGate} reason="Printing opens your phone’s print options." onPass={() => doPrint(printGate)} onCancel={() => setPrintGate(null)} />
 
       <Panel open={panel === 'rec'} side="right" title="Recording Options" {...panelPos} onClose={() => setPanel(null)}>

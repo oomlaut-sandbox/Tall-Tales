@@ -52,7 +52,7 @@ export function Fade({ edge, size, max }) {
 }
 
 export const PageView = forwardRef(function PageView(
-  { page, width, height, bottomInset = 0, textScale = 1, fontKey = 'serif', highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary },
+  { page, width, height, bottomInset = 0, textScale = 1, fontKey = 'serif', highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary, onShare },
   ref,
 ) {
   const words = useMemo(() => (page && page.text ? tokenize(page.text) : []), [page]);
@@ -112,16 +112,14 @@ export const PageView = forwardRef(function PageView(
         {end ? (
           <View style={{ alignItems: 'center' }}>
             <Text style={storyStyle}>Thank you for reading.</Text>
-            {/* stacked, styled like the menu rows: a grey icon tile and a bold label */}
-            <View style={{ gap: 10, marginTop: 20, alignSelf: 'stretch', alignItems: 'center' }}>
-              <Pressable onPress={onReadAgain} style={styles.endBtn} accessibilityRole="button">
-                <View style={styles.endIc}><Text style={styles.endGlyph}>↺</Text></View>
-                <Text style={styles.endBtnText}>Read Again</Text>
-              </Pressable>
-              <Pressable onPress={onLibrary} style={styles.endBtn} accessibilityRole="button">
-                <View style={styles.endIc}><Text style={styles.endGlyph}>▤</Text></View>
-                <Text style={styles.endBtnText}>My Library</Text>
-              </Pressable>
+            {/* stacked: a square icon and black text beside it, like the start page */}
+            <View style={{ gap: 12, marginTop: 20, alignSelf: 'center' }}>
+              {[['↺', 'Read Again', onReadAgain], ['▤', 'My Library', onLibrary], ['✉\uFE0E', 'Share Book', onShare]].map(([g, label, fn]) => (
+                <Pressable key={label} onPress={fn} style={styles.endBtn} accessibilityRole="button">
+                  <View style={styles.endIc}><Text style={styles.endGlyph}>{g}</Text></View>
+                  <Text style={styles.endBtnText}>{label}</Text>
+                </Pressable>
+              ))}
             </View>
           </View>
         ) : (
@@ -156,8 +154,8 @@ const styles = StyleSheet.create({
   bubbleText: { backgroundColor: colors.white, color: colors.ink, fontFamily: fonts.story, fontSize: 22, paddingHorizontal: 14, paddingVertical: 6, overflow: 'hidden' },
   endArt: { backgroundColor: '#5a5a5a', alignItems: 'center', justifyContent: 'center' },
   endTitle: { color: '#f2f2f2', textAlign: 'center' },
-  endBtn: { width: 200, flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: colors.bar, padding: 6, paddingRight: 16 },
+  endBtn: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   endIc: { width: 36, height: 36, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
   endGlyph: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
-  endBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  endBtnText: { color: colors.ink, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
 });
