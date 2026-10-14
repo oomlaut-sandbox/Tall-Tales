@@ -193,6 +193,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           setHl(i);
         },
         onDone: afterPage,
+        onFail: () => { // the narration file wouldn't play: read it with the phone's voice instead
+          usingVoice.current = false;
+          if (st.current.idx === pageIndex) speakTracked(p.text, { rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage });
+        },
       })) {
         usingVoice.current = true;
         return;
@@ -203,7 +207,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       getRecording(story.id, pageKey(p, pageIndex)).then((rec) => {
         if (st.current.idx !== pageIndex) return;
         if (rec && playVoice(rec.uri, { rate: speedOf(prefs) / DEFAULT_SPEED, // a parent's own pace at the default setting
-           onProgress: (f) => hlChar(Math.floor(f * p.text.length)), onDone: afterPage })) {
+           onProgress: (f) => hlChar(Math.floor(f * p.text.length)), onDone: afterPage,
+           onFail: () => { if (st.current.idx === pageIndex) narrate(); } })) {
           usingVoice.current = true;
         } else {
           narrate();
@@ -281,7 +286,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (mode === 'self') return toast('Read Yourself is on, so there’s no audio. Pick another mode to listen.');
     if (st.current.recording) return;
     if (paused) { usingVoice.current ? resumeVoice() : resumeSpeech(); setPaused(false); return; }
-    if (!reading) readPage(idx);
+    // Play always (re)reads the page, so it can never get stuck thinking it's still reading.
+    stopReading();
+    setTimeout(() => readPage(st.current.idx), 60);
   };
   const onPause = () => {
     if (!reading) return;

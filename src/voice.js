@@ -32,12 +32,15 @@ function ensurePlayback() {
 
 // source: a file uri string or a bundled audio file. onProgress(fraction 0..1), onTime(seconds), onDone()
 // Returns true straight away; the sound starts as soon as the audio mode is ready.
-export function playVoice(source, { onProgress, onTime, onDone, rate = 1 } = {}) {
+export function playVoice(source, { onProgress, onTime, onDone, onFail, rate = 1 } = {}) {
   stopVoice();
   const my = session;
+  let tries = 0;
   const start = () => {
     if (my !== session) return; // something else started or stopped in the meantime
+    tries++;
     try {
+      if (player) { try { sub && sub.remove(); player.remove(); } catch (e) {} player = null; sub = null; clearInterval(ticker); ticker = null; }
       player = createAudioPlayer(typeof source === 'string' ? { uri: source } : source);
       sub = player.addListener('playbackStatusUpdate', (s) => {
         if (my !== session) return;
@@ -53,14 +56,20 @@ export function playVoice(source, { onProgress, onTime, onDone, rate = 1 } = {})
         ticker = setInterval(() => { if (my === session && player) { try { onTime(player.currentTime || 0); } catch (e) {} } }, 70);
       }
       player.play();
-      // If the sound didn't actually start (it can happen right after a page turn), nudge it once.
+      // Watchdog: if the sound hasn't actually started, try once more with a fresh player; if it
+      // still won't start, give up so the caller can use another voice (and Play works again).
       setTimeout(() => {
         if (my !== session || !player) return;
-        try { if (!player.playing && (player.currentTime || 0) < 0.05) player.play(); } catch (e) {}
-      }, 600);
+        let started = false;
+        try { started = player.playing || (player.currentTime || 0) > 0.05; } catch (e) {}
+        if (started) return;
+        if (tries < 2) return start();
+        stopVoice();
+        (onFail || onDone) && (onFail || onDone)();
+      }, 900);
     } catch (e) {
       stopVoice();
-      onDone && onDone();
+      (onFail || onDone) && (onFail || onDone)();
     }
   };
   const ready = ensurePlayback();
