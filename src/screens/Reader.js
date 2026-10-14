@@ -1,6 +1,6 @@
 // The reader: page curl, read-aloud with highlighting, learn-to-read, interactive pictures.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, PanResponder, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, PanResponder, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOOK_FONTS, colors, fonts } from '../theme';
@@ -126,9 +126,18 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 
   // A plain black strip over the camera area (so pictures aren't hidden), and the solid black bar
   // at the bottom with the menu, title and play controls (no play controls in Read Yourself).
-  const topH = insets.top;
+  // The book floats on dark grey: two equal squares (picture above words), about 30 points of grey
+  // all round. The squares are sized from the screen width; the black bars take what height is
+  // left (never less than the camera area at the top and the controls at the bottom). On a short
+  // screen the squares shrink instead.
+  const { width: winW, height: winH } = useWindowDimensions();
+  const GAP = 30;
+  const minTop = insets.top, minBar = u * 13 + insets.bottom;
+  const side = Math.floor(Math.max(120, Math.min(winW - 2 * GAP, (winH - minTop - minBar - 2 * GAP) / 2)));
+  const spare = Math.max(0, winH - minTop - minBar - 2 * GAP - 2 * side);
+  const topH = minTop + spare / 2;
   const showControls = prefs.mode !== 'self' || recording;
-  const barH = u * 14.5 + insets.bottom;
+  const barH = minBar + spare / 2;
   const panelPos = { bottom: barH };
   const n = story.pages.length;
   const tokens = useMemo(() => (pages[idx] && pages[idx].text ? tokenize(pages[idx].text) : []), [pages, idx]);
@@ -537,12 +546,14 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   return (
     <View style={styles.screen}>
       <View style={{ height: topH, backgroundColor: colors.bar }} />
+      <View style={styles.desk}>
+      <View style={[styles.bookShadow, { width: side, height: side * 2 }]}>
       <View style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...pan.panHandlers}>
         {size ? layers : null}
         {/* Tap anywhere along the left or right edge to turn back or forward (swipes work anywhere). */}
         {size && idx > 0 ? <Pressable onPress={() => flip(-1)} accessibilityLabel="Previous page" style={[styles.edge, { left: 0, width: edgeW }]} /> : null}
         {size && idx < pages.length - 1 ? <Pressable onPress={() => flip(1)} accessibilityLabel="Next page" style={[styles.edge, { right: 0, width: edgeW }]} /> : null}
-        {idx < pages.length - 1 ? <View style={{ position: 'absolute', right: 0, bottom: 0, zIndex: 20 }}><DogEar u={u} onPress={() => flip(1)} /></View> : null}
+        {idx < pages.length - 1 ? <View style={{ position: 'absolute', right: 0, bottom: 0, zIndex: 20 }}><DogEar u={u} under={colors.desk} onPress={() => flip(1)} /></View> : null}
         {recording ? (
           <View style={styles.recBanner} pointerEvents="none">
             <View style={styles.recDot} />
@@ -550,9 +561,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           </View>
         ) : null}
       </View>
+      </View>
+      </View>
       <View style={[styles.bottomBar, { height: barH, paddingBottom: insets.bottom }]}>
         <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
-        <BarMeta serif title={story.title} sub={idx < n ? `Page ${idx + 1} of ${n}` : 'The End'} />
+        <BarMeta page={idx < n ? `Page ${idx + 1} of ${n}` : 'The End'} />
         {showControls ? (
           <View style={[styles.small, { flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
             <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
@@ -661,7 +674,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.paper },
+  screen: { flex: 1, backgroundColor: colors.desk },
+  desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.desk },
+  bookShadow: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
   book: { flex: 1, overflow: 'hidden', backgroundColor: colors.paper },
   bottomBar: { backgroundColor: colors.bar, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, gap: 10, zIndex: 30 },
   small: { transform: [{ scale: 0.86 }] },

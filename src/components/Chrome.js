@@ -28,7 +28,9 @@ export function Bar({ u, children, vertical }) {
   );
 }
 
-export function BarMeta({ title, sub, vertical, serif }) {
+export function BarMeta({ title, sub, vertical, serif, page }) {
+  // The reader's bar: just "Page X of Y", small bold Helvetica.
+  if (page) return <View style={{ flex: 1, minWidth: 0, paddingLeft: 14 }}><Text numberOfLines={1} style={styles.metaPage}>{page}</Text></View>;
   if (vertical) {
     // Only room for the page number when the bar runs down the side.
     return sub ? <Text style={[styles.metaSub, { textAlign: 'center', marginTop: 0 }]}>{sub}</Text> : null;
@@ -82,14 +84,14 @@ export function PlayButton({ onPress, active, disabled }) {
 // Folded corner at the bottom right. The drawn fold is small; the tap area stays thumb-sized.
 // The folded corner: a dark triangle (the page behind) and the white folded flap, which casts a
 // soft shadow onto the page (a few faint, slightly larger triangles behind it).
-export function DogEar({ u, onPress, label = 'Next page' }) {
+export function DogEar({ u, onPress, label = 'Next page', under = '#262626' }) {
   const e = Math.max(24, u * 7.5);
   const tri = (size, color, off = 0) => (
     <View key={`${size}-${off}`} style={{ position: 'absolute', right: off * 0.4, bottom: off * 0.4, width: 0, height: 0, borderRightWidth: size, borderTopWidth: size, borderRightColor: 'transparent', borderTopColor: color }} />
   );
   return (
     <Pressable onPress={onPress} accessibilityLabel={label} style={[styles.ear, { width: Math.max(48, e + 16), height: Math.max(48, e + 16) }]}>
-      <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderLeftWidth: e, borderBottomWidth: e, borderLeftColor: 'transparent', borderBottomColor: '#262626' }} />
+      <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderLeftWidth: e, borderBottomWidth: e, borderLeftColor: 'transparent', borderBottomColor: under }} />
       {/* soft shadow: many faint layers, each a little larger, so it fades smoothly */}
       {Array.from({ length: 10 }, (_, i) => (10 - i) * 0.8).map((d) => tri(e + d, 'rgba(0,0,0,0.018)', d))}
       {tri(e, colors.white)}
@@ -201,6 +203,7 @@ const styles = StyleSheet.create({
   // In the reader, the book's title and page number use the book serif.
   metaTitleSerif: { fontFamily: fonts.story, fontWeight: '400', fontSize: 19 },
   metaSubSerif: { fontFamily: fonts.story, fontSize: 14 },
+  metaPage: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 13, letterSpacing: 0.2 },
   metaSub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 13, marginTop: 2 },
   ctl: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   ear: { position: 'absolute', right: 0, bottom: 0, width: 48, height: 48, zIndex: 20 },

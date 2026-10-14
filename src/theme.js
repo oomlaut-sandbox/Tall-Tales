@@ -6,6 +6,7 @@ export const colors = {
   paper: '#c9c9c9',
   ink: '#111111',
   bar: '#000000',
+  desk: '#3b3b3b', // the dark grey the book floats on in the reader
   panel: '#1c1c1c',
   panelHead: 'rgba(0,0,0,0.78)',
   tile: '#5f5f5f',
