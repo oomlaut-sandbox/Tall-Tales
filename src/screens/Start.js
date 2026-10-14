@@ -31,8 +31,19 @@ function MenuItem({ u, color, title, sub, onPress }) {
   );
 }
 
-export default function Start({ u, go, openMenu, closed, onOpened }) {
+export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
   const p = useRef(new Animated.Value(0)).current; // 0 = cover shut, 1 = cover fully open
+  // The menu page's dog-ear: the page turns over and My Library shows through.
+  const q = useRef(new Animated.Value(0)).current;
+  const peeling = useRef(false);
+  const peel = () => {
+    if (peeling.current) return;
+    peeling.current = true;
+    onPeek && onPeek(); // My Library is drawn underneath while the page turns
+    playPaper('turn', 1);
+    Animated.timing(q, { toValue: 1, duration: 950, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => go('library'));
+  };
+  const fadeAway = q.interpolate({ inputRange: [0, 0.45, 1], outputRange: [1, 1, 0] });
   const [opening, setOpening] = useState(false);
   const busy = useRef(false);
   const open = () => {
@@ -48,6 +59,7 @@ export default function Start({ u, go, openMenu, closed, onOpened }) {
   })).current;
 
   return (
+    <Animated.View style={{ flex: 1, opacity: fadeAway }}>
     <BookFrame bare barMin={u * 17} bar={(L) => <Bar u={u} vertical={L.wide}><Burger u={u} onPress={openMenu} /></Bar>}>
       {({ side, wide }) => {
         const k = side / 100; // sizes inside the book scale with the squares
@@ -68,18 +80,27 @@ export default function Start({ u, go, openMenu, closed, onOpened }) {
         const leaf = wide
           ? { transformOrigin: 'left', transform: [{ perspective: 1600 }, { rotateY: turn }] }
           : { transformOrigin: 'top', transform: [{ perspective: 1600 }, { rotateX: turn }] };
+        const qTurn = q.interpolate({ inputRange: [0, 1], outputRange: wide ? ['0deg', '-180deg'] : ['0deg', '180deg'] });
+        const qBack = q.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] });
+        const qShade = q.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.25, 0.1] });
+        const pageTurn = wide
+          ? { zIndex: 6, transformOrigin: 'left', transform: [{ perspective: 1600 }, { rotateY: qTurn }] }
+          : { zIndex: 6, transformOrigin: 'top', transform: [{ perspective: 1600 }, { rotateX: qTurn }] };
         return (
           <>
             {/* the picture square: only once the book is open */}
             {!closed ? <View style={[at1, styles.page]}>{pebbles}</View> : null}
             {/* the words square: the menu */}
-            <View style={[at2, styles.page, { justifyContent: 'center', gap: k * 8, paddingLeft: k * 11.8, paddingRight: k * 8, backgroundColor: colors.paper }]}>
+            <Animated.View style={[at2, styles.page, { justifyContent: 'center', gap: k * 8, paddingLeft: k * 11.8, paddingRight: k * 8, backgroundColor: colors.paper }, pageTurn]}>
               {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
               <Spine wide={wide} />
               <MenuItem u={k} color={colors.green} title="My Library" sub="Find and read purchased stories" onPress={() => go('library')} />
               <MenuItem u={k} color={colors.blue} title="Book Store" sub="Find and buy new stories" onPress={() => go('store')} />
-              {!closed ? <DogEar u={u} onPress={() => go('library')} label="Open my library" /> : null}
-            </View>
+              {!closed ? <DogEar u={u} onPress={peel} label="Open my library" /> : null}
+              {/* back of the menu page, seen once it has turned past upright */}
+              <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: colors.paper, opacity: qBack }]} />
+              <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: qShade }]} />
+            </Animated.View>
             {/* the cover */}
             {closed ? (
               <Animated.View {...swipe.panHandlers} style={[at2, styles.page, { zIndex: 5 }, leaf]}>
@@ -96,6 +117,7 @@ export default function Start({ u, go, openMenu, closed, onOpened }) {
         );
       }}
     </BookFrame>
+    </Animated.View>
   );
 }
 

@@ -26,6 +26,7 @@ function Root() {
   const insets = useSafeAreaInsets();
   const [screen, setScreen] = useState('start');
   const [coverOpen, setCoverOpen] = useState(false); // the book's cover is shut each time the app opens
+  const [peek, setPeek] = useState(false); // start screen's page turning to reveal My Library
   // Phones and iPads can turn: the book goes side by side when sideways.
   const landscape = false; // (the old sideways layout with the bar down the side stays off)
   // The app fills the screen; controls are sized from a phone-sized width so they don't balloon on an iPad.
@@ -67,7 +68,7 @@ function Root() {
     toastTimer.current = setTimeout(() => setMessage(''), 3200);
   }, []);
 
-  const go = (s) => { stopSpeech(); stopVoice(); setDrawer(false); setScreen(s); };
+  const go = (s) => { stopSpeech(); stopVoice(); setDrawer(false); setPeek(false); setScreen(s); };
   const openStory = (s) => { setStory(s); go('reader'); };
   const openMenu = () => setDrawer(true);
   const openPublisher = (story) => { setDraft(draftFrom(story)); go('publisher'); };
@@ -77,8 +78,13 @@ function Root() {
     <View style={styles.outer}>
       <StatusBar style={screen === 'profile' ? 'dark' : 'light'} />
       <View style={[styles.app, { width: W }]}>
-        {screen === 'start' && <Start u={u} go={go} openMenu={openMenu} closed={!coverOpen} onOpened={() => setCoverOpen(true)} />}
-        {screen === 'library' && (
+        {screen === 'start' && (
+          // while the menu page is being turned, My Library is drawn underneath and shows through
+          <View style={peek ? [StyleSheet.absoluteFill, { zIndex: 10 }] : { flex: 1 }}>
+            <Start u={u} go={go} openMenu={openMenu} closed={!coverOpen} onOpened={() => setCoverOpen(true)} onPeek={() => setPeek(true)} />
+          </View>
+        )}
+        {(screen === 'library' || (screen === 'start' && peek)) && (
           <Library u={u} stories={[...STORIES.filter((s) => !removed.includes(s.id)), ...userStories]} openStory={openStory} openMenu={openMenu}
             onCreate={() => openPublisher(null)} onEdit={openPublisher}
             removedCount={removed.length} onRestore={() => setRemovedSaved([])}
