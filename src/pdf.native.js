@@ -53,6 +53,7 @@ html,body{margin:0;padding:0;background:#fff}
 .pg{width:${SIZE}px;height:${SIZE}px;overflow:hidden;position:relative;page-break-after:always;break-after:page;
   display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:${family};color:#2b2b2b}
 .pg:last-child{page-break-after:auto;break-after:auto}
+.pg::after{content:'';position:absolute;inset:4px;border:1.5px solid #000;pointer-events:none} /* thin black line around each page of the book */
 .title h1{font-weight:400;font-size:64px;margin:0 48px;text-align:center;line-height:1.1}
 .title .by{font-size:18px;margin-top:18px;color:#555}
 .title .made{position:absolute;bottom:28px;font-size:12px;color:#888;font-family:Helvetica,Arial,sans-serif}
