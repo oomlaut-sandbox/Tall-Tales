@@ -28,7 +28,7 @@ export const fonts = {
 // (A third, cursive font was tried and dropped; any saved "cursive" choice falls back to Serif.)
 export const BOOK_FONTS = {
   sans: { label: 'Helvetica', family: fonts.ui, css: 'Helvetica, Arial, sans-serif', width: 0.52, size: 0.92 },
-  serif: { label: 'Serif', family: 'EBGaramond_400Regular', css: 'Story, Georgia, serif', width: 0.47, size: 1 },
+  serif: { label: 'Serif', family: 'EBGaramond_400Regular', bold: 'EBGaramond_700Bold', css: 'Story, Georgia, serif', width: 0.47, size: 1 },
 };
 export const bookFont = (key) => BOOK_FONTS[key] || BOOK_FONTS.serif;
 

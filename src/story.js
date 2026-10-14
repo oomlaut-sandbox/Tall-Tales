@@ -59,7 +59,7 @@ export const DIFFERENT = {
     illustrated: ['il', 'lus', 'trat', 'ed'], written: ['writ', 'ten'], place: ['place'],
   },
   pages: [
-    { pid: 'd01', image: require('../assets/books/different/d01.jpg'), w: 1600, h: 1600, text: "Different. Written and illustrated by Jörg Schmidt." },
+    { pid: 'd01', titlePage: true, image: require('../assets/books/different/d01.jpg'), w: 1600, h: 1600, text: "Different. Written and illustrated by Jörg Schmidt." },
     { pid: 'd02', image: require('../assets/books/different/d02.jpg'), w: 1600, h: 1600, text: "I feel different." },
     { pid: 'd03', image: require('../assets/books/different/d03.jpg'), w: 1600, h: 1600, text: "I feel strange." },
     { pid: 'd04', image: require('../assets/books/different/d04.jpg'), w: 1600, h: 1600, text: "I feel odd." },
@@ -91,7 +91,7 @@ export const FALLING = {
     illustrated: ['il', 'lus', 'trat', 'ed'], written: ['writ', 'ten'], happy: ['hap', 'py'], along: ['a', 'long'],
   },
   pages: [
-    { pid: 'f01', image: require('../assets/books/falling/f01.jpg'), w: 1600, h: 1600, text: "Falling. Written and illustrated by Jörg Schmidt." },
+    { pid: 'f01', titlePage: true, image: require('../assets/books/falling/f01.jpg'), w: 1600, h: 1600, text: "Falling. Written and illustrated by Jörg Schmidt." },
     { pid: 'f02', image: require('../assets/books/falling/f02.jpg'), w: 1600, h: 1600, text: "The sun was shining bright over the rolling hills." },
     { pid: 'f03', image: require('../assets/books/falling/f03.jpg'), w: 1600, h: 1600, text: "Then the sky turned grey and a dark storm cloud appeared." },
     { pid: 'f04', image: require('../assets/books/falling/f04.jpg'), w: 1600, h: 1600, text: "From it fell a tiny raindrop." },

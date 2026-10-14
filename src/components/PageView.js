@@ -125,13 +125,31 @@ export const PageView = forwardRef(function PageView(
             </View>
           </View>
         ) : (
-          <Text style={storyStyle}>
-            {words.map((w, i) => (
+          (() => {
+            const word = (w, i, last, shown) => (
               <Text key={i} onPress={onWord ? () => onWord(i, w.word) : undefined} style={i === highlight ? styles.hl : null}>
-                {w.word}{i < words.length - 1 ? ' ' : ''}
+                {shown ?? w.word}{i < last ? ' ' : ''}
               </Text>
-            ))}
-          </Text>
+            );
+            // A title page ("Title. Written and illustrated by …"): the title in bold on its own
+            // line(s), a space, then the author line in regular type. Word positions stay the same,
+            // so narration highlighting still lines up.
+            const k = page?.titlePage ? words.findIndex((w) => /\.$/.test(w.word)) : -1;
+            if (k >= 0 && k < words.length - 1) {
+              return (
+                <View style={{ alignItems: 'center' }}>
+                  <Text style={[storyStyle, font.bold ? { fontFamily: font.bold } : styles.titleWords]}>
+                    {words.slice(0, k + 1).map((w, i) => word(w, i, k, i === k ? w.word.replace(/\.$/, '') : undefined))}
+                  </Text>
+                  <View style={{ height: fs * 0.9 }} />
+                  <Text style={storyStyle}>
+                    {words.slice(k + 1).map((w, j) => word(w, k + 1 + j, words.length - 1))}
+                  </Text>
+                </View>
+              );
+            }
+            return <Text style={storyStyle}>{words.map((w, i) => word(w, i, words.length - 1))}</Text>;
+          })()
         )}
       </View>
     </View>
@@ -150,6 +168,7 @@ const styles = StyleSheet.create({
   theEndText: { color: colors.white, fontFamily: fonts.story, fontSize: 52 },
   textBox: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   story: { fontFamily: fonts.story, color: colors.ink, textAlign: 'center' },
+  titleWords: { fontWeight: '700' },
   hl: { color: colors.highlight },
   hot: { position: 'absolute', width: 46, height: 46, borderRadius: 23, borderWidth: 3, borderColor: 'rgba(255,255,255,0.9)', backgroundColor: 'rgba(255,255,255,0.12)' },
   bubble: { position: 'absolute', width: 220, alignItems: 'center' },

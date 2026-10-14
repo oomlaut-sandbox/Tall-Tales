@@ -4,7 +4,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { StatusBar } from 'expo-status-bar';
 import { Asset } from 'expo-asset';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFonts, EBGaramond_400Regular } from '@expo-google-fonts/eb-garamond';
+import { useFonts, EBGaramond_400Regular, EBGaramond_700Bold } from '@expo-google-fonts/eb-garamond';
 import { colors, MAX_WIDTH } from './src/theme';
 import Start from './src/screens/Start';
 import { Library, Store } from './src/screens/Shelf';
@@ -135,7 +135,7 @@ const HOME_PICTURE = require('./assets/home-pebbles.jpg');
 if (Platform.OS !== 'web') ScreenOrientation.unlockAsync().catch(() => {});
 
 export default function App() {
-  const [loaded] = useFonts({ EBGaramond_400Regular });
+  const [loaded] = useFonts({ EBGaramond_400Regular, EBGaramond_700Bold });
   const [pictureReady, setPictureReady] = useState(false);
   useEffect(() => {
     let done = false;
