@@ -53,7 +53,7 @@ function Band({ color, dark, title, sub, action, onAction }) {
   const insets = useSafeAreaInsets();
   const fg = dark ? colors.ink : colors.white;
   return (
-    <View style={{ backgroundColor: color, paddingTop: insets.top + 40, paddingBottom: 22, paddingHorizontal: 24 }}>
+    <View style={{ backgroundColor: color, paddingTop: insets.top + 30, paddingBottom: 30, paddingHorizontal: 24 }}>{/* the title block centred top to bottom in the coloured band */}
       {/* the title block, with the action (Select / Cancel) centred beside the whole block */}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ flex: 1 }}>

@@ -11,7 +11,7 @@ export default function About({ u, openMenu }) {
   const insets = useSafeAreaInsets();
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
-      <View style={[styles.band, { paddingTop: insets.top + 40 }]}>
+      <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {/* the ® sits raised (superscript) after oomlaut */}
         <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
           <Text style={styles.title}>oomlaut</Text>
@@ -36,7 +36,7 @@ export default function About({ u, openMenu }) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
-  band: { backgroundColor: colors.red, paddingBottom: 22, paddingHorizontal: 24 },
+  band: { backgroundColor: colors.red, paddingBottom: 30, paddingHorizontal: 24 },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32 },
   reg: { color: colors.white, fontFamily: fonts.ui, fontSize: 13, lineHeight: 15, marginTop: 4, marginLeft: 1 }, // small raised ®
   tagline: { color: colors.white, fontFamily: fonts.story, fontSize: 20, marginTop: 6, fontStyle: 'italic' },

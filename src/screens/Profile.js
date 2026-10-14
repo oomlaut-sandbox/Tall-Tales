@@ -123,7 +123,7 @@ export default function Profile({ u, openMenu, toast }) {
 
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
-      <View style={[styles.band, { paddingTop: insets.top + 40 }]}>
+      <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         <Text style={styles.title}>Profile</Text>
         <Text style={styles.sub}>{user ? (user.user_metadata?.name || 'Your oomlaut account') : 'Your oomlaut account'}</Text>
       </View>
@@ -139,7 +139,7 @@ export default function Profile({ u, openMenu, toast }) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
-  band: { backgroundColor: colors.orange, paddingBottom: 22, paddingHorizontal: 24 },
+  band: { backgroundColor: colors.orange, paddingBottom: 30, paddingHorizontal: 24 },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32 },
   sub: { color: colors.white, fontFamily: fonts.ui, fontSize: 15, marginTop: 6, opacity: 0.9 },
   body: { padding: 24, paddingTop: 40, paddingBottom: 40, alignItems: 'center' },
