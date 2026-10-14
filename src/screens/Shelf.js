@@ -277,8 +277,8 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
         <View style={{ flexDirection: 'row' }}>
           <View style={{ width: cs, height: cs }} />
           {!across ? (
-            <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'space-between', padding: 14 }}>
-              <CloseX onPress={() => close()} />
+            <View style={{ flex: 1, justifyContent: 'space-between', padding: 14, paddingLeft: 20 }}>
+              <View style={{ alignSelf: 'flex-end' }}><CloseX onPress={() => close()} /></View>
               <Badge book={book} />
             </View>
           ) : null}
