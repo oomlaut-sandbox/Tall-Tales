@@ -278,13 +278,13 @@ export function Toast({ message, at, onDismiss }) {
   const side = at && at.side;
   const wrap = side
     ? { position: 'absolute', right: at.right + 16, top: Math.max(12, at.y - 34), zIndex: 60, alignItems: 'flex-end', left: 24 }
-    : { position: 'absolute', left: 16, right: 24, bottom: (at ? at.bottom : 80) + 18, zIndex: 60, alignItems: 'flex-start' };
+    : { position: 'absolute', left: 10, right: 24, bottom: (at ? at.bottom : 80) + 18, zIndex: 60, alignItems: 'flex-start' };
   // a simple, even little point, aimed at the menu stripes
   const T = 12;
   const tail = side
     ? { position: 'absolute', right: -T, top: 34 - T, width: 0, height: 0, borderLeftWidth: T, borderLeftColor: colors.white,
         borderTopWidth: T, borderTopColor: 'transparent', borderBottomWidth: T, borderBottomColor: 'transparent' }
-    : { position: 'absolute', bottom: -T, left: Math.max(14, (at ? at.x : 40) - 16 - T), width: 0, height: 0, borderTopWidth: T, borderTopColor: colors.white,
+    : { position: 'absolute', bottom: -T, left: Math.max(12, (at ? at.x : 40) - 10 - T), width: 0, height: 0, borderTopWidth: T, borderTopColor: colors.white,
         borderLeftWidth: T, borderLeftColor: 'transparent', borderRightWidth: T, borderRightColor: 'transparent' };
   return (
     <View pointerEvents="box-none" style={wrap}>
