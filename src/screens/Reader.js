@@ -124,10 +124,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const autoTimer = useRef(null);
   const anim = useRef(null);
 
-  const barH = u * 17 + insets.bottom;
-  // Sideways: the bar runs down the right edge and the menus open beside it.
-  const barW = u * 17 + insets.right;
-  const panelPos = landscape ? { bottom: 0, inset: barW } : { bottom: barH };
+  // Black bar along the top (clear of the camera) with the menu, title and page number; a thinner,
+  // see-through bar at the bottom with the play controls (none in Read Yourself), over the page.
+  const topH = insets.top + 52;
+  const showControls = prefs.mode !== 'self' || recording;
+  const barH = showControls ? u * 12.5 + insets.bottom : 0;
+  const panelPos = { bottom: Math.max(barH, insets.bottom) };
   const n = story.pages.length;
   const tokens = useMemo(() => (pages[idx] && pages[idx].text ? tokenize(pages[idx].text) : []), [pages, idx]);
 
@@ -470,7 +472,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     return { artH, textH, tables: flapTables({ textH, artH }) };
   }, [W, H]);
   const pageProps = (i) => ({
-    page: pages[i], end: !!pages[i]?.end, width: W, height: H, textScale: prefs.textScale || 1, fontKey: prefs.font || 'serif',
+    page: pages[i], end: !!pages[i]?.end, width: W, height: H, bottomInset: barH, textScale: prefs.textScale || 1, fontKey: prefs.font || 'serif',
     onReadAgain: () => { stopReading(); setIdx(0); }, onLibrary: goLibrary,
   });
   const showHot = false; // Interactive mode is switched off for now
@@ -533,32 +535,33 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   } else layers.push(abs(prevEl, 'p'), abs(nextEl, 'n'), abs(curEl, 'c'));
 
   return (
-    <View style={[styles.screen, landscape && { flexDirection: 'row', paddingLeft: insets.left }]}>
+    <View style={styles.screen}>
+      <View style={[styles.topBar, { height: topH, paddingTop: insets.top }]}>
+        <Burger u={u} onPress={openMenu} />
+        <BarMeta title={story.title} sub={idx < n ? `Page ${idx + 1} of ${n}` : 'The End'} />
+      </View>
       <View style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...pan.panHandlers}>
         {size ? layers : null}
         {/* Tap anywhere along the left or right edge to turn back or forward (swipes work anywhere). */}
-        {size && idx > 0 ? <Pressable onPress={() => flip(-1)} accessibilityLabel="Previous page" style={[styles.edge, { left: 0, width: edgeW }]} /> : null}
-        {size && idx < pages.length - 1 ? <Pressable onPress={() => flip(1)} accessibilityLabel="Next page" style={[styles.edge, { right: 0, width: edgeW }]} /> : null}
-        {idx < pages.length - 1 ? <DogEar u={u} onPress={() => flip(1)} /> : null}
+        {size && idx > 0 ? <Pressable onPress={() => flip(-1)} accessibilityLabel="Previous page" style={[styles.edge, { left: 0, width: edgeW, bottom: barH }]} /> : null}
+        {size && idx < pages.length - 1 ? <Pressable onPress={() => flip(1)} accessibilityLabel="Next page" style={[styles.edge, { right: 0, width: edgeW, bottom: barH }]} /> : null}
+        {idx < pages.length - 1 ? <View style={{ position: 'absolute', right: 0, bottom: barH, zIndex: 20 }}><DogEar u={u} onPress={() => flip(1)} /></View> : null}
         {recording ? (
           <View style={styles.recBanner} pointerEvents="none">
             <View style={styles.recDot} />
             <Text style={styles.recText}>Recording page {idx + 1}. Turn the page to keep going, or tap ● to stop.</Text>
           </View>
         ) : null}
-      </View>
-      <Bar u={u} vertical={landscape}>
-        <Burger u={u} onPress={openMenu} />
-        <BarMeta vertical={landscape} title={story.title} sub={idx < n ? (landscape ? `${idx + 1} / ${n}` : `Page ${idx + 1} of ${n}`) : 'The End'} />
-        {/* Read Yourself is quiet reading: no record, pause or play buttons (Playback Settings in the menu switches modes). */}
-        {prefs.mode !== 'self' || recording ? (
-          <>
-            <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
-            <PauseButton onPress={onPause} disabled={recording} />
-            <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
-          </>
+        {showControls ? (
+          <View style={[styles.controls, { height: barH, paddingBottom: insets.bottom }]}>
+            <View style={styles.controlsRow}>
+              <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
+              <PauseButton onPress={onPause} disabled={recording} />
+              <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
+            </View>
+          </View>
         ) : null}
-      </Bar>
+      </View>
 
       <Panel open={panel === 'play'} side="right" title={playView === 'voices' ? 'Voices' : 'Playback Options'} {...panelPos} onClose={() => { setPanel(null); setPlayView('main'); }}>
         {playView === 'voices' ? (
@@ -661,6 +664,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   book: { flex: 1, overflow: 'hidden', backgroundColor: colors.paper },
+  topBar: { backgroundColor: colors.bar, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, gap: 4, zIndex: 30 },
+  controls: { position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.72)', justifyContent: 'center', zIndex: 30 },
+  controlsRow: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 6, paddingHorizontal: 18, transform: [{ scale: 0.85 }] },
   edge: { position: 'absolute', top: 0, bottom: 0, zIndex: 15 },
   half: { position: 'absolute', left: 0, right: 0, overflow: 'hidden', backfaceVisibility: 'hidden' },
   strip: { position: 'absolute', left: 0, right: 0, overflow: 'hidden', transformOrigin: 'top' },

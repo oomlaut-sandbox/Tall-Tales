@@ -54,11 +54,12 @@ export function Fade({ edge, size, max }) {
 }
 
 export const PageView = forwardRef(function PageView(
-  { page, width, height, textScale = 1, fontKey = 'serif', highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary },
+  { page, width, height, bottomInset = 0, textScale = 1, fontKey = 'serif', highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary },
   ref,
 ) {
   const words = useMemo(() => (page && page.text ? tokenize(page.text) : []), [page]);
-  const L = useMemo(() => pageLayout(width, height), [width, height]);
+  // bottomInset: room kept clear at the bottom for the reader's see-through control bar
+  const L = useMemo(() => { const l = pageLayout(width, height); return { ...l, textH: l.textH - bottomInset }; }, [width, height, bottomInset]);
   const { artW, artH } = L;
   const font = bookFont(fontKey);
   const fs = useMemo(() => fitFontSize(page?.text || '', L, textScale, font), [page, L, textScale, font]);
@@ -103,7 +104,7 @@ export const PageView = forwardRef(function PageView(
         {!L.wide ? <Fade edge="bottom" size={Math.round(artH * 0.05)} max={0.2} /> : null}
       </View>
       </View>
-      <View style={[styles.textBox, { paddingHorizontal: L.padX, paddingVertical: L.padY }]}>
+      <View style={[styles.textBox, { paddingHorizontal: L.padX, paddingTop: L.padY, paddingBottom: L.padY + bottomInset }]}>
         {!L.wide ? <Fade edge="top" size={Math.round(L.textH * 0.09)} max={0.13} /> : null}
         {end ? (
           <View style={{ alignItems: 'center' }}>
