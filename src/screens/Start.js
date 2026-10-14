@@ -56,7 +56,7 @@ export default function Start({ u, go, openMenu, closed, onOpened }) {
         const at2 = wide ? { position: 'absolute', left: side, top: 0, width: side, height: side } : { position: 'absolute', left: 0, top: side, width: side, height: side };
         const pebbles = (
           <View style={{ width: side, height: side, backgroundColor: '#7d7d7d', overflow: 'hidden' }}>
-            <Image source={PEBBLES} accessibilityLabel="oomlaut Reader" style={StyleSheet.absoluteFill} resizeMode="cover" />
+            <Image source={PEBBLES} accessibilityLabel="oomlaut Reader" style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
             {!wide ? <Fade edge="bottom" size={Math.round(side * 0.05)} max={0.2} /> : null}
           </View>
         );
