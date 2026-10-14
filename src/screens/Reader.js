@@ -134,6 +134,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const peelOn = useRef(false);
   const cache = useRef({}); // page index -> picture of that page
   const pageX0 = useRef(0); // the book's left edge on screen (for which corner to peel)
+  const pageY0 = useRef(0); // the book's top edge on screen (sideways: top or bottom corner)
 
 
   const refs = { prev: useRef(null), cur: useRef(null), next: useRef(null) };
@@ -367,11 +368,13 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     const i = st.current.idx;
     const a = dir > 0 ? i : i - 1;
     let pics = null;
-    if (supportsCurl && peelWorks.ok && !st.current.wide) { // sideways iPad: the page turns like a book's instead
+    if (supportsCurl && peelWorks.ok) { // upright and sideways: the paper peel
       // pictures of both pages for the paper peel
       const fa = dir > 0 ? await snapshot(refs.cur) : (cache.current[a] || (await snapshot(refs.prev)));
       const fb = dir > 0 ? (cache.current[a + 1] || (await snapshot(refs.next))) : await snapshot(refs.cur);
-      if (fa && fb) pics = { front: fa, back: fb, corner };
+      // sideways the words page peels from its bottom-right corner (or top-right when the finger
+      // starts high up); in the peel's upright frame those are its 'left' and 'right' corners
+      if (fa && fb) pics = { front: fa, back: fb, corner: st.current.wide ? (corner === 'top' ? 'right' : 'left') : corner };
     }
     peelOn.current = !!pics;
     setPeel(pics);
@@ -422,13 +425,14 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (!horiz && !vert) return null;
     return { horiz, dir: horiz ? (g.dx < 0 ? 1 : -1) : (g.dy < 0 ? 1 : -1) };
   };
-  const beginDrag = (sd, x0) => {
+  const beginDrag = (sd, x0, y0) => {
     busy.current = true;
     const d = { ...sd, p: sd.dir > 0 ? 0 : 1, ready: false, ended: null };
     drag.current = d;
     stopReading();
     // peel from the bottom corner on the side the finger started
-    const corner = st.current.size && x0 < st.current.size.w / 2 ? 'left' : 'right';
+    const corner = st.current.wide ? (y0 != null && st.current.size && y0 < st.current.size.h / 2 ? 'top' : 'bottom')
+      : st.current.size && x0 < st.current.size.w / 2 ? 'left' : 'right';
     startFlip(sd.dir, corner).then(() => {
       d.ready = true;
       if (d.ended) finishDrag(d, d.ended); // finger already lifted while the pages were being prepared
@@ -448,7 +452,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     onPanResponderGrant: (_, g) => {
       drag.current = {};
       const sd = swipeDir(g);
-      if (sd && canTurn(sd.dir)) beginDrag(sd, g.x0 - (pageX0.current || 0));
+      if (sd && canTurn(sd.dir)) beginDrag(sd, g.x0 - (pageX0.current || 0), g.y0 - (pageY0.current || 0));
     },
     onPanResponderMove: (_, g) => {
       let d = drag.current;
@@ -457,11 +461,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         if (busy.current || st.current.turning) return;
         const sd = swipeDir(g);
         if (!sd || !canTurn(sd.dir)) return;
-        beginDrag(sd, g.x0 - (pageX0.current || 0));
+        beginDrag(sd, g.x0 - (pageX0.current || 0), g.y0 - (pageY0.current || 0));
         d = drag.current;
       }
       const { w: W, h: H } = st.current.size;
-      const amount = d.horiz ? -g.dx / (W * 0.8) : -g.dy / (H * 0.55);
+      const amount = d.horiz ? -g.dx / (W * (st.current.wide ? 0.42 : 0.8)) : -g.dy / (H * 0.55);
       d.p = d.dir > 0 ? Math.max(0, Math.min(1, amount)) : 1 - Math.max(0, Math.min(1, -amount));
       if (d.ready) setProgress(d.p);
     },
@@ -502,6 +506,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 
   /* ---------- render ---------- */
   const W = size?.w || 0, H = size?.h || 0;
+  pageY0.current = wide ? (winH - H) / 2 : 0;
   const edgeW = Math.max(44, W * 0.12); // width of the tap-to-turn strips along each edge
   const flipT = useMemo(() => {
     if (!W || !H) return null;
@@ -521,7 +526,18 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       showHotspots={showHot} onHotspot={onHotspot} bubble={bubble} />
   );
   const abs = (el, k, style) => (el ? <Animated.View key={k} style={[StyleSheet.absoluteFill, style]}>{el}</Animated.View> : null);
-  if (flipPair && size && wide) {
+  if (flipPair && size && flipT && peel) {
+    // phone: the words half peels up like paper (drawn from pictures of both pages)
+    const { a, b } = flipPair;
+    const view = (i, k) => <PageView key={k} {...pageProps(i)} />;
+    layers.push(abs(prevEl, 'p'), abs(nextEl, 'n'), abs(curEl, 'c'));
+    layers.push(
+      <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
+      wide
+        ? <View key="fat" pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: W / 2, height: H, overflow: 'hidden' }}>{view(a, `t${a}`)}</View>
+        : <View key="fat" pointerEvents="none" style={[styles.half, { top: 0, height: flipT.artH }]}>{view(a, `t${a}`)}</View>,
+    );
+  } else if (flipPair && size && wide) {
     // Sideways iPad: the words page (right) turns over the spine like a real book's page. Its back
     // shows the next page's picture, which ends up on the left.
     const { a, b } = flipPair;
@@ -544,15 +560,6 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         </Animated.View>
         <Animated.View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: '#000', opacity: shade }} />
       </Animated.View>,
-    );
-  } else if (flipPair && size && flipT && peel) {
-    // phone: the words half peels up like paper (drawn from pictures of both pages)
-    const { a, b } = flipPair;
-    const view = (i, k) => <PageView key={k} {...pageProps(i)} />;
-    layers.push(abs(prevEl, 'p'), abs(nextEl, 'n'), abs(curEl, 'c'));
-    layers.push(
-      <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
-      <View key="fat" pointerEvents="none" style={[styles.half, { top: 0, height: flipT.artH }]}>{view(a, `t${a}`)}</View>,
     );
   } else if (flipPair && size && flipT) {
     // A page turn in progress (see "page turning" above): page b underneath, page a's picture on
@@ -658,8 +665,13 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       {/* The peeling page is drawn over the whole screen, so it can lift past the book's edges. */}
       {flipPair && size && flipT && peel ? (
         <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 40 }]}>
-          <PeelGuard><PeelLayer start={prog.current} width={W} height={H} artH={flipT.artH} corner={peel.corner} front={peel.front} back={peel.back}
-            ox={(winW - W) / 2} oy={topH + (winH - topH - barH - H) / 2} canvasW={winW} canvasH={winH} /></PeelGuard>
+          {wide ? (
+            <PeelGuard><PeelLayer start={prog.current} sideways width={H} height={W} artH={H} corner={peel.corner} front={peel.front} back={peel.back}
+              ox={BL.leftW + (winW - BL.leftW - BL.rightW - W) / 2} oy={(winH - H) / 2} canvasW={winW} canvasH={winH} /></PeelGuard>
+          ) : (
+            <PeelGuard><PeelLayer start={prog.current} width={W} height={H} artH={flipT.artH} corner={peel.corner} front={peel.front} back={peel.back}
+              ox={(winW - W) / 2} oy={topH + (winH - topH - barH - H) / 2} canvasW={winW} canvasH={winH} /></PeelGuard>
+          )}
         </View>
       ) : null}
       <Panel open={panel === 'play'} side="right" title={playView === 'voices' ? 'Voices' : 'Playback Options'} {...panelPos} onClose={() => { setPanel(null); setPlayView('main'); }}>

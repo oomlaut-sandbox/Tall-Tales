@@ -87,9 +87,20 @@ export function liftMatrix(M, nx, ny, t, textH) {
 
 // ox, oy: where the book sits inside the canvas. The canvas covers the whole screen, so the
 // lifted paper can swing out over the grey and past the screen edges.
-export function FlapPeel({ width: W, height: H, artH, t, corner, front, back, ox = 0, oy = 0, canvasW, canvasH }) {
+// sideways: the book lies on its side (picture left, words right). The peel is worked out exactly as
+// upright (in a frame turned a quarter turn), so it looks and feels the same: W and H are then the
+// upright frame's size (W = the page height, H = twice that) and the pictures are turned to match.
+export function FlapPeel({ width: W, height: H, artH, t, corner, front, back, ox = 0, oy = 0, canvasW, canvasH, sideways }) {
   if (!front || !back || !W || !H) return null;
-  const CW = canvasW || W, CH = canvasH || H, at = [{ translateX: ox }, { translateY: oy }];
+  const CW = canvasW || W, CH = canvasH || H;
+  // upright frame -> screen. Sideways: a quarter turn, so the frame's top (the picture) lands on the left.
+  const at = sideways
+    ? [{ translateX: ox }, { translateY: oy }, { translateY: W }, { rotate: -Math.PI / 2 }]
+    : [{ translateX: ox }, { translateY: oy }];
+  // a page picture drawn into the frame (sideways pictures are wide, so they're turned back)
+  const pic = (img) => (sideways
+    ? <Group transform={[{ translateX: W }, { rotate: Math.PI / 2 }]}><Image image={img} x={0} y={0} width={H} height={W} fit="fill" /></Group>
+    : <Image image={img} x={0} y={0} width={W} height={H} fit="fill" />);
   const textH = H - artH;
   const C = corner === 'left' ? [0, H] : [W, H];
   const fold = computePeel(peelCorner(t, C, W, H, artH), C, W, H, artH);
@@ -99,7 +110,7 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back, ox
   if (!fold) {
     return (
       <Canvas style={{ position: 'absolute', left: 0, top: 0, width: CW, height: CH }} pointerEvents="none">
-        <Group transform={at}><Group clip={flap}><Image image={front} {...full} /></Group></Group>
+        <Group transform={at}><Group clip={flap}>{pic(front)}</Group></Group>
       </Canvas>
     );
   }
@@ -131,10 +142,10 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back, ox
       {/* The folded flap is shorter than the picture square, so it can't reach the very top:
           only that thin top strip fades in to the next picture (the flap itself stays solid). */}
       {fadeIn > 0 && artH > textH ? (
-        <Group clip={rect(0, 0, W, artH - textH)} opacity={fadeIn}><Image image={back} {...full} /></Group>
+        <Group clip={rect(0, 0, W, artH - textH)} opacity={fadeIn}>{pic(back)}</Group>
       ) : null}
       {/* the part of the words half still lying flat */}
-      <Group clip={frontPath}><Image image={front} {...full} /></Group>
+      <Group clip={frontPath}>{pic(front)}</Group>
       {/* the lifted part's shadow on the page */}
       <Group transform={reflect}>
         <Path path={cut} color={`rgba(0,0,0,${(0.28 * settle).toFixed(3)})`}>
@@ -145,7 +156,7 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back, ox
       <Group matrix={lift || undefined}>
       <Group transform={reflect}>
         <Group clip={cut}>
-          <Group transform={spine}><Image image={back} {...full} /></Group>
+          <Group transform={spine}>{pic(back)}</Group>
           <Rect x={0} y={0} width={W} height={H}>
             <LinearGradient
               start={g0}
