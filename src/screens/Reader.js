@@ -28,7 +28,7 @@ function PeelLayer({ start, ...props }) {
 }
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { Bar, BarMeta, Burger, DogEar, GearIcon, Option, Panel, PauseButton, PlayButton, RecordButton, Slider } from '../components/Chrome';
+import { Bar, BarMeta, Burger, DogEar, GearIcon, Option, Panel, PauseButton, PlayButton, RecordButton, Slider, SIDE_MENU_TOP } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
@@ -144,7 +144,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const barH = BL.barH;
   // a small 'Your voice' mark when this page will play the parent's recording
   const mineHere = prefs.voice === 'mine' && recPages.includes(idx) && prefs.mode !== 'self' && !recording;
-  const panelPos = wide ? { bottom: 0, inset: BL.rightW, top: BL.bookTop } : { bottom: barH };
+  const panelPos = wide ? { bottom: 0, inset: BL.rightW } : { bottom: barH };
   const n = story.pages.length;
   const tokens = useMemo(() => (pages[idx] && pages[idx].text ? tokenize(pages[idx].text) : []), [pages, idx]);
 
@@ -604,7 +604,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       </View>
       {wide ? (
         // sideways: the menu bar runs down the right side; same icons, page tag shortened to "2/16"
-        <View style={[styles.sideBar, { width: BL.rightW, paddingTop: BL.bookTop /* the menu lines up with the top of the page */, paddingBottom: Math.max(16, insets.bottom) }]}>
+        <View style={[styles.sideBar, { width: BL.rightW, paddingTop: SIDE_MENU_TOP /* fixed a little down from the top corner */, paddingBottom: Math.max(16, insets.bottom) }]}>
           <View style={{ width: BL.rightW, alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
             <View style={{ alignItems: 'center', gap: 18 }}>
               <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>

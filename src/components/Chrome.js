@@ -1,6 +1,6 @@
 // Shared pieces of Jörg's design: black control bar, hamburger, dog-ear corner, slide-in panels.
 import React, { useEffect, useRef } from 'react';
-import { Animated, PanResponder, Pressable, StyleSheet, Text, View, ScrollView, useWindowDimensions } from 'react-native';
+import { Animated, Easing, PanResponder, Pressable, StyleSheet, Text, View, ScrollView, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 
@@ -24,7 +24,7 @@ export function Bar({ u, children, vertical, top }) {
   const insets = useSafeAreaInsets();
   if (vertical) {
     return (
-      <View style={[styles.bar, styles.barV, { width: u * 17 * SIDE_BAR, paddingTop: top != null ? top : Math.max(14, insets.top), paddingBottom: Math.max(14, insets.bottom) }]}>{children}</View>
+      <View style={[styles.bar, styles.barV, { width: u * 17 * SIDE_BAR, paddingTop: top != null ? top : SIDE_MENU_TOP, paddingBottom: Math.max(14, insets.bottom) }]}>{children}</View>
     );
   }
   return (
@@ -118,50 +118,57 @@ export function DogEar({ u, onPress, label = 'Next page', under = colors.earUnde
   );
 }
 
-// Dark panel that slides in from the left or right and grows upward from the bar.
-export function Panel({ open, side = 'right', title, onClose, bottom, inset = 0, top, children }) {
+// The height of the menu stripes from the top when sideways: fixed, a little down from the top
+// right corner, clear of the iPad's status icons (battery etc.).
+export const SIDE_MENU_TOP = 46;
+
+// Dark menu panel that comes out of the black menu bar.
+// Upright: it slides UP out of the bottom bar, at the bottom left.
+// Sideways: it slides out to the LEFT from the right-hand bar, its top level with the menu stripes.
+// It is clipped at the bar's edge, so it looks as if it comes out of (and goes back into) the bar.
+// bottom: the bottom bar's height (upright). inset: the right bar's width (sideways).
+export function Panel({ open, title, onClose, bottom, inset = 0, children }) {
   const x = useRef(new Animated.Value(open ? 0 : 1)).current;
   useEffect(() => {
-    Animated.timing(x, { toValue: open ? 0 : 1, duration: 300, useNativeDriver: true }).start();
+    Animated.timing(x, { toValue: open ? 0 : 1, duration: 300, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
   }, [open]);
-  const sign = side === 'right' ? 1 : -1;
-  // Never taller than about 80% of the screen, so it stays clear of the camera and status bar.
   const { height: winH, width: winW } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  // The top of the menu sits at about 20% of the screen height.
   // Sideways (wider than tall) the menu is wide and short: its items sit in two columns.
   const wide = winW > winH * 1.1;
-  // sideways: tucked into the top right, its top level with the menu stripes, a little space round it
-  const wideTop = top != null ? top : 14;
-  const maxHeight = wide ? winH - wideTop - 14 : Math.max(240, Math.min(winH * 0.8 - (bottom || 0), winH - (bottom || 0) - insets.top - 24));
-  // sideways: centred between the camera strip on the left and the menu bar on the right
   const rightW = inset || Math.round((Math.min(winW, 460) / 100) * 17 * 1.15);
+  const maxHeight = wide ? winH - SIDE_MENU_TOP - 34 : Math.max(240, Math.min(winH * 0.8 - (bottom || 0), winH - (bottom || 0) - insets.top - 24));
   const room = winW - insets.left - rightW;
-  const panelW = wide ? Math.min(760, room - 40) : null;
+  const panelW = wide ? Math.min(760, room - 24) : null;
   const colW = wide ? (panelW - 44 - 22) / 2 : null;
   const flat = (kids) => React.Children.toArray(kids).flatMap((c) => (c && c.type === React.Fragment ? flat(c.props.children) : [c]));
+  const shift = x.interpolate({ inputRange: [0, 1], outputRange: [0, wide ? winW : winH] });
   return (
     <>
       {open ? <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close menu" /> : null}
-      <Animated.View
-        pointerEvents={open ? 'auto' : 'none'}
-        style={[styles.panel, wide && { width: panelW, maxWidth: panelW, top: wideTop, right: rightW + 14 }, !wide && { bottom, [side]: inset }, { maxHeight, transform: [{ translateX: x.interpolate({ inputRange: [0, 1], outputRange: [0, (wide ? 1 : sign) * (winW + 40)] }) }] }]}
-      >
-        <View style={[styles.panelHead, wide && { paddingTop: 14, paddingBottom: 12 }]}>
-          <Text style={[styles.panelTitle, { flex: 1 }, wide && { fontSize: 22 }]}>{title}</Text>
-          {/* Close: a small downward chevron. Tapping outside the menu still closes it too. */}
-          <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close menu" style={styles.closeBtn}>
-            <View style={styles.chev}>
-              <View style={[styles.chevBar, { left: 0, transform: [{ rotate: '40deg' }] }]} />
-              <View style={[styles.chevBar, { right: 0, transform: [{ rotate: '-40deg' }] }]} />
-            </View>
-          </Pressable>
-        </View>
-        {/* Only scrolls when it can't fit (e.g. sideways on a phone). */}
-        <ScrollView style={{ flexGrow: 0, flexShrink: 1, backgroundColor: colors.panel }} contentContainerStyle={[styles.panelList, wide && styles.panelCols]} bounces={false}>
-          {wide ? flat(children).map((c, i) => <View key={i} style={{ width: colW }}>{c}</View>) : children}
-        </ScrollView>
-      </Animated.View>
+      {/* the clip: everything up to the edge of the menu bar */}
+      <View pointerEvents="box-none" style={[styles.panelClip, wide ? { right: rightW } : { bottom: bottom || 0 }]}>
+        <Animated.View
+          pointerEvents={open ? 'auto' : 'none'}
+          style={[styles.panel, wide ? { width: panelW, maxWidth: panelW, top: SIDE_MENU_TOP, right: 0 } : { bottom: 0, left: 0 },
+            { maxHeight, transform: [wide ? { translateX: shift } : { translateY: shift }] }]}
+        >
+          <View style={[styles.panelHead, wide && { paddingTop: 14, paddingBottom: 12 }]}>
+            <Text style={[styles.panelTitle, { flex: 1 }, wide && { fontSize: 22 }]}>{title}</Text>
+            {/* Close: a small downward chevron. Tapping outside the menu still closes it too. */}
+            <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close menu" style={styles.closeBtn}>
+              <View style={styles.chev}>
+                <View style={[styles.chevBar, { left: 0, transform: [{ rotate: '40deg' }] }]} />
+                <View style={[styles.chevBar, { right: 0, transform: [{ rotate: '-40deg' }] }]} />
+              </View>
+            </Pressable>
+          </View>
+          {/* Only scrolls when it can't fit (e.g. sideways on a phone). */}
+          <ScrollView style={{ flexGrow: 0, flexShrink: 1, backgroundColor: colors.panel }} contentContainerStyle={[styles.panelList, wide && styles.panelCols]} bounces={false}>
+            {wide ? flat(children).map((c, i) => <View key={i} style={{ width: colW }}>{c}</View>) : children}
+          </ScrollView>
+        </Animated.View>
+      </View>
     </>
   );
 }
@@ -297,13 +304,14 @@ const styles = StyleSheet.create({
   metaSub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 13, marginTop: 2 },
   ctl: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   ear: { position: 'absolute', right: 0, bottom: 0, width: 48, height: 48, zIndex: 20 },
-  panel: { position: 'absolute', width: '82%', maxWidth: 440, zIndex: 41 },
+  panel: { position: 'absolute', width: '82%', maxWidth: 440 },
+  panelClip: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, overflow: 'hidden', zIndex: 41 },
   panelHead: { backgroundColor: colors.panelHead, paddingLeft: 24, paddingRight: 12, paddingTop: 24, paddingBottom: 20, flexDirection: 'row', alignItems: 'center' },
   closeBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   chev: { width: 22, height: 12 },
   chevBar: { position: 'absolute', top: 4, width: 14, height: 3, borderRadius: 1.5, backgroundColor: colors.white },
   panelTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 28 },
-  panelCols: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 22, rowGap: 16, paddingTop: 16, paddingBottom: 16 },
+  panelCols: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 22, rowGap: 16, paddingTop: 16, paddingBottom: 30 },
   panelList: { backgroundColor: colors.panel, paddingHorizontal: 22, paddingTop: 20, paddingBottom: 22, gap: 16 },
   opt: { flexDirection: 'row', alignItems: 'center', gap: 18 },
   optIc: { width: 54, height: 54, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },

@@ -77,7 +77,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
 
   return (
     <Animated.View style={{ flex: 1, opacity: fade }}>
-    <BookFrame bare barMin={u * 17} bar={(L) => <Bar u={u} vertical={L.wide} top={L.wide ? L.bookTop : undefined}><Burger u={u} onPress={openMenu} /></Bar>}>
+    <BookFrame bare barMin={u * 17} bar={(L) => <Bar u={u} vertical={L.wide}><Burger u={u} onPress={openMenu} /></Bar>}>
       {({ side, wide }) => {
         const k = side / 100; // sizes inside the book scale with the squares
         // where the two squares sit: picture first (top, or left when sideways), then the words

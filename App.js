@@ -106,8 +106,9 @@ function Root() {
     return { side: false, bottom, x };
   }, [screen, sideways, width, height, insets, camBar, u]);
   // sideways the Settings menu sits in the top right, level with the menu stripes
-  const bookish = screen === 'reader' || screen === 'start' || screen === 'publisher';
-  const drawerTop = sideways && bookish ? bookLayout(width, height, { ...insets, left: camBar }, u * (screen === 'reader' ? 13 : 17)).bookTop : undefined;
+  // upright the menu comes up out of the bottom bar, whose height depends on the screen
+  const drawerBottom = sideways ? 0 : screen === 'reader' ? bookLayout(width, height, { ...insets, top: camBar }, u * 13).barH
+    : screen === 'start' ? bookLayout(width, height, { ...insets, top: camBar }, u * 17).barH : barH;
   const drawerRight = sideways ? (screen === 'reader' ? bookLayout(width, height, { ...insets, left: camBar }, u * 13).rightW : Math.round(u * 17 * 1.15)) : 0;
   const screenInsets = useMemo(() => (sideways ? { ...insets, left: camBar } : { ...insets, top: camBar }), [insets, sideways, camBar]);
   return (
@@ -144,12 +145,12 @@ function Root() {
         {screen === 'reader' && story && (
           <Reader u={u} story={story} prefs={prefs} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
         )}
-        <Panel open={drawer} side="left" title="Settings" bottom={landscape || width > height * 1.1 ? 0 : barH} top={drawerTop} inset={drawerRight} onClose={() => setDrawer(false)}>
+        <Panel open={drawer} title="Settings" bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
           <Option glyph={<LibraryIcon size={18} />} title="My Library" sub="View purchased stories" onPress={() => go('library')} />
           <Option glyph="◫" title="Book Store" sub="Buy more stories" onPress={() => go('store')} />
           <Option glyph="▸" title="Playback Settings" sub="Reader controls" onPress={() => {
             setDrawer(false);
-            if (screen === 'reader') setPlayMenu((x) => x + 1); else toast('Open a story first, then choose how it plays.');
+            if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else toast('Open a story first, then choose how it plays.');
           }} />
           <Option glyph="+" title="Create a Story" sub="Add your own pictures and words" onPress={() => openPublisher(null)} />
           <Option glyph="○" title="Profile" sub="Manage your oomlaut account" onPress={() => { setDrawer(false); setProfileGate(true); }} />
