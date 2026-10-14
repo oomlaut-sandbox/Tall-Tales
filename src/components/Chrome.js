@@ -148,6 +148,31 @@ export function Panel({ open, side = 'right', title, onClose, bottom, inset = 0,
   );
 }
 
+// Small flat icons drawn with shapes (so they look the same on every phone).
+// Read again: a circle, open on the left, no arrow.
+export function AgainIcon({ size = 18, color = colors.white, weight = 2.5 }) {
+  return <View style={{ width: size, height: size, borderRadius: size / 2, borderWidth: weight, borderColor: color, borderLeftColor: 'transparent', transform: [{ rotate: '0deg' }] }} />;
+}
+// My Library: books standing on a shelf (an outlined square with upright lines).
+export function LibraryIcon({ size = 18, color = colors.white, weight = 2 }) {
+  return (
+    <View style={{ width: size, height: size, borderWidth: weight, borderColor: color, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'stretch', paddingVertical: 2 }}>
+      {[0, 1, 2].map((k) => <View key={k} style={{ width: weight, backgroundColor: color }} />)}
+    </View>
+  );
+}
+// Share: a small solid heart.
+export function HeartIcon({ size = 16, color = colors.white }) {
+  const r = size * 0.56; // the two round lobes
+  return (
+    <View style={{ width: size, height: size }}>
+      <View style={{ position: 'absolute', left: size * 0.17, top: size * 0.28, width: size * 0.66, height: size * 0.66, backgroundColor: color, transform: [{ rotate: '45deg' }] }} />
+      <View style={{ position: 'absolute', left: size * 0.03, top: size * 0.08, width: r, height: r, borderRadius: r / 2, backgroundColor: color }} />
+      <View style={{ position: 'absolute', right: size * 0.03, top: size * 0.08, width: r, height: r, borderRadius: r / 2, backgroundColor: color }} />
+    </View>
+  );
+}
+
 // A small, flat gear (for settings): three crossed bars make six teeth, a disc and a hole on top.
 export function GearIcon({ size = 18, color = colors.white, hole = colors.tile }) {
   const bar = { position: 'absolute', left: (size - size * 0.24) / 2, top: 0, width: size * 0.24, height: size, backgroundColor: color, borderRadius: size * 0.04 };

@@ -5,6 +5,7 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { bookFont, colors, fonts } from '../theme';
 import { tokenize } from '../story';
 import ZoomArt from './ZoomArt';
+import { AgainIcon, HeartIcon, LibraryIcon } from './Chrome';
 
 // The picture area is a perfect square (as wide as the screen). Only on unusually short
 // screens is it capped, so the words always keep at least a third of the page.
@@ -115,9 +116,9 @@ export const PageView = forwardRef(function PageView(
             <Text style={storyStyle}>Thank you for reading.</Text>
             {/* stacked: a square icon and black text beside it, like the start page */}
             <View style={{ gap: 12, marginTop: 20, alignSelf: 'center' }}>
-              {[['↺', 'Read Again', onReadAgain], ['▤', 'My Library', onLibrary], ['✉\uFE0E', 'Share Book', onShare]].map(([g, label, fn]) => (
+              {[[<AgainIcon />, 'Read Again', onReadAgain], [<LibraryIcon />, 'My Library', onLibrary], [<HeartIcon />, 'Share Book', onShare]].map(([g, label, fn]) => (
                 <Pressable key={label} onPress={fn} style={styles.endBtn} accessibilityRole="button">
-                  <View style={styles.endIc}><Text style={styles.endGlyph}>{g}</Text></View>
+                  <View style={styles.endIc}>{g}</View>
                   <Text style={styles.endBtnText}>{label}</Text>
                 </Pressable>
               ))}

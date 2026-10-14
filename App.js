@@ -18,7 +18,7 @@ import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
-import { Option, Panel, Toast } from './src/components/Chrome';
+import { LibraryIcon, Option, Panel, Toast } from './src/components/Chrome';
 import { stopSpeech } from './src/speech';
 import { stopVoice } from './src/voice';
 
@@ -111,7 +111,7 @@ function Root() {
           <Reader u={u} story={story} prefs={prefs} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => go('library')} toast={toast} menuRequest={playMenu} landscape={landscape} />
         )}
         <Panel open={drawer} side="left" title="Settings" bottom={landscape || width > height * 1.1 ? 0 : barH} onClose={() => setDrawer(false)}>
-          <Option glyph="▤" title="My Library" sub="View purchased stories" onPress={() => go('library')} />
+          <Option glyph={<LibraryIcon size={20} />} title="My Library" sub="View purchased stories" onPress={() => go('library')} />
           <Option glyph="◫" title="Book Store" sub="Buy more stories" onPress={() => go('store')} />
           <Option glyph="▸" title="Playback Settings" sub="Reader controls" onPress={() => {
             setDrawer(false);
