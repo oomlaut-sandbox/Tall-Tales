@@ -1,14 +1,11 @@
 // Plays a page's audio: a parent's recording (a file uri) or ElevenLabs narration (a bundled file).
 // Reports progress so the words can be highlighted.
 import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
-import { isMuted, onMuteChange } from './sound';
 
 let player = null;
 let sub = null;
 let ticker = null;
 let session = 0;
-// the sound switch: muted voices keep playing silently so the words still light up in time
-onMuteChange((m) => { try { if (player) player.volume = m ? 0 : 1; } catch (e) {} });
 
 export function stopVoice() {
   session++;
@@ -45,7 +42,6 @@ export function playVoice(source, { onProgress, onTime, onDone, onFail, rate = 1
     try {
       if (player) { try { sub && sub.remove(); player.remove(); } catch (e) {} player = null; sub = null; clearInterval(ticker); ticker = null; }
       player = createAudioPlayer(typeof source === 'string' ? { uri: source } : source);
-      try { player.volume = isMuted() ? 0 : 1; } catch (e) {}
       sub = player.addListener('playbackStatusUpdate', (s) => {
         if (my !== session) return;
         if (s.duration > 0 && onProgress) onProgress(Math.min(1, s.currentTime / s.duration));

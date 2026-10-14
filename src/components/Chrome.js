@@ -302,18 +302,3 @@ const styles = StyleSheet.create({
   toast: { color: colors.ink, fontFamily: fonts.story, fontSize: 19, lineHeight: 25, textAlign: 'center' }, // the book serif
 });
 
-// The sound switch's icon: a small white speaker with sound waves; a red line through it when muted.
-export function SpeakerIcon({ size = 22, muted, color = colors.white }) {
-  const s = size;
-  return (
-    <View style={{ width: s, height: s, justifyContent: 'center' }}>
-      {/* the speaker: a small box and its cone */}
-      <View style={{ position: 'absolute', left: 0, top: s * 0.36, width: s * 0.2, height: s * 0.28, backgroundColor: color }} />
-      <View style={{ position: 'absolute', left: s * 0.12, top: s * 0.14, width: 0, height: 0, borderTopWidth: s * 0.36, borderBottomWidth: s * 0.36, borderRightWidth: s * 0.3, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderRightColor: color }} />
-      {/* two sound waves */}
-      <View style={{ position: 'absolute', left: s * 0.3, top: s * 0.29, width: s * 0.42, height: s * 0.42, borderRadius: s * 0.21, borderWidth: s * 0.1, borderColor: 'transparent', borderRightColor: color, opacity: muted ? 0.35 : 1 }} />
-      <View style={{ position: 'absolute', left: s * 0.26, top: s * 0.1, width: s * 0.8, height: s * 0.8, borderRadius: s * 0.4, borderWidth: s * 0.1, borderColor: 'transparent', borderRightColor: color, opacity: muted ? 0.35 : 1 }} />
-      {muted ? <View style={{ position: 'absolute', left: -s * 0.05, top: s * 0.46, width: s * 1.15, height: s * 0.1, backgroundColor: colors.highlight, borderRadius: s * 0.05, transform: [{ rotate: '-45deg' }] }} /> : null}
-    </View>
-  );
-}

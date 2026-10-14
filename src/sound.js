@@ -1,9 +1,6 @@
-// Sound effects (ElevenLabs, chosen by Jörg) and the app-wide sound switch.
-// The speaker in the black bar turns ALL sound on or off: these effects, the narration, recordings
-// and word clips. Muted narration still runs silently, so the words keep lighting up.
+// Sound effects (ElevenLabs, chosen by Jörg). Off by default; the Playback menu turns them on.
 // Every call is wrapped so a sound problem can never break reading.
 import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
-import { loadJSON, saveJSON } from './storage';
 
 const sources = {
   coverOpen: require('../assets/sfx/cover-open.mp3'),
@@ -22,17 +19,9 @@ const players = {};
 let ready = false;
 let suspended = false; // while recording
 
-// --- the sound switch ---
-let muted = false;
-const listeners = new Set();
-loadJSON('muted', false).then((m) => { if (m === true) setMuted(true, false); }).catch(() => {});
-export function isMuted() { return muted; }
-export function setMuted(m, save = true) {
-  muted = !!m;
-  if (save) saveJSON('muted', muted).catch?.(() => {});
-  listeners.forEach((fn) => { try { fn(muted); } catch (e) {} });
-}
-export function onMuteChange(fn) { listeners.add(fn); return () => listeners.delete(fn); }
+// Sound effects are off unless switched on in the Playback menu (prefs.sound).
+let enabled = false;
+export function setEffects(on) { enabled = !!on; }
 
 async function init() {
   if (ready) return;
@@ -53,7 +42,7 @@ export function suspendSounds(on) { suspended = on; }
 
 // kind: one of the names above. volume: 0..1 on top of the effect's own level.
 export function playSound(kind, volume = 1) {
-  if (muted || suspended) return;
+  if (!enabled || suspended) return;
   const p = players[kind];
   if (!p) return;
   try {

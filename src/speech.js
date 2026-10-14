@@ -1,7 +1,6 @@
 // Read-aloud with word tracking. Uses the phone's voice for now; ElevenLabs narration
 // (with exact word timings) will replace this per book later.
 import * as Speech from 'expo-speech';
-import { isMuted } from './sound';
 
 let voiceId;
 let session = 0;
@@ -43,7 +42,6 @@ export function speakTracked(text, { rate = 0.92, onWord, onDone } = {}) {
   };
   Speech.speak(text, {
     rate,
-    volume: isMuted() ? 0 : 1, // the sound switch (the words still light up)
     pitch: 1.05,
     language: 'en-US',
     voice: voiceId,
@@ -71,7 +69,7 @@ export function speakQueue(items, onDone) {
     if (my !== session) return;
     if (i >= items.length) return onDone && onDone();
     const it = items[i++];
-    Speech.speak(it.text, { volume: isMuted() ? 0 : 1, rate: it.rate ?? 0.8, language: 'en-US', voice: voiceId, onDone: () => setTimeout(next, it.pause ?? 180), onError: next });
+    Speech.speak(it.text, { rate: it.rate ?? 0.8, language: 'en-US', voice: voiceId, onDone: () => setTimeout(next, it.pause ?? 180), onError: next });
   };
   next();
 }

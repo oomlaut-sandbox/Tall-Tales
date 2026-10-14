@@ -46,7 +46,7 @@ const VOICE_RECORDING = {
   ios: { ...RecordingPresets.HIGH_QUALITY.ios, audioQuality: 127, sampleRate: 48000 },
   android: { ...RecordingPresets.HIGH_QUALITY.android, sampleRate: 48000 },
 };
-import { playSound, suspendSounds } from '../sound';
+import { playSound, setEffects, suspendSounds } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { shareInvite } from '../invite';
 import { audioModeChanged, pauseVoice, playClips, playVoice, resumeVoice, stopVoice } from '../voice';
@@ -685,6 +685,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         <View style={styles.setting}>
           <Text style={styles.help}>Book font</Text>
           <Seg value={prefs.font || 'serif'} options={Object.entries(BOOK_FONTS).map(([k, f]) => [k, f.label, f.family])} onChange={(v) => setPrefs((p) => ({ ...p, font: v }))} />
+        </View>
+        <View style={styles.setting}>
+          <Text style={styles.help}>Sound effects</Text>
+          <Seg value={prefs.sound ? 'on' : 'off'} options={[['off', 'Off'], ['on', 'On']]}
+            onChange={(v) => { const on = v === 'on'; setPrefs((p) => ({ ...p, sound: on })); setEffects(on); if (on) playSound('flick'); }} />
         </View>
         <View style={{ marginTop: 10, gap: 16 }}>
         {printChoice ? (

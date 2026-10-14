@@ -19,8 +19,8 @@ import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
-import { LibraryIcon, Option, Panel, SpeakerIcon, Toast } from './src/components/Chrome';
-import { isMuted, onMuteChange, playSound, setMuted } from './src/sound';
+import { LibraryIcon, Option, Panel, Toast } from './src/components/Chrome';
+import { playSound, setEffects } from './src/sound';
 import { stopSpeech } from './src/speech';
 import { stopVoice } from './src/voice';
 
@@ -87,18 +87,15 @@ function Root() {
   const openPublisher = (story) => { setDraft(draftFrom(story)); go('publisher'); };
 
   const barH = u * 17 + insets.bottom;
-  // The permanent black bar over the front camera, with the sound switch: across the top when
-  // upright (speaker at the right), down the left side when sideways (speaker at the top).
-  // The screens are told the bar is part of the safe area, so they keep clear of it.
-  const [muted, setMutedState] = useState(isMuted());
-  useEffect(() => onMuteChange(setMutedState), []);
+  // The permanent black bar over the front camera: across the top when upright, down the left
+  // side when sideways. The screens are told the bar is part of the safe area, so they keep clear of it.
+  useEffect(() => setEffects(prefs.sound === true), [prefs.sound]); // sound effects: Playback menu, off by default
   const sideways = width > height * 1.1;
   const camBar = sideways ? Math.max(insets.left, 44) : Math.max(insets.top, 44);
   const screenInsets = useMemo(() => (sideways ? { ...insets, left: camBar } : { ...insets, top: camBar }), [insets, sideways, camBar]);
-  const toggleSound = () => { const m = !isMuted(); setMuted(m); if (!m) playSound('tap'); };
   return (
     <View style={styles.outer}>
-      <StatusBar hidden />
+      <StatusBar style="light" />
       <SafeAreaInsetsContext.Provider value={screenInsets}>
       <View style={[styles.app, { width: W }]}>
         {screen === 'start' && (
@@ -147,13 +144,9 @@ function Root() {
         ) : null}
         <ParentGate visible={profileGate} reason="Your profile is for grown-ups." onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
         <Toast message={message} />
-        <View pointerEvents="box-none" style={sideways
-          ? { position: 'absolute', left: 0, top: 0, bottom: 0, width: camBar, backgroundColor: colors.bar, zIndex: 200, alignItems: 'center', paddingTop: 18 }
-          : { position: 'absolute', left: 0, right: 0, top: 0, height: camBar, backgroundColor: colors.bar, zIndex: 200, alignItems: 'flex-end', justifyContent: 'center', paddingRight: 20 }}>
-          <Pressable onPress={toggleSound} hitSlop={14} accessibilityRole="switch" accessibilityState={{ checked: !muted }} accessibilityLabel={muted ? 'Sound is off. Turn sound on' : 'Sound is on. Turn sound off'}>
-            <SpeakerIcon size={22} muted={muted} />
-          </Pressable>
-        </View>
+        <View pointerEvents="none" style={sideways
+          ? { position: 'absolute', left: 0, top: 0, bottom: 0, width: camBar, backgroundColor: colors.bar, zIndex: 200 }
+          : { position: 'absolute', left: 0, right: 0, top: 0, height: camBar, backgroundColor: colors.bar, zIndex: 200 }} />
       </View>
       </SafeAreaInsetsContext.Provider>
     </View>
