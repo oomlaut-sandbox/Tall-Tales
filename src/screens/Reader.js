@@ -584,9 +584,6 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             else if (id === 'self') toast('Reading on your own. Turn the page when you’re ready.');
             else toast('Tap the glowing circles in the picture.');
           }} />
-          {id === 'learn' ? (
-            <Option glyph="♫" title="Voices" sub={`Narrator: ${(NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1]}`} onPress={() => setPlayView('voices')} />
-          ) : null}
           </React.Fragment>
         ))}
         <Option glyph="♪" title={`Page turn sound: ${prefs.sound ? 'On' : 'Off'}`} sub="Tap to switch"
@@ -606,6 +603,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <Text style={styles.help}>Book font</Text>
           <Seg value={prefs.font || 'serif'} options={Object.entries(BOOK_FONTS).map(([k, f]) => [k, f.label, f.family])} onChange={(v) => setPrefs((p) => ({ ...p, font: v }))} />
         </View>
+        <Option glyph="♫" title="Voices" sub={`Narrator: ${(NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1]}`} onPress={() => setPlayView('voices')} />
         {printChoice ? (
           <>
             <Option glyph="⎙" title="Print: picture above the words" sub="One page each, like the app" onPress={() => { setPrintChoice(false); setPanel(null); setPrintGate('stacked'); }} />
