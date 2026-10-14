@@ -77,7 +77,7 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back }) 
   const fold = computePeel(peelCorner(t, C, W, H, artH), C, W, H, artH);
   const flap = toPath([[0, artH], [W, artH], [W, H], [0, H]]);
   const full = { x: 0, y: 0, width: W, height: H, fit: 'fill' };
-  const fadeIn = Math.max(0, Math.min(1, (t - 0.86) / 0.14)); // the last bit settles b's whole picture
+  const fadeIn = Math.max(0, Math.min(1, (t - 0.8) / 0.2)); // the top strip the flap can't reach
   if (!fold) {
     return (
       <Canvas style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} pointerEvents="none">
@@ -125,8 +125,10 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back }) 
           </Rect>
         </Group>
       </Group>
-      {fadeIn > 0 ? (
-        <Group clip={rect(0, 0, W, artH)} opacity={fadeIn}><Image image={back} {...full} /></Group>
+      {/* The folded flap is shorter than the picture square, so it can't reach the very top:
+          only that thin top strip fades in to the next picture (the flap itself stays solid). */}
+      {fadeIn > 0 && artH > textH ? (
+        <Group clip={rect(0, 0, W, artH - textH)} opacity={fadeIn}><Image image={back} {...full} /></Group>
       ) : null}
     </Canvas>
   );
