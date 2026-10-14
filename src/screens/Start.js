@@ -5,7 +5,7 @@
 // Turning it (tap, or swipe up / sideways) opens the cover over the spine like a real book, and its
 // inside (also brown) lands in the picture square.
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
 import { Bar, Burger, DogEar } from '../components/Chrome';
 import BookFrame, { Spine } from '../components/BookFrame';
@@ -14,6 +14,7 @@ import { playSound } from '../sound';
 
 
 export const COVER_BROWN = '#6f4b32';
+const LEATHER = require('../../assets/leather.jpg'); // Jörg's brown leather, outside and inside the cover
 
 function MenuItem({ u, color, title, sub, onPress }) {
   return (
@@ -86,6 +87,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
         // the inside of the cover: the same brown as the outside (Jörg may add texture later)
         const pebbles = (
           <View style={{ width: side, height: side, backgroundColor: COVER_BROWN, overflow: 'hidden' }} accessibilityLabel="oomlaut Reader">
+            <Image source={LEATHER} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
             {!wide ? <Fade edge="bottom" size={Math.round(side * 0.05)} max={0.2} /> : null}
           </View>
         );
@@ -113,6 +115,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
             {closed ? (
               <Animated.View {...swipe.panHandlers} style={[at2, styles.page, { zIndex: 8 }, leaf]}>
                 <Animated.View style={[StyleSheet.absoluteFill, { opacity: frontOp, backgroundColor: COVER_BROWN }]}>
+                  <Image source={LEATHER} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
                   <Pressable style={StyleSheet.absoluteFill} onPress={open} accessibilityRole="button" accessibilityLabel="Open the book" />
                   {!opening ? <DogEar u={u} onPress={open} label="Open the book" /> : null}
                 </Animated.View>

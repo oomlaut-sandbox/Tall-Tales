@@ -162,7 +162,7 @@ function Root() {
 
 // While the app gets ready (fonts, and the home picture so it appears in one go), show plain dark grey
 // to match the launch screen and the logo animation, instead of a flash of colour.
-const HOME_PICTURE = require('./assets/home-pebbles.jpg');
+const HOME_PICTURE = require('./assets/leather.jpg');
 // Phones and tablets both turn: sideways, the book goes side by side with the menu bar on the right.
 if (Platform.OS !== 'web') ScreenOrientation.unlockAsync().catch(() => {});
 
