@@ -124,12 +124,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const autoTimer = useRef(null);
   const anim = useRef(null);
 
-  // Black bar along the top (clear of the camera) with the menu, title and page number; a thinner,
-  // see-through bar at the bottom with the play controls (none in Read Yourself), over the page.
-  const topH = insets.top + 52;
+  // A plain black strip over the camera area (so pictures aren't hidden), and the solid black bar
+  // at the bottom with the menu, title and play controls (no play controls in Read Yourself).
+  const topH = insets.top;
   const showControls = prefs.mode !== 'self' || recording;
-  const barH = showControls ? u * 12.5 + insets.bottom : 0;
-  const panelPos = { bottom: Math.max(barH, insets.bottom) };
+  const barH = u * 14.5 + insets.bottom;
+  const panelPos = { bottom: barH };
   const n = story.pages.length;
   const tokens = useMemo(() => (pages[idx] && pages[idx].text ? tokenize(pages[idx].text) : []), [pages, idx]);
 
@@ -472,7 +472,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     return { artH, textH, tables: flapTables({ textH, artH }) };
   }, [W, H]);
   const pageProps = (i) => ({
-    page: pages[i], end: !!pages[i]?.end, width: W, height: H, bottomInset: barH, textScale: prefs.textScale || 1, fontKey: prefs.font || 'serif',
+    page: pages[i], end: !!pages[i]?.end, width: W, height: H, textScale: prefs.textScale || 1, fontKey: prefs.font || 'serif',
     onReadAgain: () => { stopReading(); setIdx(0); }, onLibrary: goLibrary,
   });
   const showHot = false; // Interactive mode is switched off for now
@@ -536,29 +536,28 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 
   return (
     <View style={styles.screen}>
-      <View style={[styles.topBar, { height: topH, paddingTop: insets.top }]}>
-        <Burger u={u} onPress={openMenu} />
-        <BarMeta title={story.title} sub={idx < n ? `Page ${idx + 1} of ${n}` : 'The End'} />
-      </View>
+      <View style={{ height: topH, backgroundColor: colors.bar }} />
       <View style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...pan.panHandlers}>
         {size ? layers : null}
         {/* Tap anywhere along the left or right edge to turn back or forward (swipes work anywhere). */}
-        {size && idx > 0 ? <Pressable onPress={() => flip(-1)} accessibilityLabel="Previous page" style={[styles.edge, { left: 0, width: edgeW, bottom: barH }]} /> : null}
-        {size && idx < pages.length - 1 ? <Pressable onPress={() => flip(1)} accessibilityLabel="Next page" style={[styles.edge, { right: 0, width: edgeW, bottom: barH }]} /> : null}
-        {idx < pages.length - 1 ? <View style={{ position: 'absolute', right: 0, bottom: barH, zIndex: 20 }}><DogEar u={u} onPress={() => flip(1)} /></View> : null}
+        {size && idx > 0 ? <Pressable onPress={() => flip(-1)} accessibilityLabel="Previous page" style={[styles.edge, { left: 0, width: edgeW }]} /> : null}
+        {size && idx < pages.length - 1 ? <Pressable onPress={() => flip(1)} accessibilityLabel="Next page" style={[styles.edge, { right: 0, width: edgeW }]} /> : null}
+        {idx < pages.length - 1 ? <View style={{ position: 'absolute', right: 0, bottom: 0, zIndex: 20 }}><DogEar u={u} onPress={() => flip(1)} /></View> : null}
         {recording ? (
           <View style={styles.recBanner} pointerEvents="none">
             <View style={styles.recDot} />
             <Text style={styles.recText}>Recording page {idx + 1}. Turn the page to keep going, or tap ● to stop.</Text>
           </View>
         ) : null}
+      </View>
+      <View style={[styles.bottomBar, { height: barH, paddingBottom: insets.bottom }]}>
+        <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
+        <BarMeta title={story.title} sub={idx < n ? `Page ${idx + 1} of ${n}` : 'The End'} />
         {showControls ? (
-          <View style={[styles.controls, { height: barH, paddingBottom: insets.bottom }]}>
-            <View style={styles.controlsRow}>
-              <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
-              <PauseButton onPress={onPause} disabled={recording} />
-              <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
-            </View>
+          <View style={[styles.small, { flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
+            <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
+            <PauseButton onPress={onPause} disabled={recording} />
+            <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
           </View>
         ) : null}
       </View>
@@ -664,9 +663,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   book: { flex: 1, overflow: 'hidden', backgroundColor: colors.paper },
-  topBar: { backgroundColor: colors.bar, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, gap: 4, zIndex: 30 },
-  controls: { position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.72)', justifyContent: 'center', zIndex: 30 },
-  controlsRow: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 6, paddingHorizontal: 18, transform: [{ scale: 0.85 }] },
+  bottomBar: { backgroundColor: colors.bar, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, gap: 10, zIndex: 30 },
+  small: { transform: [{ scale: 0.86 }] },
   edge: { position: 'absolute', top: 0, bottom: 0, zIndex: 15 },
   half: { position: 'absolute', left: 0, right: 0, overflow: 'hidden', backfaceVisibility: 'hidden' },
   strip: { position: 'absolute', left: 0, right: 0, overflow: 'hidden', transformOrigin: 'top' },

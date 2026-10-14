@@ -51,6 +51,10 @@
       }
     },
     "owner": "oomlaut-code",
-    "icon": "./assets/icon.png"
+    "icon": "./assets/icon.png",
+    "splash": {
+      "backgroundColor": "#000000",
+      "resizeMode": "contain"
+    }
   }
 }

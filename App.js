@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { Asset } from 'expo-asset';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFonts, EBGaramond_400Regular } from '@expo-google-fonts/eb-garamond';
 import { colors, MAX_WIDTH } from './src/theme';
@@ -113,9 +114,20 @@ function Root() {
   );
 }
 
+// While the app gets ready (fonts, and the home picture so it appears in one go), show plain black
+// to match the launch screen, instead of a flash of colour.
+const HOME_PICTURE = require('./assets/home-pebbles.jpg');
 export default function App() {
   const [loaded] = useFonts({ EBGaramond_400Regular });
-  if (!loaded) return <View style={{ flex: 1, backgroundColor: colors.red }} />;
+  const [pictureReady, setPictureReady] = useState(false);
+  useEffect(() => {
+    let done = false;
+    const finish = () => { if (!done) { done = true; setPictureReady(true); } };
+    Asset.loadAsync(HOME_PICTURE).then(finish, finish);
+    const t = setTimeout(finish, 1500); // never wait longer than this
+    return () => clearTimeout(t);
+  }, []);
+  if (!loaded || !pictureReady) return <View style={{ flex: 1, backgroundColor: '#000' }} />;
   return (
     <SafeAreaProvider>
       <Root />

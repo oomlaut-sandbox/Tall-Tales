@@ -61,8 +61,6 @@ export function CurlCanvas({ width: W, height: H, under, turning, fold }) {
             />
           </Rect>
         </Group>
-        {/* a fine white edge all round the turned part, so the paper reads as having thickness */}
-        <Path path={cut} style="stroke" strokeWidth={1.6} strokeJoin="round" color="rgba(255,255,255,0.95)" />
       </Group>
     </Canvas>
   );
@@ -79,7 +77,7 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back }) 
   const fold = computePeel(peelCorner(t, C, W, H, artH), C, W, H, artH);
   const flap = toPath([[0, artH], [W, artH], [W, H], [0, H]]);
   const full = { x: 0, y: 0, width: W, height: H, fit: 'fill' };
-  const fadeIn = Math.max(0, Math.min(1, (t - 0.8) / 0.2)); // the top strip the flap can't reach
+  const fadeIn = Math.max(0, Math.min(1, (t - 0.75) / 0.25)); // the top strip the flap can't reach
   if (!fold) {
     return (
       <Canvas style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} pointerEvents="none">
@@ -88,18 +86,20 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back }) 
     );
   }
   const { M, nx, ny, angle, depth } = fold;
+  // all the shading fades away as the page lands (and fades in as a backward turn starts)
+  const settle = 1 - Math.max(0, Math.min(1, (t - 0.82) / 0.18));
   const frontPath = toPath(fold.front);
   const cut = toPath(fold.cut);
   const shadeW = Math.max(18, Math.min(60, depth * 0.55));
-  const shadeA = Math.min(0.32, (depth / W) * 0.5 + 0.08);
+  const shadeA = Math.min(0.32, (depth / W) * 0.5 + 0.08) * settle;
   const g0 = vec(M[0], M[1]);
   const reflect = [
     { translateX: M[0] }, { translateY: M[1] }, { rotate: angle }, { scaleY: -1 }, { rotate: -angle },
     { translateX: -M[0] }, { translateY: -M[1] },
   ];
-  // flat flap position → where that spot of the next page's picture is (mirrored over the spine)
-  const k = artH / textH;
-  const spine = [{ translateY: artH }, { scaleY: -1 / k }, { translateY: -artH }];
+  // flat flap position → the spot of the next page's picture it lands on (mirrored over the spine,
+  // at true size, so the last frame matches the finished page exactly)
+  const spine = [{ translateY: artH }, { scaleY: -1 }, { translateY: -artH }];
   return (
     <Canvas style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} pointerEvents="none">
       {/* shadow on the uncovered words area, along the crease */}
@@ -117,7 +117,7 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back }) 
       <Group clip={frontPath}><Image image={front} {...full} /></Group>
       {/* the lifted part, folded over: its back shows the next page's picture */}
       <Group transform={reflect}>
-        <Path path={cut} color="rgba(0,0,0,0.28)">
+        <Path path={cut} color={`rgba(0,0,0,${(0.28 * settle).toFixed(3)})`}>
           <BlurMask blur={8} style="normal" />
         </Path>
         <Group clip={cut}>
@@ -126,7 +126,7 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back }) 
             <LinearGradient
               start={g0}
               end={vec(M[0] + nx * Math.max(1, depth), M[1] + ny * Math.max(1, depth))}
-              colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0)', 'rgba(255,255,255,0.12)', 'rgba(0,0,0,0.05)']}
+              colors={[`rgba(0,0,0,${(0.2 * settle).toFixed(3)})`, 'rgba(0,0,0,0)', `rgba(255,255,255,${(0.12 * settle).toFixed(3)})`, `rgba(0,0,0,${(0.05 * settle).toFixed(3)})`]}
               positions={[0, Math.min(0.5, 20 / Math.max(1, depth)), 0.55, 1]}
             />
           </Rect>
