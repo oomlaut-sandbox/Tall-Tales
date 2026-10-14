@@ -91,7 +91,8 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
             {/* the picture square: only once the book is open */}
             {!closed ? <View style={[at1, styles.page]}>{pebbles}</View> : null}
             {/* the words square: the menu */}
-            <Animated.View style={[at2, styles.page, { justifyContent: 'center', gap: k * 8, paddingLeft: k * 11.8, paddingRight: k * 8, backgroundColor: colors.paper }, pageTurn]}>
+            <Animated.View style={[at2, styles.page, { justifyContent: 'center', gap: k * 8, paddingLeft: k * 13, paddingRight: k * 6, // two items of 33 + gap 8 leave 13 above and below: same 13 on the left
+             backgroundColor: colors.paper }, pageTurn]}>
               {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
               <Spine wide={wide} />
               <MenuItem u={k} color={colors.green} title="My Library" sub="Find and read purchased stories" onPress={() => go('library')} />
