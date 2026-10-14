@@ -17,14 +17,14 @@ import { playSound } from '../sound';
 export const COVER_BROWN = '#6f4b32';
 const LEATHER = require('../../assets/leather.jpg'); // Jörg's brown leather, outside and inside the cover
 
-function MenuItem({ u, color, title, sub, onPress }) {
+const TILE_LIBRARY = require('../../assets/tile-library.png');
+const TILE_STORE = require('../../assets/tile-store.png');
+
+function MenuItem({ u, icon, title, sub, onPress }) {
   return (
     <Pressable onPress={onPress} accessibilityRole="button" style={{ flexDirection: 'row', gap: u * 4.6 }}>
-      {/* the icon, with a slight drop shadow */}
-      <View style={{ width: u * 16.5, height: u * 33, backgroundColor: colors.white, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 3 }}>
-        <View style={{ flex: 1, backgroundColor: color }} />
-        <View style={{ flex: 1, backgroundColor: colors.white }} />
-      </View>
+      {/* the icon: a stitched felt tile (Jörg's), with a slight drop shadow */}
+      <Image source={icon} resizeMode="contain" style={{ width: u * 19, height: u * 33, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3 }} />
       <View style={{ maxWidth: u * 48 }}>
         {/* Same sizes as the menu titles (20) and their descriptions (14). */}
         <Text style={{ fontFamily: fonts.ui, fontWeight: '700', fontSize: 20, lineHeight: 24, color: colors.ink, marginBottom: u * 2 }}>{title}</Text>
@@ -112,8 +112,8 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
               <Spine wide={wide} />
               {/* the two items as one block, centred in the page */}
               <View style={{ gap: k * 8 }}>
-                <MenuItem u={k} color={colors.green} title="My Library" sub="Find and read your books" onPress={() => goTo('library')} />
-                <MenuItem u={k} color={colors.blue} title="Book Store" sub="Discover and buy new books" onPress={() => goTo('store')} />
+                <MenuItem u={k} icon={TILE_LIBRARY} title="My Library" sub="Find and read your books" onPress={() => goTo('library')} />
+                <MenuItem u={k} icon={TILE_STORE} title="Book Store" sub="Discover and buy new books" onPress={() => goTo('store')} />
               </View>
             </View>
             {/* the cover */}
