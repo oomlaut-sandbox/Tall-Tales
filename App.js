@@ -35,7 +35,7 @@ function Root() {
   const [story, setStory] = useState(null);
   const [drawer, setDrawer] = useState(false);
   const [profileGate, setProfileGate] = useState(false); // the profile is for grown-ups
-  const [prefs, setPrefs] = useState({ mode: null, sound: false, speed: 'normal', voice: 'narrator' });
+  const [prefs, setPrefs] = useState({ mode: 'page', sound: false, speed: 'normal', voice: 'narrator' }) // Page by Page narration by default;
   const [userStories, setUserStories] = useState([]);
   const [removed, setRemoved] = useState([]); // built-in books taken off the shelf (can be restored)
   useEffect(() => { loadJSON('removedBooks', []).then((r) => Array.isArray(r) && setRemoved(r)); }, []);
@@ -50,6 +50,8 @@ function Root() {
       if (p && !p.soundOffDefault) p = { ...p, sound: false, soundOffDefault: true };
       // Interactive mode was removed: anyone who had it gets Page by Page instead.
       if (p && p.mode === 'interactive') p = { ...p, mode: 'page' };
+      // No playback option chosen yet: Page by Page narration.
+      if (p && !p.mode) p = { ...p, mode: 'page' };
       // Huge text was removed: Large is the biggest now.
       if (p && p.textScale > 1.25) p = { ...p, textScale: 1.25 };
       if (p) setPrefs((x) => ({ ...x, ...p }));
