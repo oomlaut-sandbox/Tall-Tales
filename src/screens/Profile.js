@@ -79,7 +79,7 @@ export default function Profile({ u, openMenu, toast }) {
   } else if (step === 'start') {
     body = (
       <>
-        <Text style={styles.p}>Sign in to your oomlaut account. There’s no password to remember.</Text>
+        <Text style={[styles.p, { marginBottom: 10 }]}>Sign in to your oomlaut account. There’s no password to remember.</Text>
         {apple ? (
           // our own button so both match (same font, size and dark grey); Apple's logo and wording kept
           <Pressable onPress={() => run(signInWithApple)} style={[styles.btn, { flexDirection: 'row', justifyContent: 'center', gap: 7 }]} accessibilityRole="button" accessibilityLabel="Sign in with Apple">
@@ -142,15 +142,15 @@ const styles = StyleSheet.create({
   band: { backgroundColor: colors.orange, paddingBottom: 22, paddingHorizontal: 24 },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32 },
   sub: { color: colors.white, fontFamily: fonts.ui, fontSize: 15, marginTop: 6, opacity: 0.9 },
-  body: { padding: 24, paddingBottom: 40, alignItems: 'center' },
-  col: { width: '100%', maxWidth: 420, gap: 14 },
+  body: { padding: 24, paddingTop: 40, paddingBottom: 40, alignItems: 'center' },
+  col: { width: '100%', maxWidth: 420, gap: 18 },
   p: { fontFamily: fonts.ui, fontSize: 16, lineHeight: 23, color: colors.ink },
   small: { fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, color: '#444', marginTop: 6 },
   label: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#555', textTransform: 'uppercase', letterSpacing: 0.5 },
   value: { fontFamily: fonts.ui, fontSize: 17, color: colors.ink },
-  input: { backgroundColor: colors.white, paddingHorizontal: 14, paddingVertical: 12, fontFamily: fonts.ui, fontSize: 17, color: colors.ink },
+  input: { backgroundColor: colors.white, borderRadius: 14, paddingHorizontal: 16, paddingVertical: 12, fontFamily: fonts.ui, fontSize: 17, color: colors.ink },
   codeInput: { fontSize: 26, letterSpacing: 8, textAlign: 'center' },
-  btn: { backgroundColor: '#3b3b3b', paddingVertical: 14, alignItems: 'center' },
+  btn: { backgroundColor: '#3b3b3b', height: 52, borderRadius: 26, justifyContent: 'center', alignItems: 'center' }, // Apple-style pills
   off: { opacity: 0.4 },
   btnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   link: { color: colors.ink, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, textAlign: 'center', paddingVertical: 4 },

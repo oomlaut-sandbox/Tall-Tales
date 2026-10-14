@@ -337,7 +337,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           </View>
         </View>
       ) : null}
-      <StoryGuide visible={guide} onClose={closeGuide} />
+      <StoryGuide visible={guide} onClose={closeGuide} area={wide ? { left: BL.leftW, right: BL.rightW } : { top: BL.topH, bottom: BL.barH }} />
       <ParentGate visible={!!gateFor} reason={gateFor?.mode === 'print' ? 'Printing opens your phone’s print options.' : 'Sharing sends this story outside the app.'} onPass={() => makePdf(gateFor)} onCancel={() => setGateFor(null)} />
     </KeyboardAvoidingView>
   );

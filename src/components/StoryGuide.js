@@ -1,6 +1,7 @@
 // Quick guide for making a story. Shown the first time, and from the "?" button.
 import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { colors, fonts } from '../theme';
 
 export const GUIDE_STEPS = [
@@ -12,15 +13,19 @@ export const GUIDE_STEPS = [
   { title: 'Read it in your voice', body: 'Open your story and tap the red button to record yourself reading each page. Your child will hear your voice every time.' },
 ];
 
-export default function StoryGuide({ visible, onClose }) {
+// area: the space between the bars, so the card sits right in the middle of the book
+export default function StoryGuide({ visible, onClose, area }) {
   const [step, setStep] = useState(0);
   useEffect(() => { if (visible) setStep(0); }, [visible]);
   if (!visible) return null;
   const s = GUIDE_STEPS[step];
   const last = step === GUIDE_STEPS.length - 1;
   return (
-    <View style={styles.scrim}>
+    <View style={[styles.scrim, area]}>
+      {/* black, a little see-through, with the page softly blurred behind it (like the Book Store cards) */}
       <View style={styles.card} accessibilityRole="summary">
+        <BlurView pointerEvents="none" tint="dark" intensity={22} style={StyleSheet.absoluteFill} />
+        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.62)' }]} />
         <Text style={styles.kicker}>How to make a story · {step + 1} of {GUIDE_STEPS.length}</Text>
         <Text style={styles.title}>{s.title}</Text>
         <Text style={styles.body}>{s.body}</Text>
@@ -42,8 +47,8 @@ export default function StoryGuide({ visible, onClose }) {
 }
 
 const styles = StyleSheet.create({
-  scrim: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'center', paddingHorizontal: 20, zIndex: 70 },
-  card: { backgroundColor: colors.panel, padding: 24, gap: 12 },
+  scrim: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.3)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, zIndex: 70 },
+  card: { padding: 24, gap: 12, overflow: 'hidden', width: '100%', maxWidth: 440 },
   kicker: { color: colors.muted, fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', letterSpacing: 0.3 },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 26 },
   body: { color: '#e2e2e2', fontFamily: fonts.ui, fontSize: 17, lineHeight: 25 },
