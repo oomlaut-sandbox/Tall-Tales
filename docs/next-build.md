@@ -21,6 +21,21 @@ Jörg's notes, 13 Oct 2026. Do not build until he has reviewed it.
 - Keep it as it is ("very good right now"). The squares should fix the last moment before it
   settles.
 
+## Jörg's mockup (docs/mockups/build20-reader.jpg)
+These measurements come from the screenshot at 3x, about 395 points wide.
+- **Background:** dark grey #3B3B3B.
+- **Top black bar:** covers the status bar and camera (about 60 pt).
+- **Book:** about 327 pt wide, with about 33 pt of grey on each side and roughly 22–25 pt above
+  and below. The two halves come out as squares (about 328 × 328 pt each).
+- **Book shadow:** a soft drop shadow, a little heavier on the bottom and right.
+- **Spine:** in the mockup the picture square casts a soft shadow down onto the words square,
+  about 20 pt fading out, with no thin line. The written note said a thin line instead, so
+  this needs checking with Jörg.
+- **Dog-ear:** the dark triangle is the background grey with a soft shadow, and the white
+  fold sits in front of it.
+- **Bottom black bar:** the burger is at the left. The mockup shows no buttons or label, but
+  "Page X of Y" in small bold Helvetica still goes in, as the note above says.
+
 ## Sizing notes
 - Square side = the smaller of (screen width minus a margin on each side) and (height between
   the top and bottom bars minus margins, divided by 2). On an iPhone 15 that's about 330–340
