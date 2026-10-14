@@ -9,6 +9,7 @@
     "backgroundColor": "#3a3a3a",
     "ios": {
       "supportsTablet": true,
+      "usesAppleSignIn": true,
       "bundleIdentifier": "com.oomlaut.reader",
       "infoPlist": {
         "NSMicrophoneUsageDescription": "oomlaut Reader records your voice so you can read stories aloud for your child.",
@@ -39,7 +40,8 @@
         {
           "photosPermission": "oomlaut Reader uses your photos as pictures in the stories you make."
         }
-      ]
+      ],
+      "expo-apple-authentication"
     ],
     "web": {
       "output": "single",

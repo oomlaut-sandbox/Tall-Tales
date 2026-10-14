@@ -50,6 +50,12 @@ jobs:
         run: node ci/crash-logs.js asc-api-key.p8 "$(cat ci/asc-app-id.txt)" || true
       - name: Install
         run: npm ci --no-audit --no-fund
+      - name: Account connection (Supabase URL and public key, if the secrets exist)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          node -e 'const u=process.env.SUPABASE_URL,k=process.env.SUPABASE_ANON_KEY; if(u&&k){require("fs").writeFileSync("src/supabaseConfig.json",JSON.stringify({url:u.trim(),anonKey:k.trim()}));console.log("accounts: on")}else console.log("accounts: secrets not set yet")' | tee -a ios-out/checks.txt
       - name: Send an existing build to TestFlight
         if: contains(github.event.head_commit.message, '[submit]')
         timeout-minutes: 80

@@ -10,6 +10,8 @@ import { colors, MAX_WIDTH } from './src/theme';
 import Home from './src/screens/Home';
 import { Library, Store } from './src/screens/Shelf';
 import About from './src/screens/About';
+import Profile from './src/screens/Profile';
+import ParentGate from './src/components/ParentGate';
 import Reader from './src/screens/Reader';
 import Publisher, { draftFrom } from './src/screens/Publisher';
 import { STORIES } from './src/story';
@@ -31,6 +33,7 @@ function Root() {
   const u = Math.min(width, MAX_WIDTH) / 100;
   const [story, setStory] = useState(null);
   const [drawer, setDrawer] = useState(false);
+  const [profileGate, setProfileGate] = useState(false); // the profile is for grown-ups
   const [prefs, setPrefs] = useState({ mode: null, sound: false, speed: 'normal', voice: 'narrator' });
   const [userStories, setUserStories] = useState([]);
   const [removed, setRemoved] = useState([]); // built-in books taken off the shelf (can be restored)
@@ -97,6 +100,7 @@ function Root() {
         )}
         {screen === 'store' && <Store u={u} openStory={openStory} openMenu={openMenu} />}
         {screen === 'about' && <About u={u} openMenu={openMenu} />}
+        {screen === 'profile' && <Profile u={u} openMenu={openMenu} toast={toast} />}
         {screen === 'reader' && story && (
           <Reader u={u} story={story} prefs={prefs} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => go('library')} toast={toast} menuRequest={playMenu} landscape={landscape} />
         )}
@@ -108,9 +112,10 @@ function Root() {
             if (screen === 'reader') setPlayMenu((x) => x + 1); else toast('Open a story first, then choose how it plays.');
           }} />
           <Option glyph="+" title="Create a Story" sub="Add your own pictures and words" onPress={() => openPublisher(null)} />
-          <Option glyph="○" title="Profile" sub="Manage your oomlaut account" onPress={() => toast('Accounts arrive in a later build.')} />
+          <Option glyph="○" title="Profile" sub="Manage your oomlaut account" onPress={() => { setDrawer(false); setProfileGate(true); }} />
           <Option glyph="i" title="About" sub="Learn more about the app" onPress={() => go('about')} />
         </Panel>
+        <ParentGate visible={profileGate} reason="Your profile is for grown-ups." onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
         <Toast message={message} />
       </View>
     </View>
