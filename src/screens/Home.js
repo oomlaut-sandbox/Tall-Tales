@@ -25,7 +25,7 @@ function MenuItem({ u, color, title, sub, onPress }) {
 export default function Home({ u, go, openMenu }) {
   // The home screen is a book too: the felt pebbles in the picture square, the menu in the words square.
   return (
-    <BookFrame barMin={u * 17} bar={<Bar u={u}><Burger u={u} onPress={openMenu} /></Bar>}>
+    <BookFrame barMin={u * 17} bar={(L) => <Bar u={u} vertical={L.wide}><Burger u={u} onPress={openMenu} /></Bar>}>
       {({ side, wide }) => {
         const k = side / 100; // sizes inside the book scale with the squares
         return (

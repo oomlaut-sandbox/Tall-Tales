@@ -159,8 +159,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     ? Math.max(80, Math.min(BL.side, wide ? Math.min((desk.w - 2 * GAP) / 2, desk.h - 2 * GAP) : Math.min(desk.w - 2 * GAP, (desk.h - 2 * GAP) / 2)))
     : BL.side);
   return (
-    <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <View style={{ height: insets.top + spare / 2, backgroundColor: colors.bar }} />
+    <KeyboardAvoidingView style={[styles.screen, wide && { flexDirection: 'row' }]} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <View style={wide ? { width: BL.leftW, backgroundColor: colors.bar } : { height: insets.top + spare / 2, backgroundColor: colors.bar }} />
       <View style={styles.desk} onLayout={(e) => setDesk({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
       <View style={[styles.bookShadow, wide ? { width: side * 2, height: side } : { width: side, height: side * 2 }]}>
       <View style={[styles.page, wide && { flexDirection: 'row' }]}>
@@ -202,6 +202,24 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       </View>
       </View>
       </View>
+      {wide ? (
+        // sideways: the bar runs down the right side (the title can be edited when upright)
+        <View style={{ width: BL.rightW, backgroundColor: colors.bar, flexDirection: 'row', justifyContent: 'flex-end' }}>
+          <Bar u={u} vertical>
+            <View style={{ alignItems: 'center', gap: 18 }}>
+              <Burger u={u} onPress={openMenu} />
+              <Text style={[styles.sub, { textAlign: 'center' }]}>{i + 1}/{draft.pages.length}</Text>
+            </View>
+            <View style={{ alignItems: 'center', gap: 18 }}>
+              <Pressable onPress={() => setI(Math.max(0, i - 1))} disabled={i === 0} hitSlop={8} style={{ opacity: i === 0 ? 0.35 : 1 }} accessibilityLabel="Previous page">
+                <Text style={[styles.btn, { fontSize: 22 }]}>‹</Text>
+              </Pressable>
+              <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
+              <Pressable onPress={finish} hitSlop={8}><Text style={[styles.btn, { color: colors.highlight }]}>Done</Text></Pressable>
+            </View>
+          </Bar>
+        </View>
+      ) : (
       <View style={{ backgroundColor: colors.bar, paddingTop: spare / 2 }}>
       <Bar u={u}>
         <Burger u={u} onPress={openMenu} />
@@ -216,8 +234,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <Pressable onPress={finish} hitSlop={8}><Text style={[styles.btn, { color: colors.highlight }]}>Done</Text></Pressable>
       </Bar>
       </View>
+      )}
 
-      <Panel open={pagesOpen} side="right" title="Pages" bottom={barH} onClose={() => setPagesOpen(false)}>
+      <Panel open={pagesOpen} side="right" title="Pages" bottom={wide ? 0 : barH} inset={wide ? BL.rightW : 0} onClose={() => setPagesOpen(false)}>
         <ScrollView style={{ maxHeight: 380 }} contentContainerStyle={{ gap: 10 }}>
           {draft.pages.map((p, k) => (
             <View key={p.pid} style={[styles.prow, k === i && { borderColor: colors.highlight }]}>

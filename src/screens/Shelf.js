@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
-import { Bar, BarMeta, Burger } from '../components/Chrome';
+import { Bar, BarMeta, Burger, WithBar } from '../components/Chrome';
 import ParentGate from '../components/ParentGate';
 import { STORIES } from '../story';
 
@@ -71,7 +71,19 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
   const stop = () => { setSelecting(false); setPicked([]); setConfirm(false); };
   const mineCount = chosen.filter((s) => s.mine).length;
   return (
-    <View style={styles.screen}>
+    <WithBar style={styles.screen} bar={(v) => (selecting ? (
+        <Bar u={u} vertical={v}>
+          <Pressable onPress={() => setGate('share')} disabled={chosen.length !== 1} style={[styles.barBtn, chosen.length !== 1 && styles.barBtnOff]} accessibilityRole="button">
+            <Text style={styles.barBtnText}>Share</Text>
+          </Pressable>
+          <Pressable onPress={() => setConfirm(true)} disabled={!chosen.length} style={[styles.barBtn, !chosen.length && styles.barBtnOff]} accessibilityRole="button">
+            <Text style={[styles.barBtnText, { color: '#ff6b6b' }]}>Delete</Text>
+          </Pressable>
+          {!v ? <Text style={styles.barHint}>{chosen.length > 1 ? 'Share one book at a time' : ''}</Text> : null}
+        </Bar>
+      ) : (
+        <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /><BarMeta vertical={v} title="My Library" /></Bar>
+      ))}>
       <Band color={colors.orange} title={selecting ? 'Select books' : 'My Library'}
         sub={selecting ? (picked.length ? `${picked.length} selected` : 'Tap books to select them') : 'Your stories, ready to read'}
         action={selecting ? 'Cancel' : 'Select'} onAction={selecting ? stop : () => setSelecting(true)} />
@@ -103,19 +115,6 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
           </View>
         </View>
       ) : null}
-      {selecting ? (
-        <Bar u={u}>
-          <Pressable onPress={() => setGate('share')} disabled={chosen.length !== 1} style={[styles.barBtn, chosen.length !== 1 && styles.barBtnOff]} accessibilityRole="button">
-            <Text style={styles.barBtnText}>Share</Text>
-          </Pressable>
-          <Pressable onPress={() => setConfirm(true)} disabled={!chosen.length} style={[styles.barBtn, !chosen.length && styles.barBtnOff]} accessibilityRole="button">
-            <Text style={[styles.barBtnText, { color: '#ff6b6b' }]}>Delete</Text>
-          </Pressable>
-          <Text style={styles.barHint}>{chosen.length > 1 ? 'Share one book at a time' : ''}</Text>
-        </Bar>
-      ) : (
-        <Bar u={u}><Burger u={u} onPress={openMenu} /><BarMeta title="My Library" /></Bar>
-      )}
       <ParentGate visible={!!gate} reason={gate === 'share' ? 'Sharing sends this book outside the app as a PDF.' : 'Deleting books from the library.'}
         onCancel={() => setGate(null)}
         onPass={() => {
@@ -123,14 +122,14 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
           if (g === 'share' && chosen[0]) onShare(chosen[0]);
           if (g === 'delete') { onDelete(chosen); stop(); }
         }} />
-    </View>
+    </WithBar>
   );
 }
 
 export function Store({ u, openStory, openMenu }) {
   const { width: winW } = useWindowDimensions();
   return (
-    <View style={styles.screen}>
+    <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /><BarMeta vertical={v} title="Book Store" /></Bar>}>
       <Band color={colors.blue} title="Book Store" sub="Find and buy new stories" />
       <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]}>
         <Text style={styles.note}>Buying and downloading stories arrives in a later build. For now, the sample story is free to read.</Text>
@@ -138,8 +137,7 @@ export function Store({ u, openStory, openMenu }) {
           <Tile key={s.id} u={u} cover={s.pages[0].image} title={s.title} sub={s.author ? `by ${s.author} · in your library` : 'Free sample · in your library'} onPress={() => openStory(s)} />
         ))}
       </ScrollView>
-      <Bar u={u}><Burger u={u} onPress={openMenu} /><BarMeta title="Book Store" /></Bar>
-    </View>
+    </WithBar>
   );
 }
 

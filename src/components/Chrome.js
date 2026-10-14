@@ -28,12 +28,25 @@ export function Bar({ u, children, vertical }) {
   );
 }
 
+// A screen with its menu bar: at the bottom when upright, down the right side when sideways (iPad).
+// bar: a function given `vertical` that returns the bar.
+export function WithBar({ bar, children, style }) {
+  const { width, height } = useWindowDimensions();
+  const side = width > height * 1.1;
+  return (
+    <View style={[{ flex: 1, flexDirection: side ? 'row' : 'column' }, style]}>
+      <View style={{ flex: 1 }}>{children}</View>
+      {bar(side)}
+    </View>
+  );
+}
+
 export function BarMeta({ title, sub, vertical, serif, page }) {
   // The reader's bar: just "Page X of Y", small bold Helvetica.
   if (page) return <View style={{ flex: 1, minWidth: 0, paddingLeft: 14 }}><Text numberOfLines={1} style={styles.metaPage}>{page}</Text></View>;
   if (vertical) {
     // Only room for the page number when the bar runs down the side.
-    return sub ? <Text style={[styles.metaSub, { textAlign: 'center', marginTop: 0 }]}>{sub}</Text> : null;
+    return sub ? <Text style={[styles.metaPage, { textAlign: 'center' }]}>{sub}</Text> : null;
   }
   return (
     <View style={{ flex: 1, minWidth: 0, paddingLeft: 18 }}>

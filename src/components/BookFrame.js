@@ -11,35 +11,58 @@ import { colors } from '../theme';
 
 export const BOOK_GAP = 30;
 
-// Sizes for the book on this screen. barMin: the bottom bar's own height (without the home-indicator area).
+// Sizes for the book on this screen. barMin: the menu bar's own thickness (without safe areas).
+// Upright: black strip at the top (camera), menu bar at the bottom, squares stacked.
+// Sideways (iPad): black strip on the left, menu bar down the right side, squares side by side.
+// Either way the bars take whatever room is left after the book and its 30-point grey border.
 export function bookLayout(winW, winH, insets, barMin) {
   const G = BOOK_GAP;
+  const wide = winW > winH * 1.1;
+  if (wide) {
+    const minLeft = Math.max(insets.left, 20), minRight = barMin + insets.right;
+    const roomW = winW - minLeft - minRight - 2 * G, roomH = winH - Math.max(insets.top, 0) - insets.bottom - 2 * G;
+    const side = Math.floor(Math.max(120, Math.min(roomW / 2, roomH)));
+    const spare = Math.max(0, roomW - 2 * side);
+    return { side, wide, bookW: side * 2, bookH: side, leftW: minLeft + spare / 2, rightW: minRight + spare / 2, topH: 0, barH: 0, spare };
+  }
   const minTop = insets.top, minBar = barMin + insets.bottom;
   const room = winH - minTop - minBar - 2 * G;
-  const wide = winW > winH * 1.1;
-  const side = Math.floor(Math.max(120, wide ? Math.min((winW - 2 * G - insets.left - insets.right) / 2, room) : Math.min(winW - 2 * G, room / 2)));
-  const bookW = wide ? side * 2 : side, bookH = wide ? side : side * 2;
-  const spare = Math.max(0, room - bookH);
-  return { side, wide, bookW, bookH, topH: minTop + spare / 2, barH: minBar + spare / 2, spare };
+  const side = Math.floor(Math.max(120, Math.min(winW - 2 * G, room / 2)));
+  const spare = Math.max(0, room - side * 2);
+  return { side, wide, bookW: side, bookH: side * 2, topH: minTop + spare / 2, barH: minBar + spare / 2, leftW: 0, rightW: 0, spare };
 }
 
-// children: a function given { side, wide } that draws the two squares.
+// children: a function given the layout ({ side, wide, ... }) that draws the two squares.
+// bar: the menu bar, or a function given the layout (so it can run down the side when wide).
 export default function BookFrame({ barMin, bar, children, deskProps, bookProps, under }) {
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
   const L = bookLayout(winW, winH, insets, barMin);
+  const barEl = typeof bar === 'function' ? bar(L) : bar;
+  const book = (
+    <View style={styles.desk} {...deskProps}>
+      <View style={[styles.shadow, { width: L.bookW, height: L.bookH }]}>
+        <View style={[styles.book, { flexDirection: L.wide ? 'row' : 'column' }]} {...bookProps}>
+          {children(L)}
+        </View>
+      </View>
+      {under}
+    </View>
+  );
+  if (L.wide) {
+    return (
+      <View style={[styles.screen, { flexDirection: 'row' }]}>
+        <View style={{ width: L.leftW, backgroundColor: colors.bar }} />
+        {book}
+        <View style={{ width: L.rightW, backgroundColor: colors.bar, flexDirection: 'row', justifyContent: 'flex-end' }}>{barEl}</View>
+      </View>
+    );
+  }
   return (
     <View style={styles.screen}>
       <View style={{ height: L.topH, backgroundColor: colors.bar }} />
-      <View style={styles.desk} {...deskProps}>
-        <View style={[styles.shadow, { width: L.bookW, height: L.bookH }]}>
-          <View style={[styles.book, { flexDirection: L.wide ? 'row' : 'column' }]} {...bookProps}>
-            {children(L)}
-          </View>
-        </View>
-        {under}
-      </View>
-      <View style={{ backgroundColor: colors.bar, paddingTop: L.spare / 2 }}>{bar}</View>
+      {book}
+      <View style={{ backgroundColor: colors.bar, paddingTop: L.spare / 2 }}>{barEl}</View>
     </View>
   );
 }

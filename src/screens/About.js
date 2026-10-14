@@ -3,14 +3,14 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
-import { Bar, BarMeta, Burger } from '../components/Chrome';
+import { Bar, BarMeta, Burger, WithBar } from '../components/Chrome';
 
 const VERSION = require('../../app.json').expo.version;
 
 export default function About({ u, openMenu }) {
   const insets = useSafeAreaInsets();
   return (
-    <View style={styles.screen}>
+    <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /><BarMeta vertical={v} title="About" /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 40 }]}>
         <Text style={styles.title}>oomlaut<Text style={styles.reg}>®</Text> Reader</Text>
         <Text style={styles.tagline}>Picture books in your voice.</Text>
@@ -25,8 +25,7 @@ export default function About({ u, openMenu }) {
         <Text style={styles.p}>oomlaut Reader is made by Jörg Schmidt, an illustrator and author, and a parent.</Text>
         <Text style={styles.version}>Version {VERSION}</Text>
       </ScrollView>
-      <Bar u={u}><Burger u={u} onPress={openMenu} /><BarMeta title="About" /></Bar>
-    </View>
+    </WithBar>
   );
 }
 

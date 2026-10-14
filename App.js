@@ -100,7 +100,7 @@ function Root() {
         {screen === 'reader' && story && (
           <Reader u={u} story={story} prefs={prefs} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => go('library')} toast={toast} menuRequest={playMenu} landscape={landscape} />
         )}
-        <Panel open={drawer} side="left" title="Settings" bottom={landscape ? 0 : barH} onClose={() => setDrawer(false)}>
+        <Panel open={drawer} side="left" title="Settings" bottom={landscape || width > height * 1.1 ? 0 : barH} onClose={() => setDrawer(false)}>
           <Option glyph="▤" title="My Library" sub="View purchased stories" onPress={() => go('library')} />
           <Option glyph="◫" title="Book Store" sub="Buy more stories" onPress={() => go('store')} />
           <Option glyph="▸" title="Playback Settings" sub="Reader controls" onPress={() => {

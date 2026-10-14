@@ -136,7 +136,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const topH = BL.topH;
   const showControls = prefs.mode !== 'self' || recording;
   const barH = BL.barH;
-  const panelPos = { bottom: barH };
+  const panelPos = wide ? { bottom: 0, inset: BL.rightW } : { bottom: barH };
   const n = story.pages.length;
   const tokens = useMemo(() => (pages[idx] && pages[idx].text ? tokenize(pages[idx].text) : []), [pages, idx]);
 
@@ -565,8 +565,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   } else layers.push(abs(prevEl, 'p'), abs(nextEl, 'n'), abs(curEl, 'c'));
 
   return (
-    <View style={styles.screen}>
-      <View style={{ height: topH, backgroundColor: colors.bar }} />
+    <View style={[styles.screen, wide && { flexDirection: 'row' }]}>
+      {/* the black strip over the camera: along the top, or down the left side when sideways */}
+      <View style={wide ? { width: BL.leftW, backgroundColor: colors.bar } : { height: topH, backgroundColor: colors.bar }} />
       <View style={styles.desk}>
       <View style={[styles.bookShadow, { width: BL.bookW, height: BL.bookH }]}>
       <View style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...pan.panHandlers}>
@@ -584,6 +585,24 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       </View>
       </View>
       </View>
+      {wide ? (
+        // sideways: the menu bar runs down the right side; same icons, page tag shortened to "2/16"
+        <View style={[styles.sideBar, { width: BL.rightW, paddingRight: insets.right, paddingTop: Math.max(16, insets.top), paddingBottom: Math.max(16, insets.bottom) }]}>
+          <View style={{ width: u * 13, alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
+            <View style={{ alignItems: 'center', gap: 18 }}>
+              <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
+              <BarMeta vertical sub={idx < n ? `${idx + 1}/${n}` : 'End'} />
+            </View>
+            {showControls ? (
+              <View style={[styles.small, { alignItems: 'center', gap: 14 }]}>
+                <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
+                <PauseButton onPress={onPause} disabled={recording} />
+                <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
+              </View>
+            ) : null}
+          </View>
+        </View>
+      ) : (
       <View style={[styles.bottomBar, { height: barH, paddingBottom: insets.bottom }]}>
         <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
         <BarMeta page={idx < n ? `Page ${idx + 1} of ${n}` : 'The End'} />
@@ -595,6 +614,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           </View>
         ) : null}
       </View>
+      )}
 
       {/* The peeling page is drawn over the whole screen, so it can lift past the book's edges. */}
       {flipPair && size && flipT && peel ? (
@@ -706,6 +726,7 @@ const styles = StyleSheet.create({
   desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.desk },
   bookShadow: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
   book: { flex: 1, overflow: 'hidden', backgroundColor: colors.paper },
+  sideBar: { backgroundColor: colors.bar, alignItems: 'flex-end', zIndex: 30 },
   bottomBar: { backgroundColor: colors.bar, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, gap: 10, zIndex: 30 },
   small: { transform: [{ scale: 0.86 }] },
   edge: { position: 'absolute', top: 0, bottom: 0, zIndex: 15 },
