@@ -20,3 +20,14 @@ Things agreed with Jörg for when we build the store publishing pipeline. Not st
 ## Memberships and purchases
 - RevenueCat. Jörg must accept the Paid Apps Agreement and apply for the Small Business Program.
 - Possible members-only extra: storyteller (ElevenLabs) narration for books parents make, with a monthly limit.
+
+## Later: the felt pebble mascot (Jörg, 14 Oct 2026)
+- A googly-eyed felt pebble, in the same family as the book characters.
+- Pops up now and then to help (at the start, when a child seems stuck, to celebrate finishing a book), speaking through the speech bubbles; can be tapped away.
+- At the very start it can sit in the foreground doing funny things.
+- Never on the story pages themselves, so it doesn't compete with the pictures.
+- Jörg draws the poses (idle, wave, peek, celebrate); then it gets animated. After the store and the interface font are settled.
+
+## Later: interface font and backgrounds
+- A friendly rounded sans serif for the interface (menus, titles, buttons); story text stays EB Garamond. Candidates mocked up: Nunito, Quicksand, Fredoka, Baloo 2.
+- "Skins" would mostly be background choices (desk colour or texture, cover), driven from the theme colours.
