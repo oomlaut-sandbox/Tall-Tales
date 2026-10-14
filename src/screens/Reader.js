@@ -46,7 +46,7 @@ const VOICE_RECORDING = {
   ios: { ...RecordingPresets.HIGH_QUALITY.ios, audioQuality: 127, sampleRate: 48000 },
   android: { ...RecordingPresets.HIGH_QUALITY.android, sampleRate: 48000 },
 };
-import { playPaper, setPageSound } from '../sound';
+import { playSound, suspendSounds } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { shareInvite } from '../invite';
 import { audioModeChanged, pauseVoice, playClips, playVoice, resumeVoice, stopVoice } from '../voice';
@@ -148,7 +148,6 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const n = story.pages.length;
   const tokens = useMemo(() => (pages[idx] && pages[idx].text ? tokenize(pages[idx].text) : []), [pages, idx]);
 
-  useEffect(() => setPageSound(prefs.sound === true), [prefs.sound]);
   useEffect(() => {
     if (!prefs.mode) setTimeout(() => setPanel('play'), 350);
     return () => { stopSpeech(); clearTimeout(autoTimer.current); cancelAnimationFrame(anim.current); };
@@ -241,7 +240,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       await recorder.prepareToRecordAsync();
       recorder.record();
       recStart.current = Date.now();
-      setPageSound(false);
+      suspendSounds(true);
       setRecording(true);
     } catch (e) {
       toast('Recording couldn’t start. Try again.');
@@ -267,7 +266,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     } catch (e) {
       toast('That recording couldn’t be saved.');
     }
-    setPageSound(prefsRef.current.sound === true);
+    suspendSounds(false);
   };
 
   const openRecList = async () => {
@@ -396,7 +395,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     busy.current = true;
     if (st.current.recording && dir > 0) { await stopRec(true); pendingRec.current = st.current.idx + 1 < story.pages.length; }
     else if (!pendingRead.current) stopReading();
-    playPaper('turn', 1);
+    playSound('flick');
     await startFlip(dir);
     runFlip(dir > 0 ? 1 : 0, 900, () => endFlip(dir, true));
     return true;
@@ -415,7 +414,6 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     const d = { ...sd, p: sd.dir > 0 ? 0 : 1, ready: false, ended: null };
     drag.current = d;
     stopReading();
-    playPaper('lift', 0.5);
     // peel from the bottom corner on the side the finger started
     const corner = st.current.size && x0 < st.current.size.w / 2 ? 'left' : 'right';
     startFlip(sd.dir, corner).then(() => {
@@ -473,7 +471,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       const keepGoing = st.current.idx + 1 < story.pages.length;
       stopRec(true).then(() => { pendingRec.current = keepGoing; });
     }
-    playPaper(commit ? 'drop' : 'lift', commit ? 0.9 : 0.35);
+    if (commit) playSound('peel');
     const target = commit ? (d.dir > 0 ? 1 : 0) : (d.dir > 0 ? 0 : 1);
     runFlip(target, 240 + 420 * Math.abs(target - prog.current), () => endFlip(d.dir, commit));
   };
@@ -687,11 +685,6 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         <View style={styles.setting}>
           <Text style={styles.help}>Book font</Text>
           <Seg value={prefs.font || 'serif'} options={Object.entries(BOOK_FONTS).map(([k, f]) => [k, f.label, f.family])} onChange={(v) => setPrefs((p) => ({ ...p, font: v }))} />
-        </View>
-        <View style={styles.setting}>
-          <Text style={styles.help}>Page turn sound</Text>
-          <Seg value={prefs.sound ? 'on' : 'off'} options={[['off', 'Off'], ['on', 'On']]}
-            onChange={(v) => { const on = v === 'on'; setPrefs((p) => ({ ...p, sound: on })); setPageSound(on); if (on) playPaper('turn', 0.8); }} />
         </View>
         <View style={{ marginTop: 10, gap: 16 }}>
         {printChoice ? (

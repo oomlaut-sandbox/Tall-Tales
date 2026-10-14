@@ -10,7 +10,7 @@ import { colors, fonts } from '../theme';
 import { Bar, Burger, DogEar } from '../components/Chrome';
 import BookFrame, { Spine } from '../components/BookFrame';
 import { Fade } from '../components/PageView';
-import { playPaper } from '../sound';
+import { playSound } from '../sound';
 
 
 export const COVER_BROWN = '#6f4b32';
@@ -43,7 +43,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
     if (leaving.current) return;
     leaving.current = true;
     onPeek && onPeek(target);
-    playPaper('turn', 0.6);
+    playSound('slide');
     Animated.sequence([
       Animated.timing(slide, { toValue: 1, duration: 420, easing: Easing.in(Easing.cubic), useNativeDriver: true }),
       Animated.timing(fade, { toValue: 0, duration: 220, useNativeDriver: true }),
@@ -52,7 +52,10 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
   // when the app opens, the closed book slides in from the right onto the grey
   const enter = useRef(new Animated.Value(closed ? 1 : 0)).current;
   useEffect(() => {
-    if (closed) Animated.timing(enter, { toValue: 0, duration: 650, delay: 150, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+    if (!closed) return;
+    const t = setTimeout(() => playSound('slide', 0.8), 150);
+    Animated.timing(enter, { toValue: 0, duration: 650, delay: 150, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(() => playSound('setDown', 0.7));
+    return () => clearTimeout(t);
   }, []);
   const slideX = Animated.add(
     slide.interpolate({ inputRange: [0, 1], outputRange: [0, -winW] }),
@@ -64,7 +67,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
     if (busy.current) return;
     busy.current = true;
     setOpening(true);
-    playPaper('turn', 1);
+    playSound('coverOpen');
     Animated.timing(p, { toValue: 1, duration: 1200, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => onOpened && onOpened());
   };
   const swipe = useRef(PanResponder.create({

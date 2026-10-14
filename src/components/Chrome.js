@@ -37,8 +37,10 @@ export function Bar({ u, children, vertical }) {
 export function WithBar({ bar, children, style }) {
   const { width, height } = useWindowDimensions();
   const side = width > height * 1.1;
+  const insets = useSafeAreaInsets();
   return (
     <View style={[{ flex: 1, flexDirection: side ? 'row' : 'column' }, style]}>
+      {side ? <View style={{ width: insets.left, backgroundColor: colors.bar }} /> : null}
       <View style={{ flex: 1 }}>{children}</View>
       {bar(side)}
     </View>
@@ -299,3 +301,19 @@ const styles = StyleSheet.create({
     borderLeftWidth: 4, borderLeftColor: 'transparent', borderRightWidth: 14, borderRightColor: 'transparent' },
   toast: { color: colors.ink, fontFamily: fonts.story, fontSize: 19, lineHeight: 25, textAlign: 'center' }, // the book serif
 });
+
+// The sound switch's icon: a small white speaker with sound waves; a red line through it when muted.
+export function SpeakerIcon({ size = 22, muted, color = colors.white }) {
+  const s = size;
+  return (
+    <View style={{ width: s, height: s, justifyContent: 'center' }}>
+      {/* the speaker: a small box and its cone */}
+      <View style={{ position: 'absolute', left: 0, top: s * 0.36, width: s * 0.2, height: s * 0.28, backgroundColor: color }} />
+      <View style={{ position: 'absolute', left: s * 0.12, top: s * 0.14, width: 0, height: 0, borderTopWidth: s * 0.36, borderBottomWidth: s * 0.36, borderRightWidth: s * 0.3, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderRightColor: color }} />
+      {/* two sound waves */}
+      <View style={{ position: 'absolute', left: s * 0.36, top: s * 0.3, width: s * 0.4, height: s * 0.4, borderRadius: s * 0.2, borderWidth: s * 0.08, borderColor: 'transparent', borderRightColor: color, opacity: muted ? 0.35 : 1 }} />
+      <View style={{ position: 'absolute', left: s * 0.32, top: s * 0.12, width: s * 0.76, height: s * 0.76, borderRadius: s * 0.38, borderWidth: s * 0.08, borderColor: 'transparent', borderRightColor: color, opacity: muted ? 0.35 : 1 }} />
+      {muted ? <View style={{ position: 'absolute', left: -s * 0.05, top: s * 0.46, width: s * 1.15, height: s * 0.1, backgroundColor: colors.highlight, borderRadius: s * 0.05, transform: [{ rotate: '-45deg' }] }} /> : null}
+    </View>
+  );
+}

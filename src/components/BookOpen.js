@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme';
 import { bookLayout } from './BookFrame';
 import { PageView } from './PageView';
+import { playSound } from '../sound';
 
 export default function BookOpen({ u, story, cover, rect, textScale, fontKey, onDone }) {
   const insets = useSafeAreaInsets();
@@ -32,11 +33,13 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
   const flip = useRef(new Animated.Value(0)).current;
   const [phase, setPhase] = useState(0); // 0 fade + move, 1 flipping
   useEffect(() => {
+    playSound('tap');
     Animated.sequence([
       Animated.timing(bg, { toValue: 1, duration: 320, useNativeDriver: true }),
       Animated.timing(mv, { toValue: 1, duration: 520, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
     ]).start(() => {
       setPhase(1);
+      playSound('coverOpen');
       Animated.timing(flip, { toValue: 1, duration: 1100, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => onDone && onDone());
     });
   }, []);

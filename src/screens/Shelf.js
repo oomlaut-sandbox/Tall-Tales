@@ -7,6 +7,7 @@ import { Bar, BarMeta, Burger, Panel, WithBar } from '../components/Chrome';
 import { accessLabel, bundledStory, cachedCatalog, coverFor, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
 import { STORIES } from '../story';
+import { playSound } from '../sound';
 
 // Two covers across on a phone; more on an iPad.
 const COLS = (w) => (w >= 900 ? 4 : w >= 600 ? 3 : 2);
@@ -228,10 +229,12 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
   useEffect(() => {
     if (!boxH || started.current) return;
     started.current = true;
+    playSound('tap');
     Animated.sequence([
       Animated.timing(mv, { toValue: 1, duration: rect ? 480 : 1, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
       Animated.timing(fade, { toValue: 1, duration: 260, useNativeDriver: true }),
     ]).start();
+    setTimeout(() => playSound('cardLift'), rect ? 480 : 0);
   }, [boxH]);
   const closing = useRef(false);
   const close = (then) => {
