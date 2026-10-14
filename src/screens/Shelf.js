@@ -7,6 +7,8 @@ import { Bar, BarMeta, Burger, Panel, WithBar } from '../components/Chrome';
 import { accessLabel, bundledStory, cachedCatalog, coverFor, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
 import { STORIES } from '../story';
+import { BlurView } from 'expo-blur';
+const AnimatedBlur = Animated.createAnimatedComponent(BlurView);
 import { playSound } from '../sound';
 
 // Two covers across on a phone; more on an iPad.
@@ -219,12 +221,14 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
   const areaW = winW - barW, areaH = winH - barH;
   const across = sideways; // cover on the left, details beside it
   const boxW = Math.min(areaW - 40, across ? 600 : 400);
-  const cs = Math.round(across ? Math.min(boxW * 0.42, areaH - Math.max(insets.top, 20) - 40) : boxW * 0.55); // cover size
+  const M = 20; // margin around the cover inside the card
+  const cs = Math.round(across ? Math.min(boxW * 0.42, areaH - Math.max(insets.top, 20) - 40 - 2 * M) : boxW * 0.52); // cover size
   const [boxH, setBoxH] = useState(0);
   const boxX = Math.round((areaW - boxW) / 2);
   const boxY = Math.round(Math.max(insets.top + 10, (areaH - boxH) / 2));
   const mv = useRef(new Animated.Value(0)).current; // cover: 0 at the tile, 1 in the card
   const fade = useRef(new Animated.Value(0)).current; // the card around it
+  const blur = useRef(new Animated.Value(0)).current; // the blur behind it (not on the native driver)
   const started = useRef(false);
   useEffect(() => {
     if (!boxH || started.current) return;
@@ -232,7 +236,10 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
     playSound('tap');
     Animated.sequence([
       Animated.timing(mv, { toValue: 1, duration: rect ? 480 : 1, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
-      Animated.timing(fade, { toValue: 1, duration: 260, useNativeDriver: true }),
+      Animated.parallel([
+        Animated.timing(fade, { toValue: 1, duration: 260, useNativeDriver: true }),
+        Animated.timing(blur, { toValue: 22, duration: 260, useNativeDriver: false }),
+      ]),
     ]).start();
     setTimeout(() => playSound('cardLift'), rect ? 480 : 0);
   }, [boxH]);
@@ -241,12 +248,15 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
     if (closing.current) return;
     closing.current = true;
     Animated.sequence([
-      Animated.timing(fade, { toValue: 0, duration: 200, useNativeDriver: true }),
+      Animated.parallel([
+        Animated.timing(fade, { toValue: 0, duration: 200, useNativeDriver: true }),
+        Animated.timing(blur, { toValue: 0, duration: 200, useNativeDriver: false }),
+      ]),
       Animated.timing(mv, { toValue: 0, duration: rect && !then ? 400 : 1, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
     ]).start(() => (then ? then() : onClose()));
   };
-  const r = rect || { x: boxX, y: boxY, w: cs, h: cs };
-  const dx = r.x + r.w / 2 - (boxX + cs / 2), dy = r.y + r.h / 2 - (boxY + cs / 2), k = r.w / cs;
+  const r = rect || { x: boxX + M, y: boxY + M, w: cs, h: cs };
+  const dx = r.x + r.w / 2 - (boxX + M + cs / 2), dy = r.y + r.h / 2 - (boxY + M + cs / 2), k = r.w / cs;
   const coverMove = [
     { translateX: mv.interpolate({ inputRange: [0, 1], outputRange: [dx, 0] }) },
     { translateY: mv.interpolate({ inputRange: [0, 1], outputRange: [dy, 0] }) },
@@ -275,24 +285,29 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
         <Pressable style={StyleSheet.absoluteFill} onPress={() => close()} accessibilityLabel="Close" />
       </Animated.View>
       {/* the card (it also measures itself so it can sit in the middle) */}
-      <Animated.View onLayout={(e) => setBoxH(e.nativeEvent.layout.height)}
-        style={[styles.card, { left: boxX, top: boxY, width: boxW, maxHeight: areaH - boxY - 16, opacity: fade, flexDirection: across ? 'row' : 'column' }]}>
+      <View onLayout={(e) => setBoxH(e.nativeEvent.layout.height)}
+        style={[styles.card, { left: boxX, top: boxY, width: boxW, maxHeight: areaH - boxY - 16 }]}>
+        {/* black, a little see-through, with the store softly blurred behind it */}
+        <AnimatedBlur pointerEvents="none" tint="dark" intensity={blur} style={StyleSheet.absoluteFill} />
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.62)', opacity: fade }]} />
+        <Animated.View pointerEvents={boxH ? 'auto' : 'none'} style={{ opacity: fade, flexDirection: across ? 'row' : 'column' }}>
         <View style={{ flexDirection: 'row' }}>
-          <View style={{ width: cs, height: cs }} />
+          <View style={{ width: cs + M, height: cs + M }} />
           {!across ? (
-            <View style={{ flex: 1, justifyContent: 'space-between', padding: 14, paddingLeft: 20 }}>
+            <View style={{ flex: 1, justifyContent: 'space-between', padding: 14, paddingLeft: 18, paddingTop: M }}>
               <View style={{ alignSelf: 'flex-end' }}><CloseX onPress={() => close()} /></View>
               <Badge book={book} />
             </View>
           ) : null}
         </View>
-        <View style={{ flex: 1, padding: 20, paddingTop: across ? 18 : 18 }}>
+        <View style={{ flex: 1, padding: M, paddingTop: across ? M : 18 }}>
           {across ? <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}><Badge book={book} /><CloseX onPress={() => close()} /></View> : null}
           {info}
         </View>
-      </Animated.View>
+        </Animated.View>
+      </View>
       {/* the cover, flying from its tile into the card's top-left corner */}
-      <Animated.View pointerEvents="none" style={[styles.tileShadow, { position: 'absolute', left: boxX, top: boxY, width: cs, height: cs, opacity: boxH ? 1 : 0, transform: coverMove }]}>
+      <Animated.View pointerEvents="none" style={[styles.tileShadow, { position: 'absolute', left: boxX + M, top: boxY + M, width: cs, height: cs, opacity: boxH ? 1 : 0, transform: coverMove }]}>
         {cover ? <Image source={cover} style={styles.coverImg} resizeMode="cover" /> : null}
       </Animated.View>
     </View>
@@ -344,7 +359,7 @@ const styles = StyleSheet.create({
   badgeAt: { position: 'absolute', left: 6, top: 6 },
   badge: { alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3 },
   badgeText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 12 },
-  card: { position: 'absolute', backgroundColor: colors.panel, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.45, shadowRadius: 18, elevation: 12 },
+  card: { position: 'absolute', overflow: 'hidden' },
   cardTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 26 },
   xBar: { position: 'absolute', left: 0, top: 10, width: 22, height: 2.5, backgroundColor: colors.white },
   sheetSub: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15 },

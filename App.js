@@ -7,6 +7,7 @@ import { SafeAreaInsetsContext, SafeAreaProvider, useSafeAreaInsets } from 'reac
 import { useFonts, EBGaramond_400Regular, EBGaramond_700Bold } from '@expo-google-fonts/eb-garamond';
 import { colors, MAX_WIDTH } from './src/theme';
 import Start from './src/screens/Start';
+import { bookLayout } from './src/components/BookFrame';
 import BookOpen from './src/components/BookOpen';
 import { Library, Store } from './src/screens/Shelf';
 import About from './src/screens/About';
@@ -70,7 +71,7 @@ function Root() {
   const toast = useCallback((m) => {
     setMessage(m);
     clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setMessage(''), 3200);
+    toastTimer.current = setTimeout(() => setMessage(''), 5500); // a little longer; tap the bubble to close it sooner
   }, []);
 
   const go = (s) => { stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen(s); };
@@ -92,6 +93,18 @@ function Root() {
   useEffect(() => setEffects(prefs.sound === true), [prefs.sound]); // sound effects: Playback menu, off by default
   const sideways = width > height * 1.1;
   const camBar = sideways ? Math.max(insets.left, 44) : Math.max(insets.top, 44);
+  // where the menu stripes are, so the speech bubble looks like they are saying it
+  const toastAt = useMemo(() => {
+    const reader = screen === 'reader';
+    if (sideways) {
+      const barW = reader ? bookLayout(width, height, { ...insets, left: camBar }, u * 13).rightW : Math.round(u * 17 * 1.15);
+      return { side: true, right: barW, y: Math.max(14, insets.top) + u * 3.7 };
+    }
+    const ins = { ...insets, top: camBar };
+    const bottom = reader ? bookLayout(width, height, ins, u * 13).barH : u * 17 + insets.bottom;
+    const x = reader ? 18 + u * 3.5 : u * 5.4 + u * 3.5;
+    return { side: false, bottom, x };
+  }, [screen, sideways, width, height, insets, camBar, u]);
   const screenInsets = useMemo(() => (sideways ? { ...insets, left: camBar } : { ...insets, top: camBar }), [insets, sideways, camBar]);
   return (
     <View style={styles.outer}>
@@ -143,7 +156,7 @@ function Root() {
             onDone={() => { setStory(opening.story); go('reader'); setTimeout(() => setOpening(null), 60); }} />
         ) : null}
         <ParentGate visible={profileGate} reason="Your profile is for grown-ups." onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
-        <Toast message={message} />
+        <Toast message={message} at={toastAt} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         <View pointerEvents="none" style={sideways
           ? { position: 'absolute', left: 0, top: 0, bottom: 0, width: camBar, backgroundColor: colors.bar, zIndex: 200 }
           : { position: 'absolute', left: 0, right: 0, top: 0, height: camBar, backgroundColor: colors.bar, zIndex: 200 }} />
