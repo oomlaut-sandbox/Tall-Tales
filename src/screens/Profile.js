@@ -124,7 +124,7 @@ export default function Profile({ u, openMenu, toast }) {
   }
 
   return (
-    <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /><BarMeta vertical={v} title="Profile" /></Bar>}>
+    <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 40 }]}>
         <Text style={styles.title}>Profile</Text>
         <Text style={styles.sub}>{user ? (user.user_metadata?.name || 'Your oomlaut account') : 'Your oomlaut account'}</Text>

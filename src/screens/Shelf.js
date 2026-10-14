@@ -82,7 +82,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
           {!v ? <Text style={styles.barHint}>{chosen.length > 1 ? 'Share one book at a time' : ''}</Text> : null}
         </Bar>
       ) : (
-        <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /><BarMeta vertical={v} title="My Library" /></Bar>
+        <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>
       ))}>
       <Band color={colors.orange} title={selecting ? 'Select books' : 'My Library'}
         sub={selecting ? (picked.length ? `${picked.length} selected` : 'Tap books to select them') : 'Your stories, ready to read'}
@@ -129,7 +129,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
 export function Store({ u, openStory, openMenu }) {
   const { width: winW } = useWindowDimensions();
   return (
-    <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /><BarMeta vertical={v} title="Book Store" /></Bar>}>
+    <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <Band color={colors.blue} title="Book Store" sub="Find and buy new stories" />
       <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]}>
         <Text style={styles.note}>Buying and downloading stories arrives in a later build. For now, the sample story is free to read.</Text>

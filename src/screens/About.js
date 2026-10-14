@@ -10,7 +10,7 @@ const VERSION = require('../../app.json').expo.version;
 export default function About({ u, openMenu }) {
   const insets = useSafeAreaInsets();
   return (
-    <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /><BarMeta vertical={v} title="About" /></Bar>}>
+    <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 40 }]}>
         <Text style={styles.title}>oomlaut<Text style={styles.reg}>®</Text> Reader</Text>
         <Text style={styles.tagline}>Picture books in your voice.</Text>

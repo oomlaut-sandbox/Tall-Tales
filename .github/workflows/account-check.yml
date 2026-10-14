@@ -40,10 +40,13 @@ jobs:
             })();'
       - name: Save result
         run: |
-          git config user.name ci; git config user.email ci@example.com
+          git config user.name "build-bot"
+          git config user.email "build-bot@users.noreply.github.com"
+          mv out /tmp/out
           git checkout --orphan account-output
-          git rm -rfq . >/dev/null 2>&1 || true
-          mv out /tmp/out && git rm -rfq . >/dev/null 2>&1; mkdir -p out && cp /tmp/out/account-check.txt out/
-          git add -f out/account-check.txt
-          git commit -qm "account check $(date -u +%FT%TZ)"
+          git rm -rfq --cached . > /dev/null
+          rm -rf ./* .gitignore 2>/dev/null || true
+          cp -r /tmp/out ./out
+          git add -f out
+          git commit -qm "account check"
           git push -f origin account-output
