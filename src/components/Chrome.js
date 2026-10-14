@@ -149,26 +149,33 @@ export function Panel({ open, side = 'right', title, onClose, bottom, inset = 0,
 }
 
 // Small flat icons drawn with shapes (so they look the same on every phone).
-// Read again: a circle, open on the left, no arrow.
-export function AgainIcon({ size = 18, color = colors.white, weight = 2.5 }) {
-  return <View style={{ width: size, height: size, borderRadius: size / 2, borderWidth: weight, borderColor: color, borderLeftColor: 'transparent', transform: [{ rotate: '0deg' }] }} />;
-}
-// My Library: books standing on a shelf (an outlined square with upright lines).
-export function LibraryIcon({ size = 18, color = colors.white, weight = 2 }) {
+// Read again: a thick little circle with a small opening on the left (no arrow).
+// bg: the colour behind the icon (the opening is cut with it).
+export function AgainIcon({ size = 14, color = colors.white, weight = 3.5, bg = colors.tile }) {
+  const gap = Math.max(3, size * 0.26);
   return (
-    <View style={{ width: size, height: size, borderWidth: weight, borderColor: color, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'stretch', paddingVertical: 2 }}>
-      {[0, 1, 2].map((k) => <View key={k} style={{ width: weight, backgroundColor: color }} />)}
+    <View style={{ width: size, height: size }}>
+      <View style={{ width: size, height: size, borderRadius: size / 2, borderWidth: weight, borderColor: color }} />
+      <View style={{ position: 'absolute', left: -1, top: (size - gap) / 2, width: weight + 2, height: gap, backgroundColor: bg }} />
     </View>
   );
 }
-// Share: a small solid heart.
-export function HeartIcon({ size = 16, color = colors.white }) {
-  const r = size * 0.56; // the two round lobes
+// My Library: books standing on a shelf (an outlined square with upright lines).
+export function LibraryIcon({ size = 14, color = colors.white, weight = 2 }) {
   return (
-    <View style={{ width: size, height: size }}>
-      <View style={{ position: 'absolute', left: size * 0.17, top: size * 0.28, width: size * 0.66, height: size * 0.66, backgroundColor: color, transform: [{ rotate: '45deg' }] }} />
-      <View style={{ position: 'absolute', left: size * 0.03, top: size * 0.08, width: r, height: r, borderRadius: r / 2, backgroundColor: color }} />
-      <View style={{ position: 'absolute', right: size * 0.03, top: size * 0.08, width: r, height: r, borderRadius: r / 2, backgroundColor: color }} />
+    <View style={{ width: size, height: size, borderWidth: weight, borderColor: color, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'stretch', paddingVertical: 2 }}>
+      {[0, 1].map((k) => <View key={k} style={{ width: weight, backgroundColor: color }} />)}
+    </View>
+  );
+}
+// Share: a small solid heart, made of two rounded halves leaning together.
+export function HeartIcon({ size = 15, color = colors.white }) {
+  const w = size * 0.52, h = size * 0.8;
+  const half = { position: 'absolute', top: 0, width: w, height: h, backgroundColor: color, borderTopLeftRadius: w / 2, borderTopRightRadius: w / 2 };
+  return (
+    <View style={{ width: size, height: size * 0.9 }}>
+      <View style={[half, { left: size / 2, transformOrigin: 'left bottom', transform: [{ rotate: '-45deg' }] }]} />
+      <View style={[half, { left: size / 2 - w, transformOrigin: 'right bottom', transform: [{ rotate: '45deg' }] }]} />
     </View>
   );
 }
