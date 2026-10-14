@@ -48,7 +48,7 @@ const VOICE_RECORDING = {
 };
 import { playPaper, setPageSound } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
-import { pauseVoice, playClips, playVoice, resumeVoice, stopVoice } from '../voice';
+import { audioModeChanged, pauseVoice, playClips, playVoice, resumeVoice, stopVoice } from '../voice';
 import { WORDS } from '../narration/words';
 import { getRecording, listRecordings, pageKey, removeRecording, saveRecording } from '../recordings';
 import { AUDIO, TIMINGS } from '../narration';
@@ -226,6 +226,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       const perm = await AudioModule.requestRecordingPermissionsAsync();
       if (!perm.granted) return toast('oomlaut Reader needs the microphone to record. You can allow it in Settings.');
       await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
+      audioModeChanged();
       await recorder.prepareToRecordAsync();
       recorder.record();
       recStart.current = Date.now();
@@ -245,6 +246,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     try {
       await recorder.stop();
       await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
+      audioModeChanged();
       if (save && recorder.uri && seconds > 0.7) {
         await saveRecording(story.id, pageKey(story.pages[page], page), recorder.uri, seconds);
         if (prefsRef.current.voice !== 'mine') setPrefs((p) => ({ ...p, voice: 'mine' }));
