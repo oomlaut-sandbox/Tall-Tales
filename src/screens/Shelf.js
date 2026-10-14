@@ -23,7 +23,6 @@ function Tile({ u, cover, title, sub, onPress, onLongPress, plus, selecting, sel
             {selected ? <Text style={styles.checkMark}>✓</Text> : null}
           </View>
         ) : null}
-        {selecting && selected ? <View pointerEvents="none" style={styles.selShade} /> : null}
       </View>
       </View>
       <Text style={styles.tileTitle}>{title}</Text>
@@ -141,10 +140,9 @@ const styles = StyleSheet.create({
   tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.16, shadowRadius: 4, elevation: 2 },
   tileTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, color: colors.ink },
   tileSub: { fontFamily: fonts.ui, fontSize: 13, color: '#444' },
-  check: { position: 'absolute', top: 8, right: 8, width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: colors.white, backgroundColor: 'rgba(0,0,0,0.25)', alignItems: 'center', justifyContent: 'center', zIndex: 2 },
+  check: { position: 'absolute', top: 8, left: 8, width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: colors.white, backgroundColor: 'rgba(0,0,0,0.25)', alignItems: 'center', justifyContent: 'center', zIndex: 2 },
   checkOn: { backgroundColor: colors.highlight, borderColor: colors.white },
   checkMark: { color: colors.white, fontWeight: '800', fontSize: 16, lineHeight: 18 },
-  selShade: { ...StyleSheet.absoluteFillObject, borderWidth: 4, borderColor: colors.highlight },
   restore: { fontFamily: fonts.ui, fontSize: 15, color: '#333', textDecorationLine: 'underline', textAlign: 'center' },
   confirm: { position: 'absolute', left: 16, right: 16, bottom: 150, backgroundColor: colors.panel, padding: 18, gap: 14, zIndex: 40 },
   confirmText: { color: colors.white, fontFamily: fonts.ui, fontSize: 16, lineHeight: 22 },
