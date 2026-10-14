@@ -12,12 +12,17 @@ export default function About({ u, openMenu }) {
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 40 }]}>
-        <Text style={styles.title}>oomlaut<Text style={styles.reg}>®</Text> Reader</Text>
+        {/* the ® sits raised (superscript) after oomlaut */}
+        <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+          <Text style={styles.title}>oomlaut</Text>
+          <Text style={styles.reg}>®</Text>
+          <Text style={styles.title}> Reader</Text>
+        </View>
         <Text style={styles.tagline}>Picture books in your voice.</Text>
       </View>
       <ScrollView contentContainerStyle={styles.body}>
         <Text style={styles.p}>
-          oomlaut<Text style={styles.regSmall}>®</Text> Reader is a home for beautifully illustrated stories, made for children who are learning to read and the grown-ups who read with them.
+          oomlaut Reader is a home for beautifully illustrated stories, made for children who are learning to read and the grown-ups who read with them.
         </Text>
         <Text style={styles.p}>
           Every book can be read aloud by a warm narrator, with each word lighting up as it’s spoken. In Learn to Read mode, children tap any word to hear it sounded out, one part at a time. Parents can record themselves reading each page, so a favourite story can be heard in a familiar voice, any time. And families can make their own books, with their own pictures and words.
@@ -33,8 +38,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   band: { backgroundColor: colors.red, paddingBottom: 22, paddingHorizontal: 24 },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32 },
-  reg: { fontSize: 14, fontWeight: '400' }, // small registered trademark mark
-  regSmall: { fontSize: 10 },
+  reg: { color: colors.white, fontFamily: fonts.ui, fontSize: 13, lineHeight: 15, marginTop: 4, marginLeft: 1 }, // small raised ®
   tagline: { color: colors.white, fontFamily: fonts.story, fontSize: 20, marginTop: 6, fontStyle: 'italic' },
   body: { padding: 24, paddingBottom: 40, gap: 16 },
   p: { fontFamily: fonts.story, fontSize: 19, lineHeight: 28, color: colors.ink },
