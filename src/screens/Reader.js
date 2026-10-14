@@ -606,8 +606,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       </View>
       {wide ? (
         // sideways: the menu bar runs down the right side; same icons, page tag shortened to "2/16"
-        <View style={[styles.sideBar, { width: BL.rightW, paddingRight: insets.right, paddingTop: Math.max(16, insets.top), paddingBottom: Math.max(16, insets.bottom) }]}>
-          <View style={{ width: u * 13, alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
+        <View style={[styles.sideBar, { width: BL.rightW, paddingTop: Math.max(16, insets.top), paddingBottom: Math.max(16, insets.bottom) }]}>
+          <View style={{ width: BL.rightW, alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
             <View style={{ alignItems: 'center', gap: 18 }}>
               <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
               <BarMeta vertical sub={idx < n ? `${idx + 1}/${n}` : 'End'} />

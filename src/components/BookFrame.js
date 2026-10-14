@@ -19,7 +19,7 @@ export function bookLayout(winW, winH, insets, barMin) {
   const G = BOOK_GAP;
   const wide = winW > winH * 1.1;
   if (wide) {
-    const minLeft = Math.max(insets.left, 20), minRight = barMin + insets.right;
+    const minLeft = Math.max(insets.left, 20), minRight = Math.round(barMin * 1.15); // the bar sits at the very right edge
     const roomW = winW - minLeft - minRight - 2 * G, roomH = winH - Math.max(insets.top, 0) - insets.bottom - 2 * G;
     const side = Math.floor(Math.max(120, Math.min(roomW / 2, roomH)));
     const spare = Math.max(0, roomW - 2 * side);

@@ -16,11 +16,15 @@ export function Burger({ onPress, u }) {
 }
 
 // The black bar. Upright it runs along the bottom; sideways (vertical) it runs down the right edge.
+// Sideways the menu bar sits right at the screen's edge and is a touch wider than upright.
+// (The camera housing is in the middle of the edge, where the bar has no buttons.)
+export const SIDE_BAR = 1.15;
+
 export function Bar({ u, children, vertical }) {
   const insets = useSafeAreaInsets();
   if (vertical) {
     return (
-      <View style={[styles.bar, styles.barV, { width: u * 17 + insets.right, paddingRight: insets.right, paddingTop: Math.max(14, insets.top), paddingBottom: Math.max(14, insets.bottom) }]}>{children}</View>
+      <View style={[styles.bar, styles.barV, { width: u * 17 * SIDE_BAR, paddingTop: Math.max(14, insets.top), paddingBottom: Math.max(14, insets.bottom) }]}>{children}</View>
     );
   }
   return (
@@ -120,7 +124,7 @@ export function Panel({ open, side = 'right', title, onClose, bottom, inset = 0,
   }, [open]);
   const sign = side === 'right' ? 1 : -1;
   // Never taller than about 80% of the screen, so it stays clear of the camera and status bar.
-  const { height: winH } = useWindowDimensions();
+  const { height: winH, width: winW } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   // The top of the menu sits at about 20% of the screen height.
   const maxHeight = Math.max(240, Math.min(winH * 0.8 - (bottom || 0), winH - (bottom || 0) - insets.top - 24));
@@ -129,7 +133,7 @@ export function Panel({ open, side = 'right', title, onClose, bottom, inset = 0,
       {open ? <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close menu" /> : null}
       <Animated.View
         pointerEvents={open ? 'auto' : 'none'}
-        style={[styles.panel, { bottom, maxHeight, [side]: inset, transform: [{ translateX: x.interpolate({ inputRange: [0, 1], outputRange: [0, sign * 500] }) }] }]}
+        style={[styles.panel, { bottom, maxHeight, [side]: inset, transform: [{ translateX: x.interpolate({ inputRange: [0, 1], outputRange: [0, sign * (winW + 40)] }) }] }]}
       >
         <View style={styles.panelHead}>
           <Text style={[styles.panelTitle, { flex: 1 }]}>{title}</Text>

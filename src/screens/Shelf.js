@@ -186,7 +186,7 @@ export function Store({ u, openStory, openMenu }) {
           </View>
         ))}
       </ScrollView>
-      <Panel open={!!open} side="right" title={open ? open.title : ''} bottom={sideways ? 0 : u * 17 + insets.bottom} inset={sideways ? u * 17 + insets.right : 0} onClose={() => setOpen(null)}>
+      <Panel open={!!open} side="right" title={open ? open.title : ''} bottom={sideways ? 0 : u * 17 + insets.bottom} inset={sideways ? Math.round(u * 17 * 1.15) : 0} onClose={() => setOpen(null)}>
         {open ? (
           <View style={{ gap: 12 }}>
             {open.author ? <Text style={styles.sheetSub}>by {open.author}</Text> : null}
