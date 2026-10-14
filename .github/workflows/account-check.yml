@@ -36,6 +36,13 @@ jobs:
                   out.push("delete_my_account: HTTP "+r.status+" "+(r.status===404||/Could not find/.test(t)?"(function NOT found: run docs/supabase-setup.sql)":"(function exists; anonymous call refused as expected)"));
                 }catch(e){out.push("delete_my_account: error "+e.message)}
               }
+              if(u&&k){
+                for(const t of ["shelves","books"]){
+                  try{const r=await fetch(u+"/rest/v1/"+t+"?select=id",{headers:{apikey:k,Authorization:"Bearer "+k}});const j=await r.json();
+                    out.push("catalog "+t+": HTTP "+r.status+" "+(Array.isArray(j)?j.length+" published ("+j.map(x=>x.id).join(", ")+")":"(table missing: run docs/catalog-setup.sql)"));
+                  }catch(e){out.push("catalog "+t+": error "+e.message)}
+                }
+              }
               require("fs").writeFileSync("out/account-check.txt",out.join("\n")+"\n");console.log(out.join("\n"));
             })();'
       - name: Save result
