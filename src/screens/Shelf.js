@@ -154,7 +154,7 @@ export function Store({ u, openStory, openMenu }) {
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <Band color={colors.blue} title="Book Store" sub="Find and buy new stories" />
-      <ScrollView contentContainerStyle={{ paddingVertical: 20, gap: 26 }}
+      <ScrollView contentContainerStyle={{ paddingTop: 28, paddingBottom: 20, gap: 26 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.white} />}>
         {featured ? (
           <Pressable onPress={() => setOpen(featured)} style={styles.feature} accessibilityRole="button" accessibilityLabel={`${featured.title}, featured`}>
@@ -215,7 +215,8 @@ function Badge({ book }) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.desk }, // same dark grey as reading
-  grid: { padding: 20, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
+  // the gap under the coloured title band matches the visible space under its subtitle
+  grid: { padding: 20, paddingTop: 28, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
   tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 4 },
   tileTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, color: colors.white },
   tileSub: { fontFamily: fonts.ui, fontSize: 13, color: '#d0d0d0' },
