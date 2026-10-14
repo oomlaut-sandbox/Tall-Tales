@@ -6,7 +6,7 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "backgroundColor": "#000000",
+    "backgroundColor": "#3a3a3a",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.oomlaut.reader",
@@ -53,7 +53,7 @@
     "owner": "oomlaut-code",
     "icon": "./assets/icon.png",
     "splash": {
-      "backgroundColor": "#000000",
+      "backgroundColor": "#3a3a3a",
       "resizeMode": "contain"
     }
   }

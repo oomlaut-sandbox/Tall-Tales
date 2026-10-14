@@ -115,8 +115,8 @@ function Root() {
   );
 }
 
-// While the app gets ready (fonts, and the home picture so it appears in one go), show plain black
-// to match the launch screen, instead of a flash of colour.
+// While the app gets ready (fonts, and the home picture so it appears in one go), show plain dark grey
+// to match the launch screen and the logo animation, instead of a flash of colour.
 const HOME_PICTURE = require('./assets/home-pebbles.jpg');
 export default function App() {
   const [loaded] = useFonts({ EBGaramond_400Regular });
@@ -129,7 +129,7 @@ export default function App() {
     return () => clearTimeout(t);
   }, []);
   const [intro, setIntro] = useState(true);
-  if (!loaded || !pictureReady) return <View style={{ flex: 1, backgroundColor: '#000' }} />;
+  if (!loaded || !pictureReady) return <View style={{ flex: 1, backgroundColor: '#3a3a3a' }} />;
   return (
     <SafeAreaProvider>
       <Root />

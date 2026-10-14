@@ -1,12 +1,12 @@
-// Opening logo animation (placeholder until Jörg's reference image arrives).
-// Two light grey circles side by side, like the oomlaut logo. They orbit around each other once,
+// Opening logo animation, matched to Jörg's reference (docs/mockups/logo-intro.jpg).
+// Two grey circles side by side, centred on dark grey, like the oomlaut logo. They orbit around each other once,
 // as if turning in 3D (the one in front is a little bigger, lower and brighter) while staying flat
 // discs, then settle back exactly where they started and the app fades in.
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 
-const DOT = 56; // circle diameter
-const GAP = 84; // distance between the two centres
+const DOT = 40; // circle diameter (points)
+const GAP = 61; // distance between the two centres
 const TILT = 0.32; // how far the orbit seems tipped toward us (0 = edge-on, 1 = seen from above)
 const DEPTH = 0.16; // how much bigger the front circle gets
 const N = 49; // sample points around the orbit
@@ -67,7 +67,7 @@ export default function Intro({ onDone }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { backgroundColor: '#000', alignItems: 'center', justifyContent: 'center', zIndex: 100 },
+  screen: { backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center', zIndex: 100 },
   stage: { width: GAP + DOT * 1.4, height: DOT * 1.6, alignItems: 'center', justifyContent: 'center' },
-  dot: { position: 'absolute', width: DOT, height: DOT, borderRadius: DOT / 2, backgroundColor: '#d4d4d4' },
+  dot: { position: 'absolute', width: DOT, height: DOT, borderRadius: DOT / 2, backgroundColor: '#797979' },
 });
