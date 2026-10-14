@@ -132,7 +132,7 @@ export const PageView = forwardRef(function PageView(
               </Text>
             );
             // A title page ("Title. Written and illustrated by …"): the title in bold on its own
-            // line(s), a space, then the author line in regular type. Word positions stay the same,
+            // line(s), a space, then the author line in small regular type. Word positions stay the same,
             // so narration highlighting still lines up.
             const k = page?.titlePage ? words.findIndex((w) => /\.$/.test(w.word)) : -1;
             if (k >= 0 && k < words.length - 1) {
@@ -141,8 +141,9 @@ export const PageView = forwardRef(function PageView(
                   <Text style={[storyStyle, font.bold ? { fontFamily: font.bold } : styles.titleWords]}>
                     {words.slice(0, k + 1).map((w, i) => word(w, i, k, i === k ? w.word.replace(/\.$/, '') : undefined))}
                   </Text>
-                  <View style={{ height: fs * 0.9 }} />
-                  <Text style={storyStyle}>
+                  <View style={{ height: fs * 0.7 }} />
+                  {/* the author and illustrator credits in small type, like the cover's byline */}
+                  <Text style={[storyStyle, { fontSize: Math.round(fs * 0.55), lineHeight: Math.round(fs * 0.55 * 1.5) }]}>
                     {words.slice(k + 1).map((w, j) => word(w, k + 1 + j, words.length - 1))}
                   </Text>
                 </View>
