@@ -1,6 +1,6 @@
 // Turns a story into a PDF on the phone and opens the share sheet (Files, Mail, AirDrop, print shop…)
 // or the print options.
-// Two layouts: "stacked" (picture above the words, one page each) and "spreads"
+// Two layouts: "stacked" (the book as in the app: picture square above words square, one page each) and "spreads"
 // (picture page, then a words page, like a printed picture book).
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
@@ -45,26 +45,33 @@ async function fontFace(fontKey) {
   }
 }
 
-function css(face, family) {
+// "stacked" pages are 8 × 11 inches with the book drawn like the app: two squares, the picture
+// above the words, each with a thin black outline, the words centred in theirs.
+const PAGE_W = 576, PAGE_H = 792, SQ = 360;
+const pageSize = (layout) => (layout === 'spreads' ? { w: SIZE, h: SIZE } : { w: PAGE_W, h: PAGE_H });
+
+function css(face, family, layout) {
+  const { w, h } = pageSize(layout);
   return `${face}
-@page{size:${SIZE}px ${SIZE}px;margin:0}
+@page{size:${w}px ${h}px;margin:0}
 html,body{margin:0;padding:0;background:#fff}
 *{box-sizing:border-box}
-.pg{width:${SIZE}px;height:${SIZE}px;overflow:hidden;position:relative;page-break-after:always;break-after:page;
+.pg{width:${w}px;height:${h}px;overflow:hidden;position:relative;page-break-after:always;break-after:page;
   display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:${family};color:#2b2b2b}
 .pg:last-child{page-break-after:auto;break-after:auto}
-.pg::after{content:'';position:absolute;inset:4px;border:1.5px solid #000;pointer-events:none} /* thin black line around each page of the book */
-.title h1{font-weight:400;font-size:64px;margin:0 48px;text-align:center;line-height:1.1}
+.title h1{font-weight:400;font-size:56px;margin:0 48px;text-align:center;line-height:1.1}
 .title .by{font-size:18px;margin-top:18px;color:#555}
 .title .made{position:absolute;bottom:28px;font-size:12px;color:#888;font-family:Helvetica,Arial,sans-serif}
 .full img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.full::after,.words::after{content:'';position:absolute;inset:4px;border:1.5px solid #000}
 .words p{font-size:28px;line-height:1.5;margin:0 64px;text-align:center}
-.stack{justify-content:flex-start;padding-top:36px}
-.stack .pic{width:396px;height:396px;background:#eee;overflow:hidden;flex:0 0 auto}
-.stack .pic img{width:100%;height:100%;object-fit:cover;display:block}
-.stack .txt{flex:1;width:100%;display:flex;align-items:center;justify-content:center;padding:0 64px 30px}
-.stack p{font-size:19px;line-height:1.5;margin:0;text-align:center}
-.num{position:absolute;bottom:18px;font-size:11px;color:#999;font-family:Helvetica,Arial,sans-serif}`;
+.book{width:${SQ}px;display:flex;flex-direction:column}
+.sq{width:${SQ}px;height:${SQ}px;border:1.5px solid #000;overflow:hidden;position:relative}
+.sq + .sq{border-top:none}
+.sq img{width:100%;height:100%;object-fit:cover;display:block}
+.sq.txt{display:flex;align-items:center;justify-content:center;padding:0 ${Math.round(SQ * 0.09)}px}
+.sq.txt p{font-size:22px;line-height:1.55;margin:0;text-align:center}
+.num{position:absolute;bottom:22px;font-size:11px;color:#999;font-family:Helvetica,Arial,sans-serif}`;
 }
 
 export async function buildStoryHtml(story, layout = 'stacked', fontKey = 'serif') {
@@ -79,15 +86,16 @@ export async function buildStoryHtml(story, layout = 'stacked', fontKey = 'serif
       if (pic) out.push(`<div class="pg full"><img src="${pic}"/></div>`);
       if (p.text && p.text.trim()) out.push(`<div class="pg words"><p>${esc(p.text)}</p></div>`);
     } else {
-      out.push(`<div class="pg stack"><div class="pic">${pic ? `<img src="${pic}"/>` : ''}</div><div class="txt">${p.text ? `<p>${esc(p.text)}</p>` : ''}</div><div class="num">${i + 1}</div></div>`);
+      out.push(`<div class="pg"><div class="book"><div class="sq">${pic ? `<img src="${pic}"/>` : ''}</div><div class="sq txt">${p.text ? `<p>${esc(p.text)}</p>` : ''}</div></div><div class="num">${i + 1}</div></div>`);
     }
   });
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${css(face, bookFont(fontKey).css)}</style></head><body>${out.join('')}</body></html>`;
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${css(face, bookFont(fontKey).css, layout)}</style></head><body>${out.join('')}</body></html>`;
 }
 
 async function makePdf(story, layout, fontKey) {
   const html = await buildStoryHtml(story, layout, fontKey);
-  const { uri } = await Print.printToFileAsync({ html, width: SIZE, height: SIZE, margins: { top: 0, right: 0, bottom: 0, left: 0 } });
+  const { w, h } = pageSize(layout);
+  const { uri } = await Print.printToFileAsync({ html, width: w, height: h, margins: { top: 0, right: 0, bottom: 0, left: 0 } });
   return uri;
 }
 
