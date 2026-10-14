@@ -285,5 +285,5 @@ const styles = StyleSheet.create({
     shadowColor: '#000', shadowOpacity: 0.34, shadowRadius: 12, shadowOffset: { width: 0, height: 5 }, elevation: 9 },
   bubbleTail: { position: 'absolute', left: 38, bottom: -13, width: 0, height: 0, borderTopWidth: 16, borderTopColor: colors.white,
     borderLeftWidth: 4, borderLeftColor: 'transparent', borderRightWidth: 14, borderRightColor: 'transparent' },
-  toast: { color: colors.ink, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, lineHeight: 22, textAlign: 'center' },
+  toast: { color: colors.ink, fontFamily: fonts.story, fontSize: 19, lineHeight: 25, textAlign: 'center' }, // the book serif
 });
