@@ -10,8 +10,6 @@ import { tokenize } from '../story';
 export const artHeight = (width, height) => Math.min(width, height * 0.68);
 
 // Text sizes the reader can choose (Playback Options → Text size).
-// The last page's picture: "The End" embroidered on grey felt (Jörg's artwork).
-const THE_END = require('../../assets/the-end.jpg');
 
 export const TEXT_SIZES = [['Small', 0.85], ['Medium', 1], ['Large', 1.25]];
 
@@ -86,7 +84,10 @@ export const PageView = forwardRef(function PageView(
       <View style={[L.wide ? { width: artW, height, justifyContent: 'center' } : styles.artShadow, { zIndex: 1 }]}>
       <View style={[styles.art, { width: artW, height: artH }]}>
         {end ? (
-          <Image source={THE_END} style={styles.fill} resizeMode="cover" accessibilityLabel="The End" />
+          // "The End" in the book's font on a plain medium-dark grey square
+          <View style={[styles.fill, styles.endArt]} accessibilityLabel="The End">
+            <Text style={[styles.endTitle, { fontFamily: font.family, fontSize: Math.round(artW * 0.14) }]}>The End</Text>
+          </View>
         ) : (
           page?.image ? <Image source={page.image} style={styles.fill} resizeMode="cover" /> : null
         )}
@@ -145,6 +146,8 @@ const styles = StyleSheet.create({
   hot: { position: 'absolute', width: 46, height: 46, borderRadius: 23, borderWidth: 3, borderColor: 'rgba(255,255,255,0.9)', backgroundColor: 'rgba(255,255,255,0.12)' },
   bubble: { position: 'absolute', width: 220, alignItems: 'center' },
   bubbleText: { backgroundColor: colors.white, color: colors.ink, fontFamily: fonts.story, fontSize: 22, paddingHorizontal: 14, paddingVertical: 6, overflow: 'hidden' },
+  endArt: { backgroundColor: '#5a5a5a', alignItems: 'center', justifyContent: 'center' },
+  endTitle: { color: '#f2f2f2', textAlign: 'center' },
   endBtn: { backgroundColor: colors.bar, paddingHorizontal: 18, paddingVertical: 12 },
   endBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
 });
