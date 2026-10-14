@@ -155,9 +155,10 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children }) {
         >
           <View style={[styles.panelHead, wide && { paddingTop: 14, paddingBottom: 12 }]}>
             <Text style={[styles.panelTitle, { flex: 1 }, wide && { fontSize: 22 }]}>{title}</Text>
-            {/* Close: a small downward chevron. Tapping outside the menu still closes it too. */}
+            {/* Close: a small chevron pointing back at the menu bar it goes into (down when upright,
+                right when sideways). Tapping outside the menu still closes it too. */}
             <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close menu" style={styles.closeBtn}>
-              <View style={styles.chev}>
+              <View style={[styles.chev, wide && { transform: [{ rotate: '-90deg' }] }]}>
                 <View style={[styles.chevBar, { left: 0, transform: [{ rotate: '40deg' }] }]} />
                 <View style={[styles.chevBar, { right: 0, transform: [{ rotate: '-40deg' }] }]} />
               </View>
