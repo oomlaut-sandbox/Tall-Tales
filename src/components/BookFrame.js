@@ -34,18 +34,23 @@ export function bookLayout(winW, winH, insets, barMin) {
 
 // children: a function given the layout ({ side, wide, ... }) that draws the two squares.
 // bar: the menu bar, or a function given the layout (so it can run down the side when wide).
-export default function BookFrame({ barMin, bar, children, deskProps, bookProps, under }) {
+// bare: no shared paper and shadow behind the two squares (the caller draws each square itself).
+export default function BookFrame({ barMin, bar, children, deskProps, bookProps, under, bare }) {
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
   const L = bookLayout(winW, winH, insets, barMin);
   const barEl = typeof bar === 'function' ? bar(L) : bar;
   const book = (
     <View style={styles.desk} {...deskProps}>
-      <View style={[styles.shadow, { width: L.bookW, height: L.bookH }]}>
-        <View style={[styles.book, { flexDirection: L.wide ? 'row' : 'column' }]} {...bookProps}>
-          {children(L)}
+      {bare ? (
+        <View style={{ width: L.bookW, height: L.bookH }} {...bookProps}>{children(L)}</View>
+      ) : (
+        <View style={[styles.shadow, { width: L.bookW, height: L.bookH }]}>
+          <View style={[styles.book, { flexDirection: L.wide ? 'row' : 'column' }]} {...bookProps}>
+            {children(L)}
+          </View>
         </View>
-      </View>
+      )}
       {under}
     </View>
   );

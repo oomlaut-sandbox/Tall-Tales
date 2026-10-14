@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Intro from './src/components/Intro';
 import { Dimensions, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { StatusBar } from 'expo-status-bar';
@@ -7,7 +6,7 @@ import { Asset } from 'expo-asset';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFonts, EBGaramond_400Regular } from '@expo-google-fonts/eb-garamond';
 import { colors, MAX_WIDTH } from './src/theme';
-import Home from './src/screens/Home';
+import Start from './src/screens/Start';
 import { Library, Store } from './src/screens/Shelf';
 import About from './src/screens/About';
 import Profile from './src/screens/Profile';
@@ -25,8 +24,9 @@ import { stopVoice } from './src/voice';
 function Root() {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const [screen, setScreen] = useState('home');
-  // Phones stay upright. iPads (and other tablets) can turn: the book goes side by side when sideways.
+  const [screen, setScreen] = useState('start');
+  const [coverOpen, setCoverOpen] = useState(false); // the book's cover is shut each time the app opens
+  // Phones and iPads can turn: the book goes side by side when sideways.
   const landscape = false; // (the old sideways layout with the bar down the side stays off)
   // The app fills the screen; controls are sized from a phone-sized width so they don't balloon on an iPad.
   const W = width;
@@ -75,9 +75,9 @@ function Root() {
   const barH = u * 17 + insets.bottom;
   return (
     <View style={styles.outer}>
-      <StatusBar style={screen === 'library' ? 'dark' : 'light'} />
+      <StatusBar style={screen === 'profile' ? 'dark' : 'light'} />
       <View style={[styles.app, { width: W }]}>
-        {screen === 'home' && <Home u={u} go={go} openMenu={openMenu} />}
+        {screen === 'start' && <Start u={u} go={go} openMenu={openMenu} closed={!coverOpen} onOpened={() => setCoverOpen(true)} />}
         {screen === 'library' && (
           <Library u={u} stories={[...STORIES.filter((s) => !removed.includes(s.id)), ...userStories]} openStory={openStory} openMenu={openMenu}
             onCreate={() => openPublisher(null)} onEdit={openPublisher}
@@ -125,8 +125,8 @@ function Root() {
 // While the app gets ready (fonts, and the home picture so it appears in one go), show plain dark grey
 // to match the launch screen and the logo animation, instead of a flash of colour.
 const HOME_PICTURE = require('./assets/home-pebbles.jpg');
-const IS_TABLET = (Platform.OS === 'ios' && Platform.isPad) || Math.min(Dimensions.get('screen').width, Dimensions.get('screen').height) >= 600;
-if (!IS_TABLET && Platform.OS !== 'web') ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP).catch(() => {});
+// Phones and tablets both turn: sideways, the book goes side by side with the menu bar on the right.
+if (Platform.OS !== 'web') ScreenOrientation.unlockAsync().catch(() => {});
 
 export default function App() {
   const [loaded] = useFonts({ EBGaramond_400Regular });
@@ -138,12 +138,10 @@ export default function App() {
     const t = setTimeout(finish, 1500); // never wait longer than this
     return () => clearTimeout(t);
   }, []);
-  const [intro, setIntro] = useState(true);
   if (!loaded || !pictureReady) return <View style={{ flex: 1, backgroundColor: '#3a3a3a' }} />;
   return (
     <SafeAreaProvider>
       <Root />
-      {intro ? <Intro onDone={() => setIntro(false)} /> : null}
     </SafeAreaProvider>
   );
 }

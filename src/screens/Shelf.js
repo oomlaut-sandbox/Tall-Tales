@@ -84,7 +84,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
       ) : (
         <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>
       ))}>
-      <Band color={colors.orange} title={selecting ? 'Select books' : 'My Library'}
+      <Band color={colors.green} title={selecting ? 'Select books' : 'My Library'}
         sub={selecting ? (picked.length ? `${picked.length} selected` : 'Tap books to select them') : 'Your stories, ready to read'}
         action={selecting ? 'Cancel' : 'Select'} onAction={selecting ? stop : () => setSelecting(true)} />
       <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]}>

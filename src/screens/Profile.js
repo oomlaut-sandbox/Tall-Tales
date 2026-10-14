@@ -141,7 +141,7 @@ export default function Profile({ u, openMenu, toast }) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
-  band: { backgroundColor: colors.desk, paddingBottom: 22, paddingHorizontal: 24 },
+  band: { backgroundColor: colors.orange, paddingBottom: 22, paddingHorizontal: 24 },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32 },
   sub: { color: colors.white, fontFamily: fonts.ui, fontSize: 15, marginTop: 6, opacity: 0.9 },
   body: { padding: 24, paddingBottom: 40, alignItems: 'center' },
