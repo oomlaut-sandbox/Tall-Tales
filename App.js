@@ -4,7 +4,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { StatusBar } from 'expo-status-bar';
 import { Asset } from 'expo-asset';
 import { SafeAreaInsetsContext, SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFonts, EBGaramond_400Regular, EBGaramond_700Bold } from '@expo-google-fonts/eb-garamond';
+import { useFonts, EBGaramond_400Regular, EBGaramond_500Medium, EBGaramond_700Bold } from '@expo-google-fonts/eb-garamond';
 import { colors, MAX_WIDTH } from './src/theme';
 import Start from './src/screens/Start';
 import { bookLayout } from './src/components/BookFrame';
@@ -20,7 +20,7 @@ import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
-import { LibraryIcon, Option, Panel, SIDE_MENU_TOP, Toast } from './src/components/Chrome';
+import { LibraryIcon, Option, Panel, Toast } from './src/components/Chrome';
 import { playSound, setEffects } from './src/sound';
 import { stopSpeech } from './src/speech';
 import { stopVoice } from './src/voice';
@@ -91,23 +91,17 @@ function Root() {
   useEffect(() => setEffects(prefs.sound === true), [prefs.sound]); // sound effects: Playback menu, off by default
   const sideways = width > height * 1.1;
   const camBar = sideways ? Math.max(insets.left, 44) : Math.max(insets.top, 44);
-  // where the menu stripes are, so the speech bubble looks like they are saying it
-  const toastAt = useMemo(() => {
+  // the speech bubble sits in the middle of the space between the bars
+  const toastArea = useMemo(() => {
     const reader = screen === 'reader';
     if (sideways) {
       const barW = reader ? bookLayout(width, height, { ...insets, left: camBar }, u * 13).rightW : Math.round(u * 17 * 1.15);
-      return { side: true, right: barW, y: SIDE_MENU_TOP + u * 3.2 };
+      return { left: camBar, right: barW, top: 0, bottom: 0 };
     }
     const ins = { ...insets, top: camBar };
     const bottom = reader ? bookLayout(width, height, ins, u * 13).barH : u * 17 + insets.bottom;
-    const x = reader ? 18 + u * 3.5 : u * 5.4 + u * 3.5;
-    return { side: false, bottom, x };
+    return { left: 0, right: 0, top: camBar, bottom };
   }, [screen, sideways, width, height, insets, camBar, u]);
-  // sideways the Settings menu sits in the top right, level with the menu stripes
-  // upright the menu comes up out of the bottom bar, whose height depends on the screen
-  const drawerBottom = sideways ? 0 : screen === 'reader' ? bookLayout(width, height, { ...insets, top: camBar }, u * 13).barH
-    : screen === 'start' ? bookLayout(width, height, { ...insets, top: camBar }, u * 17).barH : barH;
-  const drawerRight = sideways ? (screen === 'reader' ? bookLayout(width, height, { ...insets, left: camBar }, u * 13).rightW : Math.round(u * 17 * 1.15)) : 0;
   const screenInsets = useMemo(() => (sideways ? { ...insets, left: camBar } : { ...insets, top: camBar }), [insets, sideways, camBar]);
   return (
     <View style={styles.outer}>
@@ -159,7 +153,7 @@ function Root() {
             onDone={() => { setStory(opening.story); go('reader'); setTimeout(() => setOpening(null), 60); }} />
         ) : null}
         <ParentGate visible={profileGate} reason="Your profile is for grown-ups." onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
-        <Toast message={message} at={toastAt} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
+        <Toast message={message} area={toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         <View pointerEvents="none" style={sideways
           ? { position: 'absolute', left: 0, top: 0, bottom: 0, width: camBar, backgroundColor: colors.bar, zIndex: 200 }
           : { position: 'absolute', left: 0, right: 0, top: 0, height: camBar, backgroundColor: colors.bar, zIndex: 200 }} />
@@ -176,7 +170,7 @@ const HOME_PICTURE = require('./assets/leather.jpg');
 if (Platform.OS !== 'web') ScreenOrientation.unlockAsync().catch(() => {});
 
 export default function App() {
-  const [loaded] = useFonts({ EBGaramond_400Regular, EBGaramond_700Bold });
+  const [loaded] = useFonts({ EBGaramond_400Regular, EBGaramond_500Medium, EBGaramond_700Bold });
   const [pictureReady, setPictureReady] = useState(false);
   useEffect(() => {
     let done = false;

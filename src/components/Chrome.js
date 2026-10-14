@@ -278,28 +278,13 @@ export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLab
   );
 }
 
-// The speech bubble, said by the menu stripes: upright it sits just above the bottom bar with its
-// tail pointing down at the stripes; sideways it sits beside the right-hand bar, tail pointing at them.
-// at: { side: false, bottom, x } (x = the stripes' centre) or { side: true, right, y }. Tap it to close.
-export function Toast({ message, at, onDismiss }) {
+// The speech bubble: a white rounded box in the middle of the screen (between the bars). Tap it to close.
+export function Toast({ message, area, onDismiss }) {
   if (!message) return null;
-  const side = at && at.side;
-  const wrap = side
-    ? { position: 'absolute', right: at.right + 16, top: Math.max(12, at.y - 34), zIndex: 60, alignItems: 'flex-end', left: 24 }
-    : { position: 'absolute', left: 10, right: 24, bottom: (at ? at.bottom : 80) + 18, zIndex: 60, alignItems: 'flex-start' };
-  // a simple, even little point, aimed at the menu stripes
-  const T = 12;
-  const tail = side
-    ? { position: 'absolute', right: -T, top: 34 - T, width: 0, height: 0, borderLeftWidth: T, borderLeftColor: colors.white,
-        borderTopWidth: T, borderTopColor: 'transparent', borderBottomWidth: T, borderBottomColor: 'transparent' }
-    : { position: 'absolute', bottom: -T, left: Math.max(12, (at ? at.x : 40) - 10 - T), width: 0, height: 0, borderTopWidth: T, borderTopColor: colors.white,
-        borderLeftWidth: T, borderLeftColor: 'transparent', borderRightWidth: T, borderRightColor: 'transparent' };
   return (
-    <View pointerEvents="box-none" style={wrap}>
-      {/* a white speech bubble: big rounded corners, roomy padding, a soft shadow and a little tail */}
+    <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, zIndex: 60, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 }, area]}>
       <Pressable onPress={onDismiss} accessibilityRole="button" accessibilityHint="Closes the message" style={styles.bubble}>
         <Text style={styles.toast}>{message}</Text>
-        <View style={tail} />
       </Pressable>
     </View>
   );
@@ -335,6 +320,6 @@ const styles = StyleSheet.create({
     shadowColor: '#000', shadowOpacity: 0.34, shadowRadius: 12, shadowOffset: { width: 0, height: 5 }, elevation: 9 },
   bubbleTail: { position: 'absolute', left: 38, bottom: -13, width: 0, height: 0, borderTopWidth: 16, borderTopColor: colors.white,
     borderLeftWidth: 14, borderLeftColor: 'transparent', borderRightWidth: 4, borderRightColor: 'transparent' },
-  toast: { color: colors.ink, fontFamily: fonts.story, fontSize: 19, lineHeight: 25, textAlign: 'center' }, // the book serif
+  toast: { color: colors.ink, fontFamily: 'EBGaramond_500Medium', fontSize: 21, lineHeight: 28, textAlign: 'center' }, // the book serif
 });
 
