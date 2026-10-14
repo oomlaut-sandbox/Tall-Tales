@@ -7,6 +7,7 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import { useFonts, EBGaramond_400Regular, EBGaramond_700Bold } from '@expo-google-fonts/eb-garamond';
 import { colors, MAX_WIDTH } from './src/theme';
 import Start from './src/screens/Start';
+import BookOpen from './src/components/BookOpen';
 import { Library, Store } from './src/screens/Shelf';
 import About from './src/screens/About';
 import Profile from './src/screens/Profile';
@@ -72,7 +73,15 @@ function Root() {
   }, []);
 
   const go = (s) => { stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen(s); };
-  const openStory = (s) => { setStory(s); go('reader'); };
+  // A book with a title page opens onto its title page with a blank white page above it (the
+  // inside of the cover); its cover picture is the cover. From My Library, the cover animates open.
+  const prepared = (s) => (s.pages[0] && s.pages[0].titlePage ? { ...s, pages: [{ ...s.pages[0], image: null, whiteArt: true }, ...s.pages.slice(1)] } : s);
+  const [opening, setOpening] = useState(null); // { story, cover, rect } while a book opens from the library
+  const openStory = (s, rect) => {
+    const ready = prepared(s);
+    if (rect && screen === 'library') { setOpening({ story: ready, cover: s.pages[0] && s.pages[0].image, rect }); return; }
+    setStory(ready); go('reader');
+  };
   const openMenu = () => setDrawer(true);
   const openPublisher = (story) => { setDraft(draftFrom(story)); go('publisher'); };
 
@@ -121,6 +130,10 @@ function Root() {
           <Option glyph="○" title="Profile" sub="Manage your oomlaut account" onPress={() => { setDrawer(false); setProfileGate(true); }} />
           <Option glyph="i" title="About" sub="Learn more about the app" onPress={() => go('about')} />
         </Panel>
+        {opening ? (
+          <BookOpen u={u} story={opening.story} cover={opening.cover} rect={opening.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}
+            onDone={() => { setStory(opening.story); go('reader'); setTimeout(() => setOpening(null), 60); }} />
+        ) : null}
         <ParentGate visible={profileGate} reason="Your profile is for grown-ups." onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
         <Toast message={message} />
       </View>

@@ -1,5 +1,5 @@
 // My Library and Book Store.
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
@@ -17,11 +17,18 @@ const gridGap = (w) => { const n = COLS(w); return `${(100 - n * TILE[n]) / (n -
 function Tile({ u, cover, title, sub, onPress, onLongPress, plus, selecting, selected }) {
   const { width: winW } = useWindowDimensions();
   const ear = u * 3;
+  const coverRef = useRef(null);
+  // tells the caller where the cover is on screen (so the book can open from right there)
+  const press = () => {
+    if (!onPress) return;
+    if (coverRef.current && coverRef.current.measureInWindow) coverRef.current.measureInWindow((x, y, w, h) => onPress({ x, y, w, h }));
+    else onPress(null);
+  };
   return (
-    <Pressable onPress={onPress} onLongPress={onLongPress} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button">
+    <Pressable onPress={press} onLongPress={onLongPress} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button">
       {/* a very subtle drop shadow under the square cover */}
       <View style={styles.tileShadow}>
-      <View style={{ aspectRatio: 1, backgroundColor: '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
+      <View ref={coverRef} collapsable={false} style={{ aspectRatio: 1, backgroundColor: '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
         {cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }} resizeMode="cover" /> : null}
         {plus ? <Text style={{ color: colors.white, fontSize: 64, fontWeight: '300' }}>+</Text> : null}
         <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderLeftWidth: ear, borderBottomWidth: ear, borderLeftColor: 'transparent', borderBottomColor: colors.earUnder }} />
@@ -99,7 +106,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
           <Tile key={s.id} u={u} cover={s.pages[0] && s.pages[0].image} title={s.title}
             selecting={selecting} selected={picked.includes(s.id)}
             sub={s.mine ? `${s.pages.length} page${s.pages.length === 1 ? '' : 's'} · made by you${selecting ? '' : ' · hold to edit'}` : `${s.author ? `by ${s.author} · ` : ''}${s.pages.length} pages · read-along`}
-            onPress={() => (selecting ? toggle(s.id) : openStory(s))}
+            onPress={(rect) => (selecting ? toggle(s.id) : openStory(s, rect))}
             onLongPress={!selecting && s.mine ? () => onEdit(s) : undefined} />
         ))}
         {!selecting ? <Tile u={u} plus title="Create a story" sub="Add pictures and words" onPress={onCreate} /> : null}

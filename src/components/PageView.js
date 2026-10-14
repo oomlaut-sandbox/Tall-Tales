@@ -84,7 +84,7 @@ export const PageView = forwardRef(function PageView(
     <View ref={ref} collapsable={false} style={[styles.page, { width, height }, L.wide && styles.row]}>
       {/* The picture square, with a very soft shadow falling below it. */}
       <View style={[L.wide ? { width: artW, height, justifyContent: 'center' } : styles.artShadow, { zIndex: 1 }]}>
-      <View style={[styles.art, { width: artW, height: artH }]}>
+      <View style={[styles.art, { width: artW, height: artH }, page?.whiteArt && { backgroundColor: colors.white }]}>
         {end ? (
           // "The End" in the book's font on a plain medium-dark grey square
           <View style={[styles.fill, styles.endArt]} accessibilityLabel="The End">
