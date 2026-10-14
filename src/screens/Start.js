@@ -1,9 +1,9 @@
-// The start screen: a book on the dark grey. Jörg's felt pebbles in the picture square, the menu
-// in the words square.
+// The start screen: a book on the dark grey. The inside of the brown cover in the picture square,
+// the menu in the words square.
 //
 // When the app opens, the book is closed: only one square shows, a brown cover with a dog-ear.
 // Turning it (tap, or swipe up / sideways) opens the cover over the spine like a real book, and its
-// inside, the pebbles, lands in the picture square.
+// inside (also brown) lands in the picture square.
 import React, { useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme';
@@ -20,7 +20,6 @@ class PeelSafe extends React.Component {
   render() { return this.state.failed ? null : this.props.children; }
 }
 
-const PEBBLES = require('../../assets/home-pebbles.jpg');
 export const COVER_BROWN = '#6f4b32';
 
 function MenuItem({ u, color, title, sub, onPress }) {
@@ -100,9 +99,9 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
         // where the two squares sit: picture first (top, or left when sideways), then the words
         const at1 = { position: 'absolute', left: 0, top: 0, width: side, height: side };
         const at2 = wide ? { position: 'absolute', left: side, top: 0, width: side, height: side } : { position: 'absolute', left: 0, top: side, width: side, height: side };
+        // the inside of the cover: the same brown as the outside (Jörg may add texture later)
         const pebbles = (
-          <View style={{ width: side, height: side, backgroundColor: '#7d7d7d', overflow: 'hidden' }}>
-            <Image source={PEBBLES} accessibilityLabel="oomlaut Reader" style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
+          <View style={{ width: side, height: side, backgroundColor: COVER_BROWN, overflow: 'hidden' }} accessibilityLabel="oomlaut Reader">
             {!wide ? <Fade edge="bottom" size={Math.round(side * 0.05)} max={0.2} /> : null}
           </View>
         );
