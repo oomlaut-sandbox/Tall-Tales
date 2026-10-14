@@ -11,6 +11,8 @@ function Tile({ u, cover, title, sub, onPress, onLongPress, plus, selecting, sel
   const ear = u * 3;
   return (
     <Pressable onPress={onPress} onLongPress={onLongPress} style={{ width: '47%', gap: 8 }} accessibilityRole="button">
+      {/* a very subtle drop shadow under the square cover */}
+      <View style={styles.tileShadow}>
       <View style={{ aspectRatio: 1, backgroundColor: '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
         {cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }} resizeMode="cover" /> : null}
         {plus ? <Text style={{ color: colors.white, fontSize: 64, fontWeight: '300' }}>+</Text> : null}
@@ -22,6 +24,7 @@ function Tile({ u, cover, title, sub, onPress, onLongPress, plus, selecting, sel
           </View>
         ) : null}
         {selecting && selected ? <View pointerEvents="none" style={styles.selShade} /> : null}
+      </View>
       </View>
       <Text style={styles.tileTitle}>{title}</Text>
       <Text style={styles.tileSub}>{sub}</Text>
@@ -132,6 +135,7 @@ export function Store({ u, openStory, openMenu }) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   grid: { padding: 20, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 22 },
+  tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.16, shadowRadius: 4, elevation: 2 },
   tileTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, color: colors.ink },
   tileSub: { fontFamily: fonts.ui, fontSize: 13, color: '#444' },
   check: { position: 'absolute', top: 8, right: 8, width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: colors.white, backgroundColor: 'rgba(0,0,0,0.25)', alignItems: 'center', justifyContent: 'center', zIndex: 2 },

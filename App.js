@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import Intro from './src/components/Intro';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Asset } from 'expo-asset';
@@ -127,10 +128,12 @@ export default function App() {
     const t = setTimeout(finish, 1500); // never wait longer than this
     return () => clearTimeout(t);
   }, []);
+  const [intro, setIntro] = useState(true);
   if (!loaded || !pictureReady) return <View style={{ flex: 1, backgroundColor: '#000' }} />;
   return (
     <SafeAreaProvider>
       <Root />
+      {intro ? <Intro onDone={() => setIntro(false)} /> : null}
     </SafeAreaProvider>
   );
 }
