@@ -50,8 +50,8 @@ function Root() {
   useEffect(() => {
     loadUserStories().then(setUserStories).catch(() => {});
     loadJSON('prefs', null).then((p) => {
-      // Page sound is now off by default: switch it off once for anyone who had the old default.
-      if (p && !p.soundOffDefault) p = { ...p, sound: false, soundOffDefault: true };
+      // Sound effects start off every time the app opens (they can be switched on in the Playback menu).
+      if (p) p = { ...p, sound: false, soundOffDefault: true };
       // Interactive mode was removed: anyone who had it gets Page by Page instead.
       if (p && p.mode === 'interactive') p = { ...p, mode: 'page' };
       // No playback option chosen yet: Page by Page narration.

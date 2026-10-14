@@ -226,7 +226,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       {wide ? (
         // sideways: the bar runs down the right side (the title can be edited when upright)
         <View style={{ width: BL.rightW, backgroundColor: colors.bar, flexDirection: 'row', justifyContent: 'flex-end' }}>
-          <Bar u={u} vertical>
+          <Bar u={u} vertical top={BL.bookTop}>
             <View style={{ alignItems: 'center', gap: 18 }}>
               <Burger u={u} onPress={openMenu} />
               <Text style={[styles.sub, { textAlign: 'center' }]}>{i + 1}/{draft.pages.length}</Text>

@@ -20,11 +20,11 @@ export function Burger({ onPress, u }) {
 // (The camera housing is in the middle of the edge, where the bar has no buttons.)
 export const SIDE_BAR = 1.15;
 
-export function Bar({ u, children, vertical }) {
+export function Bar({ u, children, vertical, top }) {
   const insets = useSafeAreaInsets();
   if (vertical) {
     return (
-      <View style={[styles.bar, styles.barV, { width: u * 17 * SIDE_BAR, paddingTop: Math.max(14, insets.top), paddingBottom: Math.max(14, insets.bottom) }]}>{children}</View>
+      <View style={[styles.bar, styles.barV, { width: u * 17 * SIDE_BAR, paddingTop: top != null ? top : Math.max(14, insets.top), paddingBottom: Math.max(14, insets.bottom) }]}>{children}</View>
     );
   }
   return (
