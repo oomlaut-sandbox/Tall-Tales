@@ -106,6 +106,11 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back }) 
           <LinearGradient start={g0} end={vec(M[0] + nx * shadeW, M[1] + ny * shadeW)} colors={[`rgba(0,0,0,${shadeA.toFixed(3)})`, 'rgba(0,0,0,0)']} />
         </Rect>
       </Group>
+      {/* The folded flap is shorter than the picture square, so it can't reach the very top:
+          only that thin top strip fades in to the next picture (the flap itself stays solid). */}
+      {fadeIn > 0 && artH > textH ? (
+        <Group clip={rect(0, 0, W, artH - textH)} opacity={fadeIn}><Image image={back} {...full} /></Group>
+      ) : null}
       {/* the part of the words half still lying flat */}
       <Group clip={frontPath}><Image image={front} {...full} /></Group>
       {/* the lifted part, folded over: its back shows the next page's picture */}
@@ -125,11 +130,6 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back }) 
           </Rect>
         </Group>
       </Group>
-      {/* The folded flap is shorter than the picture square, so it can't reach the very top:
-          only that thin top strip fades in to the next picture (the flap itself stays solid). */}
-      {fadeIn > 0 && artH > textH ? (
-        <Group clip={rect(0, 0, W, artH - textH)} opacity={fadeIn}><Image image={back} {...full} /></Group>
-      ) : null}
     </Canvas>
   );
 }
