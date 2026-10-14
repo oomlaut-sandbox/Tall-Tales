@@ -586,8 +586,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           }} />
           </React.Fragment>
         ))}
-        <Option glyph="♪" title={`Page turn sound: ${prefs.sound ? 'On' : 'Off'}`} sub="Tap to switch"
-          onPress={() => { const on = !prefs.sound; setPrefs((p) => ({ ...p, sound: on })); setPageSound(on); if (on) playPaper('turn', 0.8); }} />
+        <Option glyph="♫" title="Voices" sub={`Narrator: ${(NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1]}`} onPress={() => setPlayView('voices')} />
         <View style={styles.setting}>
           <Text style={styles.help}>Text size</Text>
           <Seg value={prefs.textScale || 1} options={TEXT_SIZES.map(([label, v]) => [v, label])} onChange={(v) => setPrefs((p) => ({ ...p, textScale: v }))} />
@@ -603,7 +602,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <Text style={styles.help}>Book font</Text>
           <Seg value={prefs.font || 'serif'} options={Object.entries(BOOK_FONTS).map(([k, f]) => [k, f.label, f.family])} onChange={(v) => setPrefs((p) => ({ ...p, font: v }))} />
         </View>
-        <Option glyph="♫" title="Voices" sub={`Narrator: ${(NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1]}`} onPress={() => setPlayView('voices')} />
+        <View style={styles.setting}>
+          <Text style={styles.help}>Page turn sound</Text>
+          <Seg value={prefs.sound ? 'on' : 'off'} options={[['off', 'Off'], ['on', 'On']]}
+            onChange={(v) => { const on = v === 'on'; setPrefs((p) => ({ ...p, sound: on })); setPageSound(on); if (on) playPaper('turn', 0.8); }} />
+        </View>
         {printChoice ? (
           <>
             <Option glyph="⎙" title="Print: picture above the words" sub="One page each, like the app" onPress={() => { setPrintChoice(false); setPanel(null); setPrintGate('stacked'); }} />
