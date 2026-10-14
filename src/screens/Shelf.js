@@ -151,7 +151,7 @@ export function Store({ u, openStory, openMenu }) {
         {featured ? (
           <Pressable onPress={() => setOpen(featured)} style={styles.feature} accessibilityRole="button" accessibilityLabel={`${featured.title}, featured`}>
             <View style={[styles.tileShadow, { width: tileW * 1.15, aspectRatio: 1 }]}>
-              {coverFor(featured) ? <Image source={coverFor(featured)} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
+              {coverFor(featured) ? <Image source={coverFor(featured)} style={styles.coverImg} resizeMode="cover" /> : null}
             </View>
             <View style={{ flex: 1, minWidth: 0, gap: 6 }}>
               <Text style={styles.kicker}>Featured</Text>
@@ -168,7 +168,7 @@ export function Store({ u, openStory, openMenu }) {
               {sh.books.map((b) => (
                 <Pressable key={b.id} onPress={() => setOpen(b)} style={{ width: tileW, gap: 8 }} accessibilityRole="button" accessibilityLabel={b.title}>
                   <View style={[styles.tileShadow, { width: tileW, height: tileW }]}>
-                    {coverFor(b) ? <Image source={coverFor(b)} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
+                    {coverFor(b) ? <Image source={coverFor(b)} style={styles.coverImg} resizeMode="cover" /> : null}
                     <View style={styles.badgeAt}><Badge book={b} /></View>
                   </View>
                   <Text numberOfLines={2} style={styles.tileTitle}>{b.title}</Text>
@@ -223,6 +223,7 @@ const styles = StyleSheet.create({
   barBtnOff: { opacity: 0.35 },
   barBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
   barHint: { flex: 1, textAlign: 'right', color: colors.muted, fontFamily: fonts.ui, fontSize: 12 },
+  coverImg: { position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' },
   feature: { flexDirection: 'row', gap: 16, alignItems: 'center', paddingHorizontal: 20 },
   kicker: { color: '#d0d0d0', fontFamily: fonts.ui, fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 },
   featureTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 22 },
