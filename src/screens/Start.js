@@ -103,7 +103,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
             </Animated.View>
             {/* the cover */}
             {closed ? (
-              <Animated.View {...swipe.panHandlers} style={[at2, styles.page, { zIndex: 5 }, leaf]}>
+              <Animated.View {...swipe.panHandlers} style={[at2, styles.page, { zIndex: 8 }, leaf]}>
                 <Animated.View style={[StyleSheet.absoluteFill, { opacity: frontOp, backgroundColor: COVER_BROWN }]}>
                   <Pressable style={StyleSheet.absoluteFill} onPress={open} accessibilityRole="button" accessibilityLabel="Open the book" />
                   {!opening ? <DogEar u={u} onPress={open} label="Open the book" /> : null}
