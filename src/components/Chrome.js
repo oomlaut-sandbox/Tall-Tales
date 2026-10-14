@@ -127,16 +127,21 @@ export function Panel({ open, side = 'right', title, onClose, bottom, inset = 0,
   const { height: winH, width: winW } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   // The top of the menu sits at about 20% of the screen height.
-  const maxHeight = Math.max(240, Math.min(winH * 0.8 - (bottom || 0), winH - (bottom || 0) - insets.top - 24));
+  // Sideways (wider than tall) the menu is wide and short: its items sit in two columns.
+  const wide = winW > winH * 1.1;
+  const maxHeight = wide ? winH - (bottom || 0) - Math.max(12, insets.top) - 12 : Math.max(240, Math.min(winH * 0.8 - (bottom || 0), winH - (bottom || 0) - insets.top - 24));
+  const panelW = wide ? Math.min(760, winW - (inset || 0) - Math.max(60, insets.left + 40)) : null;
+  const colW = wide ? (panelW - 44 - 22) / 2 : null;
+  const flat = (kids) => React.Children.toArray(kids).flatMap((c) => (c && c.type === React.Fragment ? flat(c.props.children) : [c]));
   return (
     <>
       {open ? <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close menu" /> : null}
       <Animated.View
         pointerEvents={open ? 'auto' : 'none'}
-        style={[styles.panel, { bottom, maxHeight, [side]: inset, transform: [{ translateX: x.interpolate({ inputRange: [0, 1], outputRange: [0, sign * (winW + 40)] }) }] }]}
+        style={[styles.panel, wide && { width: panelW, maxWidth: panelW, bottom: (bottom || 0) + 12 }, !wide && { bottom }, { maxHeight, [side]: inset, transform: [{ translateX: x.interpolate({ inputRange: [0, 1], outputRange: [0, sign * (winW + 40)] }) }] }]}
       >
-        <View style={styles.panelHead}>
-          <Text style={[styles.panelTitle, { flex: 1 }]}>{title}</Text>
+        <View style={[styles.panelHead, wide && { paddingTop: 14, paddingBottom: 12 }]}>
+          <Text style={[styles.panelTitle, { flex: 1 }, wide && { fontSize: 22 }]}>{title}</Text>
           {/* Close: a small downward chevron. Tapping outside the menu still closes it too. */}
           <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close menu" style={styles.closeBtn}>
             <View style={styles.chev}>
@@ -146,7 +151,9 @@ export function Panel({ open, side = 'right', title, onClose, bottom, inset = 0,
           </Pressable>
         </View>
         {/* Only scrolls when it can't fit (e.g. sideways on a phone). */}
-        <ScrollView style={{ flexGrow: 0, flexShrink: 1, backgroundColor: colors.panel }} contentContainerStyle={styles.panelList} bounces={false}>{children}</ScrollView>
+        <ScrollView style={{ flexGrow: 0, flexShrink: 1, backgroundColor: colors.panel }} contentContainerStyle={[styles.panelList, wide && styles.panelCols]} bounces={false}>
+          {wide ? flat(children).map((c, i) => <View key={i} style={{ width: colW }}>{c}</View>) : children}
+        </ScrollView>
       </Animated.View>
     </>
   );
@@ -278,6 +285,7 @@ const styles = StyleSheet.create({
   chev: { width: 22, height: 12 },
   chevBar: { position: 'absolute', top: 4, width: 14, height: 3, borderRadius: 1.5, backgroundColor: colors.white },
   panelTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 28 },
+  panelCols: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 22, rowGap: 16, paddingTop: 16, paddingBottom: 16 },
   panelList: { backgroundColor: colors.panel, paddingHorizontal: 22, paddingTop: 20, paddingBottom: 22, gap: 16 },
   opt: { flexDirection: 'row', alignItems: 'center', gap: 18 },
   optIc: { width: 54, height: 54, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
