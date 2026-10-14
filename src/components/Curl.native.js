@@ -62,8 +62,6 @@ export function CurlCanvas({ width: W, height: H, under, turning, fold }) {
           </Rect>
         </Group>
       </Group>
-      </Group>
-      </Group>
     </Canvas>
   );
 }
@@ -157,6 +155,8 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back, ox
             />
           </Rect>
         </Group>
+      </Group>
+      </Group>
       </Group>
     </Canvas>
   );
