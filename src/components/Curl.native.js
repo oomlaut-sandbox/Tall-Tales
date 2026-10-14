@@ -61,6 +61,8 @@ export function CurlCanvas({ width: W, height: H, under, turning, fold }) {
             />
           </Rect>
         </Group>
+        {/* a fine white edge all round the turned part, so the paper reads as having thickness */}
+        <Path path={cut} style="stroke" strokeWidth={1.6} strokeJoin="round" color="rgba(255,255,255,0.95)" />
       </Group>
     </Canvas>
   );
