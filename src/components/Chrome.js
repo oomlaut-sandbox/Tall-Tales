@@ -91,7 +91,7 @@ export function DogEar({ u, onPress, label = 'Next page' }) {
     <Pressable onPress={onPress} accessibilityLabel={label} style={[styles.ear, { width: Math.max(48, e + 16), height: Math.max(48, e + 16) }]}>
       <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderLeftWidth: e, borderBottomWidth: e, borderLeftColor: 'transparent', borderBottomColor: '#262626' }} />
       {/* soft shadow: many faint layers, each a little larger, so it fades smoothly */}
-      {Array.from({ length: 12 }, (_, i) => 12 - i).map((d) => tri(e + d, 'rgba(0,0,0,0.022)', d))}
+      {Array.from({ length: 10 }, (_, i) => (10 - i) * 0.8).map((d) => tri(e + d, 'rgba(0,0,0,0.018)', d))}
       {tri(e, colors.white)}
     </Pressable>
   );
