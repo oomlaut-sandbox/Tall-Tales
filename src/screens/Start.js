@@ -88,7 +88,7 @@ export default function Start({ u, go, openMenu, closed, onOpened }) {
                   {!opening ? <DogEar u={u} onPress={open} label="Open the book" /> : null}
                 </Animated.View>
                 {/* inside of the cover: the pebbles, mirrored so they read right once turned over */}
-                <Animated.View style={[StyleSheet.absoluteFill, { opacity: backOp, transform: [wide ? { scaleX: -1 } : { scaleY: -1 }] }]}>{pebbles}</Animated.View>
+                <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: backOp, transform: [wide ? { scaleX: -1 } : { scaleY: -1 }] }]}>{pebbles}</Animated.View>
                 <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: shade }]} />
               </Animated.View>
             ) : null}
