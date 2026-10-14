@@ -16,17 +16,16 @@ import { playSound } from '../sound';
 export const COVER_BROWN = '#6f4b32';
 const LEATHER = require('../../assets/leather.jpg'); // Jörg's brown leather, outside and inside the cover
 
-function MenuItem({ u, color, title, sub, onPress }) {
+function MenuItem({ u, color, title, onPress }) {
   return (
     <Pressable onPress={onPress} accessibilityRole="button" style={{ flexDirection: 'row', gap: u * 4.6 }}>
       <View style={{ width: u * 16.5, height: u * 33 }}>
         <View style={{ flex: 1, backgroundColor: color }} />
         <View style={{ flex: 1, backgroundColor: colors.white }} />
       </View>
-      <View style={{ flex: 1, minWidth: 0 }}>
-        {/* Same sizes as the menu titles (20) and their descriptions (14). */}
-        <Text style={{ fontFamily: fonts.ui, fontWeight: '700', fontSize: 20, lineHeight: 24, color: colors.ink, marginBottom: u * 2 }}>{title}</Text>
-        <Text style={{ fontFamily: fonts.ui, fontSize: 14, lineHeight: 18, color: colors.ink }}>{sub}</Text>
+      {/* the title, centred on the coloured square */}
+      <View style={{ height: u * 16.5, justifyContent: 'center' }}>
+        <Text style={{ fontFamily: fonts.ui, fontWeight: '700', fontSize: 20, lineHeight: 24, color: colors.ink }}>{title}</Text>
       </View>
     </Pressable>
   );
@@ -104,12 +103,14 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
             {/* the picture square: only once the book is open */}
             {!closed ? <View style={[at1, styles.page]}>{pebbles}</View> : null}
             {/* the words square: the menu */}
-            <View style={[at2, styles.page, { justifyContent: 'center', gap: k * 8, paddingLeft: k * 13, paddingRight: k * 6, // two items of 33 + gap 8 leave 13 above and below: same 13 on the left
-             backgroundColor: colors.paper }]}>
+            <View style={[at2, styles.page, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.paper }]}>
               {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
               <Spine wide={wide} />
-              <MenuItem u={k} color={colors.green} title="My Library" sub="Find and read purchased stories" onPress={() => goTo('library')} />
-              <MenuItem u={k} color={colors.blue} title="Book Store" sub="Find and buy new stories" onPress={() => goTo('store')} />
+              {/* the two items as one block, centred in the page */}
+              <View style={{ gap: k * 8 }}>
+                <MenuItem u={k} color={colors.green} title="My Library" onPress={() => goTo('library')} />
+                <MenuItem u={k} color={colors.blue} title="Book Store" onPress={() => goTo('store')} />
+              </View>
             </View>
             {/* the cover */}
             {closed ? (

@@ -224,8 +224,10 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
   const M = 20; // margin around the cover inside the card
   const cs = Math.round(across ? Math.min(boxW * 0.42, areaH - Math.max(insets.top, 20) - 40 - 2 * M) : boxW * 0.52); // cover size
   const [boxH, setBoxH] = useState(0);
-  const boxX = Math.round((areaW - boxW) / 2);
-  const boxY = Math.round(Math.max(insets.top + 10, (areaH - boxH) / 2));
+  // right in the middle of the space between the bars (top bar / camera strip and the menu bar)
+  const spaceL = across ? insets.left : 0, spaceT = across ? 0 : insets.top;
+  const boxX = Math.round(spaceL + (areaW - spaceL - boxW) / 2);
+  const boxY = Math.round(Math.max(spaceT + 10, spaceT + (areaH - spaceT - boxH) / 2));
   const mv = useRef(new Animated.Value(0)).current; // cover: 0 at the tile, 1 in the card
   const fade = useRef(new Animated.Value(0)).current; // the card around it
   const blur = useRef(new Animated.Value(0)).current; // the blur behind it (not on the native driver)
