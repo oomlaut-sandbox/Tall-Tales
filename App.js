@@ -84,7 +84,7 @@ function Root() {
     if (rect && screen === 'library') { setOpening({ story: ready, cover: s.pages[0] && s.pages[0].image, rect }); return; }
     setStory(ready); go('reader');
   };
-  const openMenu = () => setDrawer(true);
+  const openMenu = () => setDrawer((d) => !d); // the menu stripes open and close it
   const openPublisher = (story) => { setDraft(draftFrom(story)); go('publisher'); };
 
   const barH = u * 17 + insets.bottom;
@@ -105,6 +105,10 @@ function Root() {
     const x = reader ? 18 + u * 3.5 : u * 5.4 + u * 3.5;
     return { side: false, bottom, x };
   }, [screen, sideways, width, height, insets, camBar, u]);
+  // sideways the Settings menu sits in the top right, level with the menu stripes
+  const bookish = screen === 'reader' || screen === 'start' || screen === 'publisher';
+  const drawerTop = sideways && bookish ? bookLayout(width, height, { ...insets, left: camBar }, u * (screen === 'reader' ? 13 : 17)).bookTop : undefined;
+  const drawerRight = sideways ? (screen === 'reader' ? bookLayout(width, height, { ...insets, left: camBar }, u * 13).rightW : Math.round(u * 17 * 1.15)) : 0;
   const screenInsets = useMemo(() => (sideways ? { ...insets, left: camBar } : { ...insets, top: camBar }), [insets, sideways, camBar]);
   return (
     <View style={styles.outer}>
@@ -140,7 +144,7 @@ function Root() {
         {screen === 'reader' && story && (
           <Reader u={u} story={story} prefs={prefs} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
         )}
-        <Panel open={drawer} side="left" title="Settings" bottom={landscape || width > height * 1.1 ? 0 : barH} onClose={() => setDrawer(false)}>
+        <Panel open={drawer} side="left" title="Settings" bottom={landscape || width > height * 1.1 ? 0 : barH} top={drawerTop} inset={drawerRight} onClose={() => setDrawer(false)}>
           <Option glyph={<LibraryIcon size={18} />} title="My Library" sub="View purchased stories" onPress={() => go('library')} />
           <Option glyph="◫" title="Book Store" sub="Buy more stories" onPress={() => go('store')} />
           <Option glyph="▸" title="Playback Settings" sub="Reader controls" onPress={() => {

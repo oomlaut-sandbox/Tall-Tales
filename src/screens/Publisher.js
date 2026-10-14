@@ -257,7 +257,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       </View>
       )}
 
-      <Panel open={pagesOpen} side="right" title="Pages" bottom={wide ? 0 : barH} inset={wide ? BL.rightW : 0} onClose={() => setPagesOpen(false)}>
+      <Panel open={pagesOpen} side="right" title="Pages" bottom={wide ? 0 : barH} inset={wide ? BL.rightW : 0} top={wide ? BL.bookTop : undefined} onClose={() => setPagesOpen(false)}>
         <ScrollView style={{ maxHeight: 380 }} contentContainerStyle={{ gap: 10 }}>
           {draft.pages.map((p, k) => (
             <View key={p.pid} style={[styles.prow, k === i && { borderColor: colors.highlight }]}>

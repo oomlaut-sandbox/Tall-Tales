@@ -119,7 +119,7 @@ export function DogEar({ u, onPress, label = 'Next page', under = colors.earUnde
 }
 
 // Dark panel that slides in from the left or right and grows upward from the bar.
-export function Panel({ open, side = 'right', title, onClose, bottom, inset = 0, children }) {
+export function Panel({ open, side = 'right', title, onClose, bottom, inset = 0, top, children }) {
   const x = useRef(new Animated.Value(open ? 0 : 1)).current;
   useEffect(() => {
     Animated.timing(x, { toValue: open ? 0 : 1, duration: 300, useNativeDriver: true }).start();
@@ -131,12 +131,13 @@ export function Panel({ open, side = 'right', title, onClose, bottom, inset = 0,
   // The top of the menu sits at about 20% of the screen height.
   // Sideways (wider than tall) the menu is wide and short: its items sit in two columns.
   const wide = winW > winH * 1.1;
-  const maxHeight = wide ? winH - (bottom || 0) - Math.max(12, insets.top) - 12 : Math.max(240, Math.min(winH * 0.8 - (bottom || 0), winH - (bottom || 0) - insets.top - 24));
+  // sideways: tucked into the top right, its top level with the menu stripes, a little space round it
+  const wideTop = top != null ? top : 14;
+  const maxHeight = wide ? winH - wideTop - 14 : Math.max(240, Math.min(winH * 0.8 - (bottom || 0), winH - (bottom || 0) - insets.top - 24));
   // sideways: centred between the camera strip on the left and the menu bar on the right
   const rightW = inset || Math.round((Math.min(winW, 460) / 100) * 17 * 1.15);
   const room = winW - insets.left - rightW;
-  const panelW = wide ? Math.min(760, room - 32) : null;
-  const panelLeft = wide ? insets.left + Math.round((room - panelW) / 2) : null;
+  const panelW = wide ? Math.min(760, room - 40) : null;
   const colW = wide ? (panelW - 44 - 22) / 2 : null;
   const flat = (kids) => React.Children.toArray(kids).flatMap((c) => (c && c.type === React.Fragment ? flat(c.props.children) : [c]));
   return (
@@ -144,7 +145,7 @@ export function Panel({ open, side = 'right', title, onClose, bottom, inset = 0,
       {open ? <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close menu" /> : null}
       <Animated.View
         pointerEvents={open ? 'auto' : 'none'}
-        style={[styles.panel, wide && { width: panelW, maxWidth: panelW, bottom: (bottom || 0) + 12, left: panelLeft }, !wide && { bottom, [side]: inset }, { maxHeight, transform: [{ translateX: x.interpolate({ inputRange: [0, 1], outputRange: [0, sign * (winW + 40)] }) }] }]}
+        style={[styles.panel, wide && { width: panelW, maxWidth: panelW, top: wideTop, right: rightW + 14 }, !wide && { bottom, [side]: inset }, { maxHeight, transform: [{ translateX: x.interpolate({ inputRange: [0, 1], outputRange: [0, (wide ? 1 : sign) * (winW + 40)] }) }] }]}
       >
         <View style={[styles.panelHead, wide && { paddingTop: 14, paddingBottom: 12 }]}>
           <Text style={[styles.panelTitle, { flex: 1 }, wide && { fontSize: 22 }]}>{title}</Text>

@@ -144,7 +144,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const barH = BL.barH;
   // a small 'Your voice' mark when this page will play the parent's recording
   const mineHere = prefs.voice === 'mine' && recPages.includes(idx) && prefs.mode !== 'self' && !recording;
-  const panelPos = wide ? { bottom: 0, inset: BL.rightW } : { bottom: barH };
+  const panelPos = wide ? { bottom: 0, inset: BL.rightW, top: BL.bookTop } : { bottom: barH };
   const n = story.pages.length;
   const tokens = useMemo(() => (pages[idx] && pages[idx].text ? tokenize(pages[idx].text) : []), [pages, idx]);
 
