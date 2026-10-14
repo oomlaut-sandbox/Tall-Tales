@@ -3,6 +3,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
+import { Felt, Stitch } from '../look';
 import { Bar, BarMeta, Burger, WithBar } from '../components/Chrome';
 
 const VERSION = require('../../app.json').expo.version;
@@ -12,6 +13,7 @@ export default function About({ u, openMenu }) {
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
+        <Felt /><Stitch inset={7} />
         {/* the ® sits raised (superscript) after oomlaut */}
         <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
           <Text style={styles.title}>oomlaut</Text>

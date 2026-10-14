@@ -4,6 +4,7 @@ import { Animated, Easing, PanResponder, Platform, Pressable, Share, StyleSheet,
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOOK_FONTS, colors, fonts } from '../theme';
+import { Felt } from '../look';
 import { tokenize, cleanWord, syllablesFor } from '../story';
 import { Fade, PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
 import { FLAP_PERSPECTIVE, flapTables } from '../flapStrips';
@@ -603,8 +604,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 
   return (
     <View style={[styles.screen, wide && { flexDirection: 'row' }]}>
+      <Felt />
       {/* the black strip over the camera: along the top, or down the left side when sideways */}
-      <View style={wide ? { width: BL.leftW, backgroundColor: colors.bar } : { height: topH, backgroundColor: colors.bar }} />
+      <View style={wide ? { width: BL.leftW, backgroundColor: colors.bar } : { height: topH, backgroundColor: colors.bar }}><Felt /></View>
       <View style={styles.desk}>
       <View style={[styles.bookShadow, { width: BL.bookW, height: BL.bookH }]}>
       <View style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...pan.panHandlers}>
@@ -625,6 +627,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       {wide ? (
         // sideways: the menu bar runs down the right side; same icons, page tag shortened to "2/16"
         <View style={[styles.sideBar, { width: BL.rightW, paddingTop: SIDE_MENU_TOP /* fixed a little down from the top corner */, paddingBottom: Math.max(16, insets.bottom) }]}>
+          <Felt />
           <View style={{ width: BL.rightW, alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
             <View style={{ alignItems: 'center' }}>
               <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
@@ -647,6 +650,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         </View>
       ) : (
       <View style={[styles.bottomBar, { height: barH, paddingBottom: insets.bottom }]}>
+        <Felt />
         <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
         <View style={{ flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center' }}>
           <BarMeta page={idx < n ? `Page ${idx + 1} of ${n}` : 'The End'} />

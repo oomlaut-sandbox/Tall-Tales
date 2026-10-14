@@ -7,6 +7,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
+import { Felt } from '../look';
 import { Bar, Burger, DogEar } from '../components/Chrome';
 import BookFrame, { Spine } from '../components/BookFrame';
 import { Fade } from '../components/PageView';
@@ -106,6 +107,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
             {!closed ? <View style={[at1, styles.page]}>{pebbles}</View> : null}
             {/* the words square: the menu */}
             <View style={[at2, styles.page, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.paper }]}>
+              <Felt opacity={0.7} />
               {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
               <Spine wide={wide} />
               {/* the two items as one block, centred in the page */}

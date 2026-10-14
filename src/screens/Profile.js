@@ -5,6 +5,7 @@ import { ActivityIndicator, Platform, Pressable, ScrollView, StyleSheet, Text, T
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { colors, fonts } from '../theme';
+import { Felt, Stitch } from '../look';
 import { Bar, BarMeta, Burger, WithBar } from '../components/Chrome';
 import {
   accountsReady, appleAvailable, currentUser, deleteAccount, onUserChange, sendEmailCode, signInWithApple, signOut, updateProfile, verifyEmailCode,
@@ -124,6 +125,7 @@ export default function Profile({ u, openMenu, toast }) {
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
+        <Felt /><Stitch inset={7} />
         <Text style={styles.title}>Profile</Text>
         <Text style={styles.sub}>{user ? (user.user_metadata?.name || 'Your oomlaut account') : 'Your oomlaut account'}</Text>
       </View>

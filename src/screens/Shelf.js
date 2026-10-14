@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
+import { Felt, Stitch } from '../look';
 import { Bar, BarMeta, Burger, Panel, WithBar } from '../components/Chrome';
 import { accessLabel, bundledStory, cachedCatalog, coverFor, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
@@ -55,6 +56,7 @@ function Band({ color, dark, title, sub, action, onAction }) {
   const fg = dark ? colors.ink : colors.white;
   return (
     <View style={{ backgroundColor: color, paddingTop: insets.top + 30, paddingBottom: 30, paddingHorizontal: 24 }}>{/* the title block centred top to bottom in the coloured band */}
+      <Felt /><Stitch inset={7} />
       {/* the title block, with the action (Select / Cancel) centred beside the whole block */}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ flex: 1 }}>
@@ -266,6 +268,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
       {/* the card (it also measures itself so it can sit in the middle) */}
       <View onLayout={(e) => setBoxH(e.nativeEvent.layout.height)}
         style={[styles.card, { left: boxX, top: boxY, width: boxW, maxHeight: areaH - boxY - 16 }]}>
+        <Felt />
         {/* black, a little see-through, with the store softly blurred behind it */}
         <AnimatedBlur pointerEvents="none" tint="dark" intensity={blur} style={StyleSheet.absoluteFill} />
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.62)', opacity: fade }]} />

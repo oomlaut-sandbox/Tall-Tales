@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, PanResponder, Pressable, StyleSheet, Text, View, ScrollView, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
+import { Felt, Stitch, useLook } from '../look';
 
 export function Burger({ onPress, u }) {
   const w = u * 7, t = Math.max(3, u * 1), gap = u * 1.7;
@@ -24,11 +25,11 @@ export function Bar({ u, children, vertical, top }) {
   const insets = useSafeAreaInsets();
   if (vertical) {
     return (
-      <View style={[styles.bar, styles.barV, { width: u * 17 * SIDE_BAR, paddingTop: top != null ? top : SIDE_MENU_TOP, paddingBottom: Math.max(14, insets.bottom) }]}>{children}</View>
+      <View style={[styles.bar, styles.barV, { width: u * 17 * SIDE_BAR, paddingTop: top != null ? top : SIDE_MENU_TOP, paddingBottom: Math.max(14, insets.bottom) }]}><Felt />{children}</View>
     );
   }
   return (
-    <View style={[styles.bar, { minHeight: u * 17 + insets.bottom, paddingBottom: insets.bottom, paddingHorizontal: u * 5.4 }]}>{children}</View>
+    <View style={[styles.bar, { minHeight: u * 17 + insets.bottom, paddingBottom: insets.bottom, paddingHorizontal: u * 5.4 }]}><Felt />{children}</View>
   );
 }
 
@@ -41,7 +42,7 @@ export function WithBar({ bar, children, style }) {
   return (
     <View style={[{ flex: 1, flexDirection: side ? 'row' : 'column' }, style]}>
       {side ? <View style={{ width: insets.left, backgroundColor: colors.bar }} /> : null}
-      <View style={{ flex: 1 }}>{children}</View>
+      <View style={{ flex: 1 }}><Felt />{children}</View>
       {bar(side)}
     </View>
   );
@@ -161,6 +162,7 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children }) {
           style={[styles.panel, wide ? { width: panelW, maxWidth: panelW, top: wideTop, right: 0 } : { bottom: 0, left: 0 },
             { maxHeight, transform: [wide ? { translateX: shift } : { translateY: shift }] }]}
         >
+          <Felt />
           <View style={[styles.panelHead, wide && { paddingTop: 14, paddingBottom: 12 }]}>
             <Text style={[styles.panelTitle, { flex: 1 }, wide && { fontSize: 22 }]}>{title}</Text>
             {/* Close: a small chevron pointing back at the menu bar it goes into (down when upright,
@@ -176,6 +178,7 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children }) {
           <ScrollView style={{ flexGrow: 0, flexShrink: 1, backgroundColor: colors.panel }} contentContainerStyle={[styles.panelList, wide && styles.panelCols]} bounces={false}>
             {wide ? flat(children).map((c, i) => <View key={i} style={{ width: colW }}>{c}</View>) : children}
           </ScrollView>
+          <Stitch inset={6} />
         </Animated.View>
       </View>
     </>
@@ -227,9 +230,14 @@ export function GearIcon({ size = 18, color = colors.white, hole = colors.tile }
 }
 
 export function Option({ glyph, title, sub, onPress, selected, disabled }) {
+  const felt = useLook() === 'felt';
   return (
     <Pressable onPress={onPress} disabled={disabled} style={[styles.opt, disabled && { opacity: 0.45 }]} accessibilityRole="button">
-      <View style={[styles.optIc, selected && { backgroundColor: colors.highlight }]}>{typeof glyph === 'string' ? <Text style={styles.optGlyph}>{glyph}</Text> : glyph}</View>
+      <View style={[styles.optIc, selected && { backgroundColor: colors.highlight }, felt && { borderRadius: 12, overflow: 'hidden' }]}>
+        <Felt />
+        <Stitch inset={4} radius={12} />
+        {typeof glyph === 'string' ? <Text style={styles.optGlyph}>{glyph}</Text> : glyph}
+      </View>
       <View style={{ flex: 1, minWidth: 0 }}>
         <Text style={styles.optTitle}>{title}</Text>
         <Text style={styles.optSub}>{sub}</Text>

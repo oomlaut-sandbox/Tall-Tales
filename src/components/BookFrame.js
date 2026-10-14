@@ -8,6 +8,7 @@ import React from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme';
+import { Felt } from '../look';
 
 export const BOOK_GAP = 30;
 
@@ -43,6 +44,7 @@ export default function BookFrame({ barMin, bar, children, deskProps, bookProps,
   const barEl = typeof bar === 'function' ? bar(L) : bar;
   const book = (
     <View style={styles.desk} {...deskProps}>
+      <Felt />
       {bare ? (
         <View style={{ width: L.bookW, height: L.bookH }} {...bookProps}>{children(L)}</View>
       ) : (
@@ -58,17 +60,17 @@ export default function BookFrame({ barMin, bar, children, deskProps, bookProps,
   if (L.wide) {
     return (
       <View style={[styles.screen, { flexDirection: 'row' }]}>
-        <View style={{ width: L.leftW, backgroundColor: colors.bar }} />
+        <View style={{ width: L.leftW, backgroundColor: colors.bar }}><Felt /></View>
         {book}
-        <View style={{ width: L.rightW, backgroundColor: colors.bar, flexDirection: 'row', justifyContent: 'flex-end' }}>{barEl}</View>
+        <View style={{ width: L.rightW, backgroundColor: colors.bar, flexDirection: 'row', justifyContent: 'flex-end' }}><Felt />{barEl}</View>
       </View>
     );
   }
   return (
     <View style={styles.screen}>
-      <View style={{ height: L.topH, backgroundColor: colors.bar }} />
+      <View style={{ height: L.topH, backgroundColor: colors.bar }}><Felt /></View>
       {book}
-      <View style={{ backgroundColor: colors.bar, paddingTop: L.spare / 2 }}>{barEl}</View>
+      <View style={{ backgroundColor: colors.bar, paddingTop: L.spare / 2 }}><Felt />{barEl}</View>
     </View>
   );
 }

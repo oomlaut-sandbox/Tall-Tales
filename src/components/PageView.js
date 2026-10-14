@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React, { forwardRef, useMemo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { bookFont, colors, fonts } from '../theme';
+import { Felt } from '../look';
 import { tokenize } from '../story';
 import ZoomArt from './ZoomArt';
 import { AgainIcon, HeartIcon, LibraryIcon } from './Chrome';
@@ -109,6 +110,7 @@ export const PageView = forwardRef(function PageView(
       </View>
       </View>
       <View style={[styles.textBox, { paddingHorizontal: L.padX, paddingTop: L.padY, paddingBottom: L.padY + bottomInset }]}>
+        <Felt opacity={0.7} />
         {!L.wide ? <Fade edge="top" size={Math.round(L.textH * 0.09)} max={0.13} /> : null}
         {/* the spine: a thin dark grey line where the two squares meet */}
         <View pointerEvents="none" style={L.wide ? styles.spineV : styles.spine} />
