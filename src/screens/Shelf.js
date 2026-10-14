@@ -17,7 +17,7 @@ const TILE = { 2: 47, 3: 31, 4: 22.5 };
 const tileWidth = (w) => `${TILE[COLS(w)]}%`;
 const gridGap = (w) => { const n = COLS(w); return `${(100 - n * TILE[n]) / (n - 1)}%`; };
 
-function Tile({ u, cover, title, sub, onPress, onLongPress, plus, selecting, selected }) {
+function Tile({ u, cover, title, sub, onPress, onLongPress, plus, selecting, selected, badge, label }) {
   const { width: winW } = useWindowDimensions();
   const ear = u * 3;
   const coverRef = useRef(null);
@@ -28,7 +28,7 @@ function Tile({ u, cover, title, sub, onPress, onLongPress, plus, selecting, sel
     else onPress(null);
   };
   return (
-    <Pressable onPress={press} onLongPress={onLongPress} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button">
+    <Pressable onPress={press} onLongPress={onLongPress} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={label}>
       {/* a very subtle drop shadow under the square cover */}
       <View style={styles.tileShadow}>
       <View ref={coverRef} collapsable={false} style={{ aspectRatio: 1, backgroundColor: '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
@@ -36,6 +36,7 @@ function Tile({ u, cover, title, sub, onPress, onLongPress, plus, selecting, sel
         {plus ? <Text style={{ color: colors.white, fontSize: 64, fontWeight: '300' }}>+</Text> : null}
         <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderLeftWidth: ear, borderBottomWidth: ear, borderLeftColor: 'transparent', borderBottomColor: colors.earUnder }} />
         <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderRightWidth: ear, borderTopWidth: ear, borderRightColor: 'transparent', borderTopColor: colors.white }} />
+        {badge ? <View style={styles.badgeAt}>{badge}</View> : null}
         {selecting ? (
           <View style={[styles.check, selected && styles.checkOn]} accessibilityLabel={selected ? 'Selected' : 'Not selected'}>
             {selected ? <Text style={styles.checkMark}>✓</Text> : null}
@@ -44,7 +45,7 @@ function Tile({ u, cover, title, sub, onPress, onLongPress, plus, selecting, sel
       </View>
       </View>
       <Text style={styles.tileTitle}>{title}</Text>
-      <Text style={styles.tileSub}>{sub}</Text>
+      {sub ? <Text style={styles.tileSub}>{sub}</Text> : null}
     </Pressable>
   );
 }
@@ -159,47 +160,23 @@ export function Store({ u, openStory, openMenu }) {
   useEffect(() => { cachedCatalog().then((c) => setCat((cur) => cur || c)); load(false); }, []);
   const rows = cat ? shelvesWithBooks(cat) : [];
   const featured = cat ? cat.books.find((b) => b.featured) : null;
-  const tileW = Math.min(170, Math.max(120, winW * 0.36));
   const read = (b) => { const st = bundledStory(b.id); if (st) { setOpen(null); openStory(st); } };
-  // remember where the tapped cover is, so the card can grow out of it
-  const refs = useRef({});
-  const choose = (key, b) => {
-    const r = refs.current[key];
-    if (r && r.measureInWindow) r.measureInWindow((x, y, w, h) => setOpen({ book: b, rect: { x, y, w, h } }));
-    else setOpen({ book: b, rect: null });
-  };
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <Band color={colors.blue} title="Book Store" sub="Find and buy new stories" />
-      <ScrollView contentContainerStyle={{ paddingTop: 26, paddingBottom: 20, gap: 26 }}
+      <ScrollView contentContainerStyle={{ paddingTop: 26, paddingBottom: 24, gap: 30 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.white} />}>
-        {featured ? (
-          <Pressable onPress={() => choose('featured', featured)} style={styles.feature} accessibilityRole="button" accessibilityLabel={`${featured.title}, featured`}>
-            <View ref={(r) => { refs.current.featured = r; }} collapsable={false} style={[styles.tileShadow, { width: tileW, height: tileW }]}>
-              {coverFor(featured) ? <Image source={coverFor(featured)} style={styles.coverImg} resizeMode="cover" /> : null}
-            </View>
-            <View style={{ flex: 1, minWidth: 0, gap: 6 }}>
-              <Text style={styles.kicker}>Featured</Text>
-              <Text style={styles.featureTitle}>{featured.title}</Text>
-              {featured.author ? <Text style={styles.tileSub}>by {featured.author}</Text> : null}
-              <Badge book={featured} />
-            </View>
-          </Pressable>
-        ) : null}
-        {rows.map((sh) => (
-          <View key={sh.id} style={{ gap: 12 }}>
+        {/* laid out like My Library: whole covers in a grid, nothing cut off, no sideways scrolling */}
+        {[...(featured ? [{ id: 'featured', title: 'Featured', books: [featured] }] : []), ...rows].map((sh) => (
+          <View key={sh.id} style={{ gap: 14 }}>
             <Text style={styles.shelfTitle}>{sh.title}</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}>
+            <View style={[styles.shelfGrid, { columnGap: gridGap(winW) }]}>
               {sh.books.map((b) => (
-                <Pressable key={b.id} onPress={() => choose(sh.id + '/' + b.id, b)} style={{ width: tileW, gap: 8 }} accessibilityRole="button" accessibilityLabel={b.title}>
-                  <View ref={(r) => { refs.current[sh.id + '/' + b.id] = r; }} collapsable={false} style={[styles.tileShadow, { width: tileW, height: tileW }]}>
-                    {coverFor(b) ? <Image source={coverFor(b)} style={styles.coverImg} resizeMode="cover" /> : null}
-                    <View style={styles.badgeAt}><Badge book={b} /></View>
-                  </View>
-                  <Text numberOfLines={2} style={styles.tileTitle}>{b.title}</Text>
-                </Pressable>
+                <Tile key={b.id} u={u} cover={coverFor(b)} title={b.title} label={sh.id === 'featured' ? `${b.title}, featured` : b.title}
+                  sub={b.author ? `by ${b.author}` : null} badge={<Badge book={b} />}
+                  onPress={(rect) => setOpen({ book: b, rect })} />
               ))}
-            </ScrollView>
+            </View>
           </View>
         ))}
       </ScrollView>
@@ -357,6 +334,7 @@ const styles = StyleSheet.create({
   feature: { flexDirection: 'row', gap: 16, alignItems: 'center', paddingHorizontal: 20 },
   kicker: { color: '#d0d0d0', fontFamily: fonts.ui, fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 },
   featureTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 22 },
+  shelfGrid: { paddingHorizontal: 20, flexDirection: 'row', flexWrap: 'wrap', rowGap: 22 },
   shelfTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 19, paddingHorizontal: 20 },
   badgeAt: { position: 'absolute', left: 6, top: 6 },
   badge: { alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3 },
