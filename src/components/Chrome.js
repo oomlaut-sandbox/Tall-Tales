@@ -132,7 +132,11 @@ export function Panel({ open, side = 'right', title, onClose, bottom, inset = 0,
   // Sideways (wider than tall) the menu is wide and short: its items sit in two columns.
   const wide = winW > winH * 1.1;
   const maxHeight = wide ? winH - (bottom || 0) - Math.max(12, insets.top) - 12 : Math.max(240, Math.min(winH * 0.8 - (bottom || 0), winH - (bottom || 0) - insets.top - 24));
-  const panelW = wide ? Math.min(760, winW - (inset || 0) - Math.max(60, insets.left + 40)) : null;
+  // sideways: centred between the camera strip on the left and the menu bar on the right
+  const rightW = inset || Math.round((Math.min(winW, 460) / 100) * 17 * 1.15);
+  const room = winW - insets.left - rightW;
+  const panelW = wide ? Math.min(760, room - 32) : null;
+  const panelLeft = wide ? insets.left + Math.round((room - panelW) / 2) : null;
   const colW = wide ? (panelW - 44 - 22) / 2 : null;
   const flat = (kids) => React.Children.toArray(kids).flatMap((c) => (c && c.type === React.Fragment ? flat(c.props.children) : [c]));
   return (
@@ -140,7 +144,7 @@ export function Panel({ open, side = 'right', title, onClose, bottom, inset = 0,
       {open ? <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close menu" /> : null}
       <Animated.View
         pointerEvents={open ? 'auto' : 'none'}
-        style={[styles.panel, wide && { width: panelW, maxWidth: panelW, bottom: (bottom || 0) + 12 }, !wide && { bottom }, { maxHeight, [side]: inset, transform: [{ translateX: x.interpolate({ inputRange: [0, 1], outputRange: [0, sign * (winW + 40)] }) }] }]}
+        style={[styles.panel, wide && { width: panelW, maxWidth: panelW, bottom: (bottom || 0) + 12, left: panelLeft }, !wide && { bottom, [side]: inset }, { maxHeight, transform: [{ translateX: x.interpolate({ inputRange: [0, 1], outputRange: [0, sign * (winW + 40)] }) }] }]}
       >
         <View style={[styles.panelHead, wide && { paddingTop: 14, paddingBottom: 12 }]}>
           <Text style={[styles.panelTitle, { flex: 1 }, wide && { fontSize: 22 }]}>{title}</Text>

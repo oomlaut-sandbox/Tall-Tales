@@ -1,5 +1,6 @@
 // One story page: illustration on top, words below (or, sideways, picture left and words right).
 // Each word can be tapped.
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { forwardRef, useMemo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { bookFont, colors, fonts } from '../theme';
@@ -42,14 +43,14 @@ function fitFontSize(text, L, scale = 1, font = bookFont()) {
 // A soft shadow made of thin bands that fade out, so it works everywhere without extra libraries.
 // Used along the seam between picture and words, so the page seems to curve into a book's spine.
 export function Fade({ edge, size, max }) {
-  // Layers of the same faint grey, each a little shorter, stack up into a smooth fade with no seams.
-  const n = 16, a = 1 - Math.pow(1 - max, 1 / n);
+  // One smooth gradient (no steps): darkest at the edge, easing out to nothing.
+  const N = 12;
+  const stops = Array.from({ length: N + 1 }, (_, i) => i / N);
+  const cols = stops.map((t) => `rgba(0,0,0,${(max * Math.pow(1 - t, 2)).toFixed(4)})`);
+  const toEdge = edge === 'bottom';
   return (
-    <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, [edge]: 0, height: size }}>
-      {Array.from({ length: n }, (_, i) => (
-        <View key={i} style={{ position: 'absolute', left: 0, right: 0, [edge]: 0, height: size * Math.pow(1 - i / n, 1.6), backgroundColor: '#000', opacity: a }} />
-      ))}
-    </View>
+    <LinearGradient pointerEvents="none" colors={toEdge ? cols.slice().reverse() : cols} locations={stops}
+      style={{ position: 'absolute', left: 0, right: 0, [edge]: 0, height: size }} />
   );
 }
 
@@ -104,7 +105,7 @@ export const PageView = forwardRef(function PageView(
             <Text style={styles.bubbleText}>{bubble.say}</Text>
           </View>
         ) : null}
-        {!L.wide ? <Fade edge="bottom" size={Math.round(artH * 0.05)} max={0.2} /> : null}
+        {!L.wide ? <Fade edge="bottom" size={Math.round(artH * 0.1)} max={0.22} /> : null}
       </View>
       </View>
       <View style={[styles.textBox, { paddingHorizontal: L.padX, paddingTop: L.padY, paddingBottom: L.padY + bottomInset }]}>

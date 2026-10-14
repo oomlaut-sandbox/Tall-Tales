@@ -88,7 +88,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
         const pebbles = (
           <View style={{ width: side, height: side, backgroundColor: COVER_BROWN, overflow: 'hidden' }} accessibilityLabel="oomlaut Reader">
             <Image source={LEATHER} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
-            {!wide ? <Fade edge="bottom" size={Math.round(side * 0.05)} max={0.2} /> : null}
+            {!wide ? <Fade edge="bottom" size={Math.round(side * 0.1)} max={0.22} /> : null}
           </View>
         );
         // the cover turns over the spine: up when upright, to the left when sideways

@@ -203,7 +203,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               <Text style={styles.addImage}>Add Image</Text>
             </View>
           )}
-          {!wide ? <Fade edge="bottom" size={Math.round(side * 0.05)} max={0.2} /> : null}
+          {!wide ? <Fade edge="bottom" size={Math.round(side * 0.1)} max={0.22} /> : null}
         </Pressable>
         <View style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>
           {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
