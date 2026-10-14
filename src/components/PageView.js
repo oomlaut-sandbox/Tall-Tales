@@ -139,12 +139,12 @@ export const PageView = forwardRef(function PageView(
             if (k >= 0 && k < words.length - 1) {
               return (
                 <View style={{ alignItems: 'center' }}>
-                  <Text style={[storyStyle, font.bold ? { fontFamily: font.bold } : styles.titleWords]}>
+                  <Text style={[storyStyle, font.bold ? { fontFamily: font.bold } : styles.titleWords, { fontSize: Math.round(fs * 1.45), lineHeight: Math.round(fs * 1.45 * 1.2), color: '#454545', textAlign: 'center' }]}>
                     {words.slice(0, k + 1).map((w, i) => word(w, i, k, i === k ? w.word.replace(/\.$/, '') : undefined))}
                   </Text>
                   <View style={{ height: fs * 0.7 }} />
                   {/* the author and illustrator credits in small type, like the cover's byline */}
-                  <Text style={[storyStyle, { fontSize: Math.round(fs * 0.55), lineHeight: Math.round(fs * 0.55 * 1.5) }]}>
+                  <Text style={[storyStyle, { fontSize: Math.round(fs * 0.65), lineHeight: Math.round(fs * 0.65 * 1.5) }]}>
                     {words.slice(k + 1).map((w, j) => word(w, k + 1 + j, words.length - 1))}
                   </Text>
                 </View>
