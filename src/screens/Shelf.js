@@ -294,7 +294,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.62)', opacity: fade }]} />
         <Animated.View pointerEvents={boxH ? 'auto' : 'none'} style={{ opacity: fade, flexDirection: across ? 'row' : 'column' }}>
         <View style={{ flexDirection: 'row' }}>
-          <View style={{ width: cs + M, height: cs + M }} />
+          <View style={{ width: cs + M, height: cs + 2 * M }} />{/* the same margin above and below the cover */}
           {!across ? (
             <View style={{ flex: 1, justifyContent: 'space-between', padding: 14, paddingLeft: 18, paddingTop: M }}>
               <View style={{ alignSelf: 'flex-end' }}><CloseX onPress={() => close()} /></View>
@@ -302,7 +302,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
             </View>
           ) : null}
         </View>
-        <View style={{ flex: 1, padding: M, paddingTop: across ? M : 18 }}>
+        <View style={{ flex: 1, padding: M, paddingTop: across ? M : 0 }}>
           {across ? <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}><Badge book={book} /><CloseX onPress={() => close()} /></View> : null}
           {info}
         </View>
