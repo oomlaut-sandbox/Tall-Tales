@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { bookFont, colors, fonts } from '../theme';
 import { Bar, Burger, DogEar, Panel } from '../components/Chrome';
 import { Fade } from '../components/PageView';
@@ -14,6 +15,10 @@ import StoryGuide from '../components/StoryGuide';
 import ParentGate from '../components/ParentGate';
 import { printStory, shareStoryPdf } from '../pdf';
 import { loadJSON, saveJSON } from '../storage';
+
+const MAX_PX = 1600;
+const MAX_PAGES = 40; // a soft limit, so books stay quick to open, print and share
+const FULL = `Books can have up to ${MAX_PAGES} pages. That’s a long story!`;
 
 const blank = () => ({ pid: newPageId(), text: '', uri: null, w: 1, h: 1 });
 
@@ -84,9 +89,17 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       const r = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'images', quality: 0.9, allowsEditing: true, aspect: [1, 1] });
       if (r.canceled || !r.assets || !r.assets[0]) return;
       const a = r.assets[0];
-      const uri = await keepPicture(draft.id, a.uri);
+      // Pictures are kept at most 1,600 pixels across: still sharp on an iPad, but much smaller.
+      let src = a.uri, w = a.width || 1, h = a.height || 1;
+      if (Math.max(w, h) > MAX_PX) {
+        try {
+          const r2 = await ImageManipulator.manipulateAsync(a.uri, [{ resize: w >= h ? { width: MAX_PX } : { height: MAX_PX } }], { compress: 0.85, format: ImageManipulator.SaveFormat.JPEG });
+          src = r2.uri; w = r2.width; h = r2.height;
+        } catch (e) { /* keep the original if resizing fails */ }
+      }
+      const uri = await keepPicture(draft.id, src);
       if (page.uri) dropPicture(page.uri);
-      update({ uri, w: a.width || 1, h: a.height || 1 });
+      update({ uri, w, h });
     } catch (e) {
       toast('Couldn’t open your photos. Check that oomlaut Reader is allowed to use Photos in Settings.');
     }
@@ -100,6 +113,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const next = () => {
     if (i === draft.pages.length - 1) {
       if (!page.text.trim() && !page.uri) return toast('Add a picture or some words before the next page.');
+      if (draft.pages.length >= MAX_PAGES) return toast(FULL);
       setDraft((d) => ({ ...d, pages: [...d.pages, blank()] }));
     }
     setI(i + 1);
@@ -108,6 +122,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   // After the words editor: carry on with a new page, or finish the book.
   const addPage = () => {
     setPageDone(false);
+    if (draft.pages.length >= MAX_PAGES) return toast(FULL);
     setDraft((d) => ({ ...d, pages: [...d.pages.slice(0, i + 1), blank(), ...d.pages.slice(i + 1)] }));
     setI(i + 1);
   };
