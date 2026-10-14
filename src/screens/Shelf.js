@@ -79,10 +79,14 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
           <Pressable onPress={() => setGate('share')} disabled={chosen.length !== 1} style={[styles.barBtn, chosen.length !== 1 && styles.barBtnOff]} accessibilityRole="button">
             <Text style={styles.barBtnText}>Share</Text>
           </Pressable>
+          {/* Edit: only for a single book you made yourself */}
+          <Pressable onPress={() => { const b = chosen[0]; stop(); onEdit(b); }} disabled={!(chosen.length === 1 && chosen[0].mine)} style={[styles.barBtn, !(chosen.length === 1 && chosen[0].mine) && styles.barBtnOff]} accessibilityRole="button">
+            <Text style={styles.barBtnText}>Edit</Text>
+          </Pressable>
           <Pressable onPress={() => setConfirm(true)} disabled={!chosen.length} style={[styles.barBtn, !chosen.length && styles.barBtnOff]} accessibilityRole="button">
             <Text style={[styles.barBtnText, { color: '#ff6b6b' }]}>Delete</Text>
           </Pressable>
-          {!v ? <Text style={styles.barHint}>{chosen.length > 1 ? 'Share one book at a time' : ''}</Text> : null}
+          {!v ? <Text style={styles.barHint}>{chosen.length > 1 ? 'One book at a time for Share and Edit' : chosen.length === 1 && !chosen[0].mine ? 'Only books you made can be edited' : ''}</Text> : null}
         </Bar>
       ) : (
         <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>

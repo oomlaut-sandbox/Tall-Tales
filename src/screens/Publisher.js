@@ -35,6 +35,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const [pdfChoice, setPdfChoice] = useState(null); // 'share' | 'print' | null: choosing a layout
   const [gateFor, setGateFor] = useState(null); // {mode, layout} waiting for the grown-up check
   const [making, setMaking] = useState(false);
+  const [editing, setEditing] = useState(false); // the big words editor
+  const [pageDone, setPageDone] = useState(false); // 'Add another page?' after the editor
 
   const makePdf = async ({ mode, layout }) => {
     setGateFor(null);
@@ -100,6 +102,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       if (!page.text.trim() && !page.uri) return toast('Add a picture or some words before the next page.');
       setDraft((d) => ({ ...d, pages: [...d.pages, blank()] }));
     }
+    setI(i + 1);
+  };
+
+  // After the words editor: carry on with a new page, or finish the book.
+  const addPage = () => {
+    setPageDone(false);
+    setDraft((d) => ({ ...d, pages: [...d.pages.slice(0, i + 1), blank(), ...d.pages.slice(i + 1)] }));
     setI(i + 1);
   };
 
@@ -185,15 +194,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
           <Spine wide={wide} />
           <Text style={styles.addText}>Add Text</Text>
-          <TextInput
-            value={page.text}
-            onChangeText={(text) => update({ text })}
-            placeholder="Type the words for this page. Two or three sentences reads best."
-            placeholderTextColor="#666"
-            multiline
-            style={[styles.input, { fontFamily: bookFont(fontKey).family, maxHeight: side * 0.7 }]}
-            accessibilityLabel={`Words for page ${i + 1}`}
-          />
+          {/* Tapping the words opens a big editor (just the words page, above the keyboard). */}
+          <Pressable onPress={() => setEditing(true)} accessibilityRole="button" accessibilityLabel={`Words for page ${i + 1}`}>
+            <Text style={[styles.input, { fontFamily: bookFont(fontKey).family, maxHeight: side * 0.7 }, !page.text && { color: '#666' }]} numberOfLines={8}>
+              {page.text || 'Tap to type the words for this page. Two or three sentences reads best.'}
+            </Text>
+          </Pressable>
         </View>
         <DogEar u={u} under={colors.earUnder} onPress={next} label="Next page" />
         <Pressable onPress={() => setGuide(true)} style={[styles.help, { top: 10, right: 10 }]} hitSlop={8} accessibilityLabel="How to make a story">
@@ -215,7 +221,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 <Text style={[styles.btn, { fontSize: 22 }]}>‹</Text>
               </Pressable>
               <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
-              <Pressable onPress={finish} hitSlop={8}><Text style={[styles.btn, { color: colors.highlight }]}>Done</Text></Pressable>
+              <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><Text style={[styles.btn, { color: colors.highlight }]}>Finish</Text></Pressable>
             </View>
           </Bar>
         </View>
@@ -231,7 +237,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <Text style={[styles.btn, { fontSize: 22 }]}>‹</Text>
         </Pressable>
         <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
-        <Pressable onPress={finish} hitSlop={8}><Text style={[styles.btn, { color: colors.highlight }]}>Done</Text></Pressable>
+        <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><Text style={[styles.btn, { color: colors.highlight }]}>Finish</Text></Pressable>
       </Bar>
       </View>
       )}
@@ -285,6 +291,37 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} hitSlop={6}><Text style={styles.deleteLink}>Delete this story…</Text></Pressable>
         )}
       </Panel>
+      {editing ? (
+        // The words editor: only the words page, as big as fits above the keyboard.
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, styles.editor, { paddingTop: insets.top + 10 }]}>
+          <View style={styles.editorHead}>
+            <Text style={styles.editorTitle}>Page {i + 1}</Text>
+            <Pressable onPress={() => { setEditing(false); setPageDone(true); }} hitSlop={10} accessibilityRole="button"><Text style={styles.editorDone}>Done</Text></Pressable>
+          </View>
+          <View style={[styles.editorPage, { width: winW - 2 * GAP, maxHeight: winW - 2 * GAP }]}>
+            <TextInput
+              value={page.text}
+              onChangeText={(text) => update({ text })}
+              placeholder="Type the words for this page. Two or three sentences reads best."
+              placeholderTextColor="#666"
+              multiline
+              autoFocus
+              style={[styles.editorInput, { fontFamily: bookFont(fontKey).family }]}
+              accessibilityLabel={`Words for page ${i + 1}`}
+            />
+          </View>
+        </KeyboardAvoidingView>
+      ) : null}
+      {pageDone ? (
+        <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
+          <View style={styles.choice}>
+            <Text style={styles.choiceTitle}>Page {i + 1} is done.</Text>
+            <Pressable onPress={addPage} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Add another page</Text></Pressable>
+            <Pressable onPress={() => { setPageDone(false); finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Finish and save book</Text></Pressable>
+            <Pressable onPress={() => setPageDone(false)} hitSlop={8}><Text style={styles.choiceLink}>Keep working on this page</Text></Pressable>
+          </View>
+        </View>
+      ) : null}
       <StoryGuide visible={guide} onClose={closeGuide} />
       <ParentGate visible={!!gateFor} reason={gateFor?.mode === 'print' ? 'Printing opens your phone’s print options.' : 'Sharing sends this story outside the app.'} onPass={() => makePdf(gateFor)} onCancel={() => setGateFor(null)} />
     </KeyboardAvoidingView>
@@ -292,6 +329,18 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
 }
 
 const styles = StyleSheet.create({
+  editor: { backgroundColor: colors.desk, alignItems: 'center', zIndex: 50 },
+  editorHead: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 30, paddingBottom: 12 },
+  editorTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
+  editorDone: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
+  editorPage: { flex: 1, marginBottom: 16, backgroundColor: colors.paper, padding: 24, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10 },
+  editorInput: { flex: 1, fontSize: 24, lineHeight: 36, color: colors.ink, textAlign: 'center', textAlignVertical: 'top', padding: 0 },
+  choiceBack: { backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', zIndex: 60, padding: 30 },
+  choice: { width: '100%', maxWidth: 380, backgroundColor: colors.panel, padding: 22, gap: 14 },
+  choiceTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20, marginBottom: 4 },
+  choiceBtn: { backgroundColor: colors.tile, paddingVertical: 14, alignItems: 'center' },
+  choiceBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  choiceLink: { color: '#d6d6d6', fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, textAlign: 'center', paddingVertical: 4 },
   screen: { flex: 1, backgroundColor: colors.desk },
   desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.desk },
   bookShadow: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },

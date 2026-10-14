@@ -86,7 +86,7 @@ export const PageView = forwardRef(function PageView(
         {end ? (
           // "The End" in the book's font on a plain medium-dark grey square
           <View style={[styles.fill, styles.endArt]} accessibilityLabel="The End">
-            <Text style={[styles.endTitle, { fontFamily: font.family, fontSize: Math.round(artW * 0.14) }]}>The End</Text>
+            <Text style={[styles.endTitle, { fontFamily: font.family, fontSize: Math.round(artW * 0.1) }]}>The End</Text>
           </View>
         ) : (
           page?.image ? <Image source={page.image} style={styles.fill} resizeMode="cover" /> : null
