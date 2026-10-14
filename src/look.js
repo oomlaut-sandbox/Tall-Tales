@@ -14,7 +14,11 @@ const GRAIN = require('../assets/felt-grain.png'); // a see-through felt grain, 
 export function Felt({ opacity = 1, style }) {
   const look = useLook();
   if (look !== 'felt') return null;
-  return <Image pointerEvents="none" source={GRAIN} resizeMode="repeat" style={[StyleSheet.absoluteFill, { width: undefined, height: undefined, opacity }, style]} />;
+  return (
+    <View pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: 'hidden', opacity }, style]}>
+      <Image source={GRAIN} resizeMode="repeat" style={{ width: '100%', height: '100%' }} />
+    </View>
+  );
 }
 
 // A stitched edge just inside the surface it sits in.
