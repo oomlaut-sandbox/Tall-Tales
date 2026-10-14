@@ -31,7 +31,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
   const bg = useRef(new Animated.Value(0)).current;
   const mv = useRef(new Animated.Value(0)).current;
   const flip = useRef(new Animated.Value(0)).current;
-  const [phase, setPhase] = useState(0); // 0 fade + move, 1 flipping
+  const [phase, setPhase] = useState(0); // 0 fade + move, 1 flipping, 2 landed (flat)
   useEffect(() => {
     playSound('tap');
     Animated.sequence([
@@ -40,7 +40,11 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
     ]).start(() => {
       setPhase(1);
       playSound('coverOpen');
-      Animated.timing(flip, { toValue: 1, duration: 1100, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => onDone && onDone());
+      Animated.timing(flip, { toValue: 1, duration: 1100, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => {
+        // land perfectly flat: swap the turned cover for a plain, straight page before the reader takes over
+        setPhase(2);
+        requestAnimationFrame(() => requestAnimationFrame(() => onDone && onDone()));
+      });
     });
   }, []);
 
@@ -54,8 +58,8 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
   ];
   const turn = flip.interpolate({ inputRange: [0, 1], outputRange: L.wide ? ['0deg', '-180deg'] : ['0deg', '180deg'] });
   const leaf = L.wide
-    ? { transformOrigin: 'left', transform: [{ perspective: 1600 }, { rotateY: turn }] }
-    : { transformOrigin: 'top', transform: [{ perspective: 1600 }, { rotateX: turn }] };
+    ? { transformOrigin: 'left', transform: [{ perspective: 2600 }, { rotateY: turn }] }
+    : { transformOrigin: 'top', transform: [{ perspective: 2600 }, { rotateX: turn }] };
   const frontOp = flip.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [1, 1, 0, 0] });
   const backOp = flip.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] });
   const shade = flip.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.25, 0] });
@@ -88,8 +92,14 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
           </View>
         </View>
       ) : null}
+      {/* landed: the inside of the cover lying flat in the picture square */}
+      {phase === 2 ? (
+        <View pointerEvents="none" style={[styles.shadow, { position: 'absolute', left: bx, top: by, width: s, height: s, backgroundColor: colors.white, overflow: 'hidden' }]}>
+          {inside ? <Image source={inside} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s }} resizeMode="cover" /> : null}
+        </View>
+      ) : null}
       {/* the cover */}
-      <Animated.View pointerEvents="none" style={{ position: 'absolute', left: tx, top: ty, width: s, height: s, transform: move }}>
+      <Animated.View pointerEvents="none" style={{ position: 'absolute', left: tx, top: ty, width: s, height: s, transform: move, opacity: phase === 2 ? 0 : 1 }}>
         <Animated.View style={[{ width: s, height: s }, styles.shadow, leaf]}>
           <Animated.View style={[StyleSheet.absoluteFill, { opacity: frontOp, backgroundColor: '#828282', overflow: 'hidden' }]}>
             {cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s }} resizeMode="cover" /> : null}
