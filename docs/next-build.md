@@ -11,7 +11,7 @@ Jörg's notes, 13 Oct 2026. Do not build until he has reviewed it.
   top and bottom halves. It replaces the soft spine shading.
 - The **black bar at the top** still covers the camera area.
 - The **black menu bar** stays at the bottom. It no longer shows the book's title, only
-  "Page X of Y" (in serif).
+  "Page X of Y", in **small bold Helvetica** (not serif).
 
 ## Dog-ear
 - The same size and position, but its dark triangle now matches the dark grey background, so
