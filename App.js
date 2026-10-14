@@ -192,6 +192,6 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  outer: { flex: 1, backgroundColor: '#2a2a2a', alignItems: 'center' },
-  app: { flex: 1, backgroundColor: colors.paper, overflow: 'hidden' },
+  outer: { flex: 1, backgroundColor: colors.desk, alignItems: 'center' },
+  app: { flex: 1, backgroundColor: colors.desk, overflow: 'hidden' }, // dark grey underneath everything: no light flash
 });

@@ -9,7 +9,7 @@ import { Animated, Easing, Image, StyleSheet, View, useWindowDimensions } from '
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme';
 import { bookLayout } from './BookFrame';
-import { PageView } from './PageView';
+import { Fade, PageView } from './PageView';
 import { playSound } from '../sound';
 
 export default function BookOpen({ u, story, cover, rect, textScale, fontKey, onDone }) {
@@ -96,6 +96,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
       {phase === 2 ? (
         <View pointerEvents="none" style={[styles.shadow, { position: 'absolute', left: bx, top: by, width: s, height: s, backgroundColor: colors.white, overflow: 'hidden' }]}>
           {inside ? <Image source={inside} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s }} resizeMode="cover" /> : null}
+          {!L.wide ? <Fade edge="bottom" size={Math.round(s * 0.1)} max={0.22} /> : null}
         </View>
       ) : null}
       {/* the cover */}
@@ -107,6 +108,8 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
           {/* the inside of the cover, mirrored so it reads right once turned over */}
           <Animated.View style={[StyleSheet.absoluteFill, { opacity: backOp, backgroundColor: colors.white, overflow: 'hidden', transform: [L.wide ? { scaleX: -1 } : { scaleY: -1 }] }]}>
             {inside ? <Image source={inside} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s }} resizeMode="cover" /> : null}
+            {/* the spine shadow is there from the moment the inside shows (same as the reader's) */}
+            {!L.wide ? <Fade edge="bottom" size={Math.round(s * 0.1)} max={0.22} /> : null}
           </Animated.View>
           <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: shade }]} />
         </Animated.View>

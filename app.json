@@ -17,6 +17,12 @@
       },
       "config": {
         "usesNonExemptEncryption": false
+      },
+      "splash": {
+        "backgroundColor": "#3b3b3b",
+        "dark": {
+          "backgroundColor": "#3b3b3b"
+        }
       }
     },
     "android": {
@@ -45,7 +51,11 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#3b3b3b"
+          "backgroundColor": "#3b3b3b",
+          "dark": {
+            "backgroundColor": "#3b3b3b"
+          },
+          "resizeMode": "contain"
         }
       ]
     ],
