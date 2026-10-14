@@ -28,15 +28,15 @@ export function Bar({ u, children, vertical }) {
   );
 }
 
-export function BarMeta({ title, sub, vertical }) {
+export function BarMeta({ title, sub, vertical, serif }) {
   if (vertical) {
     // Only room for the page number when the bar runs down the side.
     return sub ? <Text style={[styles.metaSub, { textAlign: 'center', marginTop: 0 }]}>{sub}</Text> : null;
   }
   return (
     <View style={{ flex: 1, minWidth: 0, paddingLeft: 18 }}>
-      <Text numberOfLines={1} style={styles.metaTitle}>{title}</Text>
-      {sub ? <Text style={styles.metaSub}>{sub}</Text> : null}
+      <Text numberOfLines={1} style={[styles.metaTitle, serif && styles.metaTitleSerif]}>{title}</Text>
+      {sub ? <Text style={[styles.metaSub, serif && styles.metaSubSerif]}>{sub}</Text> : null}
     </View>
   );
 }
@@ -198,6 +198,9 @@ const styles = StyleSheet.create({
   bar: { backgroundColor: colors.bar, flexDirection: 'row', alignItems: 'center', gap: 16, zIndex: 30 },
   barV: { flexDirection: 'column', justifyContent: 'space-between', gap: 10 },
   metaTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  // In the reader, the book's title and page number use the book serif.
+  metaTitleSerif: { fontFamily: fonts.story, fontWeight: '400', fontSize: 19 },
+  metaSubSerif: { fontFamily: fonts.story, fontSize: 14 },
   metaSub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 13, marginTop: 2 },
   ctl: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   ear: { position: 'absolute', right: 0, bottom: 0, width: 48, height: 48, zIndex: 20 },

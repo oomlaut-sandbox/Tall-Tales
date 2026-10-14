@@ -552,7 +552,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       </View>
       <View style={[styles.bottomBar, { height: barH, paddingBottom: insets.bottom }]}>
         <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
-        <BarMeta title={story.title} sub={idx < n ? `Page ${idx + 1} of ${n}` : 'The End'} />
+        <BarMeta serif title={story.title} sub={idx < n ? `Page ${idx + 1} of ${n}` : 'The End'} />
         {showControls ? (
           <View style={[styles.small, { flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
             <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
