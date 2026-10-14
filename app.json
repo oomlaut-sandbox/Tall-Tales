@@ -6,7 +6,7 @@
     "version": "0.1.0",
     "orientation": "default",
     "userInterfaceStyle": "light",
-    "backgroundColor": "#3a3a3a",
+    "backgroundColor": "#3b3b3b",
     "ios": {
       "supportsTablet": true,
       "usesAppleSignIn": true,
@@ -41,7 +41,13 @@
           "photosPermission": "oomlaut Reader uses your photos as pictures in the stories you make."
         }
       ],
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#3b3b3b"
+        }
+      ]
     ],
     "web": {
       "output": "single",
@@ -55,7 +61,7 @@
     "owner": "oomlaut-code",
     "icon": "./assets/icon.png",
     "splash": {
-      "backgroundColor": "#3a3a3a",
+      "backgroundColor": "#3b3b3b",
       "resizeMode": "contain"
     }
   }

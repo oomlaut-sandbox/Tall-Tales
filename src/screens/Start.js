@@ -4,7 +4,7 @@
 // When the app opens, the book is closed: only one square shows, a brown cover with a dog-ear.
 // Turning it (tap, or swipe up / sideways) opens the cover over the spine like a real book, and its
 // inside (also brown) lands in the picture square.
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
 import { Bar, Burger, DogEar } from '../components/Chrome';
@@ -49,7 +49,15 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
       Animated.timing(fade, { toValue: 0, duration: 220, useNativeDriver: true }),
     ]).start(() => go(target));
   };
-  const slideX = slide.interpolate({ inputRange: [0, 1], outputRange: [0, -winW] });
+  // when the app opens, the closed book slides in from the right onto the grey
+  const enter = useRef(new Animated.Value(closed ? 1 : 0)).current;
+  useEffect(() => {
+    if (closed) Animated.timing(enter, { toValue: 0, duration: 650, delay: 150, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+  }, []);
+  const slideX = Animated.add(
+    slide.interpolate({ inputRange: [0, 1], outputRange: [0, -winW] }),
+    enter.interpolate({ inputRange: [0, 1], outputRange: [0, winW] }),
+  );
   const [opening, setOpening] = useState(false);
   const busy = useRef(false);
   const open = () => {

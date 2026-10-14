@@ -81,13 +81,11 @@ export default function Profile({ u, openMenu, toast }) {
       <>
         <Text style={styles.p}>Sign in to your oomlaut account. There’s no password to remember.</Text>
         {apple ? (
-          <AppleAuthentication.AppleAuthenticationButton
-            buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-            buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-            cornerRadius={0}
-            style={{ height: 50, alignSelf: 'stretch' }}
-            onPress={() => run(signInWithApple)}
-          />
+          // our own button so both match (same font, size and dark grey); Apple's logo and wording kept
+          <Pressable onPress={() => run(signInWithApple)} style={[styles.btn, { flexDirection: 'row', justifyContent: 'center', gap: 7 }]} accessibilityRole="button" accessibilityLabel="Sign in with Apple">
+            <Text style={[styles.btnText, { fontSize: 18, marginTop: -2 }]}>{'\uF8FF'}</Text>
+            <Text style={styles.btnText}>Sign in with Apple</Text>
+          </Pressable>
         ) : null}
         <Pressable onPress={() => { setErr(''); setStep('email'); }} style={styles.btn} accessibilityRole="button">
           <Text style={styles.btnText}>{apple ? 'Use email instead' : 'Sign in with email'}</Text>
@@ -152,7 +150,7 @@ const styles = StyleSheet.create({
   value: { fontFamily: fonts.ui, fontSize: 17, color: colors.ink },
   input: { backgroundColor: colors.white, paddingHorizontal: 14, paddingVertical: 12, fontFamily: fonts.ui, fontSize: 17, color: colors.ink },
   codeInput: { fontSize: 26, letterSpacing: 8, textAlign: 'center' },
-  btn: { backgroundColor: colors.bar, paddingVertical: 14, alignItems: 'center' },
+  btn: { backgroundColor: '#3b3b3b', paddingVertical: 14, alignItems: 'center' },
   off: { opacity: 0.4 },
   btnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   link: { color: colors.ink, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, textAlign: 'center', paddingVertical: 4 },

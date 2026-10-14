@@ -157,7 +157,7 @@ export default function App() {
     const t = setTimeout(finish, 1500); // never wait longer than this
     return () => clearTimeout(t);
   }, []);
-  if (!loaded || !pictureReady) return <View style={{ flex: 1, backgroundColor: '#3a3a3a' }} />;
+  if (!loaded || !pictureReady) return <View style={{ flex: 1, backgroundColor: colors.desk }} />;
   return (
     <SafeAreaProvider>
       <Root />
