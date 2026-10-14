@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme';
 import { bookLayout } from './BookFrame';
 import { Fade, PageView } from './PageView';
+import { Felt } from '../look';
 import { playSound } from '../sound';
 
 export default function BookOpen({ u, story, cover, rect, textScale, fontKey, onDone }) {
@@ -70,6 +71,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
     <View pointerEvents="auto" style={[StyleSheet.absoluteFill, { zIndex: 80 }]}>
       {/* the dark grey with the reader's black bars fades in over the library */}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: bg, backgroundColor: colors.desk }]}>
+        <Felt />
         {L.wide ? (
           <>
             <View style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: L.leftW, backgroundColor: colors.bar }} />

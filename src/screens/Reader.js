@@ -608,6 +608,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       {/* the black strip over the camera: along the top, or down the left side when sideways */}
       <View style={wide ? { width: BL.leftW, backgroundColor: colors.bar } : { height: topH, backgroundColor: colors.bar }}><Felt /></View>
       <View style={styles.desk}>
+      <Felt />
       <View style={[styles.bookShadow, { width: BL.bookW, height: BL.bookH }]}>
       <View style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...pan.panHandlers}>
         {size ? layers : null}
