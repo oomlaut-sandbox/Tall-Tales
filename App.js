@@ -20,8 +20,8 @@ import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
-import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
-import { Felt, LOOKS, LookContext, Stitch } from './src/look';
+import { CircleIcon, InfoIcon, LibraryIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
+import { Felt, LookContext } from './src/look';
 import { playSound, setEffects } from './src/sound';
 import { stopSpeech } from './src/speech';
 import { stopVoice } from './src/voice';
@@ -39,7 +39,6 @@ function Root() {
   const u = Math.min(width, MAX_WIDTH) / 100;
   const [story, setStory] = useState(null);
   const [drawer, setDrawer] = useState(false);
-  const [settings, setSettings] = useState(false); // the Settings panel (Looks, About)
   const [profileGate, setProfileGate] = useState(false); // the profile is for grown-ups
   const [prefs, setPrefs] = useState({ mode: 'page', sound: false, speed: 'normal', voice: 'narrator' }) // Page by Page narration by default;
   const [userStories, setUserStories] = useState([]);
@@ -74,7 +73,7 @@ function Root() {
     toastTimer.current = setTimeout(() => setMessage(''), 5500); // a little longer; tap the bubble to close it sooner
   }, []);
 
-  const go = (s) => { stopSpeech(); stopVoice(); setDrawer(false); setSettings(false); setPeek(null); setScreen(s); };
+  const go = (s) => { stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen(s); };
   // A book with a title page opens onto its title page with a blank white page above it (the
   // inside of the cover); its cover picture is the cover. From My Library, the cover animates open.
   const prepared = (s) => (s.pages[0] && s.pages[0].titlePage ? { ...s, pages: [{ ...s.pages[0], image: null, whiteArt: true }, ...s.pages.slice(1)] } : s);
@@ -84,8 +83,8 @@ function Root() {
     if (rect && (screen === 'library' || screen === 'store')) { setOpening({ story: ready, cover: s.pages[0] && s.pages[0].image, rect }); return; }
     setStory(ready); go('reader');
   };
-  const openMenu = () => { setSettings(false); setDrawer((d) => !d); };
-  const look = 'classic'; // the Felt look is switched off for now (it shows a message instead)
+  const openMenu = () => { setDrawer((d) => !d); };
+  const look = 'classic'; // one look for now (the Looks setting was dropped)
   const openPublisher = (story) => { setDraft(draftFrom(story)); go('publisher'); };
 
   const barH = u * 17 + insets.bottom;
@@ -154,31 +153,7 @@ function Root() {
           }} />
           <Option glyph={<PlusIcon />} title="Create a Story" sub="Add your own pictures and words" onPress={() => openPublisher(null)} />
           <Option glyph={<CircleIcon />} title="Profile" sub="Manage your oomlaut account" onPress={() => { setDrawer(false); setProfileGate(true); }} />
-          <Option glyph={<GearIcon size={MENU_ICON} />} title="Settings" sub="Looks, and about the app" onPress={() => {
-            setDrawer(false);
-            setTimeout(() => setSettings(true), 300); // the menu goes back into the bar first
-          }} />
-        </Panel>
-        {/* Settings: comes out in the same spot as the menu, like Playback Options */}
-        <Panel open={settings} title="Settings" bottom={drawerBottom} inset={drawerRight} onClose={() => setSettings(false)}>
-          <View style={styles.setting}>
-            <Text style={styles.help}>Looks</Text>
-            <View style={{ flexDirection: 'row', gap: 14 }}>
-              {LOOKS.map(([k, label]) => (
-                <Pressable key={k} onPress={() => (k === 'felt' ? toast('The Felt look is coming soon. For now, oomlaut uses the Classic look.') : setPrefs((p) => ({ ...p, look: k })))} accessibilityRole="button" accessibilityState={{ selected: look === k }} accessibilityLabel={`${label} look`} style={{ alignItems: 'center', gap: 6 }}>
-                  <LookContext.Provider value={k}>
-                    <View style={[styles.lookTile, look === k && styles.lookOn, k === 'felt' && { borderRadius: 12 }]}>
-                      <Felt />
-                      <View style={[styles.lookPage, k === 'felt' && { borderRadius: 3 }]}><Felt opacity={0.7} /></View>
-                      <Stitch inset={4} radius={12} />
-                    </View>
-                  </LookContext.Provider>
-                  <Text style={styles.lookLabel}>{label}{k === 'felt' ? ' (soon)' : ''}</Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-          <Option glyph={<InfoIcon />} title="About" sub="Learn more about the app" onPress={() => { setSettings(false); go('about'); }} />
+          <Option glyph={<InfoIcon />} title="About" sub="Learn more about the app" onPress={() => go('about')} />
           <View style={{ height: 14 }} />
         </Panel>
         {opening ? (
@@ -224,10 +199,6 @@ export default function App() {
 const styles = StyleSheet.create({
   setting: { gap: 10, paddingTop: 4, paddingBottom: 8 },
   help: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22 },
-  lookTile: { width: 64, height: 64, backgroundColor: colors.desk, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderWidth: 2, borderColor: 'transparent' },
-  lookOn: { borderColor: colors.green },
-  lookPage: { width: 26, height: 34, backgroundColor: colors.paper, overflow: 'hidden' },
-  lookLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
   outer: { flex: 1, backgroundColor: colors.desk, alignItems: 'center' },
   app: { flex: 1, backgroundColor: colors.desk, overflow: 'hidden' }, // dark grey underneath everything: no light flash
 });
