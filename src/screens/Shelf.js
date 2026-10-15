@@ -166,7 +166,7 @@ export function Store({ u, openStory, openMenu }) {
   const read = (b, rect) => { const st = bundledStory(b.id); if (st) openStory(st, rect); };
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
-      <Band color={colors.blue} title="Book Store" sub="Find and buy new stories" />
+      <Band color={colors.blue} title="Book Store" sub="Discover and buy new books" />
       <ScrollView contentContainerStyle={{ paddingTop: 26, paddingBottom: 24, gap: 30 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.white} />}>
         {/* laid out like My Library: whole covers in a grid, nothing cut off, no sideways scrolling */}
