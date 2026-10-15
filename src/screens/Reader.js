@@ -707,15 +707,15 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         ))}
         <Option glyph="♫" title="Voices" sub={`Narrator: ${(NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1]}`} onPress={() => setPlayView('voices')} />
         <View style={styles.setting}>
-          <Text style={styles.help}>Text size</Text>
-          <Seg value={prefs.textScale || 1} options={TEXT_SIZES.map(([label, v]) => [v, label])} onChange={(v) => setPrefs((p) => ({ ...p, textScale: v }))} />
-        </View>
-        <View style={styles.setting}>
           <Text style={styles.help}>Playback speed</Text>
           <Slider value={speedDraft ?? speedOf(prefs)} min={0.5} max={1.5} step={0.05} leftLabel="Slower" rightLabel="Faster"
             format={(v) => `${v.toFixed(2).replace(/0$/, '')}×`}
             onChange={setSpeedDraft}
             onDone={(v) => { setSpeedDraft(null); setPrefs((p) => ({ ...p, rate: Math.round(v * 100) / 100 })); }} />
+        </View>
+        <View style={styles.setting}>
+          <Text style={styles.help}>Text size</Text>
+          <Seg value={prefs.textScale || 1} options={TEXT_SIZES.map(([label, v]) => [v, label])} onChange={(v) => setPrefs((p) => ({ ...p, textScale: v }))} />
         </View>
         <View style={styles.setting}>
           <Text style={styles.help}>Book font</Text>

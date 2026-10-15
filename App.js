@@ -85,7 +85,7 @@ function Root() {
     setStory(ready); go('reader');
   };
   const openMenu = () => { setSettings(false); setDrawer((d) => !d); };
-  const look = prefs.look || 'classic'; // the menu stripes open and close it
+  const look = 'classic'; // the Felt look is switched off for now (it shows a message instead)
   const openPublisher = (story) => { setDraft(draftFrom(story)); go('publisher'); };
 
   const barH = u * 17 + insets.bottom;
@@ -165,7 +165,7 @@ function Root() {
             <Text style={styles.help}>Looks</Text>
             <View style={{ flexDirection: 'row', gap: 14 }}>
               {LOOKS.map(([k, label]) => (
-                <Pressable key={k} onPress={() => setPrefs((p) => ({ ...p, look: k }))} accessibilityRole="button" accessibilityState={{ selected: look === k }} accessibilityLabel={`${label} look`} style={{ alignItems: 'center', gap: 6 }}>
+                <Pressable key={k} onPress={() => (k === 'felt' ? toast('The Felt look is coming soon. For now, oomlaut uses the Classic look.') : setPrefs((p) => ({ ...p, look: k })))} accessibilityRole="button" accessibilityState={{ selected: look === k }} accessibilityLabel={`${label} look`} style={{ alignItems: 'center', gap: 6 }}>
                   <LookContext.Provider value={k}>
                     <View style={[styles.lookTile, look === k && styles.lookOn, k === 'felt' && { borderRadius: 12 }]}>
                       <Felt />
@@ -173,7 +173,7 @@ function Root() {
                       <Stitch inset={4} radius={12} />
                     </View>
                   </LookContext.Provider>
-                  <Text style={styles.lookLabel}>{label}</Text>
+                  <Text style={styles.lookLabel}>{label}{k === 'felt' ? ' (soon)' : ''}</Text>
                 </Pressable>
               ))}
             </View>
