@@ -1,9 +1,10 @@
 // Shared pieces of Jörg's design: black control bar, hamburger, dog-ear corner, slide-in panels.
 import React, { useEffect, useRef } from 'react';
-import { Animated, Easing, PanResponder, Pressable, StyleSheet, Text, View, ScrollView, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, ScrollView, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { Felt, Stitch, useLook } from '../look';
+import { SKIPPY_POSES } from './Skippy';
 
 export function Burger({ onPress, u }) {
   const w = u * 7, t = Math.max(3, u * 1), gap = u * 1.7;
@@ -369,8 +370,12 @@ export function Toast({ message, area, onDismiss }) {
   if (!message) return null;
   return (
     <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, zIndex: 60, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 }, area]}>
-      <Pressable onPress={onDismiss} accessibilityRole="button" accessibilityHint="Closes the message" style={styles.bubble}>
-        <Text style={styles.toast}>{message}</Text>
+      {/* Skippy says it: his thinking pose beside the bubble */}
+      <Pressable onPress={onDismiss} accessibilityRole="button" accessibilityHint="Closes the message" style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 6, maxWidth: 420 }}>
+        <Image source={SKIPPY_POSES.thinking} resizeMode="contain" style={{ width: 74, height: 100, marginBottom: -8 }} />
+        <View style={[styles.bubble, { flexShrink: 1, marginBottom: 40 }]}>
+          <Text style={styles.toast}>{message}</Text>
+        </View>
       </Pressable>
     </View>
   );

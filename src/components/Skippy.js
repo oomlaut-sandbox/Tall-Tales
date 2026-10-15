@@ -1,7 +1,6 @@
-// Skippy, the felt pebble mascot. Drawn from a sprite sheet cut out of Jörg's animation:
-// frames 0–40 he walks in, ~48–80 he stops and waves, ~84 on he opens his book and reads.
-// mode 'intro': walk in, wave, then keep reading (a gentle loop of the last frames).
-// mode 'wave': just wave (from standing), then read. still: show one frame only.
+// Skippy, the felt pebble mascot. Drawn from a sprite sheet cut out of Jörg's green-screen animation:
+// frames 0–30 he walks in, then turns to face us, 54–86 he waves, 87 on he stands (a gentle loop).
+// mode 'intro': walk in, wave, then stand. mode 'wave…': just wave, then stand. still: one frame only.
 import React, { useEffect, useRef, useState } from 'react';
 import { Image, Pressable, View } from 'react-native';
 import META from '../skippyFrames.json';
@@ -9,7 +8,7 @@ import META from '../skippyFrames.json';
 const SHEET = require('../../assets/skippy-sheet.png');
 const { frames: N, cols: COLS, fw: FW, fh: FH, fps: FPS, cx: CX } = META;
 const ROWS = Math.ceil(N / COLS);
-const WALK_END = 40, WAVE_START = 46, READ_START = 92;
+const WALK_END = 30, WAVE_START = 54, READ_START = 87; // READ_START: where the standing loop begins
 
 export default function Skippy({ height = 150, mode = 'intro', still, enterFrom = 0, onPress, onWave, style }) {
   const k = height / FH;
@@ -33,7 +32,7 @@ export default function Skippy({ height = 150, mode = 'intro', still, enterFrom 
         }
         if (cur >= N - 1) { dir.current = -1; return N - 2; }
         n = cur + 1;
-        if (n === WAVE_START + 10 && !waved.current) { waved.current = true; onWave && onWave(); }
+        if (n === WAVE_START + 6 && !waved.current) { waved.current = true; onWave && onWave(); }
         return n;
       });
     }, 1000 / FPS);
@@ -50,4 +49,15 @@ export default function Skippy({ height = 150, mode = 'intro', still, enterFrom 
   return <Pressable onPress={onPress} style={style} accessibilityRole="button" accessibilityLabel="Skippy">{body}</Pressable>;
 }
 
-export const SKIPPY_WAVE_FRAME = 62;
+export const SKIPPY_WAVE_FRAME = 66;
+
+// Still poses (cut out from Jörg's renders), for small appearances such as beside a speech bubble.
+export const SKIPPY_POSES = {
+  front: require('../../assets/skippy/front.png'),
+  wave: require('../../assets/skippy/wave.png'),
+  reading: require('../../assets/skippy/reading.png'),
+  thinking: require('../../assets/skippy/thinking.png'),
+  side: require('../../assets/skippy/side.png'),
+  back: require('../../assets/skippy/back.png'),
+  walkAway: require('../../assets/skippy/walk-away.png'),
+};
