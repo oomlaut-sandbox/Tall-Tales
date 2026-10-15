@@ -9,7 +9,7 @@ import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, Vie
 import { colors, fonts } from '../theme';
 import { Felt } from '../look';
 import { Bar, Burger, DogEar } from '../components/Chrome';
-import BookFrame, { Spine, bookLayout } from '../components/BookFrame';
+import BookFrame, { Spine, bookLayout, skippyRoom } from '../components/BookFrame';
 import Skippy from '../components/Skippy';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Fade } from '../components/PageView';
@@ -99,7 +99,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
 
   return (
     <Animated.View style={{ flex: 1, opacity: fade }}>
-    <BookFrame bare barMin={u * 17} bar={(L) => <Bar u={u} vertical={L.wide}><Burger u={u} onPress={openMenu} /></Bar>}>
+    <BookFrame bare barMin={u * 17} reserve={skippyRoom(winW, winH)} bar={(L) => <Bar u={u} vertical={L.wide}><Burger u={u} onPress={openMenu} /></Bar>}>
       {({ side, wide }) => {
         const k = side / 100; // sizes inside the book scale with the squares
         // where the two squares sit: picture first (top, or left when sideways), then the words
@@ -153,14 +153,16 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
       }}
     </BookFrame>
       {skippy ? (() => {
-        const L = bookLayout(winW, winH, insets, u * 17);
-        const h = Math.round(Math.min(190, L.side * (L.wide ? 0.42 : 0.4)));
+        const R = skippyRoom(winW, winH);
+        const L = bookLayout(winW, winH, insets, u * 17, R);
+        // upright: he stands in the strip kept free under the book, his bubble beside him
+        const h = L.wide ? Math.round(Math.min(190, L.side * 0.42)) : Math.round(R * 0.92);
         const bottom = L.wide ? Math.round(h * 0.06) + 8 : L.barH - Math.round(h * 0.05);
-        const left = L.wide ? L.leftW + 6 : 10;
+        const left = L.wide ? L.leftW + 6 : Math.max(10, Math.round((winW - L.side) / 2 - h * 0.12));
         return (
           <Animated.View pointerEvents="box-none" style={{ position: 'absolute', left, bottom, opacity: skippyFade, zIndex: 20 }}>
             {hello ? (
-              <View pointerEvents="none" style={[styles.hello, { bottom: h * 0.92, left: h * 0.35 }]}>
+              <View pointerEvents="none" style={[styles.hello, L.wide ? { bottom: h * 0.92, left: h * 0.35 } : { bottom: h * 0.4, left: h * 0.95, width: Math.min(230, winW - left - h * 0.95 - 12) }]}>
                 <Text style={styles.helloText}>Hi, I’m Skippy! Tap the corner to open the book.</Text>
               </View>
             ) : null}

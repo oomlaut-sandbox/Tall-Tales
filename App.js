@@ -7,7 +7,7 @@ import { SafeAreaInsetsContext, SafeAreaProvider, useSafeAreaInsets } from 'reac
 import { useFonts, EBGaramond_400Regular, EBGaramond_500Medium, EBGaramond_700Bold } from '@expo-google-fonts/eb-garamond';
 import { colors, fonts, MAX_WIDTH } from './src/theme';
 import Start from './src/screens/Start';
-import { bookLayout } from './src/components/BookFrame';
+import { bookLayout, skippyRoom } from './src/components/BookFrame';
 import BookOpen from './src/components/BookOpen';
 import { Library, Store } from './src/screens/Shelf';
 import About from './src/screens/About';
@@ -106,7 +106,7 @@ function Root() {
   }, [screen, sideways, width, height, insets, camBar, u]);
   // upright the menu comes up out of the bottom bar, whose height depends on the screen
   const drawerBottom = sideways ? 0 : screen === 'reader' ? bookLayout(width, height, { ...insets, top: camBar }, u * 13).barH
-    : screen === 'start' ? bookLayout(width, height, { ...insets, top: camBar }, u * 17).barH : barH;
+    : screen === 'start' ? bookLayout(width, height, { ...insets, top: camBar }, u * 17, skippyRoom(width, height)).barH : barH;
   const drawerRight = sideways ? (screen === 'reader' ? bookLayout(width, height, { ...insets, left: camBar }, u * 13).rightW : Math.round(u * 17 * 1.15)) : 0;
   const screenInsets = useMemo(() => (sideways ? { ...insets, left: camBar } : { ...insets, top: camBar }), [insets, sideways, camBar]);
   return (

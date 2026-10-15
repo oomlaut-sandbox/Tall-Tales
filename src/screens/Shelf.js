@@ -52,12 +52,14 @@ function Tile({ u, cover, title, sub, onPress, onLongPress, plus, selecting, sel
   );
 }
 
-function Band({ color, dark, title, sub, action, onAction }) {
+const BAND_FELT = { library: require('../../assets/band-library.jpg'), store: require('../../assets/band-store.jpg') }; // Jörg's stitched felt strips
+
+function Band({ color, felt, dark, title, sub, action, onAction }) {
   const insets = useSafeAreaInsets();
   const fg = dark ? colors.ink : colors.white;
   return (
     <View style={{ backgroundColor: color, paddingTop: insets.top + 30, paddingBottom: 30, paddingHorizontal: 24 }}>{/* the title block centred top to bottom in the coloured band */}
-      <Felt /><Stitch inset={7} />
+      {felt ? <Image source={BAND_FELT[felt]} resizeMode="stretch" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, width: '100%' }} /> : <><Felt /><Stitch inset={7} /></>}
       {/* the title block, with the action (Select / Cancel) centred beside the whole block */}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ flex: 1 }}>
@@ -105,7 +107,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
       ) : (
         <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>
       ))}>
-      <Band color={colors.green} title={selecting ? 'Select books' : 'My Library'}
+      <Band color={colors.green} felt="library" title={selecting ? 'Select books' : 'My Library'}
         sub={selecting ? (picked.length ? `${picked.length} selected` : 'Tap books to select them') : 'Your stories, ready to read'}
         action={selecting ? 'Cancel' : 'Select'} onAction={selecting ? stop : () => setSelecting(true)} />
       <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]}>
@@ -169,7 +171,7 @@ export function Store({ u, openStory, openMenu }) {
   const read = (b, rect) => { const st = bundledStory(b.id); if (st) openStory(st, rect); };
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
-      <Band color={colors.blue} title="Book Store" sub="Discover and buy new books" />
+      <Band color={colors.blue} felt="store" title="Book Store" sub="Discover and buy new books" />
       <ScrollView contentContainerStyle={{ paddingTop: 26, paddingBottom: 24, gap: 30 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.white} />}>
         {/* laid out like My Library: whole covers in a grid, nothing cut off, no sideways scrolling */}

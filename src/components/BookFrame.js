@@ -16,7 +16,11 @@ export const BOOK_GAP = 30;
 // Upright: black strip at the top (camera), menu bar at the bottom, squares stacked.
 // Sideways (iPad): black strip on the left, menu bar down the right side, squares side by side.
 // Either way the bars take whatever room is left after the book and its 30-point grey border.
-export function bookLayout(winW, winH, insets, barMin) {
+// The start page keeps a strip under the book (upright only) for Skippy and his speech bubble.
+export const skippyRoom = (winW, winH) => (winW > winH * 1.1 ? 0 : Math.round(Math.min(170, winH * 0.17)));
+
+// reserve: extra room kept free between the book and the bottom bar (upright only)
+export function bookLayout(winW, winH, insets, barMin, reserve = 0) {
   const G = BOOK_GAP;
   const wide = winW > winH * 1.1;
   if (wide) {
@@ -28,22 +32,22 @@ export function bookLayout(winW, winH, insets, barMin) {
     return { side, wide, bookW: side * 2, bookH: side, leftW: minLeft, rightW: minRight, topH: 0, barH: 0, spare, bookTop: Math.round((winH - side) / 2) };
   }
   const minTop = insets.top, minBar = barMin + insets.bottom;
-  const room = winH - minTop - minBar - 2 * G;
+  const room = winH - minTop - minBar - 2 * G - reserve;
   const side = Math.floor(Math.max(120, Math.min(winW - 2 * G, room / 2)));
   const spare = Math.max(0, room - side * 2);
-  return { side, wide, bookW: side, bookH: side * 2, topH: minTop + spare / 2, barH: minBar + spare / 2, leftW: 0, rightW: 0, spare };
+  return { side, wide, bookW: side, bookH: side * 2, topH: minTop + spare / 2, barH: minBar + spare / 2, leftW: 0, rightW: 0, spare, reserve };
 }
 
 // children: a function given the layout ({ side, wide, ... }) that draws the two squares.
 // bar: the menu bar, or a function given the layout (so it can run down the side when wide).
 // bare: no shared paper and shadow behind the two squares (the caller draws each square itself).
-export default function BookFrame({ barMin, bar, children, deskProps, bookProps, under, bare }) {
+export default function BookFrame({ barMin, bar, children, deskProps, bookProps, under, bare, reserve = 0 }) {
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
-  const L = bookLayout(winW, winH, insets, barMin);
+  const L = bookLayout(winW, winH, insets, barMin, reserve);
   const barEl = typeof bar === 'function' ? bar(L) : bar;
   const book = (
-    <View style={styles.desk} {...deskProps}>
+    <View style={[styles.desk, !L.wide && L.reserve ? { paddingBottom: L.reserve } : null]} {...deskProps}>
       <Felt />
       {bare ? (
         <View style={{ width: L.bookW, height: L.bookH }} {...bookProps}>{children(L)}</View>
