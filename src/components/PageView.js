@@ -1,8 +1,8 @@
 // One story page: illustration on top, words below (or, sideways, picture left and words right).
 // Each word can be tapped.
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { forwardRef, useMemo } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, Easing, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { bookFont, colors, fonts } from '../theme';
 import { Felt } from '../look';
 import { tokenize } from '../story';
@@ -55,8 +55,63 @@ export function Fade({ edge, size, max }) {
   );
 }
 
+// The words laid out one by one (centred lines, like the plain paragraph), so each word's spot is known
+// and a little red dot can bounce from word to word as it is read, like a karaoke sing-along.
+// items: [{ i, text }] (i = the word's place in the page); fs: font size; lh: line height.
+function WordFlow({ items, textStyle, fs, lh, highlight, onWord }) {
+  const spots = useRef({});
+  const [, setTick] = useState(0);
+  const d = Math.max(6, Math.round(fs * 0.24)); // the dot
+  const x = useRef(new Animated.Value(0)).current;
+  const y = useRef(new Animated.Value(0)).current;
+  const op = useRef(new Animated.Value(0)).current;
+  const was = useRef(null); // where the dot last landed
+  const mine = items.some((w) => w.i === highlight);
+  const at = mine ? spots.current[highlight] : null;
+  useEffect(() => {
+    if (!at) {
+      if (was.current) Animated.timing(op, { toValue: 0, duration: 150, useNativeDriver: true }).start();
+      was.current = null;
+      return;
+    }
+    const tx = at.x + at.w / 2 - d / 2;
+    const ty = at.y + (lh - fs) / 2 + fs * 0.1 - d; // sitting just above the letters
+    if (!was.current) {
+      // the first word: the dot drops in from above
+      x.setValue(tx); y.setValue(ty - fs * 0.6); op.setValue(0);
+      Animated.parallel([
+        Animated.timing(op, { toValue: 1, duration: 140, useNativeDriver: true }),
+        Animated.timing(y, { toValue: ty, duration: 240, easing: Easing.bounce, useNativeDriver: true }),
+      ]).start();
+    } else {
+      // hop: along to the next word, up in an arc and down onto it
+      const top = Math.min(was.current.y, ty) - fs * 0.5;
+      Animated.parallel([
+        Animated.timing(x, { toValue: tx, duration: 240, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+        Animated.sequence([
+          Animated.timing(y, { toValue: top, duration: 120, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+          Animated.timing(y, { toValue: ty, duration: 120, easing: Easing.in(Easing.quad), useNativeDriver: true }),
+        ]),
+        Animated.timing(op, { toValue: 1, duration: 100, useNativeDriver: true }),
+      ]).start();
+    }
+    was.current = { x: tx, y: ty };
+  }, [highlight, at && at.x, at && at.y]);
+  const gap = fs * 0.14; // half a space on each side of every word keeps the lines centred
+  return (
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignSelf: 'stretch' }}>
+      {items.map((w) => (
+        <Text key={w.i} onPress={onWord ? () => onWord(w.i, w.word) : undefined}
+          onLayout={(e) => { const l = e.nativeEvent.layout; const o = spots.current[w.i]; spots.current[w.i] = { x: l.x, y: l.y, w: l.width }; if (w.i === highlight && (!o || o.x !== l.x || o.y !== l.y)) setTick((t) => t + 1); }}
+          style={[textStyle, { marginHorizontal: gap }, w.i === highlight ? styles.hl : null]}>{w.text}</Text>
+      ))}
+      <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: d, height: d, borderRadius: d / 2, backgroundColor: colors.highlight, opacity: op, transform: [{ translateX: x }, { translateY: y }] }} />
+    </View>
+  );
+}
+
 export const PageView = forwardRef(function PageView(
-  { page, width, height, bottomInset = 0, textScale = 1, fontKey = 'serif', highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary, onShare, zoomable },
+  { page, width, height, bottomInset = 0, textScale = 1, fontKey = 'serif', highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary, onShare, zoomable, flow },
   ref,
 ) {
   const words = useMemo(() => (page && page.text ? tokenize(page.text) : []), [page]);
@@ -138,6 +193,23 @@ export const PageView = forwardRef(function PageView(
             // line(s), a space, then the author line in small regular type. Word positions stay the same,
             // so narration highlighting still lines up.
             const k = page?.titlePage ? words.findIndex((w) => /\.$/.test(w.word)) : -1;
+            // bouncing dot on: the same words, laid out one by one so the dot knows where each one is
+            if (flow) {
+              const it = (from, to, last) => words.slice(from, to).map((w, j) => ({ i: from + j, word: w.word, text: from + j === last ? w.word.replace(/\.$/, '') : w.word }));
+              if (k >= 0 && k < words.length - 1) {
+                const tfs = Math.round(fs * 1.45), cfs = Math.round(fs * 0.65);
+                return (
+                  <View style={{ alignItems: 'center', alignSelf: 'stretch' }}>
+                    <WordFlow items={it(0, k + 1, k)} fs={tfs} lh={Math.round(tfs * 1.2)} highlight={highlight} onWord={onWord}
+                      textStyle={[storyStyle, font.bold ? { fontFamily: font.bold } : styles.titleWords, { fontSize: tfs, lineHeight: Math.round(tfs * 1.2), color: '#454545', textAlign: 'center' }]} />
+                    <View style={{ height: fs * 0.7 }} />
+                    <WordFlow items={it(k + 1, words.length, -1)} fs={cfs} lh={Math.round(cfs * 1.5)} highlight={highlight} onWord={onWord}
+                      textStyle={[storyStyle, { fontSize: cfs, lineHeight: Math.round(cfs * 1.5) }]} />
+                  </View>
+                );
+              }
+              return <WordFlow items={it(0, words.length, -1)} fs={fs} lh={fs * 1.62} highlight={highlight} onWord={onWord} textStyle={storyStyle} />;
+            }
             if (k >= 0 && k < words.length - 1) {
               return (
                 <View style={{ alignItems: 'center' }}>
