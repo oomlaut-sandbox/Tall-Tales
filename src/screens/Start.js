@@ -9,7 +9,9 @@ import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, Vie
 import { colors, fonts } from '../theme';
 import { Felt } from '../look';
 import { Bar, Burger, DogEar } from '../components/Chrome';
-import BookFrame, { Spine } from '../components/BookFrame';
+import BookFrame, { Spine, bookLayout } from '../components/BookFrame';
+import Skippy from '../components/Skippy';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Fade } from '../components/PageView';
 import { playSound } from '../sound';
 
@@ -40,7 +42,8 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
   const p = useRef(new Animated.Value(0)).current; // 0 = cover shut, 1 = cover fully open
   // Choosing My Library or the Book Store: the book slides off to the left, and the chosen screen
   // (drawn underneath) takes its place on the grey.
-  const { width: winW } = useWindowDimensions();
+  const { width: winW, height: winH } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const slide = useRef(new Animated.Value(0)).current; // 0 = in place, 1 = gone off the left
   const fade = useRef(new Animated.Value(1)).current;
   const leaving = useRef(false);
@@ -66,12 +69,26 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
     slide.interpolate({ inputRange: [0, 1], outputRange: [0, -winW] }),
     enter.interpolate({ inputRange: [0, 1], outputRange: [0, winW] }),
   );
+  // Skippy: when the app opens he walks in along the bottom, waves hello, then sits reading.
+  // Tap him and he waves again. He leaves once the book is opened.
+  const [skippy, setSkippy] = useState(closed);
+  const [skippyMode, setSkippyMode] = useState('intro');
+  const [hello, setHello] = useState(false);
+  const skippyFade = useRef(new Animated.Value(1)).current;
+  const helloTimer = useRef(null);
+  const sayHello = () => { setHello(true); clearTimeout(helloTimer.current); helloTimer.current = setTimeout(() => setHello(false), 5000); };
+  useEffect(() => () => clearTimeout(helloTimer.current), []);
+  const skippyLeaves = () => {
+    setHello(false);
+    Animated.timing(skippyFade, { toValue: 0, duration: 450, useNativeDriver: true }).start(() => setSkippy(false));
+  };
   const [opening, setOpening] = useState(false);
   const busy = useRef(false);
   const open = () => {
     if (busy.current) return;
     busy.current = true;
     setOpening(true);
+    if (skippy) skippyLeaves();
     playSound('coverOpen');
     Animated.timing(p, { toValue: 1, duration: 1200, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => onOpened && onOpened());
   };
@@ -135,10 +152,30 @@ export default function Start({ u, go, openMenu, closed, onOpened, onPeek }) {
         );
       }}
     </BookFrame>
+      {skippy ? (() => {
+        const L = bookLayout(winW, winH, insets, u * 17);
+        const h = Math.round(Math.min(190, L.side * (L.wide ? 0.42 : 0.4)));
+        const bottom = L.wide ? Math.round(h * 0.06) + 8 : L.barH - Math.round(h * 0.05);
+        const left = L.wide ? L.leftW + 6 : 10;
+        return (
+          <Animated.View pointerEvents="box-none" style={{ position: 'absolute', left, bottom, opacity: skippyFade, zIndex: 20 }}>
+            {hello ? (
+              <View pointerEvents="none" style={[styles.hello, { bottom: h * 0.92, left: h * 0.35 }]}>
+                <Text style={styles.helloText}>Hi, I’m Skippy! Tap the corner to open the book.</Text>
+              </View>
+            ) : null}
+            <Skippy height={h} mode={skippyMode} enterFrom={-(left + h)} onWave={sayHello}
+              onPress={() => { setSkippyMode((m) => (m === 'wave' ? 'wave2' : 'wave')); }} />
+          </Animated.View>
+        );
+      })() : null}
     </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
+  hello: { position: 'absolute', width: 230, backgroundColor: colors.white, borderRadius: 22, paddingHorizontal: 20, paddingVertical: 14,
+    shadowColor: '#000', shadowOpacity: 0.34, shadowRadius: 12, shadowOffset: { width: 0, height: 5 }, elevation: 9 },
+  helloText: { color: colors.ink, fontFamily: 'EBGaramond_500Medium', fontSize: 19, lineHeight: 24, textAlign: 'center' },
   page: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
 });
