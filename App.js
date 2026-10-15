@@ -20,7 +20,7 @@ import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
-import { GearIcon, LibraryIcon, Option, Panel, Toast } from './src/components/Chrome';
+import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
 import { Felt, LOOKS, LookContext, Stitch } from './src/look';
 import { playSound, setEffects } from './src/sound';
 import { stopSpeech } from './src/speech';
@@ -81,7 +81,7 @@ function Root() {
   const [opening, setOpening] = useState(null); // { story, cover, rect } while a book opens from the library
   const openStory = (s, rect) => {
     const ready = prepared(s);
-    if (rect && screen === 'library') { setOpening({ story: ready, cover: s.pages[0] && s.pages[0].image, rect }); return; }
+    if (rect && (screen === 'library' || screen === 'store')) { setOpening({ story: ready, cover: s.pages[0] && s.pages[0].image, rect }); return; }
     setStory(ready); go('reader');
   };
   const openMenu = () => { setSettings(false); setDrawer((d) => !d); };
@@ -146,15 +146,15 @@ function Root() {
           <Reader u={u} story={story} prefs={prefs} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
         )}
         <Panel open={drawer} title="Menu" bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
-          <Option glyph={<LibraryIcon size={18} />} title="My Library" sub="View purchased stories" onPress={() => go('library')} />
-          <Option glyph="◫" title="Book Store" sub="Buy more stories" onPress={() => go('store')} />
-          <Option glyph="▸" title="Playback Settings" sub="Reader controls" onPress={() => {
+          <Option glyph={<LibraryIcon size={MENU_ICON} />} title="My Library" sub="View purchased stories" onPress={() => go('library')} />
+          <Option glyph={<StoreIcon />} title="Book Store" sub="Discover and buy new books" onPress={() => go('store')} />
+          <Option glyph={<PlayGlyph />} title="Playback Settings" sub="Reader controls" onPress={() => {
             setDrawer(false);
             if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else toast('Open a story first, then choose how it plays.');
           }} />
-          <Option glyph="+" title="Create a Story" sub="Add your own pictures and words" onPress={() => openPublisher(null)} />
-          <Option glyph="○" title="Profile" sub="Manage your oomlaut account" onPress={() => { setDrawer(false); setProfileGate(true); }} />
-          <Option glyph={<GearIcon size={20} />} title="Settings" sub="Looks, and about the app" onPress={() => {
+          <Option glyph={<PlusIcon />} title="Create a Story" sub="Add your own pictures and words" onPress={() => openPublisher(null)} />
+          <Option glyph={<CircleIcon />} title="Profile" sub="Manage your oomlaut account" onPress={() => { setDrawer(false); setProfileGate(true); }} />
+          <Option glyph={<GearIcon size={MENU_ICON} />} title="Settings" sub="Looks, and about the app" onPress={() => {
             setDrawer(false);
             setTimeout(() => setSettings(true), 300); // the menu goes back into the bar first
           }} />
@@ -178,7 +178,7 @@ function Root() {
               ))}
             </View>
           </View>
-          <Option glyph="i" title="About" sub="Learn more about the app" onPress={() => { setSettings(false); go('about'); }} />
+          <Option glyph={<InfoIcon />} title="About" sub="Learn more about the app" onPress={() => { setSettings(false); go('about'); }} />
         </Panel>
         {opening ? (
           <BookOpen u={u} story={opening.story} cover={opening.cover} rect={opening.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
   setting: { gap: 10, paddingTop: 4, paddingBottom: 8 },
   help: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22 },
   lookTile: { width: 64, height: 64, backgroundColor: colors.desk, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderWidth: 2, borderColor: 'transparent' },
-  lookOn: { borderColor: colors.highlight },
+  lookOn: { borderColor: colors.green },
   lookPage: { width: 26, height: 34, backgroundColor: colors.paper, overflow: 'hidden' },
   lookLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
   outer: { flex: 1, backgroundColor: colors.desk, alignItems: 'center' },

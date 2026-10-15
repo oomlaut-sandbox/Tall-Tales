@@ -8,7 +8,7 @@ import { Animated, Image, StyleSheet, View } from 'react-native';
 export const artGesture = { active: false }; // read by the reader's swipe handling
 
 const HOLD_MS = 220; // how long to hold before the magnifying glass appears
-const LOUPE = 128; // magnifying glass size (points)
+const LOUPE = 160; // magnifying glass size (points)
 const LOUPE_ZOOM = 2.4;
 const MAX_ZOOM = 4;
 

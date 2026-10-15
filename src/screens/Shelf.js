@@ -162,7 +162,8 @@ export function Store({ u, openStory, openMenu }) {
   useEffect(() => { cachedCatalog().then((c) => setCat((cur) => cur || c)); load(false); }, []);
   const rows = cat ? shelvesWithBooks(cat) : [];
   const featured = cat ? cat.books.find((b) => b.featured) : null;
-  const read = (b) => { const st = bundledStory(b.id); if (st) { setOpen(null); openStory(st); } };
+  // Read now: the cover in the card opens like a book does from My Library (the card stays until the reader takes over)
+  const read = (b, rect) => { const st = bundledStory(b.id); if (st) openStory(st, rect); };
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <Band color={colors.blue} title="Book Store" sub="Find and buy new stories" />
@@ -185,7 +186,7 @@ export function Store({ u, openStory, openMenu }) {
       {open ? (
         <BookCard key={open.book.id} u={u} book={open.book} rect={open.rect} sideways={sideways}
           barH={sideways ? 0 : u * 17 + insets.bottom} barW={sideways ? Math.round(u * 17 * 1.15) : 0}
-          onClose={() => setOpen(null)} onRead={() => read(open.book)} />
+          onClose={() => setOpen(null)} onRead={(rect) => read(open.book, rect)} />
       ) : null}
     </WithBar>
   );
@@ -254,7 +255,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
       {book.blurb ? <Text style={styles.sheetText}>{book.blurb}</Text> : null}
       <Text style={styles.sheetSub}>{meta}</Text>
       {canRead ? (
-        <Pressable onPress={() => close(onRead)} style={[styles.sheetBtn, { marginTop: 6 }]} accessibilityRole="button"><Text style={styles.sheetBtnText}>Read now</Text></Pressable>
+        <Pressable onPress={() => onRead({ x: boxX + M, y: boxY + M, w: cs, h: cs })} style={[styles.sheetBtn, { marginTop: 6 }]} accessibilityRole="button"><Text style={styles.sheetBtnText}>Read now</Text></Pressable>
       ) : (
         <Text style={styles.sheetText}>{book.access === 'free' ? 'Downloading new books arrives in the next update.' : 'Memberships and buying single books arrive in the next update.'}</Text>
       )}
@@ -269,9 +270,8 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
       <View onLayout={(e) => setBoxH(e.nativeEvent.layout.height)}
         style={[styles.card, { left: boxX, top: boxY, width: boxW, maxHeight: areaH - boxY - 16 }]}>
         <Felt />
-        {/* black, a little see-through, with the store softly blurred behind it */}
-        <AnimatedBlur pointerEvents="none" tint="dark" intensity={blur} style={StyleSheet.absoluteFill} />
-        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.62)', opacity: fade }]} />
+        {/* solid near-black, the same as the menus' title bars */}
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#141414', opacity: fade }]} />
         <Animated.View pointerEvents={boxH ? 'auto' : 'none'} style={{ opacity: fade, flexDirection: across ? 'row' : 'column' }}>
         <View style={{ flexDirection: 'row' }}>
           <View style={{ width: cs + M, height: cs + 2 * M }} />{/* the same margin above and below the cover */}
@@ -319,8 +319,8 @@ const styles = StyleSheet.create({
   // the gap under the coloured title band matches the visible space under its subtitle
   grid: { padding: 20, paddingTop: 26, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
   tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 4 },
-  tileTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, color: colors.white },
-  tileSub: { fontFamily: fonts.ui, fontSize: 13, color: '#d0d0d0' },
+  tileTitle: { fontFamily: 'EBGaramond_700Bold', fontSize: 19, lineHeight: 23, color: colors.white }, // book titles and details: the book serif
+  tileSub: { fontFamily: fonts.story, fontSize: 15, lineHeight: 19, color: '#d0d0d0' },
   check: { position: 'absolute', top: 8, left: 8, width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: colors.white, backgroundColor: 'rgba(0,0,0,0.25)', alignItems: 'center', justifyContent: 'center', zIndex: 2 },
   checkOn: { backgroundColor: colors.highlight, borderColor: colors.white },
   checkMark: { color: colors.white, fontWeight: '800', fontSize: 16, lineHeight: 18 },
@@ -343,10 +343,10 @@ const styles = StyleSheet.create({
   badge: { alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3 },
   badgeText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 12 },
   card: { position: 'absolute', overflow: 'hidden' },
-  cardTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 26 },
+  cardTitle: { color: colors.white, fontFamily: 'EBGaramond_700Bold', fontSize: 30, lineHeight: 34 },
   xBar: { position: 'absolute', left: 0, top: 10, width: 22, height: 2.5, backgroundColor: colors.white },
-  sheetSub: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15 },
-  sheetText: { color: colors.white, fontFamily: fonts.ui, fontSize: 16, lineHeight: 23 },
+  sheetSub: { color: '#d6d6d6', fontFamily: fonts.story, fontSize: 18 },
+  sheetText: { color: colors.white, fontFamily: fonts.story, fontSize: 18, lineHeight: 25 },
   sheetBtn: { backgroundColor: colors.green, paddingVertical: 14, alignItems: 'center' },
   sheetBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   note: { width: '100%', backgroundColor: '#4a4a4a', padding: 16, fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, color: colors.white },

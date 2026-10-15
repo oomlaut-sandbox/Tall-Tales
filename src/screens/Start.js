@@ -22,9 +22,11 @@ const TILE_STORE = require('../../assets/tile-store.png');
 
 function MenuItem({ u, icon, title, sub, onPress }) {
   return (
-    <Pressable onPress={onPress} accessibilityRole="button" style={{ flexDirection: 'row', gap: u * 4.6 }}>
+    <Pressable onPress={onPress} accessibilityRole="button" style={{ flexDirection: 'row', gap: u * 7 }}>
       {/* the icon: a stitched felt tile (Jörg's), with a slight drop shadow */}
-      <Image source={icon} resizeMode="contain" style={{ width: u * 19, height: u * 33, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3 }} />
+      <View style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.35, shadowRadius: 4, elevation: 4 }}>
+        <Image source={icon} resizeMode="contain" style={{ width: u * 19, height: u * 33 }} />
+      </View>
       <View style={{ maxWidth: u * 48 }}>
         {/* Same sizes as the menu titles (20) and their descriptions (14). */}
         <Text style={{ fontFamily: fonts.ui, fontWeight: '700', fontSize: 20, lineHeight: 24, color: colors.ink, marginBottom: u * 2 }}>{title}</Text>

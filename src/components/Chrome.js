@@ -164,7 +164,7 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children }) {
         >
           <Felt />
           <View style={[styles.panelHead, wide && { paddingTop: 14, paddingBottom: 12 }]}>
-            <Text style={[styles.panelTitle, { flex: 1 }, wide && { fontSize: 22 }]}>{title}</Text>
+            <Text style={[styles.panelTitle, { flex: 1 }, wide && { fontSize: 20 }]}>{title}</Text>
             {/* Close: a small chevron pointing back at the menu bar it goes into (down when upright,
                 right when sideways). Tapping outside the menu still closes it too. */}
             <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close menu" style={styles.closeBtn}>
@@ -205,6 +205,43 @@ export function LibraryIcon({ size = 14, color = colors.white, weight = 2 }) {
     </View>
   );
 }
+// Menu icons: one family, all drawn at the same size (20) with the same 2-point stroke.
+export const MENU_ICON = 20;
+export function StoreIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
+  return (
+    <View style={{ width: size, height: size, borderWidth: weight, borderColor: color, alignItems: 'center' }}>
+      <View style={{ width: weight, flex: 1, backgroundColor: color }} />
+    </View>
+  );
+}
+export function PlayGlyph({ size = MENU_ICON, color = colors.white }) {
+  const h = size * 0.8, w = size * 0.7;
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: 0, height: 0, marginLeft: size * 0.12, borderTopWidth: h / 2, borderBottomWidth: h / 2, borderLeftWidth: w, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: color }} />
+    </View>
+  );
+}
+export function PlusIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ position: 'absolute', width: size, height: weight, backgroundColor: color }} />
+      <View style={{ position: 'absolute', width: weight, height: size, backgroundColor: color }} />
+    </View>
+  );
+}
+export function CircleIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
+  return <View style={{ width: size, height: size, borderRadius: size / 2, borderWidth: weight, borderColor: color }} />;
+}
+export function InfoIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'space-between', paddingVertical: 1 }}>
+      <View style={{ width: weight + 1, height: weight + 1, borderRadius: weight, backgroundColor: color }} />
+      <View style={{ width: weight, height: size * 0.62, backgroundColor: color }} />
+    </View>
+  );
+}
+
 // Share: a small solid heart, made of two rounded halves leaning together.
 export function HeartIcon({ size = 15, color = colors.white }) {
   const w = size * 0.52, h = size * 0.8;
@@ -233,7 +270,7 @@ export function Option({ glyph, title, sub, onPress, selected, disabled }) {
   const felt = useLook() === 'felt';
   return (
     <Pressable onPress={onPress} disabled={disabled} style={[styles.opt, disabled && { opacity: 0.45 }]} accessibilityRole="button">
-      <View style={[styles.optIc, selected && { backgroundColor: colors.highlight }, felt && { borderRadius: 12, overflow: 'hidden' }]}>
+      <View style={[styles.optIc, selected && { backgroundColor: colors.green }, felt && { borderRadius: 12, overflow: 'hidden' }]}>
         <Felt />
         <Stitch inset={4} radius={12} />
         {typeof glyph === 'string' ? <Text style={styles.optGlyph}>{glyph}</Text> : glyph}
@@ -273,7 +310,7 @@ export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLab
       <View style={{ height: 44, justifyContent: 'center' }} onLayout={(e) => { geo.current.w = e.nativeEvent.layout.width; setW(e.nativeEvent.layout.width); }} {...pan.panHandlers}
         accessibilityRole="adjustable" accessibilityValue={{ text: String(format(value)) }}>
         <View pointerEvents="none" style={{ height: 6, backgroundColor: '#444' }}>
-          <View style={{ width: f * w, height: 6, backgroundColor: colors.highlight }} />
+          <View style={{ width: f * w, height: 6, backgroundColor: colors.green }} />
         </View>
         <View pointerEvents="none" style={{ position: 'absolute', left: f * w - 13, width: 26, height: 26, borderRadius: 13, backgroundColor: colors.white }} />
       </View>
@@ -311,11 +348,11 @@ const styles = StyleSheet.create({
   ear: { position: 'absolute', right: 0, bottom: 0, width: 48, height: 48, zIndex: 20 },
   panel: { position: 'absolute', width: '82%', maxWidth: 440 },
   panelClip: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, overflow: 'hidden', zIndex: 41 },
-  panelHead: { backgroundColor: colors.panelHead, paddingLeft: 24, paddingRight: 12, paddingTop: 24, paddingBottom: 20, flexDirection: 'row', alignItems: 'center' },
+  panelHead: { backgroundColor: '#141414', paddingLeft: 24, paddingRight: 12, paddingTop: 24, paddingBottom: 20, flexDirection: 'row', alignItems: 'center' },
   closeBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   chev: { width: 22, height: 12 },
   chevBar: { position: 'absolute', top: 4, width: 14, height: 3, borderRadius: 1.5, backgroundColor: colors.white },
-  panelTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 28 },
+  panelTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 24 },
   panelCols: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 22, rowGap: 16, paddingTop: 16, paddingBottom: 30 },
   panelList: { backgroundColor: colors.panel, paddingHorizontal: 22, paddingTop: 20, paddingBottom: 22, gap: 16 },
   opt: { flexDirection: 'row', alignItems: 'center', gap: 18 },

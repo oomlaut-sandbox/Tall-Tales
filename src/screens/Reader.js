@@ -80,7 +80,7 @@ function Seg({ value, options, onChange }) {
   return (
     <View style={{ flexDirection: 'row', gap: 8 }}>
       {options.map(([v, l, family]) => (
-        <Pressable key={v} onPress={() => onChange(v)} style={[styles.seg, value === v && { backgroundColor: colors.highlight }]}>
+        <Pressable key={v} onPress={() => onChange(v)} style={[styles.seg, value === v && { backgroundColor: colors.green }]}>
           <Text style={[styles.segText, family && { fontFamily: family, fontWeight: '400', fontSize: 17 }]}>{l}</Text>
         </Pressable>
       ))}
