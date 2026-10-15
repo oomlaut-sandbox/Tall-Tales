@@ -2,7 +2,7 @@
 // frames 0–30 he walks in, then turns to face us, 54–86 he waves, 87 on he stands (a gentle loop).
 // mode 'intro': walk in, wave, then stand. mode 'wave…': just wave, then stand. still: one frame only.
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, Pressable, View } from 'react-native';
+import { Animated, Easing, Image, Pressable, View } from 'react-native';
 import META from '../skippyFrames.json';
 
 const SHEET = require('../../assets/skippy-sheet.png');
@@ -60,4 +60,38 @@ export const SKIPPY_POSES = {
   side: require('../../assets/skippy/side.png'),
   back: require('../../assets/skippy/back.png'),
   walkAway: require('../../assets/skippy/walk-away.png'),
+  jump: require('../../assets/skippy/jump.png'),
+  peekOver: require('../../assets/skippy/peek-over.png'), // hands rest on the bottom edge of the picture
+  peekSide: require('../../assets/skippy/peek-side.png'), // the right edge of the picture is the edge he hides behind
+  skip: require('../../assets/skippy/skip.png'),
+  sittingReading: require('../../assets/skippy/sitting-reading.png'),
+  sleeping: require('../../assets/skippy/sleeping.png'),
 };
+// width / height of each pose picture, so it can be sized without measuring
+export const POSE_RATIO = { peekOver: 600 / 364, peekSide: 335 / 600, jump: 574 / 600, skip: 594 / 600, sittingReading: 460 / 600, sleeping: 600 / 387 };
+
+// Skippy peeking out from behind the edge of a floating box. The parent places this right against the edge:
+// side 'top' → just above the box (his hands land on its top edge); side 'left' → just left of the box.
+// He slides out from behind the edge after `delay` ms and hides again when `show` turns false.
+export function PeekingSkippy({ side = 'top', size = 70, delay = 500, show = true, style }) {
+  const over = side === 'top';
+  // size: his height when peeking over; his width when peeking from the side
+  const H = over ? size : size / POSE_RATIO.peekSide, W = over ? size * POSE_RATIO.peekOver : size;
+  const t = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const a = show
+      ? Animated.timing(t, { toValue: 1, duration: 420, delay, easing: Easing.out(Easing.cubic), useNativeDriver: true })
+      : Animated.timing(t, { toValue: 0, duration: 160, useNativeDriver: true });
+    a.start();
+    return () => a.stop();
+  }, [show]);
+  const move = over
+    ? { translateY: t.interpolate({ inputRange: [0, 1], outputRange: [H + 4, 0] }) }
+    : { translateX: t.interpolate({ inputRange: [0, 1], outputRange: [W + 4, 0] }) };
+  return (
+    <View pointerEvents="none" style={[{ width: W, height: H, overflow: 'hidden' }, style]}>
+      <Animated.Image source={over ? SKIPPY_POSES.peekOver : SKIPPY_POSES.peekSide} resizeMode="contain"
+        style={{ width: W, height: H, transform: [move] }} />
+    </View>
+  );
+}

@@ -4,7 +4,7 @@ import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, Vie
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { Felt, Stitch, useLook } from '../look';
-import { SKIPPY_POSES } from './Skippy';
+import { PeekingSkippy } from './Skippy';
 
 export function Burger({ onPress, u }) {
   const w = u * 7, t = Math.max(3, u * 1), gap = u * 1.7;
@@ -370,10 +370,10 @@ export function Toast({ message, area, onDismiss }) {
   if (!message) return null;
   return (
     <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, zIndex: 60, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 }, area]}>
-      {/* Skippy says it: his thinking pose beside the bubble */}
-      <Pressable onPress={onDismiss} accessibilityRole="button" accessibilityHint="Closes the message" style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 6, maxWidth: 420 }}>
-        <Image source={SKIPPY_POSES.thinking} resizeMode="contain" style={{ width: 74, height: 100, marginBottom: -8 }} />
-        <View style={[styles.bubble, { flexShrink: 1, marginBottom: 40 }]}>
+      {/* Skippy says it: he peeks out from behind the left edge of the bubble */}
+      <Pressable onPress={onDismiss} accessibilityRole="button" accessibilityHint="Closes the message" style={{ flexDirection: 'row', alignItems: 'center', maxWidth: 420 }}>
+        <PeekingSkippy side="left" size={52} delay={150} style={{ marginRight: -3, zIndex: 1 }} />
+        <View style={[styles.bubble, { flexShrink: 1 }]}>
           <Text style={styles.toast}>{message}</Text>
         </View>
       </Pressable>
