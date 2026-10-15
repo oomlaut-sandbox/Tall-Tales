@@ -59,7 +59,7 @@ function Band({ color, felt, dark, title, sub, action, onAction }) {
   const fg = dark ? colors.ink : colors.white;
   return (
     <View style={{ backgroundColor: color, paddingTop: insets.top + 30, paddingBottom: 30, paddingHorizontal: 24 }}>{/* the title block centred top to bottom in the coloured band */}
-      {felt ? <Image source={BAND_FELT[felt]} resizeMode="stretch" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, width: '100%' }} /> : <><Felt /><Stitch inset={7} /></>}
+      {felt ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT[felt]} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : <><Felt /><Stitch inset={7} /></>}
       {/* the title block, with the action (Select / Cancel) centred beside the whole block */}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ flex: 1 }}>
