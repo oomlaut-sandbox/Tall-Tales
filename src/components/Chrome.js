@@ -251,14 +251,10 @@ export function DiamondIcon({ size = MENU_ICON, color = colors.white, weight = 2
   );
 }
 export function ChevronIcon({ size = MENU_ICON, color = colors.white, weight = 2, count = 1 }) {
-  const arm = size * 0.42;
-  const one = (k) => (
-    <View key={k} style={{ width: arm * 0.75, height: size * 0.62 }}>
-      <View style={{ position: 'absolute', left: 0, top: size * 0.31 - arm / 2 - weight / 2 + arm * 0.18, width: arm, height: weight, backgroundColor: color, transform: [{ rotate: '45deg' }] }} />
-      <View style={{ position: 'absolute', left: 0, top: size * 0.31 + arm / 2 - weight / 2 - arm * 0.18, width: arm, height: weight, backgroundColor: color, transform: [{ rotate: '-45deg' }] }} />
-    </View>
-  );
-  return <View style={{ width: size, height: size, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: count > 1 ? 1 : 0 }}>{Array.from({ length: count }, (_, k) => one(k))}</View>;
+  // a corner (top and right edges of a small square) turned to point right
+  const w = size * 0.5;
+  const one = (k) => <View key={k} style={{ width: w, height: w, borderTopWidth: weight, borderRightWidth: weight, borderColor: color, transform: [{ rotate: '45deg' }], marginLeft: k ? -w * 0.15 : 0 }} />;
+  return <View style={{ width: size, height: size, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingRight: w * 0.3 }}>{Array.from({ length: count }, (_, k) => one(k))}</View>;
 }
 export function TextIcon({ size = MENU_ICON, color = colors.white, text }) {
   return (
