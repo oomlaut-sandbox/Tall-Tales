@@ -236,7 +236,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 <Text style={[styles.btn, { fontSize: 22 }]}>‹</Text>
               </Pressable>
               <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
-              <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><Text style={[styles.btn, { color: colors.highlight }]}>Finish</Text></Pressable>
+              <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><Text style={[styles.btn, styles.finish]}>Finish</Text></Pressable>
             </View>
           </Bar>
         </View>
@@ -252,15 +252,15 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <Text style={[styles.btn, { fontSize: 22 }]}>‹</Text>
         </Pressable>
         <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
-        <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><Text style={[styles.btn, { color: colors.highlight }]}>Finish</Text></Pressable>
+        <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><Text style={[styles.btn, styles.finish]}>Finish</Text></Pressable>
       </Bar>
       </View>
       )}
 
       <Panel open={pagesOpen} side="right" title="Pages" bottom={wide ? 0 : barH} inset={wide ? BL.rightW : 0} onClose={() => setPagesOpen(false)}>
-        <ScrollView style={{ maxHeight: 380 }} contentContainerStyle={{ gap: 10 }}>
+        <ScrollView style={{ maxHeight: Math.max(380, winH * 0.55) }} contentContainerStyle={{ gap: 14, paddingBottom: 6 }}>
           {draft.pages.map((p, k) => (
-            <View key={p.pid} style={[styles.prow, k === i && { borderColor: colors.highlight }]}>
+            <View key={p.pid} style={[styles.prow, k === i && { borderColor: colors.green }]}>
               <Pressable onPress={() => { setI(k); setPagesOpen(false); }} style={styles.thumb} accessibilityLabel={`Go to page ${k + 1}`}>
                 {p.uri ? <Image source={{ uri: p.uri }} style={styles.fill} resizeMode="cover" /> : <Text style={styles.thumbNum}>{k + 1}</Text>}
               </Pressable>
@@ -375,13 +375,14 @@ const styles = StyleSheet.create({
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, padding: 0 },
   sub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 12, marginTop: 2 },
   btn: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, paddingHorizontal: 3 },
-  prow: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#2a2a2a', padding: 8, borderWidth: 2, borderColor: 'transparent' },
-  thumb: { width: 44, height: 44, backgroundColor: '#666', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  finish: { backgroundColor: colors.green, color: colors.white, paddingHorizontal: 14, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' }, // a green pill
+  prow: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#2a2a2a', padding: 12, borderWidth: 2, borderColor: 'transparent' },
+  thumb: { width: 64, height: 64, backgroundColor: '#666', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   thumbNum: { color: colors.white, fontWeight: '700', fontFamily: fonts.ui },
-  prowTitle: { color: colors.white, fontWeight: '700', fontSize: 15, fontFamily: fonts.ui },
-  prowSub: { color: '#bbb', fontSize: 13, fontFamily: fonts.ui },
-  pbtn: { width: 32, height: 32, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
-  pbtnText: { color: colors.white, fontWeight: '700', fontSize: 16 },
+  prowTitle: { color: colors.white, fontWeight: '700', fontSize: 17, fontFamily: fonts.ui, marginBottom: 3 },
+  prowSub: { color: '#bbb', fontSize: 14, fontFamily: fonts.ui },
+  pbtn: { width: 40, height: 40, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
+  pbtnText: { color: colors.white, fontWeight: '700', fontSize: 18 },
   deleteLink: { color: '#ff6b6b', fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
   warn: { color: '#e6e6e6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 21 },
   wide: { flex: 1, backgroundColor: colors.tile, paddingVertical: 12, alignItems: 'center' },

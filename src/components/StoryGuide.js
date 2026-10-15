@@ -22,10 +22,9 @@ export default function StoryGuide({ visible, onClose, area }) {
   const last = step === GUIDE_STEPS.length - 1;
   return (
     <View style={[styles.scrim, area]}>
-      {/* black, a little see-through, with the page softly blurred behind it (like the Book Store cards) */}
+      {/* solid near-black, like the menus' title bars and the Book Store cards */}
       <View style={styles.card} accessibilityRole="summary">
-        <BlurView pointerEvents="none" tint="dark" intensity={22} style={StyleSheet.absoluteFill} />
-        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.62)' }]} />
+        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#141414' }]} />
         <Text style={styles.kicker}>How to make a story · {step + 1} of {GUIDE_STEPS.length}</Text>
         <Text style={styles.title}>{s.title}</Text>
         <Text style={styles.body}>{s.body}</Text>

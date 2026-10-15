@@ -242,6 +242,51 @@ export function InfoIcon({ size = MENU_ICON, color = colors.white, weight = 2 })
   );
 }
 
+export function DiamondIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
+  const d = size * 0.68;
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: d, height: d, borderWidth: weight, borderColor: color, transform: [{ rotate: '45deg' }] }} />
+    </View>
+  );
+}
+export function ChevronIcon({ size = MENU_ICON, color = colors.white, weight = 2, count = 1 }) {
+  const arm = size * 0.42;
+  const one = (k) => (
+    <View key={k} style={{ width: arm * 0.75, height: size * 0.62 }}>
+      <View style={{ position: 'absolute', left: 0, top: size * 0.31 - arm / 2 - weight / 2 + arm * 0.18, width: arm, height: weight, backgroundColor: color, transform: [{ rotate: '45deg' }] }} />
+      <View style={{ position: 'absolute', left: 0, top: size * 0.31 + arm / 2 - weight / 2 - arm * 0.18, width: arm, height: weight, backgroundColor: color, transform: [{ rotate: '-45deg' }] }} />
+    </View>
+  );
+  return <View style={{ width: size, height: size, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: count > 1 ? 1 : 0 }}>{Array.from({ length: count }, (_, k) => one(k))}</View>;
+}
+export function TextIcon({ size = MENU_ICON, color = colors.white, text }) {
+  return (
+    <View style={{ width: size + 8, height: size, alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ color, fontFamily: fonts.ui, fontWeight: '700', fontSize: size * 0.9, lineHeight: size * 1.05 }}>{text}</Text>
+    </View>
+  );
+}
+export function NoteIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
+  return (
+    <View style={{ width: size, height: size }}>
+      <View style={{ position: 'absolute', left: size * 0.12, top: size * 0.6, width: size * 0.42, height: size * 0.34, borderRadius: size, backgroundColor: color, transform: [{ rotate: '-20deg' }] }} />
+      <View style={{ position: 'absolute', left: size * 0.5, top: size * 0.05, width: weight, height: size * 0.72, backgroundColor: color }} />
+      <View style={{ position: 'absolute', left: size * 0.5, top: size * 0.05, width: size * 0.36, height: weight, backgroundColor: color, transform: [{ rotate: '30deg' }, { translateX: size * 0.03 }, { translateY: size * 0.08 }] }} />
+    </View>
+  );
+}
+export function DotIcon({ size = MENU_ICON, color = colors.white }) {
+  return <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}><View style={{ width: size * 0.62, height: size * 0.62, borderRadius: size, backgroundColor: color }} /></View>;
+}
+export function ListIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
+  return (
+    <View style={{ width: size, height: size, justifyContent: 'space-evenly', paddingVertical: 2 }}>
+      {[0, 1, 2].map((k) => <View key={k} style={{ height: weight, backgroundColor: color }} />)}
+    </View>
+  );
+}
+
 // Share: a small solid heart, made of two rounded halves leaning together.
 export function HeartIcon({ size = 15, color = colors.white }) {
   const w = size * 0.52, h = size * 0.8;

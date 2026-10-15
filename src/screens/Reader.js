@@ -29,13 +29,13 @@ function PeelLayer({ start, ...props }) {
 }
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { Bar, BarMeta, Burger, DogEar, GearIcon, Option, Panel, PauseButton, PlayButton, RecordButton, Slider, SIDE_MENU_TOP } from '../components/Chrome';
+import { Bar, BarMeta, Burger, ChevronIcon, DiamondIcon, DogEar, DotIcon, GearIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, RecordButton, Slider, SIDE_MENU_TOP, TextIcon } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
 export const DEFAULT_SPEED = 0.75;
 export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : DEFAULT_SPEED);
-// Book narrators (ElevenLabs). Hannah (voice key 'lily') is the default.
+// Book narrators (ElevenLabs). Anne (voice key 'lily') is the default.
 // A tiny printed page: white sheet with the picture and words squares, upright or sideways.
 function PageShape({ wide }) {
   const W = wide ? 40 : 30, H = wide ? 30 : 40, q = 15;
@@ -49,7 +49,7 @@ function PageShape({ wide }) {
   );
 }
 
-export const NARRATORS = [['lily', 'Hannah'], ['gregory', 'Frank']]; // add more voices here (and in ci/narrate.js)
+export const NARRATORS = [['lily', 'Anne'], ['gregory', 'Henry']]; // add more voices here (and in ci/narrate.js)
 const narratorOf = (prefs) => (NARRATORS.some(([k]) => k === prefs.narrator) ? prefs.narrator : 'lily');
 const NARRATOR = 0.92; // the phone voice's normal pace
 const VOICE_RECORDING = {
@@ -69,10 +69,10 @@ import { getRecording, listRecordings, pageKey, removeRecording, saveRecording }
 import { AUDIO, TIMINGS } from '../narration';
 
 const MODES = [
-  ['◇', 'self', 'Read Yourself', 'Page by page with no audio'],
-  ['Aa', 'learn', 'Learn to Read', 'Says a word when you touch it'],
-  ['»', 'auto', 'Auto Play', 'Reads the full story with audio'],
-  ['›', 'page', 'Page by Page Play', 'Reads a page at a time with audio'],
+  [<DiamondIcon />, 'self', 'Read Yourself', 'Page by page with no audio'],
+  [<TextIcon text="Aa" />, 'learn', 'Learn to Read', 'Says a word when you touch it'],
+  [<ChevronIcon count={2} />, 'auto', 'Auto Play', 'Reads the full story with audio'],
+  [<ChevronIcon />, 'page', 'Page by Page Play', 'Reads a page at a time with audio'],
   // ['✦', 'interactive', 'Interactive', 'Image interaction with touch'],  (hidden for now; hotspot code kept)
 ];
 
@@ -683,7 +683,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         {playView === 'voices' ? (
           <>
             {NARRATORS.map(([k, label]) => (
-              <Option key={k} glyph="♫" title={label} sub={k === 'lily' ? 'Warm and gentle' : 'A lovable old bedtime bear'} selected={narratorOf(prefs) === k}
+              <Option key={k} glyph={<NoteIcon />} title={label} sub={k === 'lily' ? 'Warm and gentle' : 'A lovable old bedtime bear'} selected={narratorOf(prefs) === k}
                 onPress={() => { stopReading(); setPrefs((p) => ({ ...p, narrator: k })); toast(`${label} will read the stories.`); }} />
             ))}
             <Text style={styles.help}>The voice reads the stories aloud and sounds out words in Learn to Read. Pages you recorded in your own voice still play in yours.</Text>
@@ -705,7 +705,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           }} />
           </React.Fragment>
         ))}
-        <Option glyph="♫" title="Voices" sub={`Narrator: ${(NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1]}`} onPress={() => setPlayView('voices')} />
+        <Option glyph={<NoteIcon />} title="Voices" sub={`Narrator: ${(NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1]}`} onPress={() => setPlayView('voices')} />
         <View style={styles.setting}>
           <Text style={styles.help}>Playback speed</Text>
           <Slider value={speedDraft ?? speedOf(prefs)} min={0.5} max={1.5} step={0.05} leftLabel="Slower" rightLabel="Faster"
@@ -751,10 +751,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       <Panel open={panel === 'rec'} side="right" title="Recording Options" {...panelPos} onClose={() => setPanel(null)}>
         {recView === 'main' ? (
           <>
-            <Option glyph="●" title="Start Recording" sub={`Read this story in your own voice, starting on page ${Math.min(idx + 1, n)}`} disabled={idx >= n} onPress={startRec} />
-            <Option glyph="≡" title="Your Recordings" sub="Listen to or remove the pages you recorded" onPress={openRecList} />
-            <Option glyph={<GearIcon size={14} />} title="Recording Settings" sub="Choose whose voice reads the story" onPress={() => setRecView('settings')} />
-            <Option glyph="?" title="Help" sub="How recording works" onPress={() => setRecView('help')} />
+            <Option glyph={<DotIcon />} title="Start Recording" sub={`Read this story in your own voice, starting on page ${Math.min(idx + 1, n)}`} disabled={idx >= n} onPress={startRec} />
+            <Option glyph={<ListIcon />} title="Your Recordings" sub="Listen to or remove the pages you recorded" onPress={openRecList} />
+            <Option glyph={<GearIcon size={MENU_ICON} />} title="Recording Settings" sub="Choose whose voice reads the story" onPress={() => setRecView('settings')} />
+            <Option glyph={<TextIcon text="?" />} title="Help" sub="How recording works" onPress={() => setRecView('help')} />
           </>
         ) : (
           <Pressable onPress={() => setRecView('main')} hitSlop={8}><Text style={styles.back}>‹ Back</Text></Pressable>

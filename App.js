@@ -15,7 +15,7 @@ import Profile from './src/screens/Profile';
 import ParentGate from './src/components/ParentGate';
 import Reader from './src/screens/Reader';
 import Publisher, { draftFrom } from './src/screens/Publisher';
-import { STORIES } from './src/story';
+import { SHOWN_BOOKS, STORIES } from './src/story';
 import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
@@ -123,7 +123,7 @@ function Root() {
           </View>
         )}
         {(screen === 'library' || (screen === 'start' && peek === 'library')) && (
-          <Library u={u} stories={[...STORIES.filter((s) => !removed.includes(s.id)), ...userStories]} openStory={openStory} openMenu={openMenu}
+          <Library u={u} stories={[...STORIES.filter((s) => SHOWN_BOOKS.includes(s.id) && !removed.includes(s.id)), ...userStories]} openStory={openStory} openMenu={openMenu}
             onCreate={() => openPublisher(null)} onEdit={openPublisher}
             removedCount={removed.length} onRestore={() => setRemovedSaved([])}
             onShare={(s) => shareInvite(s.title)} // an invitation to the app, not the book
@@ -179,6 +179,7 @@ function Root() {
             </View>
           </View>
           <Option glyph={<InfoIcon />} title="About" sub="Learn more about the app" onPress={() => { setSettings(false); go('about'); }} />
+          <View style={{ height: 14 }} />
         </Panel>
         {opening ? (
           <BookOpen u={u} story={opening.story} cover={opening.cover} rect={opening.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}

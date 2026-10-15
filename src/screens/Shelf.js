@@ -7,7 +7,7 @@ import { Felt, Stitch } from '../look';
 import { Bar, BarMeta, Burger, Panel, WithBar } from '../components/Chrome';
 import { accessLabel, bundledStory, cachedCatalog, coverFor, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
-import { STORIES } from '../story';
+import { SHOWN_BOOKS, STORIES } from '../story';
 import { BlurView } from 'expo-blur';
 const AnimatedBlur = Animated.createAnimatedComponent(BlurView);
 import { playSound } from '../sound';
@@ -160,8 +160,10 @@ export function Store({ u, openStory, openMenu }) {
     if (pull) setRefreshing(false);
   };
   useEffect(() => { cachedCatalog().then((c) => setCat((cur) => cur || c)); load(false); }, []);
-  const rows = cat ? shelvesWithBooks(cat) : [];
-  const featured = cat ? cat.books.find((b) => b.featured) : null;
+  // only the books shown for now (see SHOWN_BOOKS)
+  const shown = cat ? { ...cat, books: cat.books.filter((b) => SHOWN_BOOKS.includes(b.id)) } : null;
+  const rows = shown ? shelvesWithBooks(shown) : [];
+  const featured = shown ? shown.books.find((b) => b.featured) : null;
   // Read now: the cover in the card opens like a book does from My Library (the card stays until the reader takes over)
   const read = (b, rect) => { const st = bundledStory(b.id); if (st) openStory(st, rect); };
   return (
