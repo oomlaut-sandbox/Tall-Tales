@@ -542,9 +542,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <Pressable onPress={() => setCoverTitle({ size: Math.max(0.05, cover.title.size - 0.015) })} style={styles.sizeBtn} accessibilityLabel="Smaller title"><Text style={[styles.donePillText, { fontSize: 14 }]}>A</Text></Pressable>
                   <Pressable onPress={() => setCoverTitle({ size: Math.min(0.24, cover.title.size + 0.015) })} style={styles.sizeBtn} accessibilityLabel="Bigger title"><Text style={[styles.donePillText, { fontSize: 22 }]}>A</Text></Pressable>
-                  {/* colour: a little colour wheel, the title's colour in its middle */}
+                  {/* colour: a white colour wheel (8 slices), like the other tool icons */}
                   <Pressable onPress={() => { setCoverTool((x) => (x === 'color' ? null : 'color')); }} style={[styles.sizeBtn, coverTool === 'color' && styles.toolOn]} accessibilityLabel="Title colour">
-                    <ColorWheel color={cover.title.color || '#ffffff'} />
+                    <ColorWheel />
                   </Pressable>
                   {/* font */}
                   <Pressable onPress={() => { setCoverTool((x) => (x === 'font' ? null : 'font')); }} style={[styles.sizeBtn, coverTool === 'font' && styles.toolOn]} accessibilityLabel="Title font">
@@ -626,16 +626,14 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   );
 }
 
-// The colour button: a little colour wheel (the spectrum in 12 slices), with a dot of the title's colour in the middle.
-const WHEEL = ['#ff3b30', '#ff8a00', '#ffcc00', '#c6e000', '#4cd964', '#00c7a0', '#00c3ff', '#2f7bff', '#5856d6', '#a14bd9', '#ff2d92', '#ff3b6b'];
-function ColorWheel({ size = 26, color }) {
-  const r = size / 2, w = Math.ceil(size * 0.3);
+// The colour button: a plain white colour wheel to match the other tool icons: a circle cut into 8 equal slices.
+function ColorWheel({ size = 22 }) {
+  const line = 1.5;
   return (
-    <View style={{ width: size, height: size, borderRadius: r, overflow: 'hidden', borderWidth: 1.5, borderColor: '#ffffff' }}>
-      {WHEEL.map((c, k) => (
-        <View key={c} style={{ position: 'absolute', left: r - w / 2 - 1.5, top: -1.5, width: w, height: r, backgroundColor: c, transformOrigin: 'bottom', transform: [{ rotate: `${k * 30}deg` }] }} />
+    <View style={{ width: size, height: size, borderRadius: size / 2, borderWidth: 2, borderColor: '#ffffff', alignItems: 'center', justifyContent: 'center' }}>
+      {[0, 45, 90, 135].map((a) => (
+        <View key={a} style={{ position: 'absolute', width: line, height: size - 2, backgroundColor: '#ffffff', transform: [{ rotate: `${a}deg` }] }} />
       ))}
-      <View style={{ position: 'absolute', left: r - 6.5, top: r - 6.5, width: 10, height: 10, borderRadius: 5, borderWidth: 1.5, borderColor: '#ffffff', backgroundColor: color }} />
     </View>
   );
 }
@@ -646,7 +644,7 @@ const styles = StyleSheet.create({
   editorTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
   coverSquare: { backgroundColor: '#7d7d7d', overflow: 'hidden', marginBottom: 14, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10 },
   toolOn: { backgroundColor: colors.green },
-  swatches: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', gap: 8, marginTop: 12 },
+  swatches: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', gap: 8, marginTop: 22 },
   swatch: { width: 30, height: 30, borderRadius: 15, borderWidth: 2, borderColor: 'rgba(255,255,255,0.35)' },
   swatchOn: { borderColor: colors.white, borderWidth: 3, transform: [{ scale: 1.12 }] },
   fontChip: { height: 36, borderRadius: 18, paddingHorizontal: 14, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
