@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
   restore: { fontFamily: fonts.ui, fontSize: 15, color: '#d0d0d0', textDecorationLine: 'underline', textAlign: 'center' },
   confirm: { position: 'absolute', left: 16, right: 16, bottom: 150, backgroundColor: colors.panel, padding: 18, gap: 14, zIndex: 40 },
   confirmText: { color: colors.white, fontFamily: fonts.ui, fontSize: 16, lineHeight: 22 },
-  actBtn: { flex: 1, paddingVertical: 12, alignItems: 'center', overflow: 'hidden' },
+  actBtn: { flex: 1, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
   actText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   barBtn: { paddingVertical: 10, paddingHorizontal: 6 },
   barSmall: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 }, // Select / Cancel: small, tucked in the corner

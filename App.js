@@ -23,6 +23,7 @@ import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
 import { CircleIcon, InfoIcon, LibraryIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
 import { DESK_FELT, Felt, LookContext } from './src/look';
+import { hideSplash } from './src/launch';
 import { playSound, setEffects } from './src/sound';
 import { stopSpeech } from './src/speech';
 import { stopVoice } from './src/voice';
@@ -193,7 +194,9 @@ export default function App() {
   if (!loaded || !pictureReady) return <View style={{ flex: 1, backgroundColor: colors.desk }} />;
   return (
     <SafeAreaProvider>
+      <View style={{ flex: 1 }} onLayout={hideSplash}>
       <Root />
+      </View>
     </SafeAreaProvider>
   );
 }

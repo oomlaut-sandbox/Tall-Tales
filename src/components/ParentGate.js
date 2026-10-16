@@ -56,6 +56,6 @@ const styles = StyleSheet.create({
   input: { backgroundColor: '#2e2e2e', color: colors.white, fontFamily: fonts.ui, fontSize: 24, fontWeight: '700', paddingHorizontal: 14, paddingVertical: 10 },
   wrong: { color: '#ff7b7b', fontFamily: fonts.ui, fontSize: 14 },
   row: { flexDirection: 'row', gap: 10, marginTop: 6 },
-  btn: { flex: 1, backgroundColor: colors.tile, paddingVertical: 13, alignItems: 'center', overflow: 'hidden' },
+  btn: { flex: 1, backgroundColor: colors.tile, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
   btnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
 });

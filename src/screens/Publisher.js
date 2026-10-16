@@ -592,6 +592,6 @@ const styles = StyleSheet.create({
   layIc: { width: 64, height: 64, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
   layLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
   pill: { flex: 1, backgroundColor: '#6b6b6b', borderRadius: 22, height: 44, paddingVertical: 0, justifyContent: 'center' }, // Share as PDF / Print: medium grey pills
-  wide: { flex: 1, backgroundColor: colors.tile, paddingVertical: 12, alignItems: 'center', overflow: 'hidden' },
+  wide: { flex: 1, backgroundColor: colors.tile, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
   wideText: { color: colors.white, fontWeight: '700', fontSize: 15, fontFamily: fonts.ui },
 });

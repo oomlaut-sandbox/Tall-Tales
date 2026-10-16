@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   dotOn: { backgroundColor: colors.highlight },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
   skip: { color: colors.muted, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
-  btn: { backgroundColor: colors.tile, paddingHorizontal: 18, paddingVertical: 12, overflow: 'hidden' },
+  btn: { backgroundColor: colors.tile, paddingHorizontal: 20, height: 44, borderRadius: 22, justifyContent: 'center', overflow: 'hidden' }, // pills
   btnMain: { backgroundColor: colors.highlight },
   btnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
 });

@@ -15,6 +15,7 @@ import BookFrame, { Spine, startRoom } from '../components/BookFrame';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Fade } from '../components/PageView';
 import { playSound } from '../sound';
+import { appShown } from '../launch';
 
 
 export const COVER_BROWN = '#6f4b32';
@@ -62,10 +63,16 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
   const enter = useRef(new Animated.Value(closed ? 1 : 0)).current;
   useEffect(() => {
     if (!closed) return;
-    // a short pause first, so the felt background is on screen before the book slides in from the right
-    const t = setTimeout(() => playSound('slide', 0.8), 450);
-    Animated.timing(enter, { toValue: 0, duration: 700, delay: 450, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(() => playSound('setDown', 0.7));
-    return () => clearTimeout(t);
+    // wait until the launch screen has gone, then a short pause, then the book slides in from the right
+    let t, alive = true;
+    appShown.then(() => {
+      if (!alive) return;
+      t = setTimeout(() => {
+        playSound('slide', 0.8);
+        Animated.timing(enter, { toValue: 0, duration: 700, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(() => playSound('setDown', 0.7));
+      }, 350);
+    });
+    return () => { alive = false; clearTimeout(t); };
   }, []);
   const slideX = Animated.add(
     slide.interpolate({ inputRange: [0, 1], outputRange: [0, -winW] }),
