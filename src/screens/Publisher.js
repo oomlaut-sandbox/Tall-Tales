@@ -286,11 +286,11 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           </View>
         ) : (
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('share'); }} disabled={making} style={[styles.wide, { flex: 1, backgroundColor: colors.bar }]}>
-              <Text style={styles.wideText}>{making ? 'Working…' : 'Share as PDF…'}</Text>
+            <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('share'); }} disabled={making} style={[styles.wide, styles.pill]}>
+              <Text style={styles.wideText}>{making ? 'Working…' : 'Share as PDF'}</Text>
             </Pressable>
-            <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('print'); }} disabled={making} style={[styles.wide, { flex: 1, backgroundColor: colors.bar }]}>
-              <Text style={styles.wideText}>Print…</Text>
+            <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('print'); }} disabled={making} style={[styles.wide, styles.pill]}>
+              <Text style={styles.wideText}>Print</Text>
             </Pressable>
           </View>
         )}
@@ -385,6 +385,7 @@ const styles = StyleSheet.create({
   pbtnText: { color: colors.white, fontWeight: '700', fontSize: 18 },
   deleteLink: { color: '#ff6b6b', fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
   warn: { color: '#e6e6e6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 21 },
+  pill: { flex: 1, backgroundColor: '#6b6b6b', borderRadius: 22, height: 44, paddingVertical: 0, justifyContent: 'center' }, // Share as PDF / Print: medium grey pills
   wide: { flex: 1, backgroundColor: colors.tile, paddingVertical: 12, alignItems: 'center', overflow: 'hidden' },
   wideText: { color: colors.white, fontWeight: '700', fontSize: 15, fontFamily: fonts.ui },
 });
