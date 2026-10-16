@@ -10,7 +10,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
 import { Felt } from '../look';
-import { Bar, Burger, DogEar } from '../components/Chrome';
+import { Bar, Burger } from '../components/Chrome';
 import BookFrame, { Spine, startRoom } from '../components/BookFrame';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Fade } from '../components/PageView';
@@ -18,8 +18,6 @@ import { playSound } from '../sound';
 
 
 export const COVER_BROWN = '#6f4b32';
-const COVER_FLAP = '#a27552'; // the turned-up corner of the leather cover: a lighter brown
-const COVER_UNDER = '#ababab'; // the page showing under that corner: a lighter grey than in the books
 const LEATHER = require('../../assets/leather.jpg'); // Jörg's brown leather, outside and inside the cover
 const DESK_FELT = require('../../assets/desk-felt.jpg'); // trying Jörg's charcoal felt as the start page's background
 
@@ -161,7 +159,6 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
                 <Animated.View style={[StyleSheet.absoluteFill, { opacity: frontOp, backgroundColor: COVER_BROWN }]}>
                   <Image source={LEATHER} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
                   <Pressable style={StyleSheet.absoluteFill} onPress={open} accessibilityRole="button" accessibilityLabel="Open the book" />
-                  {!opening ? <DogEar u={u} onPress={open} label="Open the book" flap={COVER_FLAP} under={COVER_UNDER} /> : null}
                 </Animated.View>
                 {/* inside of the cover: the pebbles, mirrored so they read right once turned over */}
                 <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: backOp, transform: [wide ? { scaleX: -1 } : { scaleY: -1 }] }]}>{pebbles}</Animated.View>
