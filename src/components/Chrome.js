@@ -225,7 +225,18 @@ export function PlayGlyph({ size = MENU_ICON, color = colors.white, count = 1 })
     </View>
   );
 }
-// A small solid speech bubble (rounded box with a little point at the bottom left), for Read Yourself.
+// Simple round glasses: two circles and a bridge, for Read Yourself.
+export function GlassesIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
+  const d = size * 0.42;
+  return (
+    <View style={{ width: size + 4, height: size, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: d, height: d, borderRadius: d, borderWidth: weight, borderColor: color }} />
+      <View style={{ width: size * 0.14, height: weight, backgroundColor: color, marginTop: -d * 0.2 }} />
+      <View style={{ width: d, height: d, borderRadius: d, borderWidth: weight, borderColor: color }} />
+    </View>
+  );
+}
+// A small solid speech bubble (rounded box with a little point at the bottom left), for Voices.
 export function BubbleIcon({ size = MENU_ICON, color = colors.white }) {
   const w = size * 0.95, h = size * 0.62, t = size * 0.22;
   return (

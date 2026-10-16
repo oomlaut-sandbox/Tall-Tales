@@ -29,7 +29,7 @@ function PeelLayer({ start, ...props }) {
 }
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { Bar, BarMeta, BubbleIcon, Burger, ChevronIcon, DiamondIcon, DogEar, DotIcon, GearIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon } from '../components/Chrome';
+import { Bar, BarMeta, BubbleIcon, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, GearIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
@@ -69,7 +69,7 @@ import { getRecording, listRecordings, pageKey, removeRecording, saveRecording }
 import { AUDIO, TIMINGS } from '../narration';
 
 const MODES = [
-  [<BubbleIcon />, 'self', 'Read Yourself', 'Page by page with no audio'],
+  [<GlassesIcon />, 'self', 'Read Yourself', 'Page by page with no audio'],
   [<TextIcon text="Aa" />, 'learn', 'Learn to Read', 'Says a word when you touch it'],
   [<PlayGlyph count={2} />, 'auto', 'Auto Play', 'Reads the full story with audio'],
   [<PlayGlyph />, 'page', 'Page by Page Play', 'Reads a page at a time with audio'],
@@ -704,7 +704,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           }} />
           </React.Fragment>
         ))}
-        <Option glyph={<NoteIcon />} title="Voices" sub={`Narrator: ${(NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1]}`} onPress={() => setPlayView('voices')} />
+        <Option glyph={<BubbleIcon />} title="Voices" sub={`Narrator: ${(NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1]}`} onPress={() => setPlayView('voices')} />
         <View style={styles.setting}>
           <Text style={styles.help}>Playback speed</Text>
           <Slider value={speedDraft ?? speedOf(prefs)} min={0.5} max={1.5} step={0.05} leftLabel="Slower" rightLabel="Faster"
