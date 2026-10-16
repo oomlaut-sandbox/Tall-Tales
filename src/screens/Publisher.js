@@ -110,8 +110,17 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const update = (patch) => setDraft((d) => ({ ...d, pages: d.pages.map((p, k) => (k === i ? { ...p, ...patch } : p)) }));
 
   // Choose a square photo, keep a copy in the story's folder: { uri, w, h }, or null if cancelled.
-  const choosePhoto = async () => {
-    const r = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'images', quality: 0.9, allowsEditing: true, aspect: [1, 1] });
+  // source: 'library' (the phone's photos) or 'camera' (take a photo, e.g. of a drawing; only after the grown-up check)
+  const choosePhoto = async (source = 'library') => {
+    const opts = { mediaTypes: 'images', quality: 0.9, allowsEditing: true, aspect: [1, 1] };
+    let r;
+    if (source === 'camera') {
+      const perm = await ImagePicker.requestCameraPermissionsAsync();
+      if (!perm.granted) { toast('Oomlaut Reader isn’t allowed to use the camera. You can turn it on in Settings.'); return null; }
+      r = await ImagePicker.launchCameraAsync(opts);
+    } else {
+      r = await ImagePicker.launchImageLibraryAsync(opts);
+    }
     if (r.canceled || !r.assets || !r.assets[0]) return null;
     const a = r.assets[0];
     let src = a.uri, w = a.width || 1, h = a.height || 1;
@@ -143,9 +152,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const cover = draft.cover || null;
   const setCover = (c) => setDraft((d) => ({ ...d, cover: c }));
   const openCover = () => { setPageDone(false); setCoverAsk(false); setCoverTitling(!!(cover && cover.title)); setCoverOpen(true); };
-  const pickCover = async () => {
+  const pickCover = async (source) => {
     try {
-      const ph = await choosePhoto();
+      const ph = await choosePhoto(source);
       if (!ph) return;
       if (cover && cover.uri) dropPicture(cover.uri);
       setCover({ ...ph, title: cover ? cover.title || null : null });
@@ -182,26 +191,23 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     },
   })).current;
 
-  const pickImage = async () => {
+  // Add Image asks first: choose a picture from the phone, or take a photo (a drawing, say).
+  // Taking a photo opens the camera, so a grown-up answers a question before it opens.
+  const [imgAsk, setImgAsk] = useState(null); // 'page' | 'cover': which square the picture is for
+  const [camGate, setCamGate] = useState(null); // 'page' | 'cover' waiting for the grown-up check
+  const pickImage = () => setImgAsk('page');
+  const placeImage = async (target, source) => {
+    if (target === 'cover') return pickCover(source);
     try {
-      const r = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'images', quality: 0.9, allowsEditing: true, aspect: [1, 1] });
-      if (r.canceled || !r.assets || !r.assets[0]) return;
-      const a = r.assets[0];
-      // Pictures are kept at most 1,600 pixels across: still sharp on an iPad, but much smaller.
-      let src = a.uri, w = a.width || 1, h = a.height || 1;
-      if (Math.max(w, h) > MAX_PX) {
-        try {
-          const r2 = await ImageManipulator.manipulateAsync(a.uri, [{ resize: w >= h ? { width: MAX_PX } : { height: MAX_PX } }], { compress: 0.85, format: ImageManipulator.SaveFormat.JPEG });
-          src = r2.uri; w = r2.width; h = r2.height;
-        } catch (e) { /* keep the original if resizing fails */ }
-      }
-      const uri = await keepPicture(draft.id, src);
+      const ph = await choosePhoto(source);
+      if (!ph) return;
       if (page.uri) dropPicture(page.uri);
-      update({ uri, w, h });
+      update(ph);
     } catch (e) {
-      toast('Couldn’t open your photos. Check that Oomlaut Reader is allowed to use Photos in Settings.');
+      toast(source === 'camera' ? 'Couldn’t open the camera.' : 'Couldn’t open your photos. Check that Oomlaut Reader is allowed to use Photos in Settings.');
     }
   };
+
 
   const removeImage = () => {
     if (page.uri) dropPicture(page.uri);
@@ -496,11 +502,11 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               return (
                 <View style={[styles.coverSquare, { width: W, height: W }]}>
                   {cover && cover.uri ? (
-                    <Pressable onPress={pickCover} style={StyleSheet.absoluteFill} accessibilityLabel="Change the cover picture">
+                    <Pressable onPress={() => setImgAsk('cover')} style={StyleSheet.absoluteFill} accessibilityLabel="Change the cover picture">
                       <Image source={{ uri: cover.uri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
                     </Pressable>
                   ) : (
-                    <Pressable onPress={pickCover} style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]} accessibilityRole="button">
+                    <Pressable onPress={() => setImgAsk('cover')} style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]} accessibilityRole="button">
                       <Text style={[styles.plus, { fontSize: u * 30, lineHeight: u * 30 }]}>+</Text>
                       <Text style={styles.addImage}>Add Image</Text>
                     </Pressable>
@@ -593,6 +599,18 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           </View>
         </View>
       ) : null}
+      {imgAsk ? (
+        <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
+          <View style={styles.choice}>
+            <Text style={styles.choiceTitle}>Add a picture</Text>
+            <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); placeImage(t, 'library'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Choose a picture</Text></Pressable>
+            {/* a photo of a drawing, say; the camera only opens after the grown-up check */}
+            <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setCamGate(t); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Take a photo</Text></Pressable>
+            <Pressable onPress={() => setImgAsk(null)} style={[styles.choiceBtn, { marginTop: 14 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Cancel</Text></Pressable>
+          </View>
+        </View>
+      ) : null}
+      <ParentGate visible={!!camGate} reason="Taking a photo opens the camera." onPass={() => { const t = camGate; setCamGate(null); setTimeout(() => placeImage(t, 'camera'), 250); }} onCancel={() => setCamGate(null)} />
       <StoryGuide visible={guide} onClose={closeGuide} area={wide ? { left: BL.leftW, right: BL.rightW } : { top: BL.topH, bottom: BL.barH }} />
       <ParentGate visible={!!gateFor} reason={gateFor?.mode === 'print' ? 'Printing opens your phone’s print options.' : 'Sharing sends this story outside the app.'} onPass={() => makePdf(gateFor)} onCancel={() => setGateFor(null)} />
     </KeyboardAvoidingView>

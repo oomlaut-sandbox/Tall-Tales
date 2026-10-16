@@ -44,7 +44,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Oomlaut Reader uses your photos as pictures in the stories you make."
+          "photosPermission": "Oomlaut Reader uses your photos as pictures in the stories you make.",
+          "cameraPermission": "Oomlaut Reader uses the camera to take photos, such as of your drawings, for the stories you make."
         }
       ],
       "expo-apple-authentication",
