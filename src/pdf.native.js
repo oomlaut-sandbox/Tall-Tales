@@ -78,7 +78,8 @@ html,body{margin:0;padding:0;background:#fff}
 .num{position:absolute;bottom:22px;font-size:11px;color:#999;font-family:Helvetica,Arial,sans-serif}`;
 }
 
-export async function buildStoryHtml(story, layout = 'stacked', fontKey = 'serif') {
+export async function buildStoryHtml(story0, layout = 'stacked', fontKey = 'serif') {
+  const story = { ...story0, pages: story0.pages.filter((p) => !p.titlePage) }; // the PDF makes its own title page
   const face = await fontFace(fontKey);
   const pics = [];
   for (const p of story.pages) pics.push(await imageData(p.image));

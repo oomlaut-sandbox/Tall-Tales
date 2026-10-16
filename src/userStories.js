@@ -13,13 +13,31 @@ export async function loadUserStories() {
   return list.map(fromSaved);
 }
 
+// The credits line for a title page: 'Written by A.' / 'Illustrated by B.' / 'Written by A and illustrated by B.'
+// (or 'Written and illustrated by A.' when it's the same person). Empty if neither was given.
+export function creditsLine(writer, artist) {
+  const w = (writer || '').trim(), a = (artist || '').trim();
+  if (w && a) return w.toLowerCase() === a.toLowerCase() ? `Written and illustrated by ${w}.` : `Written by ${w} and illustrated by ${a}.`;
+  if (w) return `Written by ${w}.`;
+  if (a) return `Illustrated by ${a}.`;
+  return '';
+}
+
 function fromSaved(s) {
+  const bodyPages = s.pages.map((p, i) => ({ pid: p.pid || `i${i}`, text: p.text || '', image: p.uri ? { uri: p.uri } : null, w: p.w || 1, h: p.h || 1 }));
+  const credits = creditsLine(s.writer, s.artist);
+  const coverImg = s.cover && s.cover.uri ? { uri: s.cover.uri } : (bodyPages[0] && bodyPages[0].image) || null;
+  // Every book opens like 'Different': the cover, a blank back of the cover, and a title page with the credits.
+  const titlePage = { pid: `title-${s.id}`, titlePage: true, text: `${(s.title || 'Untitled story').replace(/\.+$/, '')}.${credits ? ` ${credits}` : ''}`, image: coverImg, w: 1600, h: 1600 };
   return {
     id: s.id,
     title: s.title,
+    writer: s.writer || '',
+    artist: s.artist || '',
+    author: [s.writer, s.artist].filter((x) => x && x.trim()).filter((x, i, a) => a.indexOf(x) === i).join(' and ') || undefined,
     mine: true,
     cover: s.cover && s.cover.uri ? s.cover : null, // made in the Cover Editor (picture and, if wanted, the title)
-    pages: s.pages.map((p, i) => ({ pid: p.pid || `i${i}`, text: p.text || '', image: p.uri ? { uri: p.uri } : null, w: p.w || 1, h: p.h || 1 })),
+    pages: [titlePage, ...bodyPages],
   };
 }
 
@@ -42,7 +60,7 @@ export function saveUserStory(draft) {
     if (!pages.length) {
       if (i >= 0) list.splice(i, 1);
     } else {
-      const saved = { id: draft.id, title: draft.title.trim() || 'Untitled story', pages, cover: draft.cover && draft.cover.uri ? draft.cover : null };
+      const saved = { id: draft.id, title: draft.title.trim() || 'Untitled story', writer: (draft.writer || '').trim(), artist: (draft.artist || '').trim(), pages, cover: draft.cover && draft.cover.uri ? draft.cover : null };
       if (i >= 0) list[i] = saved; else list.push(saved);
     }
     await saveJSON('stories', list);

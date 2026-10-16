@@ -11,7 +11,8 @@ import { Bar, Burger, DogEar, Panel, PageShape } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT } from '../look';
-import { titleStyle } from '../components/CoverArt';
+import { bylineStyle, titleStyle } from '../components/CoverArt';
+import { creditsLine } from '../userStories';
 import { playKey } from '../sound';
 import { deleteUserStory, dropPicture, keepPicture, newPageId, saveUserStory } from '../userStories';
 import StoryGuide from '../components/StoryGuide';
@@ -26,11 +27,13 @@ const FULL = `Books can have up to ${MAX_PAGES} pages. That’s a long story!`;
 const blank = () => ({ pid: newPageId(), text: '', uri: null, w: 1, h: 1 });
 
 export function draftFrom(story) {
-  if (!story) return { id: `s${Date.now()}`, title: '', pages: [blank()] }; // no title yet: the bar invites 'Tap to add title'
+  if (!story) return { id: `s${Date.now()}`, title: '', writer: '', artist: '', pages: [blank()] }; // no title yet: the bar invites 'Tap to add title'
   return {
     id: story.id,
     title: story.title,
-    pages: story.pages.map((p) => ({ pid: p.pid, text: p.text, uri: p.image ? p.image.uri : null, w: p.w, h: p.h })),
+    writer: story.writer || '',
+    artist: story.artist || '',
+    pages: story.pages.filter((p) => !p.titlePage).map((p) => ({ pid: p.pid, text: p.text, uri: p.image ? p.image.uri : null, w: p.w, h: p.h })),
     cover: story.cover || null,
   };
 }
@@ -123,6 +126,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
 
   // ---- The Cover Editor: a square like the words editor. Add a picture, then (if wanted) the title,
   // which can be typed, sized and dragged into place. ----
+  const [titleBox, setTitleBox] = useState(false); // the title (and author / illustrator) box
   const [coverOpen, setCoverOpen] = useState(false);
   const [coverAsk, setCoverAsk] = useState(false); // 'Add the title as text?'
   const [coverTitling, setCoverTitling] = useState(false);
@@ -323,7 +327,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       <Bar u={u}>
         <Burger u={u} onPress={openMenu} />
         <View style={{ flex: 1, minWidth: 0, paddingLeft: 12 }}>
-          <TextInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} style={styles.title} placeholder="Tap to add title" placeholderTextColor="rgba(255,255,255,0.75)" accessibilityLabel="Story title" selectTextOnFocus />
+          <Pressable onPress={() => setTitleBox(true)} accessibilityRole="button" accessibilityLabel="Book title">
+            <Text numberOfLines={1} style={[styles.title, !draft.title.trim() && { color: 'rgba(255,255,255,0.75)' }]}>{draft.title.trim() || 'Tap to add title'}</Text>
+          </Pressable>
           <Text style={styles.sub}>Page {i + 1} of {draft.pages.length} · {saved ? 'Saved' : 'Saving…'}</Text>
         </View>
         <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
@@ -444,6 +450,20 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           </Animated.View>
           </View>
         </KeyboardAvoidingView>      ) : null}
+      {titleBox ? (
+        // the book's title, then (optional) who wrote it and who drew the pictures, for the title page
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, styles.choiceBack]}>
+          <View style={styles.choice}>
+            <Text style={styles.choiceTitle}>Book title</Text>
+            <TextInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder="Type the title" placeholderTextColor="#8a8a8a" autoFocus style={styles.field} accessibilityLabel="Book title" />
+            <Text style={[styles.choiceTitle, { fontSize: 16, marginTop: 6, marginBottom: 0 }]}>Add an author or illustrator?</Text>
+            <Text style={styles.fieldHint}>Optional. They appear on the title page.</Text>
+            <TextInput value={draft.writer || ''} onChangeText={(writer) => setDraft((d) => ({ ...d, writer }))} placeholder="Written by" placeholderTextColor="#8a8a8a" style={styles.field} accessibilityLabel="Written by" />
+            <TextInput value={draft.artist || ''} onChangeText={(artist) => setDraft((d) => ({ ...d, artist }))} placeholder="Illustrated by" placeholderTextColor="#8a8a8a" style={styles.field} accessibilityLabel="Illustrated by" />
+            <Pressable onPress={() => setTitleBox(false)} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 10 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Done</Text></Pressable>
+          </View>
+        </KeyboardAvoidingView>
+      ) : null}
       {coverOpen ? (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk }]}>
           {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
@@ -471,6 +491,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                       <TextInput value={t.text} onChangeText={(text) => setCoverTitle({ text })} multiline
                         style={[titleStyle, { fontSize: t.size * W, lineHeight: t.size * W * 1.2, paddingHorizontal: W * 0.04, minWidth: W * 0.3, outlineWidth: 0 }]}
                         accessibilityLabel="Cover title" />
+                      {t.byline ? <Text style={[titleStyle, bylineStyle, { fontSize: t.size * W * 0.42, lineHeight: t.size * W * 0.6 }]}>{t.byline}</Text> : null}
                     </View>
                   ) : null}
                 </View>
@@ -482,7 +503,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 14 }}>
                   <Pressable onPress={() => setCoverTitle({ size: Math.max(0.05, cover.title.size - 0.015) })} style={styles.sizeBtn} accessibilityLabel="Smaller title"><Text style={[styles.donePillText, { fontSize: 14 }]}>A</Text></Pressable>
                   <Pressable onPress={() => setCoverTitle({ size: Math.min(0.24, cover.title.size + 0.015) })} style={styles.sizeBtn} accessibilityLabel="Bigger title"><Text style={[styles.donePillText, { fontSize: 22 }]}>A</Text></Pressable>
-                  <Text style={styles.coverHint}>Drag the title</Text>
+                  {/* the author / illustrator on the cover too: only if they want it (and gave a name) */}
+                  {creditsLine(draft.writer, draft.artist) ? (
+                    <Pressable onPress={() => setCoverTitle({ byline: cover.title.byline ? '' : creditsLine(draft.writer, draft.artist).replace(/\.$/, '') })}
+                      style={[styles.sizeBtn, { width: undefined, paddingHorizontal: 14 }, cover.title.byline ? { backgroundColor: colors.green } : null]} accessibilityRole="button" accessibilityState={{ selected: !!cover.title.byline }}>
+                      <Text style={[styles.donePillText, { fontSize: 14 }]}>Author</Text>
+                    </Pressable>
+                  ) : <Text style={styles.coverHint}>Drag the title</Text>}
                 </View>
               ) : <View />}
               <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={styles.donePill}><Text style={styles.donePillText}>Done</Text></Pressable>
@@ -526,6 +553,8 @@ const styles = StyleSheet.create({
   coverSquare: { backgroundColor: '#7d7d7d', overflow: 'hidden', marginBottom: 14, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10 },
   sizeBtn: { width: 44, height: 40, borderRadius: 20, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   coverHint: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 13, marginLeft: 4 },
+  field: { backgroundColor: '#2e2e2e', color: colors.white, fontFamily: fonts.ui, fontSize: 17, height: 48, borderRadius: 14, paddingHorizontal: 14 },
+  fieldHint: { color: '#a8a8a8', fontFamily: fonts.ui, fontSize: 13, marginTop: -8 },
   fontsBtn: { flexDirection: 'row', alignItems: 'center', height: 40, borderRadius: 20, paddingHorizontal: 18, backgroundColor: '#5f5f5f' },
   fontMenu: { position: 'absolute', bottom: 48, left: 0, width: 170, backgroundColor: '#2a2a2a', borderRadius: 14, padding: 6, gap: 4, shadowColor: '#000', shadowOpacity: 0.4, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 8 },
   fontRow: { height: 40, borderRadius: 10, justifyContent: 'center', paddingHorizontal: 12 },
