@@ -110,6 +110,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const recorder = useAudioRecorder(VOICE_RECORDING);
   const recStart = useRef(0);
   const pendingRec = useRef(false);
+  const recAuto = useRef(false); // recording carried on to the next page by itself (no instructions bubble again)
   const usingVoice = useRef(false);
   const prefsRef = useRef(prefs);
   prefsRef.current = prefs;
@@ -227,7 +228,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   }, [prefs.speed, prefs.rate, prefs.voice, prefs.narrator, story]);
 
   useEffect(() => {
-    if (pendingRec.current) { pendingRec.current = false; setTimeout(startRec, 350); }
+    if (pendingRec.current) { pendingRec.current = false; recAuto.current = true; setTimeout(startRec, 350); }
   }, [idx]);
 
   /* ---------- recording ---------- */
@@ -245,6 +246,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       recStart.current = Date.now();
       suspendSounds(true);
       setRecording(true);
+      if (!recAuto.current) toast(`Recording page ${st.current.idx + 1}. Turn the page to keep going, or tap ● to stop.`);
+      recAuto.current = false;
     } catch (e) {
       toast('Recording couldn’t start. Try again.');
     }
@@ -600,6 +603,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
       <Felt />
       {/* a small, quiet red dot when this page has a voice recording: top right on phones, top left on iPad */}
+      {/* while recording: a small grey box in the top-left corner, out of the way, with a blinking red dot and the time */}
+      {recording ? <RecIndicator start={recStart.current} /> : null}
       {recPages.includes(idx) && !recording ? (
         <View pointerEvents="none" accessibilityLabel="This page has a voice recording"
           style={[styles.recMark, IS_TABLET ? { left: 14 } : { right: 14 }]} />
@@ -611,12 +616,6 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         {size && idx > 0 ? <Pressable onPress={() => flip(-1)} accessibilityLabel="Previous page" style={[styles.edge, { left: 0, width: edgeW }]} /> : null}
         {size && idx < pages.length - 1 ? <Pressable onPress={() => flip(1)} accessibilityLabel="Next page" style={[styles.edge, { right: 0, width: edgeW }]} /> : null}
         {idx < pages.length - 1 ? <View style={{ position: 'absolute', right: 0, bottom: 0, zIndex: 20 }}><DogEar u={u} under={colors.earUnder} onPress={() => flip(1)} /></View> : null}
-        {recording ? (
-          <View style={styles.recBanner} pointerEvents="none">
-            <View style={styles.recDot} />
-            <Text style={styles.recText}>Recording page {idx + 1}. Turn the page to keep going, or tap ● to stop.</Text>
-          </View>
-        ) : null}
       </View>
       </View>
       </View>
@@ -774,6 +773,27 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   );
 }
 
+// The recording box: grey, top left, a red dot that blinks and the time recorded so far (0:03).
+function RecIndicator({ start }) {
+  const blink = useRef(new Animated.Value(1)).current;
+  const [secs, setSecs] = useState(0);
+  useEffect(() => {
+    const a = Animated.loop(Animated.sequence([
+      Animated.timing(blink, { toValue: 0.15, duration: 550, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+      Animated.timing(blink, { toValue: 1, duration: 550, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+    ]));
+    a.start();
+    const t = setInterval(() => setSecs(Math.floor((Date.now() - start) / 1000)), 250);
+    return () => { a.stop(); clearInterval(t); };
+  }, [start]);
+  return (
+    <View pointerEvents="none" style={styles.recBox} accessibilityLabel={`Recording, ${secs} seconds`}>
+      <Animated.View style={[styles.recBoxDot, { opacity: blink }]} />
+      <Text style={styles.recBoxTime}>{Math.floor(secs / 60)}:{String(secs % 60).padStart(2, '0')}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.desk },
   desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.desk },
@@ -789,9 +809,10 @@ const styles = StyleSheet.create({
   edge: { position: 'absolute', top: 0, bottom: 0, zIndex: 15 },
   half: { position: 'absolute', left: 0, right: 0, overflow: 'hidden', backfaceVisibility: 'hidden' },
   strip: { position: 'absolute', left: 0, right: 0, overflow: 'hidden', transformOrigin: 'top' },
-  recBanner: { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 25, backgroundColor: colors.highlight, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingVertical: 10 },
-  recDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.white },
-  recText: { flex: 1, color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
+  recBox: { position: 'absolute', top: 8, left: 10, zIndex: 30, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(70,70,70,0.92)', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5,
+    shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 4 },
+  recBoxDot: { width: 11, height: 11, borderRadius: 6, backgroundColor: '#e3000f' },
+  recBoxTime: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14, fontVariant: ['tabular-nums'], minWidth: 34 },
   back: { color: colors.muted, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
   setting: { gap: 8, paddingTop: 10, paddingBottom: 8 },
   printBtn: { alignItems: 'center', gap: 6 },
