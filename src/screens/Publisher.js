@@ -2,7 +2,7 @@
 // Everything saves automatically. "Pages" opens a list to reorder or delete pages,
 // or to delete the whole story.
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Image, KeyboardAvoidingView, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, Keyboard, KeyboardAvoidingView, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -183,6 +183,15 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const setCoverTitle = (patch) => setDraft((d) => ({ ...d, cover: { ...d.cover, title: { ...d.cover.title, ...patch } } }));
   // dragging the title around the square
   const coverSize = useRef(1);
+  // The cover square fits the room it has: on a phone held sideways, and above the keyboard while typing
+  // the title, it scales down and sits centred in the space that's left.
+  const [coverArea, setCoverArea] = useState(null); // { w, h } of the space under the 'Cover' heading
+  const [kbUp, setKbUp] = useState(false);
+  useEffect(() => {
+    const a = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () => setKbUp(true));
+    const b = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setKbUp(false));
+    return () => { a.remove(); b.remove(); };
+  }, []);
   const dragFrom = useRef(null);
   const titleDrag = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => !titleEditingRef.current, // the title takes the touch (unless it's being typed in)
@@ -500,10 +509,16 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       {coverOpen ? (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk }]}>
           {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
-          <View style={[styles.editor, { flex: 1, paddingTop: insets.top + 34 }]}>
-            <View style={styles.editorHead}><Text style={styles.editorTitle}>Cover</Text></View>
+          <View style={[styles.editor, { flex: 1, paddingTop: kbUp ? insets.top + 8 : insets.top + (winW > winH ? 12 : 34), paddingLeft: insets.left, paddingRight: insets.right }]}>
+            {!kbUp ? <View style={styles.editorHead}><Text style={styles.editorTitle}>Cover</Text></View> : null}
+            <View style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: kbUp ? 'center' : 'flex-start' }}
+              onLayout={(e) => setCoverArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
             {(() => {
-              const W = winW - 2 * GAP;
+              // room for the tools under the square (hidden while typing) and, upright, for Done at the bottom
+              const toolsH = coverTitling && !kbUp ? 56 + (coverTool ? 96 : 0) : 0;
+              const doneH = kbUp || winW > winH ? 0 : 76;
+              const fitH = coverArea ? coverArea.h - toolsH - doneH - 8 : winW;
+              const W = Math.max(120, Math.floor(Math.min(winW - insets.left - insets.right - 2 * GAP, fitH)));
               coverSize.current = W;
               const t = cover && cover.title;
               return (
@@ -536,8 +551,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               );
             })()}
             {/* under the cover: the title tools (size, colour, font, author), centred, with the hint; then Done */}
-            {coverTitling && cover && cover.title ? (
-              <View style={{ width: winW - 2 * GAP }}>
+            {coverTitling && cover && cover.title && !kbUp ? (
+              <View style={{ width: coverSize.current }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <Pressable onPress={() => setCoverTitle({ size: Math.max(0.05, cover.title.size - 0.015) })} style={styles.sizeBtn} accessibilityLabel="Smaller title"><Text style={[styles.donePillText, { fontSize: 14 }]}>A</Text></Pressable>
@@ -578,11 +593,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 ) : null}
               </View>
             ) : null}
+            </View>
           </View>
           {/* the hint is a speech bubble near the bottom that goes away after a while (tap it to close it sooner) */}
-          {coverTitling && coverTip ? <Toast message="Tap the title to type. Drag it anywhere on the cover." area={{ left: GAP - 6, right: GAP - 6, bottom: insets.bottom + 74 }} onDismiss={() => setCoverTip(false)} /> : null}
+          {coverTitling && coverTip && !kbUp ? <Toast message="Tap the title to type. Drag it anywhere on the cover." area={{ left: GAP - 6, right: GAP - 6, bottom: insets.bottom + 74 }} onDismiss={() => setCoverTip(false)} /> : null}
           {/* Done: bottom right, lined up with the cover's right edge */}
-          <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { position: 'absolute', right: GAP, bottom: insets.bottom + 18, marginBottom: 0 }]}><Text style={styles.donePillText}>Done</Text></Pressable>
+          {!kbUp ? <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { position: 'absolute', right: GAP + insets.right, bottom: insets.bottom + 18, marginBottom: 0 }]}><Text style={styles.donePillText}>Done</Text></Pressable> : null}
           {coverAsk ? (
             <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
               <View style={styles.choice}>
