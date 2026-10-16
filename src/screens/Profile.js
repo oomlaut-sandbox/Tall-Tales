@@ -1,11 +1,13 @@
 // The parent's profile: sign in (Apple, or a code by email), your name, sign out, delete account.
 // Reached from the menu behind the parent gate.
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { colors, fonts } from '../theme';
 import { Felt, Stitch } from '../look';
+
+const BAND_FELT = require('../../assets/band-profile.jpg');
 import { Bar, BarMeta, Burger, WithBar } from '../components/Chrome';
 import {
   accountsReady, appleAvailable, currentUser, deleteAccount, onUserChange, sendEmailCode, signInWithApple, signOut, updateProfile, verifyEmailCode,
@@ -125,7 +127,8 @@ export default function Profile({ u, openMenu, toast }) {
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
-        <Felt /><Stitch inset={7} />
+        {/* Jörg's stitched orange felt, treated like the My Library and Book Store banners */}
+        <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View>
         {/* just the title, centred top to bottom in the band (like My Library and the Book Store) */}
         <Text style={styles.title}>Profile</Text>
       </View>
@@ -141,7 +144,7 @@ export default function Profile({ u, openMenu, toast }) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
-  band: { backgroundColor: colors.orange, paddingBottom: 30, paddingHorizontal: 24 },
+  band: { backgroundColor: colors.orange, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3, transform: [{ translateY: -3 }] },
   sub: { color: colors.white, fontFamily: fonts.ui, fontSize: 15, marginTop: 6, opacity: 0.9 },
   body: { padding: 24, paddingTop: 40, paddingBottom: 40, alignItems: 'center' },
