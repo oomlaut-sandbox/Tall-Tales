@@ -65,6 +65,6 @@ const styles = StyleSheet.create({
   body: { paddingLeft: 24, paddingTop: 24, paddingBottom: 40, gap: 16 },
   p: { fontFamily: fonts.story, fontSize: 19, lineHeight: 28, color: colors.ink },
   pill: { alignSelf: 'flex-start', maxWidth: '100%', backgroundColor: '#8a8a8a', borderRadius: 22, height: 44, paddingHorizontal: 16, alignItems: 'center', justifyContent: 'center' },
-  pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
+  pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 13 },
   version: { fontFamily: fonts.ui, fontSize: 13, color: '#555', marginTop: 8 },
 });
