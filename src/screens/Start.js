@@ -138,7 +138,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
               <View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden' }]}><Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.13)} max={0.2} /></View>
               <Spine wide={wide} />
               {/* the two items as one block, centred in the page */}
-              <View style={{ gap: k * 8 }}>
+              <View style={{ gap: k * 8, transform: [{ translateX: k * 5 }] }}>{/* nudged a little to the right */}
                 <MenuItem u={k} icon={TILE_LIBRARY} title="My Library" sub={"Find and read your\nfavorite books"} onPress={() => goTo('library')} />
                 <MenuItem u={k} icon={TILE_STORE} title="Book Store" sub="Discover and buy new books" onPress={() => goTo('store')} />
               </View>
