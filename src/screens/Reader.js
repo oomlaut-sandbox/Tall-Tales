@@ -604,8 +604,6 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         {/* the charcoal felt, as on the other screens */}
         {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
       <Felt />
-      {/* while recording: a small grey box in the top-left corner, out of the way, with a blinking red dot and the time */}
-      {recording ? <RecIndicator start={recStart.current} /> : null}
       {/* a small, quiet red dot when this page has a voice recording: top right on phones, top left on iPad */}
       {recPages.includes(idx) && !recording ? (
         // tap it (it's small, so the finger gets a generous area) to hear what it means
@@ -634,6 +632,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             <View style={{ alignItems: 'center' }}>
             {showControls ? (
               <View style={[styles.small, { alignItems: 'center', gap: 14 }]}>
+                {/* while recording, the time so far sits in a small grey box just before the pulsing record button (above it when sideways) */}
+                {recording ? <RecTimer start={recStart.current} /> : null}
                 <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
                 <PauseButton onPress={onPause} disabled={recording} />
                 <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
@@ -650,7 +650,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         <View style={{ flex: 1 }} />
         {showControls ? (
           <View style={[styles.small, { flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
-            <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
+            {/* while recording, the time so far sits in a small grey box just before the pulsing record button (above it when sideways) */}
+                {recording ? <RecTimer start={recStart.current} /> : null}
+                <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
             <PauseButton onPress={onPause} disabled={recording} />
             <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
           </View>
@@ -785,22 +787,15 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   );
 }
 
-// The recording box: grey, top left, a red dot that blinks and the time recorded so far (0:03).
-function RecIndicator({ start }) {
-  const blink = useRef(new Animated.Value(1)).current;
+// The recording timer: a small grey box with the time recorded so far (0:03), beside the pulsing record button.
+function RecTimer({ start }) {
   const [secs, setSecs] = useState(0);
   useEffect(() => {
-    const a = Animated.loop(Animated.sequence([
-      Animated.timing(blink, { toValue: 0.15, duration: 550, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-      Animated.timing(blink, { toValue: 1, duration: 550, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-    ]));
-    a.start();
     const t = setInterval(() => setSecs(Math.floor((Date.now() - start) / 1000)), 250);
-    return () => { a.stop(); clearInterval(t); };
+    return () => clearInterval(t);
   }, [start]);
   return (
     <View pointerEvents="none" style={styles.recBox} accessibilityLabel={`Recording, ${secs} seconds`}>
-      <Animated.View style={[styles.recBoxDot, { opacity: blink }]} />
       <Text style={styles.recBoxTime}>{Math.floor(secs / 60)}:{String(secs % 60).padStart(2, '0')}</Text>
     </View>
   );
@@ -821,10 +816,8 @@ const styles = StyleSheet.create({
   edge: { position: 'absolute', top: 0, bottom: 0, zIndex: 15 },
   half: { position: 'absolute', left: 0, right: 0, overflow: 'hidden', backfaceVisibility: 'hidden' },
   strip: { position: 'absolute', left: 0, right: 0, overflow: 'hidden', transformOrigin: 'top' },
-  recBox: { position: 'absolute', top: 3, left: 10, zIndex: 30, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(70,70,70,0.92)', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 3,
-    shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 4 },
-  recBoxDot: { width: 11, height: 11, borderRadius: 6, backgroundColor: '#e3000f' },
-  recBoxTime: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14, fontVariant: ['tabular-nums'], minWidth: 34 },
+  recBox: { backgroundColor: '#4a4a4a', borderRadius: 8, paddingHorizontal: 9, paddingVertical: 4, alignItems: 'center' },
+  recBoxTime: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14, fontVariant: ['tabular-nums'], minWidth: 34, textAlign: 'center' },
   back: { color: colors.muted, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
   setting: { gap: 8, paddingTop: 10, paddingBottom: 8 },
   printBtn: { alignItems: 'center', gap: 6 },
