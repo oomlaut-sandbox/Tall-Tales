@@ -515,7 +515,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     return { artH, textH, tables: flapTables({ textH, artH }) };
   }, [W, H]);
   const pageProps = (i) => ({
-    page: pages[i], end: !!pages[i]?.end, width: W, height: H, textScale: prefs.textScale || 1, fontKey: prefs.font || 'serif', flow: !!prefs.dot,
+    page: pages[i], end: !!pages[i]?.end, width: W, height: H, textScale: prefs.textScale || 1, fontKey: prefs.font || 'serif',
     onReadAgain: () => { stopReading(); setIdx(0); }, onLibrary: goLibrary, onShare: () => setShareGate(true),
   });
   const showHot = false; // Interactive mode is switched off for now
@@ -720,11 +720,6 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         <View style={styles.setting}>
           <Text style={styles.help}>Book font</Text>
           <Seg value={prefs.font || 'serif'} options={Object.entries(BOOK_FONTS).map(([k, f]) => [k, f.label, f.family])} onChange={(v) => setPrefs((p) => ({ ...p, font: v }))} />
-        </View>
-        <View style={styles.setting}>
-          <Text style={styles.help}>Bouncing dot</Text>
-          <Seg value={prefs.dot ? 'on' : 'off'} options={[['off', 'Off'], ['on', 'On']]}
-            onChange={(v) => setPrefs((p) => ({ ...p, dot: v === 'on' }))} />
         </View>
         <View style={styles.setting}>
           <Text style={styles.help}>Sound effects</Text>

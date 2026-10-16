@@ -16,10 +16,10 @@ export const BOOK_GAP = 30;
 // Upright: black strip at the top (camera), menu bar at the bottom, squares stacked.
 // Sideways (iPad): black strip on the left, menu bar down the right side, squares side by side.
 // Either way the bars take whatever room is left after the book and its 30-point grey border.
-// The start page keeps a strip under the book (upright only) for Skippy and his speech bubble.
-export const skippyRoom = (winW, winH) => (winW > winH * 1.1 ? 0 : Math.round(Math.min(170, winH * 0.17)));
+// The start page's book is a little smaller than the others (upright only); the room is left as grey around it.
+export const startRoom = (winW, winH) => (winW > winH * 1.1 ? 0 : Math.round(Math.min(170, winH * 0.17)));
 
-// reserve: extra room kept free between the book and the bottom bar (upright only)
+// reserve: extra grey room around the book (upright only); the book stays centred
 export function bookLayout(winW, winH, insets, barMin, reserve = 0) {
   const G = BOOK_GAP;
   const wide = winW > winH * 1.1;
@@ -47,7 +47,7 @@ export default function BookFrame({ barMin, bar, children, deskProps, bookProps,
   const L = bookLayout(winW, winH, insets, barMin, reserve);
   const barEl = typeof bar === 'function' ? bar(L) : bar;
   const book = (
-    <View style={[styles.desk, !L.wide && L.reserve ? { paddingBottom: L.reserve } : null]} {...deskProps}>
+    <View style={styles.desk} {...deskProps}>
       <Felt />
       {bare ? (
         <View style={{ width: L.bookW, height: L.bookH }} {...bookProps}>{children(L)}</View>

@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 export const colors = {
   red: '#bd1212',
   highlight: '#e3000f',
+  wordRed: '#b0000c', // the word being read: a deeper red
   paper: '#c9c9c9',
   ink: '#111111',
   bar: '#000000',
