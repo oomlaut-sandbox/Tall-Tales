@@ -142,7 +142,7 @@ export default function Profile({ u, openMenu, toast }) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   band: { backgroundColor: colors.orange, paddingBottom: 30, paddingHorizontal: 24 },
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, transform: [{ translateY: -3 }] },
+  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3, transform: [{ translateY: -3 }] },
   sub: { color: colors.white, fontFamily: fonts.ui, fontSize: 15, marginTop: 6, opacity: 0.9 },
   body: { padding: 24, paddingTop: 40, paddingBottom: 40, alignItems: 'center' },
   col: { width: '100%', maxWidth: 420, gap: 18 },
