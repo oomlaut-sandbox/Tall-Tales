@@ -18,7 +18,7 @@ const TILE = { 2: 47, 3: 31, 4: 22.5 };
 const tileWidth = (w) => `${TILE[COLS(w)]}%`;
 const gridGap = (w) => { const n = COLS(w); return `${(100 - n * TILE[n]) / (n - 1)}%`; };
 
-function Tile({ u, cover, title, sub, onPress, onLongPress, plus, selecting, selected, badge, label }) {
+function Tile({ u, cover, title, sub, onPress, onLongPress, plus, selecting, selected, badge, label, ear: showEar = true }) {
   const { width: winW } = useWindowDimensions();
   const ear = u * 3;
   const coverRef = useRef(null);
@@ -35,8 +35,9 @@ function Tile({ u, cover, title, sub, onPress, onLongPress, plus, selecting, sel
       <View ref={coverRef} collapsable={false} style={{ aspectRatio: 1, backgroundColor: '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
         {cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }} resizeMode="cover" /> : null}
         {plus ? <Text style={{ color: colors.white, fontSize: 64, fontWeight: '300' }}>+</Text> : null}
-        <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderLeftWidth: ear, borderBottomWidth: ear, borderLeftColor: 'transparent', borderBottomColor: colors.earUnder }} />
-        <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderRightWidth: ear, borderTopWidth: ear, borderRightColor: 'transparent', borderTopColor: colors.white }} />
+        {/* a small dog-ear (My Library only; the Book Store covers have none) */}
+        {showEar ? <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderLeftWidth: ear, borderBottomWidth: ear, borderLeftColor: 'transparent', borderBottomColor: colors.earUnder }} /> : null}
+        {showEar ? <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderRightWidth: ear, borderTopWidth: ear, borderRightColor: 'transparent', borderTopColor: colors.white }} /> : null}
         {badge ? <View style={styles.badgeAt}>{badge}</View> : null}
         {selecting ? (
           <View style={[styles.check, selected && styles.checkOn]} accessibilityLabel={selected ? 'Selected' : 'Not selected'}>
@@ -179,7 +180,7 @@ export function Store({ u, openStory, openMenu }) {
             <View style={[styles.shelfGrid, { columnGap: gridGap(winW) }]}>
               {sh.books.map((b) => (
                 // covers only: the title and author are in the details box that opens on a tap
-                <Tile key={b.id} u={u} cover={coverFor(b)} label={sh.id === 'featured' ? `${b.title}, featured` : b.title}
+                <Tile key={b.id} u={u} ear={false} cover={coverFor(b)} label={sh.id === 'featured' ? `${b.title}, featured` : b.title}
                   badge={<Badge book={b} />}
                   onPress={(rect) => setOpen({ book: b, rect })} />
               ))}
