@@ -270,7 +270,7 @@ export function GlassesIcon({ size = MENU_ICON, color = colors.white, weight = 2
     <View style={{ width: size * 1.4, height: size, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
       <View style={{ width: d, height: d, borderRadius: d / 2, borderWidth: weight, borderColor: color }} />
       {/* the bridge: the top half of a small ring, so it arches up between the lenses */}
-      <View style={{ width: b, height: b / 2 + weight, overflow: 'hidden', marginHorizontal: -weight, marginBottom: d * 0.3 }}>
+      <View style={{ width: b, height: b / 2, overflow: 'hidden', marginHorizontal: -weight, marginBottom: d * 0.3 }}>{/* just the arch, nothing under it */}
         <View style={{ width: b, height: b, borderRadius: b / 2, borderWidth: weight, borderColor: color }} />
       </View>
       <View style={{ width: d, height: d, borderRadius: d / 2, borderWidth: weight, borderColor: color }} />
