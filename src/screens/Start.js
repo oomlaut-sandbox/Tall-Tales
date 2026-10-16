@@ -41,32 +41,18 @@ function MenuItem({ u, icon, title, sub, onPress }) {
 
 export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onPeek }) {
   const p = useRef(new Animated.Value(closed ? 0 : 1)).current; // 0 = cover shut, 1 = cover fully open
-  // Choosing My Library or the Book Store: the book slides off to the left, and the chosen screen
-  // (drawn underneath) takes its place on the grey.
+  // Choosing My Library or the Book Store: the cover turns shut, then the chosen page simply appears (no sliding).
   const { width: winW, height: winH } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const slide = useRef(new Animated.Value(0)).current; // 0 = in place, 1 = gone off the left
-  const fade = useRef(new Animated.Value(1)).current;
   const leaving = useRef(false);
-  const goTo = (target) => {
-    if (leaving.current) return;
-    leaving.current = true;
-    onPeek && onPeek(target);
-    playSound('slide');
-    Animated.sequence([
-      Animated.timing(slide, { toValue: 1, duration: 420, easing: Easing.in(Easing.cubic), useNativeDriver: true }),
-      Animated.timing(fade, { toValue: 0, duration: 220, useNativeDriver: true }),
-    ]).start(() => go(target));
-  };
   // When the app opens the book is simply there on the felt, closed: no slide-in (Jörg's choice).
-  const slideX = slide.interpolate({ inputRange: [0, 1], outputRange: [0, -winW] });
   const [opening, setOpening] = useState(false); // the cover is moving or open (hides the dog-ear)
   const [isOpen, setIsOpen] = useState(!closed);
   const openNow = useRef(!closed);
   const busy = useRef(false);
   const geo = useRef({ side: 300, wide: false }); // the square size and direction, kept for dragging
   // Turn the cover the rest of the way: to 1 (open) or 0 (shut), from wherever it is now.
-  const settle = (target, from) => {
+  const settle = (target, from, after) => {
     busy.current = true;
     const wasOpen = openNow.current;
     if (target === 1 && !wasOpen) playSound('coverOpen');
@@ -77,11 +63,17 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
       busy.current = false;
       if (target === 1) { openNow.current = true; setIsOpen(true); if (!wasOpen) onOpened && onOpened(); }
       else { setOpening(false); if (wasOpen) onClosed && onClosed(); }
+      after && after();
     });
   };
   const open = () => { if (busy.current || openNow.current) return; setOpening(true); settle(1, 0); };
   // the open cover can be turned back again (tap it, or drag it down / to the right), like a page
   const close = () => { if (busy.current || !openNow.current) return; settle(0, 1); };
+  const goTo = (target) => {
+    if (leaving.current || busy.current) return;
+    leaving.current = true;
+    settle(0, 1, () => go(target));
+  };
   // Dragging: the cover follows the finger the whole way (up / to the left opens it, down / to the
   // right closes it); let go past halfway and it falls open, otherwise it settles back shut.
   const drag = useRef({ start: 0, v: 0 });
@@ -106,7 +98,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
   })).current;
 
   return (
-    <Animated.View style={{ flex: 1, opacity: fade }}>
+    <View style={{ flex: 1 }}>
     <BookFrame bare deskImage={DESK_FELT} barMin={u * 17} reserve={startRoom(winW, winH)} bar={(L) => <Bar u={u} vertical={L.wide}><Burger u={u} onPress={openMenu} /></Bar>}>
       {({ side, wide }) => {
         const k = side / 100; // sizes inside the book scale with the squares
@@ -130,7 +122,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
           ? { transformOrigin: 'left', transform: [{ perspective: 1600 }, { rotateY: turn }] }
           : { transformOrigin: 'top', transform: [{ perspective: 1600 }, { rotateX: turn }] };
         return (
-          <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: wide ? side * 2 : side, height: wide ? side : side * 2, transform: [{ translateX: slideX }] }}>
+          <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: wide ? side * 2 : side, height: wide ? side : side * 2 }}>
             {/* the words square: the menu */}
             <View style={[at2, styles.page, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.paper }]}>
               <Felt opacity={0.7} />
@@ -160,7 +152,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
         );
       }}
     </BookFrame>
-    </Animated.View>
+    </View>
   );
 }
 
