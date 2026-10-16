@@ -1,0 +1,10 @@
+url secret: set (looks right)
+key secret: set (length 46)
+auth settings: HTTP 200
+email: true, apple: true
+email autoconfirm: false
+delete_my_account: HTTP 401 (function exists; anonymous call refused as expected)
+catalog shelves: HTTP 200 4 published (free, new, bedtime, feelings)
+catalog books: HTTP 200 3 published (different, falling, pip)
+store manager setup: NOT run yet (docs/store-manager-setup.sql), HTTP 404
+narration service: not deployed yet (HTTP 404)
