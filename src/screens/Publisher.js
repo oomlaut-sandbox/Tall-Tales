@@ -23,7 +23,7 @@ const FULL = `Books can have up to ${MAX_PAGES} pages. That’s a long story!`;
 const blank = () => ({ pid: newPageId(), text: '', uri: null, w: 1, h: 1 });
 
 export function draftFrom(story) {
-  if (!story) return { id: `s${Date.now()}`, title: 'My New Story', pages: [blank()] };
+  if (!story) return { id: `s${Date.now()}`, title: '', pages: [blank()] }; // no title yet: the bar invites 'Tap to add title'
   return {
     id: story.id,
     title: story.title,
@@ -166,7 +166,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     clearTimeout(timer.current);
     draft.pages.forEach((p) => p.uri && dropPicture(p.uri));
     const list = await deleteUserStory(draft.id);
-    toast(`“${draft.title}” deleted.`);
+    toast(`“${draft.title.trim() || 'Untitled story'}” deleted.`);
     onDone(list);
   };
 
@@ -242,7 +242,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       <Bar u={u}>
         <Burger u={u} onPress={openMenu} />
         <View style={{ flex: 1, minWidth: 0, paddingLeft: 12 }}>
-          <TextInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} style={styles.title} accessibilityLabel="Story title" selectTextOnFocus />
+          <TextInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} style={styles.title} placeholder="Tap to add title" placeholderTextColor="rgba(255,255,255,0.75)" accessibilityLabel="Story title" selectTextOnFocus />
           <Text style={styles.sub}>Page {i + 1} of {draft.pages.length} · {saved ? 'Saved' : 'Saving…'}</Text>
         </View>
         <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
@@ -298,7 +298,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         )}
         {confirmDelete ? (
           <View style={{ gap: 10 }}>
-            <Text style={styles.warn}>Delete “{draft.title}”, its pictures and any voice recordings? This can’t be undone.</Text>
+            <Text style={styles.warn}>Delete “{draft.title.trim() || 'Untitled story'}”, its pictures and any voice recordings? This can’t be undone.</Text>
             <View style={{ flexDirection: 'row', gap: 10 }}>
               <Pressable onPress={deleteStory} style={[styles.wide, { backgroundColor: colors.highlight }]}><Text style={styles.wideText}>Delete story</Text></Pressable>
               <Pressable onPress={() => setConfirmDelete(false)} style={styles.wide}><Text style={styles.wideText}>Keep it</Text></Pressable>
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
   textBox: { justifyContent: 'center' }, // "Add Text" and the words sit in the middle of the square
   addText: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.ink, marginBottom: 6, textAlign: 'center' },
   input: { fontFamily: fonts.story, fontSize: 21, lineHeight: 34, color: colors.ink, textAlign: 'center', textAlignVertical: 'center', padding: 0, minHeight: 68 },
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, padding: 0 },
+  title: { color: colors.white, fontFamily: 'EBGaramond_700Bold', fontSize: 17, padding: 0 }, // the book serif, bold
   sub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 12, marginTop: 2 },
   btn: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, paddingHorizontal: 3 },
   finish: { backgroundColor: colors.green, paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' }, // a solid green pill
