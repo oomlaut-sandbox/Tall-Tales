@@ -597,7 +597,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       <View style={wide ? { width: BL.leftW, backgroundColor: colors.bar } : { height: topH, backgroundColor: colors.bar }}><Felt /></View>
       <View style={styles.desk}>
         {/* the charcoal felt, as on the other screens */}
-        <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} />
+        {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
       <Felt />
       <View style={[styles.bookShadow, { width: BL.bookW, height: BL.bookH }]}>
       <View style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...pan.panHandlers}>

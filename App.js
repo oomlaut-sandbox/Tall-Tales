@@ -21,7 +21,7 @@ import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
 import { CircleIcon, InfoIcon, LibraryIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
-import { Felt, LookContext } from './src/look';
+import { DESK_FELT, Felt, LookContext } from './src/look';
 import { playSound, setEffects } from './src/sound';
 import { stopSpeech } from './src/speech';
 import { stopVoice } from './src/voice';
@@ -185,7 +185,7 @@ export default function App() {
     let done = false;
     const finish = () => { if (!done) { done = true; setPictureReady(true); } };
     // the leather and the charcoal felt are ready before the first screen, so the book's slide-in isn't lost to a slow first frame
-    Asset.loadAsync([HOME_PICTURE, require('./assets/desk-felt.jpg')]).then(finish, finish);
+    Asset.loadAsync([HOME_PICTURE, ...(DESK_FELT ? [DESK_FELT] : [])]).then(finish, finish);
     const t = setTimeout(finish, 1500); // never wait longer than this
     return () => clearTimeout(t);
   }, []);

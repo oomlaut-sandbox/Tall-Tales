@@ -2,7 +2,7 @@
 // (desk, bars, menus, pages, title bands) gets a soft felt texture, and menus and buttons get
 // stitched edges, like the felt objects Jörg uses as inspiration.
 import React, { createContext, useContext } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Dimensions, Image, Platform, StyleSheet, View } from 'react-native';
 
 export const LOOKS = [['classic', 'Classic'], ['felt', 'Felt']];
 export const LookContext = createContext('classic');
@@ -33,4 +33,8 @@ export function Stitch({ inset = 5, radius = 0, color = 'rgba(255,255,255,0.5)',
 
 // Jörg's charcoal felt, being tried as the background (start page, My Library, Book Store, Create a Story).
 // To go back to the plain dark grey (colors.desk, #3b3b3b), stop passing it / remove the Image that uses it.
-export const DESK_FELT = require('../assets/desk-felt.jpg');
+// Phones only: the iPad (and other tablet-sized screens) keeps the 'classic' look with the plain dark grey,
+// because the felt photo is phone-shaped and looks blotchy when enlarged that much.
+const { width: W0, height: H0 } = Dimensions.get('screen');
+export const IS_TABLET = Platform.isPad || Math.min(W0, H0) >= 600;
+export const DESK_FELT = IS_TABLET ? null : require('../assets/desk-felt.jpg');
