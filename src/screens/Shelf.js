@@ -315,15 +315,13 @@ function CloseX({ onPress }) {
   );
 }
 
-// The access label: a little felt tag (green felt for Free, blue for members) with white letters.
-const LABEL_FELT = { free: require('../../assets/label-green.jpg'), member: require('../../assets/label-blue.jpg') };
+// The access label: a small solid tag (green for Free, blue for members, orange to buy) with a soft shadow.
 function Badge({ book }) {
-  const felt = LABEL_FELT[book.access];
+  const bg = book.access === 'free' ? colors.green : book.access === 'member' ? colors.blue : colors.orange;
   return (
     <View style={styles.badgeShadow}>
-      <View style={[styles.badge, !felt && { backgroundColor: colors.orange }]}>
-        {felt ? <Image source={felt} resizeMode="cover" style={StyleSheet.absoluteFill} /> : null}
-        <Text style={[styles.badgeText, !felt && { color: colors.ink }]}>{accessLabel(book)}</Text>
+      <View style={[styles.badge, { backgroundColor: bg }]}>
+        <Text style={[styles.badgeText, book.access === 'paid' && { color: colors.ink }]}>{accessLabel(book)}</Text>
       </View>
     </View>
   );
@@ -359,7 +357,7 @@ const styles = StyleSheet.create({
   shelfTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 19, paddingHorizontal: 20 },
   badgeAt: { position: 'absolute', left: 6, bottom: 6 }, // bottom-left corner of the cover
   badgeShadow: { alignSelf: 'flex-start', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.35, shadowRadius: 3, elevation: 3 },
-  badge: { paddingHorizontal: 8, paddingVertical: 3, overflow: 'hidden' },
+  badge: { paddingHorizontal: 8, paddingTop: 2, paddingBottom: 4, overflow: 'hidden' }, // a little more room below: the word sits centred
   badgeText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 12 },
   card: { position: 'absolute', overflow: 'hidden' },
   cardTitle: { color: CARD_INK, fontFamily: 'EBGaramond_700Bold', fontSize: 30, lineHeight: 34 },
