@@ -173,8 +173,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const [coverTip, setCoverTip] = useState(false); // the 'Tap the title…' bubble
   useEffect(() => {
     if (!(coverOpen && coverTitling)) { setCoverTip(false); return undefined; }
-    setCoverTip(true);
-    const t = setTimeout(() => setCoverTip(false), 5000);
+    setCoverTip(true); // stays until the title is first touched, or for 8 seconds
+    const t = setTimeout(() => setCoverTip(false), 8000);
     return () => clearTimeout(t);
   }, [coverOpen, coverTitling]);
   const [coverTool, setCoverTool] = useState(null); // 'color' | 'font' palette open under the tools
@@ -212,7 +212,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   useEffect(() => {
     const a = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () => setKbUp(true));
     const b = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setKbUp(false));
-    return () => { a.remove(); b.remove(); };
+    const c = Keyboard.addListener('keyboardDidHide', () => setKbUp(false)); // belt and braces
+    return () => { a.remove(); b.remove(); c.remove(); };
   }, []);
   const dragFrom = useRef(null);
   const titleDrag = useRef(PanResponder.create({
@@ -220,7 +221,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) + Math.abs(g.dy) > 6,
     onMoveShouldSetPanResponderCapture: (_, g) => Math.abs(g.dx) + Math.abs(g.dy) > 6, // win over the text box while dragging
     onPanResponderTerminationRequest: () => false,
-    onPanResponderGrant: () => { const t = latest.current.cover && latest.current.cover.title; dragFrom.current = t ? { x: t.x, y: t.y } : null; },
+    onPanResponderGrant: () => { setCoverTip(false); const t = latest.current.cover && latest.current.cover.title; dragFrom.current = t ? { x: t.x, y: t.y } : null; },
     onPanResponderRelease: (_, g) => { if (Math.abs(g.dx) + Math.abs(g.dy) < 6) setTitleEditing(true); }, // a tap: type in it
     onPanResponderMove: (_, g) => {
       if (!dragFrom.current) return;
@@ -542,7 +543,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               onLayout={(e) => setCoverArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
             {(() => {
               // room for the tools under the square (hidden while typing) and, upright, for Done at the bottom
-              const toolsH = coverTitling && !kbUp ? 56 + (coverTool ? 96 : 0) : 0;
+              const toolsH = kbUp ? 60 : coverTitling ? 56 + (coverTool ? 96 : 0) : 0;
               const doneH = kbUp || winW > winH ? 0 : 76;
               const fitH = coverArea ? coverArea.h - toolsH - doneH - 8 : winW;
               const W = Math.max(120, Math.floor(Math.min(winW - insets.left - insets.right - 2 * GAP, fitH)));
@@ -566,6 +567,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                       {/* tap the title to type in it; otherwise it's plain text that can be dragged anywhere */}
                       {titleEditing ? (
                         <TextInput value={t.text} onChangeText={(text) => setCoverTitle({ text })} multiline autoFocus onBlur={() => setTitleEditing(false)}
+                          blurOnSubmit returnKeyType="done" onSubmitEditing={() => { Keyboard.dismiss(); setTitleEditing(false); }}
                           style={[titleStyle, coverTitleLook(t), { fontSize: t.size * W, lineHeight: t.size * W * 1.2, paddingHorizontal: W * 0.04, minWidth: W * 0.3, outlineWidth: 0 }]}
                           accessibilityLabel="Cover title" />
                       ) : (
@@ -578,6 +580,14 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               );
             })()}
             {/* under the cover: the title tools (size, colour, font, author), centred, with the hint; then Done */}
+            {/* while typing: a Done pill right under the cover puts the keyboard away (so does the return key) */}
+            {kbUp ? (
+              <View style={{ width: coverSize.current, alignItems: 'flex-end', marginTop: 10 }}>
+                <Pressable onPress={() => { Keyboard.dismiss(); setTitleEditing(false); }} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { marginBottom: 0 }]}>
+                  <Text style={styles.donePillText}>Done</Text>
+                </Pressable>
+              </View>
+            ) : null}
             {coverTitling && cover && cover.title && !kbUp ? (
               <View style={{ width: coverSize.current }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
