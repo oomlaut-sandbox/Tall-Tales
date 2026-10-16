@@ -1,6 +1,6 @@
 // A simple grown-up check before anything leaves the app (Apple's Kids category requires one).
-import React, { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
 
 const NUMBER_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
@@ -16,13 +16,26 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
       setWrong(false);
     }
   }, [visible]);
+  // The box sits in the middle of the space left above the keyboard (the keyboard comes up straight away).
+  const [kbTop, setKbTop] = useState(null); // where the keyboard starts, from the top of the screen
+  const [frame, setFrame] = useState(null); // where this dark layer sits on screen
+  const scrimRef = useRef(null);
+  const { height: winH } = useWindowDimensions();
+  useEffect(() => {
+    const show = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', (e) => setKbTop(e.endCoordinates.screenY));
+    const hide = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setKbTop(null));
+    return () => { show.remove(); hide.remove(); };
+  }, []);
   if (!visible) return null;
+  // how much of this layer the keyboard covers
+  const covered = kbTop != null && frame ? Math.max(0, frame.y + frame.h - kbTop) : 0;
   const check = () => {
     if (parseInt(answer, 10) === q.a * q.b) onPass();
     else { setWrong(true); setAnswer(''); }
   };
   return (
-    <View style={styles.scrim}>
+    <View ref={scrimRef} style={[styles.scrim, { paddingBottom: covered }]}
+      onLayout={() => scrimRef.current && scrimRef.current.measureInWindow((x, y, w, h) => setFrame({ y, h: h || winH }))}>
       <View style={styles.card}>
         <Text style={styles.kicker}>For grown-ups</Text>
         <Text style={styles.title}>What is {NUMBER_WORDS[q.a]} times {NUMBER_WORDS[q.b]}?</Text>

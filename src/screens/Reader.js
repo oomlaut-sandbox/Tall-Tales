@@ -602,11 +602,13 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         {/* the charcoal felt, as on the other screens */}
         {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
       <Felt />
-      {/* a small, quiet red dot when this page has a voice recording: top right on phones, top left on iPad */}
       {/* while recording: a small grey box in the top-left corner, out of the way, with a blinking red dot and the time */}
       {recording ? <RecIndicator start={recStart.current} /> : null}
+      {/* a small, quiet red dot when this page has a voice recording: top right on phones, top left on iPad */}
       {recPages.includes(idx) && !recording ? (
-        <View pointerEvents="none" accessibilityLabel="This page has a voice recording"
+        // tap it (it's small, so the finger gets a generous area) to hear what it means
+        <Pressable onPress={() => toast('This red dot means you’ve recorded this page in your own voice.')} hitSlop={20}
+          accessibilityRole="button" accessibilityLabel="This page has a voice recording"
           style={[styles.recMark, IS_TABLET ? { left: 14 } : { right: 14 }]} />
       ) : null}
       <View style={[styles.bookShadow, { width: BL.bookW, height: BL.bookH }]}>
