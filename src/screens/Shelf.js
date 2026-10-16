@@ -39,8 +39,6 @@ function Tile({ u, cover, coverArt, title, sub, onPress, onLongPress, plus, sele
         {/* a small dog-ear (My Library only; the Book Store covers have none) */}
         {showEar ? <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderLeftWidth: ear, borderBottomWidth: ear, borderLeftColor: 'transparent', borderBottomColor: colors.earUnder }} /> : null}
         {showEar ? <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderRightWidth: ear, borderTopWidth: ear, borderRightColor: 'transparent', borderTopColor: colors.white }} /> : null}
-        {/* the same thin grey outline as the cover in the book details box */}
-        {cover || coverArt ? <View pointerEvents="none" style={styles.coverLine} /> : null}
         {badge ? <View style={styles.badgeAt}>{badge}</View> : null}
         {selecting ? (
           <View style={[styles.check, selected && styles.checkOn]} accessibilityLabel={selected ? 'Selected' : 'Not selected'}>
@@ -356,7 +354,6 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.desk }, // same dark grey as reading
   // a generous gap between the felt title band and the first row of books
   grid: { padding: 20, paddingTop: 42, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
-  coverLine: { position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, borderWidth: 1, borderColor: '#8c8c8c' },
   tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.55, shadowRadius: 9, elevation: 8 }, // a clear shadow, so covers lift off the felt
   tileTitle: { fontFamily: 'EBGaramond_700Bold', fontSize: 19, lineHeight: 23, color: colors.white }, // book titles and details: the book serif
   tileOption: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, lineHeight: 23 },
