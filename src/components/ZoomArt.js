@@ -1,6 +1,7 @@
 // A book page's picture, with two ways to look closer (the words are not affected):
 // - pinch with two fingers to zoom in; let go and it springs back,
-// - touch and hold one finger on the picture for a round magnifying glass that follows the finger.
+// - touch and hold one finger on the picture for a round magnifying glass that follows the finger
+//   (it floats just above the finger and enlarges what is right underneath it).
 // While either is happening, the reader doesn't treat the movement as a page-turning swipe.
 import React, { useRef, useState } from 'react';
 import { Animated, Image, StyleSheet, View } from 'react-native';
@@ -84,7 +85,8 @@ export default function ZoomArt({ source, width, height, enabled = true, childre
     onResponderTerminate: reset,
   } : {};
 
-  // The magnifying glass sits above the finger (or below it near the top of the picture).
+  // The magnifying glass sits above the finger (or below it near the top of the picture), and like a real
+  // magnifying glass it shows the part of the picture directly under itself, not the spot under the finger.
   let glass = null;
   if (loupe) {
     const above = loupe.y - LOUPE * 0.9 > 0;
@@ -93,7 +95,7 @@ export default function ZoomArt({ source, width, height, enabled = true, childre
     glass = (
       <View pointerEvents="none" style={[styles.loupe, { left: cx - LOUPE / 2, top: cy - LOUPE / 2 }]}>
         <Image source={source} resizeMode="cover"
-          style={{ position: 'absolute', width: width * LOUPE_ZOOM, height: height * LOUPE_ZOOM, left: LOUPE / 2 - loupe.x * LOUPE_ZOOM, top: LOUPE / 2 - loupe.y * LOUPE_ZOOM }} />
+          style={{ position: 'absolute', width: width * LOUPE_ZOOM, height: height * LOUPE_ZOOM, left: LOUPE / 2 - cx * LOUPE_ZOOM, top: LOUPE / 2 - cy * LOUPE_ZOOM }} />
       </View>
     );
   }
