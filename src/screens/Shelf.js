@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, Felt, IS_TABLET, Stitch } from '../look';
 import { Bar, BarMeta, Burger, DogEar, Panel, WithBar } from '../components/Chrome';
-import { accessLabel, bundledStory, cachedCatalog, coverFor, refreshCatalog, shelvesWithBooks } from '../catalog';
+import { accessLabel, bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
 import CoverArt from '../components/CoverArt';
 import { SHOWN_BOOKS, STORIES } from '../story';
@@ -159,7 +159,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
 }
 
 // The Book Store: shelves of books from the catalog you curate in Supabase (see src/catalog.js).
-export function Store({ u, openStory, openMenu }) {
+export function Store({ u, openStory, openMenu, toast }) {
   const { width: winW, height: winH } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const sideways = winW > winH * 1.1;
@@ -173,11 +173,18 @@ export function Store({ u, openStory, openMenu }) {
   };
   useEffect(() => { cachedCatalog().then((c) => setCat((cur) => cur || c)); load(false); }, []);
   // only the books shown for now (see SHOWN_BOOKS)
-  const shown = cat ? { ...cat, books: cat.books.filter((b) => SHOWN_BOOKS.includes(b.id)) } : null;
+  const shown = cat ? { ...cat, books: cat.books.filter((b) => SHOWN_BOOKS.includes(b.id) || !b.bundled) } : null; // plus every book published from the Store Manager
   const rows = shown ? shelvesWithBooks(shown) : [];
   const featured = shown ? shown.books.find((b) => b.featured) : null;
   // Read now: the cover in the card opens like a book does from My Library (the card stays until the reader takes over)
-  const read = (b, rect) => { const st = bundledStory(b.id); if (st) openStory(st, rect); };
+  const [fetching, setFetching] = useState(null); // a store book being downloaded
+  const read = async (b, rect) => {
+    const st = bundledStory(b.id);
+    if (st) return openStory(st, rect);
+    setFetching(b.id);
+    try { openStory(await loadStoreBook(b), rect); } catch (e) { toast && toast(e.message); }
+    setFetching(null);
+  };
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <Band color={colors.blue} felt="store" title="Book Store" sub="Discover and buy new books" />
@@ -190,7 +197,7 @@ export function Store({ u, openStory, openMenu }) {
             <View style={[styles.shelfGrid, { columnGap: gridGap(winW) }]}>
               {sh.books.map((b) => (
                 // covers only: the title and author are in the details box that opens on a tap
-                <Tile key={b.id} u={u} ear={false} cover={coverFor(b)} label={sh.id === 'featured' ? `${b.title}, featured` : b.title}
+                <Tile key={b.id} u={u} ear={false} cover={coverFor(b)} coverArt={coverArtFor(b)} label={sh.id === 'featured' ? `${b.title}, featured` : b.title}
                   badge={<Badge book={b} />}
                   onPress={(rect) => setOpen({ book: b, rect })} />
               ))}
@@ -201,7 +208,7 @@ export function Store({ u, openStory, openMenu }) {
       {open ? (
         <BookCard key={open.book.id} u={u} book={open.book} rect={open.rect} sideways={sideways}
           barH={sideways ? 0 : u * 17 + insets.bottom} barW={sideways ? Math.round(u * 17 * 1.15) : 0}
-          onClose={() => setOpen(null)} onRead={(rect) => read(open.book, rect)} />
+          busy={fetching === open.book.id} onClose={() => setOpen(null)} onRead={(rect) => read(open.book, rect)} />
       ) : null}
     </WithBar>
   );
@@ -210,7 +217,7 @@ export function Store({ u, openStory, openMenu }) {
 // A book's details as a floating card in the middle of the screen. The tapped cover first slides
 // and grows into the card's top-left corner, then the card fades in around it, with the title and
 // details underneath (beside it when the phone is sideways). Closing runs it backwards.
-function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
+function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy }) {
   const { width: winW, height: winH } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const areaW = winW - barW, areaH = winH - barH;
@@ -265,12 +272,12 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
   const blurb = book.blurb || (bundledStory(book.id) || {}).blurb; // the catalog's text, or the bundled book's own
   const pageCount = bundledStory(book.id) ? bundledStory(book.id).pages.length * 2 : book.page_count;
   const meta = [pageCount ? `${pageCount} pages` : null, book.age_range ? `ages ${book.age_range}` : null, accessLabel(book)].filter(Boolean).join(' · ');
-  const canRead = book.access === 'free' && bundledStory(book.id);
+  const canRead = book.access === 'free' && (bundledStory(book.id) || !book.bundled); // bundled, or downloaded from the store
   // the action: a small solid green pill beside the cover, level with its bottom
   const pill = (
-    <Pressable disabled={!canRead} onPress={() => onRead({ x: boxX + M, y: boxY + M, w: cs, h: cs })}
+    <Pressable disabled={!canRead || busy} onPress={() => onRead({ x: boxX + M, y: boxY + M, w: cs, h: cs })}
       style={[styles.sheetBtn, !canRead && { opacity: 0.45 }]} accessibilityRole="button">
-      <Text style={styles.sheetBtnText}>{book.access === 'free' ? 'Read now' : 'Buy now'}</Text>
+      <Text style={styles.sheetBtnText}>{busy ? 'Opening…' : book.access === 'free' ? 'Read now' : 'Buy now'}</Text>
     </Pressable>
   );
   // under the cover: title, author, pages and price, then a short description
@@ -327,7 +334,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
       </View>
       {/* the cover, already in place in the card's top-left corner (it fades with the box) */}
       <Animated.View pointerEvents="none" style={[styles.tileShadow, { position: 'absolute', left: boxX + M, top: boxY + M, width: cs, height: cs, opacity: boxH ? coverOp : 0, transform: coverMove }]}>
-        {cover ? <Image source={cover} style={styles.coverImg} resizeMode="cover" /> : null}
+        {coverArtFor(book) ? <CoverArt cover={coverArtFor(book)} /> : cover ? <Image source={cover} style={styles.coverImg} resizeMode="cover" /> : null}
         {/* a very thin dark grey line just outside the cover */}
         <View pointerEvents="none" style={{ position: 'absolute', left: -1, top: -1, right: -1, bottom: -1, borderWidth: 1, borderColor: '#8c8c8c' }} />
       </Animated.View>

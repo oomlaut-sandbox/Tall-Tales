@@ -13,6 +13,9 @@ import BookOpen from './src/components/BookOpen';
 import { Library, Store } from './src/screens/Shelf';
 import About from './src/screens/About';
 import Profile from './src/screens/Profile';
+import StoreManager from './src/screens/StoreManager';
+import { isStoreAdmin } from './src/storeAdmin';
+import { onUserChange } from './src/account';
 import ParentGate from './src/components/ParentGate';
 import Reader from './src/screens/Reader';
 import Publisher, { draftFrom } from './src/screens/Publisher';
@@ -32,6 +35,9 @@ function Root() {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const [screen, setScreen] = useState('start');
+  // the store owner gets a Store Manager in the menu (checked at launch and whenever someone signs in or out)
+  const [storeAdmin, setStoreAdmin] = useState(false);
+  useEffect(() => { isStoreAdmin().then(setStoreAdmin); return onUserChange(() => isStoreAdmin().then(setStoreAdmin)); }, []);
   const [coverOpen, setCoverOpen] = useState(false); // the book's cover is shut each time the app opens
   const [peek, setPeek] = useState(null); // 'library' | 'store': drawn under the start screen as its book slides away
   // Phones and iPads can turn: the book goes side by side when sideways.
@@ -141,8 +147,9 @@ function Root() {
         {screen === 'publisher' && draft && (
           <Publisher key={draft.id} u={u} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} />
         )}
-        {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} />}
+        {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} />}
         {screen === 'about' && <About u={u} openMenu={openMenu} />}
+        {screen === 'storeManager' && <StoreManager u={u} openMenu={openMenu} toast={toast} />}
         {screen === 'profile' && <Profile u={u} openMenu={openMenu} toast={toast} />}
         {screen === 'reader' && story && (
           <Reader u={u} story={story} prefs={prefs} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
@@ -157,6 +164,7 @@ function Root() {
           <Option glyph={<PlusIcon />} title="Create a Story" sub="Add your own pictures and words" onPress={() => openPublisher(null)} />
           <Option glyph={<CircleIcon />} title="Profile" sub="Manage your Oomlaut account" onPress={() => { setDrawer(false); setProfileGate(true); }} />
           <Option glyph={<InfoIcon />} title="About" sub="Learn more about the app" onPress={() => go('about')} />
+          {storeAdmin ? <Option glyph={<StoreIcon />} title="Store Manager" sub="Your Book Store's books" onPress={() => go('storeManager')} /> : null}
           <View style={{ height: 14 }} />
         </Panel>
         {opening ? (

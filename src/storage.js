@@ -10,3 +10,9 @@ export async function keepFile(uri) {
   return uri;
 }
 export function deleteFile() {}
+
+// A file's bytes, for uploading (Book Store publishing).
+export async function readBytes(uri) {
+  const r = await fetch(uri);
+  return new Uint8Array(await r.arrayBuffer());
+}

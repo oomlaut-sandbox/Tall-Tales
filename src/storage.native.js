@@ -39,3 +39,8 @@ export function deleteFile(uri) {
     if (f.exists) f.delete();
   } catch (e) {}
 }
+
+// A file's bytes, for uploading (Book Store publishing).
+export async function readBytes(uri) {
+  return new File(uri).bytes();
+}

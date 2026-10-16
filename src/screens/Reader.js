@@ -193,8 +193,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     // otherwise the phone's own voice.
     const narrate = () => {
       const voiceKey = narratorOf(prefs);
-      const audio = AUDIO[voiceKey]?.[story.id]?.[p.pid] || AUDIO.lily?.[story.id]?.[p.pid];
-      const times = (TIMINGS[AUDIO[voiceKey]?.[story.id]?.[p.pid] ? voiceKey : 'lily']?.[story.id]?.[p.pid] || {}).words;
+      // books from the store bring their own narration (downloaded); the app's own books have it built in
+      const own = story.narration ? (story.narration[voiceKey]?.[p.pid] || story.narration.lily?.[p.pid]) : null;
+      const audio = own ? { uri: own.uri } : AUDIO[voiceKey]?.[story.id]?.[p.pid] || AUDIO.lily?.[story.id]?.[p.pid];
+      const times = own ? own.words : (TIMINGS[AUDIO[voiceKey]?.[story.id]?.[p.pid] ? voiceKey : 'lily']?.[story.id]?.[p.pid] || {}).words;
       if (audio && times && times.length === toks.length && playVoice(audio, {
         rate: speedOf(prefs) / DEFAULT_SPEED, // narration is already made at the default pace
         onTime: (t) => {

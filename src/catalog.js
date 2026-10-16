@@ -24,10 +24,13 @@ export async function cachedCatalog() {
 // Fetches the latest catalog (published rows only; the database only lets the app read those).
 export async function refreshCatalog() {
   if (!supabase) return null;
-  const [sh, bk] = await Promise.all([
+  const cols = 'id,title,author,blurb,shelf_id,sort,access,price_label,product_id,featured,bundled,cover_path,content_path,page_count,age_range,updated_at';
+  let [sh, bk] = await Promise.all([
     supabase.from('shelves').select('id,title,sort').order('sort'),
-    supabase.from('books').select('id,title,author,blurb,shelf_id,sort,access,price_label,product_id,featured,bundled,cover_path,content_path,page_count,age_range,updated_at').order('sort'),
+    supabase.from('books').select(`${cols},cover_title`).order('sort'),
   ]);
+  // before the Store Manager's setup has run there's no cover_title column yet
+  if (bk.error) bk = await supabase.from('books').select(cols).order('sort');
   if (sh.error || bk.error) throw sh.error || bk.error;
   const c = { shelves: sh.data, books: bk.data, fetchedAt: Date.now() };
   await saveJSON(KEY, c);
@@ -57,5 +60,46 @@ export function coverFor(book) {
 }
 
 export const bundledStory = (id) => STORIES.find((s) => s.id === id) || null;
+
+// The cover as the book maker made it: the picture with its title on top (store books from the Store Manager).
+export function coverArtFor(book) {
+  if (bundledStory(book.id) || !book.cover_title) return null;
+  const url = storageUrl(book.cover_path);
+  return url ? { uri: url, title: book.cover_title } : null;
+}
+
+// A store book that isn't inside the app: its words and pictures, and the narration made for it
+// (Fatima and Henry, with word timings), fetched from the store. Shaped like the app's own books.
+const VOICE_KEYS = ['lily', 'gregory'];
+export async function loadStoreBook(book) {
+  const base = (p) => storageUrl(`${book.content_path || book.id}/${p}`);
+  const fresh = (u) => `${u}?v=${encodeURIComponent(book.updated_at || '')}`;
+  const r = await fetch(fresh(base('content.json')));
+  if (!r.ok) throw new Error('This book could not be downloaded. Check the internet connection and try again.');
+  const c = await r.json();
+  const narration = {};
+  await Promise.all(VOICE_KEYS.map(async (v) => {
+    try {
+      const t = await fetch(fresh(base(`narration/${v}/timings.json`)));
+      if (!t.ok) return;
+      const times = await t.json();
+      narration[v] = {};
+      for (const [pid, info] of Object.entries(times)) narration[v][pid] = { uri: fresh(base(`narration/${v}/${pid}.mp3`)), words: info.words };
+    } catch (e) {}
+  }));
+  const credits = [c.writer, c.artist].some((x) => x && x.trim())
+    ? (() => { const w = (c.writer || '').trim(), a = (c.artist || '').trim(); if (w && a) return w.toLowerCase() === a.toLowerCase() ? `Written and illustrated by ${w}.` : `Written by ${w} and illustrated by ${a}.`; return w ? `Written by ${w}.` : `Illustrated by ${a}.`; })()
+    : '';
+  const coverImg = c.cover ? { uri: fresh(base(c.cover)) } : null;
+  const pages = c.pages.map((p) => ({ pid: p.pid, text: p.text || '', image: p.image ? { uri: fresh(base(p.image)) } : null, w: p.w || 1, h: p.h || 1 }));
+  // like the books made in the app: the cover, a blank back of the cover, then a title page with the credits
+  const titlePage = { pid: `title-${c.id}`, titlePage: true, text: `${(c.title || '').replace(/\.+$/, '')}.${credits ? ` ${credits}` : ''}`, image: coverImg, w: 1600, h: 1600 };
+  return {
+    id: c.id, title: c.title, author: c.author || undefined, store: true,
+    cover: coverImg ? { uri: coverImg.uri, title: c.coverTitle || null } : null,
+    pages: [titlePage, ...pages],
+    narration,
+  };
+}
 
 export const accessLabel = (b) => (b.access === 'free' ? 'Free' : b.access === 'member' ? 'Members' : b.price_label || 'Members or buy');

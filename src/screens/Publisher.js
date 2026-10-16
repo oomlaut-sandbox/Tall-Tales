@@ -18,6 +18,7 @@ import { deleteUserStory, dropPicture, keepPicture, newPageId, saveUserStory } f
 import StoryGuide from '../components/StoryGuide';
 import ParentGate from '../components/ParentGate';
 import { printStory, shareStoryPdf } from '../pdf';
+import { isStoreAdmin, publishToStore } from '../storeAdmin';
 import { loadJSON, saveJSON } from '../storage';
 
 const MAX_PX = 1600;
@@ -45,6 +46,23 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const [pagesOpen, setPagesOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [pdfChoice, setPdfChoice] = useState(null); // 'share' | 'print' | null: choosing a layout
+  // the store owner can send a finished book to the Book Store (see storeAdmin.js)
+  const [admin, setAdmin] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  useEffect(() => { isStoreAdmin().then(setAdmin); }, []);
+  const publish = async () => {
+    if (publishing) return;
+    setPublishing(true); setPagesOpen(false);
+    try {
+      clearTimeout(timer.current);
+      await saveUserStory(latest.current);
+      const r = await publishToStore(latest.current, (step) => toast(step));
+      toast(r.narration || 'Sent to the Book Store. It stays hidden until you show it in the Store Manager; the narration is being made now.');
+    } catch (e) {
+      toast(`Couldn’t publish: ${e.message}`);
+    }
+    setPublishing(false);
+  };
   const [gateFor, setGateFor] = useState(null); // {mode, layout} waiting for the grown-up check
   const [making, setMaking] = useState(false);
   const [editing, setEditing] = useState(false); // the big words editor
@@ -146,8 +164,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   // thinking it confirms the title), and fade back in when the box closes.
   const barFade = useRef(new Animated.Value(1)).current;
   useEffect(() => {
-    Animated.timing(barFade, { toValue: titleBox ? 0 : 1, duration: titleBox ? 450 : 600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start();
-  }, [titleBox]);
+    Animated.timing(barFade, { toValue: titleBox || coverOpen ? 0 : 1, duration: titleBox || coverOpen ? 450 : 600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start();
+  }, [titleBox, coverOpen]); // and while the Cover Editor is open (its own Done is the way out)
   const [coverTip, setCoverTip] = useState(false); // the 'Tap the title…' bubble
   useEffect(() => {
     if (!(coverOpen && coverTitling)) { setCoverTip(false); return undefined; }
@@ -354,7 +372,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <View style={{ alignItems: 'center', gap: 18 }}>
               {/* the page count sits above Pages, with plenty of room between them */}
               <Text style={[styles.sub, { textAlign: 'center', marginBottom: 22 }]}>{i + 1}/{draft.pages.length}</Text>
-              <Animated.View pointerEvents={titleBox ? 'none' : 'auto'} style={{ alignItems: 'center', gap: 18, opacity: barFade }}>
+              <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ alignItems: 'center', gap: 18, opacity: barFade }}>
               <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
               <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><View style={styles.finish}><Text style={styles.btn}>Finish</Text></View></Pressable>
               </Animated.View>
@@ -371,7 +389,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           </Pressable>
           <Text style={styles.sub}>Page {i + 1} of {draft.pages.length} · {saved ? 'Saved' : 'Saving…'}</Text>
         </View>
-        <Animated.View pointerEvents={titleBox ? 'none' : 'auto'} style={{ flexDirection: 'row', alignItems: 'center', gap: 14, opacity: barFade }}>
+        <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ flexDirection: 'row', alignItems: 'center', gap: 14, opacity: barFade }}>
         <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
         <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><View style={styles.finish}><Text style={styles.btn}>Finish</Text></View></Pressable>
         </Animated.View>
@@ -433,8 +451,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             </View>
           </View>
         ) : (
+          // the store owner only: send this book to the Book Store
+          admin ? <Pressable onPress={publish} disabled={publishing} accessibilityRole="button" style={[styles.deletePill, { backgroundColor: colors.blue, marginBottom: 0 }]}><Text style={styles.wideText}>{publishing ? 'Publishing…' : 'Publish to the Book Store'}</Text></Pressable> : null
+        )}
+        {confirmDelete ? null : (
           // a red pill, well apart from Share and Print
-          <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} accessibilityRole="button" style={styles.deletePill}><Text style={styles.wideText}>Delete this story</Text></Pressable>
+          <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} accessibilityRole="button" style={[styles.deletePill, admin && { marginTop: 30 }]}><Text style={styles.wideText}>Delete this story</Text></Pressable>
         )}
       </Panel>
       {editing ? (
@@ -507,7 +529,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         </KeyboardAvoidingView>
       ) : null}
       {coverOpen ? (
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk }]}>
+        // the Cover Editor stops at the black bar, which stays in view (its Pages and Finish fade out meanwhile)
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk, overflow: 'hidden' }, wide ? { right: BL.rightW } : { bottom: BL.barH }]}>
           {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
           <View style={[styles.editor, { flex: 1, paddingTop: kbUp ? insets.top + 8 : insets.top + (winW > winH ? 12 : 34), paddingLeft: insets.left, paddingRight: insets.right }]}>
             {!kbUp ? <View style={styles.editorHead}><Text style={styles.editorTitle}>Cover</Text></View> : null}
@@ -596,9 +619,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             </View>
           </View>
           {/* the hint is a speech bubble near the bottom that goes away after a while (tap it to close it sooner) */}
-          {coverTitling && coverTip && !kbUp ? <Toast message="Tap the title to type. Drag it anywhere on the cover." area={{ left: GAP - 6, right: GAP - 6, bottom: insets.bottom + 74 }} onDismiss={() => setCoverTip(false)} /> : null}
+          {coverTitling && coverTip && !kbUp ? <Toast message="Tap the title to type. Drag it anywhere on the cover." area={{ left: GAP - 6, right: GAP - 6, bottom: 74 }} onDismiss={() => setCoverTip(false)} /> : null}
           {/* Done: bottom right, lined up with the cover's right edge */}
-          {!kbUp ? <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { position: 'absolute', right: GAP + insets.right, bottom: insets.bottom + 18, marginBottom: 0 }]}><Text style={styles.donePillText}>Done</Text></Pressable> : null}
+          {!kbUp ? <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { position: 'absolute', right: GAP + (wide ? 0 : insets.right), bottom: 18, marginBottom: 0 }]}><Text style={styles.donePillText}>Done</Text></Pressable> : null}
           {coverAsk ? (
             <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
               <View style={styles.choice}>
