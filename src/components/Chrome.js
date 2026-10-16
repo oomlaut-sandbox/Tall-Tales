@@ -225,6 +225,18 @@ export function PlayGlyph({ size = MENU_ICON, color = colors.white, count = 1 })
     </View>
   );
 }
+// A little page for the print choices: portrait (picture above words) or landscape (side by side).
+export function PageShape({ wide }) {
+  const W = wide ? 40 : 30, H = wide ? 30 : 40, q = 15;
+  return (
+    <View style={{ width: W, height: H, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ flexDirection: wide ? 'row' : 'column' }}>
+        <View style={{ width: q, height: q, borderWidth: 1.5, borderColor: '#333', backgroundColor: '#9a9a9a' }} />
+        <View style={{ width: q, height: q, borderWidth: 1.5, borderColor: '#333', [wide ? 'borderLeftWidth' : 'borderTopWidth']: 0 }} />
+      </View>
+    </View>
+  );
+}
 // Simple round glasses: two circles and a bridge, for Read Yourself.
 export function GlassesIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
   const d = size * 0.52;

@@ -29,7 +29,7 @@ function PeelLayer({ start, ...props }) {
 }
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { Bar, BarMeta, BubbleIcon, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, GearIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon } from '../components/Chrome';
+import { Bar, BarMeta, BubbleIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, GearIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
@@ -37,18 +37,6 @@ export const DEFAULT_SPEED = 0.75;
 export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : DEFAULT_SPEED);
 // Book narrators (ElevenLabs). Anne (voice key 'lily') is the default.
 // A tiny printed page: white sheet with the picture and words squares, upright or sideways.
-function PageShape({ wide }) {
-  const W = wide ? 40 : 30, H = wide ? 30 : 40, q = 15;
-  return (
-    <View style={{ width: W, height: H, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{ flexDirection: wide ? 'row' : 'column' }}>
-        <View style={{ width: q, height: q, borderWidth: 1.5, borderColor: '#333', backgroundColor: '#9a9a9a' }} />
-        <View style={{ width: q, height: q, borderWidth: 1.5, borderColor: '#333', [wide ? 'borderLeftWidth' : 'borderTopWidth']: 0 }} />
-      </View>
-    </View>
-  );
-}
-
 export const NARRATORS = [['lily', 'Anne'], ['gregory', 'Henry']]; // add more voices here (and in ci/narrate.js)
 const narratorOf = (prefs) => (NARRATORS.some(([k]) => k === prefs.narrator) ? prefs.narrator : 'lily');
 const NARRATOR = 0.92; // the phone voice's normal pace
