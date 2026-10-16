@@ -232,7 +232,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <Spine wide={wide} />
           <Text style={styles.addText}>Add Text</Text>
           {/* Tapping the words opens a big editor (just the words page, above the keyboard). */}
-          <Text style={[styles.input, { fontFamily: bookFont(fontKey).family, maxHeight: side * 0.7 }, !page.text && { color: '#666' }]} numberOfLines={8}>
+          <Text style={[styles.input, { fontFamily: 'SpecialElite_400Regular', maxHeight: side * 0.7 }, !page.text && { color: '#666' }]} numberOfLines={8}>
             {page.text || 'Tap to type the words for this page. Two or three sentences reads best.'}
           </Text>
         </Pressable>
@@ -407,7 +407,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Pressable onPress={addPage} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Add another page</Text></Pressable>
             <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Keep working on this page</Text></Pressable>
             <Pressable onPress={() => toast('Designing a cover is coming in a future update.')} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Design a cover</Text></Pressable>
-            <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Cancel</Text></Pressable>
+            {/* leave the book maker for now; what's been made so far stays saved */}
+            <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await saveUserStory(latest.current)); } catch (e) { onDone(); } }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Cancel book editor</Text></Pressable>
             {/* Finish last, in green, with extra room around it */}
             <Pressable onPress={() => { setPageDone(false); finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 18, marginBottom: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Finish and save book</Text></Pressable>
           </View>
