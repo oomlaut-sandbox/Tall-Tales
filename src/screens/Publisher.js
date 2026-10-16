@@ -178,7 +178,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const coverNo = () => { setCover({ ...cover, title: null }); finishCover(); };
   const coverYes = () => {
     setCoverAsk(false); setCoverTitling(true);
-    setCover({ ...cover, title: { text: draft.title.trim() || 'My Story', x: 0.5, y: 0.2, size: 0.11 } });
+    setCover({ ...cover, title: { text: draft.title.trim() || 'My Story', x: 0.5, y: 0.2, size: 0.11, color: TITLE_YELLOW } }); // yellow to start with
   };
   const setCoverTitle = (patch) => setDraft((d) => ({ ...d, cover: { ...d.cover, title: { ...d.cover.title, ...patch } } }));
   // dragging the title around the square
@@ -557,9 +557,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <Pressable onPress={() => setCoverTitle({ size: Math.max(0.05, cover.title.size - 0.015) })} style={styles.sizeBtn} accessibilityLabel="Smaller title"><Text style={[styles.donePillText, { fontSize: 14 }]}>A</Text></Pressable>
                   <Pressable onPress={() => setCoverTitle({ size: Math.min(0.24, cover.title.size + 0.015) })} style={styles.sizeBtn} accessibilityLabel="Bigger title"><Text style={[styles.donePillText, { fontSize: 22 }]}>A</Text></Pressable>
-                  {/* colour: a white colour wheel (8 slices), like the other tool icons */}
+                  {/* colour: a solid circle in the title's colour (yellow to start with) */}
                   <Pressable onPress={() => { setCoverTool((x) => (x === 'color' ? null : 'color')); }} style={[styles.sizeBtn, coverTool === 'color' && styles.toolOn]} accessibilityLabel="Title colour">
-                    <ColorWheel />
+                    <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: cover.title.color || '#ffffff', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.85)' }} />
                   </Pressable>
                   {/* font */}
                   <Pressable onPress={() => { setCoverTool((x) => (x === 'font' ? null : 'font')); }} style={[styles.sizeBtn, coverTool === 'font' && styles.toolOn]} accessibilityLabel="Title font">
@@ -642,17 +642,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   );
 }
 
-// The colour button: a plain white colour wheel to match the other tool icons: a circle cut into 8 equal slices.
-function ColorWheel({ size = 22 }) {
-  const line = 1.5;
-  return (
-    <View style={{ width: size, height: size, borderRadius: size / 2, borderWidth: 2, borderColor: '#ffffff', alignItems: 'center', justifyContent: 'center' }}>
-      {[0, 45, 90, 135].map((a) => (
-        <View key={a} style={{ position: 'absolute', width: line, height: size - 2, backgroundColor: '#ffffff', transform: [{ rotate: `${a}deg` }] }} />
-      ))}
-    </View>
-  );
-}
+// A new cover title starts out yellow (the palette's mustard).
+const TITLE_YELLOW = '#c9a227';
 
 const styles = StyleSheet.create({
   editor: { alignItems: 'center' },
