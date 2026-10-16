@@ -258,7 +258,13 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
       {book.blurb ? <Text style={styles.sheetText}>{book.blurb}</Text> : null}
       <Text style={styles.sheetSub}>{meta}</Text>
       {canRead ? (
-        <Pressable onPress={() => onRead({ x: boxX + M, y: boxY + M, w: cs, h: cs })} style={[styles.sheetBtn, { marginTop: 6 }]} accessibilityRole="button"><Text style={styles.sheetBtnText}>Read now</Text></Pressable>
+        <Pressable onPress={() => onRead({ x: boxX + M, y: boxY + M, w: cs, h: cs })} style={[styles.badgeShadow, { alignSelf: 'stretch', marginTop: 6 }]} accessibilityRole="button">
+          {/* green felt, like the Free label */}
+          <View style={[styles.sheetBtn, { overflow: 'hidden' }]}>
+            <Image source={BUTTON_FELT} resizeMode="cover" style={StyleSheet.absoluteFill} />
+            <Text style={styles.sheetBtnText}>Read now</Text>
+          </View>
+        </Pressable>
       ) : (
         <Text style={styles.sheetText}>{book.access === 'free' ? 'Downloading new books arrives in the next update.' : 'Memberships and buying single books arrive in the next update.'}</Text>
       )}
@@ -309,6 +315,7 @@ function CloseX({ onPress }) {
 }
 
 // The access label: a little felt tag (green felt for Free, blue for members) with white letters.
+const BUTTON_FELT = require('../../assets/button-green.jpg');
 const LABEL_FELT = { free: require('../../assets/label-green.jpg'), member: require('../../assets/label-blue.jpg') };
 function Badge({ book }) {
   const felt = LABEL_FELT[book.access];
