@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
-import { Felt, Stitch } from '../look';
+import { DESK_FELT, Felt, Stitch } from '../look';
 import { Bar, BarMeta, Burger, DogEar, Panel, WithBar } from '../components/Chrome';
 import { accessLabel, bundledStory, cachedCatalog, coverFor, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
@@ -89,7 +89,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
   const stop = () => { setSelecting(false); setPicked([]); setConfirm(false); };
   const mineCount = chosen.filter((s) => s.mine).length;
   return (
-    <WithBar style={styles.screen} bar={(v) => (selecting ? (
+    <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => (selecting ? (
         <Bar u={u} vertical={v}>
           <Pressable onPress={() => setGate('share')} disabled={chosen.length !== 1} style={[styles.barBtn, chosen.length !== 1 && styles.barBtnOff]} accessibilityRole="button">
             <Text style={styles.barBtnText}>Share</Text>
@@ -169,7 +169,7 @@ export function Store({ u, openStory, openMenu }) {
   // Read now: the cover in the card opens like a book does from My Library (the card stays until the reader takes over)
   const read = (b, rect) => { const st = bundledStory(b.id); if (st) openStory(st, rect); };
   return (
-    <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
+    <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <Band color={colors.blue} felt="store" title="Book Store" sub="Discover and buy new books" />
       <ScrollView contentContainerStyle={{ paddingTop: 42, paddingBottom: 24, gap: 30 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.white} />}>

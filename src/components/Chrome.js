@@ -35,14 +35,18 @@ export function Bar({ u, children, vertical, top }) {
 
 // A screen with its menu bar: at the bottom when upright, down the right side when sideways (iPad).
 // bar: a function given `vertical` that returns the bar.
-export function WithBar({ bar, children, style }) {
+export function WithBar({ bar, children, style, bg }) {
   const { width, height } = useWindowDimensions();
   const side = width > height * 1.1;
   const insets = useSafeAreaInsets();
   return (
     <View style={[{ flex: 1, flexDirection: side ? 'row' : 'column' }, style]}>
       {side ? <View style={{ width: insets.left, backgroundColor: colors.bar }} /> : null}
-      <View style={{ flex: 1 }}><Felt />{children}</View>
+      <View style={{ flex: 1 }}>
+        {/* an optional background picture (the charcoal felt) behind the page's content */}
+        {bg ? <Image source={bg} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+        <Felt />{children}
+      </View>
       {bar(side)}
     </View>
   );

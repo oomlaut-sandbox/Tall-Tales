@@ -9,7 +9,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
-import { Felt } from '../look';
+import { DESK_FELT, Felt } from '../look';
 import { Bar, Burger } from '../components/Chrome';
 import BookFrame, { Spine, startRoom } from '../components/BookFrame';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,7 +19,6 @@ import { playSound } from '../sound';
 
 export const COVER_BROWN = '#6f4b32';
 const LEATHER = require('../../assets/leather.jpg'); // Jörg's brown leather, outside and inside the cover
-const DESK_FELT = require('../../assets/desk-felt.jpg'); // trying Jörg's charcoal felt as the start page's background
 
 const TILE_LIBRARY = require('../../assets/tile-library.png');
 const TILE_STORE = require('../../assets/tile-store.png');
