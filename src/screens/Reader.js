@@ -658,7 +658,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             {/* while recording, the time so far floats in a small grey box just left of the pulsing record button
                 (it takes no room, so the buttons never move) */}
             <View>
-              {recording ? <RecTimer start={recStart.current} style={{ position: 'absolute', right: '100%', marginRight: 4, top: 0, bottom: 0, justifyContent: 'center' }} /> : null}
+              {recording ? <RecTimer start={recStart.current} style={{ position: 'absolute', right: '100%', marginRight: 14, top: 0, bottom: 0, justifyContent: 'center' }} /> : null}
               <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
             </View>
             <PauseButton onPress={onPause} disabled={recording} />
