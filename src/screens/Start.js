@@ -1,12 +1,12 @@
 // The start screen: a book on the dark grey. The inside of the brown cover in the picture square,
 // the menu in the words square.
 //
-// When the app opens, the book is closed: only one square shows, a brown cover with a dog-ear.
+// When the app opens, the book is already sitting there closed: only one square shows, a brown cover with a dog-ear.
 // Turning it (tap, or swipe up / sideways) opens the cover over the spine like a real book, and its
 // inside (also brown) lands in the picture square. The cover can also be dragged with a finger and
 // follows it the whole way. Tapping or dragging the open cover closes it again;
 // only My Library or the Book Store take you to another screen.
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, Felt } from '../look';
@@ -15,7 +15,6 @@ import BookFrame, { Spine, startRoom } from '../components/BookFrame';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Fade } from '../components/PageView';
 import { playSound } from '../sound';
-import { appShown } from '../launch';
 
 
 export const COVER_BROWN = '#7c5438'; // a touch lighter
@@ -59,25 +58,8 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
       Animated.timing(fade, { toValue: 0, duration: 220, useNativeDriver: true }),
     ]).start(() => go(target));
   };
-  // when the app opens, the closed book slides in from the right onto the grey
-  const enter = useRef(new Animated.Value(closed ? 1 : 0)).current;
-  useEffect(() => {
-    if (!closed) return;
-    // wait until the launch screen has gone, then a short pause, then the book slides in from the right
-    let t, alive = true;
-    appShown.then(() => {
-      if (!alive) return;
-      t = setTimeout(() => {
-        playSound('slide', 0.8);
-        Animated.timing(enter, { toValue: 0, duration: 700, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(() => playSound('setDown', 0.7));
-      }, 350);
-    });
-    return () => { alive = false; clearTimeout(t); };
-  }, []);
-  const slideX = Animated.add(
-    slide.interpolate({ inputRange: [0, 1], outputRange: [0, -winW] }),
-    enter.interpolate({ inputRange: [0, 1], outputRange: [0, winW] }),
-  );
+  // When the app opens the book is simply there on the felt, closed: no slide-in (Jörg's choice).
+  const slideX = slide.interpolate({ inputRange: [0, 1], outputRange: [0, -winW] });
   const [opening, setOpening] = useState(false); // the cover is moving or open (hides the dog-ear)
   const [isOpen, setIsOpen] = useState(!closed);
   const openNow = useRef(!closed);

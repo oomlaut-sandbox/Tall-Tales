@@ -133,6 +133,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const [titleEditing, setTitleEditing] = useState(false);
   const titleEditingRef = useRef(false);
   titleEditingRef.current = titleEditing;
+  // While the title box is open, Pages and Finish fade into the black bar (so nobody taps Finish
+  // thinking it confirms the title), and fade back in when the box closes.
+  const barFade = useRef(new Animated.Value(1)).current;
+  useEffect(() => {
+    Animated.timing(barFade, { toValue: titleBox ? 0 : 1, duration: titleBox ? 450 : 600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start();
+  }, [titleBox]);
   const [coverTool, setCoverTool] = useState(null); // 'color' | 'font' palette open under the tools
   const cover = draft.cover || null;
   const setCover = (c) => setDraft((d) => ({ ...d, cover: c }));
@@ -302,11 +308,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <Pressable onPress={openWords} accessibilityRole="button" accessibilityLabel={`Words for page ${i + 1}`} ref={wordsRef} collapsable={false} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>{/* the whole words square opens the editor */}
           {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
           <Spine wide={wide} />
-          <Text style={styles.addText}>Add Text</Text>
+          <Text style={[styles.addText, { marginTop: side * 0.04 }]}>Add Text</Text>
           {/* Tapping the words opens a big editor (just the words page, above the keyboard). */}
-          <Text style={[styles.input, { fontFamily: 'SpecialElite_400Regular', maxHeight: side * 0.7 }, !page.text && { color: '#666' }]} numberOfLines={8}>
-            {page.text || 'Tap to type the words for this page. Two or three sentences reads best.'}
-          </Text>
+          <View style={{ flex: 1, justifyContent: 'center', minHeight: 0 }}>
+            <Text style={[styles.input, { fontFamily: 'SpecialElite_400Regular' }, !page.text && { color: '#666' }]} numberOfLines={7}>
+              {page.text || 'Tap to type the words for this page. Two or three sentences reads best.'}
+            </Text>
+          </View>
         </Pressable>
         <DogEar u={u} under={colors.earUnder} onPress={next} label="Next page" />
         <Pressable onPress={() => setGuide(true)} style={[styles.help, { top: 10, right: 10 }]} hitSlop={8} accessibilityLabel="How to make a story">
@@ -325,8 +333,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <View style={{ alignItems: 'center', gap: 18 }}>
               {/* the page count sits above Pages, with plenty of room between them */}
               <Text style={[styles.sub, { textAlign: 'center', marginBottom: 22 }]}>{i + 1}/{draft.pages.length}</Text>
+              <Animated.View pointerEvents={titleBox ? 'none' : 'auto'} style={{ alignItems: 'center', gap: 18, opacity: barFade }}>
               <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
               <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><View style={styles.finish}><Text style={styles.btn}>Finish</Text></View></Pressable>
+              </Animated.View>
             </View>
           </Bar>
         </View>
@@ -340,8 +350,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           </Pressable>
           <Text style={styles.sub}>Page {i + 1} of {draft.pages.length} · {saved ? 'Saved' : 'Saving…'}</Text>
         </View>
+        <Animated.View pointerEvents={titleBox ? 'none' : 'auto'} style={{ flexDirection: 'row', alignItems: 'center', gap: 14, opacity: barFade }}>
         <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
         <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><View style={styles.finish}><Text style={styles.btn}>Finish</Text></View></Pressable>
+        </Animated.View>
       </Bar>
       </View>
       )}
@@ -632,8 +644,8 @@ const styles = StyleSheet.create({
   addImage: { color: colors.white, fontWeight: '700', fontSize: 22, fontFamily: fonts.ui, marginTop: 4 },
   artBtns: { position: 'absolute', left: 12, bottom: 12, flexDirection: 'row', gap: 8 },
   chip: { backgroundColor: 'rgba(0,0,0,0.6)', color: colors.white, fontWeight: '700', fontSize: 15, paddingHorizontal: 14, paddingVertical: 8, overflow: 'hidden', fontFamily: fonts.ui },
-  textBox: { justifyContent: 'center' }, // "Add Text" and the words sit in the middle of the square
-  addText: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.ink, marginBottom: 22, marginTop: -40, textAlign: 'center' }, // lifted well above the words
+  textBox: { justifyContent: 'flex-start' }, // "Add Text" near the top of the words square, the words centred below it
+  addText: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.ink, marginBottom: 6, textAlign: 'center' }, // always inside the words square
   input: { fontFamily: fonts.story, fontSize: 21, lineHeight: 34, color: colors.ink, textAlign: 'center', textAlignVertical: 'center', padding: 0, minHeight: 68 },
   title: { color: colors.white, fontFamily: 'EBGaramond_700Bold', fontSize: 17, padding: 0 }, // the book serif, bold
   sub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 12, marginTop: 2 },
