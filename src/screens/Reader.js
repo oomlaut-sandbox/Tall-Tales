@@ -634,10 +634,6 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
               <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
             </View>
             <View style={{ alignItems: 'center' }}>
-            {/* the page count sits above the record button, with a good gap between them */}
-            <View style={{ alignItems: 'center', gap: 8, marginBottom: showControls ? 30 : 0 }}>
-              <BarMeta vertical sub={idx < n ? `${idx + 1}/${n}` : 'End'} />
-            </View>
             {showControls ? (
               <View style={[styles.small, { alignItems: 'center', gap: 14 }]}>
                 <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
@@ -652,10 +648,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       <View style={[styles.bottomBar, { height: barH, paddingBottom: insets.bottom }]}>
         <Felt />
         <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
-        {/* the page count */}
-        <View style={{ flex: 1, minWidth: 0, justifyContent: 'center' }}>
-          <BarMeta page={idx < n ? `Page ${idx + 1} of ${n}` : 'The End'} />
-        </View>
+        {/* no page numbers in the reader (the store shows how long a book is) */}
+        <View style={{ flex: 1 }} />
         {showControls ? (
           <View style={[styles.small, { flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
             <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />

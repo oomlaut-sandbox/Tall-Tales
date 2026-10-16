@@ -2,7 +2,6 @@
 // Reached from the menu behind the parent gate.
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import FeltFill from '../components/FeltFill';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { colors, fonts } from '../theme';
@@ -62,15 +61,15 @@ export default function Profile({ u, openMenu, toast }) {
           autoCapitalize="words" returnKeyType="done"
           onEndEditing={() => name !== (user.user_metadata?.name || '') && run(async () => { await updateProfile({ name: name.trim() }); toast && toast('Saved.'); })} />
         <Text style={styles.small}>Coming next: your stories and recordings backed up, and on all your family’s devices.</Text>
-        <Pressable onPress={() => run(signOut)} style={styles.btn} accessibilityRole="button"><FeltFill color="dark" /><Text style={styles.btnText}>Sign out</Text></Pressable>
+        <Pressable onPress={() => run(signOut)} style={styles.btn} accessibilityRole="button"><Text style={styles.btnText}>Sign out</Text></Pressable>
         {confirmDelete ? (
           <View style={styles.warnBox}>
             <Text style={styles.warn}>Delete your oomlaut account? You’ll be signed out and the account is removed for good. Books and recordings on this phone stay here.</Text>
             <View style={{ flexDirection: 'row', gap: 10 }}>
-              <Pressable onPress={() => run(async () => { await deleteAccount(); setConfirmDelete(false); toast && toast('Your account was deleted.'); })} style={[styles.btn, { flex: 1, backgroundColor: colors.highlight }]}><FeltFill color="red" />
+              <Pressable onPress={() => run(async () => { await deleteAccount(); setConfirmDelete(false); toast && toast('Your account was deleted.'); })} style={[styles.btn, { flex: 1, backgroundColor: colors.highlight }]}>
                 <Text style={styles.btnText}>Delete account</Text>
               </Pressable>
-              <Pressable onPress={() => setConfirmDelete(false)} style={[styles.btn, { flex: 1 }]}><FeltFill color="dark" /><Text style={styles.btnText}>Keep it</Text></Pressable>
+              <Pressable onPress={() => setConfirmDelete(false)} style={[styles.btn, { flex: 1 }]}><Text style={styles.btnText}>Keep it</Text></Pressable>
             </View>
           </View>
         ) : (
@@ -85,13 +84,11 @@ export default function Profile({ u, openMenu, toast }) {
         {apple ? (
           // our own button so both match (same font, size and dark grey); Apple's logo and wording kept
           <Pressable onPress={() => run(signInWithApple)} style={[styles.btn, { flexDirection: 'row', justifyContent: 'center', gap: 7 }]} accessibilityRole="button" accessibilityLabel="Sign in with Apple">
-            <FeltFill color="dark" />
             <Text style={[styles.btnText, { fontSize: 18, marginTop: -2 }]}>{'\uF8FF'}</Text>
             <Text style={styles.btnText}>Sign in with Apple</Text>
           </Pressable>
         ) : null}
         <Pressable onPress={() => { setErr(''); setStep('email'); }} style={styles.btn} accessibilityRole="button">
-          <FeltFill color="dark" />
           <Text style={styles.btnText}>{apple ? 'Use email instead' : 'Sign in with email'}</Text>
         </Pressable>
       </>
@@ -104,7 +101,6 @@ export default function Profile({ u, openMenu, toast }) {
           keyboardType="email-address" autoCapitalize="none" autoCorrect={false} textContentType="emailAddress" autoComplete="email" />
         <Pressable disabled={busy || !/.+@.+\..+/.test(email)} onPress={() => run(async () => { await sendEmailCode(email); setStep('code'); })}
           style={[styles.btn, (busy || !/.+@.+\..+/.test(email)) && styles.off]} accessibilityRole="button">
-          <FeltFill color="dark" />
           <Text style={styles.btnText}>{busy ? 'Sending…' : 'Send code'}</Text>
         </Pressable>
         <Pressable onPress={() => setStep('start')} hitSlop={8}><Text style={styles.link}>‹ Back</Text></Pressable>
@@ -118,7 +114,6 @@ export default function Profile({ u, openMenu, toast }) {
           style={[styles.input, styles.codeInput]} keyboardType="number-pad" textContentType="oneTimeCode" autoComplete="one-time-code" maxLength={6} />
         <Pressable disabled={busy || code.length !== 6} onPress={() => run(() => verifyEmailCode(email, code))}
           style={[styles.btn, (busy || code.length !== 6) && styles.off]} accessibilityRole="button">
-          <FeltFill color="dark" />
           <Text style={styles.btnText}>{busy ? 'Checking…' : 'Sign in'}</Text>
         </Pressable>
         <Pressable onPress={() => run(() => sendEmailCode(email))} hitSlop={8}><Text style={styles.link}>Send a new code</Text></Pressable>

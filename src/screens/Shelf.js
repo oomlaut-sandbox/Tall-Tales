@@ -113,7 +113,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
         {stories.map((s) => (
           <Tile key={s.id} u={u} cover={s.pages[0] && s.pages[0].image} title={s.title}
             selecting={selecting} selected={picked.includes(s.id)}
-            sub={s.mine ? `${s.pages.length} page${s.pages.length === 1 ? '' : 's'} · made by you${selecting ? '' : ' · hold to edit'}` : `${s.author ? `by ${s.author} · ` : ''}${s.pages.length} pages · read-along`}
+            sub={s.mine ? `${s.pages.length} page${s.pages.length === 1 ? '' : 's'} · made by you${selecting ? '' : ' · hold to edit'}` : `${s.author ? `by ${s.author} · ` : ''}${s.pages.length * 2} pages · read-along`}
             onPress={(rect) => (selecting ? toggle(s.id) : openStory(s, rect))}
             onLongPress={!selecting && s.mine ? () => onEdit(s) : undefined} />
         ))}
@@ -251,21 +251,25 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
   ];
   const dim = Animated.add(mv.interpolate({ inputRange: [0, 1], outputRange: [0, 0.3] }), fade.interpolate({ inputRange: [0, 1], outputRange: [0, 0.25] }));
   const cover = coverFor(book);
-  const meta = [book.page_count ? `${book.page_count} pages` : null, book.age_range ? `ages ${book.age_range}` : null, accessLabel(book)].filter(Boolean).join(' · ');
+  // every square is a page (a screen is a picture page and a words page), so bundled books count both
+  const pageCount = bundledStory(book.id) ? bundledStory(book.id).pages.length * 2 : book.page_count;
+  const meta = [pageCount ? `${pageCount} pages` : null, book.age_range ? `ages ${book.age_range}` : null, accessLabel(book)].filter(Boolean).join(' · ');
   const canRead = book.access === 'free' && bundledStory(book.id);
+  // the action: a small solid green pill beside the cover, level with its bottom
+  const pill = (
+    <Pressable disabled={!canRead} onPress={() => onRead({ x: boxX + M, y: boxY + M, w: cs, h: cs })}
+      style={[styles.sheetBtn, !canRead && { opacity: 0.45 }]} accessibilityRole="button">
+      <Text style={styles.sheetBtnText}>{book.access === 'free' ? 'Read now' : 'Buy now'}</Text>
+    </Pressable>
+  );
+  // under the cover: title, author, pages and price, then a short description
   const info = (
-    <View style={{ gap: 10 }}>
+    <View style={{ gap: 8 }}>
       <Text style={styles.cardTitle}>{book.title}</Text>
       {book.author ? <Text style={styles.sheetSub}>by {book.author}</Text> : null}
-      {book.blurb ? <Text style={styles.sheetText}>{book.blurb}</Text> : null}
       <Text style={styles.sheetSub}>{meta}</Text>
-      {canRead ? (
-        <Pressable onPress={() => onRead({ x: boxX + M, y: boxY + M, w: cs, h: cs })} style={[styles.sheetBtn, { marginTop: 6 }]} accessibilityRole="button">
-          <Text style={styles.sheetBtnText}>Read now</Text>
-        </Pressable>
-      ) : (
-        <Text style={styles.sheetText}>{book.access === 'free' ? 'Downloading new books arrives in the next update.' : 'Memberships and buying single books arrive in the next update.'}</Text>
-      )}
+      {book.blurb ? <Text style={[styles.sheetText, { marginTop: 6 }]}>{book.blurb}</Text> : null}
+      {!canRead ? <Text style={[styles.sheetText, { marginTop: 6 }]}>{book.access === 'free' ? 'Downloading new books arrives in the next update.' : 'Memberships and buying single books arrive in the next update.'}</Text> : null}
     </View>
   );
   return (
@@ -277,22 +281,28 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
       <View onLayout={(e) => setBoxH(e.nativeEvent.layout.height)}
         style={[styles.card, { left: boxX, top: boxY, width: boxW, maxHeight: areaH - boxY - 16 }]}>
         <Felt />
-        {/* solid near-black, the same as the menus' title bars */}
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: CARD_GREY, opacity: fade }]} />
         <Animated.View pointerEvents={boxH ? 'auto' : 'none'} style={{ opacity: fade, flexDirection: across ? 'row' : 'column' }}>
         <View style={{ flexDirection: 'row' }}>
           <View style={{ width: cs + M, height: cs + 2 * M }} />{/* the same margin above and below the cover */}
           {!across ? (
-            <View style={{ flex: 1, justifyContent: 'space-between', padding: 14, paddingLeft: 18, paddingTop: M, paddingBottom: M }}>{/* the Free label sits level with the bottom of the cover */}
+            <View style={{ flex: 1, justifyContent: 'space-between', alignItems: 'flex-start', padding: 14, paddingLeft: 16, paddingTop: M, paddingBottom: M }}>
               <View style={{ alignSelf: 'flex-end' }}><CloseX onPress={() => close()} /></View>
-              <Badge book={book} />
+              {pill}
             </View>
           ) : null}
         </View>
-        <View style={{ flex: 1, padding: M, paddingTop: across ? M : 0 }}>
-          {across ? <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}><Badge book={book} /><CloseX onPress={() => close()} /></View> : null}
-          {info}
-        </View>
+        {across ? (
+          <View style={{ flex: 1, padding: M, minHeight: cs + 2 * M, justifyContent: 'space-between' }}>
+            <View>
+              <View style={{ alignSelf: 'flex-end', marginBottom: 4 }}><CloseX onPress={() => close()} /></View>
+              {info}
+            </View>
+            <View style={{ alignItems: 'flex-start', marginTop: 14 }}>{pill}</View>
+          </View>
+        ) : (
+          <View style={{ padding: M, paddingTop: 2, paddingBottom: M + 8 }}>{info}</View>
+        )}
         </Animated.View>
       </View>
       {/* the cover, flying from its tile into the card's top-left corner */}
@@ -363,7 +373,7 @@ const styles = StyleSheet.create({
   xBar: { position: 'absolute', left: 0, top: 10, width: 22, height: 2.5, backgroundColor: CARD_INK },
   sheetSub: { color: '#4a4a4a', fontFamily: fonts.story, fontSize: 18 },
   sheetText: { color: CARD_INK, fontFamily: fonts.story, fontSize: 18, lineHeight: 25 },
-  sheetBtn: { backgroundColor: colors.green, height: 50, borderRadius: 25, alignItems: 'center', justifyContent: 'center' }, // a solid green pill
+  sheetBtn: { backgroundColor: colors.green, height: 40, borderRadius: 20, paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center' }, // a small solid green pill
   sheetBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   note: { width: '100%', backgroundColor: '#4a4a4a', padding: 16, fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, color: colors.white },
 });
