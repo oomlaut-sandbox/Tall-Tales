@@ -119,7 +119,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       if (page.uri) dropPicture(page.uri);
       update({ uri, w, h });
     } catch (e) {
-      toast('Couldn’t open your photos. Check that oomlaut Reader is allowed to use Photos in Settings.');
+      toast('Couldn’t open your photos. Check that Oomlaut Reader is allowed to use Photos in Settings.');
     }
   };
 

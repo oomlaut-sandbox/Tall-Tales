@@ -83,7 +83,7 @@ export async function buildStoryHtml(story, layout = 'stacked', fontKey = 'serif
   const pics = [];
   for (const p of story.pages) pics.push(await imageData(p.image));
   const out = [];
-  out.push(`<div class="pg title"><h1>${esc(story.title)}</h1>${story.author ? `<div class="by">by ${esc(story.author)}</div>` : ''}<div class="made">Made with oomlaut Reader</div></div>`);
+  out.push(`<div class="pg title"><h1>${esc(story.title)}</h1>${story.author ? `<div class="by">by ${esc(story.author)}</div>` : ''}<div class="made">Made with Oomlaut Reader</div></div>`);
   story.pages.forEach((p, i) => {
     const pic = pics[i];
     if (layout === 'spreads') {

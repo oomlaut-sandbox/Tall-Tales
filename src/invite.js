@@ -5,7 +5,7 @@ import { Share } from 'react-native';
 export const APP_LINK = 'https://apps.apple.com/app/id6822165068';
 
 export function inviteMessage(title) {
-  return `We’ve been reading “${title}” together in oomlaut Reader: picture books in your voice. Come and read with us! ${APP_LINK}`;
+  return `We’ve been reading “${title}” together in Oomlaut Reader: Picture books in your voice. Come and read with us! ${APP_LINK}`;
 }
 
 export function shareInvite(title) {

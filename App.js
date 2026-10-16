@@ -153,7 +153,7 @@ function Root() {
             if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else toast('Open a story first, then choose how it plays.');
           }} />
           <Option glyph={<PlusIcon />} title="Create a Story" sub="Add your own pictures and words" onPress={() => openPublisher(null)} />
-          <Option glyph={<CircleIcon />} title="Profile" sub="Manage your oomlaut account" onPress={() => { setDrawer(false); setProfileGate(true); }} />
+          <Option glyph={<CircleIcon />} title="Profile" sub="Manage your Oomlaut account" onPress={() => { setDrawer(false); setProfileGate(true); }} />
           <Option glyph={<InfoIcon />} title="About" sub="Learn more about the app" onPress={() => go('about')} />
           <View style={{ height: 14 }} />
         </Panel>

@@ -66,7 +66,7 @@ export default function Profile({ u, openMenu, toast }) {
         <Pressable onPress={() => run(signOut)} style={styles.btn} accessibilityRole="button"><Text style={styles.btnText}>Sign out</Text></Pressable>
         {confirmDelete ? (
           <View style={styles.warnBox}>
-            <Text style={styles.warn}>Delete your oomlaut account? You’ll be signed out and the account is removed for good. Books and recordings on this phone stay here.</Text>
+            <Text style={styles.warn}>Delete your Oomlaut account? You’ll be signed out and the account is removed for good. Books and recordings on this phone stay here.</Text>
             <View style={{ flexDirection: 'row', gap: 10 }}>
               <Pressable onPress={() => run(async () => { await deleteAccount(); setConfirmDelete(false); toast && toast('Your account was deleted.'); })} style={[styles.btn, { flex: 1, backgroundColor: colors.highlight }]}>
                 <Text style={styles.btnText}>Delete account</Text>
@@ -82,7 +82,7 @@ export default function Profile({ u, openMenu, toast }) {
   } else if (step === 'start') {
     body = (
       <>
-        <Text style={[styles.p, { marginBottom: 10 }]}>Sign in to your oomlaut account. There’s no password to remember.</Text>
+        <Text style={[styles.p, { marginBottom: 10 }]}>Sign in to your Oomlaut account. There’s no password to remember.</Text>
         {apple ? (
           // our own button so both match (same font, size and dark grey); Apple's logo and wording kept
           <Pressable onPress={() => run(signInWithApple)} style={[styles.btn, { flexDirection: 'row', justifyContent: 'center', gap: 7 }]} accessibilityRole="button" accessibilityLabel="Sign in with Apple">

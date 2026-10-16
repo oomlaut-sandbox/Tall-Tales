@@ -237,7 +237,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     setPanel(null);
     try {
       const perm = await AudioModule.requestRecordingPermissionsAsync();
-      if (!perm.granted) return toast('oomlaut Reader needs the microphone to record. You can allow it in Settings.');
+      if (!perm.granted) return toast('Oomlaut Reader needs the microphone to record. You can allow it in Settings.');
       await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
       audioModeChanged();
       await recorder.prepareToRecordAsync();

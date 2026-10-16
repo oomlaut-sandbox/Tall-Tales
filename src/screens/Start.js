@@ -127,7 +127,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
         const at2 = wide ? { position: 'absolute', left: side, top: 0, width: side, height: side } : { position: 'absolute', left: 0, top: side, width: side, height: side };
         // the inside of the cover: the same brown as the outside (Jörg may add texture later)
         const pebbles = (
-          <View style={{ width: side, height: side, backgroundColor: COVER_BROWN, overflow: 'hidden' }} accessibilityLabel="oomlaut Reader">
+          <View style={{ width: side, height: side, backgroundColor: COVER_BROWN, overflow: 'hidden' }} accessibilityLabel="Oomlaut Reader">
             <Image source={LEATHER} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
             {!wide ? <Fade edge="bottom" size={Math.round(side * 0.1)} max={0.22} /> : null}
           </View>

@@ -1,4 +1,4 @@
-// About oomlaut Reader (from the Settings menu).
+// About Oomlaut Reader (from the Settings menu).
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,9 +14,9 @@ export default function About({ u, openMenu }) {
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         <Felt /><Stitch inset={7} />
-        {/* the ® sits raised (superscript) after oomlaut */}
+        {/* the ® sits raised (superscript) after Oomlaut */}
         <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-          <Text style={styles.title}>oomlaut</Text>
+          <Text style={styles.title}>Oomlaut</Text>
           <Text style={styles.reg}>®</Text>
           <Text style={styles.title}> Reader</Text>
         </View>
@@ -24,12 +24,12 @@ export default function About({ u, openMenu }) {
       </View>
       <ScrollView contentContainerStyle={styles.body}>
         <Text style={styles.p}>
-          oomlaut Reader is a home for beautifully illustrated stories, made for children who are learning to read and the grown-ups who read with them.
+          Oomlaut Reader is a home for beautifully illustrated stories, made for children who are learning to read and the grown-ups who read with them.
         </Text>
         <Text style={styles.p}>
           Every book can be read aloud by a warm narrator, with each word lighting up as it’s spoken. In Learn to Read mode, children tap any word to hear it sounded out, one part at a time. Parents can record themselves reading each page, so a favourite story can be heard in a familiar voice, any time. And families can make their own books, with their own pictures and words.
         </Text>
-        <Text style={styles.p}>oomlaut Reader is made by Jörg Schmidt, an illustrator and author, and a parent.</Text>
+        <Text style={styles.p}>Oomlaut Reader is made by Jörg Schmidt, an illustrator and author, and a parent.</Text>
         <Text style={styles.version}>Version {VERSION}</Text>
       </ScrollView>
     </WithBar>

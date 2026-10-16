@@ -1,4 +1,4 @@
-// The parent's oomlaut account (Supabase). Sign in with Apple, or a 6-digit code sent by email.
+// The parent's Oomlaut account (Supabase). Sign in with Apple, or a 6-digit code sent by email.
 // No passwords. The connection details (project URL and public "anon" key) are written into
 // supabaseConfig.json by the TestFlight workflow from the SUPABASE_URL / SUPABASE_ANON_KEY secrets;
 // until they exist, accounts simply show as "not set up yet".
