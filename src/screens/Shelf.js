@@ -214,33 +214,32 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
   const spaceL = across ? insets.left : 0, spaceT = across ? 0 : insets.top;
   const boxX = Math.round(spaceL + (areaW - spaceL - boxW) / 2);
   const boxY = Math.round(Math.max(spaceT + 10, spaceT + (areaH - spaceT - boxH) / 2));
-  const mv = useRef(new Animated.Value(0)).current; // cover: 0 at the tile, 1 in the card
-  const fade = useRef(new Animated.Value(0)).current; // the card around it
+  // The box simply fades in with the cover already in place (the cover no longer flies over from its tile),
+  // and fades out again when closed.
+  const mv = useRef(new Animated.Value(1)).current; // cover position: kept in the card
+  const fade = useRef(new Animated.Value(0)).current; // the card and its cover
+  const coverOp = useRef(new Animated.Value(0)).current; // the cover (stays put when 'Read now' opens the book)
   const blur = useRef(new Animated.Value(0)).current; // the blur behind it (not on the native driver)
   const started = useRef(false);
   useEffect(() => {
     if (!boxH || started.current) return;
     started.current = true;
-    playSound('tap');
-    Animated.sequence([
-      Animated.timing(mv, { toValue: 1, duration: rect ? 480 : 1, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
-      Animated.parallel([
-        Animated.timing(fade, { toValue: 1, duration: 260, useNativeDriver: true }),
-        Animated.timing(blur, { toValue: 22, duration: 260, useNativeDriver: false }),
-      ]),
+    playSound('cardLift');
+    Animated.parallel([
+      Animated.timing(fade, { toValue: 1, duration: 280, useNativeDriver: true }),
+      Animated.timing(coverOp, { toValue: 1, duration: 280, useNativeDriver: true }),
+      Animated.timing(blur, { toValue: 22, duration: 280, useNativeDriver: false }),
     ]).start();
-    setTimeout(() => playSound('cardLift'), rect ? 480 : 0);
   }, [boxH]);
   const closing = useRef(false);
   const close = (then) => {
     if (closing.current) return;
     closing.current = true;
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(fade, { toValue: 0, duration: 200, useNativeDriver: true }),
-        Animated.timing(blur, { toValue: 0, duration: 200, useNativeDriver: false }),
-      ]),
-      Animated.timing(mv, { toValue: 0, duration: rect && !then ? 400 : 1, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
+    Animated.parallel([
+      Animated.timing(fade, { toValue: 0, duration: 240, useNativeDriver: true }),
+      // reading: the cover stays so the book can open from it; closing: it fades out with the box
+      Animated.timing(coverOp, { toValue: then ? 1 : 0, duration: 240, useNativeDriver: true }),
+      Animated.timing(blur, { toValue: 0, duration: 240, useNativeDriver: false }),
     ]).start(() => (then ? then() : onClose()));
   };
   const r = rect || { x: boxX + M, y: boxY + M, w: cs, h: cs };
@@ -250,7 +249,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
     { translateY: mv.interpolate({ inputRange: [0, 1], outputRange: [dy, 0] }) },
     { scale: mv.interpolate({ inputRange: [0, 1], outputRange: [k, 1] }) },
   ];
-  const dim = Animated.add(mv.interpolate({ inputRange: [0, 1], outputRange: [0, 0.3] }), fade.interpolate({ inputRange: [0, 1], outputRange: [0, 0.25] }));
+  const dim = fade.interpolate({ inputRange: [0, 1], outputRange: [0, 0.55] });
   const cover = coverFor(book);
   // every square is a page (a screen is a picture page and a words page), so bundled books count both
   const blurb = book.blurb || (bundledStory(book.id) || {}).blurb; // the catalog's text, or the bundled book's own
@@ -316,8 +315,8 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
           <DogEar u={u} onPress={() => close()} label="Close" under="transparent" />{/* just the white fold and its shadow; the corner behind it is open */}
         </Animated.View>
       </View>
-      {/* the cover, flying from its tile into the card's top-left corner */}
-      <Animated.View pointerEvents="none" style={[styles.tileShadow, { position: 'absolute', left: boxX + M, top: boxY + M, width: cs, height: cs, opacity: boxH ? 1 : 0, transform: coverMove }]}>
+      {/* the cover, already in place in the card's top-left corner (it fades with the box) */}
+      <Animated.View pointerEvents="none" style={[styles.tileShadow, { position: 'absolute', left: boxX + M, top: boxY + M, width: cs, height: cs, opacity: boxH ? coverOp : 0, transform: coverMove }]}>
         {cover ? <Image source={cover} style={styles.coverImg} resizeMode="cover" /> : null}
         {/* a very thin dark grey line just outside the cover */}
         <View pointerEvents="none" style={{ position: 'absolute', left: -1, top: -1, right: -1, bottom: -1, borderWidth: 1, borderColor: '#3c3c3c' }} />
