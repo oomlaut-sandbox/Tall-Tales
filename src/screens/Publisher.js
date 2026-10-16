@@ -309,7 +309,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             </View>
           </View>
         ) : (
-          <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} hitSlop={6} style={{ marginBottom: 18 }}><Text style={styles.deleteLink}>Delete this story</Text></Pressable>
+          <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} hitSlop={6} style={{ marginTop: 26, marginBottom: 18 }}><Text style={styles.deleteLink}>Delete this story</Text></Pressable>
         )}
       </Panel>
       {editing ? (

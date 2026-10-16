@@ -1,10 +1,10 @@
 // The reader: page curl, read-aloud with highlighting, learn-to-read, interactive pictures.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, PanResponder, Platform, Pressable, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, PanResponder, Platform, Pressable, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOOK_FONTS, colors, fonts } from '../theme';
-import { Felt } from '../look';
+import { DESK_FELT, Felt } from '../look';
 import { tokenize, cleanWord, syllablesFor } from '../story';
 import { Fade, PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
 import { FLAP_PERSPECTIVE, flapTables } from '../flapStrips';
@@ -596,6 +596,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       {/* the black strip over the camera: along the top, or down the left side when sideways */}
       <View style={wide ? { width: BL.leftW, backgroundColor: colors.bar } : { height: topH, backgroundColor: colors.bar }}><Felt /></View>
       <View style={styles.desk}>
+        {/* the charcoal felt, as on the other screens */}
+        <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} />
       <Felt />
       <View style={[styles.bookShadow, { width: BL.bookW, height: BL.bookH }]}>
       <View style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...pan.panHandlers}>

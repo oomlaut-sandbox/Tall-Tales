@@ -34,3 +34,6 @@ export function Stitch({ inset = 5, radius = 0, color = 'rgba(255,255,255,0.5)',
 // Jörg's charcoal felt, being tried as the background (start page, My Library, Book Store, Create a Story).
 // To go back to the plain dark grey (colors.desk, #3b3b3b), stop passing it / remove the Image that uses it.
 export const DESK_FELT = require('../assets/desk-felt.jpg');
+
+// A light grey felt (made from the charcoal felt's fibres) for the About and Profile pages.
+export const LIGHT_FELT = require('../assets/light-felt.jpg');

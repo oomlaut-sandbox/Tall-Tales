@@ -319,7 +319,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
       <Animated.View pointerEvents="none" style={[styles.tileShadow, { position: 'absolute', left: boxX + M, top: boxY + M, width: cs, height: cs, opacity: boxH ? coverOp : 0, transform: coverMove }]}>
         {cover ? <Image source={cover} style={styles.coverImg} resizeMode="cover" /> : null}
         {/* a very thin dark grey line just outside the cover */}
-        <View pointerEvents="none" style={{ position: 'absolute', left: -1, top: -1, right: -1, bottom: -1, borderWidth: 1, borderColor: '#3c3c3c' }} />
+        <View pointerEvents="none" style={{ position: 'absolute', left: -1, top: -1, right: -1, bottom: -1, borderWidth: 1, borderColor: '#8c8c8c' }} />
       </Animated.View>
     </View>
   );
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
   tileOption: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, lineHeight: 23 },
   tileSub: { fontFamily: fonts.story, fontSize: 15, lineHeight: 19, color: '#d0d0d0' },
   check: { position: 'absolute', top: 8, left: 8, width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: colors.white, backgroundColor: 'rgba(0,0,0,0.25)', alignItems: 'center', justifyContent: 'center', zIndex: 2 },
-  checkOn: { backgroundColor: colors.highlight, borderColor: colors.white },
+  checkOn: { backgroundColor: colors.green, borderColor: colors.white }, // selected: the standard green
   checkMark: { color: colors.white, fontWeight: '800', fontSize: 16, lineHeight: 18 },
   restore: { fontFamily: fonts.ui, fontSize: 15, color: '#d0d0d0', textDecorationLine: 'underline', textAlign: 'center' },
   confirm: { position: 'absolute', left: 16, right: 16, bottom: 150, backgroundColor: colors.panel, padding: 18, gap: 14, zIndex: 40 },
