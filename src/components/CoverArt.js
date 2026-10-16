@@ -37,7 +37,7 @@ export default function CoverArt({ cover }) {
       {t && t.text && w ? (
         <View style={{ position: 'absolute', left: 0, right: 0, top: t.y * w, alignItems: 'center', transform: [{ translateX: (t.x - 0.5) * w }, { translateY: -t.size * w * 0.65 }] }}>
           <Text style={[titleStyle, coverTitleLook(t), { fontSize: t.size * w, lineHeight: t.size * w * 1.2, paddingHorizontal: w * 0.04 }]}>{t.text}</Text>
-          {t.byline ? <Text style={[titleStyle, bylineStyle, coverTitleLook(t, true), { fontSize: t.size * w * 0.42, lineHeight: t.size * w * 0.6, paddingHorizontal: w * 0.04 }]}>{t.byline}</Text> : null}
+          {t.byline ? <Text style={[titleStyle, bylineStyle, coverTitleLook(t, true), { fontSize: t.size * w * 0.42, lineHeight: t.size * w * 0.6, paddingHorizontal: w * 0.12 }]}>{t.byline}</Text> : null}
         </View>
       ) : null}
     </View>

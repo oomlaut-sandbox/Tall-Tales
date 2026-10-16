@@ -522,7 +522,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                       ) : (
                         <Text style={[titleStyle, coverTitleLook(t), { fontSize: t.size * W, lineHeight: t.size * W * 1.2, paddingHorizontal: W * 0.04 }]} accessibilityLabel="Cover title">{t.text}</Text>
                       )}
-                      {t.byline ? <Text style={[titleStyle, bylineStyle, coverTitleLook(t, true), { fontSize: t.size * W * 0.42, lineHeight: t.size * W * 0.6 }]}>{t.byline}</Text> : null}
+                      {t.byline ? <Text style={[titleStyle, bylineStyle, coverTitleLook(t, true), { fontSize: t.size * W * 0.42, lineHeight: t.size * W * 0.6, paddingHorizontal: W * 0.12 }]}>{t.byline}</Text> : null}
                     </View>
                   ) : null}
                 </View>
