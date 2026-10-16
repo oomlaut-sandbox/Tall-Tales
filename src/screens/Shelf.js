@@ -63,7 +63,7 @@ function Band({ color, felt, dark, title, sub, action, onAction }) {
       {/* the title alone (no subtitle), centred in the band, with Select / Cancel on the same line */}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: fg, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, lineHeight: 38 }}>{title}</Text>
+          <Text style={{ color: fg, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, transform: [{ translateY: -3 }] }}>{title}</Text>{/* nudged up a touch: the big title sat a little low next to Select */}
         </View>
         {action ? (
           <Pressable onPress={onAction} hitSlop={10} accessibilityRole="button">
