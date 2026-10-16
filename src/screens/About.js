@@ -16,8 +16,11 @@ export default function About({ u, openMenu }) {
   const insets = useSafeAreaInsets();
   const { width: winW } = useWindowDimensions();
   // the words sit in a column about half the page wide; Skippy stands in the white margin on the right, at the bottom
-  const colW = Math.round(winW * 0.54);
-  const skW = Math.min(240, Math.max(110, winW - colW - 24 - 20));
+  // the words on the left, about half the page; the right half is Skippy's: a speech bubble about book
+  // submissions (with the email pill) above him, and him standing at the bottom right
+  const colW = Math.round(winW * 0.5) - 30;
+  const rightW = Math.min(320, winW - (colW + 24) - 18);
+  const skW = Math.min(200, Math.round(rightW * 0.72));
   const [mailGate, setMailGate] = useState(false); // writing an email leaves the app, so a grown-up says yes first
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
@@ -40,15 +43,21 @@ export default function About({ u, openMenu }) {
           Every book can be read aloud by a warm narrator, with each word lighting up as it’s spoken. In Learn to Read mode, children tap any word to hear it sounded out, one part at a time. Parents can record themselves reading each page, so a favourite story can be heard in a familiar voice, any time. And families can make their own books, with their own pictures and words.
         </Text>
         <Text style={styles.p}>Oomlaut Reader is made by Jörg Schmidt, an illustrator and author, and a parent.</Text>
-        {/* book submissions: a short note and a pill that opens a new email (after the grown-up check) */}
-        <Text style={[styles.p, { marginTop: 8 }]}>Oomlaut is always looking for new picture books. If you’ve written or illustrated a story, send it to us and join the Oomlaut author community.</Text>
-        <Pressable onPress={() => setMailGate(true)} style={styles.pill} accessibilityRole="button" accessibilityLabel={`Email ${SUBMISSIONS}`}>
-          <Text style={styles.pillText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{SUBMISSIONS}</Text>
-        </Pressable>
         <Text style={styles.version}>Version {VERSION}</Text>
       </ScrollView>
-      <Image source={SKIPPY} resizeMode="contain" accessibilityIgnoresInvertColors pointerEvents="none"
-        style={{ position: 'absolute', right: 14, bottom: 12, width: skW, height: skW * 600 / 449 }} />
+      <View pointerEvents="box-none" style={{ position: 'absolute', right: 10, bottom: 12, width: rightW, alignItems: 'flex-end' }}>
+        {/* Skippy's speech bubble: book submissions, and a pill that opens a new email (after the grown-up check) */}
+        <View style={[styles.bubble, { width: rightW }]}>
+          <Text style={styles.bubbleText}>Oomlaut is always looking for new picture books. If you’ve written or illustrated a story, send it to us and join the Oomlaut author community.</Text>
+          <Pressable onPress={() => setMailGate(true)} style={styles.pill} accessibilityRole="button" accessibilityLabel={`Email ${SUBMISSIONS}`}>
+            <Text style={styles.pillText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{SUBMISSIONS}</Text>
+          </Pressable>
+          {/* the bubble's point, down towards Skippy */}
+          <View style={[styles.bubbleTail, { right: skW * 0.42 }]} />
+        </View>
+        <Image source={SKIPPY} resizeMode="contain" accessibilityIgnoresInvertColors pointerEvents="none"
+          style={{ width: skW, height: skW * 600 / 449, marginTop: 14 }} />
+      </View>
       </View>
       <ParentGate visible={mailGate} reason="This opens your email app to write to Oomlaut." onCancel={() => setMailGate(false)}
         onPass={() => { setMailGate(false); Linking.openURL(`mailto:${SUBMISSIONS}?subject=${encodeURIComponent('Book submission')}`).catch(() => {}); }} />
@@ -64,7 +73,11 @@ const styles = StyleSheet.create({
   tagline: { color: colors.white, fontFamily: fonts.story, fontSize: 20, marginTop: 6, fontStyle: 'italic' },
   body: { paddingLeft: 24, paddingTop: 24, paddingBottom: 40, gap: 16 },
   p: { fontFamily: fonts.story, fontSize: 19, lineHeight: 28, color: colors.ink },
-  pill: { alignSelf: 'flex-start', maxWidth: '100%', backgroundColor: '#8a8a8a', borderRadius: 22, height: 44, paddingHorizontal: 16, alignItems: 'center', justifyContent: 'center' },
-  pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 13 },
+  bubble: { backgroundColor: '#ffffff', borderRadius: 16, paddingHorizontal: 12, paddingTop: 12, paddingBottom: 14, gap: 10,
+    shadowColor: '#000', shadowOpacity: 0.22, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 4 },
+  bubbleText: { fontFamily: fonts.story, fontSize: 15, lineHeight: 20, color: colors.ink },
+  bubbleTail: { position: 'absolute', bottom: -9, width: 18, height: 18, backgroundColor: '#ffffff', transform: [{ rotate: '45deg' }] },
+  pill: { alignSelf: 'stretch', backgroundColor: '#8a8a8a', borderRadius: 18, height: 36, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center' },
+  pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 11.5 },
   version: { fontFamily: fonts.ui, fontSize: 13, color: '#555', marginTop: 8 },
 });
