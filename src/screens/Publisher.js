@@ -6,12 +6,12 @@ import { Animated, Easing, Image, KeyboardAvoidingView, PanResponder, Platform, 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
-import { bookFont, colors, fonts } from '../theme';
+import { BOOK_FONTS, bookFont, colors, fonts } from '../theme';
 import { Bar, Burger, DogEar, Panel, PageShape } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT } from '../look';
-import { bylineStyle, titleStyle } from '../components/CoverArt';
+import { COVER_COLORS, bylineStyle, coverTitleLook, titleStyle } from '../components/CoverArt';
 import { creditsLine } from '../userStories';
 import { playKey } from '../sound';
 import { deleteUserStory, dropPicture, keepPicture, newPageId, saveUserStory } from '../userStories';
@@ -130,6 +130,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const [coverOpen, setCoverOpen] = useState(false);
   const [coverAsk, setCoverAsk] = useState(false); // 'Add the title as text?'
   const [coverTitling, setCoverTitling] = useState(false);
+  const [coverTool, setCoverTool] = useState(null); // 'color' | 'font' palette open under the tools
   const cover = draft.cover || null;
   const setCover = (c) => setDraft((d) => ({ ...d, cover: c }));
   const openCover = () => { setPageDone(false); setCoverAsk(false); setCoverTitling(!!(cover && cover.title)); setCoverOpen(true); };
@@ -160,11 +161,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const dragFrom = useRef(null);
   const titleDrag = useRef(PanResponder.create({
     onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) + Math.abs(g.dy) > 6,
+    onMoveShouldSetPanResponderCapture: (_, g) => Math.abs(g.dx) + Math.abs(g.dy) > 6, // win over the text box while dragging
+    onPanResponderTerminationRequest: () => false,
     onPanResponderGrant: () => { const t = latest.current.cover && latest.current.cover.title; dragFrom.current = t ? { x: t.x, y: t.y } : null; },
     onPanResponderMove: (_, g) => {
       if (!dragFrom.current) return;
       const W = coverSize.current;
-      setCoverTitle({ x: Math.max(0.1, Math.min(0.9, dragFrom.current.x + g.dx / W)), y: Math.max(0.08, Math.min(0.92, dragFrom.current.y + g.dy / W)) });
+      setCoverTitle({ x: Math.max(0.05, Math.min(0.95, dragFrom.current.x + g.dx / W)), y: Math.max(0.06, Math.min(0.94, dragFrom.current.y + g.dy / W)) });
     },
   })).current;
 
@@ -489,29 +492,57 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   {coverTitling && t ? (
                     <View {...titleDrag.panHandlers} style={{ position: 'absolute', left: 0, right: 0, top: t.y * W, alignItems: 'center', transform: [{ translateX: (t.x - 0.5) * W }, { translateY: -t.size * W * 0.65 }] }}>
                       <TextInput value={t.text} onChangeText={(text) => setCoverTitle({ text })} multiline
-                        style={[titleStyle, { fontSize: t.size * W, lineHeight: t.size * W * 1.2, paddingHorizontal: W * 0.04, minWidth: W * 0.3, outlineWidth: 0 }]}
+                        style={[titleStyle, coverTitleLook(t), { fontSize: t.size * W, lineHeight: t.size * W * 1.2, paddingHorizontal: W * 0.04, minWidth: W * 0.3, outlineWidth: 0 }]}
                         accessibilityLabel="Cover title" />
-                      {t.byline ? <Text style={[titleStyle, bylineStyle, { fontSize: t.size * W * 0.42, lineHeight: t.size * W * 0.6 }]}>{t.byline}</Text> : null}
+                      {t.byline ? <Text style={[titleStyle, bylineStyle, coverTitleLook(t, true), { fontSize: t.size * W * 0.42, lineHeight: t.size * W * 0.6 }]}>{t.byline}</Text> : null}
                     </View>
                   ) : null}
                 </View>
               );
             })()}
-            {/* under the cover: the title size (left) and Done (right) */}
-            <View style={{ width: winW - 2 * GAP, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              {coverTitling && cover && cover.title ? (
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+            {/* under the cover: the title tools (size, colour, font, author), centred, with the hint; then Done */}
+            {coverTitling && cover && cover.title ? (
+              <View style={{ width: winW - 2 * GAP, alignItems: 'center' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <Pressable onPress={() => setCoverTitle({ size: Math.max(0.05, cover.title.size - 0.015) })} style={styles.sizeBtn} accessibilityLabel="Smaller title"><Text style={[styles.donePillText, { fontSize: 14 }]}>A</Text></Pressable>
                   <Pressable onPress={() => setCoverTitle({ size: Math.min(0.24, cover.title.size + 0.015) })} style={styles.sizeBtn} accessibilityLabel="Bigger title"><Text style={[styles.donePillText, { fontSize: 22 }]}>A</Text></Pressable>
+                  {/* colour: a grey circle holding a little dot of the title's colour */}
+                  <Pressable onPress={() => { setCoverTool((x) => (x === 'color' ? null : 'color')); }} style={[styles.sizeBtn, coverTool === 'color' && styles.toolOn]} accessibilityLabel="Title colour">
+                    <View style={{ width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: colors.white, backgroundColor: cover.title.color || '#ffffff' }} />
+                  </Pressable>
+                  {/* font */}
+                  <Pressable onPress={() => { setCoverTool((x) => (x === 'font' ? null : 'font')); }} style={[styles.sizeBtn, coverTool === 'font' && styles.toolOn]} accessibilityLabel="Title font">
+                    <Text style={[styles.donePillText, { fontSize: 16, fontFamily: bookFont(cover.title.font || 'serif').bold || bookFont(cover.title.font || 'serif').family }]}>Aa</Text>
+                  </Pressable>
                   {/* the author / illustrator on the cover too: only if they want it (and gave a name) */}
                   {creditsLine(draft.writer, draft.artist) ? (
                     <Pressable onPress={() => setCoverTitle({ byline: cover.title.byline ? '' : creditsLine(draft.writer, draft.artist).replace(/\.$/, '') })}
                       style={[styles.authorBtn, cover.title.byline ? { backgroundColor: colors.green } : null]} accessibilityRole="button" accessibilityState={{ selected: !!cover.title.byline }}>
                       <Text style={[styles.donePillText, { fontSize: 14 }]}>Author</Text>
                     </Pressable>
-                  ) : <Text style={styles.coverHint}>Drag the title</Text>}
+                  ) : null}
                 </View>
-              ) : <View />}
+                {coverTool === 'color' ? (
+                  <View style={styles.swatches}>
+                    {COVER_COLORS.map(([hex, name]) => (
+                      <Pressable key={hex} onPress={() => setCoverTitle({ color: hex })} accessibilityLabel={name}
+                        style={[styles.swatch, { backgroundColor: hex }, (cover.title.color || '#ffffff') === hex && styles.swatchOn]} />
+                    ))}
+                  </View>
+                ) : null}
+                {coverTool === 'font' ? (
+                  <View style={[styles.swatches, { gap: 6 }]}>
+                    {Object.entries(BOOK_FONTS).map(([k, f]) => (
+                      <Pressable key={k} onPress={() => setCoverTitle({ font: k })} style={[styles.fontChip, (cover.title.font || 'serif') === k && { backgroundColor: colors.green }]}>
+                        <Text style={[styles.donePillText, { fontFamily: f.bold || f.family, fontWeight: f.bold ? undefined : '700', fontSize: 15 }]}>{f.label}</Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                ) : null}
+                <Text style={[styles.coverHint, { marginTop: 10, marginLeft: 0, textAlign: 'center' }]}>Drag the title anywhere on the cover</Text>
+              </View>
+            ) : null}
+            <View style={{ width: winW - 2 * GAP, alignItems: 'flex-end', marginTop: 12 }}>
               <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={styles.donePill}><Text style={styles.donePillText}>Done</Text></Pressable>
             </View>
           </View>
@@ -551,6 +582,11 @@ const styles = StyleSheet.create({
   editorHead: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 30, paddingBottom: 12 },
   editorTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
   coverSquare: { backgroundColor: '#7d7d7d', overflow: 'hidden', marginBottom: 14, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10 },
+  toolOn: { backgroundColor: colors.green },
+  swatches: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginTop: 12, maxWidth: 330 },
+  swatch: { width: 30, height: 30, borderRadius: 15, borderWidth: 2, borderColor: 'rgba(255,255,255,0.35)' },
+  swatchOn: { borderColor: colors.white, borderWidth: 3, transform: [{ scale: 1.12 }] },
+  fontChip: { height: 36, borderRadius: 18, paddingHorizontal: 14, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   authorBtn: { height: 40, borderRadius: 20, paddingHorizontal: 16, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center', marginLeft: 4 },
   sizeBtn: { width: 44, height: 40, borderRadius: 20, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   coverHint: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 13, marginLeft: 4 },
