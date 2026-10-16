@@ -101,14 +101,20 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
           <Pressable onPress={() => setConfirm(true)} disabled={!chosen.length} style={[styles.barBtn, !chosen.length && styles.barBtnOff]} accessibilityRole="button">
             <Text style={[styles.barBtnText, { color: '#ff6b6b' }]}>Delete</Text>
           </Pressable>
-          {!v ? <Text style={styles.barHint}>{chosen.length > 1 ? 'One book at a time for Share and Edit' : chosen.length === 1 && !chosen[0].mine ? 'Only books you made can be edited' : ''}</Text> : null}
+          {!v ? <Text style={styles.barHint}>{chosen.length > 1 ? 'One book at a time for Share and Edit' : chosen.length === 1 && !chosen[0].mine ? 'Only books you made can be edited' : ''}</Text> : <View style={{ flex: 1 }} />}
+          {/* Cancel sits where Select was: the bottom right of the bar */}
+          <Pressable onPress={stop} hitSlop={10} style={styles.barBtn} accessibilityRole="button"><Text style={styles.barSmall}>Cancel</Text></Pressable>
         </Bar>
       ) : (
-        <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>
+        <Bar u={u} vertical={v}>
+          <Burger u={u} onPress={openMenu} />
+          <View style={{ flex: 1 }} />
+          {/* Select: in the bottom right corner of the bar */}
+          <Pressable onPress={() => setSelecting(true)} hitSlop={10} style={styles.barBtn} accessibilityRole="button"><Text style={styles.barSmall}>Select</Text></Pressable>
+        </Bar>
       ))}>
       <Band color={colors.green} felt="library" title={selecting ? 'Select books' : 'My Library'}
-        sub={selecting ? (picked.length ? `${picked.length} selected` : 'Tap books to select them') : 'Your stories, ready to read'}
-        action={selecting ? 'Cancel' : 'Select'} onAction={selecting ? stop : () => setSelecting(true)} />
+        sub={selecting ? (picked.length ? `${picked.length} selected` : 'Tap books to select them') : 'Your stories, ready to read'} />
       <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]}>
         {stories.map((s) => (
           // just the title under each cover (no author, pages or other details)
@@ -357,6 +363,7 @@ const styles = StyleSheet.create({
   actBtn: { flex: 1, paddingVertical: 12, alignItems: 'center', overflow: 'hidden' },
   actText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   barBtn: { paddingVertical: 10, paddingHorizontal: 6 },
+  barSmall: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 }, // Select / Cancel: small, tucked in the corner
   barBtnOff: { opacity: 0.35 },
   barBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
   barHint: { flex: 1, textAlign: 'right', color: colors.muted, fontFamily: fonts.ui, fontSize: 12 },
