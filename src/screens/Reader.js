@@ -637,7 +637,6 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             {/* the page count sits above the record button, with a good gap between them */}
             <View style={{ alignItems: 'center', gap: 8, marginBottom: showControls ? 30 : 0 }}>
               <BarMeta vertical sub={idx < n ? `${idx + 1}/${n}` : 'End'} />
-              {mineHere ? <View style={styles.mineDot} accessibilityLabel="This page plays your own recording" /> : null}
             </View>
             {showControls ? (
               <View style={[styles.small, { alignItems: 'center', gap: 14 }]}>
@@ -653,10 +652,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       <View style={[styles.bottomBar, { height: barH, paddingBottom: insets.bottom }]}>
         <Felt />
         <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
-        {/* the page count, with the small 'Your voice' mark on its own line underneath (so it never cuts the count off) */}
+        {/* the page count */}
         <View style={{ flex: 1, minWidth: 0, justifyContent: 'center' }}>
           <BarMeta page={idx < n ? `Page ${idx + 1} of ${n}` : 'The End'} />
-          {mineHere ? <View style={styles.mine} accessibilityLabel="This page plays your own recording"><View style={styles.mineDot} /><Text numberOfLines={1} style={styles.mineText}>Your voice</Text></View> : null}
         </View>
         {showControls ? (
           <View style={[styles.small, { flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
