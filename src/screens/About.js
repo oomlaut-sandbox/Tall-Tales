@@ -50,7 +50,7 @@ export default function About({ u, openMenu }) {
         <View style={[styles.bubble, { width: rightW }]}>
           <Text style={styles.bubbleText}>Oomlaut is always looking for new picture books. If you’ve written or illustrated a story, send it to us and join the Oomlaut author community.</Text>
           <Pressable onPress={() => setMailGate(true)} style={styles.pill} accessibilityRole="button" accessibilityLabel={`Email ${SUBMISSIONS}`}>
-            <Text style={styles.pillText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{SUBMISSIONS}</Text>
+            <Text style={styles.pillText}>{'submissions@\noomlaut.com'}</Text>
           </Pressable>
           {/* the bubble's point, down towards Skippy */}
           <View style={[styles.bubbleTail, { right: skW * 0.42 }]} />
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000', shadowOpacity: 0.22, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 4 },
   bubbleText: { fontFamily: fonts.story, fontSize: 15, lineHeight: 20, color: colors.ink },
   bubbleTail: { position: 'absolute', bottom: -9, width: 18, height: 18, backgroundColor: '#ffffff', transform: [{ rotate: '45deg' }] },
-  pill: { alignSelf: 'stretch', backgroundColor: '#8a8a8a', borderRadius: 18, height: 36, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center' },
-  pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 11.5 },
+  pill: { alignSelf: 'stretch', backgroundColor: '#8a8a8a', borderRadius: 20, paddingVertical: 7, paddingHorizontal: 8, alignItems: 'center', justifyContent: 'center' },
+  pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 13, lineHeight: 16, textAlign: 'center' },
   version: { fontFamily: fonts.ui, fontSize: 13, color: '#555', marginTop: 8 },
 });
