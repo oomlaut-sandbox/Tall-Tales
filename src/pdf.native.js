@@ -45,37 +45,39 @@ async function fontFace(fontKey) {
   }
 }
 
-// "stacked" pages are 8 × 11 inches with the book drawn like the app: two squares, the picture
-// above the words, each with a thin black outline, the words centred in theirs.
-const PAGE_W = 576, PAGE_H = 792, SQ = 360;
-// "landscape" pages are 11 × 8 inches with the two squares side by side, like the app held sideways.
+// "stacked" pages are US Letter (8.5 × 11 inches) with the book drawn like the app: two squares, the
+// picture above the words, each with a thin black outline, the words centred in theirs.
+// All sizes are points (72 per inch) and the page's CSS uses pt too, so the book lands in the middle.
+const PAGE_W = 612, PAGE_H = 792, SQ = 340; // portrait: about 3/4 inch of white above and below the book
+// "landscape" pages are US Letter sideways (11 × 8.5 inches) with the two squares side by side,
+// centred, like the app held sideways.
 const pageSize = (layout) => (layout === 'spreads' ? { w: SIZE, h: SIZE } : layout === 'landscape' ? { w: PAGE_H, h: PAGE_W } : { w: PAGE_W, h: PAGE_H });
 
 function css(face, family, layout) {
   const { w, h } = pageSize(layout);
   return `${face}
-@page{size:${w}px ${h}px;margin:0}
+@page{size:${w}pt ${h}pt;margin:0}
 html,body{margin:0;padding:0;background:#fff}
 *{box-sizing:border-box}
-.pg{width:${w}px;height:${h}px;overflow:hidden;position:relative;page-break-after:always;break-after:page;
+.pg{width:${w}pt;height:${h}pt;overflow:hidden;position:relative;page-break-after:always;break-after:page;
   display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:${family};color:#2b2b2b}
 .pg:last-child{page-break-after:auto;break-after:auto}
-.title h1{font-weight:400;font-size:56px;margin:0 48px;text-align:center;line-height:1.1}
-.title .by{font-size:18px;margin-top:18px;color:#555}
-.title .made{position:absolute;bottom:28px;font-size:12px;color:#888;font-family:Helvetica,Arial,sans-serif}
+.title h1{font-weight:400;font-size:56pt;margin:0 48pt;text-align:center;line-height:1.1}
+.title .by{font-size:18pt;margin-top:18pt;color:#555}
+.title .made{position:absolute;bottom:28pt;font-size:12pt;color:#888;font-family:Helvetica,Arial,sans-serif}
 .full img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.full::after,.words::after{content:'';position:absolute;inset:4px;border:1.5px solid #000}
-.words p{font-size:28px;line-height:1.5;margin:0 64px;text-align:center}
-.book{width:${SQ}px;display:flex;flex-direction:column}
-.sq{width:${SQ}px;height:${SQ}px;border:1.5px solid #000;overflow:hidden;position:relative}
+.full::after,.words::after{content:'';position:absolute;inset:4pt;border:1.5pt solid #000}
+.words p{font-size:28pt;line-height:1.5;margin:0 64pt;text-align:center}
+.book{width:${SQ}pt;display:flex;flex-direction:column}
+.sq{width:${SQ}pt;height:${SQ}pt;border:1.5pt solid #000;overflow:hidden;position:relative}
 .sq + .sq{border-top:none}
 .book.row{flex-direction:row;width:auto}
-.book.row .sq{width:330px;height:330px}
-.book.row .sq + .sq{border-top:1.5px solid #000;border-left:none}
+.book.row .sq{width:330pt;height:330pt}
+.book.row .sq + .sq{border-top:1.5pt solid #000;border-left:none}
 .sq img{width:100%;height:100%;object-fit:cover;display:block}
-.sq.txt{display:flex;align-items:center;justify-content:center;padding:0 ${Math.round(SQ * 0.09)}px}
-.sq.txt p{font-size:22px;line-height:1.55;margin:0;text-align:center}
-.num{position:absolute;bottom:22px;font-size:11px;color:#999;font-family:Helvetica,Arial,sans-serif}`;
+.sq.txt{display:flex;align-items:center;justify-content:center;padding:0 ${Math.round(SQ * 0.09)}pt}
+.sq.txt p{font-size:22pt;line-height:1.55;margin:0;text-align:center}
+.num{position:absolute;bottom:22pt;font-size:11pt;color:#999;font-family:Helvetica,Arial,sans-serif}`;
 }
 
 export async function buildStoryHtml(story0, layout = 'stacked', fontKey = 'serif') {
