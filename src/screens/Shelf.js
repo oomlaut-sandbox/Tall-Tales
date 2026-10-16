@@ -206,6 +206,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
   const across = sideways; // cover on the left, details beside it
   const boxW = Math.min(areaW - 40, across ? 600 : 400);
   const M = 20; // margin around the cover inside the card
+  const ear = Math.max(24, u * 7.5); // the dog-ear's size (as in DogEar)
   const cs = Math.round(across ? Math.min(boxW * 0.42, areaH - Math.max(insets.top, 20) - 40 - 2 * M) : boxW * 0.52); // cover size
   const [boxH, setBoxH] = useState(0);
   // right in the middle of the space between the bars (top bar / camera strip and the menu bar)
@@ -281,7 +282,12 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
       <View onLayout={(e) => setBoxH(e.nativeEvent.layout.height)}
         style={[styles.card, { left: boxX, top: boxY, width: boxW, maxHeight: areaH - boxY - 16 }]}>
         <Felt />
-        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: CARD_GREY, opacity: fade }]} />
+        {/* the grey card, with its top-right corner cut away under the dog-ear so the background shows through */}
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: fade }]}>
+          <View style={{ position: 'absolute', left: 0, right: 0, top: ear, bottom: 0, backgroundColor: CARD_GREY }} />
+          <View style={{ position: 'absolute', left: 0, right: ear, top: 0, height: ear, backgroundColor: CARD_GREY }} />
+          <View style={{ position: 'absolute', right: 0, top: 0, width: 0, height: 0, borderTopWidth: ear, borderLeftWidth: ear, borderTopColor: 'transparent', borderLeftColor: CARD_GREY }} />
+        </Animated.View>
         <Animated.View pointerEvents={boxH ? 'auto' : 'none'} style={{ opacity: fade, flexDirection: across ? 'row' : 'column' }}>
         <View style={{ flexDirection: 'row' }}>
           <View style={{ width: cs + M, height: cs + 2 * M }} />{/* the same margin above and below the cover */}
@@ -306,7 +312,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
         </Animated.View>
         {/* close: a dog-ear in the top-right corner, folded like a page corner (it replaces the ×) */}
         <Animated.View style={{ position: 'absolute', right: 0, top: 0, width: 56, height: 56, opacity: fade, transform: [{ scaleY: -1 }] }}>
-          <DogEar u={u} onPress={() => close()} label="Close" under="#4a4a4a" />{/* white fold over a dark grey corner, so it shows against the dark background */}
+          <DogEar u={u} onPress={() => close()} label="Close" under="transparent" />{/* just the white fold and its shadow; the corner behind it is open */}
         </Animated.View>
       </View>
       {/* the cover, flying from its tile into the card's top-left corner */}
