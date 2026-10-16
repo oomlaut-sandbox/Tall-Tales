@@ -377,11 +377,11 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           })()}
           {/* under the page: the three fonts to write in (left), and a green Done pill (right) */}
           <Animated.View style={{ width: winW - 2 * GAP, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: zoom }}>
-            <View style={{ flexDirection: 'row', gap: 6, marginBottom: 14 }}>
+            <View style={{ flexDirection: 'row', gap: 5, marginBottom: 14, flexShrink: 1 }}>
               {[['typewriter', 'Typewriter'], ['serif', 'Serif'], ['sans', 'Helvetica']].map(([k, label]) => (
                 <Pressable key={k} onPress={() => setWriteFont(k)} hitSlop={4} accessibilityRole="button" accessibilityState={{ selected: writeFont === k }}
                   style={[styles.fontPill, writeFont === k && styles.fontPillOn]}>
-                  <Text style={[styles.fontPillText, { fontFamily: bookFont(k).family }]}>{label}</Text>
+                  <Text style={[styles.fontPillText, { fontFamily: bookFont(k).family, fontSize: k === 'serif' ? 17 : k === 'typewriter' ? 13 : 14 }]}>{label}</Text>
                 </Pressable>
               ))}
             </View>
@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
   editor: { alignItems: 'center' },
   editorHead: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 30, paddingBottom: 12 },
   editorTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
-  fontPill: { height: 32, borderRadius: 16, paddingHorizontal: 11, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.14)' },
+  fontPill: { height: 32, borderRadius: 16, paddingHorizontal: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.14)' },
   fontPillOn: { backgroundColor: colors.green },
   fontPillText: { color: colors.white, fontSize: 14 },
   donePill: { backgroundColor: colors.green, height: 40, borderRadius: 20, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
