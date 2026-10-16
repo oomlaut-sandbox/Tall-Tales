@@ -225,17 +225,15 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           )}
           {!wide ? <Fade edge="bottom" size={Math.round(side * 0.1)} max={0.22} /> : null}
         </Pressable>
-        <View ref={wordsRef} collapsable={false} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>
+        <Pressable onPress={openWords} accessibilityRole="button" accessibilityLabel={`Words for page ${i + 1}`} ref={wordsRef} collapsable={false} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>{/* the whole words square opens the editor */}
           {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
           <Spine wide={wide} />
           <Text style={styles.addText}>Add Text</Text>
           {/* Tapping the words opens a big editor (just the words page, above the keyboard). */}
-          <Pressable onPress={openWords} accessibilityRole="button" accessibilityLabel={`Words for page ${i + 1}`}>
-            <Text style={[styles.input, { fontFamily: bookFont(fontKey).family, maxHeight: side * 0.7 }, !page.text && { color: '#666' }]} numberOfLines={8}>
-              {page.text || 'Tap to type the words for this page. Two or three sentences reads best.'}
-            </Text>
-          </Pressable>
-        </View>
+          <Text style={[styles.input, { fontFamily: bookFont(fontKey).family, maxHeight: side * 0.7 }, !page.text && { color: '#666' }]} numberOfLines={8}>
+            {page.text || 'Tap to type the words for this page. Two or three sentences reads best.'}
+          </Text>
+        </Pressable>
         <DogEar u={u} under={colors.earUnder} onPress={next} label="Next page" />
         <Pressable onPress={() => setGuide(true)} style={[styles.help, { top: 10, right: 10 }]} hitSlop={8} accessibilityLabel="How to make a story">
           <Text style={styles.helpText}>?</Text>
@@ -367,7 +365,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   placeholderTextColor="#666"
                   multiline
                   autoFocus
-                  style={[styles.editorInput, { fontFamily: 'SpecialElite_400Regular' }]}
+                  style={[styles.editorInput, { fontFamily: 'SpecialElite_400Regular', outlineWidth: 0 }]}
                   accessibilityLabel={`Words for page ${i + 1}`}
                 />
               </Animated.View>
@@ -384,8 +382,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <View style={styles.choice}>
             <Text style={styles.choiceTitle}>Page {i + 1} is done.</Text>
             <Pressable onPress={addPage} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Add another page</Text></Pressable>
-            <Pressable onPress={() => { setPageDone(false); finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Finish and save book</Text></Pressable>
-            <Pressable onPress={() => setPageDone(false)} hitSlop={8}><Text style={styles.choiceLink}>Keep working on this page</Text></Pressable>
+            <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Keep working on this page</Text></Pressable>
+            {/* Finish last, in green */}
+            <Pressable onPress={() => { setPageDone(false); finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 6 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Finish and save book</Text></Pressable>
           </View>
         </View>
       ) : null}
@@ -404,9 +403,9 @@ const styles = StyleSheet.create({
   editorPage: { flex: 1, marginBottom: 14, backgroundColor: colors.paper, padding: 24, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10 },
   editorInput: { flex: 1, fontSize: 24, lineHeight: 36, color: colors.ink, textAlign: 'center', textAlignVertical: 'top', padding: 0 },
   choiceBack: { backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', zIndex: 60, padding: 30 },
-  choice: { width: '100%', maxWidth: 380, backgroundColor: colors.panel, padding: 22, gap: 14 },
-  choiceTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20, marginBottom: 4 },
-  choiceBtn: { backgroundColor: colors.tile, paddingVertical: 14, alignItems: 'center', overflow: 'hidden' },
+  choice: { width: '100%', maxWidth: 380, backgroundColor: colors.panel, paddingHorizontal: 26, paddingTop: 30, paddingBottom: 32, gap: 16 },
+  choiceTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20, marginBottom: 10 },
+  choiceBtn: { backgroundColor: colors.tile, height: 50, borderRadius: 25, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
   choiceBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   choiceLink: { color: '#d6d6d6', fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, textAlign: 'center', paddingVertical: 4 },
   screen: { flex: 1, backgroundColor: colors.desk },
