@@ -104,7 +104,8 @@ export function PlayButton({ onPress, active, disabled }) {
 // Folded corner at the bottom right. The drawn fold is small; the tap area stays thumb-sized.
 // The folded corner: a dark triangle (the page behind) and the white folded flap, which casts a
 // soft shadow onto the page (a few faint, slightly larger triangles behind it).
-export function DogEar({ u, onPress, label = 'Next page', under = colors.earUnder }) {
+// flap: the colour of the folded-over corner (white paper in books; lighter brown on the leather cover)
+export function DogEar({ u, onPress, label = 'Next page', under = colors.earUnder, flap = colors.white }) {
   const e = Math.max(24, u * 7.5);
   const tri = (size, color, off = 0) => (
     <View key={`${size}-${off}`} style={{ position: 'absolute', right: off * 0.4, bottom: off * 0.4, width: 0, height: 0, borderRightWidth: size, borderTopWidth: size, borderRightColor: 'transparent', borderTopColor: color }} />
@@ -114,7 +115,7 @@ export function DogEar({ u, onPress, label = 'Next page', under = colors.earUnde
       <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderLeftWidth: e, borderBottomWidth: e, borderLeftColor: 'transparent', borderBottomColor: under }} />
       {/* soft shadow: many faint layers, each a little larger, so it fades smoothly */}
       {Array.from({ length: 10 }, (_, i) => (10 - i) * 0.8).map((d) => tri(e + d, 'rgba(0,0,0,0.018)', d))}
-      {tri(e, colors.white)}
+      {tri(e, flap)}
     </Pressable>
   );
 }

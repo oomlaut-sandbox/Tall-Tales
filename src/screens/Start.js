@@ -17,6 +17,7 @@ import { playSound } from '../sound';
 
 
 export const COVER_BROWN = '#6f4b32';
+const COVER_FLAP = '#a27552'; // the turned-up corner of the leather cover: a lighter brown
 const LEATHER = require('../../assets/leather.jpg'); // Jörg's brown leather, outside and inside the cover
 
 const TILE_LIBRARY = require('../../assets/tile-library.png');
@@ -141,7 +142,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
                 <Animated.View style={[StyleSheet.absoluteFill, { opacity: frontOp, backgroundColor: COVER_BROWN }]}>
                   <Image source={LEATHER} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
                   <Pressable style={StyleSheet.absoluteFill} onPress={open} accessibilityRole="button" accessibilityLabel="Open the book" />
-                  {!opening ? <DogEar u={u} onPress={open} label="Open the book" /> : null}
+                  {!opening ? <DogEar u={u} onPress={open} label="Open the book" flap={COVER_FLAP} /> : null}
                 </Animated.View>
                 {/* inside of the cover: the pebbles, mirrored so they read right once turned over */}
                 <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: backOp, transform: [wide ? { scaleX: -1 } : { scaleY: -1 }] }]}>{pebbles}</Animated.View>
