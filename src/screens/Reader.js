@@ -809,7 +809,7 @@ const styles = StyleSheet.create({
   edge: { position: 'absolute', top: 0, bottom: 0, zIndex: 15 },
   half: { position: 'absolute', left: 0, right: 0, overflow: 'hidden', backfaceVisibility: 'hidden' },
   strip: { position: 'absolute', left: 0, right: 0, overflow: 'hidden', transformOrigin: 'top' },
-  recBox: { position: 'absolute', top: 8, left: 10, zIndex: 30, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(70,70,70,0.92)', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5,
+  recBox: { position: 'absolute', top: 3, left: 10, zIndex: 30, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(70,70,70,0.92)', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 3,
     shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 4 },
   recBoxDot: { width: 11, height: 11, borderRadius: 6, backgroundColor: '#e3000f' },
   recBoxTime: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14, fontVariant: ['tabular-nums'], minWidth: 34 },
