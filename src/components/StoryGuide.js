@@ -16,6 +16,7 @@ export const GUIDE_STEPS = [
 // area: the space between the bars, so the card sits right in the middle of the book
 export default function StoryGuide({ visible, onClose, area }) {
   const [step, setStep] = useState(0);
+  const [w, setW] = useState(0); // the width of the text area
   useEffect(() => { if (visible) setStep(0); }, [visible]);
   if (!visible) return null;
   const s = GUIDE_STEPS[step];
@@ -27,8 +28,18 @@ export default function StoryGuide({ visible, onClose, area }) {
       <View style={styles.card} accessibilityRole="summary">
         <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#141414' }]} />
         <Text style={styles.kicker}>Guide: How to make a story · {step + 1} of {GUIDE_STEPS.length}</Text>
-        <Text style={styles.title}>{s.title}</Text>
-        <Text style={styles.body}>{s.body}</Text>
+        {/* every step in one row of equal-width slots: the row is as tall as the wordiest step, so the box
+            keeps the same size for all six steps; only the current step is shown */}
+        <View onLayout={(e) => setW(e.nativeEvent.layout.width)} style={{ overflow: 'hidden' }}>
+          <View style={{ flexDirection: 'row', width: w * GUIDE_STEPS.length, opacity: w ? 1 : 0, transform: [{ translateX: -step * w }] }}>
+            {GUIDE_STEPS.map((g, k) => (
+              <View key={k} style={{ width: w, gap: 12 }} accessibilityElementsHidden={k !== step} importantForAccessibility={k === step ? 'auto' : 'no-hide-descendants'}>
+                <Text style={styles.title}>{g.title}</Text>
+                <Text style={styles.body}>{g.body}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
         <View style={styles.dots}>
           {GUIDE_STEPS.map((_, k) => <View key={k} style={[styles.dot, k === step && styles.dotOn]} />)}
         </View>
