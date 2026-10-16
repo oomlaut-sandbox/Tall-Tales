@@ -126,6 +126,8 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
             onPress={(rect) => (selecting ? toggle(s.id) : openStory(s, rect))}
             onLongPress={!selecting && s.mine ? () => onEdit(s) : undefined} />
         ))}
+        {/* Create a story always starts its own row, below the books */}
+        {!selecting ? <View style={{ width: '100%' }} /> : null}
         {!selecting ? <Tile u={u} plus title="Create a story" onPress={onCreate} /> : null}
         {!selecting && removedCount ? (
           <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
