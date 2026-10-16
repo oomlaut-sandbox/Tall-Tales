@@ -44,6 +44,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const [editing, setEditing] = useState(false); // the big words editor
   // Opening the words editor: the words square zooms from its place on the page up into the editing spot.
   const wordsRef = useRef(null);
+  const editRef = useRef(null);
   const fromRect = useRef(null);
   const zoom = useRef(new Animated.Value(1)).current; // 0 = where the square is on the page, 1 = in the editor
   const [zoomTo, setZoomTo] = useState(null); // the editor square's spot on screen
@@ -345,12 +346,17 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             ] : [];
             return (
               <Animated.View
-                onLayout={(e) => {
+                ref={editRef} collapsable={false}
+                onLayout={() => {
                   if (zoomTo) return;
-                  e.target && e.target.measureInWindow ? e.target.measureInWindow((x, y, w, h) => {
-                    setZoomTo({ x, y, w, h });
-                    if (fromRect.current) Animated.timing(zoom, { toValue: 1, duration: 300, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
-                  }) : zoom.setValue(1);
+                  const grow = (r) => {
+                    setZoomTo(r || { x: 0, y: 0, w: 1, h: 1 });
+                    if (r && fromRect.current) Animated.timing(zoom, { toValue: 1, duration: 300, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+                    else { fromRect.current = null; zoom.setValue(1); }
+                  };
+                  // measure where the editor's square sits, then zoom the page's square up into it
+                  setTimeout(() => (editRef.current && editRef.current.measureInWindow
+                    ? editRef.current.measureInWindow((x, y, w, h) => grow(w ? { x, y, w, h } : null)) : grow(null)), 0);
                 }}
                 style={[styles.editorPage, { width: W, maxHeight: W, opacity: f && !t ? 0 : 1, transform: move }]}>
                 <TextInput

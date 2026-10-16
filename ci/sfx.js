@@ -11,6 +11,7 @@ const FX = [
   ['book-set-down', 0.6, 'A small hardcover book set down gently on a wooden table: one soft muted wooden thud. Close, natural, no music.'],
   ['card-lift', 0.7, 'A sheet of heavy card paper lifted lightly off a table: a tiny airy paper whoosh. Close, soft, natural, no music.'],
   ['tap', 0.5, 'A fingertip tapping once on a cardboard book cover: a tiny soft dull tap. Close, natural, no music.'],
+  ['typewriter-key', 0.5, 'A single key strike on an old mechanical typewriter: one crisp metallic clack of the typebar hitting paper on the platen, short and dry, no bell, no carriage return. Close, natural, no music.'],
   ['page-swish', 0.9, 'A soft, quiet paper swish of one picture book page being turned: a gentle airy sweep of paper, no crinkle, no thump, smooth and short. Quiet room, close, natural, no music.'],
 ];
 // ONLY=name1,name2 makes just those (each three times)
