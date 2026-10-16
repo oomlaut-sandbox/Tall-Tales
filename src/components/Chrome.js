@@ -215,11 +215,25 @@ export function StoreIcon({ size = MENU_ICON, color = colors.white, weight = 2 }
     </View>
   );
 }
-export function PlayGlyph({ size = MENU_ICON, color = colors.white }) {
-  const h = size * 0.8, w = size * 0.7;
+export function PlayGlyph({ size = MENU_ICON, color = colors.white, count = 1 }) {
+  // solid play triangle(s), like the play button in the reader's bar; count 2 = Auto Play
+  const h = size * (count > 1 ? 0.62 : 0.8), w = size * (count > 1 ? 0.48 : 0.7);
+  const tri = (k) => <View key={k} style={{ width: 0, height: 0, marginLeft: k ? size * 0.04 : 0, borderTopWidth: h / 2, borderBottomWidth: h / 2, borderLeftWidth: w, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: color }} />;
+  return (
+    <View style={{ width: size, height: size, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginLeft: count > 1 ? 0 : size * 0.12 }}>
+      {Array.from({ length: count }, (_, k) => tri(k))}
+    </View>
+  );
+}
+// A small solid speech bubble (rounded box with a little point at the bottom left), for Read Yourself.
+export function BubbleIcon({ size = MENU_ICON, color = colors.white }) {
+  const w = size * 0.95, h = size * 0.62, t = size * 0.22;
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{ width: 0, height: 0, marginLeft: size * 0.12, borderTopWidth: h / 2, borderBottomWidth: h / 2, borderLeftWidth: w, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: color }} />
+      <View style={{ width: w, height: h + t * 0.8, marginTop: -t * 0.4 }}>
+        <View style={{ width: w, height: h, borderRadius: h * 0.32, backgroundColor: color }} />
+        <View style={{ position: 'absolute', left: w * 0.18, top: h - 1, width: 0, height: 0, borderTopWidth: t, borderRightWidth: t, borderTopColor: color, borderRightColor: 'transparent' }} />
+      </View>
     </View>
   );
 }

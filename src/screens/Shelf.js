@@ -298,6 +298,8 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
       {/* the cover, flying from its tile into the card's top-left corner */}
       <Animated.View pointerEvents="none" style={[styles.tileShadow, { position: 'absolute', left: boxX + M, top: boxY + M, width: cs, height: cs, opacity: boxH ? 1 : 0, transform: coverMove }]}>
         {cover ? <Image source={cover} style={styles.coverImg} resizeMode="cover" /> : null}
+        {/* a very thin dark grey line just outside the cover */}
+        <View pointerEvents="none" style={{ position: 'absolute', left: -1, top: -1, right: -1, bottom: -1, borderWidth: 1, borderColor: '#3c3c3c' }} />
       </Animated.View>
     </View>
   );

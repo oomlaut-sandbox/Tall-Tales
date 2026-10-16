@@ -29,7 +29,7 @@ function PeelLayer({ start, ...props }) {
 }
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { Bar, BarMeta, Burger, ChevronIcon, DiamondIcon, DogEar, DotIcon, GearIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, RecordButton, Slider, SIDE_MENU_TOP, TextIcon } from '../components/Chrome';
+import { Bar, BarMeta, BubbleIcon, Burger, ChevronIcon, DiamondIcon, DogEar, DotIcon, GearIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
@@ -69,10 +69,10 @@ import { getRecording, listRecordings, pageKey, removeRecording, saveRecording }
 import { AUDIO, TIMINGS } from '../narration';
 
 const MODES = [
-  [<DiamondIcon />, 'self', 'Read Yourself', 'Page by page with no audio'],
+  [<BubbleIcon />, 'self', 'Read Yourself', 'Page by page with no audio'],
   [<TextIcon text="Aa" />, 'learn', 'Learn to Read', 'Says a word when you touch it'],
-  [<ChevronIcon count={2} />, 'auto', 'Auto Play', 'Reads the full story with audio'],
-  [<ChevronIcon />, 'page', 'Page by Page Play', 'Reads a page at a time with audio'],
+  [<PlayGlyph count={2} />, 'auto', 'Auto Play', 'Reads the full story with audio'],
+  [<PlayGlyph />, 'page', 'Page by Page Play', 'Reads a page at a time with audio'],
   // ['✦', 'interactive', 'Interactive', 'Image interaction with touch'],  (hidden for now; hotspot code kept)
 ];
 
