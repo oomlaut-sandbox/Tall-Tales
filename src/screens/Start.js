@@ -126,10 +126,10 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
           ? { transformOrigin: 'left', transform: [{ perspective: 1600 }, { rotateY: turn }] }
           : { transformOrigin: 'top', transform: [{ perspective: 1600 }, { rotateX: turn }] };
         return (
-          // Upright, the closed notebook rests a little higher (clear of the speech bubble and nearer the middle);
-          // as the cover opens the whole book glides down into place, keeping a proper margin at the top.
+          // Upright, the whole notebook sits a little higher than centred, so the closed cover rests just above the
+          // speech bubble. It never moves; when it's open the space above it is a bit smaller than below.
           <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: wide ? side * 2 : side, height: wide ? side : side * 2,
-            transform: wide ? [] : [{ translateY: p.interpolate({ inputRange: [0, 1], outputRange: [-side * 0.3, 0] }) }] }}>
+            transform: wide ? [] : [{ translateY: -Math.round(side * 0.14) }] }}>
             {/* the words square: the menu */}
             {/* the menu page has the same rounded corners as the cover that lies on it */}
             <View style={[at2, styles.page, round, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.paper }]}>
