@@ -184,7 +184,8 @@ export default function App() {
   useEffect(() => {
     let done = false;
     const finish = () => { if (!done) { done = true; setPictureReady(true); } };
-    Asset.loadAsync(HOME_PICTURE).then(finish, finish);
+    // the leather and the charcoal felt are ready before the first screen, so the book's slide-in isn't lost to a slow first frame
+    Asset.loadAsync([HOME_PICTURE, require('./assets/desk-felt.jpg')]).then(finish, finish);
     const t = setTimeout(finish, 1500); // never wait longer than this
     return () => clearTimeout(t);
   }, []);

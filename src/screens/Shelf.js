@@ -101,7 +101,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
           <Pressable onPress={() => setConfirm(true)} disabled={!chosen.length} style={[styles.barBtn, !chosen.length && styles.barBtnOff]} accessibilityRole="button">
             <Text style={[styles.barBtnText, { color: '#ff6b6b' }]}>Delete</Text>
           </Pressable>
-          {!v ? <Text style={styles.barHint}>{chosen.length > 1 ? 'One book at a time for Share and Edit' : chosen.length === 1 && !chosen[0].mine ? 'Only books you made can be edited' : ''}</Text> : <View style={{ flex: 1 }} />}
+          <View style={{ flex: 1 }} />{/* (Edit and Share simply grey out when they can't be used) */}
           {/* Cancel sits where Select was: the bottom right of the bar */}
           <Pressable onPress={stop} hitSlop={10} style={styles.barBtn} accessibilityRole="button"><Text style={styles.barSmall}>Cancel</Text></Pressable>
         </Bar>

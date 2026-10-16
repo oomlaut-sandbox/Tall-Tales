@@ -62,8 +62,9 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
   const enter = useRef(new Animated.Value(closed ? 1 : 0)).current;
   useEffect(() => {
     if (!closed) return;
-    const t = setTimeout(() => playSound('slide', 0.8), 150);
-    Animated.timing(enter, { toValue: 0, duration: 650, delay: 150, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(() => playSound('setDown', 0.7));
+    // a short pause first, so the felt background is on screen before the book slides in from the right
+    const t = setTimeout(() => playSound('slide', 0.8), 450);
+    Animated.timing(enter, { toValue: 0, duration: 700, delay: 450, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(() => playSound('setDown', 0.7));
     return () => clearTimeout(t);
   }, []);
   const slideX = Animated.add(
