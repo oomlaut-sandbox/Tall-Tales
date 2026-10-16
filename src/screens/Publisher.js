@@ -47,6 +47,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const wordsRef = useRef(null);
   const editRef = useRef(null);
   const [writeFont, setWriteFont] = useState('typewriter'); // the font to write in (typewriter to start)
+  const [fontsOpen, setFontsOpen] = useState(false);
   const fromRect = useRef(null);
   const zoom = useRef(new Animated.Value(1)).current; // 0 = where the square is on the page, 1 = in the editor
   const [zoomTo, setZoomTo] = useState(null); // the editor square's spot on screen
@@ -337,7 +338,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           </Animated.View>
           <View style={[styles.editor, { flex: 1, paddingTop: insets.top + 34 }]}>
           <Animated.View style={[styles.editorHead, { opacity: zoom }]}>
-            <Text style={styles.editorTitle}>Page {i + 1}</Text>
+            {/* the words are the second page of each pair (the picture is the first): page 2, 4, 6 … */}
+            <Text style={styles.editorTitle}>Page {i * 2 + 2}</Text>
           </Animated.View>
           {(() => {
             const W = winW - 2 * GAP;
@@ -377,13 +379,22 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           })()}
           {/* under the page: the three fonts to write in (left), and a green Done pill (right) */}
           <Animated.View style={{ width: winW - 2 * GAP, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: zoom }}>
-            <View style={{ flexDirection: 'row', gap: 5, marginBottom: 14, flexShrink: 1 }}>
-              {[['typewriter', 'Typewriter'], ['serif', 'Serif'], ['sans', 'Helvetica']].map(([k, label]) => (
-                <Pressable key={k} onPress={() => setWriteFont(k)} hitSlop={4} accessibilityRole="button" accessibilityState={{ selected: writeFont === k }}
-                  style={[styles.fontPill, writeFont === k && styles.fontPillOn]}>
-                  <Text style={[styles.fontPillText, { fontFamily: bookFont(k).family, fontSize: k === 'serif' ? 17 : k === 'typewriter' ? 13 : 14 }]}>{label}</Text>
-                </Pressable>
-              ))}
+            {/* Fonts: a grey button that opens a little list of the three fonts above it */}
+            <View style={{ marginBottom: 14 }}>
+              {fontsOpen ? (
+                <View style={styles.fontMenu}>
+                  {[['typewriter', 'Typewriter'], ['serif', 'Serif'], ['sans', 'Helvetica']].map(([k, label]) => (
+                    <Pressable key={k} onPress={() => { setWriteFont(k); setFontsOpen(false); }} accessibilityRole="button" accessibilityState={{ selected: writeFont === k }}
+                      style={[styles.fontRow, writeFont === k && styles.fontRowOn]}>
+                      <Text style={[styles.fontPillText, { fontFamily: bookFont(k).family, fontSize: k === 'serif' ? 19 : k === 'typewriter' ? 15 : 16 }]}>{label}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              ) : null}
+              <Pressable onPress={() => setFontsOpen((o) => !o)} accessibilityRole="button" style={styles.fontsBtn}>
+                <Text style={styles.donePillText}>Fonts</Text>
+                <Text style={[styles.donePillText, { fontSize: 11, marginLeft: 6 }]}>{fontsOpen ? '▼' : '▲'}</Text>
+              </Pressable>
             </View>
             <Pressable onPress={closeWords} hitSlop={8} accessibilityRole="button" style={styles.donePill}><Text style={styles.donePillText}>Done</Text></Pressable>
           </Animated.View>
@@ -392,9 +403,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       {pageDone ? (
         <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
-            <Text style={styles.choiceTitle}>Page {i + 1} is done.</Text>
+            <Text style={styles.choiceTitle}>Page {i * 2 + 2} is done.</Text>
             <Pressable onPress={addPage} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Add another page</Text></Pressable>
             <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Keep working on this page</Text></Pressable>
+            <Pressable onPress={() => toast('Designing a cover is coming in a future update.')} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Design a cover</Text></Pressable>
             <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Cancel</Text></Pressable>
             {/* Finish last, in green, with extra room around it */}
             <Pressable onPress={() => { setPageDone(false); finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 18, marginBottom: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Finish and save book</Text></Pressable>
@@ -411,6 +423,10 @@ const styles = StyleSheet.create({
   editor: { alignItems: 'center' },
   editorHead: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 30, paddingBottom: 12 },
   editorTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
+  fontsBtn: { flexDirection: 'row', alignItems: 'center', height: 40, borderRadius: 20, paddingHorizontal: 18, backgroundColor: '#5f5f5f' },
+  fontMenu: { position: 'absolute', bottom: 48, left: 0, width: 170, backgroundColor: '#2a2a2a', borderRadius: 14, padding: 6, gap: 4, shadowColor: '#000', shadowOpacity: 0.4, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 8 },
+  fontRow: { height: 40, borderRadius: 10, justifyContent: 'center', paddingHorizontal: 12 },
+  fontRowOn: { backgroundColor: colors.green },
   fontPill: { height: 32, borderRadius: 16, paddingHorizontal: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.14)' },
   fontPillOn: { backgroundColor: colors.green },
   fontPillText: { color: colors.white, fontSize: 14 },
