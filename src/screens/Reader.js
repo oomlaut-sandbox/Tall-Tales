@@ -634,9 +634,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             <View style={{ alignItems: 'center' }}>
             {showControls ? (
               <View style={[styles.small, { alignItems: 'center', gap: 14 }]}>
-                {/* while recording, the time so far sits in a small grey box just before the pulsing record button (above it when sideways) */}
-                {recording ? <RecTimer start={recStart.current} /> : null}
-                <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
+                {/* while recording, the time so far floats in a small grey box just above the pulsing record button
+                    (it takes no room, so the buttons never move) */}
+                <View>
+                  {recording ? <RecTimer start={recStart.current} style={{ position: 'absolute', left: -20, right: -20, bottom: '100%', marginBottom: 6, alignItems: 'center' }} /> : null}
+                  <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
+                </View>
                 <PauseButton onPress={onPause} disabled={recording} />
                 <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
               </View>
@@ -652,9 +655,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         <View style={{ flex: 1 }} />
         {showControls ? (
           <View style={[styles.small, { flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
-            {/* while recording, the time so far sits in a small grey box just before the pulsing record button (above it when sideways) */}
-                {recording ? <RecTimer start={recStart.current} /> : null}
-                <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
+            {/* while recording, the time so far floats in a small grey box just left of the pulsing record button
+                (it takes no room, so the buttons never move) */}
+            <View>
+              {recording ? <RecTimer start={recStart.current} style={{ position: 'absolute', right: '100%', marginRight: 4, top: 0, bottom: 0, justifyContent: 'center' }} /> : null}
+              <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
+            </View>
             <PauseButton onPress={onPause} disabled={recording} />
             <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
           </View>
@@ -790,15 +796,17 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 }
 
 // The recording timer: a small grey box with the time recorded so far (0:03), beside the pulsing record button.
-function RecTimer({ start }) {
+function RecTimer({ start, style }) {
   const [secs, setSecs] = useState(0);
   useEffect(() => {
     const t = setInterval(() => setSecs(Math.floor((Date.now() - start) / 1000)), 250);
     return () => clearInterval(t);
   }, [start]);
   return (
-    <View pointerEvents="none" style={styles.recBox} accessibilityLabel={`Recording, ${secs} seconds`}>
-      <Text style={styles.recBoxTime}>{Math.floor(secs / 60)}:{String(secs % 60).padStart(2, '0')}</Text>
+    <View pointerEvents="none" style={style}>
+      <View style={styles.recBox} accessibilityLabel={`Recording, ${secs} seconds`}>
+        <Text style={styles.recBoxTime}>{Math.floor(secs / 60)}:{String(secs % 60).padStart(2, '0')}</Text>
+      </View>
     </View>
   );
 }
