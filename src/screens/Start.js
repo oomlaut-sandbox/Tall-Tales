@@ -18,7 +18,7 @@ import { playSound } from '../sound';
 import { appShown } from '../launch';
 
 
-export const COVER_BROWN = '#6f4b32';
+export const COVER_BROWN = '#7c5438'; // a touch lighter
 const LEATHER = require('../../assets/leather.jpg'); // Jörg's brown leather, outside and inside the cover
 
 const TILE_LIBRARY = require('../../assets/tile-library.png');
