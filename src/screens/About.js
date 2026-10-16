@@ -31,6 +31,7 @@ export default function About({ u, openMenu }) {
       </View>
       <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={[styles.body, { width: colW + 24 }]}>
+        <Text style={styles.p}>Welcome to the world of Oomlaut, pronounced [oom-lout].</Text>
         <Text style={styles.p}>
           Oomlaut Reader is a home for beautifully illustrated stories, made for children who are learning to read and the grown-ups who read with them.
         </Text>
