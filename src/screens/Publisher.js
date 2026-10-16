@@ -403,7 +403,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       {pageDone ? (
         <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
-            <Text style={styles.choiceTitle}>Page {i * 2 + 2} is done.</Text>
+            <Text style={styles.choiceTitle}>What’s next?</Text>
             <Pressable onPress={addPage} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Add another page</Text></Pressable>
             <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Keep working on this page</Text></Pressable>
             <Pressable onPress={() => toast('Designing a cover is coming in a future update.')} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Design a cover</Text></Pressable>
