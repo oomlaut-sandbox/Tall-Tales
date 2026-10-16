@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
   artBtns: { position: 'absolute', left: 12, bottom: 12, flexDirection: 'row', gap: 8 },
   chip: { backgroundColor: 'rgba(0,0,0,0.6)', color: colors.white, fontWeight: '700', fontSize: 15, paddingHorizontal: 14, paddingVertical: 8, overflow: 'hidden', fontFamily: fonts.ui },
   textBox: { justifyContent: 'center' }, // "Add Text" and the words sit in the middle of the square
-  addText: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.ink, marginBottom: 6, textAlign: 'center' },
+  addText: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.ink, marginBottom: 14, marginTop: -18, textAlign: 'center' }, // lifted a little above the words
   input: { fontFamily: fonts.story, fontSize: 21, lineHeight: 34, color: colors.ink, textAlign: 'center', textAlignVertical: 'center', padding: 0, minHeight: 68 },
   title: { color: colors.white, fontFamily: 'EBGaramond_700Bold', fontSize: 17, padding: 0 }, // the book serif, bold
   sub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 12, marginTop: 2 },
