@@ -392,7 +392,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           ))}
         </ScrollView>
         {pdfChoice ? (
-          <View style={{ gap: 10 }}>
+          <View style={{ gap: 10, marginTop: 30 }}>
             <Text style={styles.warn}>{pdfChoice === 'print' ? 'Choose a layout to print:' : 'Choose a layout for your PDF:'}</Text>
             {/* the same two choices, with the same little pictures, as Print in the Playback menu */}
             <View style={{ flexDirection: 'row', gap: 14 }}>
@@ -406,7 +406,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             </View>
           </View>
         ) : (
-          <View style={{ flexDirection: 'row', gap: 10 }}>
+          <View style={{ flexDirection: 'row', gap: 10, marginTop: 30 /* well clear of the pages list */ }}>
             <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('share'); }} disabled={making} style={[styles.wide, styles.pill]}>
               <Text style={styles.wideText}>{making ? 'Working…' : 'Share as PDF'}</Text>
             </Pressable>
@@ -416,7 +416,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           </View>
         )}
         {confirmDelete ? (
-          <View style={{ gap: 10 }}>
+          <View style={{ gap: 10, marginTop: 44 }}>
             <Text style={styles.warn}>Delete “{draft.title.trim() || 'Untitled story'}”, its pictures and any voice recordings? This can’t be undone.</Text>
             <View style={{ flexDirection: 'row', gap: 10 }}>
               <Pressable onPress={deleteStory} style={[styles.wide, { backgroundColor: colors.highlight }]}><Text style={styles.wideText}>Delete story</Text></Pressable>
@@ -424,7 +424,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             </View>
           </View>
         ) : (
-          <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} hitSlop={6} style={{ marginTop: 26, marginBottom: 18 }}><Text style={styles.deleteLink}>Delete this story</Text></Pressable>
+          // a red pill, well apart from Share and Print
+          <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} accessibilityRole="button" style={[styles.wide, { flex: 0, alignSelf: 'flex-start', paddingHorizontal: 26, backgroundColor: colors.highlight, marginTop: 44, marginBottom: 14 }]}><Text style={styles.wideText}>Delete this story</Text></Pressable>
         )}
       </Panel>
       {editing ? (
