@@ -46,6 +46,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   // Opening the words editor: the words square zooms from its place on the page up into the editing spot.
   const wordsRef = useRef(null);
   const editRef = useRef(null);
+  const [writeFont, setWriteFont] = useState('typewriter'); // the font to write in (typewriter to start)
   const fromRect = useRef(null);
   const zoom = useRef(new Animated.Value(1)).current; // 0 = where the square is on the page, 1 = in the editor
   const [zoomTo, setZoomTo] = useState(null); // the editor square's spot on screen
@@ -368,14 +369,22 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   placeholderTextColor="#666"
                   multiline
                   autoFocus
-                  style={[styles.editorInput, { fontFamily: 'SpecialElite_400Regular', outlineWidth: 0 }]}
+                  style={[styles.editorInput, { fontFamily: bookFont(writeFont).family, outlineWidth: 0 }]}
                   accessibilityLabel={`Words for page ${i + 1}`}
                 />
               </Animated.View>
             );
           })()}
-          {/* Done: a green pill under the page, at its right edge */}
-          <Animated.View style={{ width: winW - 2 * GAP, alignItems: 'flex-end', opacity: zoom }}>
+          {/* under the page: the three fonts to write in (left), and a green Done pill (right) */}
+          <Animated.View style={{ width: winW - 2 * GAP, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: zoom }}>
+            <View style={{ flexDirection: 'row', gap: 6, marginBottom: 14 }}>
+              {[['typewriter', 'Typewriter'], ['serif', 'Serif'], ['sans', 'Helvetica']].map(([k, label]) => (
+                <Pressable key={k} onPress={() => setWriteFont(k)} hitSlop={4} accessibilityRole="button" accessibilityState={{ selected: writeFont === k }}
+                  style={[styles.fontPill, writeFont === k && styles.fontPillOn]}>
+                  <Text style={[styles.fontPillText, { fontFamily: bookFont(k).family }]}>{label}</Text>
+                </Pressable>
+              ))}
+            </View>
             <Pressable onPress={closeWords} hitSlop={8} accessibilityRole="button" style={styles.donePill}><Text style={styles.donePillText}>Done</Text></Pressable>
           </Animated.View>
           </View>
@@ -401,6 +410,9 @@ const styles = StyleSheet.create({
   editor: { alignItems: 'center' },
   editorHead: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 30, paddingBottom: 12 },
   editorTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
+  fontPill: { height: 32, borderRadius: 16, paddingHorizontal: 11, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.14)' },
+  fontPillOn: { backgroundColor: colors.green },
+  fontPillText: { color: colors.white, fontSize: 14 },
   donePill: { backgroundColor: colors.green, height: 40, borderRadius: 20, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
   donePillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   editorPage: { flex: 1, marginBottom: 14, backgroundColor: colors.paper, padding: 24, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10 },
