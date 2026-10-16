@@ -35,9 +35,9 @@ import { Bar, BarMeta, BubbleIcon, PageShape, Burger, GlassesIcon, ChevronIcon, 
 // Older settings only had Normal/Slow.
 export const DEFAULT_SPEED = 0.75;
 export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : DEFAULT_SPEED);
-// Book narrators (ElevenLabs). Anne (voice key 'lily') is the default.
+// Book narrators (ElevenLabs). Fatima (voice key 'lily') is the default.
 // A tiny printed page: white sheet with the picture and words squares, upright or sideways.
-export const NARRATORS = [['lily', 'Anne'], ['gregory', 'Henry']]; // add more voices here (and in ci/narrate.js)
+export const NARRATORS = [['lily', 'Fatima'], ['gregory', 'Henry']]; // add more voices here (and in ci/narrate.js)
 const narratorOf = (prefs) => (NARRATORS.some(([k]) => k === prefs.narrator) ? prefs.narrator : 'lily');
 const NARRATOR = 0.92; // the phone voice's normal pace
 const VOICE_RECORDING = {
@@ -55,6 +55,7 @@ import { audioModeChanged, pauseVoice, playClips, playVoice, resumeVoice, stopVo
 import { WORDS } from '../narration/words';
 import { getRecording, listRecordings, pageKey, removeRecording, saveRecording } from '../recordings';
 import { AUDIO, TIMINGS } from '../narration';
+import { SAMPLES } from '../narration/samples';
 
 const MODES = [
   [<GlassesIcon />, 'self', 'Read Yourself', 'Page by page with no audio'],
@@ -672,8 +673,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         {playView === 'voices' ? (
           <>
             {NARRATORS.map(([k, label]) => (
-              <Option key={k} glyph={<NoteIcon />} title={label} sub={k === 'lily' ? 'Warm and gentle' : 'Pleasant older man'} selected={narratorOf(prefs) === k}
-                onPress={() => { stopReading(); setPrefs((p) => ({ ...p, narrator: k })); toast(`${label} will read the stories.`); }} />
+              // tapping a voice chooses it and plays a short sample of it
+              <Option key={k} glyph={<BubbleIcon />} title={label} sub={k === 'lily' ? 'Warm and gentle' : 'Pleasant older man'} selected={narratorOf(prefs) === k}
+                onPress={() => { stopReading(); setPrefs((p) => ({ ...p, narrator: k })); if (SAMPLES[k]) playVoice(SAMPLES[k]); toast(`${label} will read the stories.`); }} />
             ))}
             <Text style={styles.help}>The voice reads the stories aloud and sounds out words in Learn to Read. Pages you recorded in your own voice still play in yours.</Text>
             <Pressable onPress={() => setPlayView('main')} hitSlop={8}><Text style={styles.backlink}>‹ Back to Playback Options</Text></Pressable>
