@@ -48,10 +48,13 @@ export function Fade({ edge, size, max }) {
   const N = 12;
   const stops = Array.from({ length: N + 1 }, (_, i) => i / N);
   const cols = stops.map((t) => `rgba(0,0,0,${(max * Math.pow(1 - t, 2)).toFixed(4)})`);
-  const toEdge = edge === 'bottom';
+  const toEdge = edge === 'bottom' || edge === 'right';
+  // sideways books: the same shading, running across (towards the right or left edge) instead of up and down
+  const across = edge === 'left' || edge === 'right';
   return (
     <LinearGradient pointerEvents="none" colors={toEdge ? cols.slice().reverse() : cols} locations={stops}
-      style={{ position: 'absolute', left: 0, right: 0, [edge]: 0, height: size }} />
+      start={across ? { x: 0, y: 0.5 } : { x: 0.5, y: 0 }} end={across ? { x: 1, y: 0.5 } : { x: 0.5, y: 1 }}
+      style={across ? { position: 'absolute', top: 0, bottom: 0, [edge]: 0, width: size } : { position: 'absolute', left: 0, right: 0, [edge]: 0, height: size }} />
   );
 }
 
@@ -106,12 +109,13 @@ export const PageView = forwardRef(function PageView(
             <Text style={styles.bubbleText}>{bubble.say}</Text>
           </View>
         ) : null}
-        {!L.wide ? <Fade edge="bottom" size={Math.round(artH * 0.1)} max={0.22} /> : null}
+        {/* the spine shading: on the picture's edge where it meets the words (bottom upright, right when sideways) */}
+        {L.wide ? <Fade edge="right" size={Math.round(artW * 0.1)} max={0.22} /> : <Fade edge="bottom" size={Math.round(artH * 0.1)} max={0.22} />}
       </View>
       </View>
       <View style={[styles.textBox, { paddingHorizontal: L.padX, paddingTop: L.padY, paddingBottom: L.padY + bottomInset }]}>
         <Felt opacity={0.7} />
-        {!L.wide ? <Fade edge="top" size={Math.round(L.textH * 0.09)} max={0.13} /> : null}
+        {L.wide ? <Fade edge="left" size={Math.round(L.textW * 0.09)} max={0.13} /> : <Fade edge="top" size={Math.round(L.textH * 0.09)} max={0.13} />}
         {/* the spine: a thin dark grey line where the two squares meet */}
         <View pointerEvents="none" style={L.wide ? styles.spineV : styles.spine} />
         {end ? (

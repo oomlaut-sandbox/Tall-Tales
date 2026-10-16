@@ -98,7 +98,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
       {phase === 2 ? (
         <View pointerEvents="none" style={[styles.shadow, { position: 'absolute', left: bx, top: by, width: s, height: s, backgroundColor: colors.white, overflow: 'hidden' }]}>
           {inside ? <Image source={inside} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s }} resizeMode="cover" /> : null}
-          {!L.wide ? <Fade edge="bottom" size={Math.round(s * 0.1)} max={0.22} /> : null}
+          <Fade edge={L.wide ? 'right' : 'bottom'} size={Math.round(s * 0.1)} max={0.22} />
         </View>
       ) : null}
       {/* the cover */}
@@ -111,7 +111,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
           <Animated.View style={[StyleSheet.absoluteFill, { opacity: backOp, backgroundColor: colors.white, overflow: 'hidden', transform: [L.wide ? { scaleX: -1 } : { scaleY: -1 }] }]}>
             {inside ? <Image source={inside} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s }} resizeMode="cover" /> : null}
             {/* the spine shadow is there from the moment the inside shows (same as the reader's) */}
-            {!L.wide ? <Fade edge="bottom" size={Math.round(s * 0.1)} max={0.22} /> : null}
+            <Fade edge={L.wide ? 'right' : 'bottom'} size={Math.round(s * 0.1)} max={0.22} />
           </Animated.View>
           <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: shade }]} />
         </Animated.View>
