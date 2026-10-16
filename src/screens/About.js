@@ -35,7 +35,7 @@ export default function About({ u, openMenu }) {
         </Text>
         <Text style={styles.p}>Oomlaut Reader is made by Jörg Schmidt, an illustrator and author, and a parent.</Text>
         {/* book submissions: a short note and a pill that opens a new email (after the grown-up check) */}
-        <Text style={[styles.p, { marginTop: 8 }]}>Oomlaut is always looking for new picture books. If you’ve written or illustrated a story you’d like to share, we’d love to see it.</Text>
+        <Text style={[styles.p, { marginTop: 8 }]}>Oomlaut is always looking for new picture books. If you’ve written or illustrated a story, send it to us and join the Oomlaut author community.</Text>
         <Pressable onPress={() => setMailGate(true)} style={styles.pill} accessibilityRole="button" accessibilityLabel={`Email ${SUBMISSIONS}`}>
           <Text style={styles.pillText}>{SUBMISSIONS}</Text>
         </Pressable>
