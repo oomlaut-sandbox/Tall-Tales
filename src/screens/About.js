@@ -14,7 +14,7 @@ export default function About({ u, openMenu }) {
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
   // the words fit on one phone screen without scrolling (shorter phones get a slightly smaller size)
-  const fs = winW >= 600 ? 19 : winH < 740 ? 13 : 15.5;
+  const fs = winW >= 600 ? 19 : winH < 740 ? 12.5 : 15.5;
   const textStyle = { fontSize: fs, lineHeight: Math.round(fs * 1.38) };
   // the words sit in a column about half the page wide; Skippy stands in the white margin on the right, at the bottom
   // the words on the left, about half the page; the right half is Skippy's: a speech bubble about book
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32 },
   reg: { color: colors.white, fontFamily: fonts.ui, fontSize: 13, lineHeight: 15, marginTop: 4, marginLeft: 1 }, // small raised ®
   tagline: { color: colors.white, fontFamily: fonts.story, fontSize: 20, marginTop: 6, fontStyle: 'italic' },
-  body: { paddingLeft: 24, paddingTop: 24, paddingBottom: 40, gap: 16 },
+  body: { paddingLeft: 24, paddingTop: 18, paddingBottom: 12, gap: 16 },
   p: { fontFamily: fonts.story, fontSize: 19, lineHeight: 28, color: colors.ink },
   bubble: { backgroundColor: '#ffffff', borderRadius: 16, paddingHorizontal: 12, paddingTop: 12, paddingBottom: 14, gap: 10,
     shadowColor: '#000', shadowOpacity: 0.22, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 4 },
