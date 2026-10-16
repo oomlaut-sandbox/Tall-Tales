@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { colors, fonts } from '../theme';
-import { PeekingSkippy } from './Skippy';
 
 export const GUIDE_STEPS = [
   { title: 'Add a picture', body: 'Tap the grey area to choose a picture from your photos. Square pictures work best: they fill the page and show in full. For a sharp result, use at least 1500 × 1500 pixels. You can crop a photo to a square right after picking it.' },
@@ -25,8 +24,6 @@ export default function StoryGuide({ visible, onClose, area }) {
     <View style={[styles.scrim, area]}>
       {/* solid near-black, like the menus' title bars and the Book Store cards */}
       <View style={{ width: '100%', maxWidth: 440 }}>
-      {/* Skippy peeks over the top edge of the guide */}
-      <PeekingSkippy side="top" size={60} delay={350} style={{ position: 'absolute', left: 22, top: -57 }} />
       <View style={styles.card} accessibilityRole="summary">
         <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#141414' }]} />
         <Text style={styles.kicker}>How to make a story · {step + 1} of {GUIDE_STEPS.length}</Text>

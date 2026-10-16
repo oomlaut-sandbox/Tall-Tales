@@ -11,7 +11,6 @@ import { SHOWN_BOOKS, STORIES } from '../story';
 import { BlurView } from 'expo-blur';
 const AnimatedBlur = Animated.createAnimatedComponent(BlurView);
 import { playSound } from '../sound';
-import { POSE_RATIO, PeekingSkippy } from '../components/Skippy';
 
 // Two covers across on a phone; more on an iPad.
 const COLS = (w) => (w >= 900 ? 4 : w >= 600 ? 3 : 2);
@@ -230,11 +229,9 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
     setTimeout(() => playSound('cardLift'), rect ? 480 : 0);
   }, [boxH]);
   const closing = useRef(false);
-  const [leaving, setLeaving] = useState(false);
   const close = (then) => {
     if (closing.current) return;
     closing.current = true;
-    setLeaving(true);
     Animated.sequence([
       Animated.parallel([
         Animated.timing(fade, { toValue: 0, duration: 200, useNativeDriver: true }),
@@ -294,9 +291,6 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
         </View>
         </Animated.View>
       </View>
-      {/* Skippy peeks over the top edge of the card once it has faded in */}
-      {boxH ? <PeekingSkippy side="top" size={Math.round(Math.min(64, boxW * 0.16))} delay={rect ? 900 : 400} show={!leaving}
-        style={{ position: 'absolute', left: boxX + boxW - Math.round(Math.min(64, boxW * 0.16) * POSE_RATIO.peekOver) - 28, top: boxY - Math.round(Math.min(64, boxW * 0.16)) + 3 }} /> : null}
       {/* the cover, flying from its tile into the card's top-left corner */}
       <Animated.View pointerEvents="none" style={[styles.tileShadow, { position: 'absolute', left: boxX + M, top: boxY + M, width: cs, height: cs, opacity: boxH ? 1 : 0, transform: coverMove }]}>
         {cover ? <Image source={cover} style={styles.coverImg} resizeMode="cover" /> : null}

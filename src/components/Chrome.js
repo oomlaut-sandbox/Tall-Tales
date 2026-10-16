@@ -4,7 +4,6 @@ import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, Vie
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { Felt, Stitch, useLook } from '../look';
-import { PeekingSkippy } from './Skippy';
 
 export function Burger({ onPress, u }) {
   const w = u * 7, t = Math.max(3, u * 1), gap = u * 1.7;
@@ -370,9 +369,8 @@ export function Toast({ message, area, onDismiss }) {
   if (!message) return null;
   return (
     <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, zIndex: 60, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 }, area]}>
-      {/* Skippy says it: he peeks out from behind the left edge of the bubble */}
+      {/* a speech bubble in the middle of the page; tap it to close it sooner */}
       <Pressable onPress={onDismiss} accessibilityRole="button" accessibilityHint="Closes the message" style={{ flexDirection: 'row', alignItems: 'center', maxWidth: 420 }}>
-        <PeekingSkippy side="left" size={52} delay={150} style={{ marginRight: -3, zIndex: 1 }} />
         <View style={[styles.bubble, { flexShrink: 1 }]}>
           <Text style={styles.toast}>{message}</Text>
         </View>
