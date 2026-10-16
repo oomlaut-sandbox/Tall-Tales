@@ -39,10 +39,10 @@ function MenuItem({ u, icon, title, sub, onPress }) {
       <View style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.35, shadowRadius: 4, elevation: 4 }}>
         <Image source={icon} resizeMode="contain" style={{ width: u * 19, height: u * 33 }} />
       </View>
-      <View style={{ maxWidth: u * 48 }}>
-        {/* Same sizes as the menu titles (20) and their descriptions (14). */}
-        <Text style={{ fontFamily: fonts.ui, fontWeight: '700', fontSize: 20, lineHeight: 24, color: colors.ink, marginBottom: u * 2 }}>{title}</Text>
-        <Text style={{ fontFamily: fonts.ui, fontSize: 14, lineHeight: 18, color: colors.ink }}>{sub}</Text>
+      <View style={{ width: u * 54 }}>
+        {/* the typewriter font, sized with the notebook so it always fits on its page (small phones too) */}
+        <Text style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.min(20, u * 7.4), lineHeight: Math.min(24, u * 8.9), color: colors.ink, marginBottom: u * 2 }}>{title}</Text>
+        <Text style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.min(14, u * 5.1), lineHeight: Math.min(18, u * 6.6), color: colors.ink }}>{sub}</Text>
       </View>
     </Pressable>
   );
