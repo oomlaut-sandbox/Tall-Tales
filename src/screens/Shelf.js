@@ -5,7 +5,7 @@ import FeltFill from '../components/FeltFill';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { Felt, Stitch } from '../look';
-import { Bar, BarMeta, Burger, Panel, WithBar } from '../components/Chrome';
+import { Bar, BarMeta, Burger, DogEar, Panel, WithBar } from '../components/Chrome';
 import { accessLabel, bundledStory, cachedCatalog, coverFor, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
 import { SHOWN_BOOKS, STORIES } from '../story';
@@ -252,6 +252,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
   const dim = Animated.add(mv.interpolate({ inputRange: [0, 1], outputRange: [0, 0.3] }), fade.interpolate({ inputRange: [0, 1], outputRange: [0, 0.25] }));
   const cover = coverFor(book);
   // every square is a page (a screen is a picture page and a words page), so bundled books count both
+  const blurb = book.blurb || (bundledStory(book.id) || {}).blurb; // the catalog's text, or the bundled book's own
   const pageCount = bundledStory(book.id) ? bundledStory(book.id).pages.length * 2 : book.page_count;
   const meta = [pageCount ? `${pageCount} pages` : null, book.age_range ? `ages ${book.age_range}` : null, accessLabel(book)].filter(Boolean).join(' · ');
   const canRead = book.access === 'free' && bundledStory(book.id);
@@ -268,7 +269,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
       <Text style={styles.cardTitle}>{book.title}</Text>
       {book.author ? <Text style={styles.sheetSub}>by {book.author}</Text> : null}
       <Text style={styles.sheetSub}>{meta}</Text>
-      {book.blurb ? <Text style={[styles.sheetText, { marginTop: 6 }]}>{book.blurb}</Text> : null}
+      {blurb ? <Text style={[styles.sheetText, { marginTop: 6 }]}>{blurb}</Text> : null}
       {!canRead ? <Text style={[styles.sheetText, { marginTop: 6 }]}>{book.access === 'free' ? 'Downloading new books arrives in the next update.' : 'Memberships and buying single books arrive in the next update.'}</Text> : null}
     </View>
   );
@@ -287,7 +288,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
           <View style={{ width: cs + M, height: cs + 2 * M }} />{/* the same margin above and below the cover */}
           {!across ? (
             <View style={{ flex: 1, justifyContent: 'space-between', alignItems: 'flex-start', padding: 14, paddingLeft: 16, paddingTop: M, paddingBottom: M }}>
-              <View style={{ alignSelf: 'flex-end' }}><CloseX onPress={() => close()} /></View>
+              <View />
               {pill}
             </View>
           ) : null}
@@ -295,7 +296,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
         {across ? (
           <View style={{ flex: 1, padding: M, minHeight: cs + 2 * M, justifyContent: 'space-between' }}>
             <View>
-              <View style={{ alignSelf: 'flex-end', marginBottom: 4 }}><CloseX onPress={() => close()} /></View>
+              <View style={{ height: 26 }} />
               {info}
             </View>
             <View style={{ alignItems: 'flex-start', marginTop: 14 }}>{pill}</View>
@@ -303,6 +304,10 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
         ) : (
           <View style={{ padding: M, paddingTop: 2, paddingBottom: M + 8 }}>{info}</View>
         )}
+        </Animated.View>
+        {/* close: a dog-ear in the top-right corner, folded like a page corner (it replaces the ×) */}
+        <Animated.View style={{ position: 'absolute', right: 0, top: 0, width: 56, height: 56, opacity: fade, transform: [{ scaleY: -1 }] }}>
+          <DogEar u={u} onPress={() => close()} label="Close" />
         </Animated.View>
       </View>
       {/* the cover, flying from its tile into the card's top-left corner */}

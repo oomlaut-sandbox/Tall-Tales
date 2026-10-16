@@ -11,7 +11,7 @@ const KEY = 'catalog.v1';
 export function fallbackCatalog() {
   return {
     shelves: [{ id: 'free', title: 'Free to read', sort: 10 }],
-    books: STORIES.map((s, i) => ({ id: s.id, title: s.title, author: s.author || null, shelf_id: 'free', sort: i * 10, access: 'free', bundled: true, featured: i === 0, page_count: s.pages.length * 2 /* every square is a page: each screen is a picture and a words page */ })),
+    books: STORIES.map((s, i) => ({ id: s.id, title: s.title, author: s.author || null, blurb: s.blurb || null, shelf_id: 'free', sort: i * 10, access: 'free', bundled: true, featured: i === 0, page_count: s.pages.length * 2 /* every square is a page: each screen is a picture and a words page */ })),
     fetchedAt: null,
   };
 }

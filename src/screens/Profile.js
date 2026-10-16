@@ -126,8 +126,8 @@ export default function Profile({ u, openMenu, toast }) {
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         <Felt /><Stitch inset={7} />
+        {/* just the title, centred top to bottom in the band (like My Library and the Book Store) */}
         <Text style={styles.title}>Profile</Text>
-        <Text style={styles.sub}>{user ? (user.user_metadata?.name || 'Your oomlaut account') : 'Your oomlaut account'}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
         <View style={styles.col}>
@@ -142,7 +142,7 @@ export default function Profile({ u, openMenu, toast }) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   band: { backgroundColor: colors.orange, paddingBottom: 30, paddingHorizontal: 24 },
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32 },
+  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, transform: [{ translateY: -3 }] },
   sub: { color: colors.white, fontFamily: fonts.ui, fontSize: 15, marginTop: 6, opacity: 0.9 },
   body: { padding: 24, paddingTop: 40, paddingBottom: 40, alignItems: 'center' },
   col: { width: '100%', maxWidth: 420, gap: 18 },

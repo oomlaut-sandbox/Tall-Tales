@@ -51,6 +51,8 @@ export const SAMPLE_STORY = {
 export const DIFFERENT = {
   id: 'different',
   title: 'Different',
+  // PLACEHOLDER synopsis (Jörg will replace this with his own text)
+  blurb: 'A gentle story about the quiet feeling of not quite fitting in, and the warm discovery that the things that make us different are the very things that make us belong.',
   author: 'Jörg Schmidt',
   syllables: {
     different: ['dif', 'fer', 'ent'], strange: ['strange'], anxious: ['anx', 'ious'], weird: ['weird'],
