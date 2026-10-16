@@ -37,7 +37,9 @@ function Root() {
   const [screen, setScreen] = useState('start');
   // the store owner gets a Store Manager in the menu (checked at launch and whenever someone signs in or out)
   const [storeAdmin, setStoreAdmin] = useState(false);
-  useEffect(() => { isStoreAdmin().then(setStoreAdmin); return onUserChange(() => isStoreAdmin().then(setStoreAdmin)); }, []);
+  // web preview only: #store-demo shows the Store Manager with sample books
+  const storeDemo = Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash === '#store-demo';
+  useEffect(() => { if (storeDemo) { setStoreAdmin(true); return undefined; } isStoreAdmin().then(setStoreAdmin); return onUserChange(() => isStoreAdmin().then(setStoreAdmin)); }, []);
   const [coverOpen, setCoverOpen] = useState(false); // the book's cover is shut each time the app opens
   const [peek, setPeek] = useState(null); // 'library' | 'store': drawn under the start screen as its book slides away
   // Phones and iPads can turn: the book goes side by side when sideways.
@@ -149,7 +151,7 @@ function Root() {
         )}
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} />}
         {screen === 'about' && <About u={u} openMenu={openMenu} />}
-        {screen === 'storeManager' && <StoreManager u={u} openMenu={openMenu} toast={toast} />}
+        {screen === 'storeManager' && <StoreManager u={u} openMenu={openMenu} toast={toast} demo={storeDemo} />}
         {screen === 'profile' && <Profile u={u} openMenu={openMenu} toast={toast} />}
         {screen === 'reader' && story && (
           <Reader u={u} story={story} prefs={prefs} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />

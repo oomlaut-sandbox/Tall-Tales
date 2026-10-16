@@ -109,3 +109,16 @@ export async function removeFromStore(id) {
 
 // The credits line shown on a store book's title page.
 export const storeCredits = (c) => creditsLine(c.writer, c.artist);
+
+// Shelves: add one, or change one (title, order, shown/hidden).
+export async function addShelf(title) {
+  const id = slug(title);
+  const { data } = await supabase.from('shelves').select('sort').order('sort', { ascending: false }).limit(1);
+  const sort = ((data && data[0] && data[0].sort) || 0) + 10;
+  const { error } = await supabase.from('shelves').insert({ id, title: title.trim(), sort, published: true });
+  if (error) throw new Error(error.message);
+}
+export async function updateShelf(id, patch) {
+  const { error } = await supabase.from('shelves').update(patch).eq('id', id);
+  if (error) throw new Error(error.message);
+}

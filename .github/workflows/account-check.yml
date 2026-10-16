@@ -43,6 +43,14 @@ jobs:
                   }catch(e){out.push("catalog "+t+": error "+e.message)}
                 }
               }
+              if(u&&k){
+                try{const r=await fetch(u+"/rest/v1/rpc/is_store_admin",{method:"POST",headers:{apikey:k,Authorization:"Bearer "+k,"Content-Type":"application/json"},body:"{}"});
+                  out.push("store manager setup: "+(r.status===200?"done (docs/store-manager-setup.sql has run)":"NOT run yet (docs/store-manager-setup.sql), HTTP "+r.status));
+                }catch(e){out.push("store manager setup: error "+e.message)}
+                try{const r=await fetch(u+"/functions/v1/narrate",{method:"OPTIONS",headers:{apikey:k}});
+                  out.push("narration service: "+(r.status===200?"deployed":"not deployed yet (HTTP "+r.status+")"));
+                }catch(e){out.push("narration service: error "+e.message)}
+              }
               require("fs").writeFileSync("out/account-check.txt",out.join("\n")+"\n");console.log(out.join("\n"));
             })();'
       - name: Save result

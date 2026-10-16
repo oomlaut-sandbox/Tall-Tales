@@ -9,7 +9,7 @@ import { colors, fonts } from '../theme';
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import CoverArt from '../components/CoverArt';
 import { coverFor, storageUrl } from '../catalog';
-import { loadAllForManager, removeFromStore, startNarration, updateBook } from '../storeAdmin';
+import { addShelf, loadAllForManager, removeFromStore, startNarration, updateBook, updateShelf } from '../storeAdmin';
 
 const NARRATION = { none: 'No narration yet', working: 'Narration being made…', ready: 'Narration ready', failed: 'Narration failed' };
 
@@ -106,14 +106,48 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
   );
 }
 
-export default function StoreManager({ u, openMenu, toast }) {
+function ShelfRow({ shelf, shelves, onChanged, toast }) {
+  const [title, setTitle] = useState(shelf.title);
+  const save = async (patch, note) => { try { await updateShelf(shelf.id, patch); if (note) toast(note); onChanged(); } catch (e) { toast(`Couldn’t save: ${e.message}`); } };
+  const move = async (dir) => {
+    const i = shelves.findIndex((x) => x.id === shelf.id), j = i + dir;
+    if (j < 0 || j >= shelves.length) return;
+    const other = shelves[j];
+    try { await updateShelf(shelf.id, { sort: other.sort === shelf.sort ? other.sort + dir : other.sort }); await updateShelf(other.id, { sort: shelf.sort }); onChanged(); } catch (e) { toast(`Couldn’t move it: ${e.message}`); }
+  };
+  return (
+    <View style={[styles.row, { padding: 12, gap: 8 }]}>
+      <TextInput value={title} onChangeText={setTitle} onBlur={() => title.trim() && title !== shelf.title && save({ title: title.trim() }, 'Shelf renamed.')} style={styles.input} accessibilityLabel="Shelf name" />
+      <View style={styles.choices}>
+        <Pressable onPress={() => move(-1)} style={styles.chip}><Text style={styles.chipText}>▲ Higher</Text></Pressable>
+        <Pressable onPress={() => move(1)} style={styles.chip}><Text style={styles.chipText}>▼ Lower</Text></Pressable>
+        <Pressable onPress={() => save({ published: !shelf.published })} style={[styles.chip, shelf.published && { backgroundColor: colors.green }]}>
+          <Text style={styles.chipText}>{shelf.published ? 'Shown' : 'Hidden'}</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+// Sample books for the web preview only (#store-demo), so the screen can be looked at before the store is set up.
+const DEMO = {
+  shelves: [{ id: 'free', title: 'Free to read', sort: 10, published: true }, { id: 'new', title: 'New', sort: 20, published: true }, { id: 'bedtime', title: 'Bedtime', sort: 30, published: true }],
+  books: [
+    { id: 'different', title: 'Different', author: 'Jörg Schmidt', shelf_id: 'free', sort: 10, published: true, featured: true, bundled: true },
+    { id: 'falling', title: 'Falling', author: 'Jörg Schmidt', shelf_id: 'free', sort: 20, published: true, bundled: true },
+    { id: 'brave-pebble-x1y2', title: 'The Brave Pebble', author: 'Mia', shelf_id: 'new', sort: 100, published: false, bundled: false, narration_status: 'ready', narration_note: '14 pages narrated (lily, gregory)', blurb: 'A little pebble rolls all the way to the sea.' },
+  ],
+};
+
+export default function StoreManager({ u, openMenu, toast, demo }) {
   const insets = useSafeAreaInsets();
   const [data, setData] = useState(null);
   const [err, setErr] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [newShelf, setNewShelf] = useState('');
   const load = async (pull) => {
     if (pull) setRefreshing(true);
-    try { setData(await loadAllForManager()); setErr(''); } catch (e) { setErr(e.message); }
+    try { setData(demo ? DEMO : await loadAllForManager()); setErr(''); } catch (e) { setErr(e.message); }
     if (pull) setRefreshing(false);
   };
   useEffect(() => { load(false); }, []);
@@ -144,6 +178,19 @@ export default function StoreManager({ u, openMenu, toast }) {
           <View style={{ gap: 10 }}>
             <Text style={styles.shelf}>Not on a shelf</Text>
             {data.books.filter((b) => !data.shelves.find((s) => s.id === b.shelf_id)).map((b) => <BookRow key={b.id} book={b} shelves={data.shelves} siblings={[b]} onChanged={() => load(false)} toast={toast} />)}
+          </View>
+        ) : null}
+        {/* the shelves themselves: their names, their order in the Book Store, shown or hidden, and new ones */}
+        {data ? (
+          <View style={{ gap: 10, marginTop: 10 }}>
+            <Text style={styles.shelf}>Shelves</Text>
+            <Text style={styles.note}>The rows of the Book Store, top to bottom. A shelf with no shown books doesn’t appear.</Text>
+            {data.shelves.map((sh) => <ShelfRow key={sh.id} shelf={sh} shelves={data.shelves} onChanged={() => load(false)} toast={toast} />)}
+            <View style={[styles.row, { padding: 12, gap: 8 }]}>
+              <TextInput value={newShelf} onChangeText={setNewShelf} placeholder="New shelf, e.g. Animals" placeholderTextColor="#888" style={styles.input} />
+              <Pressable disabled={!newShelf.trim()} onPress={async () => { try { await addShelf(newShelf); setNewShelf(''); toast('Shelf added.'); load(false); } catch (e) { toast(`Couldn’t add it: ${e.message}`); } }}
+                style={[styles.pill, { backgroundColor: colors.green }, !newShelf.trim() && { opacity: 0.4 }]}><Text style={styles.pillText}>Add shelf</Text></Pressable>
+            </View>
           </View>
         ) : null}
       </ScrollView>
