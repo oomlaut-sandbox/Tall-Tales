@@ -215,6 +215,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     const c = Keyboard.addListener('keyboardDidHide', () => setKbUp(false)); // belt and braces
     return () => { a.remove(); b.remove(); c.remove(); };
   }, []);
+  // web preview only (#kb-demo): typing in the title acts as if the keyboard were up, so the layout can be checked
+  useEffect(() => {
+    if (Platform.OS === 'web' && typeof window !== 'undefined' && /kb-demo/.test(window.location.hash)) setKbUp(!!titleEditing);
+  }, [titleEditing]);
   const dragFrom = useRef(null);
   const titleDrag = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => !titleEditingRef.current, // the title takes the touch (unless it's being typed in)
