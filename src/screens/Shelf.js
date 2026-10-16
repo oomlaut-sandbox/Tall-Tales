@@ -46,7 +46,7 @@ function Tile({ u, cover, title, sub, onPress, onLongPress, plus, selecting, sel
         ) : null}
       </View>
       </View>
-      <Text style={styles.tileTitle}>{title}</Text>
+      {title ? <Text style={styles.tileTitle}>{title}</Text> : null}
       {sub ? <Text style={styles.tileSub}>{sub}</Text> : null}
     </Pressable>
   );
@@ -179,8 +179,9 @@ export function Store({ u, openStory, openMenu }) {
             <Text style={styles.shelfTitle}>{sh.title}</Text>
             <View style={[styles.shelfGrid, { columnGap: gridGap(winW) }]}>
               {sh.books.map((b) => (
-                <Tile key={b.id} u={u} cover={coverFor(b)} title={b.title} label={sh.id === 'featured' ? `${b.title}, featured` : b.title}
-                  sub={b.author ? `by ${b.author}` : null} badge={<Badge book={b} />}
+                // covers only: the title and author are in the details box that opens on a tap
+                <Tile key={b.id} u={u} cover={coverFor(b)} label={sh.id === 'featured' ? `${b.title}, featured` : b.title}
+                  badge={<Badge book={b} />}
                   onPress={(rect) => setOpen({ book: b, rect })} />
               ))}
             </View>
@@ -259,12 +260,8 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
       {book.blurb ? <Text style={styles.sheetText}>{book.blurb}</Text> : null}
       <Text style={styles.sheetSub}>{meta}</Text>
       {canRead ? (
-        <Pressable onPress={() => onRead({ x: boxX + M, y: boxY + M, w: cs, h: cs })} style={[styles.badgeShadow, { alignSelf: 'stretch', marginTop: 6 }]} accessibilityRole="button">
-          {/* green felt, like the Free label */}
-          <View style={[styles.sheetBtn, { overflow: 'hidden' }]}>
-            <FeltFill color="green" />
-            <Text style={styles.sheetBtnText}>Read now</Text>
-          </View>
+        <Pressable onPress={() => onRead({ x: boxX + M, y: boxY + M, w: cs, h: cs })} style={[styles.sheetBtn, { marginTop: 6 }]} accessibilityRole="button">
+          <Text style={styles.sheetBtnText}>Read now</Text>
         </Pressable>
       ) : (
         <Text style={styles.sheetText}>{book.access === 'free' ? 'Downloading new books arrives in the next update.' : 'Memberships and buying single books arrive in the next update.'}</Text>
@@ -286,7 +283,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
         <View style={{ flexDirection: 'row' }}>
           <View style={{ width: cs + M, height: cs + 2 * M }} />{/* the same margin above and below the cover */}
           {!across ? (
-            <View style={{ flex: 1, justifyContent: 'space-between', padding: 14, paddingLeft: 18, paddingTop: M }}>
+            <View style={{ flex: 1, justifyContent: 'space-between', padding: 14, paddingLeft: 18, paddingTop: M, paddingBottom: M }}>{/* the Free label sits level with the bottom of the cover */}
               <View style={{ alignSelf: 'flex-end' }}><CloseX onPress={() => close()} /></View>
               <Badge book={book} />
             </View>
@@ -328,7 +325,7 @@ function Badge({ book }) {
 }
 
 // the book details box: light grey with very dark grey letters
-const CARD_GREY = '#d6d6d6', CARD_INK = '#222222';
+const CARD_GREY = '#bdbdbd', CARD_INK = '#222222';
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.desk }, // same dark grey as reading
@@ -364,7 +361,7 @@ const styles = StyleSheet.create({
   xBar: { position: 'absolute', left: 0, top: 10, width: 22, height: 2.5, backgroundColor: CARD_INK },
   sheetSub: { color: '#4a4a4a', fontFamily: fonts.story, fontSize: 18 },
   sheetText: { color: CARD_INK, fontFamily: fonts.story, fontSize: 18, lineHeight: 25 },
-  sheetBtn: { backgroundColor: colors.green, paddingVertical: 14, alignItems: 'center' },
+  sheetBtn: { backgroundColor: colors.green, height: 50, borderRadius: 25, alignItems: 'center', justifyContent: 'center' }, // a solid green pill
   sheetBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   note: { width: '100%', backgroundColor: '#4a4a4a', padding: 16, fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, color: colors.white },
 });
