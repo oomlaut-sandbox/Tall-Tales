@@ -237,16 +237,6 @@ export function PageShape({ wide }) {
     </View>
   );
 }
-// Book spreads: two separate square pages, the picture page then the words page.
-export function SpreadShape() {
-  const q = 18;
-  return (
-    <View style={{ flexDirection: 'row', gap: 4 }}>
-      <View style={{ width: q, height: q, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' }}><View style={{ width: q - 6, height: q - 6, backgroundColor: '#9a9a9a', borderWidth: 1.5, borderColor: '#333' }} /></View>
-      <View style={{ width: q, height: q, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' }}><View style={{ width: q - 6, height: 1.5, backgroundColor: '#333', marginBottom: 3 }} /><View style={{ width: q - 6, height: 1.5, backgroundColor: '#333' }} /></View>
-    </View>
-  );
-}
 // Simple round glasses: two circles and a bridge, for Read Yourself.
 export function GlassesIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
   const d = size * 0.52;
