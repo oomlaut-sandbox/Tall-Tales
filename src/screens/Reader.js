@@ -653,9 +653,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       <View style={[styles.bottomBar, { height: barH, paddingBottom: insets.bottom }]}>
         <Felt />
         <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
-        <View style={{ flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center' }}>
+        {/* the page count, with the small 'Your voice' mark on its own line underneath (so it never cuts the count off) */}
+        <View style={{ flex: 1, minWidth: 0, justifyContent: 'center' }}>
           <BarMeta page={idx < n ? `Page ${idx + 1} of ${n}` : 'The End'} />
-          {mineHere ? <View style={styles.mine} accessibilityLabel="This page plays your own recording"><View style={styles.mineDot} /><Text style={styles.mineText}>Your voice</Text></View> : null}
+          {mineHere ? <View style={styles.mine} accessibilityLabel="This page plays your own recording"><View style={styles.mineDot} /><Text numberOfLines={1} style={styles.mineText}>Your voice</Text></View> : null}
         </View>
         {showControls ? (
           <View style={[styles.small, { flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
@@ -791,7 +792,7 @@ const styles = StyleSheet.create({
   desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.desk },
   bookShadow: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
   book: { flex: 1, overflow: 'hidden', backgroundColor: colors.paper },
-  mine: { flexDirection: 'row', alignItems: 'center', gap: 6, marginLeft: 10 },
+  mine: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 14, marginTop: 3 },
   mineDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.highlight },
   mineText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 12 },
   sideBar: { backgroundColor: colors.bar, alignItems: 'flex-end', zIndex: 30 },
