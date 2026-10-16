@@ -64,11 +64,11 @@ const MODES = [
   // ['✦', 'interactive', 'Interactive', 'Image interaction with touch'],  (hidden for now; hotspot code kept)
 ];
 
-function Seg({ value, options, onChange }) {
+function Seg({ value, options, onChange, stacked }) {
   return (
-    <View style={{ flexDirection: 'row', gap: 8 }}>
+    <View style={stacked ? { gap: 8 } : { flexDirection: 'row', gap: 8 }}>
       {options.map(([v, l, family]) => (
-        <Pressable key={v} onPress={() => onChange(v)} style={[styles.seg, value === v && { backgroundColor: colors.green }]}>
+        <Pressable key={v} onPress={() => onChange(v)} style={[styles.seg, stacked && { flex: 0, paddingVertical: 12 }, value === v && { backgroundColor: colors.green }]}>
           <Text style={[styles.segText, family && { fontFamily: family, fontWeight: '400', fontSize: 17 }]}>{l}</Text>
         </Pressable>
       ))}
@@ -702,7 +702,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         </View>
         <View style={styles.setting}>
           <Text style={styles.help}>Book font</Text>
-          <Seg value={prefs.font || 'serif'} options={Object.entries(BOOK_FONTS).map(([k, f]) => [k, f.label, f.family])} onChange={(v) => setPrefs((p) => ({ ...p, font: v }))} />
+          <Seg stacked value={prefs.font || 'serif'} options={Object.entries(BOOK_FONTS).map(([k, f]) => [k, f.label, f.family])} onChange={(v) => setPrefs((p) => ({ ...p, font: v }))} />
         </View>
         <View style={styles.setting}>
           <Text style={styles.help}>Sound effects</Text>
