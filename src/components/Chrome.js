@@ -440,7 +440,8 @@ export function Toast({ message, area, onDismiss }) {
           Tap it to close it sooner. */}
       <Pressable onPress={onDismiss} accessibilityRole="button" accessibilityHint="Closes the message" style={styles.bubbleWrap}>
         <View style={styles.bubble}>
-          <Text style={styles.toast}>{message}</Text>
+          {/* a ● in the message is drawn in the record button's red */}
+          <Text style={styles.toast}>{String(message).split('●').map((part, i) => (i ? [<Text key={i} style={{ color: colors.highlight }}>●</Text>, part] : part))}</Text>
         </View>
         <View style={styles.bubbleTail} />
       </Pressable>
