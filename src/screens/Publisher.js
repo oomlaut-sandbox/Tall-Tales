@@ -2,7 +2,7 @@
 // Everything saves automatically. "Pages" opens a list to reorder or delete pages,
 // or to delete the whole story.
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -42,6 +42,21 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const [gateFor, setGateFor] = useState(null); // {mode, layout} waiting for the grown-up check
   const [making, setMaking] = useState(false);
   const [editing, setEditing] = useState(false); // the big words editor
+  // Opening the words editor: the words square zooms from its place on the page up into the editing spot.
+  const wordsRef = useRef(null);
+  const fromRect = useRef(null);
+  const zoom = useRef(new Animated.Value(1)).current; // 0 = where the square is on the page, 1 = in the editor
+  const [zoomTo, setZoomTo] = useState(null); // the editor square's spot on screen
+  const openWords = () => {
+    const go = (r) => { fromRect.current = r; zoom.setValue(r ? 0 : 1); setZoomTo(null); setEditing(true); };
+    if (wordsRef.current && wordsRef.current.measureInWindow) wordsRef.current.measureInWindow((x, y, w, h) => go(w ? { x, y, w, h } : null));
+    else go(null);
+  };
+  const closeWords = () => {
+    const done = () => { setEditing(false); setPageDone(true); };
+    if (!fromRect.current || !zoomTo) return done();
+    Animated.timing(zoom, { toValue: 0, duration: 260, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(done);
+  };
   const [pageDone, setPageDone] = useState(false); // 'Add another page?' after the editor
 
   const makePdf = async ({ mode, layout }) => {
@@ -208,12 +223,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           )}
           {!wide ? <Fade edge="bottom" size={Math.round(side * 0.1)} max={0.22} /> : null}
         </Pressable>
-        <View style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>
+        <View ref={wordsRef} collapsable={false} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>
           {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
           <Spine wide={wide} />
           <Text style={styles.addText}>Add Text</Text>
           {/* Tapping the words opens a big editor (just the words page, above the keyboard). */}
-          <Pressable onPress={() => setEditing(true)} accessibilityRole="button" accessibilityLabel={`Words for page ${i + 1}`}>
+          <Pressable onPress={openWords} accessibilityRole="button" accessibilityLabel={`Words for page ${i + 1}`}>
             <Text style={[styles.input, { fontFamily: bookFont(fontKey).family, maxHeight: side * 0.7 }, !page.text && { color: '#666' }]} numberOfLines={8}>
               {page.text || 'Tap to type the words for this page. Two or three sentences reads best.'}
             </Text>
@@ -313,26 +328,50 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         )}
       </Panel>
       {editing ? (
-        // The words editor: only the words page, as big as fits above the keyboard.
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, styles.editor, { paddingTop: insets.top + 10 }]}>
-          <View style={styles.editorHead}>
+        // The words editor: the words page, moved down a little from the top, with a green Done pill under it.
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 50 }]}>
+          <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: colors.desk, opacity: zoom }]} />
+          <View style={[styles.editor, { flex: 1, paddingTop: insets.top + 34 }]}>
+          <Animated.View style={[styles.editorHead, { opacity: zoom }]}>
             <Text style={styles.editorTitle}>Page {i + 1}</Text>
-            <Pressable onPress={() => { setEditing(false); setPageDone(true); }} hitSlop={10} accessibilityRole="button"><Text style={styles.editorDone}>Done</Text></Pressable>
+          </Animated.View>
+          {(() => {
+            const W = winW - 2 * GAP;
+            const f = fromRect.current, t = zoomTo;
+            const move = f && t ? [
+              { translateX: zoom.interpolate({ inputRange: [0, 1], outputRange: [f.x + f.w / 2 - (t.x + t.w / 2), 0] }) },
+              { translateY: zoom.interpolate({ inputRange: [0, 1], outputRange: [f.y + f.h / 2 - (t.y + t.h / 2), 0] }) },
+              { scale: zoom.interpolate({ inputRange: [0, 1], outputRange: [f.w / t.w, 1] }) },
+            ] : [];
+            return (
+              <Animated.View
+                onLayout={(e) => {
+                  if (zoomTo) return;
+                  e.target && e.target.measureInWindow ? e.target.measureInWindow((x, y, w, h) => {
+                    setZoomTo({ x, y, w, h });
+                    if (fromRect.current) Animated.timing(zoom, { toValue: 1, duration: 300, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+                  }) : zoom.setValue(1);
+                }}
+                style={[styles.editorPage, { width: W, maxHeight: W, opacity: f && !t ? 0 : 1, transform: move }]}>
+                <TextInput
+                  value={page.text}
+                  onChangeText={(text) => update({ text })}
+                  placeholder="Type the words for this page. Two or three sentences reads best."
+                  placeholderTextColor="#666"
+                  multiline
+                  autoFocus
+                  style={[styles.editorInput, { fontFamily: bookFont(fontKey).family }]}
+                  accessibilityLabel={`Words for page ${i + 1}`}
+                />
+              </Animated.View>
+            );
+          })()}
+          {/* Done: a green pill under the page, at its right edge */}
+          <Animated.View style={{ width: winW - 2 * GAP, alignItems: 'flex-end', opacity: zoom }}>
+            <Pressable onPress={closeWords} hitSlop={8} accessibilityRole="button" style={styles.donePill}><Text style={styles.donePillText}>Done</Text></Pressable>
+          </Animated.View>
           </View>
-          <View style={[styles.editorPage, { width: winW - 2 * GAP, maxHeight: winW - 2 * GAP }]}>
-            <TextInput
-              value={page.text}
-              onChangeText={(text) => update({ text })}
-              placeholder="Type the words for this page. Two or three sentences reads best."
-              placeholderTextColor="#666"
-              multiline
-              autoFocus
-              style={[styles.editorInput, { fontFamily: bookFont(fontKey).family }]}
-              accessibilityLabel={`Words for page ${i + 1}`}
-            />
-          </View>
-        </KeyboardAvoidingView>
-      ) : null}
+        </KeyboardAvoidingView>      ) : null}
       {pageDone ? (
         <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
@@ -350,11 +389,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
 }
 
 const styles = StyleSheet.create({
-  editor: { backgroundColor: colors.desk, alignItems: 'center', zIndex: 50 },
+  editor: { alignItems: 'center' },
   editorHead: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 30, paddingBottom: 12 },
   editorTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
-  editorDone: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
-  editorPage: { flex: 1, marginBottom: 16, backgroundColor: colors.paper, padding: 24, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10 },
+  donePill: { backgroundColor: colors.green, height: 40, borderRadius: 20, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
+  donePillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  editorPage: { flex: 1, marginBottom: 14, backgroundColor: colors.paper, padding: 24, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10 },
   editorInput: { flex: 1, fontSize: 24, lineHeight: 36, color: colors.ink, textAlign: 'center', textAlignVertical: 'top', padding: 0 },
   choiceBack: { backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', zIndex: 60, padding: 30 },
   choice: { width: '100%', maxWidth: 380, backgroundColor: colors.panel, padding: 22, gap: 14 },
