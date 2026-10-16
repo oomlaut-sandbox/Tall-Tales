@@ -274,7 +274,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
         style={[styles.card, { left: boxX, top: boxY, width: boxW, maxHeight: areaH - boxY - 16 }]}>
         <Felt />
         {/* solid near-black, the same as the menus' title bars */}
-        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#141414', opacity: fade }]} />
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: CARD_GREY, opacity: fade }]} />
         <Animated.View pointerEvents={boxH ? 'auto' : 'none'} style={{ opacity: fade, flexDirection: across ? 'row' : 'column' }}>
         <View style={{ flexDirection: 'row' }}>
           <View style={{ width: cs + M, height: cs + 2 * M }} />{/* the same margin above and below the cover */}
@@ -308,14 +308,22 @@ function CloseX({ onPress }) {
   );
 }
 
+// The access label: a little felt tag (green felt for Free, blue for members) with white letters.
+const LABEL_FELT = { free: require('../../assets/label-green.jpg'), member: require('../../assets/label-blue.jpg') };
 function Badge({ book }) {
-  const free = book.access === 'free';
+  const felt = LABEL_FELT[book.access];
   return (
-    <View style={[styles.badge, free ? { backgroundColor: colors.green } : book.access === 'member' ? { backgroundColor: colors.blue } : { backgroundColor: colors.orange }]}>
-      <Text style={[styles.badgeText, book.access === 'paid' && { color: colors.ink }]}>{accessLabel(book)}</Text>
+    <View style={styles.badgeShadow}>
+      <View style={[styles.badge, !felt && { backgroundColor: colors.orange }]}>
+        {felt ? <Image source={felt} resizeMode="cover" style={StyleSheet.absoluteFill} /> : null}
+        <Text style={[styles.badgeText, !felt && { color: colors.ink }]}>{accessLabel(book)}</Text>
+      </View>
     </View>
   );
 }
+
+// the book details box: light grey with very dark grey letters
+const CARD_GREY = '#d6d6d6', CARD_INK = '#222222';
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.desk }, // same dark grey as reading
@@ -342,14 +350,15 @@ const styles = StyleSheet.create({
   featureTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 22 },
   shelfGrid: { paddingHorizontal: 20, flexDirection: 'row', flexWrap: 'wrap', rowGap: 22 },
   shelfTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 19, paddingHorizontal: 20 },
-  badgeAt: { position: 'absolute', left: 6, top: 6 },
-  badge: { alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3 },
+  badgeAt: { position: 'absolute', left: 6, bottom: 6 }, // bottom-left corner of the cover
+  badgeShadow: { alignSelf: 'flex-start', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.35, shadowRadius: 3, elevation: 3 },
+  badge: { paddingHorizontal: 8, paddingVertical: 3, overflow: 'hidden' },
   badgeText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 12 },
   card: { position: 'absolute', overflow: 'hidden' },
-  cardTitle: { color: colors.white, fontFamily: 'EBGaramond_700Bold', fontSize: 30, lineHeight: 34 },
-  xBar: { position: 'absolute', left: 0, top: 10, width: 22, height: 2.5, backgroundColor: colors.white },
-  sheetSub: { color: '#d6d6d6', fontFamily: fonts.story, fontSize: 18 },
-  sheetText: { color: colors.white, fontFamily: fonts.story, fontSize: 18, lineHeight: 25 },
+  cardTitle: { color: CARD_INK, fontFamily: 'EBGaramond_700Bold', fontSize: 30, lineHeight: 34 },
+  xBar: { position: 'absolute', left: 0, top: 10, width: 22, height: 2.5, backgroundColor: CARD_INK },
+  sheetSub: { color: '#4a4a4a', fontFamily: fonts.story, fontSize: 18 },
+  sheetText: { color: CARD_INK, fontFamily: fonts.story, fontSize: 18, lineHeight: 25 },
   sheetBtn: { backgroundColor: colors.green, paddingVertical: 14, alignItems: 'center' },
   sheetBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   note: { width: '100%', backgroundColor: '#4a4a4a', padding: 16, fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, color: colors.white },
