@@ -227,9 +227,9 @@ export function PlayGlyph({ size = MENU_ICON, color = colors.white, count = 1 })
 }
 // Simple round glasses: two circles and a bridge, for Read Yourself.
 export function GlassesIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
-  const d = size * 0.42;
+  const d = size * 0.52;
   return (
-    <View style={{ width: size + 4, height: size, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ width: size + 8, height: size, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
       <View style={{ width: d, height: d, borderRadius: d, borderWidth: weight, borderColor: color }} />
       <View style={{ width: size * 0.14, height: weight, backgroundColor: color, marginTop: -d * 0.2 }} />
       <View style={{ width: d, height: d, borderRadius: d, borderWidth: weight, borderColor: color }} />
