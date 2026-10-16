@@ -330,7 +330,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       {editing ? (
         // The words editor: the words page, moved down a little from the top, with a green Done pill under it.
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 50 }]}>
-          <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: colors.desk, opacity: zoom }]} />
+          <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: colors.desk, opacity: zoom }]}>
+            {/* the charcoal felt (phones only; DESK_FELT is empty on iPad) */}
+            {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+          </Animated.View>
           <View style={[styles.editor, { flex: 1, paddingTop: insets.top + 34 }]}>
           <Animated.View style={[styles.editorHead, { opacity: zoom }]}>
             <Text style={styles.editorTitle}>Page {i + 1}</Text>
