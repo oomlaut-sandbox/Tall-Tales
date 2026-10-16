@@ -232,9 +232,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <Bar u={u} vertical>
             <View style={{ alignItems: 'center', gap: 18 }}>
               <Burger u={u} onPress={openMenu} />
-              <Text style={[styles.sub, { textAlign: 'center' }]}>{i + 1}/{draft.pages.length}</Text>
             </View>
             <View style={{ alignItems: 'center', gap: 18 }}>
+              {/* the page count sits above Pages, with plenty of room between them */}
+              <Text style={[styles.sub, { textAlign: 'center', marginBottom: 22 }]}>{i + 1}/{draft.pages.length}</Text>
               <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
               <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><View style={styles.finish}><Text style={styles.btn}>Finish</Text></View></Pressable>
             </View>

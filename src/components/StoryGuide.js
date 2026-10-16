@@ -26,7 +26,7 @@ export default function StoryGuide({ visible, onClose, area }) {
       <View style={{ width: '100%', maxWidth: 440 }}>
       <View style={styles.card} accessibilityRole="summary">
         <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#141414' }]} />
-        <Text style={styles.kicker}>Guide – How to make a story · {step + 1} of {GUIDE_STEPS.length}</Text>
+        <Text style={styles.kicker}>Guide: How to make a story · {step + 1} of {GUIDE_STEPS.length}</Text>
         <Text style={styles.title}>{s.title}</Text>
         <Text style={styles.body}>{s.body}</Text>
         <View style={styles.dots}>
