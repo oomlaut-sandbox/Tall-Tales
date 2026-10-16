@@ -232,9 +232,6 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               <Text style={[styles.sub, { textAlign: 'center' }]}>{i + 1}/{draft.pages.length}</Text>
             </View>
             <View style={{ alignItems: 'center', gap: 18 }}>
-              <Pressable onPress={() => setI(Math.max(0, i - 1))} disabled={i === 0} hitSlop={8} style={{ opacity: i === 0 ? 0.35 : 1 }} accessibilityLabel="Previous page">
-                <Text style={[styles.btn, { fontSize: 22 }]}>‹</Text>
-              </Pressable>
               <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
               <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><View style={styles.finish}><Text style={styles.btn}>Finish</Text></View></Pressable>
             </View>
@@ -248,9 +245,6 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <TextInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} style={styles.title} accessibilityLabel="Story title" selectTextOnFocus />
           <Text style={styles.sub}>Page {i + 1} of {draft.pages.length} · {saved ? 'Saved' : 'Saving…'}</Text>
         </View>
-        <Pressable onPress={() => setI(Math.max(0, i - 1))} disabled={i === 0} hitSlop={8} style={{ opacity: i === 0 ? 0.35 : 1 }} accessibilityLabel="Previous page">
-          <Text style={[styles.btn, { fontSize: 22 }]}>‹</Text>
-        </Pressable>
         <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
         <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><View style={styles.finish}><Text style={styles.btn}>Finish</Text></View></Pressable>
       </Bar>

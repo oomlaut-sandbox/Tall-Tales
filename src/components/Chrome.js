@@ -394,12 +394,15 @@ export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLab
 export function Toast({ message, area, onDismiss }) {
   if (!message) return null;
   return (
-    <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, zIndex: 60, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 }, area]}>
-      {/* a speech bubble in the middle of the page; tap it to close it sooner */}
-      <Pressable onPress={onDismiss} accessibilityRole="button" accessibilityHint="Closes the message" style={{ flexDirection: 'row', alignItems: 'center', maxWidth: 420 }}>
-        <View style={[styles.bubble, { flexShrink: 1 }]}>
+    <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, zIndex: 60, alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 14 }, area]}>
+      {/* Every speech bubble pops up in the same place: just above the bottom bar, most of the screen wide,
+          shaped like Jörg's bubble (rounded box, a small straight point at the bottom left), with a soft shadow.
+          Tap it to close it sooner. */}
+      <Pressable onPress={onDismiss} accessibilityRole="button" accessibilityHint="Closes the message" style={styles.bubbleWrap}>
+        <View style={styles.bubble}>
           <Text style={styles.toast}>{message}</Text>
         </View>
+        <View style={styles.bubbleTail} />
       </Pressable>
     </View>
   );
@@ -431,10 +434,9 @@ const styles = StyleSheet.create({
   optTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20, marginBottom: 3 },
   optSub: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 14 },
   toastWrap: { position: 'absolute', left: 0, right: 0, top: 64, alignItems: 'center', zIndex: 60, paddingHorizontal: 24 },
-  bubble: { backgroundColor: colors.white, borderRadius: 26, paddingHorizontal: 30, paddingVertical: 22, maxWidth: 360,
-    shadowColor: '#000', shadowOpacity: 0.34, shadowRadius: 12, shadowOffset: { width: 0, height: 5 }, elevation: 9 },
-  bubbleTail: { position: 'absolute', left: 38, bottom: -13, width: 0, height: 0, borderTopWidth: 16, borderTopColor: colors.white,
-    borderLeftWidth: 14, borderLeftColor: 'transparent', borderRightWidth: 4, borderRightColor: 'transparent' },
+  bubbleWrap: { width: '90%', maxWidth: 560, paddingBottom: 22, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.4, shadowRadius: 12, elevation: 10 },
+  bubble: { backgroundColor: colors.white, borderRadius: 22, paddingHorizontal: 26, paddingVertical: 20 },
+  bubbleTail: { position: 'absolute', left: '14%', bottom: 0, width: 0, height: 0, borderTopWidth: 23, borderRightWidth: 22, borderTopColor: colors.white, borderRightColor: 'transparent' },
   toast: { color: colors.ink, fontFamily: 'EBGaramond_500Medium', fontSize: 21, lineHeight: 28, textAlign: 'center' }, // the book serif
 });
 
