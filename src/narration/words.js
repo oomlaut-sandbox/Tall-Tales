@@ -375,4 +375,9 @@ export const WORDS = {
   },
 };
 
-export const PARTS = {};
+export const PARTS = {
+  lily: {
+  },
+  gregory: {
+  },
+};
