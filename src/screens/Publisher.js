@@ -439,23 +439,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           })()}
           {/* under the page: the three fonts to write in (left), and a green Done pill (right) */}
           <Animated.View style={{ width: winW - 2 * GAP, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: zoom }}>
-            {/* Fonts: a grey button that opens a little list of the three fonts above it */}
-            <View style={{ marginBottom: 14 }}>
-              {fontsOpen ? (
-                <View style={styles.fontMenu}>
-                  {[['typewriter', 'Typewriter'], ['serif', 'Serif'], ['sans', 'Helvetica']].map(([k, label]) => (
-                    <Pressable key={k} onPress={() => { setWriteFont(k); setFontsOpen(false); }} accessibilityRole="button" accessibilityState={{ selected: writeFont === k }}
-                      style={[styles.fontRow, writeFont === k && styles.fontRowOn]}>
-                      <Text style={[styles.fontPillText, { fontFamily: bookFont(k).family, fontSize: k === 'serif' ? 19 : k === 'typewriter' ? 15 : 16 }]}>{label}</Text>
-                    </Pressable>
-                  ))}
-                </View>
-              ) : null}
-              <Pressable onPress={() => setFontsOpen((o) => !o)} accessibilityRole="button" style={styles.fontsBtn}>
-                <Text style={styles.donePillText}>Fonts</Text>
-                <Text style={[styles.donePillText, { fontSize: 11, marginLeft: 6 }]}>{fontsOpen ? '▼' : '▲'}</Text>
-              </Pressable>
-            </View>
+            <View />
             <Pressable onPress={closeWords} hitSlop={8} accessibilityRole="button" style={styles.donePill}><Text style={styles.donePillText}>Done</Text></Pressable>
           </Animated.View>
           </View>
@@ -573,7 +557,7 @@ const styles = StyleSheet.create({
   artBtns: { position: 'absolute', left: 12, bottom: 12, flexDirection: 'row', gap: 8 },
   chip: { backgroundColor: 'rgba(0,0,0,0.6)', color: colors.white, fontWeight: '700', fontSize: 15, paddingHorizontal: 14, paddingVertical: 8, overflow: 'hidden', fontFamily: fonts.ui },
   textBox: { justifyContent: 'center' }, // "Add Text" and the words sit in the middle of the square
-  addText: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.ink, marginBottom: 14, marginTop: -18, textAlign: 'center' }, // lifted a little above the words
+  addText: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.ink, marginBottom: 22, marginTop: -40, textAlign: 'center' }, // lifted well above the words
   input: { fontFamily: fonts.story, fontSize: 21, lineHeight: 34, color: colors.ink, textAlign: 'center', textAlignVertical: 'center', padding: 0, minHeight: 68 },
   title: { color: colors.white, fontFamily: 'EBGaramond_700Bold', fontSize: 17, padding: 0 }, // the book serif, bold
   sub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 12, marginTop: 2 },
