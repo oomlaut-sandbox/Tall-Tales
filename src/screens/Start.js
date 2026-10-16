@@ -149,7 +149,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
               <Spine wide={wide} />
               {/* the two items as one block, centred in the page */}
               <View style={{ gap: k * 8 }}>
-                <MenuItem u={k} icon={TILE_LIBRARY} title="My Library" sub={"Find and read\nyour books"} onPress={() => goTo('library')} />
+                <MenuItem u={k} icon={TILE_LIBRARY} title="My Library" sub={"Find and read\nyour favorite books"} onPress={() => goTo('library')} />
                 <MenuItem u={k} icon={TILE_STORE} title="Book Store" sub="Discover and buy new books" onPress={() => goTo('store')} />
               </View>
             </View>
