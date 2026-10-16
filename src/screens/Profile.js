@@ -8,7 +8,7 @@ import { colors, fonts } from '../theme';
 import { Felt, IS_TABLET, Stitch } from '../look';
 
 const BAND_FELT = require('../../assets/band-profile.jpg');
-import { Bar, BarMeta, Burger, WithBar } from '../components/Chrome';
+import { Bar, BarMeta, Burger, Toast, WithBar } from '../components/Chrome';
 import {
   accountsReady, appleAvailable, currentUser, deleteAccount, onUserChange, sendEmailCode, signInWithApple, signOut, updateProfile, verifyEmailCode,
 } from '../account';
@@ -34,6 +34,7 @@ export default function Profile({ u, openMenu, toast }) {
   const [err, setErr] = useState('');
   const [name, setName] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [tip, setTip] = useState(true); // the 'For parents' speech bubble
 
   useEffect(() => {
     currentUser().then((us) => { setUser(us); setLoading(false); });
@@ -82,7 +83,8 @@ export default function Profile({ u, openMenu, toast }) {
   } else if (step === 'start') {
     body = (
       <>
-        <Text style={[styles.p, { marginBottom: 10 }]}>Sign in to your Oomlaut account. There’s no password to remember.</Text>
+        {/* the words moved into the speech bubble at the bottom; this keeps the buttons where they were */}
+        <View style={{ height: 33 }} />
         {apple ? (
           // our own button so both match (same font, size and dark grey); Apple's logo and wording kept
           <Pressable onPress={() => run(signInWithApple)} style={[styles.btn, { flexDirection: 'row', justifyContent: 'center', gap: 7 }]} accessibilityRole="button" accessibilityLabel="Sign in with Apple">
@@ -138,6 +140,8 @@ export default function Profile({ u, openMenu, toast }) {
           {err ? <Text style={styles.err}>{err}</Text> : null}
         </View>
       </ScrollView>
+      {/* for grown-ups: a speech bubble at the bottom (tap it to put it away) */}
+      {step === 'start' && !user && !loading && tip ? <Toast message="For parents: Sign in to your Oomlaut account. There’s no password to remember." onDismiss={() => setTip(false)} /> : null}
     </WithBar>
   );
 }

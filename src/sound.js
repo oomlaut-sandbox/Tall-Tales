@@ -26,6 +26,9 @@ let suspended = false; // while recording
 // Sound effects are off unless switched on in the Playback menu (prefs.sound).
 let enabled = false;
 export function setEffects(on) { enabled = !!on; }
+// The sound effects volume (Playback menu slider): 0..1, on top of each effect's own level.
+let master = 1;
+export function setEffectsVolume(v) { master = Math.max(0, Math.min(1, v)); }
 
 async function init() {
   if (ready) return;
@@ -54,7 +57,7 @@ export function playSound(kind, volume = 1) {
   const p = players[kind];
   if (!p) return;
   try {
-    p.volume = Math.min(1, (LEVEL[kind] || 0.5) * volume);
+    p.volume = Math.min(1, (LEVEL[kind] || 0.5) * volume * master);
     p.seekTo(0);
     p.play();
   } catch (e) {}

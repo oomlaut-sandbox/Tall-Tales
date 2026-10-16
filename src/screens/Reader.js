@@ -48,7 +48,7 @@ const VOICE_RECORDING = {
   ios: { ...RecordingPresets.HIGH_QUALITY.ios, audioQuality: 127, sampleRate: 48000 },
   android: { ...RecordingPresets.HIGH_QUALITY.android, sampleRate: 48000 },
 };
-import { playSound, setEffects, suspendSounds } from '../sound';
+import { playSound, setEffects, setEffectsVolume, suspendSounds } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { shareInvite } from '../invite';
 import { audioModeChanged, pauseVoice, playClips, playVoice, resumeVoice, stopVoice } from '../voice';
@@ -93,6 +93,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const [recList, setRecList] = useState([]);
   const [playView, setPlayView] = useState('main'); // 'main' | 'voices' inside Playback Options
   const [speedDraft, setSpeedDraft] = useState(null); // speed while the slider is being dragged
+  const [volDraft, setVolDraft] = useState(null); // the sound effects volume while its slider is moving
   const [printChoice, setPrintChoice] = useState(false);
   const [printGate, setPrintGate] = useState(null); // layout waiting for the grown-up check
   const [printing, setPrinting] = useState(false);
@@ -716,6 +717,13 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <Text style={styles.help}>Sound effects</Text>
           <Seg value={prefs.sound ? 'on' : 'off'} options={[['off', 'Off'], ['on', 'On']]}
             onChange={(v) => { const on = v === 'on'; setPrefs((p) => ({ ...p, sound: on })); setEffects(on); if (on) playSound('swish'); }} />
+          {/* how loud the sound effects are (only while they're on); a swish plays at the new level */}
+          {prefs.sound ? (
+            <Slider value={volDraft ?? (prefs.soundVol == null ? 1 : prefs.soundVol)} min={0.1} max={1} step={0.05} leftLabel="Quieter" rightLabel="Louder"
+              format={(v) => `${Math.round(v * 100)}%`}
+              onChange={setVolDraft}
+              onDone={(v) => { setVolDraft(null); const vol = Math.round(v * 100) / 100; setPrefs((p) => ({ ...p, soundVol: vol })); setEffectsVolume(vol); playSound('swish'); }} />
+          ) : null}
         </View>
         {/* Print: two choices, each a little picture of the page */}
         <View style={styles.setting}>
