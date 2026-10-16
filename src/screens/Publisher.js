@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { bookFont, colors, fonts } from '../theme';
-import { Bar, Burger, DogEar, Panel, PageShape } from '../components/Chrome';
+import { Bar, Burger, DogEar, Panel, PageShape, SpreadShape } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { deleteUserStory, dropPicture, keepPicture, newPageId, saveUserStory } from '../userStories';
@@ -275,16 +275,14 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         {pdfChoice ? (
           <View style={{ gap: 10 }}>
             <Text style={styles.warn}>{pdfChoice === 'print' ? 'Choose a layout to print:' : 'Choose a layout for your PDF:'}</Text>
-            {/* the same two choices, with the same little pictures, as Print in the Playback menu */}
-            <View style={{ flexDirection: 'row', gap: 14 }}>
-              {[['stacked', 'Portrait'], ['landscape', 'Landscape']].map(([lay, label]) => (
-                <Pressable key={lay} onPress={() => { setGateFor({ mode: pdfChoice, layout: lay }); setPdfChoice(null); setPagesOpen(false); }}
-                  accessibilityRole="button" accessibilityLabel={`${label} pages`} style={styles.layBtn}>
-                  <View style={styles.layIc}><PageShape wide={lay === 'landscape'} /></View>
-                  <Text style={styles.layLabel}>{label}</Text>
-                </Pressable>
-              ))}
-            </View>
+            {/* each choice with a little picture of the page, in the same style as Print in the Playback menu */}
+            {[['stacked', 'Picture above the words', <PageShape />], ['spreads', 'Book spreads (picture, then words)', <SpreadShape />]].map(([lay, label, ic]) => (
+              <Pressable key={lay} onPress={() => { setGateFor({ mode: pdfChoice, layout: lay }); setPdfChoice(null); setPagesOpen(false); }}
+                accessibilityRole="button" style={styles.layRow}>
+                <View style={styles.layIc}>{ic}</View>
+                <Text style={[styles.layLabel, { flex: 1 }]}>{label}</Text>
+              </Pressable>
+            ))}
           </View>
         ) : (
           <View style={{ flexDirection: 'row', gap: 10 }}>
@@ -387,9 +385,9 @@ const styles = StyleSheet.create({
   pbtnText: { color: colors.white, fontWeight: '700', fontSize: 18 },
   deleteLink: { color: '#ff6b6b', fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
   warn: { color: '#e6e6e6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 21 },
-  layBtn: { alignItems: 'center', gap: 6 },
-  layIc: { width: 64, height: 64, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
-  layLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
+  layRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  layIc: { width: 56, height: 56, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
+  layLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
   pill: { flex: 1, backgroundColor: '#6b6b6b', borderRadius: 22, height: 44, paddingVertical: 0, justifyContent: 'center' }, // Share as PDF / Print: medium grey pills
   wide: { flex: 1, backgroundColor: colors.tile, paddingVertical: 12, alignItems: 'center', overflow: 'hidden' },
   wideText: { color: colors.white, fontWeight: '700', fontSize: 15, fontFamily: fonts.ui },
