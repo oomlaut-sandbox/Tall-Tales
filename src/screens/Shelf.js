@@ -319,15 +319,6 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
   );
 }
 
-function CloseX({ onPress }) {
-  return (
-    <Pressable onPress={onPress} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close" style={{ width: 22, height: 22 }}>
-      <View style={[styles.xBar, { transform: [{ rotate: '45deg' }] }]} />
-      <View style={[styles.xBar, { transform: [{ rotate: '-45deg' }] }]} />
-    </Pressable>
-  );
-}
-
 // The access label: a small solid tag (green for Free, blue for members, orange to buy) with a soft shadow.
 function Badge({ book }) {
   const bg = book.access === 'free' ? colors.green : book.access === 'member' ? colors.blue : colors.orange;
@@ -374,7 +365,6 @@ const styles = StyleSheet.create({
   badgeText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 12 },
   card: { position: 'absolute', overflow: 'hidden' },
   cardTitle: { color: CARD_INK, fontFamily: 'EBGaramond_700Bold', fontSize: 30, lineHeight: 34 },
-  xBar: { position: 'absolute', left: 0, top: 10, width: 22, height: 2.5, backgroundColor: CARD_INK },
   sheetSub: { color: '#4a4a4a', fontFamily: fonts.story, fontSize: 18 },
   sheetText: { color: CARD_INK, fontFamily: fonts.story, fontSize: 18, lineHeight: 25 },
   sheetBtn: { backgroundColor: colors.green, height: 40, borderRadius: 20, paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center' }, // a small solid green pill
