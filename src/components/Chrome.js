@@ -178,7 +178,8 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children, portr
   const shift = x.interpolate({ inputRange: [0, 1], outputRange: [0, wide ? winW : winH] });
   return (
     <>
-      {open ? <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close menu" /> : null}
+      {/* tapping outside closes the menu, but the bar stays live, so its other buttons (record, Pages…) still work */}
+      {open ? <Pressable style={[StyleSheet.absoluteFill, wide ? { right: rightW } : { bottom: bottom || 0 }]} onPress={onClose} accessibilityLabel="Close menu" /> : null}
       {/* the clip: everything up to the edge of the menu bar */}
       <View pointerEvents="box-none" style={[styles.panelClip, wide ? { right: rightW } : { bottom: bottom || 0 }]}>
         <Animated.View

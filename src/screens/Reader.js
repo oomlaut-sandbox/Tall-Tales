@@ -4,7 +4,7 @@ import { Animated, Easing, Image, PanResponder, Platform, Pressable, Share, Styl
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOOK_FONTS, colors, fonts } from '../theme';
-import { DESK_FELT, Felt } from '../look';
+import { DESK_FELT, Felt, IS_TABLET } from '../look';
 import { tokenize, cleanWord, syllablesFor } from '../story';
 import { Fade, PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
 import { FLAP_PERSPECTIVE, flapTables } from '../flapStrips';
@@ -599,6 +599,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         {/* the charcoal felt, as on the other screens */}
         {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
       <Felt />
+      {/* a small, quiet red dot when this page has a voice recording: top right on phones, top left on iPad */}
+      {recPages.includes(idx) && !recording ? (
+        <View pointerEvents="none" accessibilityLabel="This page has a voice recording"
+          style={[styles.recMark, IS_TABLET ? { left: 14 } : { right: 14 }]} />
+      ) : null}
       <View style={[styles.bookShadow, { width: BL.bookW, height: BL.bookH }]}>
       <View style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...pan.panHandlers}>
         {size ? layers : null}
@@ -775,6 +780,7 @@ const styles = StyleSheet.create({
   bookShadow: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
   book: { flex: 1, overflow: 'hidden', backgroundColor: colors.paper },
   mine: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 14, marginTop: 3 },
+  recMark: { position: 'absolute', top: 12, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.highlight, opacity: 0.75, zIndex: 5 },
   mineDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.highlight },
   mineText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 12 },
   sideBar: { backgroundColor: colors.bar, alignItems: 'flex-end', zIndex: 30 },
