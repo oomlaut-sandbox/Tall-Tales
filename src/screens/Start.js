@@ -126,7 +126,10 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
           ? { transformOrigin: 'left', transform: [{ perspective: 1600 }, { rotateY: turn }] }
           : { transformOrigin: 'top', transform: [{ perspective: 1600 }, { rotateX: turn }] };
         return (
-          <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: wide ? side * 2 : side, height: wide ? side : side * 2 }}>
+          // Upright, the closed notebook rests a little higher (clear of the speech bubble and nearer the middle);
+          // as the cover opens the whole book glides down into place, keeping a proper margin at the top.
+          <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: wide ? side * 2 : side, height: wide ? side : side * 2,
+            transform: wide ? [] : [{ translateY: p.interpolate({ inputRange: [0, 1], outputRange: [-side * 0.3, 0] }) }] }}>
             {/* the words square: the menu */}
             {/* the menu page has the same rounded corners as the cover that lies on it */}
             <View style={[at2, styles.page, round, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.paper }]}>
