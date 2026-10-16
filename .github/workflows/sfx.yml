@@ -2,6 +2,11 @@
 name: Sound effects
 on:
   workflow_dispatch:
+    inputs:
+      only:
+        description: 'Only these effects (comma separated names)'
+        required: false
+        default: ''
 permissions:
   contents: write
 jobs:
@@ -16,6 +21,7 @@ jobs:
       - name: Generate
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ONLY: ${{ github.event.inputs.only }}
         run: node ci/sfx.js 2>&1 | tee /tmp/sfx.txt
       - name: Save
         if: always()

@@ -11,12 +11,15 @@ const FX = [
   ['book-set-down', 0.6, 'A small hardcover book set down gently on a wooden table: one soft muted wooden thud. Close, natural, no music.'],
   ['card-lift', 0.7, 'A sheet of heavy card paper lifted lightly off a table: a tiny airy paper whoosh. Close, soft, natural, no music.'],
   ['tap', 0.5, 'A fingertip tapping once on a cardboard book cover: a tiny soft dull tap. Close, natural, no music.'],
+  ['page-swish', 0.9, 'A soft, quiet paper swish of one picture book page being turned: a gentle airy sweep of paper, no crinkle, no thump, smooth and short. Quiet room, close, natural, no music.'],
 ];
+// ONLY=name1,name2 makes just those (each three times)
+const ONLY = (process.env.ONLY || '').split(',').filter(Boolean);
 (async () => {
   fs.mkdirSync('sfx-out', { recursive: true });
   const list = [];
-  for (const [name, dur, text] of FX) {
-    for (const n of [1, 2]) {
+  for (const [name, dur, text] of FX.filter(([n]) => !ONLY.length || ONLY.includes(n))) {
+    for (const n of ONLY.length ? [1, 2, 3] : [1, 2]) {
       const res = await fetch('https://api.elevenlabs.io/v1/sound-generation', {
         method: 'POST',
         headers: { 'xi-api-key': KEY, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
