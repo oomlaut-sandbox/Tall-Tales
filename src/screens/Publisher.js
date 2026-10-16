@@ -408,7 +408,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Keep working on this page</Text></Pressable>
             <Pressable onPress={() => toast('Designing a cover is coming in a future update.')} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Design a cover</Text></Pressable>
             {/* leave the book maker for now; what's been made so far stays saved */}
-            <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await saveUserStory(latest.current)); } catch (e) { onDone(); } }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Cancel book editor</Text></Pressable>
+            <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await saveUserStory(latest.current)); } catch (e) { toast('Couldn’t save the story. Try again.'); } }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Cancel book editor</Text></Pressable>
             {/* Finish last, in green, with extra room around it */}
             <Pressable onPress={() => { setPageDone(false); finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 18, marginBottom: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Finish and save book</Text></Pressable>
           </View>
