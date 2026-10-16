@@ -5,7 +5,7 @@
 // Upright (phones, and iPads held upright) the squares are stacked: picture above words. On a
 // screen that is clearly wider than tall (an iPad held sideways) they sit side by side.
 import React from 'react';
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Image, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme';
 import { Felt } from '../look';
@@ -41,13 +41,15 @@ export function bookLayout(winW, winH, insets, barMin, reserve = 0) {
 // children: a function given the layout ({ side, wide, ... }) that draws the two squares.
 // bar: the menu bar, or a function given the layout (so it can run down the side when wide).
 // bare: no shared paper and shadow behind the two squares (the caller draws each square itself).
-export default function BookFrame({ barMin, bar, children, deskProps, bookProps, under, bare, reserve = 0 }) {
+export default function BookFrame({ barMin, bar, children, deskProps, bookProps, under, bare, reserve = 0, deskImage }) {
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
   const L = bookLayout(winW, winH, insets, barMin, reserve);
   const barEl = typeof bar === 'function' ? bar(L) : bar;
   const book = (
     <View style={styles.desk} {...deskProps}>
+      {/* an optional picture for the desk (Jörg's charcoal felt, being tried on the start page) */}
+      {deskImage ? <Image source={deskImage} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
       <Felt />
       {bare ? (
         <View style={{ width: L.bookW, height: L.bookH }} {...bookProps}>{children(L)}</View>

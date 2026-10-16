@@ -21,6 +21,7 @@ export const COVER_BROWN = '#6f4b32';
 const COVER_FLAP = '#a27552'; // the turned-up corner of the leather cover: a lighter brown
 const COVER_UNDER = '#ababab'; // the page showing under that corner: a lighter grey than in the books
 const LEATHER = require('../../assets/leather.jpg'); // Jörg's brown leather, outside and inside the cover
+const DESK_FELT = require('../../assets/desk-felt.jpg'); // trying Jörg's charcoal felt as the start page's background
 
 const TILE_LIBRARY = require('../../assets/tile-library.png');
 const TILE_STORE = require('../../assets/tile-store.png');
@@ -119,7 +120,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
 
   return (
     <Animated.View style={{ flex: 1, opacity: fade }}>
-    <BookFrame bare barMin={u * 17} reserve={startRoom(winW, winH)} bar={(L) => <Bar u={u} vertical={L.wide}><Burger u={u} onPress={openMenu} /></Bar>}>
+    <BookFrame bare deskImage={DESK_FELT} barMin={u * 17} reserve={startRoom(winW, winH)} bar={(L) => <Bar u={u} vertical={L.wide}><Burger u={u} onPress={openMenu} /></Bar>}>
       {({ side, wide }) => {
         const k = side / 100; // sizes inside the book scale with the squares
         geo.current = { side, wide };
