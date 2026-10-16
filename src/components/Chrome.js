@@ -136,7 +136,7 @@ const HEAD_ARROW_WIDE = 14 + 22; // sideways head: top padding + half the 44-poi
 // Sideways: it slides out to the LEFT from the right-hand bar, its top level with the menu stripes.
 // It is clipped at the bar's edge, so it looks as if it comes out of (and goes back into) the bar.
 // bottom: the bottom bar's height (upright). inset: the right bar's width (sideways).
-export function Panel({ open, title, onClose, bottom, inset = 0, children }) {
+export function Panel({ open, title, onClose, bottom, inset = 0, children, portraitWidth }) {
   const x = useRef(new Animated.Value(open ? 0 : 1)).current;
   useEffect(() => {
     Animated.timing(x, { toValue: open ? 0 : 1, duration: 300, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
@@ -160,7 +160,7 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children }) {
       <View pointerEvents="box-none" style={[styles.panelClip, wide ? { right: rightW } : { bottom: bottom || 0 }]}>
         <Animated.View
           pointerEvents={open ? 'auto' : 'none'}
-          style={[styles.panel, wide ? { width: panelW, maxWidth: panelW, top: wideTop, right: 0 } : { bottom: 0, left: 0 },
+          style={[styles.panel, wide ? { width: panelW, maxWidth: panelW, top: wideTop, right: 0 } : { bottom: 0, left: 0 }, !wide && portraitWidth ? { width: portraitWidth, maxWidth: 520 } : null,
             { maxHeight, transform: [wide ? { translateX: shift } : { translateY: shift }] }]}
         >
           <Felt />

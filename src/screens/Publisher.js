@@ -257,20 +257,24 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       </View>
       )}
 
-      <Panel open={pagesOpen} side="right" title="Pages" bottom={wide ? 0 : barH} inset={wide ? BL.rightW : 0} onClose={() => setPagesOpen(false)}>
+      <Panel open={pagesOpen} side="right" title="Pages" portraitWidth="94%" bottom={wide ? 0 : barH} inset={wide ? BL.rightW : 0} onClose={() => setPagesOpen(false)}>
         <ScrollView style={{ maxHeight: Math.max(380, winH * 0.55) }} contentContainerStyle={{ gap: 14, paddingBottom: 6 }}>
           {draft.pages.map((p, k) => (
             <View key={p.pid} style={[styles.prow, k === i && { borderColor: colors.green }]}>
               <Pressable onPress={() => { setI(k); setPagesOpen(false); }} style={styles.thumb} accessibilityLabel={`Go to page ${k + 1}`}>
                 {p.uri ? <Image source={{ uri: p.uri }} style={styles.fill} resizeMode="cover" /> : <Text style={styles.thumbNum}>{k + 1}</Text>}
               </Pressable>
-              <Pressable onPress={() => { setI(k); setPagesOpen(false); }} style={{ flex: 1, minWidth: 0 }}>
-                <Text style={styles.prowTitle}>Page {k + 1}</Text>
-                <Text numberOfLines={1} style={styles.prowSub}>{p.text.trim() || (p.uri ? 'Picture only' : 'Empty')}</Text>
+              {/* beside the picture: the page's name on top (level with the picture's top), its buttons at the bottom */}
+              <View style={{ flex: 1, minWidth: 0, height: 64, justifyContent: 'space-between' }}>
+              <Pressable onPress={() => { setI(k); setPagesOpen(false); }}>
+                <Text numberOfLines={1} style={styles.prowTitle}>Page {k + 1}<Text style={styles.prowSub}>{'  ·  '}{p.text.trim() || (p.uri ? 'Picture only' : 'Empty')}</Text></Text>
               </Pressable>
+              <View style={{ flexDirection: 'row', gap: 8 }}>
               <Pressable onPress={() => move(k, -1)} disabled={k === 0} hitSlop={6} style={[styles.pbtn, k === 0 && { opacity: 0.3 }]} accessibilityLabel={`Move page ${k + 1} up`}><Text style={styles.pbtnText}>↑</Text></Pressable>
               <Pressable onPress={() => move(k, 1)} disabled={k === draft.pages.length - 1} hitSlop={6} style={[styles.pbtn, k === draft.pages.length - 1 && { opacity: 0.3 }]} accessibilityLabel={`Move page ${k + 1} down`}><Text style={styles.pbtnText}>↓</Text></Pressable>
               <Pressable onPress={() => removePage(k)} hitSlop={6} style={styles.pbtn} accessibilityLabel={`Delete page ${k + 1}`}><Text style={styles.pbtnText}>✕</Text></Pressable>
+              </View>
+              </View>
             </View>
           ))}
         </ScrollView>
@@ -303,7 +307,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             </View>
           </View>
         ) : (
-          <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} hitSlop={6}><Text style={styles.deleteLink}>Delete this story…</Text></Pressable>
+          <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} hitSlop={6} style={{ marginBottom: 18 }}><Text style={styles.deleteLink}>Delete this story</Text></Pressable>
         )}
       </Panel>
       {editing ? (
@@ -376,12 +380,12 @@ const styles = StyleSheet.create({
   sub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 12, marginTop: 2 },
   btn: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, paddingHorizontal: 3 },
   finish: { backgroundColor: colors.green, paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' }, // a solid green pill
-  prow: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#2a2a2a', padding: 12, borderWidth: 2, borderColor: 'transparent' },
+  prow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, backgroundColor: '#2a2a2a', padding: 12, borderWidth: 2, borderColor: 'transparent' },
   thumb: { width: 64, height: 64, backgroundColor: '#666', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   thumbNum: { color: colors.white, fontWeight: '700', fontFamily: fonts.ui },
-  prowTitle: { color: colors.white, fontWeight: '700', fontSize: 17, fontFamily: fonts.ui, marginBottom: 3 },
-  prowSub: { color: '#bbb', fontSize: 14, fontFamily: fonts.ui },
-  pbtn: { width: 40, height: 40, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
+  prowTitle: { color: colors.white, fontWeight: '700', fontSize: 17, fontFamily: fonts.ui },
+  prowSub: { color: '#bbb', fontSize: 14, fontWeight: '400', fontFamily: fonts.ui },
+  pbtn: { width: 36, height: 36, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
   pbtnText: { color: colors.white, fontWeight: '700', fontSize: 18 },
   deleteLink: { color: '#ff6b6b', fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
   warn: { color: '#e6e6e6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 21 },
