@@ -3,7 +3,8 @@
 //
 // When the app opens, the book is closed: only one square shows, a brown cover with a dog-ear.
 // Turning it (tap, or swipe up / sideways) opens the cover over the spine like a real book, and its
-// inside (also brown) lands in the picture square. Tapping or swiping the open cover closes it again;
+// inside (also brown) lands in the picture square. The cover can also be dragged with a finger and
+// follows it the whole way. Tapping or dragging the open cover closes it again;
 // only My Library or the Book Store take you to another screen.
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
@@ -74,30 +75,45 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
   const [isOpen, setIsOpen] = useState(!closed);
   const openNow = useRef(!closed);
   const busy = useRef(false);
-  const open = () => {
-    if (busy.current || openNow.current) return;
+  const geo = useRef({ side: 300, wide: false }); // the square size and direction, kept for dragging
+  // Turn the cover the rest of the way: to 1 (open) or 0 (shut), from wherever it is now.
+  const settle = (target, from) => {
     busy.current = true;
-    setOpening(true);
-    playSound('coverOpen');
-    Animated.timing(p, { toValue: 1, duration: 1200, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => {
-      busy.current = false; openNow.current = true; setIsOpen(true); onOpened && onOpened();
+    const wasOpen = openNow.current;
+    if (target === 1 && !wasOpen) playSound('coverOpen');
+    if (target === 0 && wasOpen) playSound('coverClose');
+    if (target === 0) { openNow.current = false; setIsOpen(false); }
+    const left = Math.abs(target - from);
+    Animated.timing(p, { toValue: target, duration: Math.max(180, (target ? 1200 : 1000) * left), easing: left > 0.9 ? Easing.inOut(Easing.cubic) : Easing.out(Easing.cubic), useNativeDriver: true }).start(() => {
+      busy.current = false;
+      if (target === 1) { openNow.current = true; setIsOpen(true); if (!wasOpen) onOpened && onOpened(); }
+      else { setOpening(false); if (wasOpen) onClosed && onClosed(); }
     });
   };
-  // the open cover can be turned back again (tap it, or swipe it down / to the right), like a page
-  const close = () => {
-    if (busy.current || !openNow.current) return;
-    busy.current = true;
-    openNow.current = false; setIsOpen(false);
-    playSound('coverClose');
-    Animated.timing(p, { toValue: 0, duration: 1000, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => {
-      busy.current = false; setOpening(false); onClosed && onClosed();
-    });
-  };
+  const open = () => { if (busy.current || openNow.current) return; setOpening(true); settle(1, 0); };
+  // the open cover can be turned back again (tap it, or drag it down / to the right), like a page
+  const close = () => { if (busy.current || !openNow.current) return; settle(0, 1); };
+  // Dragging: the cover follows the finger the whole way (up / to the left opens it, down / to the
+  // right closes it); let go past halfway and it falls open, otherwise it settles back shut.
+  const drag = useRef({ start: 0, v: 0 });
   const swipe = useRef(PanResponder.create({
-    onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 12 || Math.abs(g.dy) > 12,
-    onPanResponderRelease: (_, g) => {
-      if (openNow.current) { if (g.dy > 30 || g.dx > 30) close(); } else if (g.dy < -30 || g.dx < -30) open();
+    onMoveShouldSetPanResponder: (_, g) => !busy.current && (Math.abs(g.dx) > 8 || Math.abs(g.dy) > 8),
+    onPanResponderGrant: () => { drag.current.start = openNow.current ? 1 : 0; drag.current.v = drag.current.start; setOpening(true); },
+    onPanResponderMove: (_, g) => {
+      const { side, wide } = geo.current;
+      const d = wide ? -g.dx : -g.dy; // towards open
+      const v = Math.max(0, Math.min(1, drag.current.start + d / (side * 1.6)));
+      drag.current.v = v; p.setValue(v);
     },
+    onPanResponderRelease: (_, g) => {
+      const { wide } = geo.current;
+      const fling = wide ? -g.vx : -g.vy; // a quick flick decides too
+      const v = drag.current.v;
+      const target = v + fling * 0.25 > 0.5 ? 1 : 0;
+      if (target === 0 && !openNow.current && v === 0) { setOpening(false); return; }
+      settle(target, v);
+    },
+    onPanResponderTerminate: () => settle(drag.current.v > 0.5 ? 1 : 0, drag.current.v),
   })).current;
 
   return (
@@ -105,6 +121,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
     <BookFrame bare barMin={u * 17} reserve={startRoom(winW, winH)} bar={(L) => <Bar u={u} vertical={L.wide}><Burger u={u} onPress={openMenu} /></Bar>}>
       {({ side, wide }) => {
         const k = side / 100; // sizes inside the book scale with the squares
+        geo.current = { side, wide };
         // where the two squares sit: picture first (top, or left when sideways), then the words
         const at1 = { position: 'absolute', left: 0, top: 0, width: side, height: side };
         const at2 = wide ? { position: 'absolute', left: side, top: 0, width: side, height: side } : { position: 'absolute', left: 0, top: side, width: side, height: side };
@@ -132,7 +149,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
               <Spine wide={wide} />
               {/* the two items as one block, centred in the page */}
               <View style={{ gap: k * 8 }}>
-                <MenuItem u={k} icon={TILE_LIBRARY} title="My Library" sub="Find and read your books" onPress={() => goTo('library')} />
+                <MenuItem u={k} icon={TILE_LIBRARY} title="My Library" sub={"Find and read\nyour books"} onPress={() => goTo('library')} />
                 <MenuItem u={k} icon={TILE_STORE} title="Book Store" sub="Discover and buy new books" onPress={() => goTo('store')} />
               </View>
             </View>
