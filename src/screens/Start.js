@@ -34,14 +34,14 @@ const TILE_STORE = require('../../assets/tile-store.png');
 
 function MenuItem({ u, icon, title, sub, onPress }) {
   return (
-    <Pressable onPress={onPress} accessibilityRole="button" style={{ flexDirection: 'row', gap: u * 9 }}>
+    <Pressable onPress={onPress} accessibilityRole="button" style={{ flexDirection: 'row', alignItems: 'center', gap: u * 9 }}>
       {/* the icon: a stitched felt tile (Jörg's), with a slight drop shadow */}
       <View style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.35, shadowRadius: 4, elevation: 4 }}>
         <Image source={icon} resizeMode="contain" style={{ width: u * 19, height: u * 33 }} />
       </View>
       <View style={{ width: u * 54 }}>
         {/* the typewriter font, sized with the notebook so it always fits on its page (small phones too) */}
-        <Text style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.min(20, u * 7.4), lineHeight: Math.min(24, u * 8.9), color: colors.ink, marginBottom: u * 2 }}>{title}</Text>
+        <Text style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.min(17, u * 6.4), lineHeight: Math.min(21, u * 7.9), color: colors.ink, marginBottom: u * 2 }}>{title}</Text>
         <Text style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.min(14, u * 5.1), lineHeight: Math.min(18, u * 6.6), color: colors.ink }}>{sub}</Text>
       </View>
     </Pressable>
