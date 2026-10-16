@@ -180,7 +180,7 @@ export function Store({ u, openStory, openMenu }) {
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <Band color={colors.blue} felt="store" title="Book Store" sub="Discover and buy new books" />
-      <ScrollView contentContainerStyle={{ paddingTop: 42, paddingBottom: 24, gap: 30 }}
+      <ScrollView contentContainerStyle={{ paddingTop: 46, paddingBottom: 24, gap: 30 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.white} />}>
         {/* laid out like My Library: whole covers in a grid, nothing cut off, no sideways scrolling */}
         {[...(featured ? [{ id: 'featured', title: 'Featured', books: [featured] }] : []), ...rows].map((sh) => (
