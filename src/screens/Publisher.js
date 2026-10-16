@@ -321,11 +321,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <Pressable onPress={openWords} accessibilityRole="button" accessibilityLabel={`Words for page ${i + 1}`} ref={wordsRef} collapsable={false} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>{/* the whole words square opens the editor */}
           {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
           <Spine wide={wide} />
-          <Text style={[styles.addText, { marginTop: side * 0.04 }]}>Add Text</Text>
           {/* Tapping the words opens a big editor (just the words page, above the keyboard). */}
           <View style={{ flex: 1, justifyContent: 'center', minHeight: 0 }}>
             <Text style={[styles.input, { fontFamily: 'SpecialElite_400Regular' }, !page.text && { color: '#666' }]} numberOfLines={7}>
-              {page.text || 'Tap to type the words for this page. Two or three sentences reads best.'}
+              {page.text || 'To add text, tap here. Two or three sentences reads best.'}
             </Text>
           </View>
         </Pressable>
@@ -683,7 +682,7 @@ const styles = StyleSheet.create({
   addImage: { color: colors.white, fontWeight: '700', fontSize: 22, fontFamily: fonts.ui, marginTop: 4 },
   artBtns: { position: 'absolute', left: 12, bottom: 12, flexDirection: 'row', gap: 8 },
   chip: { backgroundColor: 'rgba(0,0,0,0.6)', color: colors.white, fontWeight: '700', fontSize: 15, paddingHorizontal: 14, paddingVertical: 8, overflow: 'hidden', fontFamily: fonts.ui },
-  textBox: { justifyContent: 'flex-start' }, // "Add Text" near the top of the words square, the words centred below it
+  textBox: { justifyContent: 'flex-start' }, // the words (or 'To add text, tap here…') centred in the square
   addText: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.ink, marginBottom: 6, textAlign: 'center' }, // always inside the words square
   input: { fontFamily: fonts.story, fontSize: 21, lineHeight: 34, color: colors.ink, textAlign: 'center', textAlignVertical: 'center', padding: 0, minHeight: 68 },
   title: { color: colors.white, fontFamily: 'EBGaramond_700Bold', fontSize: 17, padding: 0 }, // the book serif, bold
