@@ -166,6 +166,11 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   useEffect(() => {
     Animated.timing(barFade, { toValue: titleBox || coverOpen ? 0 : 1, duration: titleBox || coverOpen ? 450 : 600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start();
   }, [titleBox, coverOpen]); // and while the Cover Editor is open (its own Done is the way out)
+  // While the Cover Editor is open the whole bar goes quiet: the menu, the title and the page count fade out too.
+  const coverFade = useRef(new Animated.Value(1)).current;
+  useEffect(() => {
+    Animated.timing(coverFade, { toValue: coverOpen ? 0 : 1, duration: coverOpen ? 450 : 600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start();
+  }, [coverOpen]);
   const [coverTip, setCoverTip] = useState(false); // the 'Tap the title…' bubble
   useEffect(() => {
     if (!(coverOpen && coverTitling)) { setCoverTip(false); return undefined; }
@@ -367,11 +372,11 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <View style={{ width: BL.rightW, backgroundColor: colors.bar, flexDirection: 'row', justifyContent: 'flex-end' }}>
           <Bar u={u} vertical>
             <View style={{ alignItems: 'center', gap: 18 }}>
-              <Burger u={u} onPress={openMenu} />
+              <Animated.View pointerEvents={coverOpen ? 'none' : 'auto'} style={{ opacity: coverFade }}><Burger u={u} onPress={openMenu} /></Animated.View>
             </View>
             <View style={{ alignItems: 'center', gap: 18 }}>
               {/* the page count sits above Pages, with plenty of room between them */}
-              <Text style={[styles.sub, { textAlign: 'center', marginBottom: 22 }]}>{i + 1}/{draft.pages.length}</Text>
+              <Animated.Text style={[styles.sub, { textAlign: 'center', marginBottom: 22, opacity: coverFade }]}>{i + 1}/{draft.pages.length}</Animated.Text>
               <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ alignItems: 'center', gap: 18, opacity: barFade }}>
               <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
               <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><View style={styles.finish}><Text style={styles.btn}>Finish</Text></View></Pressable>
@@ -382,13 +387,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       ) : (
       <View style={{ backgroundColor: colors.bar, paddingTop: spare / 2 }}>
       <Bar u={u}>
-        <Burger u={u} onPress={openMenu} />
-        <View style={{ flex: 1, minWidth: 0, paddingLeft: 12 }}>
+        <Animated.View pointerEvents={coverOpen ? 'none' : 'auto'} style={{ opacity: coverFade }}><Burger u={u} onPress={openMenu} /></Animated.View>
+        <Animated.View pointerEvents={coverOpen ? 'none' : 'auto'} style={{ flex: 1, minWidth: 0, paddingLeft: 12, opacity: coverFade }}>
           <Pressable onPress={() => setTitleBox(true)} accessibilityRole="button" accessibilityLabel="Book title">
             <Text numberOfLines={1} style={[styles.title, !draft.title.trim() && { color: 'rgba(255,255,255,0.75)' }]}>{draft.title.trim() || 'Tap to add title'}</Text>
           </Pressable>
           <Text style={styles.sub}>Page {i + 1} of {draft.pages.length} · {saved ? 'Saved' : 'Saving…'}</Text>
-        </View>
+        </Animated.View>
         <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ flexDirection: 'row', alignItems: 'center', gap: 14, opacity: barFade }}>
         <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
         <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><View style={styles.finish}><Text style={styles.btn}>Finish</Text></View></Pressable>
