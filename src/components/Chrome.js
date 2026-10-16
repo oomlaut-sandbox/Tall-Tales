@@ -140,11 +140,30 @@ const HEAD_ARROW_WIDE = 14 + 22; // sideways head: top padding + half the 44-poi
 // Sideways: it slides out to the LEFT from the right-hand bar, its top level with the menu stripes.
 // It is clipped at the bar's edge, so it looks as if it comes out of (and goes back into) the bar.
 // bottom: the bottom bar's height (upright). inset: the right bar's width (sideways).
+// Only one menu is ever out at a time: opening one sends any other open menu back into the bar first,
+// then this one slides out. (Pop-up boxes are separate and can float over anything.)
+const openPanels = new Map(); // id -> close function
+let panelSeq = 0;
 export function Panel({ open, title, onClose, bottom, inset = 0, children, portraitWidth }) {
   const x = useRef(new Animated.Value(open ? 0 : 1)).current;
+  const id = useRef(++panelSeq).current;
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
   useEffect(() => {
-    Animated.timing(x, { toValue: open ? 0 : 1, duration: 300, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+    let t;
+    if (open) {
+      const others = [...openPanels.entries()].filter(([k]) => k !== id);
+      others.forEach(([, close]) => close && close());
+      openPanels.set(id, () => closeRef.current && closeRef.current());
+      const go = () => Animated.timing(x, { toValue: 0, duration: 300, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+      if (others.length) t = setTimeout(go, 300); else go(); // wait for the other menu to slide away
+    } else {
+      openPanels.delete(id);
+      Animated.timing(x, { toValue: 1, duration: 300, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+    }
+    return () => clearTimeout(t);
   }, [open]);
+  useEffect(() => () => { openPanels.delete(id); }, []);
   const { height: winH, width: winW } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   // Sideways (wider than tall) the menu is wide and short: its items sit in two columns.
