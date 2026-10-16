@@ -18,7 +18,16 @@ import { playSound } from '../sound';
 
 
 export const COVER_BROWN = '#7c5438'; // a touch lighter
-const LEATHER = require('../../assets/leather.jpg'); // Jörg's brown leather, outside and inside the cover
+const LEATHER = require('../../assets/leather.jpg'); // Jörg's brown leather (no longer on the start book; kept)
+// Jörg's stitched leather cover: straight along the spine, slightly rounded corners on the opening side.
+// The sideways version is the same picture turned so the spine runs down its left side.
+const COVER = require('../../assets/leather-cover.jpg');
+const COVER_WIDE = require('../../assets/leather-cover-wide.jpg');
+// The rounded corners, as a share of the square: tiny along the spine, larger at the far edge (from the picture).
+const R_SPINE = 0.012, R_EDGE = 0.102;
+const corners = (side, wide) => (wide
+  ? { borderTopLeftRadius: side * R_SPINE, borderBottomLeftRadius: side * R_SPINE, borderTopRightRadius: side * R_EDGE, borderBottomRightRadius: side * R_EDGE }
+  : { borderTopLeftRadius: side * R_SPINE, borderTopRightRadius: side * R_SPINE, borderBottomLeftRadius: side * R_EDGE, borderBottomRightRadius: side * R_EDGE });
 
 const TILE_LIBRARY = require('../../assets/tile-library.png');
 const TILE_STORE = require('../../assets/tile-store.png');
@@ -106,13 +115,8 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
         // where the two squares sit: picture first (top, or left when sideways), then the words
         const at1 = { position: 'absolute', left: 0, top: 0, width: side, height: side };
         const at2 = wide ? { position: 'absolute', left: side, top: 0, width: side, height: side } : { position: 'absolute', left: 0, top: side, width: side, height: side };
-        // the inside of the cover: the same brown as the outside (Jörg may add texture later)
-        const pebbles = (
-          <View style={{ width: side, height: side, backgroundColor: COVER_BROWN, overflow: 'hidden' }} accessibilityLabel="Oomlaut Reader">
-            <Image source={LEATHER} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
-            {!wide ? <Fade edge="bottom" size={Math.round(side * 0.1)} max={0.22} /> : null}
-          </View>
-        );
+        const round = corners(side, wide);
+        const coverImg = <Image source={wide ? COVER_WIDE : COVER} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />;
         // the cover turns over the spine: up when upright, to the left when sideways
         const turn = p.interpolate({ inputRange: [0, 1], outputRange: wide ? ['0deg', '-180deg'] : ['0deg', '180deg'] });
         const frontOp = p.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [1, 1, 0, 0] });
@@ -124,8 +128,9 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
         return (
           <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: wide ? side * 2 : side, height: wide ? side : side * 2 }}>
             {/* the words square: the menu */}
-            <View style={[at2, styles.page, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.paper }]}>
-              <Felt opacity={0.7} />
+            {/* the menu page has the same rounded corners as the cover that lies on it */}
+            <View style={[at2, styles.page, round, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.paper }]}>
+              <View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden' }]}><Felt opacity={0.7} /></View>
               {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
               <Spine wide={wide} />
               {/* the two items as one block, centred in the page */}
@@ -136,14 +141,15 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
             </View>
             {/* the cover */}
             {(
-              <Animated.View {...swipe.panHandlers} pointerEvents={isOpen ? 'none' : 'auto'} style={[at2, styles.page, { zIndex: 8 }, leaf]}>
-                <Animated.View style={[StyleSheet.absoluteFill, { opacity: frontOp, backgroundColor: COVER_BROWN }]}>
-                  <Image source={LEATHER} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
+              // the cover keeps its shape (and drop shadow) while it turns: the rounded corners swing over to the far side
+              <Animated.View {...swipe.panHandlers} pointerEvents={isOpen ? 'none' : 'auto'} style={[at2, styles.page, round, { zIndex: 8, backgroundColor: COVER_BROWN }, leaf]}>
+                <Animated.View style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: frontOp }]}>
+                  {coverImg}
                   <Pressable style={StyleSheet.absoluteFill} onPress={open} accessibilityRole="button" accessibilityLabel="Open the book" />
                 </Animated.View>
-                {/* inside of the cover: the pebbles, mirrored so they read right once turned over */}
-                <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: backOp, transform: [wide ? { scaleX: -1 } : { scaleY: -1 }] }]}>{pebbles}</Animated.View>
-                <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: shade }]} />
+                {/* inside of the cover: the same leather, seen from the other side once it's turned over */}
+                <Animated.View pointerEvents="none" accessibilityLabel="Oomlaut Reader" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: backOp }]}>{coverImg}</Animated.View>
+                <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { backgroundColor: '#000', opacity: shade }]} />
               </Animated.View>
             )}
             {/* the open cover (picture square): tap or swipe it to close the book again */}
