@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { BOOK_FONTS, bookFont, colors, fonts } from '../theme';
-import { Bar, Burger, DogEar, Panel, PageShape } from '../components/Chrome';
+import { Bar, Burger, DogEar, Panel, PageShape, Toast } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT } from '../look';
@@ -148,6 +148,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   useEffect(() => {
     Animated.timing(barFade, { toValue: titleBox ? 0 : 1, duration: titleBox ? 450 : 600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start();
   }, [titleBox]);
+  const [coverTip, setCoverTip] = useState(false); // the 'Tap the title…' bubble
+  useEffect(() => {
+    if (!(coverOpen && coverTitling)) { setCoverTip(false); return undefined; }
+    setCoverTip(true);
+    const t = setTimeout(() => setCoverTip(false), 5000);
+    return () => clearTimeout(t);
+  }, [coverOpen, coverTitling]);
   const [coverTool, setCoverTool] = useState(null); // 'color' | 'font' palette open under the tools
   const cover = draft.cover || null;
   const setCover = (c) => setDraft((d) => ({ ...d, cover: c }));
@@ -530,19 +537,21 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             })()}
             {/* under the cover: the title tools (size, colour, font, author), centred, with the hint; then Done */}
             {coverTitling && cover && cover.title ? (
-              <View style={{ width: winW - 2 * GAP, alignItems: 'center' }}>
+              <View style={{ width: winW - 2 * GAP }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <Pressable onPress={() => setCoverTitle({ size: Math.max(0.05, cover.title.size - 0.015) })} style={styles.sizeBtn} accessibilityLabel="Smaller title"><Text style={[styles.donePillText, { fontSize: 14 }]}>A</Text></Pressable>
                   <Pressable onPress={() => setCoverTitle({ size: Math.min(0.24, cover.title.size + 0.015) })} style={styles.sizeBtn} accessibilityLabel="Bigger title"><Text style={[styles.donePillText, { fontSize: 22 }]}>A</Text></Pressable>
-                  {/* colour: a grey circle holding a little dot of the title's colour */}
+                  {/* colour: a little colour wheel, the title's colour in its middle */}
                   <Pressable onPress={() => { setCoverTool((x) => (x === 'color' ? null : 'color')); }} style={[styles.sizeBtn, coverTool === 'color' && styles.toolOn]} accessibilityLabel="Title colour">
-                    <View style={{ width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: colors.white, backgroundColor: cover.title.color || '#ffffff' }} />
+                    <ColorWheel color={cover.title.color || '#ffffff'} />
                   </Pressable>
                   {/* font */}
                   <Pressable onPress={() => { setCoverTool((x) => (x === 'font' ? null : 'font')); }} style={[styles.sizeBtn, coverTool === 'font' && styles.toolOn]} accessibilityLabel="Title font">
                     <Text style={[styles.donePillText, { fontSize: 16, fontFamily: bookFont(cover.title.font || 'serif').bold || bookFont(cover.title.font || 'serif').family }]}>Aa</Text>
                   </Pressable>
-                  {/* the author / illustrator on the cover too: only if they want it (and gave a name) */}
+                </View>
+                  {/* the author / illustrator on the cover too: only if they want it (and gave a name); on the right edge, apart from the tools */}
                   {creditsLine(draft.writer, draft.artist) ? (
                     <Pressable onPress={() => setCoverTitle({ byline: cover.title.byline ? '' : creditsLine(draft.writer, draft.artist).replace(/\.$/, '') })}
                       style={[styles.authorBtn, cover.title.byline ? { backgroundColor: colors.green } : null]} accessibilityRole="button" accessibilityState={{ selected: !!cover.title.byline }}>
@@ -567,13 +576,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                     ))}
                   </View>
                 ) : null}
-                <Text style={[styles.coverHint, { marginTop: 10, marginLeft: 0, textAlign: 'center' }]}>Tap the title to type · drag it anywhere on the cover</Text>
               </View>
             ) : null}
-            <View style={{ width: winW - 2 * GAP, alignItems: 'flex-end', marginTop: 12 }}>
-              <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={styles.donePill}><Text style={styles.donePillText}>Done</Text></Pressable>
-            </View>
           </View>
+          {/* the hint is a speech bubble near the bottom that goes away after a while (tap it to close it sooner) */}
+          {coverTitling && coverTip ? <Toast message="Tap the title to type. Drag it anywhere on the cover." area={{ left: GAP - 6, right: GAP - 6, bottom: insets.bottom + 74 }} onDismiss={() => setCoverTip(false)} /> : null}
+          {/* Done: bottom right, lined up with the cover's right edge */}
+          <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { position: 'absolute', right: GAP, bottom: insets.bottom + 18, marginBottom: 0 }]}><Text style={styles.donePillText}>Done</Text></Pressable>
           {coverAsk ? (
             <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
               <View style={styles.choice}>
@@ -617,17 +626,31 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   );
 }
 
+// The colour button: a little colour wheel (the spectrum in 12 slices), with a dot of the title's colour in the middle.
+const WHEEL = ['#ff3b30', '#ff8a00', '#ffcc00', '#c6e000', '#4cd964', '#00c7a0', '#00c3ff', '#2f7bff', '#5856d6', '#a14bd9', '#ff2d92', '#ff3b6b'];
+function ColorWheel({ size = 26, color }) {
+  const r = size / 2, w = Math.ceil(size * 0.3);
+  return (
+    <View style={{ width: size, height: size, borderRadius: r, overflow: 'hidden', borderWidth: 1.5, borderColor: '#ffffff' }}>
+      {WHEEL.map((c, k) => (
+        <View key={c} style={{ position: 'absolute', left: r - w / 2 - 1.5, top: -1.5, width: w, height: r, backgroundColor: c, transformOrigin: 'bottom', transform: [{ rotate: `${k * 30}deg` }] }} />
+      ))}
+      <View style={{ position: 'absolute', left: r - 6.5, top: r - 6.5, width: 10, height: 10, borderRadius: 5, borderWidth: 1.5, borderColor: '#ffffff', backgroundColor: color }} />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   editor: { alignItems: 'center' },
   editorHead: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 30, paddingBottom: 12 },
   editorTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
   coverSquare: { backgroundColor: '#7d7d7d', overflow: 'hidden', marginBottom: 14, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10 },
   toolOn: { backgroundColor: colors.green },
-  swatches: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginTop: 12, maxWidth: 330 },
+  swatches: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', gap: 8, marginTop: 12 },
   swatch: { width: 30, height: 30, borderRadius: 15, borderWidth: 2, borderColor: 'rgba(255,255,255,0.35)' },
   swatchOn: { borderColor: colors.white, borderWidth: 3, transform: [{ scale: 1.12 }] },
   fontChip: { height: 36, borderRadius: 18, paddingHorizontal: 14, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
-  authorBtn: { height: 40, borderRadius: 20, paddingHorizontal: 16, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center', marginLeft: 4 },
+  authorBtn: { height: 40, borderRadius: 20, paddingHorizontal: 16, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   sizeBtn: { width: 44, height: 40, borderRadius: 20, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   coverHint: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 13, marginLeft: 4 },
   field: { backgroundColor: '#2e2e2e', color: colors.white, fontFamily: fonts.ui, fontSize: 17, height: 48, borderRadius: 14, paddingHorizontal: 14 },
