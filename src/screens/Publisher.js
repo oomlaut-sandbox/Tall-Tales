@@ -18,7 +18,7 @@ import { deleteUserStory, dropPicture, keepPicture, newPageId, saveUserStory } f
 import StoryGuide from '../components/StoryGuide';
 import ParentGate from '../components/ParentGate';
 import { printStory, shareStoryPdf } from '../pdf';
-import { isStoreAdmin, publishToStore } from '../storeAdmin';
+import { publishToStore } from '../storeAdmin';
 import { loadJSON, saveJSON } from '../storage';
 
 const MAX_PX = 1600;
@@ -39,7 +39,7 @@ export function draftFrom(story) {
   };
 }
 
-export default function Publisher({ u, initial, fontKey, openMenu, toast, onChange, onDone }) {
+export default function Publisher({ u, initial, fontKey, openMenu, toast, onChange, onDone, storeAdmin }) {
   const insets = useSafeAreaInsets();
   const [draft, setDraft] = useState(initial);
   const [i, setI] = useState(0);
@@ -47,9 +47,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [pdfChoice, setPdfChoice] = useState(null); // 'share' | 'print' | null: choosing a layout
   // the store owner can send a finished book to the Book Store (see storeAdmin.js)
-  const [admin, setAdmin] = useState(false);
+  const admin = !!storeAdmin; // the app checks this once, for the menu and here
   const [publishing, setPublishing] = useState(false);
-  useEffect(() => { isStoreAdmin().then(setAdmin); }, []);
   const publish = async () => {
     if (publishing) return;
     setPublishing(true); setPagesOpen(false);
