@@ -113,7 +113,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
         {stories.map((s) => (
           <Tile key={s.id} u={u} cover={s.pages[0] && s.pages[0].image} title={s.title}
             selecting={selecting} selected={picked.includes(s.id)}
-            sub={s.mine ? `${s.pages.length} page${s.pages.length === 1 ? '' : 's'} · made by you${selecting ? '' : ' · hold to edit'}` : `${s.author ? `by ${s.author} · ` : ''}${s.pages.length * 2} pages · read-along`}
+            sub={s.mine ? `${s.pages.length * 2} pages · made by you${selecting ? '' : ' · hold to edit'}` : `${s.author ? `by ${s.author} · ` : ''}${s.pages.length * 2} pages · read-along`}
             onPress={(rect) => (selecting ? toggle(s.id) : openStory(s, rect))}
             onLongPress={!selecting && s.mine ? () => onEdit(s) : undefined} />
         ))}
@@ -307,7 +307,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
         </Animated.View>
         {/* close: a dog-ear in the top-right corner, folded like a page corner (it replaces the ×) */}
         <Animated.View style={{ position: 'absolute', right: 0, top: 0, width: 56, height: 56, opacity: fade, transform: [{ scaleY: -1 }] }}>
-          <DogEar u={u} onPress={() => close()} label="Close" />
+          <DogEar u={u} onPress={() => close()} label="Close" under="#4a4a4a" />{/* white fold over a dark grey corner, so it shows against the dark background */}
         </Animated.View>
       </View>
       {/* the cover, flying from its tile into the card's top-left corner */}
