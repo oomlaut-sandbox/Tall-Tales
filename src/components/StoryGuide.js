@@ -1,7 +1,6 @@
 // Quick guide for making a story. Shown the first time, and from the "?" button.
 import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import FeltFill from './FeltFill';
 import { BlurView } from 'expo-blur';
 import { colors, fonts } from '../theme';
 
@@ -36,9 +35,8 @@ export default function StoryGuide({ visible, onClose, area }) {
         <View style={styles.row}>
           <Pressable onPress={onClose} hitSlop={8}><Text style={styles.skip}>{last ? '' : 'Skip'}</Text></Pressable>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            {step > 0 ? <Pressable onPress={() => setStep(step - 1)} style={styles.btn}><FeltFill color="grey" /><Text style={styles.btnText}>Back</Text></Pressable> : null}
+            {step > 0 ? <Pressable onPress={() => setStep(step - 1)} style={styles.btn}><Text style={styles.btnText}>Back</Text></Pressable> : null}
             <Pressable onPress={() => (last ? onClose() : setStep(step + 1))} style={[styles.btn, styles.btnMain]}>
-              <FeltFill color="red" />
               <Text style={styles.btnText}>{last ? 'Start making' : 'Next'}</Text>
             </Pressable>
           </View>

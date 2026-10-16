@@ -3,7 +3,6 @@
 // or to delete the whole story.
 import React, { useEffect, useRef, useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
-import FeltFill from '../components/FeltFill';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -237,7 +236,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 <Text style={[styles.btn, { fontSize: 22 }]}>‹</Text>
               </Pressable>
               <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
-              <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><View style={styles.finish}><FeltFill color="green" /><Text style={styles.btn}>Finish</Text></View></Pressable>
+              <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><View style={styles.finish}><Text style={styles.btn}>Finish</Text></View></Pressable>
             </View>
           </Bar>
         </View>
@@ -253,7 +252,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <Text style={[styles.btn, { fontSize: 22 }]}>‹</Text>
         </Pressable>
         <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
-        <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><View style={styles.finish}><FeltFill color="green" /><Text style={styles.btn}>Finish</Text></View></Pressable>
+        <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><View style={styles.finish}><Text style={styles.btn}>Finish</Text></View></Pressable>
       </Bar>
       </View>
       )}
@@ -278,19 +277,19 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         {pdfChoice ? (
           <View style={{ gap: 10 }}>
             <Text style={styles.warn}>{pdfChoice === 'print' ? 'Choose a layout to print:' : 'Choose a layout for your PDF:'}</Text>
-            <Pressable onPress={() => { setGateFor({ mode: pdfChoice, layout: 'stacked' }); setPdfChoice(null); setPagesOpen(false); }} style={styles.wide}><FeltFill color="grey" />
+            <Pressable onPress={() => { setGateFor({ mode: pdfChoice, layout: 'stacked' }); setPdfChoice(null); setPagesOpen(false); }} style={styles.wide}>
               <Text style={styles.wideText}>Picture above the words</Text>
             </Pressable>
-            <Pressable onPress={() => { setGateFor({ mode: pdfChoice, layout: 'spreads' }); setPdfChoice(null); setPagesOpen(false); }} style={styles.wide}><FeltFill color="grey" />
+            <Pressable onPress={() => { setGateFor({ mode: pdfChoice, layout: 'spreads' }); setPdfChoice(null); setPagesOpen(false); }} style={styles.wide}>
               <Text style={styles.wideText}>Book spreads (picture, then words)</Text>
             </Pressable>
           </View>
         ) : (
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('share'); }} disabled={making} style={[styles.wide, { flex: 1, backgroundColor: colors.bar }]}><FeltFill color="dark" />
+            <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('share'); }} disabled={making} style={[styles.wide, { flex: 1, backgroundColor: colors.bar }]}>
               <Text style={styles.wideText}>{making ? 'Working…' : 'Share as PDF…'}</Text>
             </Pressable>
-            <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('print'); }} disabled={making} style={[styles.wide, { flex: 1, backgroundColor: colors.bar }]}><FeltFill color="dark" />
+            <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('print'); }} disabled={making} style={[styles.wide, { flex: 1, backgroundColor: colors.bar }]}>
               <Text style={styles.wideText}>Print…</Text>
             </Pressable>
           </View>
@@ -299,8 +298,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <View style={{ gap: 10 }}>
             <Text style={styles.warn}>Delete “{draft.title}”, its pictures and any voice recordings? This can’t be undone.</Text>
             <View style={{ flexDirection: 'row', gap: 10 }}>
-              <Pressable onPress={deleteStory} style={[styles.wide, { backgroundColor: colors.highlight }]}><FeltFill color="red" /><Text style={styles.wideText}>Delete story</Text></Pressable>
-              <Pressable onPress={() => setConfirmDelete(false)} style={styles.wide}><FeltFill color="grey" /><Text style={styles.wideText}>Keep it</Text></Pressable>
+              <Pressable onPress={deleteStory} style={[styles.wide, { backgroundColor: colors.highlight }]}><Text style={styles.wideText}>Delete story</Text></Pressable>
+              <Pressable onPress={() => setConfirmDelete(false)} style={styles.wide}><Text style={styles.wideText}>Keep it</Text></Pressable>
             </View>
           </View>
         ) : (
@@ -332,8 +331,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
             <Text style={styles.choiceTitle}>Page {i + 1} is done.</Text>
-            <Pressable onPress={addPage} style={styles.choiceBtn} accessibilityRole="button"><FeltFill color="grey" /><Text style={styles.choiceBtnText}>Add another page</Text></Pressable>
-            <Pressable onPress={() => { setPageDone(false); finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green }]} accessibilityRole="button"><FeltFill color="green" /><Text style={styles.choiceBtnText}>Finish and save book</Text></Pressable>
+            <Pressable onPress={addPage} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Add another page</Text></Pressable>
+            <Pressable onPress={() => { setPageDone(false); finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Finish and save book</Text></Pressable>
             <Pressable onPress={() => setPageDone(false)} hitSlop={8}><Text style={styles.choiceLink}>Keep working on this page</Text></Pressable>
           </View>
         </View>
@@ -376,7 +375,7 @@ const styles = StyleSheet.create({
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, padding: 0 },
   sub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 12, marginTop: 2 },
   btn: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, paddingHorizontal: 3 },
-  finish: { backgroundColor: colors.green, paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' }, // a green felt pill
+  finish: { backgroundColor: colors.green, paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' }, // a solid green pill
   prow: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#2a2a2a', padding: 12, borderWidth: 2, borderColor: 'transparent' },
   thumb: { width: 64, height: 64, backgroundColor: '#666', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   thumbNum: { color: colors.white, fontWeight: '700', fontFamily: fonts.ui },

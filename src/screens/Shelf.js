@@ -1,7 +1,6 @@
 // My Library and Book Store.
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import FeltFill from '../components/FeltFill';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { Felt, Stitch } from '../look';
@@ -132,8 +131,8 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
             {chosen.length > mineCount ? ' Built-in books can be brought back later.' : ''}
           </Text>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <Pressable onPress={() => setGate('delete')} style={[styles.actBtn, { backgroundColor: colors.highlight }]}><FeltFill color="red" /><Text style={styles.actText}>Delete</Text></Pressable>
-            <Pressable onPress={() => setConfirm(false)} style={[styles.actBtn, { backgroundColor: '#333' }]}><FeltFill color="dark" /><Text style={styles.actText}>Keep</Text></Pressable>
+            <Pressable onPress={() => setGate('delete')} style={[styles.actBtn, { backgroundColor: colors.highlight }]}><Text style={styles.actText}>Delete</Text></Pressable>
+            <Pressable onPress={() => setConfirm(false)} style={[styles.actBtn, { backgroundColor: '#333' }]}><Text style={styles.actText}>Keep</Text></Pressable>
           </View>
         </View>
       ) : null}
