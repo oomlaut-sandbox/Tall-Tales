@@ -60,11 +60,10 @@ function Band({ color, felt, dark, title, sub, action, onAction }) {
   return (
     <View style={{ backgroundColor: color, paddingTop: insets.top + 30, paddingBottom: 30, paddingHorizontal: 24 }}>{/* the title block centred top to bottom in the coloured band */}
       {felt ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT[felt]} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : <><Felt /><Stitch inset={7} /></>}
-      {/* the title block, with the action (Select / Cancel) centred beside the whole block */}
+      {/* the title alone (no subtitle), centred in the band, with Select / Cancel on the same line */}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: fg, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32 }}>{title}</Text>
-          <Text style={{ color: fg, fontFamily: fonts.ui, fontSize: 15, marginTop: 6, opacity: 0.9 }}>{sub}</Text>
+          <Text style={{ color: fg, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, lineHeight: 38 }}>{title}</Text>
         </View>
         {action ? (
           <Pressable onPress={onAction} hitSlop={10} accessibilityRole="button">
