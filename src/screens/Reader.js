@@ -400,7 +400,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     busy.current = true;
     if (st.current.recording && dir > 0) { await stopRec(true); pendingRec.current = st.current.idx + 1 < story.pages.length; }
     else if (!pendingRead.current) stopReading();
-    playSound('flick');
+    playSound('swish');
     await startFlip(dir);
     runFlip(dir > 0 ? 1 : 0, 900, () => endFlip(dir, true));
     return true;
@@ -477,7 +477,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       const keepGoing = st.current.idx + 1 < story.pages.length;
       stopRec(true).then(() => { pendingRec.current = keepGoing; });
     }
-    if (commit) playSound('peel');
+    if (commit) playSound('swish');
     const target = commit ? (d.dir > 0 ? 1 : 0) : (d.dir > 0 ? 0 : 1);
     runFlip(target, 240 + 420 * Math.abs(target - prog.current), () => endFlip(d.dir, commit));
   };
@@ -705,7 +705,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         <View style={styles.setting}>
           <Text style={styles.help}>Sound effects</Text>
           <Seg value={prefs.sound ? 'on' : 'off'} options={[['off', 'Off'], ['on', 'On']]}
-            onChange={(v) => { const on = v === 'on'; setPrefs((p) => ({ ...p, sound: on })); setEffects(on); if (on) playSound('flick'); }} />
+            onChange={(v) => { const on = v === 'on'; setPrefs((p) => ({ ...p, sound: on })); setEffects(on); if (on) playSound('swish'); }} />
         </View>
         {/* Print: two choices, each a little picture of the page */}
         <View style={styles.setting}>

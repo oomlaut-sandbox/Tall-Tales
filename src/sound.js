@@ -11,9 +11,10 @@ const sources = {
   setDown: require('../assets/sfx/book-set-down.mp3'),
   cardLift: require('../assets/sfx/card-lift.mp3'),
   tap: require('../assets/sfx/tap.mp3'),
+  swish: require('../assets/sfx/page-swish.mp3'), // the page turn: a soft paper swish
 };
 // how loud each one plays (they are evened out already; effects stay below the narrator)
-const LEVEL = { coverOpen: 0.7, coverClose: 0.6, peel: 0.9, flick: 0.55, slide: 0.45, setDown: 0.5, cardLift: 0.45, tap: 0.4 };
+const LEVEL = { coverOpen: 0.7, coverClose: 0.6, peel: 0.9, flick: 0.55, slide: 0.45, setDown: 0.5, cardLift: 0.45, tap: 0.4, swish: 0.6 };
 
 const players = {};
 let ready = false;
