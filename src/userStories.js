@@ -18,6 +18,7 @@ function fromSaved(s) {
     id: s.id,
     title: s.title,
     mine: true,
+    cover: s.cover && s.cover.uri ? s.cover : null, // made in the Cover Editor (picture and, if wanted, the title)
     pages: s.pages.map((p, i) => ({ pid: p.pid || `i${i}`, text: p.text || '', image: p.uri ? { uri: p.uri } : null, w: p.w || 1, h: p.h || 1 })),
   };
 }
@@ -41,7 +42,7 @@ export function saveUserStory(draft) {
     if (!pages.length) {
       if (i >= 0) list.splice(i, 1);
     } else {
-      const saved = { id: draft.id, title: draft.title.trim() || 'Untitled story', pages };
+      const saved = { id: draft.id, title: draft.title.trim() || 'Untitled story', pages, cover: draft.cover && draft.cover.uri ? draft.cover : null };
       if (i >= 0) list[i] = saved; else list.push(saved);
     }
     await saveJSON('stories', list);
@@ -54,7 +55,7 @@ export function deleteUserStory(id) {
   return serial(async () => {
     const list = await loadJSON('stories', []);
     const s = list.find((x) => x.id === id);
-    if (s) s.pages.forEach((p) => p.uri && deleteFile(p.uri));
+    if (s) { s.pages.forEach((p) => p.uri && deleteFile(p.uri)); if (s.cover && s.cover.uri) deleteFile(s.cover.uri); }
     const next = list.filter((x) => x.id !== id);
     await saveJSON('stories', next);
     await pruneRecordings(id, []);

@@ -7,6 +7,7 @@ import { DESK_FELT, Felt, IS_TABLET, Stitch } from '../look';
 import { Bar, BarMeta, Burger, DogEar, Panel, WithBar } from '../components/Chrome';
 import { accessLabel, bundledStory, cachedCatalog, coverFor, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
+import CoverArt from '../components/CoverArt';
 import { SHOWN_BOOKS, STORIES } from '../story';
 import { BlurView } from 'expo-blur';
 const AnimatedBlur = Animated.createAnimatedComponent(BlurView);
@@ -18,7 +19,7 @@ const TILE = { 2: 47, 3: 31, 4: 22.5 };
 const tileWidth = (w) => `${TILE[COLS(w)]}%`;
 const gridGap = (w) => { const n = COLS(w); return `${(100 - n * TILE[n]) / (n - 1)}%`; };
 
-function Tile({ u, cover, title, sub, onPress, onLongPress, plus, selecting, selected, badge, label, ear: showEar = true }) {
+function Tile({ u, cover, coverArt, title, sub, onPress, onLongPress, plus, selecting, selected, badge, label, ear: showEar = true }) {
   const { width: winW } = useWindowDimensions();
   const ear = u * 3;
   const coverRef = useRef(null);
@@ -33,13 +34,13 @@ function Tile({ u, cover, title, sub, onPress, onLongPress, plus, selecting, sel
       {/* a very subtle drop shadow under the square cover */}
       <View style={styles.tileShadow}>
       <View ref={coverRef} collapsable={false} style={{ aspectRatio: 1, backgroundColor: '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
-        {cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }} resizeMode="cover" /> : null}
+        {coverArt ? <CoverArt cover={coverArt} /> : cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }} resizeMode="cover" /> : null}
         {plus ? <Text style={{ color: colors.white, fontSize: 64, fontWeight: '300' }}>+</Text> : null}
         {/* a small dog-ear (My Library only; the Book Store covers have none) */}
         {showEar ? <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderLeftWidth: ear, borderBottomWidth: ear, borderLeftColor: 'transparent', borderBottomColor: colors.earUnder }} /> : null}
         {showEar ? <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderRightWidth: ear, borderTopWidth: ear, borderRightColor: 'transparent', borderTopColor: colors.white }} /> : null}
         {/* the same thin grey outline as the cover in the book details box */}
-        {cover ? <View pointerEvents="none" style={styles.coverLine} /> : null}
+        {cover || coverArt ? <View pointerEvents="none" style={styles.coverLine} /> : null}
         {badge ? <View style={styles.badgeAt}>{badge}</View> : null}
         {selecting ? (
           <View style={[styles.check, selected && styles.checkOn]} accessibilityLabel={selected ? 'Selected' : 'Not selected'}>
@@ -121,7 +122,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
       <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]}>
         {stories.map((s) => (
           // just the title under each cover (no author, pages or other details)
-          <Tile key={s.id} u={u} cover={s.pages[0] && s.pages[0].image} title={s.title}
+          <Tile key={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title}
             selecting={selecting} selected={picked.includes(s.id)}
             onPress={(rect) => (selecting ? toggle(s.id) : openStory(s, rect))}
             onLongPress={!selecting && s.mine ? () => onEdit(s) : undefined} />

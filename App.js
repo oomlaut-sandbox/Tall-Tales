@@ -81,7 +81,7 @@ function Root() {
   const [opening, setOpening] = useState(null); // { story, cover, rect } while a book opens from the library
   const openStory = (s, rect) => {
     const ready = prepared(s);
-    if (rect && (screen === 'library' || screen === 'store')) { setOpening({ story: ready, cover: s.pages[0] && s.pages[0].image, rect }); return; }
+    if (rect && (screen === 'library' || screen === 'store')) { setOpening({ story: ready, cover: s.cover && s.cover.uri ? { uri: s.cover.uri } : s.pages[0] && s.pages[0].image, rect }); return; }
     setStory(ready); go('reader');
   };
   const openMenu = () => { setDrawer((d) => !d); };

@@ -2,7 +2,7 @@
 // Everything saves automatically. "Pages" opens a list to reorder or delete pages,
 // or to delete the whole story.
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, KeyboardAvoidingView, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -11,6 +11,7 @@ import { Bar, Burger, DogEar, Panel, PageShape } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT } from '../look';
+import { titleStyle } from '../components/CoverArt';
 import { playKey } from '../sound';
 import { deleteUserStory, dropPicture, keepPicture, newPageId, saveUserStory } from '../userStories';
 import StoryGuide from '../components/StoryGuide';
@@ -30,6 +31,7 @@ export function draftFrom(story) {
     id: story.id,
     title: story.title,
     pages: story.pages.map((p) => ({ pid: p.pid, text: p.text, uri: p.image ? p.image.uri : null, w: p.w, h: p.h })),
+    cover: story.cover || null,
   };
 }
 
@@ -103,6 +105,64 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   useEffect(() => () => clearTimeout(timer.current), []);
 
   const update = (patch) => setDraft((d) => ({ ...d, pages: d.pages.map((p, k) => (k === i ? { ...p, ...patch } : p)) }));
+
+  // Choose a square photo, keep a copy in the story's folder: { uri, w, h }, or null if cancelled.
+  const choosePhoto = async () => {
+    const r = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'images', quality: 0.9, allowsEditing: true, aspect: [1, 1] });
+    if (r.canceled || !r.assets || !r.assets[0]) return null;
+    const a = r.assets[0];
+    let src = a.uri, w = a.width || 1, h = a.height || 1;
+    if (Math.max(w, h) > MAX_PX) {
+      try {
+        const r2 = await ImageManipulator.manipulateAsync(a.uri, [{ resize: w >= h ? { width: MAX_PX } : { height: MAX_PX } }], { compress: 0.85, format: ImageManipulator.SaveFormat.JPEG });
+        src = r2.uri; w = r2.width; h = r2.height;
+      } catch (e) { /* keep the original if resizing fails */ }
+    }
+    return { uri: await keepPicture(draft.id, src), w, h };
+  };
+
+  // ---- The Cover Editor: a square like the words editor. Add a picture, then (if wanted) the title,
+  // which can be typed, sized and dragged into place. ----
+  const [coverOpen, setCoverOpen] = useState(false);
+  const [coverAsk, setCoverAsk] = useState(false); // 'Add the title as text?'
+  const [coverTitling, setCoverTitling] = useState(false);
+  const cover = draft.cover || null;
+  const setCover = (c) => setDraft((d) => ({ ...d, cover: c }));
+  const openCover = () => { setPageDone(false); setCoverAsk(false); setCoverTitling(!!(cover && cover.title)); setCoverOpen(true); };
+  const pickCover = async () => {
+    try {
+      const ph = await choosePhoto();
+      if (!ph) return;
+      if (cover && cover.uri) dropPicture(cover.uri);
+      setCover({ ...ph, title: cover ? cover.title || null : null });
+      if (!(cover && cover.title)) setCoverAsk(true);
+    } catch (e) {
+      toast('Couldn’t open your photos. Check that Oomlaut Reader is allowed to use Photos in Settings.');
+    }
+  };
+  const finishCover = () => {
+    // a title typed on the cover also names the book, if it has no name yet
+    setDraft((d) => (!d.title.trim() && d.cover && d.cover.title && d.cover.title.text.trim() ? { ...d, title: d.cover.title.text.trim() } : d));
+    setCoverOpen(false); setCoverAsk(false); setCoverTitling(false); setPageDone(true);
+  };
+  const coverNo = () => { setCover({ ...cover, title: null }); finishCover(); };
+  const coverYes = () => {
+    setCoverAsk(false); setCoverTitling(true);
+    setCover({ ...cover, title: { text: draft.title.trim() || 'My Story', x: 0.5, y: 0.2, size: 0.11 } });
+  };
+  const setCoverTitle = (patch) => setDraft((d) => ({ ...d, cover: { ...d.cover, title: { ...d.cover.title, ...patch } } }));
+  // dragging the title around the square
+  const coverSize = useRef(1);
+  const dragFrom = useRef(null);
+  const titleDrag = useRef(PanResponder.create({
+    onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) + Math.abs(g.dy) > 6,
+    onPanResponderGrant: () => { const t = latest.current.cover && latest.current.cover.title; dragFrom.current = t ? { x: t.x, y: t.y } : null; },
+    onPanResponderMove: (_, g) => {
+      if (!dragFrom.current) return;
+      const W = coverSize.current;
+      setCoverTitle({ x: Math.max(0.1, Math.min(0.9, dragFrom.current.x + g.dx / W)), y: Math.max(0.08, Math.min(0.92, dragFrom.current.y + g.dy / W)) });
+    },
+  })).current;
 
   const pickImage = async () => {
     try {
@@ -400,13 +460,68 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           </Animated.View>
           </View>
         </KeyboardAvoidingView>      ) : null}
+      {coverOpen ? (
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk }]}>
+          {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+          <View style={[styles.editor, { flex: 1, paddingTop: insets.top + 34 }]}>
+            <View style={styles.editorHead}><Text style={styles.editorTitle}>Cover</Text></View>
+            {(() => {
+              const W = winW - 2 * GAP;
+              coverSize.current = W;
+              const t = cover && cover.title;
+              return (
+                <View style={[styles.coverSquare, { width: W, height: W }]}>
+                  {cover && cover.uri ? (
+                    <Pressable onPress={pickCover} style={StyleSheet.absoluteFill} accessibilityLabel="Change the cover picture">
+                      <Image source={{ uri: cover.uri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+                    </Pressable>
+                  ) : (
+                    <Pressable onPress={pickCover} style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]} accessibilityRole="button">
+                      <Text style={[styles.plus, { fontSize: u * 30, lineHeight: u * 30 }]}>+</Text>
+                      <Text style={styles.addImage}>Add Image</Text>
+                    </Pressable>
+                  )}
+                  {/* the title: type in it, drag it anywhere on the cover */}
+                  {coverTitling && t ? (
+                    <View {...titleDrag.panHandlers} style={{ position: 'absolute', left: 0, right: 0, top: t.y * W, alignItems: 'center', transform: [{ translateX: (t.x - 0.5) * W }, { translateY: -t.size * W * 0.65 }] }}>
+                      <TextInput value={t.text} onChangeText={(text) => setCoverTitle({ text })} multiline
+                        style={[titleStyle, { fontSize: t.size * W, lineHeight: t.size * W * 1.2, paddingHorizontal: W * 0.04, minWidth: W * 0.3, outlineWidth: 0 }]}
+                        accessibilityLabel="Cover title" />
+                    </View>
+                  ) : null}
+                </View>
+              );
+            })()}
+            {/* under the cover: the title size (left) and Done (right) */}
+            <View style={{ width: winW - 2 * GAP, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              {coverTitling && cover && cover.title ? (
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+                  <Pressable onPress={() => setCoverTitle({ size: Math.max(0.05, cover.title.size - 0.015) })} style={styles.sizeBtn} accessibilityLabel="Smaller title"><Text style={[styles.donePillText, { fontSize: 14 }]}>A</Text></Pressable>
+                  <Pressable onPress={() => setCoverTitle({ size: Math.min(0.24, cover.title.size + 0.015) })} style={styles.sizeBtn} accessibilityLabel="Bigger title"><Text style={[styles.donePillText, { fontSize: 22 }]}>A</Text></Pressable>
+                  <Text style={styles.coverHint}>Drag the title</Text>
+                </View>
+              ) : <View />}
+              <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={styles.donePill}><Text style={styles.donePillText}>Done</Text></Pressable>
+            </View>
+          </View>
+          {coverAsk ? (
+            <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
+              <View style={styles.choice}>
+                <Text style={styles.choiceTitle}>Add the title as text?</Text>
+                <Pressable onPress={coverYes} style={[styles.choiceBtn, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Yes please</Text></Pressable>
+                <Pressable onPress={coverNo} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>No thanks</Text></Pressable>
+              </View>
+            </View>
+          ) : null}
+        </KeyboardAvoidingView>
+      ) : null}
       {pageDone ? (
         <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
             <Text style={styles.choiceTitle}>What’s next?</Text>
             <Pressable onPress={addPage} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Add another page</Text></Pressable>
             <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Keep working on this page</Text></Pressable>
-            <Pressable onPress={() => toast('Designing a cover is coming in a future update.')} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Design a cover</Text></Pressable>
+            <Pressable onPress={openCover} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{cover && cover.uri ? 'Edit the cover' : 'Design a cover'}</Text></Pressable>
             {/* leave the book maker for now; what's been made so far stays saved */}
             <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await saveUserStory(latest.current)); } catch (e) { toast('Couldn’t save the story. Try again.'); } }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Cancel book editor</Text></Pressable>
             {/* Finish last, in green, with extra room around it */}
@@ -424,6 +539,9 @@ const styles = StyleSheet.create({
   editor: { alignItems: 'center' },
   editorHead: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 30, paddingBottom: 12 },
   editorTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
+  coverSquare: { backgroundColor: '#7d7d7d', overflow: 'hidden', marginBottom: 14, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10 },
+  sizeBtn: { width: 44, height: 40, borderRadius: 20, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
+  coverHint: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 13, marginLeft: 4 },
   fontsBtn: { flexDirection: 'row', alignItems: 'center', height: 40, borderRadius: 20, paddingHorizontal: 18, backgroundColor: '#5f5f5f' },
   fontMenu: { position: 'absolute', bottom: 48, left: 0, width: 170, backgroundColor: '#2a2a2a', borderRadius: 14, padding: 6, gap: 4, shadowColor: '#000', shadowOpacity: 0.4, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 8 },
   fontRow: { height: 40, borderRadius: 10, justifyContent: 'center', paddingHorizontal: 12 },
