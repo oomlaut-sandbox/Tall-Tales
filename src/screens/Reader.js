@@ -719,8 +719,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             onChange={(v) => { const on = v === 'on'; setPrefs((p) => ({ ...p, sound: on })); setEffects(on); if (on) playSound('swish'); }} />
           {/* how loud the sound effects are (only while they're on); a swish plays at the new level */}
           {prefs.sound ? (
-            <Slider value={volDraft ?? (prefs.soundVol == null ? 1 : prefs.soundVol)} min={0.1} max={1} step={0.05} leftLabel="Quieter" rightLabel="Louder"
-              format={(v) => `${Math.round(v * 100)}%`}
+            <Slider value={volDraft ?? (prefs.soundVol == null ? 0.5 : prefs.soundVol)} min={0.05} max={1} step={0.05} leftLabel="Quieter" rightLabel="Louder"
+              format={(v) => `${Math.round(v * 100)}%`} showValue={false}
               onChange={setVolDraft}
               onDone={(v) => { setVolDraft(null); const vol = Math.round(v * 100) / 100; setPrefs((p) => ({ ...p, soundVol: vol })); setEffectsVolume(vol); playSound('swish'); }} />
           ) : null}

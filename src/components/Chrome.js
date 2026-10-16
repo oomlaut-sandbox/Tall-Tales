@@ -391,7 +391,7 @@ export function Option({ glyph, title, sub, onPress, selected, disabled }) {
 }
 
 // A simple slider: drag the knob or tap the track. Values snap to `step`.
-export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLabel, rightLabel, format = (v) => v }) {
+export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLabel, rightLabel, format = (v) => v, showValue = true }) {
   const [w, setW] = React.useState(0);
   const geo = useRef({ w: 0, x0: 0 });
   const cb = useRef({});
@@ -423,7 +423,7 @@ export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLab
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text style={styles.optSub}>{leftLabel}</Text>
-        <Text style={[styles.optSub, { color: colors.white, fontWeight: '700' }]}>{format(value)}</Text>
+        {showValue ? <Text style={[styles.optSub, { color: colors.white, fontWeight: '700' }]}>{format(value)}</Text> : null}
         <Text style={styles.optSub}>{rightLabel}</Text>
       </View>
     </View>

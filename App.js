@@ -93,7 +93,7 @@ function Root() {
   // The permanent black bar over the front camera: across the top when upright, down the left
   // side when sideways. The screens are told the bar is part of the safe area, so they keep clear of it.
   useEffect(() => setEffects(prefs.sound === true), [prefs.sound]); // sound effects: Playback menu, off by default
-  useEffect(() => setEffectsVolume(prefs.soundVol == null ? 1 : prefs.soundVol), [prefs.soundVol]); // and how loud they are
+  useEffect(() => setEffectsVolume(prefs.soundVol == null ? 0.5 : prefs.soundVol), [prefs.soundVol]); // and how loud they are
   const sideways = width > height * 1.1;
   const camBar = sideways ? Math.max(insets.left, 44) : Math.max(insets.top, 44);
   // the speech bubble sits in the middle of the space between the bars

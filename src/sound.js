@@ -26,9 +26,12 @@ let suspended = false; // while recording
 // Sound effects are off unless switched on in the Playback menu (prefs.sound).
 let enabled = false;
 export function setEffects(on) { enabled = !!on; }
-// The sound effects volume (Playback menu slider): 0..1, on top of each effect's own level.
-let master = 1;
-export function setEffectsVolume(v) { master = Math.max(0, Math.min(1, v)); }
+// The sound effects volume (Playback menu slider, 0..1, the middle by default). Effects are mixed well
+// under the narrator: even with the slider all the way up they play at half their own level, and at the
+// default (the middle) at a quarter, so the voice always stays clearly on top.
+const EFFECTS_MAX = 0.5;
+let master = 0.5 * EFFECTS_MAX;
+export function setEffectsVolume(v) { master = Math.max(0, Math.min(1, v)) * EFFECTS_MAX; }
 
 async function init() {
   if (ready) return;
