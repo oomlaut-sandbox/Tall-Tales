@@ -111,13 +111,13 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
         action={selecting ? 'Cancel' : 'Select'} onAction={selecting ? stop : () => setSelecting(true)} />
       <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]}>
         {stories.map((s) => (
+          // just the title under each cover (no author, pages or other details)
           <Tile key={s.id} u={u} cover={s.pages[0] && s.pages[0].image} title={s.title}
             selecting={selecting} selected={picked.includes(s.id)}
-            sub={s.mine ? `${s.pages.length * 2} pages · made by you${selecting ? '' : ' · hold to edit'}` : `${s.author ? `by ${s.author} · ` : ''}${s.pages.length * 2} pages · read-along`}
             onPress={(rect) => (selecting ? toggle(s.id) : openStory(s, rect))}
             onLongPress={!selecting && s.mine ? () => onEdit(s) : undefined} />
         ))}
-        {!selecting ? <Tile u={u} plus title="Create a story" sub="Add pictures and words" onPress={onCreate} /> : null}
+        {!selecting ? <Tile u={u} plus title="Create a story" onPress={onCreate} /> : null}
         {!selecting && removedCount ? (
           <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
             <Text style={styles.restore}>Show removed books ({removedCount})</Text>
