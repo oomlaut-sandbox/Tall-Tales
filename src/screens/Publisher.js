@@ -425,7 +425,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           </View>
         ) : (
           // a red pill, well apart from Share and Print
-          <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} accessibilityRole="button" style={[styles.wide, { flex: 0, alignSelf: 'flex-start', paddingHorizontal: 26, backgroundColor: colors.highlight, marginTop: 44, marginBottom: 14 }]}><Text style={styles.wideText}>Delete this story</Text></Pressable>
+          <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} accessibilityRole="button" style={styles.deletePill}><Text style={styles.wideText}>Delete this story</Text></Pressable>
         )}
       </Panel>
       {editing ? (
@@ -704,5 +704,6 @@ const styles = StyleSheet.create({
   layLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
   pill: { flex: 1, backgroundColor: '#6b6b6b', borderRadius: 22, height: 44, paddingVertical: 0, justifyContent: 'center' }, // Share as PDF / Print: medium grey pills
   wide: { flex: 1, backgroundColor: colors.tile, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
+  deletePill: { alignSelf: 'flex-start', height: 44, borderRadius: 22, paddingHorizontal: 26, backgroundColor: colors.highlight, alignItems: 'center', justifyContent: 'center', marginTop: 44, marginBottom: 14 },
   wideText: { color: colors.white, fontWeight: '700', fontSize: 15, fontFamily: fonts.ui },
 });
