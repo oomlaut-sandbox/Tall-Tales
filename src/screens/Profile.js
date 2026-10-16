@@ -5,7 +5,7 @@ import { ActivityIndicator, Image, Platform, Pressable, ScrollView, StyleSheet, 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { colors, fonts } from '../theme';
-import { Felt, Stitch } from '../look';
+import { Felt, IS_TABLET, Stitch } from '../look';
 
 const BAND_FELT = require('../../assets/band-profile.jpg');
 import { Bar, BarMeta, Burger, WithBar } from '../components/Chrome';
@@ -128,7 +128,7 @@ export default function Profile({ u, openMenu, toast }) {
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {/* Jörg's stitched orange felt, treated like the My Library and Book Store banners */}
-        <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View>
+        {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}{/* iPad: the classic solid orange */}
         {/* just the title, centred top to bottom in the band (like My Library and the Book Store) */}
         <Text style={styles.title}>Profile</Text>
       </View>

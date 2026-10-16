@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
-import { DESK_FELT, Felt, Stitch } from '../look';
+import { DESK_FELT, Felt, IS_TABLET, Stitch } from '../look';
 import { Bar, BarMeta, Burger, DogEar, Panel, WithBar } from '../components/Chrome';
 import { accessLabel, bundledStory, cachedCatalog, coverFor, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
@@ -59,7 +59,8 @@ function Band({ color, felt, dark, title, sub, action, onAction }) {
   const fg = dark ? colors.ink : colors.white;
   return (
     <View style={{ backgroundColor: color, paddingTop: insets.top + 30, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 }}>{/* the title block centred top to bottom in the coloured band */}
-      {felt ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT[felt]} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : <><Felt /><Stitch inset={7} /></>}
+      {/* iPad keeps the classic solid colour banners */}
+      {felt && !IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT[felt]} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : <><Felt /><Stitch inset={7} /></>}
       {/* the title alone (no subtitle), centred in the band, with Select / Cancel on the same line */}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ flex: 1 }}>
