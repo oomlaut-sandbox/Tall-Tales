@@ -171,7 +171,7 @@ export function Store({ u, openStory, openMenu }) {
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <Band color={colors.blue} felt="store" title="Book Store" sub="Discover and buy new books" />
-      <ScrollView contentContainerStyle={{ paddingTop: 26, paddingBottom: 24, gap: 30 }}
+      <ScrollView contentContainerStyle={{ paddingTop: 42, paddingBottom: 24, gap: 30 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.white} />}>
         {/* laid out like My Library: whole covers in a grid, nothing cut off, no sideways scrolling */}
         {[...(featured ? [{ id: 'featured', title: 'Featured', books: [featured] }] : []), ...rows].map((sh) => (
@@ -334,8 +334,8 @@ const CARD_GREY = '#d6d6d6', CARD_INK = '#222222';
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.desk }, // same dark grey as reading
-  // the gap under the coloured title band matches the visible space under its subtitle
-  grid: { padding: 20, paddingTop: 26, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
+  // a generous gap between the felt title band and the first row of books
+  grid: { padding: 20, paddingTop: 42, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
   tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 4 },
   tileTitle: { fontFamily: 'EBGaramond_700Bold', fontSize: 19, lineHeight: 23, color: colors.white }, // book titles and details: the book serif
   tileSub: { fontFamily: fonts.story, fontSize: 15, lineHeight: 19, color: '#d0d0d0' },
