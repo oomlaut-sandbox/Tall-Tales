@@ -239,13 +239,13 @@ export function PageShape({ wide }) {
 }
 // Simple round glasses: two perfect circles side by side, joined by an arched bridge over the nose.
 export function GlassesIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
-  const d = Math.round(size * 0.5); // each lens
-  const b = Math.round(size * 0.26); // the bridge's width
+  const d = Math.round(size * 0.68); // each lens
+  const b = Math.round(size * 0.42); // the bridge's width
   return (
-    <View style={{ width: size + 8, height: size, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ width: size * 1.9, height: size, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
       <View style={{ width: d, height: d, borderRadius: d / 2, borderWidth: weight, borderColor: color }} />
       {/* the bridge: the top half of a small ring, so it arches up between the lenses */}
-      <View style={{ width: b, height: b / 2 + weight, overflow: 'hidden', marginHorizontal: -weight / 2, marginBottom: d * 0.18 }}>
+      <View style={{ width: b, height: b / 2 + weight, overflow: 'hidden', marginHorizontal: -weight, marginBottom: d * 0.3 }}>
         <View style={{ width: b, height: b, borderRadius: b / 2, borderWidth: weight, borderColor: color }} />
       </View>
       <View style={{ width: d, height: d, borderRadius: d / 2, borderWidth: weight, borderColor: color }} />
