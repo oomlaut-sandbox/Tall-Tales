@@ -1,6 +1,7 @@
 // A simple grown-up check before anything leaves the app (Apple's Kids category requires one).
 import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import FeltFill from './FeltFill';
 import { colors, fonts } from '../theme';
 
 const NUMBER_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
@@ -39,8 +40,8 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
         />
         {wrong ? <Text style={styles.wrong}>That’s not quite right. Try again.</Text> : null}
         <View style={styles.row}>
-          <Pressable onPress={onCancel} style={styles.btn}><Text style={styles.btnText}>Cancel</Text></Pressable>
-          <Pressable onPress={check} style={[styles.btn, { backgroundColor: colors.highlight }]}><Text style={styles.btnText}>Continue</Text></Pressable>
+          <Pressable onPress={onCancel} style={styles.btn}><FeltFill color="grey" /><Text style={styles.btnText}>Cancel</Text></Pressable>
+          <Pressable onPress={check} style={[styles.btn, { backgroundColor: colors.highlight }]}><FeltFill color="red" /><Text style={styles.btnText}>Continue</Text></Pressable>
         </View>
       </View>
     </View>
@@ -56,6 +57,6 @@ const styles = StyleSheet.create({
   input: { backgroundColor: '#2e2e2e', color: colors.white, fontFamily: fonts.ui, fontSize: 24, fontWeight: '700', paddingHorizontal: 14, paddingVertical: 10 },
   wrong: { color: '#ff7b7b', fontFamily: fonts.ui, fontSize: 14 },
   row: { flexDirection: 'row', gap: 10, marginTop: 6 },
-  btn: { flex: 1, backgroundColor: colors.tile, paddingVertical: 13, alignItems: 'center' },
+  btn: { flex: 1, backgroundColor: colors.tile, paddingVertical: 13, alignItems: 'center', overflow: 'hidden' },
   btnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
 });

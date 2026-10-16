@@ -1,6 +1,7 @@
 // My Library and Book Store.
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import FeltFill from '../components/FeltFill';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { Felt, Stitch } from '../look';
@@ -131,8 +132,8 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
             {chosen.length > mineCount ? ' Built-in books can be brought back later.' : ''}
           </Text>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <Pressable onPress={() => setGate('delete')} style={[styles.actBtn, { backgroundColor: colors.highlight }]}><Text style={styles.actText}>Delete</Text></Pressable>
-            <Pressable onPress={() => setConfirm(false)} style={[styles.actBtn, { backgroundColor: '#333' }]}><Text style={styles.actText}>Keep</Text></Pressable>
+            <Pressable onPress={() => setGate('delete')} style={[styles.actBtn, { backgroundColor: colors.highlight }]}><FeltFill color="red" /><Text style={styles.actText}>Delete</Text></Pressable>
+            <Pressable onPress={() => setConfirm(false)} style={[styles.actBtn, { backgroundColor: '#333' }]}><FeltFill color="dark" /><Text style={styles.actText}>Keep</Text></Pressable>
           </View>
         </View>
       ) : null}
@@ -261,7 +262,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead }) {
         <Pressable onPress={() => onRead({ x: boxX + M, y: boxY + M, w: cs, h: cs })} style={[styles.badgeShadow, { alignSelf: 'stretch', marginTop: 6 }]} accessibilityRole="button">
           {/* green felt, like the Free label */}
           <View style={[styles.sheetBtn, { overflow: 'hidden' }]}>
-            <Image source={BUTTON_FELT} resizeMode="cover" style={StyleSheet.absoluteFill} />
+            <FeltFill color="green" />
             <Text style={styles.sheetBtnText}>Read now</Text>
           </View>
         </Pressable>
@@ -315,7 +316,6 @@ function CloseX({ onPress }) {
 }
 
 // The access label: a little felt tag (green felt for Free, blue for members) with white letters.
-const BUTTON_FELT = require('../../assets/button-green.jpg');
 const LABEL_FELT = { free: require('../../assets/label-green.jpg'), member: require('../../assets/label-blue.jpg') };
 function Badge({ book }) {
   const felt = LABEL_FELT[book.access];
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
   restore: { fontFamily: fonts.ui, fontSize: 15, color: '#d0d0d0', textDecorationLine: 'underline', textAlign: 'center' },
   confirm: { position: 'absolute', left: 16, right: 16, bottom: 150, backgroundColor: colors.panel, padding: 18, gap: 14, zIndex: 40 },
   confirmText: { color: colors.white, fontFamily: fonts.ui, fontSize: 16, lineHeight: 22 },
-  actBtn: { flex: 1, paddingVertical: 12, alignItems: 'center' },
+  actBtn: { flex: 1, paddingVertical: 12, alignItems: 'center', overflow: 'hidden' },
   actText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   barBtn: { paddingVertical: 10, paddingHorizontal: 6 },
   barBtnOff: { opacity: 0.35 },

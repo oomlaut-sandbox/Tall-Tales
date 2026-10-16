@@ -1,6 +1,7 @@
 // Quick guide for making a story. Shown the first time, and from the "?" button.
 import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import FeltFill from './FeltFill';
 import { BlurView } from 'expo-blur';
 import { colors, fonts } from '../theme';
 
@@ -35,8 +36,9 @@ export default function StoryGuide({ visible, onClose, area }) {
         <View style={styles.row}>
           <Pressable onPress={onClose} hitSlop={8}><Text style={styles.skip}>{last ? '' : 'Skip'}</Text></Pressable>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            {step > 0 ? <Pressable onPress={() => setStep(step - 1)} style={styles.btn}><Text style={styles.btnText}>Back</Text></Pressable> : null}
+            {step > 0 ? <Pressable onPress={() => setStep(step - 1)} style={styles.btn}><FeltFill color="grey" /><Text style={styles.btnText}>Back</Text></Pressable> : null}
             <Pressable onPress={() => (last ? onClose() : setStep(step + 1))} style={[styles.btn, styles.btnMain]}>
+              <FeltFill color="red" />
               <Text style={styles.btnText}>{last ? 'Start making' : 'Next'}</Text>
             </Pressable>
           </View>
@@ -58,7 +60,7 @@ const styles = StyleSheet.create({
   dotOn: { backgroundColor: colors.highlight },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
   skip: { color: colors.muted, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
-  btn: { backgroundColor: colors.tile, paddingHorizontal: 18, paddingVertical: 12 },
+  btn: { backgroundColor: colors.tile, paddingHorizontal: 18, paddingVertical: 12, overflow: 'hidden' },
   btnMain: { backgroundColor: colors.highlight },
   btnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
 });
