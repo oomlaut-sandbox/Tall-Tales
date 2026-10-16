@@ -130,6 +130,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const [coverOpen, setCoverOpen] = useState(false);
   const [coverAsk, setCoverAsk] = useState(false); // 'Add the title as text?'
   const [coverTitling, setCoverTitling] = useState(false);
+  const [titleEditing, setTitleEditing] = useState(false);
+  const titleEditingRef = useRef(false);
+  titleEditingRef.current = titleEditing;
   const [coverTool, setCoverTool] = useState(null); // 'color' | 'font' palette open under the tools
   const cover = draft.cover || null;
   const setCover = (c) => setDraft((d) => ({ ...d, cover: c }));
@@ -160,10 +163,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const coverSize = useRef(1);
   const dragFrom = useRef(null);
   const titleDrag = useRef(PanResponder.create({
+    onStartShouldSetPanResponder: () => !titleEditingRef.current, // the title takes the touch (unless it's being typed in)
     onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) + Math.abs(g.dy) > 6,
     onMoveShouldSetPanResponderCapture: (_, g) => Math.abs(g.dx) + Math.abs(g.dy) > 6, // win over the text box while dragging
     onPanResponderTerminationRequest: () => false,
     onPanResponderGrant: () => { const t = latest.current.cover && latest.current.cover.title; dragFrom.current = t ? { x: t.x, y: t.y } : null; },
+    onPanResponderRelease: (_, g) => { if (Math.abs(g.dx) + Math.abs(g.dy) < 6) setTitleEditing(true); }, // a tap: type in it
     onPanResponderMove: (_, g) => {
       if (!dragFrom.current) return;
       const W = coverSize.current;
@@ -491,9 +496,14 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   {/* the title: type in it, drag it anywhere on the cover */}
                   {coverTitling && t ? (
                     <View {...titleDrag.panHandlers} style={{ position: 'absolute', left: 0, right: 0, top: t.y * W, alignItems: 'center', transform: [{ translateX: (t.x - 0.5) * W }, { translateY: -t.size * W * 0.65 }] }}>
-                      <TextInput value={t.text} onChangeText={(text) => setCoverTitle({ text })} multiline
-                        style={[titleStyle, coverTitleLook(t), { fontSize: t.size * W, lineHeight: t.size * W * 1.2, paddingHorizontal: W * 0.04, minWidth: W * 0.3, outlineWidth: 0 }]}
-                        accessibilityLabel="Cover title" />
+                      {/* tap the title to type in it; otherwise it's plain text that can be dragged anywhere */}
+                      {titleEditing ? (
+                        <TextInput value={t.text} onChangeText={(text) => setCoverTitle({ text })} multiline autoFocus onBlur={() => setTitleEditing(false)}
+                          style={[titleStyle, coverTitleLook(t), { fontSize: t.size * W, lineHeight: t.size * W * 1.2, paddingHorizontal: W * 0.04, minWidth: W * 0.3, outlineWidth: 0 }]}
+                          accessibilityLabel="Cover title" />
+                      ) : (
+                        <Text style={[titleStyle, coverTitleLook(t), { fontSize: t.size * W, lineHeight: t.size * W * 1.2, paddingHorizontal: W * 0.04 }]} accessibilityLabel="Cover title">{t.text}</Text>
+                      )}
                       {t.byline ? <Text style={[titleStyle, bylineStyle, coverTitleLook(t, true), { fontSize: t.size * W * 0.42, lineHeight: t.size * W * 0.6 }]}>{t.byline}</Text> : null}
                     </View>
                   ) : null}
@@ -539,7 +549,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                     ))}
                   </View>
                 ) : null}
-                <Text style={[styles.coverHint, { marginTop: 10, marginLeft: 0, textAlign: 'center' }]}>Drag the title anywhere on the cover</Text>
+                <Text style={[styles.coverHint, { marginTop: 10, marginLeft: 0, textAlign: 'center' }]}>Tap the title to type · drag it anywhere on the cover</Text>
               </View>
             ) : null}
             <View style={{ width: winW - 2 * GAP, alignItems: 'flex-end', marginTop: 12 }}>
