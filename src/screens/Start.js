@@ -131,7 +131,8 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
             {/* the menu page has the same rounded corners as the cover that lies on it */}
             <View style={[at2, styles.page, round, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.paper }]}>
               <View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden' }]}><Felt opacity={0.7} /></View>
-              {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
+              {/* spine shadow on the page: a soft one along the fold (the leather side gets the deeper one) */}
+              <View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden' }]}><Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.13)} max={0.2} /></View>
               <Spine wide={wide} />
               {/* the two items as one block, centred in the page */}
               <View style={{ gap: k * 8 }}>
@@ -148,7 +149,11 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
                   <Pressable style={StyleSheet.absoluteFill} onPress={open} accessibilityRole="button" accessibilityLabel="Open the book" />
                 </Animated.View>
                 {/* inside of the cover: the same leather, seen from the other side once it's turned over */}
-                <Animated.View pointerEvents="none" accessibilityLabel="Oomlaut Reader" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: backOp }]}>{coverImg}</Animated.View>
+                <Animated.View pointerEvents="none" accessibilityLabel="Oomlaut Reader" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: backOp }]}>
+                  {coverImg}
+                  {/* the big spine shadow on the leather: along the edge it turns on, so it travels with the cover as it opens and closes */}
+                  <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.24)} max={0.55} />
+                </Animated.View>
                 <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { backgroundColor: '#000', opacity: shade }]} />
               </Animated.View>
             )}
