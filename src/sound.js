@@ -12,9 +12,12 @@ const sources = {
   cardLift: require('../assets/sfx/card-lift.mp3'),
   tap: require('../assets/sfx/tap.mp3'),
   swish: require('../assets/sfx/page-swish.mp3'), // the page turn: a soft paper swish
+  key1: require('../assets/sfx/typewriter-1.mp3'), // typewriter keys (three, so fast typing doesn't cut one off)
+  key2: require('../assets/sfx/typewriter-2.mp3'),
+  key3: require('../assets/sfx/typewriter-3.mp3'),
 };
 // how loud each one plays (they are evened out already; effects stay below the narrator)
-const LEVEL = { coverOpen: 0.7, coverClose: 0.6, peel: 0.9, flick: 0.55, slide: 0.45, setDown: 0.5, cardLift: 0.45, tap: 0.4, swish: 0.6 };
+const LEVEL = { coverOpen: 0.7, coverClose: 0.6, peel: 0.9, flick: 0.55, slide: 0.45, setDown: 0.5, cardLift: 0.45, tap: 0.4, swish: 0.6, key1: 0.35, key2: 0.35, key3: 0.35 };
 
 const players = {};
 let ready = false;
@@ -42,6 +45,10 @@ init();
 export function suspendSounds(on) { suspended = on; }
 
 // kind: one of the names above. volume: 0..1 on top of the effect's own level.
+// One typewriter key strike (in the story editor), taking turns between three recordings.
+let keyTurn = 0;
+export function playKey() { keyTurn = (keyTurn % 3) + 1; playSound(`key${keyTurn}`); }
+
 export function playSound(kind, volume = 1) {
   if (!enabled || suspended) return;
   const p = players[kind];

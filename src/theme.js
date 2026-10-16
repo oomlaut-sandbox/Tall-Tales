@@ -31,6 +31,7 @@ export const fonts = {
 export const BOOK_FONTS = {
   sans: { label: 'Helvetica', family: fonts.ui, css: 'Helvetica, Arial, sans-serif', width: 0.52, size: 0.92 },
   serif: { label: 'Serif', family: 'EBGaramond_400Regular', bold: 'EBGaramond_700Bold', css: 'Story, Georgia, serif', width: 0.47, size: 1 },
+  typewriter: { label: 'Typewriter', family: 'SpecialElite_400Regular', css: '"Special Elite", "Courier New", monospace', width: 0.58, size: 0.9 },
 };
 export const bookFont = (key) => BOOK_FONTS[key] || BOOK_FONTS.serif;
 

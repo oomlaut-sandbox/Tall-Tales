@@ -11,6 +11,7 @@ import { Bar, Burger, DogEar, Panel, PageShape } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT } from '../look';
+import { playKey } from '../sound';
 import { deleteUserStory, dropPicture, keepPicture, newPageId, saveUserStory } from '../userStories';
 import StoryGuide from '../components/StoryGuide';
 import ParentGate from '../components/ParentGate';
@@ -361,12 +362,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 style={[styles.editorPage, { width: W, maxHeight: W, opacity: f && !t ? 0 : 1, transform: move }]}>
                 <TextInput
                   value={page.text}
-                  onChangeText={(text) => update({ text })}
+                  onChangeText={(text) => { if (text.length > (page.text || '').length) playKey(); update({ text }); }}
                   placeholder="Type the words for this page. Two or three sentences reads best."
                   placeholderTextColor="#666"
                   multiline
                   autoFocus
-                  style={[styles.editorInput, { fontFamily: bookFont(fontKey).family }]}
+                  style={[styles.editorInput, { fontFamily: 'SpecialElite_400Regular' }]}
                   accessibilityLabel={`Words for page ${i + 1}`}
                 />
               </Animated.View>
