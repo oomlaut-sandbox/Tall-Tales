@@ -648,6 +648,16 @@ function BadgeSpread({ log, side, wide, toast }) {
     </View>
   );
 }
+// Undo: a simple arrow that loops back, drawn in the same thick white line as the app's other icons
+function UndoIcon() {
+  return (
+    <View style={{ width: 22, height: 18 }}>
+      <View style={{ position: 'absolute', left: 6, top: 2, width: 14, height: 14, borderTopWidth: 3, borderRightWidth: 3, borderBottomWidth: 3, borderColor: colors.white, borderTopRightRadius: 8, borderBottomRightRadius: 8 }} />
+      <View style={{ position: 'absolute', left: 0, top: -2.5, width: 0, height: 0, borderTopWidth: 6.5, borderBottomWidth: 6.5, borderRightWidth: 8, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderRightColor: colors.white }} />
+    </View>
+  );
+}
+
 // ---- The drawing editor: a page to draw on with your finger, with pens, an eraser, undo and clear ----
 function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
   const { width: winW } = useWindowDimensions();
@@ -659,7 +669,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
   const [area, setArea] = useState(null);
   const S = useRef({});
   S.current = { strokes, pen, size, erase };
-  const toolsH = 150;
+  const toolsH = 200;
   const W = area ? Math.max(120, Math.floor(Math.min(winW - 2 * GAP, tall ? (area.h - toolsH) / 2 : area.h - toolsH))) : 0;
   const Wref = useRef(W);
   Wref.current = W;
@@ -707,8 +717,8 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
                 {photo ? <Image source={{ uri: photo }} style={StyleSheet.absoluteFill} resizeMode="cover" pointerEvents="none" /> : null}
                 <StrokesView strokes={strokes} live={live} width={W} height={tall ? W * 2 : W} />
               </View>
-              <View style={{ width: Math.max(W, Math.min(winW - 2 * GAP, 360)), marginTop: 14, gap: 12 }}>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, justifyContent: 'center' }}>
+              <View style={{ width: W, marginTop: 30, gap: 24 }}>{/* the tools line up with the page's left and right edges */}
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   {PENS.map(([hex, name]) => (
                     <Pressable key={hex} onPress={() => { setPen(hex); setErase(false); }} accessibilityLabel={`${name} pen`}
                       style={[styles.swatch, { backgroundColor: hex }, !erase && pen === hex && styles.swatchOn]} />
@@ -727,7 +737,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                     <Pressable onPress={() => setStrokes((s) => s.slice(0, -1))} disabled={!strokes.length} style={[styles.tool, !strokes.length && { opacity: 0.35 }]} accessibilityLabel="Undo">
-                      <Text style={styles.toolText}>↶</Text>
+                      <UndoIcon />
                     </Pressable>
                     <Pressable onPress={() => setStrokes([])} disabled={!strokes.length} style={[styles.toolWide, !strokes.length && { opacity: 0.35 }]} accessibilityLabel="Clear the drawing">
                       <Text style={styles.toolText}>Clear</Text>

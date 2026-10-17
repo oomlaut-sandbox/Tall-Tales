@@ -97,7 +97,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       if (mode === 'print') await printStory(st, layout, fontKey);
       else await shareStoryPdf(st, layout, fontKey);
     } catch (e) {
-      toast(e && e.message ? e.message : mode === 'print' ? 'Couldn’t print. Try again.' : 'Couldn’t make the PDF. Try again.');
+      toast(mode === 'print' ? 'Couldn’t print the book. Please try again.' : 'Couldn’t make the PDF. Please try again.'); // plain words, never the phone's technical message
     }
     setMaking(false);
   };

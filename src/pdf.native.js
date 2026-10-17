@@ -112,7 +112,8 @@ export async function printStory(story, layout, fontKey) {
   try {
     await Print.printAsync({ uri });
   } catch (e) {
-    if (!/cancel/i.test(String(e && e.message))) throw e;
+    // closing the print screen without printing isn't a problem ('Printing did not complete' on iPhone)
+    if (!/cancel|did not complete|not completed|dismiss/i.test(String(e && e.message))) throw e;
   }
 }
 
