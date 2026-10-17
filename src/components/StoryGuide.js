@@ -66,10 +66,10 @@ const styles = StyleSheet.create({
   body: { color: '#e2e2e2', fontFamily: fonts.ui, fontSize: 17, lineHeight: 25 },
   dots: { flexDirection: 'row', gap: 6, marginTop: 4 },
   dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#555' },
-  dotOn: { backgroundColor: colors.highlight },
+  dotOn: { backgroundColor: colors.blue },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
   skip: { color: colors.muted, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
   btn: { backgroundColor: colors.tile, paddingHorizontal: 20, height: 44, borderRadius: 22, justifyContent: 'center', overflow: 'hidden' }, // pills
-  btnMain: { backgroundColor: colors.highlight },
+  btnMain: { backgroundColor: colors.blue }, // primary blue (the red is kept for recording)
   btnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
 });
