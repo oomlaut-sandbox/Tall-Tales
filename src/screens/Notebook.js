@@ -501,9 +501,6 @@ function Lines({ side }) {
   );
 }
 
-// ---- The badge spread: the second spread of the notebook, over two white pages ----
-// Top page: the title, how much has been read, the milestones and the streaks.
-// Bottom page: the firsts, then a patch for every book finished (it scrolls if there are many).
 // Jörg's felt badges, cut out with drop shadows (300 px badge inside a 368 px picture). Locked: the grey ones.
 const BADGE_ART = {
   read1: [require('../../assets/badges/read1.png'), require('../../assets/badges/read1-locked.png')],
@@ -521,66 +518,106 @@ const BADGE_ART = {
 };
 const ART_PAD = 368 / 300;
 
-function Badge({ b, disc, cell, toast }) {
-  const cover = b.kind === 'book' ? ((STORIES.find((s) => s.id === b.bookId) || {}).pages || [])[0]?.image || b.cover : null;
-  const book = b.kind === 'book';
+// A badge, pinned on the page at a slight angle. d: its size.
+function Badge({ b, d, toast }) {
   const art = BADGE_ART[b.id];
+  const say = () => toast(b.earned ? `${b.title}! ${b.how}` : `${b.title}: ${b.how}`);
+  const label = `${b.title}${b.earned ? ', earned' : ', not earned yet'}`;
   if (art) {
-    // the felt badge has its name stitched on, so no label under it
-    const pic = cell * 0.92;
+    // the felt badge has its name stitched on (and its shadow drawn in)
     return (
-      <Pressable onPress={() => toast(b.earned ? `${b.title}! ${b.how}` : `${b.title}: ${b.how}`)} style={{ width: cell, alignItems: 'center', marginBottom: disc * 0.06 }}
-        accessibilityRole="button" accessibilityLabel={`${b.title}${b.earned ? ', earned' : ', not earned yet'}`}>
-        <Image source={art[b.earned ? 0 : 1]} style={{ width: pic * ART_PAD, height: pic * ART_PAD, margin: -pic * (ART_PAD - 1) / 2, opacity: b.earned ? 1 : 0.55 }} resizeMode="contain" />
+      <Pressable onPress={say} accessibilityRole="button" accessibilityLabel={label} style={{ width: d, height: d }}>
+        <Image source={art[b.earned ? 0 : 1]} style={{ width: d * ART_PAD, height: d * ART_PAD, margin: -d * (ART_PAD - 1) / 2, opacity: b.earned ? 1 : 0.55 }} resizeMode="contain" />
       </Pressable>
     );
   }
+  // a finished book: a little square patch with its whole cover
+  const cover = ((STORIES.find((s) => s.id === b.bookId) || {}).pages || [])[0]?.image || b.cover;
+  const p = d * 0.8;
   return (
-    <Pressable onPress={() => toast(b.earned ? `${b.title}! ${b.how}` : `${b.title}: ${b.how}`)} style={{ width: cell, alignItems: 'center', marginBottom: disc * 0.18 }}
-      accessibilityRole="button" accessibilityLabel={`${b.title}${b.earned ? ', earned' : ', not earned yet'}`}>
-      {/* reading badges are round; a finished book is a little square patch with its whole cover */}
-      <View style={[styles.disc, { width: disc, height: disc, borderRadius: book ? disc * 0.08 : disc / 2, backgroundColor: b.earned ? b.color || '#6b6b6b' : '#c4c1bb', opacity: b.earned ? 1 : 0.6 }]}>
-        {book && cover ? <Image source={cover} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
-        {!book ? <Text style={[styles.discMark, { fontSize: disc * (String(b.mark).length > 1 ? 0.34 : 0.42) }]}>{b.earned ? b.mark : '?'}</Text> : null}
-        <View style={[styles.stitch, { borderRadius: book ? disc * 0.05 : disc / 2, margin: disc * 0.06 }]} />
+    <Pressable onPress={say} accessibilityRole="button" accessibilityLabel={label} style={{ width: d, height: d, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={[styles.disc, { width: p, height: p, borderRadius: p * 0.08, backgroundColor: '#8a8a8a' }]}>
+        {cover ? <Image source={cover} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
+        <View style={[styles.stitch, { borderRadius: p * 0.05, margin: p * 0.06 }]} />
       </View>
-      <Text numberOfLines={2} style={[styles.badgeLabel, { width: cell - 2, fontSize: Math.max(9, Math.min(11.5, disc * 0.19)), lineHeight: Math.max(11, Math.min(14, disc * 0.23)) }, !b.earned && { color: '#777' }]}>{b.title}</Text>
     </Pressable>
   );
 }
 
+// a little random number generator that always gives the same numbers for the same seed (so the
+// badges stay where they are each time the notebook opens)
+function seeded(str) {
+  let h = 2166136261;
+  for (let k = 0; k < str.length; k++) { h ^= str.charCodeAt(k); h = Math.imul(h, 16777619); }
+  return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 100000) / 100000; };
+}
+
+// Scatter the badges over a square page: at random spots (no overlaps, clear of the words) and slightly turned.
+function scatter(items, side, keepOut, seed) {
+  const pad = side * 0.05;
+  const area = side * side - keepOut.reduce((a, r) => a + r.w * r.h, 0);
+  let d = Math.min(side * 0.235, Math.sqrt(area / Math.max(1, items.length) / 1.9));
+  for (let round = 0; round < 12; round++) {
+    const rnd = seeded(`${seed}-${round}-${items.length}`);
+    const placed = [];
+    let ok = true;
+    for (const it of items) {
+      let spot = null;
+      for (let t = 0; t < 400 && !spot; t++) {
+        const x = pad + rnd() * (side - 2 * pad - d), y = pad + rnd() * (side - 2 * pad - d);
+        const cx = x + d / 2, cy = y + d / 2;
+        if (keepOut.some((r) => x < r.x + r.w && x + d > r.x && y < r.y + r.h && y + d > r.y)) continue;
+        if (placed.some((q) => Math.hypot(q.cx - cx, q.cy - cy) < d * 1.04)) continue;
+        spot = { x, y, cx, cy };
+      }
+      if (!spot) { ok = false; break; }
+      placed.push({ ...spot, it, turn: (rnd() * 2 - 1) * 14 });
+    }
+    if (ok) return { d, placed };
+    d *= 0.93; // too crowded: a little smaller, and try again
+  }
+  return { d, placed: [] };
+}
+
+// ---- The badge spread: the second spread of the notebook, over two white pages ----
+// Top page: the title and how much has been read, with the milestones and the streaks scattered around it.
+// Bottom page: the firsts and a patch for every book finished, scattered too.
 function BadgeSpread({ log, side, wide, toast }) {
   const badges = useMemo(() => (log ? allBadges(log) : []), [log]);
-  const pad = side * 0.07;
-  const cols = 4;
-  const cell = (side - pad * 2) / cols;
-  const disc = cell * 0.66;
   const count = log ? Object.keys(log.finished).length : 0;
   const streak = log ? currentStreak(log.days) : 0;
-  const pick = (kind) => badges.filter((b) => b.kind === kind);
-  const row = (list) => (
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
-      {list.map((b) => <Badge key={b.id} b={b} disc={disc} cell={cell} toast={toast} />)}
+  const books = badges.filter((b) => b.kind === 'book');
+  const topItems = badges.filter((b) => b.kind === 'milestone' || b.kind === 'streak');
+  const bottomItems = badges.filter((b) => b.kind === 'first' || b.kind === 'book');
+  // the words get room of their own
+  const titleBox = { x: side * 0.12, y: side * 0.04, w: side * 0.76, h: side * 0.22 };
+  const hintBox = { x: side * 0.08, y: side * 0.8, w: side * 0.84, h: side * 0.16 };
+  const top = useMemo(() => scatter(topItems, side, [titleBox], 'top'), [side, topItems.map((b) => b.id + b.earned).join()]);
+  const bottom = useMemo(() => scatter(bottomItems, side, books.length ? [] : [hintBox], 'bottom'), [side, bottomItems.map((b) => b.id + b.earned).join()]);
+  const pinned = ({ d, placed }) => placed.map(({ x, y, turn, it }) => (
+    <View key={it.id} style={{ position: 'absolute', left: x, top: y, transform: [{ rotate: `${turn.toFixed(1)}deg` }] }}>
+      <Badge b={it} d={d} toast={toast} />
     </View>
-  );
-  const books = pick('book');
+  ));
   return (
     <View style={[StyleSheet.absoluteFill, { flexDirection: wide ? 'row' : 'column' }]}>
-      <View style={{ width: side, height: side, backgroundColor: WHITE, paddingHorizontal: pad, paddingTop: pad * 1.2, overflow: 'hidden' }}>
+      <View style={{ width: side, height: side, backgroundColor: WHITE, overflow: 'hidden' }}>
         <Fade edge={wide ? 'right' : 'bottom'} size={Math.round(side * 0.1)} max={0.2} />
-        <Text style={[styles.boardTitle, { fontSize: Math.min(26, side * 0.075) }]}>My Badges</Text>
-        <Text style={styles.boardStats}>{count === 1 ? '1 book finished' : `${count} books finished`} · {streak === 1 ? '1 day of reading' : `${streak} days in a row`}</Text>
-        <View style={{ height: side * 0.05 }} />
-        {row([...pick('milestone'), ...pick('streak')])}
+        <View style={{ position: 'absolute', left: titleBox.x, top: titleBox.y, width: titleBox.w, height: titleBox.h, justifyContent: 'center' }}>
+          <Text style={[styles.boardTitle, { fontSize: Math.min(28, side * 0.08) }]}>My Badges</Text>
+          <Text style={styles.boardStats}>{count === 1 ? '1 book finished' : `${count} books finished`} · {streak === 1 ? '1 day of reading' : `${streak} days in a row`}</Text>
+        </View>
+        {pinned(top)}
       </View>
       <View style={{ width: side, height: side, backgroundColor: WHITE, overflow: 'hidden' }}>
         <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.09)} max={0.13} />
         <Spine wide={wide} />
-        <ScrollView contentContainerStyle={{ paddingHorizontal: pad, paddingTop: pad * 1.1, paddingBottom: pad * 2 }}>
-          {row(pick('first'))}
-          <Text style={[styles.boardStats, { marginTop: side * 0.02, marginBottom: side * 0.03 }]}>{books.length ? 'Books I finished' : 'Read a book all the way to The End to earn a patch for it here.'}</Text>
-          {books.length ? row(books) : null}
-        </ScrollView>
+        {!books.length ? (
+          <View style={{ position: 'absolute', left: hintBox.x, top: hintBox.y, width: hintBox.w, height: hintBox.h, justifyContent: 'center' }}>
+            <Text style={styles.boardStats}>Read a book all the way to The End to earn a patch for it here.</Text>
+          </View>
+        ) : null}
+        {pinned(bottom)}
       </View>
     </View>
   );
