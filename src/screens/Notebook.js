@@ -31,6 +31,7 @@ const MAX_PAGES = 60;
 const TYPE = 'SpecialElite_400Regular'; // the notebook is written in the typewriter font
 // The leather cover from the start page, and its corners (tiny along the spine, rounder at the far edge)
 export const NOTEBOOK_COVER = require('../../assets/leather-cover.jpg');
+const NOTEBOOK_COVER_WIDE = require('../../assets/leather-cover-wide.jpg'); // the same leather, turned so the plain edge is on the left
 export const R_SPINE = 0.012, R_EDGE = 0.102;
 const COVER_SPREAD = 0, BADGES = 1, FIRST_PAGE = 2; // spread numbers
 const WHITE = '#f4f2ed'; // the notebook's white pages
@@ -140,7 +141,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const busy = useRef(false);
   const st = useRef({});
   st.current = { i, total };
-  const usePeel = supportsCurl && !wide;
+  const usePeel = supportsCurl; // upright and sideways, like the books
   const setProgress = (p) => { prog.current = p; peelSubs.forEach((f) => f(p)); };
   const turn = async (dir) => {
     const { i: at, total: n } = st.current;
@@ -236,7 +237,8 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         <View style={[StyleSheet.absoluteFill, { flexDirection: wide ? 'row' : 'column' }]}>
           {/* the inside of the hard cover: the leather, turned over, with the deep spine shadow */}
           <View style={{ width: side, height: side, overflow: 'hidden', opacity: live && opening ? 0 : 1 }}>
-            <Image source={NOTEBOOK_COVER} resizeMode="cover" style={{ width: side, height: side, transform: wide ? [{ scaleX: -1 }] : [{ scaleY: -1 }] }} />
+            {/* sideways the plain (unstitched) edge of the leather runs along the spine, on the right */}
+            <Image source={wide ? NOTEBOOK_COVER_WIDE : NOTEBOOK_COVER} resizeMode="cover" style={{ width: side, height: side, transform: wide ? [{ scaleX: -1 }] : [{ scaleY: -1 }] }} />
             <Fade edge={wide ? 'right' : 'bottom'} size={Math.round(side * 0.24)} max={0.55} />
           </View>
           {/* the first white page, with the notebook's title */}
@@ -345,10 +347,10 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           transform: [{ translateX: fly.interpolate({ inputRange: [0, 1], outputRange: [dx, 0] }) }, { translateY: fly.interpolate({ inputRange: [0, 1], outputRange: [dy, 0] }) }, { scale: fly.interpolate({ inputRange: [0, 1], outputRange: [k, 1] }) }] }}>
           <Animated.View style={[StyleSheet.absoluteFill, styles.coverShadow, round, leaf]}>
             <Animated.View style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: frontOp }]}>
-              <Image source={NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} />
+              <Image source={wide ? NOTEBOOK_COVER_WIDE : NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} />
             </Animated.View>
             <Animated.View style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: backOp }]}>
-              <Image source={NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} />
+              <Image source={wide ? NOTEBOOK_COVER_WIDE : NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} />
               <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.24)} max={0.55} />
             </Animated.View>
             <Animated.View style={[StyleSheet.absoluteFill, round, { backgroundColor: '#000', opacity: shade }]} />
@@ -368,7 +370,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     const { a, b } = flipPair;
     layers.push(abs(b, `f${b}`, null, false));
     layers.push(
-      <View key={`t${a}`} pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: side, height: side, overflow: 'hidden', ...(wide ? {} : { borderTopLeftRadius: R, borderTopRightRadius: R }) }}>
+      <View key={`t${a}`} pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: side, height: side, overflow: 'hidden', ...(wide ? { borderTopLeftRadius: R, borderBottomLeftRadius: R } : { borderTopLeftRadius: R, borderTopRightRadius: R }) }}>
         <View style={{ width: bookW, height: bookH }}>{spread(a, false)}</View>
       </View>,
     );
@@ -421,8 +423,14 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       {/* the turning page, drawn over the whole screen so it can lift past the book's edges */}
       {flipPair && peel && bookAt ? (
         <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 40 }]}>
-          <PeelGuard><PeelLayer start={prog.current} width={bookW} height={bookH} artH={side} corner="right" front={peel.front} back={peel.back}
-            ox={bookAt.x} oy={bookAt.y} canvasW={winW} canvasH={winH} /></PeelGuard>
+          {wide ? (
+            // sideways: the right page peels from its bottom-right corner over the spine (as in the books)
+            <PeelGuard><PeelLayer start={prog.current} sideways width={bookH} height={bookW} artH={bookH} corner="left" front={peel.front} back={peel.back}
+              ox={bookAt.x} oy={bookAt.y} canvasW={winW} canvasH={winH} /></PeelGuard>
+          ) : (
+            <PeelGuard><PeelLayer start={prog.current} width={bookW} height={bookH} artH={side} corner="right" front={peel.front} back={peel.back}
+              ox={bookAt.x} oy={bookAt.y} canvasW={winW} canvasH={winH} /></PeelGuard>
+          )}
         </View>
       ) : null}
       {introEl}
