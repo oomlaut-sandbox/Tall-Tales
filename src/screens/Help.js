@@ -104,11 +104,7 @@ export default function Help({ u, openMenu }) {
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
         <View style={styles.col}>
-          {/* a short video tour will go here */}
-          <View style={styles.video}>
-            <Text style={styles.videoPlay}>▶</Text>
-            <Text style={styles.videoText}>A short video tour is coming soon.</Text>
-          </View>
+          {/* (a short video tour will go here later) */}
           <TextInput value={q} onChangeText={setQ} placeholder="Search help" placeholderTextColor="#888"
             style={styles.search} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel="Search help" />
           {!found.length ? <Text style={styles.p}>Nothing found for “{q.trim()}”. Try another word.</Text> : null}
