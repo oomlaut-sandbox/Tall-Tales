@@ -43,6 +43,15 @@ export const AUDIO = {
       "p3": require("../../assets/narration/lily/pip/p3.mp3"),
       "p4": require("../../assets/narration/lily/pip/p4.mp3"),
     },
+    "small-wonders": {
+      "sw01": require("../../assets/narration/lily/small-wonders/sw01.mp3"),
+      "sw02": require("../../assets/narration/lily/small-wonders/sw02.mp3"),
+      "sw03": require("../../assets/narration/lily/small-wonders/sw03.mp3"),
+      "sw04": require("../../assets/narration/lily/small-wonders/sw04.mp3"),
+      "sw05": require("../../assets/narration/lily/small-wonders/sw05.mp3"),
+      "sw06": require("../../assets/narration/lily/small-wonders/sw06.mp3"),
+      "sw07": require("../../assets/narration/lily/small-wonders/sw07.mp3"),
+    },
   },
   gregory: {
     "different": {
@@ -84,6 +93,15 @@ export const AUDIO = {
       "p2": require("../../assets/narration/gregory/pip/p2.mp3"),
       "p3": require("../../assets/narration/gregory/pip/p3.mp3"),
       "p4": require("../../assets/narration/gregory/pip/p4.mp3"),
+    },
+    "small-wonders": {
+      "sw01": require("../../assets/narration/gregory/small-wonders/sw01.mp3"),
+      "sw02": require("../../assets/narration/gregory/small-wonders/sw02.mp3"),
+      "sw03": require("../../assets/narration/gregory/small-wonders/sw03.mp3"),
+      "sw04": require("../../assets/narration/gregory/small-wonders/sw04.mp3"),
+      "sw05": require("../../assets/narration/gregory/small-wonders/sw05.mp3"),
+      "sw06": require("../../assets/narration/gregory/small-wonders/sw06.mp3"),
+      "sw07": require("../../assets/narration/gregory/small-wonders/sw07.mp3"),
     },
   },
 };
