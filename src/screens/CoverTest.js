@@ -90,7 +90,7 @@ export default function CoverTest({ u, openMenu }) {
               <View style={[StyleSheet.absoluteFill, landRound, { overflow: 'hidden' }]}><DeskFelt spot="covertestPlate" /></View>
             </Animated.View>
             {/* the page (still, with its own shadow and a soft spine shadow along the fold) */}
-            <View style={[{ position: 'absolute', left: 0, top: side, width: side, height: side, backgroundColor: colors.paper, alignItems: 'center', justifyContent: 'center' }, shadow, pageRound]}>
+            <View style={[{ position: 'absolute', left: 0, top: side, width: side, height: side, backgroundColor: '#f4f2ed', alignItems: 'center', justifyContent: 'center' }, shadow, pageRound]}>
               <View pointerEvents="none" style={[StyleSheet.absoluteFill, pageRound, { overflow: 'hidden' }]}><Fade edge="top" size={Math.round(side * 0.17)} max={0.32} /></View>
               <Text style={{ fontFamily: TYPE, fontSize: side * 0.068, color: '#2b2b2b' }}>My Notes</Text>
             </View>
