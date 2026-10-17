@@ -112,15 +112,25 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const fly = useRef(new Animated.Value(0)).current;
   const swing = useRef(new Animated.Value(0)).current;
   const introStarted = useRef(false);
+  // waits until the book has settled into its final size and place, then runs both steps on the native
+  // driver (moves and scales only, so it stays smooth); the closed cover is only taken away a moment
+  // after the real page is showing underneath it, so nothing blinks
   useEffect(() => {
-    if (!intro || introStarted.current || !bookAt || !nb) return;
-    introStarted.current = true;
-    Animated.timing(fly, { toValue: 1, duration: 650, easing: Easing.inOut(Easing.cubic), useNativeDriver: false }).start(() => {
-      setIntro('flip');
-      playSound('coverOpen');
-      Animated.timing(swing, { toValue: 1, duration: 1100, easing: Easing.inOut(Easing.cubic), useNativeDriver: false }).start(() => setIntro(null));
-    });
+    if (!intro || introStarted.current || !bookAt || !nb) return undefined;
+    const t = setTimeout(() => {
+      introStarted.current = true;
+      Animated.timing(fly, { toValue: 1, duration: 650, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => {
+        setIntro('flip');
+        playSound('coverOpen');
+        Animated.timing(swing, { toValue: 1, duration: 1100, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => {
+          setIntro('land');
+          setTimeout(() => setIntro(null), 90);
+        });
+      });
+    }, 140);
+    return () => clearTimeout(t);
   }, [intro, bookAt, nb]);
+  const opening = intro === 'fly' || intro === 'flip'; // the real notebook stays hidden under the flying cover
 
   // ---- turning pages: the paper peel on the phone (upright), a plain switch otherwise ----
   const refs = { cur: useRef(null), prev: useRef(null), next: useRef(null) };
@@ -225,7 +235,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       return (
         <View style={[StyleSheet.absoluteFill, { flexDirection: wide ? 'row' : 'column' }]}>
           {/* the inside of the hard cover: the leather, turned over, with the deep spine shadow */}
-          <View style={{ width: side, height: side, overflow: 'hidden', opacity: live && intro ? 0 : 1 }}>
+          <View style={{ width: side, height: side, overflow: 'hidden', opacity: live && opening ? 0 : 1 }}>
             <Image source={NOTEBOOK_COVER} resizeMode="cover" style={{ width: side, height: side, transform: wide ? [{ scaleX: -1 }] : [{ scaleY: -1 }] }} />
             <Fade edge={wide ? 'right' : 'bottom'} size={Math.round(side * 0.24)} max={0.55} />
           </View>
@@ -304,13 +314,13 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   // the closed cover, flying in from the shelf and then swinging open (drawn over everything)
   let introEl = null;
   if (intro && bookAt && from) {
+    // the cover sits where it will open, and is moved and scaled from the little one on the shelf
     const to = wide ? { x: bookAt.x + side, y: bookAt.y } : { x: bookAt.x, y: bookAt.y + side };
-    const lerp = (a, b) => fly.interpolate({ inputRange: [0, 1], outputRange: [a, b] });
-    const size = lerp(from.w, side);
-    const corner = (f) => fly.interpolate({ inputRange: [0, 1], outputRange: [from.w * f, side * f] });
+    const k = from.w / side;
+    const dx = from.x + from.w / 2 - (to.x + side / 2), dy = from.y + from.h / 2 - (to.y + side / 2);
     const round = wide
-      ? { borderTopLeftRadius: corner(R_SPINE), borderBottomLeftRadius: corner(R_SPINE), borderTopRightRadius: corner(R_EDGE), borderBottomRightRadius: corner(R_EDGE) }
-      : { borderTopLeftRadius: corner(R_SPINE), borderTopRightRadius: corner(R_SPINE), borderBottomLeftRadius: corner(R_EDGE), borderBottomRightRadius: corner(R_EDGE) };
+      ? { borderTopLeftRadius: side * R_SPINE, borderBottomLeftRadius: side * R_SPINE, borderTopRightRadius: side * R_EDGE, borderBottomRightRadius: side * R_EDGE }
+      : { borderTopLeftRadius: side * R_SPINE, borderTopRightRadius: side * R_SPINE, borderBottomLeftRadius: side * R_EDGE, borderBottomRightRadius: side * R_EDGE };
     const turnDeg = swing.interpolate({ inputRange: [0, 1], outputRange: wide ? ['0deg', '-180deg'] : ['0deg', '180deg'] });
     const frontOp = swing.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [1, 1, 0, 0] });
     const backOp = swing.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] });
@@ -320,15 +330,18 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       : { transformOrigin: 'top', transform: [{ perspective: 1600 }, { rotateX: turnDeg }] };
     introEl = (
       <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 45 }]}>
-        <Animated.View style={[{ position: 'absolute', left: lerp(from.x, to.x), top: lerp(from.y, to.y), width: size, height: size }, styles.coverShadow, round, intro === 'flip' ? leaf : null]}>
-          <Animated.View style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: frontOp }]}>
-            <Image source={NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} />
+        <Animated.View style={{ position: 'absolute', left: to.x, top: to.y, width: side, height: side,
+          transform: [{ translateX: fly.interpolate({ inputRange: [0, 1], outputRange: [dx, 0] }) }, { translateY: fly.interpolate({ inputRange: [0, 1], outputRange: [dy, 0] }) }, { scale: fly.interpolate({ inputRange: [0, 1], outputRange: [k, 1] }) }] }}>
+          <Animated.View style={[StyleSheet.absoluteFill, styles.coverShadow, round, leaf]}>
+            <Animated.View style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: frontOp }]}>
+              <Image source={NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} />
+            </Animated.View>
+            <Animated.View style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: backOp }]}>
+              <Image source={NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} />
+              <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.24)} max={0.55} />
+            </Animated.View>
+            <Animated.View style={[StyleSheet.absoluteFill, round, { backgroundColor: '#000', opacity: shade }]} />
           </Animated.View>
-          <Animated.View style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: backOp }]}>
-            <Image source={NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} />
-            <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.24)} max={0.55} />
-          </Animated.View>
-          <Animated.View style={[StyleSheet.absoluteFill, round, { backgroundColor: '#000', opacity: shade }]} />
         </Animated.View>
       </View>
     );
@@ -338,7 +351,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   // peel); while a page turns, the next spread with the top of the turning one over it
   const layers = [];
   const abs = (k, key, ref, live) => (
-    <View key={key} ref={ref} collapsable={false} pointerEvents={live ? 'auto' : 'none'} style={[StyleSheet.absoluteFill, shape, { overflow: 'hidden', backgroundColor: live && intro ? 'transparent' : colors.paper }]}>{spread(k, live)}</View>
+    <View key={key} ref={ref} collapsable={false} pointerEvents={live ? 'auto' : 'none'} style={[StyleSheet.absoluteFill, shape, { overflow: 'hidden', backgroundColor: live && opening ? 'transparent' : colors.paper }]}>{spread(k, live)}</View>
   );
   if (flipPair && peel) {
     const { a, b } = flipPair;
@@ -361,7 +374,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
         {nb ? (
           <View ref={bookRef} collapsable={false} onLayout={measureBook} {...swipe.panHandlers}
-            style={[styles.bookShadow, shape, { width: bookW, height: bookH, opacity: intro === 'fly' ? 0 : 1 }, intro ? { backgroundColor: 'transparent', shadowOpacity: 0 } : null]}>
+            style={[styles.bookShadow, shape, { width: bookW, height: bookH, opacity: intro === 'fly' ? 0 : 1 }, opening ? { backgroundColor: 'transparent', shadowOpacity: 0 } : null]}>
             {layers}
             {!flipPair && !intro ? (
               <>
@@ -438,9 +451,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           <View style={styles.choice}>
             <Text style={styles.choiceTitle}>Add a new page</Text>
             <Pressable onPress={() => addPage('note')} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Notes page</Text></Pressable>
-            <Text style={styles.choiceHint}>A picture or a drawing, with your notes under it.</Text>
             <Pressable onPress={() => addPage('sketch')} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Sketch page</Text></Pressable>
-            <Text style={styles.choiceHint}>Two square pages to draw on.</Text>
             <Pressable onPress={() => setNewAsk(false)} style={[styles.choiceBtn, { marginTop: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Cancel</Text></Pressable>
           </View>
         </View>
