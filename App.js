@@ -190,19 +190,6 @@ function Root() {
         {screen === 'reader' && story && (
           <Reader u={u} story={story} setToastSpot={setToastSpot} prefs={prefs} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
         )}
-        <Panel open={drawer} title="Menu" bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
-          <Option glyph={<LibraryIcon size={MENU_ICON} />} title="My Library" sub="View purchased stories" onPress={() => go('library')} />
-          <Option glyph={<StoreIcon />} title="Book Store" sub="Discover and buy new books" onPress={() => go('store')} />
-          <Option glyph={<PlayGlyph />} title="Playback Settings" sub="Reader controls" onPress={() => {
-            setDrawer(false);
-            if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else toast('Open a story first, then choose how it plays.');
-          }} />
-          <Option glyph={<PlusIcon />} title="Create a Story" sub="Add your own pictures and words" onPress={() => openPublisher(null)} />
-          <Option glyph={<CircleIcon />} title="Profile" sub="Manage your Oomlaut account" onPress={() => { setDrawer(false); setProfileGate(true); }} />
-          <Option glyph={<InfoIcon />} title="About" sub="Learn more about the app" onPress={() => go('about')} />
-          {storeAdmin ? <Option glyph={<StoreIcon />} title="Store Manager" sub="Your Book Store's books" onPress={() => go('storeManager')} /> : null}
-          <View style={{ height: 14 }} />
-        </Panel>
         {opening ? (
           <BookOpen u={u} story={opening.story} cover={opening.cover} rect={opening.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}
             onDone={() => { setStory(opening.story); go('reader'); setTimeout(() => setOpening(null), 60); }} />
@@ -226,6 +213,22 @@ function Root() {
         })() : null}
         <ParentGate visible={profileGate} reason="Your profile is for grown-ups." onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
         <Toast message={message} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
+        {/* the main menu always slides in over everything else on screen (pop-ups, pages boxes, speech bubbles) */}
+        <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
+          <Panel open={drawer} title="Menu" bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
+            <Option glyph={<LibraryIcon size={MENU_ICON} />} title="My Library" sub="View purchased stories" onPress={() => go('library')} />
+            <Option glyph={<StoreIcon />} title="Book Store" sub="Discover and buy new books" onPress={() => go('store')} />
+            <Option glyph={<PlayGlyph />} title="Playback Settings" sub="Reader controls" onPress={() => {
+              setDrawer(false);
+              if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else toast('Open a story first, then choose how it plays.');
+            }} />
+            <Option glyph={<PlusIcon />} title="Create a Story" sub="Add your own pictures and words" onPress={() => openPublisher(null)} />
+            <Option glyph={<CircleIcon />} title="Profile" sub="Manage your Oomlaut account" onPress={() => { setDrawer(false); setProfileGate(true); }} />
+            <Option glyph={<InfoIcon />} title="About" sub="Learn more about the app" onPress={() => go('about')} />
+            {storeAdmin ? <Option glyph={<StoreIcon />} title="Store Manager" sub="Your Book Store's books" onPress={() => go('storeManager')} /> : null}
+            <View style={{ height: 14 }} />
+          </Panel>
+        </View>
         <View pointerEvents="none" style={sideways
           ? { position: 'absolute', left: 0, top: 0, bottom: 0, width: camBar, backgroundColor: colors.bar, zIndex: 200 }
           : { position: 'absolute', left: 0, right: 0, top: 0, height: camBar, backgroundColor: colors.bar, zIndex: 200 }}><Felt /></View>

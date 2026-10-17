@@ -791,7 +791,7 @@ const styles = StyleSheet.create({
   notes: { fontFamily: TYPE, fontSize: 17, lineHeight: 27, color: colors.ink },
   back: { position: 'absolute', left: 6, bottom: 6, width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.12)', alignItems: 'center', justifyContent: 'center', zIndex: 6 },
   backText: { color: '#3a3a3a', fontSize: 28, lineHeight: 30, fontWeight: '300', marginTop: -3 },
-  title: { color: colors.white, fontFamily: 'EBGaramond_700Bold', fontSize: 17 },
+  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 17 },
   sub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 12, marginTop: 2 },
   btn: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, paddingHorizontal: 3 },
   finish: { backgroundColor: colors.green, paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' },
