@@ -315,25 +315,17 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
 
   // the closed cover, flying in from the shelf and then swinging open (drawn over everything)
   let introEl = null;
-  // until the book's place is known, the little notebook just stays where it was on the shelf (no blink)
-  if (intro && from && !bookAt) {
-    const rr = { borderTopLeftRadius: from.w * R_SPINE, borderTopRightRadius: from.w * R_SPINE, borderBottomLeftRadius: from.w * R_EDGE, borderBottomRightRadius: from.w * R_EDGE };
-    introEl = (
-      <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 45 }]}>
-        <View style={[{ position: 'absolute', left: from.x, top: from.y, width: from.w, height: from.w }, styles.coverShadow, rr]}>
-          <View style={[StyleSheet.absoluteFill, rr, { overflow: 'hidden' }]}><Image source={NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} /></View>
-        </View>
-      </View>
-    );
-  }
-  if (intro && bookAt && from) {
-    // the cover sits where it will open, and is moved and scaled from the little one on the shelf
-    const to = wide ? { x: bookAt.x + side, y: bookAt.y } : { x: bookAt.x, y: bookAt.y + side };
-    const k = from.w / side;
-    const dx = from.x + from.w / 2 - (to.x + side / 2), dy = from.y + from.h / 2 - (to.y + side / 2);
+  if (intro && from) {
+    // One view, placed exactly over the little notebook on the shelf from the very first frame. It only
+    // moves and grows (translate and scale) towards the spot where the cover opens; until that spot is
+    // known it doesn't move at all, so nothing jumps or blinks.
+    const S0 = from.w;
+    const to = bookAt ? (wide ? { x: bookAt.x + side, y: bookAt.y } : { x: bookAt.x, y: bookAt.y + side }) : null;
+    const k = to ? side / S0 : 1;
+    const dx = to ? to.x + side / 2 - (from.x + S0 / 2) : 0, dy = to ? to.y + side / 2 - (from.y + S0 / 2) : 0;
     const round = wide
-      ? { borderTopLeftRadius: side * R_SPINE, borderBottomLeftRadius: side * R_SPINE, borderTopRightRadius: side * R_EDGE, borderBottomRightRadius: side * R_EDGE }
-      : { borderTopLeftRadius: side * R_SPINE, borderTopRightRadius: side * R_SPINE, borderBottomLeftRadius: side * R_EDGE, borderBottomRightRadius: side * R_EDGE };
+      ? { borderTopLeftRadius: S0 * R_SPINE, borderBottomLeftRadius: S0 * R_SPINE, borderTopRightRadius: S0 * R_EDGE, borderBottomRightRadius: S0 * R_EDGE }
+      : { borderTopLeftRadius: S0 * R_SPINE, borderTopRightRadius: S0 * R_SPINE, borderBottomLeftRadius: S0 * R_EDGE, borderBottomRightRadius: S0 * R_EDGE };
     const turnDeg = swing.interpolate({ inputRange: [0, 1], outputRange: wide ? ['0deg', '-180deg'] : ['0deg', '180deg'] });
     const frontOp = swing.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [1, 1, 0, 0] });
     const backOp = swing.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] });
@@ -343,15 +335,15 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       : { transformOrigin: 'top', transform: [{ perspective: 1600 }, { rotateX: turnDeg }] };
     introEl = (
       <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 45 }]}>
-        <Animated.View style={{ position: 'absolute', left: to.x, top: to.y, width: side, height: side,
-          transform: [{ translateX: fly.interpolate({ inputRange: [0, 1], outputRange: [dx, 0] }) }, { translateY: fly.interpolate({ inputRange: [0, 1], outputRange: [dy, 0] }) }, { scale: fly.interpolate({ inputRange: [0, 1], outputRange: [k, 1] }) }] }}>
+        <Animated.View style={{ position: 'absolute', left: from.x, top: from.y, width: S0, height: S0,
+          transform: [{ translateX: fly.interpolate({ inputRange: [0, 1], outputRange: [0, dx] }) }, { translateY: fly.interpolate({ inputRange: [0, 1], outputRange: [0, dy] }) }, { scale: fly.interpolate({ inputRange: [0, 1], outputRange: [1, k] }) }] }}>
           <Animated.View style={[StyleSheet.absoluteFill, styles.coverShadow, round, leaf]}>
             <Animated.View style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: frontOp }]}>
               <Image source={wide ? NOTEBOOK_COVER_WIDE : NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} />
             </Animated.View>
             <Animated.View style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: backOp }]}>
               <Image source={wide ? NOTEBOOK_COVER_WIDE : NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} />
-              <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.24)} max={0.55} />
+              <Fade edge={wide ? 'left' : 'top'} size={Math.round(S0 * 0.24)} max={0.55} />
             </Animated.View>
             <Animated.View style={[StyleSheet.absoluteFill, round, { backgroundColor: '#000', opacity: shade }]} />
           </Animated.View>

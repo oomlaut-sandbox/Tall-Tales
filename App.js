@@ -104,7 +104,6 @@ function Root() {
     if (!flyer) return undefined;
     if (!flyer.to) { const t = setTimeout(() => { setFlyer(null); libFade.setValue(1); }, 1500); return () => clearTimeout(t); }
     if (flyer.landed) return undefined;
-    flyP.setValue(0);
     Animated.parallel([
       Animated.timing(flyP, { toValue: 1, duration: 700, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
       Animated.timing(libFade, { toValue: 1, duration: 700, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
@@ -158,7 +157,7 @@ function Root() {
         {screen === 'start' && (
           // while the menu page is being turned, My Library is drawn underneath and shows through
           <View style={peek ? [StyleSheet.absoluteFill, { zIndex: 10 }] : { flex: 1 }}>
-            <Start u={u} go={(t, rect) => { if (t === 'library' && rect) { libFade.setValue(0); setFlyer({ from: rect }); } go(t); }} openMenu={coverOpen ? openMenu : () => toast('Start by opening your notebook.')} closed={!coverOpen} onOpened={() => setCoverOpen(true)} onClosed={() => setCoverOpen(false)} onPeek={(t) => setPeek(t || 'library')} />
+            <Start u={u} go={(t, rect) => { if (t === 'library' && rect) { libFade.setValue(0); flyP.setValue(0); setFlyer({ from: rect }); } go(t); }} openMenu={coverOpen ? openMenu : () => toast('Start by opening your notebook.')} closed={!coverOpen} onOpened={() => setCoverOpen(true)} onClosed={() => setCoverOpen(false)} onPeek={(t) => setPeek(t || 'library')} />
           </View>
         )}
         {flyer && screen === 'library' && DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
@@ -209,15 +208,17 @@ function Root() {
             onDone={() => { setStory(opening.story); go('reader'); setTimeout(() => setOpening(null), 60); }} />
         ) : null}
         {flyer ? (() => {
+          // One view that never changes its place or size: it sits exactly where the closed notebook was on
+          // the start page, and only moves (translate) and shrinks (scale) towards the shelf. Until the shelf
+          // spot is known its movement is zero, so nothing jumps or blinks when it becomes known.
           const { from, to } = flyer;
-          const end = to || from;
-          const k = from.w / end.w;
-          const dx = from.x + from.w / 2 - (end.x + end.w / 2), dy = from.y + from.h / 2 - (end.y + end.h / 2);
-          const at = (a) => (to ? flyP.interpolate({ inputRange: [0, 1], outputRange: [a, a === k ? 1 : 0] }) : a);
-          const round = { borderTopLeftRadius: end.w * R_SPINE, borderTopRightRadius: end.w * R_SPINE, borderBottomLeftRadius: end.w * R_EDGE, borderBottomRightRadius: end.w * R_EDGE };
+          const tx = to ? to.x + to.w / 2 - (from.x + from.w / 2) : 0;
+          const ty = to ? to.y + to.w / 2 - (from.y + from.w / 2) : 0;
+          const k = to ? to.w / from.w : 1;
+          const round = { borderTopLeftRadius: from.w * R_SPINE, borderTopRightRadius: from.w * R_SPINE, borderBottomLeftRadius: from.w * R_EDGE, borderBottomRightRadius: from.w * R_EDGE };
           return (
-            <Animated.View pointerEvents="none" style={[{ position: 'absolute', zIndex: 150, left: end.x, top: end.y, width: end.w, height: end.w,
-              transform: [{ translateX: at(dx) }, { translateY: at(dy) }, { scale: at(k) }],
+            <Animated.View pointerEvents="none" style={[{ position: 'absolute', zIndex: 150, left: from.x, top: from.y, width: from.w, height: from.w,
+              transform: [{ translateX: flyP.interpolate({ inputRange: [0, 1], outputRange: [0, tx] }) }, { translateY: flyP.interpolate({ inputRange: [0, 1], outputRange: [0, ty] }) }, { scale: flyP.interpolate({ inputRange: [0, 1], outputRange: [1, k] }) }],
               backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 9 }, round]}>
               <View style={[{ flex: 1, overflow: 'hidden' }, round]}><Image source={NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} /></View>
             </Animated.View>
