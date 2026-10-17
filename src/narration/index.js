@@ -52,6 +52,13 @@ export const AUDIO = {
       "sw06": require("../../assets/narration/lily/small-wonders/sw06.mp3"),
       "sw07": require("../../assets/narration/lily/small-wonders/sw07.mp3"),
     },
+    "rough-lives": {
+      "rl01": require("../../assets/narration/lily/rough-lives/rl01.mp3"),
+      "rl02": require("../../assets/narration/lily/rough-lives/rl02.mp3"),
+      "rl03": require("../../assets/narration/lily/rough-lives/rl03.mp3"),
+      "rl04": require("../../assets/narration/lily/rough-lives/rl04.mp3"),
+      "rl05": require("../../assets/narration/lily/rough-lives/rl05.mp3"),
+    },
   },
   gregory: {
     "different": {
@@ -102,6 +109,13 @@ export const AUDIO = {
       "sw05": require("../../assets/narration/gregory/small-wonders/sw05.mp3"),
       "sw06": require("../../assets/narration/gregory/small-wonders/sw06.mp3"),
       "sw07": require("../../assets/narration/gregory/small-wonders/sw07.mp3"),
+    },
+    "rough-lives": {
+      "rl01": require("../../assets/narration/gregory/rough-lives/rl01.mp3"),
+      "rl02": require("../../assets/narration/gregory/rough-lives/rl02.mp3"),
+      "rl03": require("../../assets/narration/gregory/rough-lives/rl03.mp3"),
+      "rl04": require("../../assets/narration/gregory/rough-lives/rl04.mp3"),
+      "rl05": require("../../assets/narration/gregory/rough-lives/rl05.mp3"),
     },
   },
 };

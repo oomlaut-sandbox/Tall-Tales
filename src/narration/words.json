@@ -730,7 +730,7 @@
     "file": "whispered.mp3"
    },
    "he": {
-    "fp": "13b4caf5d4c5",
+    "fp": "c1fb255c9887",
     "file": "he.mp3"
    },
    "asleep": {
@@ -1196,6 +1196,150 @@
    "best": {
     "fp": "ff61bb0610f0",
     "file": "best.mp3"
+   },
+   "rough": {
+    "fp": "bd54bc94c48b",
+    "file": "rough.mp3"
+   },
+   "lives": {
+    "fp": "62c21fc46603",
+    "file": "lives.mp3"
+   },
+   "animals": {
+    "fp": "bdbe69f43598",
+    "file": "animals.mp3"
+   },
+   "cat": {
+    "fp": "0b65d212959e",
+    "file": "cat.mp3"
+   },
+   "ball": {
+    "fp": "e0bff2bbc008",
+    "file": "ball.mp3"
+   },
+   "yarn": {
+    "fp": "5fc087ddbc20",
+    "file": "yarn.mp3"
+   },
+   "too": {
+    "fp": "99b671a25192",
+    "file": "too.mp3"
+   },
+   "worried": {
+    "fp": "3611bbffadbc",
+    "file": "worried.mp3"
+   },
+   "play": {
+    "fp": "d2ddc03683b9",
+    "file": "play.mp3"
+   },
+   "unravels": {
+    "fp": "3ca788eb259d",
+    "file": "unravels.mp3"
+   },
+   "everything": {
+    "fp": "8e04d1654ebc",
+    "file": "everything.mp3"
+   },
+   "elephant": {
+    "fp": "57dc4872113b",
+    "file": "elephant.mp3"
+   },
+   "fine": {
+    "fp": "8121924cc49e",
+    "file": "fine.mp3"
+   },
+   "says": {
+    "fp": "1e959209144d",
+    "file": "says.mp3"
+   },
+   "every": {
+    "fp": "c38f52a7a528",
+    "file": "every.mp3"
+   },
+   "balloon": {
+    "fp": "7df253ca20fa",
+    "file": "balloon.mp3"
+   },
+   "holding": {
+    "fp": "353299e52090",
+    "file": "holding.mp3"
+   },
+   "fox": {
+    "fp": "77be3912f560",
+    "file": "fox.mp3"
+   },
+   "jumped": {
+    "fp": "86b7910e0464",
+    "file": "jumped.mp3"
+   },
+   "mouse": {
+    "fp": "9b8314f16508",
+    "file": "mouse.mp3"
+   },
+   "moved": {
+    "fp": "41427e99feef",
+    "file": "moved.mp3"
+   },
+   "nobody": {
+    "fp": "cee4725569de",
+    "file": "nobody.mp3"
+   },
+   "told": {
+    "fp": "c468a307cfc9",
+    "file": "told.mp3"
+   },
+   "calls": {
+    "fp": "751afb8a2e31",
+    "file": "calls.mp3"
+   },
+   "hustle": {
+    "fp": "49fd7b5ce758",
+    "file": "hustle.mp3"
+   },
+   "ostrich": {
+    "fp": "ef86ebb2127c",
+    "file": "ostrich.mp3"
+   },
+   "stopped": {
+    "fp": "dfa5698fb41a",
+    "file": "stopped.mp3"
+   },
+   "news": {
+    "fp": "47550b4df5e1",
+    "file": "news.mp3"
+   },
+   "feels": {
+    "fp": "003d724ef989",
+    "file": "feels.mp3"
+   },
+   "much": {
+    "fp": "196bb06104c7",
+    "file": "much.mp3"
+   },
+   "calmer": {
+    "fp": "097905fa500f",
+    "file": "calmer.mp3"
+   },
+   "now": {
+    "fp": "51baa439ae79",
+    "file": "now.mp3"
+   },
+   "noticed": {
+    "fp": "60e5808bb883",
+    "file": "noticed.mp3"
+   },
+   "yet": {
+    "fp": "a6ff8a78fb1b",
+    "file": "yet.mp3"
+   },
+   "bottom": {
+    "fp": "c152be8328b5",
+    "file": "bottom.mp3"
+   },
+   "fire": {
+    "fp": "0bb09d69d48f",
+    "file": "fire.mp3"
    }
   },
   "parts": {}
@@ -1931,7 +2075,7 @@
     "file": "whispered.mp3"
    },
    "he": {
-    "fp": "ceed317818e7",
+    "fp": "07e4956f40a7",
     "file": "he.mp3"
    },
    "asleep": {
@@ -2397,6 +2541,150 @@
    "best": {
     "fp": "ddb881fc0a3d",
     "file": "best.mp3"
+   },
+   "rough": {
+    "fp": "a17659dd40cd",
+    "file": "rough.mp3"
+   },
+   "lives": {
+    "fp": "268b35a0c694",
+    "file": "lives.mp3"
+   },
+   "animals": {
+    "fp": "c99d9f3e68c7",
+    "file": "animals.mp3"
+   },
+   "cat": {
+    "fp": "3ab30e0ac53a",
+    "file": "cat.mp3"
+   },
+   "ball": {
+    "fp": "fc57a99ebaae",
+    "file": "ball.mp3"
+   },
+   "yarn": {
+    "fp": "b602d0eb5923",
+    "file": "yarn.mp3"
+   },
+   "too": {
+    "fp": "557c99ba0206",
+    "file": "too.mp3"
+   },
+   "worried": {
+    "fp": "0d04c00df8f7",
+    "file": "worried.mp3"
+   },
+   "play": {
+    "fp": "24d516830e37",
+    "file": "play.mp3"
+   },
+   "unravels": {
+    "fp": "409cde626b61",
+    "file": "unravels.mp3"
+   },
+   "everything": {
+    "fp": "6a0458a460cd",
+    "file": "everything.mp3"
+   },
+   "elephant": {
+    "fp": "f6c58decfed2",
+    "file": "elephant.mp3"
+   },
+   "fine": {
+    "fp": "688398aff6b7",
+    "file": "fine.mp3"
+   },
+   "says": {
+    "fp": "bf118d9987b4",
+    "file": "says.mp3"
+   },
+   "every": {
+    "fp": "a38e5af7b364",
+    "file": "every.mp3"
+   },
+   "balloon": {
+    "fp": "c861f722ac91",
+    "file": "balloon.mp3"
+   },
+   "holding": {
+    "fp": "46ce24a3d442",
+    "file": "holding.mp3"
+   },
+   "fox": {
+    "fp": "a0c81d326a87",
+    "file": "fox.mp3"
+   },
+   "jumped": {
+    "fp": "ca956245d119",
+    "file": "jumped.mp3"
+   },
+   "mouse": {
+    "fp": "61ff33e23b14",
+    "file": "mouse.mp3"
+   },
+   "moved": {
+    "fp": "06ba373a86ae",
+    "file": "moved.mp3"
+   },
+   "nobody": {
+    "fp": "639620f643f1",
+    "file": "nobody.mp3"
+   },
+   "told": {
+    "fp": "a03ce024890b",
+    "file": "told.mp3"
+   },
+   "calls": {
+    "fp": "7b99b8815d61",
+    "file": "calls.mp3"
+   },
+   "hustle": {
+    "fp": "4b047794ad4b",
+    "file": "hustle.mp3"
+   },
+   "ostrich": {
+    "fp": "7370121ac89d",
+    "file": "ostrich.mp3"
+   },
+   "stopped": {
+    "fp": "af6483d6a09f",
+    "file": "stopped.mp3"
+   },
+   "news": {
+    "fp": "438cc5c0d64b",
+    "file": "news.mp3"
+   },
+   "feels": {
+    "fp": "51b992f9bc7b",
+    "file": "feels.mp3"
+   },
+   "much": {
+    "fp": "57df6cd4b410",
+    "file": "much.mp3"
+   },
+   "calmer": {
+    "fp": "eaf8de142559",
+    "file": "calmer.mp3"
+   },
+   "now": {
+    "fp": "b7e55cc94baf",
+    "file": "now.mp3"
+   },
+   "noticed": {
+    "fp": "810ea3b36a28",
+    "file": "noticed.mp3"
+   },
+   "yet": {
+    "fp": "9f9854432437",
+    "file": "yet.mp3"
+   },
+   "bottom": {
+    "fp": "5e2a6a409bc5",
+    "file": "bottom.mp3"
+   },
+   "fire": {
+    "fp": "ea5390d60947",
+    "file": "fire.mp3"
    }
   },
   "parts": {}
