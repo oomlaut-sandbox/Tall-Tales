@@ -6,6 +6,7 @@
 // inside (also brown) lands in the picture square. The cover can also be dragged with a finger and
 // follows it the whole way. Tapping or dragging the open cover closes it again;
 // only My Library or the Book Store take you to another screen.
+import { flipStyle, makeFlip } from '../flip';
 import React, { useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
@@ -60,8 +61,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
   // (when the app hears the book is open) used to swap them for new ones, and the shadows blinked.
   const A = useRef(null);
   if (!A.current) A.current = {
-    turnUp: p.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '180deg'] }),
-    turnSide: p.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '-180deg'] }),
+    flip: makeFlip(p),
     frontOp: p.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [1, 1, 0, 0] }),
     backOp: p.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] }),
     shade: p.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.25, 0] }),
@@ -140,13 +140,10 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
         const round = corners(side, wide);
         const coverImg = <Image source={wide ? COVER_WIDE : COVER} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />;
         // the cover turns over the spine: up when upright, to the left when sideways
-        const turn = wide ? A.current.turnSide : A.current.turnUp;
         const frontOp = A.current.frontOp;
         const backOp = A.current.backOp;
         const shade = A.current.shade;
-        const leaf = wide
-          ? { transformOrigin: 'left', transform: [{ perspective: 1600 }, { rotateY: turn }] }
-          : { transformOrigin: 'top', transform: [{ perspective: 1600 }, { rotateX: turn }] };
+        const leaf = flipStyle(A.current.flip, wide); // a flat flip over the spine (a 3D turn strobes on iPhone)
         return (
           // Upright, the whole notebook sits a little higher than centred, so the closed cover rests just above the
           // speech bubble. It never moves; when it's open the space above it is a bit smaller than below.

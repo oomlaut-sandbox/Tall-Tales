@@ -6,6 +6,7 @@
 // Opened from My Library, the little notebook grows into place and its cover swings open like the one on
 // the start page. After that the white pages turn with the paper peel, like the books.
 // Everything saves on its own. Turn pages with the dog-ear or by swiping; "Pages" lists them all.
+import { flipStyle, makeFlip } from '../flip';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, KeyboardAvoidingView, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -120,6 +121,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const fade = useRef({
     out: fly.interpolate({ inputRange: [0, 0.5], outputRange: [1, 0], extrapolate: 'clamp' }),
     in: fly.interpolate({ inputRange: [0.2, 1], outputRange: [0, 1], extrapolate: 'clamp' }),
+    flip: makeFlip(swing),
   }).current;
   // waits until the book has settled into its final size and place, then runs both steps on the native
   // driver (moves and scales only, so it stays smooth); the closed cover is only taken away a moment
@@ -392,13 +394,10 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     const round = wide
       ? { borderTopLeftRadius: S0 * R_SPINE, borderBottomLeftRadius: S0 * R_SPINE, borderTopRightRadius: S0 * R_EDGE, borderBottomRightRadius: S0 * R_EDGE }
       : { borderTopLeftRadius: S0 * R_SPINE, borderTopRightRadius: S0 * R_SPINE, borderBottomLeftRadius: S0 * R_EDGE, borderBottomRightRadius: S0 * R_EDGE };
-    const turnDeg = swing.interpolate({ inputRange: [0, 1], outputRange: wide ? ['0deg', '-180deg'] : ['0deg', '180deg'] });
     const frontOp = swing.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [1, 1, 0, 0] });
     const backOp = swing.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] });
     const shade = swing.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.25, 0] });
-    const leaf = wide
-      ? { transformOrigin: 'left', transform: [{ perspective: 1600 }, { rotateY: turnDeg }] }
-      : { transformOrigin: 'top', transform: [{ perspective: 1600 }, { rotateX: turnDeg }] };
+    const leaf = flipStyle(fade.flip, wide); // a flat flip over the spine (a 3D turn strobes on iPhone)
     introEl = (
       <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 45 }]}>
         <Animated.View style={{ position: 'absolute', left: from.x, top: from.y, width: S0, height: S0,
