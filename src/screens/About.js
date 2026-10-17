@@ -17,6 +17,10 @@ export default function About({ u, openMenu }) {
   // (the words leave room for him at the end, so the last lines never sit behind him)
   const skW = Math.min(150, Math.round(winW * 0.32));
   const skH = Math.round(skW * 600 / 449);
+  // phones: slightly smaller words so it all fits; the last paragraph runs beside Skippy, like a wrap
+  const phone = winW < 600;
+  const textStyle = phone ? { fontSize: 17, lineHeight: 24 } : null;
+  const beside = { marginRight: skW - 4 };
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
@@ -30,15 +34,15 @@ export default function About({ u, openMenu }) {
         <Text style={styles.tagline}>Picture books in your voice.</Text>
       </View>
       <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={[styles.body, { paddingBottom: skH + 12 }]}>
-        <Text style={styles.p}>
+      <ScrollView contentContainerStyle={[styles.body, { paddingBottom: 24 }]}>
+        <Text style={[styles.p, textStyle]}>
           Oomlaut Reader is a home for beautifully illustrated stories, made for children who are learning to read and the grown-ups who read with them.
         </Text>
-        <Text style={styles.p}>
+        <Text style={[styles.p, textStyle]}>
           Every book can be read aloud by a warm narrator, with each word lighting up as it’s spoken. In Learn to Read mode, children tap any word to hear it sounded out, one part at a time. Parents can record themselves reading each page, so a favourite story can be heard in a familiar voice, any time. And families can make their own books, with their own pictures and words.
         </Text>
-        <Text style={styles.p}>Oomlaut is always looking for new picture books. If you’ve written or illustrated a story, send it to us and join the Oomlaut author community. Visit oomlaut.com for more information.</Text>
-        <Text style={styles.version}>Version {VERSION}</Text>
+        <Text style={[styles.p, textStyle, beside]}>Oomlaut is always looking for new picture books. If you’ve written or illustrated a story, send it to us and join the Oomlaut author community. Visit oomlaut.com for more information.</Text>
+        <Text style={[styles.version, beside]}>Version {VERSION}</Text>
       </ScrollView>
       <Image source={SKIPPY} resizeMode="contain" accessibilityIgnoresInvertColors pointerEvents="none"
         style={{ position: 'absolute', right: 14, bottom: 12, width: skW, height: skH }} />
