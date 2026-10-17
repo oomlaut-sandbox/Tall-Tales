@@ -20,6 +20,7 @@ import { onUserChange } from './src/account';
 import ParentGate from './src/components/ParentGate';
 import Reader from './src/screens/Reader';
 import Publisher, { draftFrom } from './src/screens/Publisher';
+import Help from './src/screens/Help';
 import Notebook, { NOTEBOOK_COVER, R_EDGE, R_SPINE } from './src/screens/Notebook';
 import { onNewBadge } from './src/badges';
 import { SHOWN_BOOKS, STORIES } from './src/story';
@@ -27,7 +28,7 @@ import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
-import { CircleIcon, InfoIcon, LibraryIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
+import { CircleIcon, HelpIcon, InfoIcon, LibraryIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
 import { DESK_FELT, Felt, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
 import { playSound, setEffects, setEffectsVolume } from './src/sound';
@@ -209,6 +210,7 @@ function Root() {
           <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} />
         )}
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} />}
+        {screen === 'help' && <Help u={u} openMenu={openMenu} />}
         {screen === 'about' && <About u={u} openMenu={openMenu} onSecret={() => {
           // the store owner: straight to the Store Manager when signed in, otherwise to the sign-in first
           if (storeAdmin) go('storeManager');
@@ -252,7 +254,8 @@ function Root() {
               if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else toast('Open a story first, then choose how it plays.');
             }} />
             <Option glyph={<PlusIcon />} title="Create a Story" sub="Add your own pictures and words" onPress={() => openPublisher(null)} />
-            {/* Profile is suspended for families for now (the store owner signs in from About: hold Skippy) */}
+            {/* Help takes Profile's place (Profile is suspended for families; the store owner signs in from About: hold Skippy) */}
+            <Option glyph={<HelpIcon />} title="Help" sub="How everything works" onPress={() => go('help')} />
             <Option glyph={<InfoIcon />} title="About" sub="Learn more about the app" onPress={() => go('about')} />
             <View style={{ height: 14 }} />
           </Panel>
