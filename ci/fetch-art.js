@@ -7,9 +7,19 @@ const QUERIES = JSON.parse(fs.readFileSync('ci/art-queries.json', 'utf8'));
 const OUT = 'art-out';
 fs.mkdirSync(OUT, { recursive: true });
 const UA = { 'User-Agent': 'OomlautReader/1.0 (book art lookup; contact via oomlaut.com)' };
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// politely: a pause between requests, and a longer wait when Wikimedia asks us to slow down
+const get = async (u) => {
+  for (let i = 0; i < 6; i++) {
+    await sleep(1500);
+    const r = await fetch(u, { headers: UA });
+    if (r.status !== 429) return r;
+    await sleep(15000 * (i + 1));
+  }
+  throw new Error('still rate limited');
+};
 const api = async (params) => {
-  const u = 'https://commons.wikimedia.org/w/api.php?' + new URLSearchParams({ format: 'json', ...params });
-  const r = await fetch(u, { headers: UA });
+  const r = await get('https://commons.wikimedia.org/w/api.php?' + new URLSearchParams({ format: 'json', ...params }));
   const t = await r.text();
   try { return JSON.parse(t); } catch (e) { throw new Error(`API HTTP ${r.status}: ${t.slice(0, 200)}`); }
 };
@@ -19,7 +29,7 @@ const api = async (params) => {
    try {
     const titles = query.files
       ? query.files
-      : ((await api({ action: 'query', list: 'search', srnamespace: '6', srlimit: '8', srsearch: query.search })).query?.search || []).map((x) => x.title);
+      : ((await api({ action: 'query', list: 'search', srnamespace: '6', srlimit: '15', srsearch: query.search })).query?.search || []).map((x) => x.title);
     let n = 0;
     for (const title of titles) {
       if (!/\.(jpe?g|png|tif?f)$/i.test(title)) continue;
@@ -31,7 +41,8 @@ const api = async (params) => {
       const lic = (md.LicenseShortName && md.LicenseShortName.value) || '';
       const date = ((md.DateTimeOriginal && md.DateTimeOriginal.value) || '').replace(/<[^>]+>/g, '').slice(0, 60);
       const artist = ((md.Artist && md.Artist.value) || '').replace(/<[^>]+>/g, '').slice(0, 60);
-      const r = await fetch(ii.thumburl || ii.url, { headers: UA });
+      if (!/public domain|pd/i.test(lic)) { index.push(`${key}\tSKIP (${lic})\t${title}`); continue; } // public domain only
+      const r = await get(ii.thumburl || ii.url);
       if (!r.ok) { index.push(`${key}\tHTTP ${r.status}\t${title}`); continue; }
       const file = `${key}-${++n}${path.extname(new URL(ii.thumburl || ii.url).pathname).toLowerCase() || '.jpg'}`;
       fs.writeFileSync(path.join(OUT, file), Buffer.from(await r.arrayBuffer()));
