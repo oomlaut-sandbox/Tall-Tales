@@ -141,7 +141,7 @@ export default function Profile({ u, openMenu, toast }) {
         </View>
       </ScrollView>
       {/* for grown-ups: a speech bubble at the bottom (tap it to put it away) */}
-      {accountsReady && step === 'start' && !user && !loading && tip ? <Toast message="For parents: Sign in to your Oomlaut account. There’s no password to remember." onDismiss={() => setTip(false)} /> : null}
+      {accountsReady && step === 'start' && !user && !loading && tip ? <Toast message="Parents, sign into your Oomlaut account." onDismiss={() => setTip(false)} /> : null}
     </WithBar>
   );
 }
