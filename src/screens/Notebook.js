@@ -96,6 +96,8 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     ? Math.max(80, Math.min(BL.side, wide ? Math.min((desk.w - 2 * GAP) / 2, desk.h - 2 * GAP) : Math.min(desk.w - 2 * GAP, (desk.h - 2 * GAP) / 2)))
     : BL.side);
   const bookW = wide ? side * 2 : side, bookH = wide ? side : side * 2;
+  const geoRef = useRef({ side, wide });
+  geoRef.current = { side, wide };
   // the open notebook's outline: rounded at the far edges, like the start page notebook
   const R = side * R_EDGE, r = side * R_SPINE;
   const shape = wide
@@ -145,17 +147,19 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   st.current = { i, total };
   const usePeel = supportsCurl; // upright and sideways, like the books
   const setProgress = (p) => { prog.current = p; peelSubs.forEach((f) => f(p)); };
-  const turn = async (dir) => {
+  // Turning a page has three parts: get the peel ready (pictures of the pages), move it (by itself, or
+  // following a finger), and finish (keep the new page, or let it fall back).
+  const ease3 = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const prepare = async (dir) => {
     const { i: at, total: n } = st.current;
     const to = at + dir;
-    if (busy.current || intro || to < 0 || to >= n) return;
+    if (busy.current || intro || to < 0 || to >= n) return null;
     busy.current = true;
-    playSound('swish');
-    if (!usePeel || !peelWorks.ok || !bookAt) { setI(to); busy.current = false; return; }
+    if (!usePeel || !peelWorks.ok || !bookAt) return { dir, to, plain: true };
     const a = dir > 0 ? at : at - 1;
     const fa = await snapshot(dir > 0 ? refs.cur : refs.prev);
     const fb = await snapshot(dir > 0 ? refs.next : refs.cur);
-    if (!fa || !fb) { setI(to); busy.current = false; return; }
+    if (!fa || !fb) return { dir, to, plain: true };
     setPeel({ front: fa, back: fb });
     setProgress(dir > 0 ? 0 : 1);
     setPeelLive(false);
@@ -164,18 +168,28 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     await new Promise((r) => setTimeout(r, 90));
     setPeelLive(true);
     await new Promise((r) => requestAnimationFrame(() => r()));
-    const target = dir > 0 ? 1 : 0, startP = prog.current, t0 = Date.now(), ms = 900;
-    const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+    return { dir, to, plain: false };
+  };
+  const finish = (t, commit) => {
+    if (t.plain) { if (commit) setI(t.to); busy.current = false; return; }
+    const target = commit === (t.dir > 0) ? 1 : 0;
+    const startP = prog.current, t0 = Date.now(), ms = Math.max(200, 900 * Math.abs(target - startP));
     const step = () => {
       const x = Math.min(1, (Date.now() - t0) / ms);
-      setProgress(startP + (target - startP) * ease(x));
+      setProgress(startP + (target - startP) * ease3(x));
       if (x < 1) requestAnimationFrame(step);
       else {
-        setI(to);
+        if (commit) setI(t.to);
         setTimeout(() => { setFlipPair(null); setPeel(null); busy.current = false; }, 40);
       }
     };
     requestAnimationFrame(step);
+  };
+  const turn = async (dir) => {
+    const t = await prepare(dir);
+    if (!t) return;
+    playSound('swish');
+    finish(t, true);
   };
   const turnRef = useRef(turn);
   turnRef.current = turn;
@@ -228,14 +242,46 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     }
   };
 
-  // swipe the book to turn pages: up (or to the left) for the next one; taps still go to the squares
+  // Swiping turns the page, and the paper follows the finger (like the books): up (or to the left when
+  // sideways) for the next page, down (or to the right) to go back. Let go past halfway, or with a flick,
+  // and the page turns; otherwise it falls back. Taps still go to the squares.
+  const drag = useRef({});
   const swipe = useRef(PanResponder.create({
-    onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) + Math.abs(g.dy) > 20,
-    onPanResponderRelease: (_, g) => {
-      const d = Math.abs(g.dy) > Math.abs(g.dx) ? -g.dy : -g.dx;
-      if (d > 40) turnRef.current(1); else if (d < -40) turnRef.current(-1);
+    onMoveShouldSetPanResponder: (_, g) => !busy.current && Math.abs(g.dx) + Math.abs(g.dy) > 12,
+    onPanResponderTerminationRequest: () => false,
+    onPanResponderGrant: (_, g) => {
+      const vert = Math.abs(g.dy) >= Math.abs(g.dx);
+      const dir = (vert ? g.dy : g.dx) < 0 ? 1 : -1;
+      const d = { vert, dir, p: dir > 0 ? 0 : 1, t: null, ended: null };
+      drag.current = d;
+      prepareRef.current(dir).then((t) => {
+        if (!t) { drag.current = {}; return; }
+        d.t = t;
+        if (d.ended) endSwipeRef.current(d, d.ended); else if (!t.plain) setProgress(d.p);
+      });
     },
+    onPanResponderMove: (_, g) => {
+      const d = drag.current;
+      if (!d.dir) return;
+      const { side: sd, wide: w } = geoRef.current;
+      const amount = d.vert ? -g.dy / (sd * 1.1) : -g.dx / (sd * (w ? 0.85 : 0.8));
+      d.p = d.dir > 0 ? Math.max(0, Math.min(1, amount)) : 1 - Math.max(0, Math.min(1, -amount));
+      if (d.t && !d.t.plain) setProgress(d.p);
+    },
+    onPanResponderRelease: (_, g) => { const d = drag.current; drag.current = {}; if (d.dir) endSwipeRef.current(d, g); },
+    onPanResponderTerminate: (_, g) => { const d = drag.current; drag.current = {}; if (d.dir) endSwipeRef.current(d, g); },
   })).current;
+  const endSwipe = (d, g) => {
+    if (!d.t) { d.ended = { vx: g.vx, vy: g.vy, dx: g.dx, dy: g.dy }; return; }
+    const v = d.vert ? g.vy : g.vx;
+    const moved = d.t.plain ? Math.abs(d.vert ? g.dy : g.dx) > 40 : null;
+    const commit = d.t.plain ? moved : d.dir > 0 ? d.p > 0.4 || v < -0.35 : d.p < 0.6 || v > 0.35;
+    if (commit) playSound('swish');
+    finish(d.t, commit);
+  };
+  // the swipe handler is made once, so it always calls the latest versions of these
+  const prepareRef = useRef(prepare); prepareRef.current = prepare;
+  const endSwipeRef = useRef(endSwipe); endSwipeRef.current = endSwipe;
 
   // ---- one spread of the notebook (k: its number). live: the one you're looking at (it takes taps) ----
   const spread = (k, live) => {
