@@ -338,11 +338,12 @@ function BadgeBoard({ log, width, height, wide, toast }) {
           {badges.map((b) => (
             <Pressable key={b.id} onPress={() => toast(b.earned ? `${b.title}! ${b.how}` : `${b.title}: ${b.how}`)} style={{ width: cell, alignItems: 'center', marginBottom: 14 }}
               accessibilityRole="button" accessibilityLabel={`${b.title}${b.earned ? ', earned' : ', not earned yet'}`}>
-              <View style={[styles.disc, { width: disc, height: disc, borderRadius: disc / 2, backgroundColor: b.earned ? b.color || '#6b6b6b' : '#b3b3b3', opacity: b.earned ? 1 : 0.55 }]}>
+              {/* reading badges are round; a finished book is a little square patch with its whole cover */}
+              <View style={[styles.disc, { width: disc, height: disc, borderRadius: b.kind === 'book' ? disc * 0.08 : disc / 2, backgroundColor: b.earned ? b.color || '#6b6b6b' : '#b3b3b3', opacity: b.earned ? 1 : 0.55 }]}>
                 {b.kind === 'book' && coverFor(b) ? <Image source={coverFor(b)} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
                 {b.kind !== 'book' ? <Text style={[styles.discMark, { fontSize: disc * (String(b.mark).length > 1 ? 0.34 : 0.42) }]}>{b.earned ? b.mark : '?'}</Text> : null}
                 {/* the stitched ring, like the felt in the app */}
-                <View style={[styles.stitch, { borderRadius: disc / 2, margin: disc * 0.06 }]} />
+                <View style={[styles.stitch, { borderRadius: b.kind === 'book' ? disc * 0.05 : disc / 2, margin: disc * 0.06 }]} />
               </View>
               <Text numberOfLines={2} style={[styles.badgeLabel, { width: cell - 4 }, !b.earned && { color: '#666' }]}>{b.title}</Text>
             </Pressable>
