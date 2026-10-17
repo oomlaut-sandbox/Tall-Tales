@@ -128,7 +128,7 @@ export default function Notebook({ u, openMenu, toast, onDone }) {
   const barTitle = (
     <View style={{ flex: 1, minWidth: 0, paddingLeft: 12 }}>
       <Text numberOfLines={1} style={styles.title}>My Notebook</Text>
-      <Text style={styles.sub}>{header} · Page {i + 1} of {total} · {saved ? 'Saved' : 'Saving…'}</Text>
+      <Text numberOfLines={1} style={styles.sub}>{header} · {i + 1} of {total} · {saved ? 'Saved' : 'Saving…'}</Text>
     </View>
   );
   const barBtns = (vertical) => (
@@ -325,7 +325,6 @@ function BadgeBoard({ log, width, height, wide, toast }) {
   const disc = cell * 0.68;
   const count = Object.keys(log.finished).length;
   const streak = currentStreak(log.days);
-  const earned = badges.filter((b) => b.earned).length;
   const coverFor = (b) => { const st = STORIES.find((s) => s.id === b.bookId); return (st && st.pages[0] && st.pages[0].image) || b.cover; };
   return (
     <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.paper }]}>
@@ -333,7 +332,7 @@ function BadgeBoard({ log, width, height, wide, toast }) {
       <ScrollView contentContainerStyle={{ paddingHorizontal: pad, paddingTop: pad * 0.9, paddingBottom: pad * 1.6 }}>
         <Text style={styles.boardTitle}>My Badges</Text>
         <Text style={styles.boardStats}>
-          {count === 1 ? '1 book finished' : `${count} books finished`} · {streak === 1 ? '1 day of reading' : `${streak} days in a row`} · {earned} {earned === 1 ? 'badge' : 'badges'}
+          {count === 1 ? '1 book finished' : `${count} books finished`} · {streak === 1 ? '1 day of reading' : `${streak} days in a row`}
         </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 14 }}>
           {badges.map((b) => (
@@ -415,7 +414,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
                 <StrokesView strokes={strokes} live={live} width={W} height={tall ? W * 2 : W} />
               </View>
               <View style={{ width: Math.max(W, Math.min(winW - 2 * GAP, 360)), marginTop: 14, gap: 12 }}>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, justifyContent: 'center' }}>
                   {PENS.map(([hex, name]) => (
                     <Pressable key={hex} onPress={() => { setPen(hex); setErase(false); }} accessibilityLabel={`${name} pen`}
                       style={[styles.swatch, { backgroundColor: hex }, !erase && pen === hex && styles.swatchOn]} />
@@ -428,7 +427,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
                         <View style={{ width: 6 + s * 300, height: 6 + s * 300, borderRadius: 20, backgroundColor: colors.white }} />
                       </Pressable>
                     ))}
-                    <Pressable onPress={() => setErase((x) => !x)} style={[styles.tool, erase && styles.toolOn, { paddingHorizontal: 12, width: undefined }]} accessibilityLabel="Eraser">
+                    <Pressable onPress={() => setErase((x) => !x)} style={[styles.toolWide, erase && styles.toolOn]} accessibilityLabel="Eraser">
                       <Text style={styles.toolText}>Eraser</Text>
                     </Pressable>
                   </View>
@@ -436,7 +435,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
                     <Pressable onPress={() => setStrokes((s) => s.slice(0, -1))} disabled={!strokes.length} style={[styles.tool, !strokes.length && { opacity: 0.35 }]} accessibilityLabel="Undo">
                       <Text style={styles.toolText}>↶</Text>
                     </Pressable>
-                    <Pressable onPress={() => setStrokes([])} disabled={!strokes.length} style={[styles.tool, { paddingHorizontal: 12, width: undefined }, !strokes.length && { opacity: 0.35 }]} accessibilityLabel="Clear the drawing">
+                    <Pressable onPress={() => setStrokes([])} disabled={!strokes.length} style={[styles.toolWide, !strokes.length && { opacity: 0.35 }]} accessibilityLabel="Clear the drawing">
                       <Text style={styles.toolText}>Clear</Text>
                     </Pressable>
                   </View>
@@ -500,9 +499,10 @@ const styles = StyleSheet.create({
   editorInput: { flex: 1, fontFamily: TYPE, fontSize: 20, lineHeight: 32, color: colors.ink, textAlignVertical: 'top', padding: 0 },
   donePill: { backgroundColor: colors.green, height: 40, borderRadius: 20, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
   drawPaper: { backgroundColor: SKETCH_PAPER, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
-  swatch: { width: 30, height: 30, borderRadius: 15, borderWidth: 2, borderColor: 'rgba(255,255,255,0.35)' },
+  swatch: { width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: 'rgba(255,255,255,0.35)' },
   swatchOn: { borderColor: colors.white, borderWidth: 3, transform: [{ scale: 1.15 }] },
   tool: { width: 44, height: 40, borderRadius: 20, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
+  toolWide: { height: 40, borderRadius: 20, paddingHorizontal: 14, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   toolOn: { backgroundColor: colors.green },
   toolText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
 });
