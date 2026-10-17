@@ -36,7 +36,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
   useEffect(() => {
     playSound('tap');
     Animated.sequence([
-      Animated.timing(bg, { toValue: 1, duration: 320, useNativeDriver: true }),
+      Animated.timing(bg, { toValue: 1, duration: 420, easing: Easing.inOut(Easing.quad), useNativeDriver: true }), // the shelf dissolves away to felt
       Animated.timing(mv, { toValue: 1, duration: 520, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
     ]).start(() => {
       setPhase(1);
