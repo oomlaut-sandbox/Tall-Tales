@@ -4,7 +4,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { StatusBar } from 'expo-status-bar';
 import { Asset } from 'expo-asset';
 import { SafeAreaInsetsContext, SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFonts, EBGaramond_400Regular, EBGaramond_500Medium, EBGaramond_700Bold } from '@expo-google-fonts/eb-garamond';
+import { useFonts, EBGaramond_400Regular, EBGaramond_400Regular_Italic, EBGaramond_500Medium, EBGaramond_700Bold } from '@expo-google-fonts/eb-garamond';
 import { SpecialElite_400Regular } from '@expo-google-fonts/special-elite';
 import { colors, fonts, MAX_WIDTH } from './src/theme';
 import Start from './src/screens/Start';
@@ -192,7 +192,7 @@ const HOME_PICTURE = require('./assets/leather.jpg');
 if (Platform.OS !== 'web') ScreenOrientation.unlockAsync().catch(() => {});
 
 export default function App() {
-  const [loaded] = useFonts({ EBGaramond_400Regular, EBGaramond_500Medium, EBGaramond_700Bold, SpecialElite_400Regular });
+  const [loaded] = useFonts({ EBGaramond_400Regular, EBGaramond_400Regular_Italic, EBGaramond_500Medium, EBGaramond_700Bold, SpecialElite_400Regular });
   const [pictureReady, setPictureReady] = useState(false);
   useEffect(() => {
     let done = false;
