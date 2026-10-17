@@ -227,6 +227,8 @@ function Root() {
           <BookOpen u={u} story={opening.story} cover={opening.cover} rect={opening.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}
             onDone={() => { setStory(opening.story); go('reader'); setTimeout(() => setOpening(null), 60); }} />
         ) : null}
+        {/* while the notebook flies, the bottom bar stays put on top (it doesn't fade with the shelf) */}
+        {flyer && !sideways ? <View pointerEvents="none" style={{ position: 'absolute', zIndex: 140, left: 0, right: 0, bottom: 0, height: barH, backgroundColor: colors.bar }}><Felt /></View> : null}
         {flyer ? (() => {
           // One view that never changes its place or size: it sits exactly where the closed notebook was on
           // the start page, and only moves (translate) and shrinks (scale) towards the shelf. Until the shelf
