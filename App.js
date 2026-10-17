@@ -255,7 +255,7 @@ function Root() {
             }} />
             <Option glyph={<PlusIcon />} title="Create a Story" sub="Add your own pictures and words" onPress={() => openPublisher(null)} />
             {/* Help takes Profile's place (Profile is suspended for families; the store owner signs in from About: hold Skippy) */}
-            <Option glyph={<HelpIcon />} title="Help" sub="How everything works" onPress={() => go('help')} />
+            <Option glyph={<CircleIcon />} title="Help" sub="How everything works" onPress={() => go('help')} />
             <Option glyph={<InfoIcon />} title="About" sub="Learn more about the app" onPress={() => go('about')} />
             <View style={{ height: 14 }} />
           </Panel>
