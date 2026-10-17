@@ -552,31 +552,34 @@ function seeded(str) {
   return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 100000) / 100000; };
 }
 
-// Scatter the badges over a square page: at random spots (no overlaps, clear of the words) and slightly turned.
-function scatter(items, side, keepOut, seed) {
-  const pad = side * 0.05;
-  const area = side * side - keepOut.reduce((a, r) => a + r.w * r.h, 0);
-  let d = Math.min(side * 0.235, Math.sqrt(area / Math.max(1, items.length) / 1.9));
-  for (let round = 0; round < 12; round++) {
-    const rnd = seeded(`${seed}-${round}-${items.length}`);
-    const placed = [];
-    let ok = true;
-    for (const it of items) {
-      let spot = null;
-      for (let t = 0; t < 400 && !spot; t++) {
-        const x = pad + rnd() * (side - 2 * pad - d), y = pad + rnd() * (side - 2 * pad - d);
-        const cx = x + d / 2, cy = y + d / 2;
-        if (keepOut.some((r) => x < r.x + r.w && x + d > r.x && y < r.y + r.h && y + d > r.y)) continue;
-        if (placed.some((q) => Math.hypot(q.cx - cx, q.cy - cy) < d * 1.04)) continue;
-        spot = { x, y, cx, cy };
-      }
-      if (!spot) { ok = false; break; }
-      placed.push({ ...spot, it, turn: (rnd() * 2 - 1) * 14 });
-    }
-    if (ok) return { d, placed };
-    d *= 0.93; // too crowded: a little smaller, and try again
+// Scatter the badges over the free part of a square page: a loose grid, each badge nudged to a random
+// spot in its cell and slightly turned, so they spread out evenly but look pinned on by hand.
+function scatter(items, side, region, seed) {
+  const n = Math.max(1, items.length);
+  const { x: rx, y: ry, w: rw, h: rh } = region;
+  // the grid shape that best fits the region
+  let best = null;
+  for (let cols = 1; cols <= n; cols++) {
+    const rows = Math.ceil(n / cols);
+    const c = Math.min(rw / cols, rh / rows);
+    if (!best || c > best.c) best = { cols, rows, c };
   }
-  return { d, placed: [] };
+  const { cols, rows } = best;
+  const cw = rw / cols, ch = rh / rows;
+  const d = Math.min(side * 0.26, Math.min(cw, ch) * 0.8);
+  const rnd = seeded(`${seed}-${n}`);
+  // which cells get a badge (when there are spare cells, a random few stay empty)
+  const cells = Array.from({ length: cols * rows }, (_, k) => k);
+  for (let k = cells.length - 1; k > 0; k--) { const j = Math.floor(rnd() * (k + 1)); [cells[k], cells[j]] = [cells[j], cells[k]]; }
+  const use = cells.slice(0, n).sort((a, b) => a - b);
+  const placed = items.map((it, k) => {
+    const cell = use[k], r = Math.floor(cell / cols), c = cell % cols;
+    // rows with fewer badges are centred
+    const x = rx + c * cw + (cw - d) / 2 + (rnd() * 2 - 1) * (cw - d) * 0.45;
+    const y = ry + r * ch + (ch - d) / 2 + (rnd() * 2 - 1) * (ch - d) * 0.45;
+    return { x, y, it, turn: (rnd() * 2 - 1) * 14 };
+  });
+  return { d, placed };
 }
 
 // ---- The badge spread: the second spread of the notebook, over two white pages ----
@@ -590,10 +593,11 @@ function BadgeSpread({ log, side, wide, toast }) {
   const topItems = badges.filter((b) => b.kind === 'milestone' || b.kind === 'streak');
   const bottomItems = badges.filter((b) => b.kind === 'first' || b.kind === 'book');
   // the words get room of their own
-  const titleBox = { x: side * 0.12, y: side * 0.04, w: side * 0.76, h: side * 0.22 };
-  const hintBox = { x: side * 0.08, y: side * 0.8, w: side * 0.84, h: side * 0.16 };
-  const top = useMemo(() => scatter(topItems, side, [titleBox], 'top'), [side, topItems.map((b) => b.id + b.earned).join()]);
-  const bottom = useMemo(() => scatter(bottomItems, side, books.length ? [] : [hintBox], 'bottom'), [side, bottomItems.map((b) => b.id + b.earned).join()]);
+  const titleBox = { x: side * 0.12, y: side * 0.05, w: side * 0.76, h: side * 0.2 };
+  const hintBox = { x: side * 0.18, y: side * 0.78, w: side * 0.64, h: side * 0.16 };
+  const m = side * 0.04;
+  const top = useMemo(() => scatter(topItems, side, { x: m, y: side * 0.27, w: side - 2 * m, h: side * 0.7 }, 'top'), [side, topItems.map((b) => b.id + b.earned).join()]);
+  const bottom = useMemo(() => scatter(bottomItems, side, { x: m, y: side * 0.05, w: side - 2 * m, h: books.length ? side * 0.9 : side * 0.7 }, 'bottom'), [side, bottomItems.map((b) => b.id + b.earned).join()]);
   const pinned = ({ d, placed }) => placed.map(({ x, y, turn, it }) => (
     <View key={it.id} style={{ position: 'absolute', left: x, top: y, transform: [{ rotate: `${turn.toFixed(1)}deg` }] }}>
       <Badge b={it} d={d} toast={toast} />
