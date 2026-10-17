@@ -780,7 +780,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
     </View>
   );
   const swatches = (w, perRow) => (
-    <View style={{ width: w, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 14 }}>
+    <View style={{ width: w, flexDirection: 'row', flexWrap: 'wrap', justifyContent: perRow ? 'flex-start' : 'space-between', rowGap: 14 }}>
       {PENS.map(([hex, name]) => (
         <View key={hex} style={{ width: perRow ? w / perRow : undefined, alignItems: perRow ? 'center' : undefined }}>
           <Pressable onPress={() => { setPen(hex); setErase(false); }} accessibilityLabel={`${name} pen`}
