@@ -874,7 +874,7 @@ const styles = StyleSheet.create({
   fill: { position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' },
   plus: { color: '#6b6b6b', fontWeight: '200', fontFamily: fonts.ui },
   addImage: { color: '#4a4a4a', fontWeight: '700', fontSize: 20, fontFamily: fonts.ui, marginTop: 2 },
-  addSub: { color: '#6b6b6b', fontSize: 15, fontFamily: fonts.ui, marginTop: 2 },
+  addSub: { color: '#6b6b6b', fontSize: 15, fontFamily: fonts.ui, marginTop: 8 },
   hint: { position: 'absolute', color: '#7a7a7a', fontFamily: TYPE, fontSize: 20 },
   textBox: { justifyContent: 'center' },
   notes: { fontFamily: TYPE, fontSize: 17, lineHeight: 27, color: colors.ink },
