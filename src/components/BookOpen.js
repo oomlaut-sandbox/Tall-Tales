@@ -32,6 +32,16 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
   const bg = useRef(new Animated.Value(0)).current;
   const mv = useRef(new Animated.Value(0)).current;
   const flip = useRef(new Animated.Value(0)).current;
+  const A = useRef({
+    plateIn: flip.interpolate({ inputRange: [0.5, 1], outputRange: [0, 1], extrapolate: 'clamp' }),
+    plateOut: flip.interpolate({ inputRange: [0, 0.12], outputRange: [1, 0], extrapolate: 'clamp' }),
+    // (all made once: the redraws when the turn starts and lands would otherwise swap them and blink)
+    turnUp: flip.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '180deg'] }),
+    turnSide: flip.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '-180deg'] }),
+    frontOp: flip.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [1, 1, 0, 0] }),
+    backOp: flip.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] }),
+    shade: flip.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.25, 0] }),
+  }).current;
   const [phase, setPhase] = useState(0); // 0 fade + move, 1 flipping, 2 landed (flat)
   useEffect(() => {
     playSound('tap');
@@ -52,18 +62,20 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
   // the cover starts exactly over the tapped tile and ends on the words square
   const r = rect || { x: tx, y: ty, w: s, h: s };
   const dx = r.x + r.w / 2 - (tx + s / 2), dy = r.y + r.h / 2 - (ty + s / 2), k = r.w / s;
-  const move = [
+  const moveRef = useRef(null); // made once too
+  if (!moveRef.current) moveRef.current = [
     { translateX: mv.interpolate({ inputRange: [0, 1], outputRange: [dx, 0] }) },
     { translateY: mv.interpolate({ inputRange: [0, 1], outputRange: [dy, 0] }) },
     { scale: mv.interpolate({ inputRange: [0, 1], outputRange: [k, 1] }) },
   ];
-  const turn = flip.interpolate({ inputRange: [0, 1], outputRange: L.wide ? ['0deg', '-180deg'] : ['0deg', '180deg'] });
+  const move = moveRef.current;
+  const turn = L.wide ? A.turnSide : A.turnUp;
   const leaf = L.wide
     ? { transformOrigin: 'left', transform: [{ perspective: 2600 }, { rotateY: turn }] }
     : { transformOrigin: 'top', transform: [{ perspective: 2600 }, { rotateX: turn }] };
-  const frontOp = flip.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [1, 1, 0, 0] });
-  const backOp = flip.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] });
-  const shade = flip.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.25, 0] });
+  const frontOp = A.frontOp;
+  const backOp = A.backOp;
+  const shade = A.shade;
   const first = story.pages[0];
   const inside = first && first.whiteArt ? null : first && first.image; // what lands in the picture square
 
@@ -86,6 +98,15 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
           </>
         )}
       </Animated.View>
+      {/* The book casts one shadow, like the reader's: under the picture square a still felt-coloured shape
+          (drawn below the words page, so its shadow never falls across the spine) grows in as the cover lands.
+          The turning cover and the landed page cast none of their own: those used to darken the spine while
+          it opened, and it went lighter the moment the reader took over. */}
+      {phase >= 1 ? (
+        <Animated.View pointerEvents="none" style={[styles.shadow, { position: 'absolute', left: bx, top: by, width: s, height: s, backgroundColor: DESK_FELT ? '#262626' : colors.desk, opacity: A.plateIn }]}>
+          <View style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]}><DeskFelt spot="bookopenPlate" /></View>
+        </Animated.View>
+      ) : null}
       {/* the first words page, uncovered as the cover swings open */}
       {phase >= 1 ? (
         <View pointerEvents="none" style={[styles.shadow, { position: 'absolute', left: tx, top: ty, width: s, height: s }]}>
@@ -98,14 +119,16 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
       ) : null}
       {/* landed: the inside of the cover lying flat in the picture square */}
       {phase === 2 ? (
-        <View pointerEvents="none" style={[styles.shadow, { position: 'absolute', left: bx, top: by, width: s, height: s, backgroundColor: colors.white, overflow: 'hidden' }]}>
+        <View pointerEvents="none" style={{ position: 'absolute', left: bx, top: by, width: s, height: s, backgroundColor: colors.white, overflow: 'hidden' }}>
           {inside ? <Image source={inside} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s }} resizeMode="cover" /> : null}
           <Fade edge={L.wide ? 'right' : 'bottom'} size={Math.round(s * 0.1)} max={0.22} />
         </View>
       ) : null}
       {/* the cover */}
       <Animated.View pointerEvents="none" style={{ position: 'absolute', left: tx, top: ty, width: s, height: s, transform: move, opacity: phase === 2 ? 0 : 1 }}>
-        <Animated.View style={[{ width: s, height: s }, styles.shadow, leaf]}>
+        {/* its shadow while it glides in, on a still shape (never on the turning cover), gone as the turn begins */}
+        <Animated.View style={[StyleSheet.absoluteFill, styles.shadow, { backgroundColor: '#828282', opacity: A.plateOut }]} />
+        <Animated.View style={[{ width: s, height: s, backgroundColor: '#828282' }, leaf]}>
           <Animated.View style={[StyleSheet.absoluteFill, { opacity: frontOp, backgroundColor: '#828282', overflow: 'hidden' }]}>
             {cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s }} resizeMode="cover" /> : null}
           </Animated.View>
