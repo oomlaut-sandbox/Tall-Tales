@@ -177,8 +177,9 @@ export function Store({ u, openStory, openMenu, toast }) {
   const extra = cat ? STORIES.filter((st) => st.storeShelf && SHOWN_BOOKS.includes(st.id) && !cat.books.some((b) => b.id === st.id))
     .map((st, i) => ({ id: st.id, title: st.title, author: st.author || null, blurb: st.blurb || null, shelf_id: st.storeShelf, sort: i, access: 'free', bundled: true, featured: false })) : [];
   const shown = cat ? { ...cat, books: [...cat.books.filter((b) => SHOWN_BOOKS.includes(b.id) || !b.bundled), ...extra] } : null; // plus every book published from the Store Manager
-  const rows = shown ? shelvesWithBooks(shown) : [];
   const featured = shown ? shown.books.find((b) => b.featured) : null;
+  // a book is on the shelves only once: the featured book isn't repeated on the shelf below
+  const rows = shown ? shelvesWithBooks(featured ? { ...shown, books: shown.books.filter((b) => b.id !== featured.id) } : shown) : [];
   // Read now: the cover in the card opens like a book does from My Library (the card stays until the reader takes over)
   const [fetching, setFetching] = useState(null); // a store book being downloaded
   const read = async (b, rect) => {

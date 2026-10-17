@@ -186,4 +186,4 @@ export function syllablesFor(story, word) {
 
 // The books shown in My Library and the Book Store for now (Jörg will add two more later).
 // The others stay in the app, just hidden: add their ids back here to show them again.
-export const SHOWN_BOOKS = ['different', 'small-wonders', 'rough-lives'];
+export const SHOWN_BOOKS = ['different', 'rough-lives'];
