@@ -678,14 +678,16 @@ function BadgeSpread({ log, side, wide, toast }) {
   const count = log ? Object.keys(log.finished).length : 0;
   const streak = log ? currentStreak(log.days) : 0;
   const books = badges.filter((b) => b.kind === 'book');
-  const topItems = badges.filter((b) => b.kind === 'milestone' || b.kind === 'streak');
-  const bottomItems = badges.filter((b) => b.kind === 'first');
+  // six on each page: the reading milestones and the first streak on top; two streaks and the firsts below
+  const ordered = badges.filter((b) => b.kind === 'milestone' || b.kind === 'streak');
+  const topItems = ordered.slice(0, ordered.length - 2);
+  const bottomItems = [...ordered.slice(ordered.length - 2), ...badges.filter((b) => b.kind === 'first')];
   // the words get room of their own
   const titleBox = { x: side * 0.12, y: side * 0.05, w: side * 0.76, h: side * 0.2 };
   const hintBox = { x: side * 0.18, y: side * 0.78, w: side * 0.64, h: side * 0.16 };
   const m = side * 0.04;
   const top = useMemo(() => scatter(topItems, side, { x: m, y: side * 0.26, w: side - 2 * m, h: side * 0.6 }, 'top'), [side, topItems.map((b) => b.id + b.earned).join()]);
-  const bottom = useMemo(() => scatter(bottomItems, side, { x: m, y: side * 0.05, w: side - 2 * m, h: side * 0.9 }, 'bottom', top.d) /* the same size as the top page's */, [side, bottomItems.map((b) => b.id + b.earned).join()]);
+  const bottom = useMemo(() => scatter(bottomItems, side, { x: m, y: side * 0.14, w: side - 2 * m, h: side * 0.8 }, 'bottom', top.d) /* clear of the spine */ /* the same size as the top page's */, [side, bottomItems.map((b) => b.id + b.earned).join()]);
   const pinned = ({ d, placed }) => placed.map(({ x, y, turn, it }) => (
     <View key={it.id} style={{ position: 'absolute', left: x, top: y, transform: [{ rotate: `${turn.toFixed(1)}deg` }] }}>
       <Badge b={it} d={d} toast={toast} />
@@ -697,7 +699,7 @@ function BadgeSpread({ log, side, wide, toast }) {
         <Fade edge={wide ? 'right' : 'bottom'} size={Math.round(side * 0.1)} max={0.2} />
         <View style={{ position: 'absolute', left: titleBox.x, top: titleBox.y, width: titleBox.w, height: titleBox.h, justifyContent: 'center' }}>
           <Text style={[styles.boardTitle, { fontSize: Math.min(22, side * 0.064) }]}>My Badges</Text>
-          <Text style={styles.boardStats}>{count === 1 ? '1 book finished' : `${count} books finished`} · {streak === 1 ? '1 day of reading' : `${streak} days in a row`}</Text>
+          <Text style={[styles.boardStats, { marginTop: 10 }]}>{count === 1 ? '1 book finished' : `${count} books finished`} · {streak === 1 ? '1 day of reading' : `${streak} days in a row`}</Text>
         </View>
         {pinned(top)}
       </View>
