@@ -109,7 +109,7 @@ export default function Help({ u, openMenu }) {
             <Text style={styles.videoPlay}>▶</Text>
             <Text style={styles.videoText}>A short video tour is coming soon.</Text>
           </View>
-          <TextInput value={q} onChangeText={setQ} placeholder="Search help (for example: record, cover, badges)" placeholderTextColor="#888"
+          <TextInput value={q} onChangeText={setQ} placeholder="Search help" placeholderTextColor="#888"
             style={styles.search} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel="Search help" />
           {!found.length ? <Text style={styles.p}>Nothing found for “{q.trim()}”. Try another word.</Text> : null}
           {found.map((h) => {
