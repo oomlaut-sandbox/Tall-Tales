@@ -396,7 +396,9 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
             </Animated.View>
             <Animated.View style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: backOp }]}>
               <Image source={wide ? NOTEBOOK_COVER_WIDE : NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} />
-              <Fade edge={wide ? 'left' : 'top'} size={Math.round(S0 * 0.24)} max={0.55} />
+              <Animated.View style={[StyleSheet.absoluteFill, { opacity: swing.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] }) }]}>
+                <Fade edge={wide ? 'left' : 'top'} size={Math.round(S0 * 0.24)} max={0.55} />
+              </Animated.View>
             </Animated.View>
             <Animated.View style={[StyleSheet.absoluteFill, round, { backgroundColor: '#000', opacity: shade }]} />
           </Animated.View>
