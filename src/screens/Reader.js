@@ -184,7 +184,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (!prefs.mode) setTimeout(() => setPanel('play'), 350);
     return () => { stopSpeech(); clearTimeout(autoTimer.current); cancelAnimationFrame(anim.current); };
   }, []);
-  useEffect(() => { if (menuRequest) setPanel('play'); }, [menuRequest]);
+  // the menu's Playback Settings opens this panel; only a new request does (not one left over from an
+  // earlier book, which used to pop the panel open whenever another book was opened)
+  const lastMenuRequest = useRef(menuRequest);
+  useEffect(() => { if (menuRequest && menuRequest !== lastMenuRequest.current) setPanel('play'); lastMenuRequest.current = menuRequest; }, [menuRequest]);
 
   /* ---------- reading ---------- */
   const stopReading = useCallback(() => {
