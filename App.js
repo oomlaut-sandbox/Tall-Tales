@@ -102,6 +102,7 @@ function Root() {
   // notebook shows first, and the flying one is taken away a moment later, so there's no blink at the end.
   useEffect(() => {
     if (!flyer) return undefined;
+    if (flyer.hold) return undefined;
     if (!flyer.to) { const t = setTimeout(() => { setFlyer(null); libFade.setValue(1); }, 1500); return () => clearTimeout(t); }
     if (flyer.landed) return undefined;
     Animated.parallel([
@@ -157,15 +158,29 @@ function Root() {
         {screen === 'start' && (
           // while the menu page is being turned, My Library is drawn underneath and shows through
           <View style={peek ? [StyleSheet.absoluteFill, { zIndex: 10 }] : { flex: 1 }}>
-            <Start u={u} go={(t, rect) => { if (t === 'library' && rect) { libFade.setValue(0); flyP.setValue(0); setFlyer({ from: rect }); } go(t); }} openMenu={coverOpen ? openMenu : () => toast('Start by opening your notebook.')} closed={!coverOpen} onOpened={() => setCoverOpen(true)} onClosed={() => setCoverOpen(false)} onPeek={(t) => setPeek(t || 'library')} />
+            <Start u={u} go={(t, rect) => { if (t === 'library' && rect) {
+              // the flying notebook is drawn over the start page's one first; only once it's surely on screen
+              // does the start page go, so there's never a frame without a notebook
+              libFade.setValue(0); flyP.setValue(0); setFlyer({ from: rect });
+              setTimeout(() => go(t), 90);
+              return;
+            }
+            go(t); }} openMenu={coverOpen ? openMenu : () => toast('Start by opening your notebook.')} closed={!coverOpen} onOpened={() => setCoverOpen(true)} onClosed={() => setCoverOpen(false)} onPeek={(t) => setPeek(t || 'library')} />
           </View>
         )}
-        {flyer && screen === 'library' && DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+        {flyer && !flyer.hold && screen === 'library' && DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
         {(screen === 'library' || (screen === 'start' && peek === 'library')) && (
           <Animated.View style={{ flex: 1, opacity: screen === 'library' ? libFade : 1 }}>
           <Library u={u} stories={[...STORIES.filter((s) => SHOWN_BOOKS.includes(s.id) && !removed.includes(s.id)), ...userStories]} openStory={openStory} openMenu={openMenu}
-            onNotebook={(rect) => { setNbFrom(rect); go('notebook'); }}
-            notebookHidden={!!flyer && !flyer.landed} onNotebookRect={(r) => setFlyer((f) => (f && !f.to && r ? { ...f, to: r } : f))}
+            onNotebook={(rect) => {
+              // the same idea the other way: a notebook is held over the shelf's one while the notebook screen
+              // gets ready, and only taken away once that screen's own flying notebook is there
+              setNbFrom(rect);
+              if (rect) { flyP.setValue(0); setFlyer({ from: rect, hold: true }); }
+              setTimeout(() => go('notebook'), 60);
+              if (rect) setTimeout(() => setFlyer((f) => (f && f.hold ? null : f)), 210); // (the notebook's own starts moving later)
+            }}
+            notebookHidden={!!flyer && !flyer.landed} onNotebookRect={(r) => setFlyer((f) => (f && !f.to && !f.hold && r ? { ...f, to: r } : f))}
             onCreate={() => openPublisher(null)} onEdit={openPublisher}
             removedCount={removed.length} onRestore={() => setRemovedSaved([])}
             onShare={(s) => shareInvite(s.title)} // an invitation to the app, not the book
