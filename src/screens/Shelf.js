@@ -19,7 +19,7 @@ const TILE = { 2: 47, 3: 31, 4: 22.5 };
 const tileWidth = (w) => `${TILE[COLS(w)]}%`;
 const gridGap = (w) => { const n = COLS(w); return `${(100 - n * TILE[n]) / (n - 1)}%`; };
 
-function Tile({ u, cover, coverArt, title, sub, onPress, onLongPress, plus, selecting, selected, badge, label, ear: showEar = true }) {
+function Tile({ u, cover, coverArt, title, sub, onPress, onLongPress, plus, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
   const { width: winW } = useWindowDimensions();
   const ear = u * 3;
   const coverRef = useRef(null);
