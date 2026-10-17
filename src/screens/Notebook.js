@@ -2,7 +2,7 @@
 // shaped like the leather notebook on the start page:
 //   - spread 1: the inside of the hard leather cover (top) and a white title page, "My Notes" (bottom)
 //   - spread 2: the badge board, over two white pages
-//   - then the child's pages: notes pages (a photo or a drawing, and typed notes) and sketch pages (one tall drawing)
+//   - then the child's pages: notes pages (a photo or a drawing, and typed notes) and sketch pages (two square pages to draw on)
 // Opened from My Library, the little notebook grows into place and its cover swings open like the one on
 // the start page. After that the white pages turn with the paper peel, like the books.
 // Everything saves on its own. Turn pages with the dog-ear or by swiping; "Pages" lists them all.
@@ -242,14 +242,21 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     const pg = pageAt(k);
     if (!pg) return null;
     if (pg.kind === 'sketch') {
-      const w = wide ? side / 2 : side;
-      return (
-        <Pressable disabled={!live} onPress={() => setDrawing(true)} style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', backgroundColor: colors.paper }]} accessibilityRole="button" accessibilityLabel="Draw on this page">
-          <View style={{ width: w, height: w * 2, backgroundColor: WHITE }}>
-            <StrokesView strokes={pg.strokes} width={w} height={w * 2} />
-          </View>
-          {!pg.strokes.length ? <Text style={styles.hint}>Tap to draw</Text> : null}
+      // a sketch spread: two square pages to draw on
+      const sq = (which, strokes, edge, spine) => (
+        <Pressable disabled={!live} onPress={() => setDrawing(which)} style={{ width: side, height: side, backgroundColor: WHITE, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}
+          accessibilityRole="button" accessibilityLabel={which === 'top' ? 'Draw on the top page' : 'Draw on the bottom page'}>
+          <StrokesView strokes={strokes} width={side} height={side} />
+          <Fade edge={edge} size={Math.round(side * 0.09)} max={0.15} />
+          {spine ? <Spine wide={wide} /> : null}
+          {!strokes.length ? <Text style={styles.hint}>Tap to draw</Text> : null}
         </Pressable>
+      );
+      return (
+        <View style={[StyleSheet.absoluteFill, { flexDirection: wide ? 'row' : 'column' }]}>
+          {sq('top', pg.strokes, wide ? 'right' : 'bottom', false)}
+          {sq('bottom', pg.strokes2 || [], wide ? 'left' : 'top', true)}
+        </View>
       );
     }
     return (
@@ -331,7 +338,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   // peel); while a page turns, the next spread with the top of the turning one over it
   const layers = [];
   const abs = (k, key, ref, live) => (
-    <View key={key} ref={ref} collapsable={false} pointerEvents={live ? 'auto' : 'none'} style={[StyleSheet.absoluteFill, shape, { overflow: 'hidden', backgroundColor: colors.paper }]}>{spread(k, live)}</View>
+    <View key={key} ref={ref} collapsable={false} pointerEvents={live ? 'auto' : 'none'} style={[StyleSheet.absoluteFill, shape, { overflow: 'hidden', backgroundColor: live && intro ? 'transparent' : colors.paper }]}>{spread(k, live)}</View>
   );
   if (flipPair && peel) {
     const { a, b } = flipPair;
@@ -354,7 +361,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
         {nb ? (
           <View ref={bookRef} collapsable={false} onLayout={measureBook} {...swipe.panHandlers}
-            style={[styles.bookShadow, shape, { width: bookW, height: bookH, opacity: intro === 'fly' ? 0 : 1 }]}>
+            style={[styles.bookShadow, shape, { width: bookW, height: bookH, opacity: intro === 'fly' ? 0 : 1 }, intro ? { backgroundColor: 'transparent', shadowOpacity: 0 } : null]}>
             {layers}
             {!flipPair && !intro ? (
               <>
@@ -405,9 +412,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
             <View key={p.pid} style={[styles.prow, i === k + FIRST_PAGE && { borderColor: colors.green }]}>
               <Pressable onPress={() => { setI(k + FIRST_PAGE); setPagesOpen(false); }} style={[styles.thumb, { backgroundColor: WHITE }]} accessibilityLabel={`Go to page ${k + 3}`}>
                 {p.uri ? <Image source={{ uri: p.uri }} style={styles.fill} resizeMode="cover" /> : null}
-                {p.kind === 'sketch'
-                  ? <View style={{ width: 32, height: 64 }}><StrokesView strokes={p.strokes} width={32} height={64} /></View>
-                  : <StrokesView strokes={p.strokes} width={64} height={64} />}
+                <StrokesView strokes={p.strokes} width={64} height={64} />
               </Pressable>
               <View style={{ flex: 1, minWidth: 0, height: 64, justifyContent: 'space-between' }}>
                 <Pressable onPress={() => { setI(k + FIRST_PAGE); setPagesOpen(false); }}>
@@ -435,7 +440,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
             <Pressable onPress={() => addPage('note')} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Notes page</Text></Pressable>
             <Text style={styles.choiceHint}>A picture or a drawing, with your notes under it.</Text>
             <Pressable onPress={() => addPage('sketch')} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Sketch page</Text></Pressable>
-            <Text style={styles.choiceHint}>One big page to draw on.</Text>
+            <Text style={styles.choiceHint}>Two square pages to draw on.</Text>
             <Pressable onPress={() => setNewAsk(false)} style={[styles.choiceBtn, { marginTop: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Cancel</Text></Pressable>
           </View>
         </View>
@@ -445,7 +450,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
             <Text style={styles.choiceTitle}>{page.uri || page.strokes.length ? 'Change the picture' : 'Add a picture'}</Text>
-            <Pressable onPress={() => { setPicAsk(false); setDrawing(true); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{page.uri ? 'Draw on the photo' : page.strokes.length ? 'Keep drawing' : 'Make a drawing'}</Text></Pressable>
+            <Pressable onPress={() => { setPicAsk(false); setDrawing('top'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{page.uri ? 'Draw on the photo' : page.strokes.length ? 'Keep drawing' : 'Make a drawing'}</Text></Pressable>
             <Pressable onPress={() => { setPicAsk(false); choosePhoto('library'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Choose a photo</Text></Pressable>
             <Pressable onPress={() => { setPicAsk(false); setCamGate(true); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Take a photo</Text></Pressable>
             {page.uri ? <Pressable onPress={() => { setPicAsk(false); dropNotebookPicture(page.uri); update({ uri: null, w: 1, h: 1 }); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Remove the photo</Text></Pressable> : null}
@@ -475,9 +480,9 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       ) : null}
 
       {drawing && page ? (
-        <DrawEditor insets={insets} tall={page.kind === 'sketch'} photo={page.kind === 'sketch' ? null : page.uri} strokes={page.strokes}
+        <DrawEditor insets={insets} photo={page.kind === 'sketch' ? null : page.uri} strokes={drawing === 'bottom' ? page.strokes2 || [] : page.strokes}
           title={page.kind === 'sketch' ? `Sketch · Page ${i + 1}` : `Drawing · Page ${i + 1}`}
-          onDone={(strokes) => { update({ strokes }); setDrawing(false); if (strokes.length) markFirst('firstDrawing'); }} />
+          onDone={(strokes) => { update(drawing === 'bottom' ? { strokes2: strokes } : { strokes }); setDrawing(false); if (strokes.length) markFirst('firstDrawing'); }} />
       ) : null}
     </View>
   );
@@ -566,8 +571,7 @@ function BadgeSpread({ log, side, wide, toast }) {
         <Text style={[styles.boardTitle, { fontSize: Math.min(26, side * 0.075) }]}>My Badges</Text>
         <Text style={styles.boardStats}>{count === 1 ? '1 book finished' : `${count} books finished`} · {streak === 1 ? '1 day of reading' : `${streak} days in a row`}</Text>
         <View style={{ height: side * 0.05 }} />
-        {row(pick('milestone'))}
-        {row(pick('streak'))}
+        {row([...pick('milestone'), ...pick('streak')])}
       </View>
       <View style={{ width: side, height: side, backgroundColor: WHITE, overflow: 'hidden' }}>
         <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.09)} max={0.13} />
