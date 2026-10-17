@@ -493,6 +493,11 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       ) : null}
       {introEl}
       <Panel open={pagesOpen} side="right" title="Pages" portraitWidth="94%" bottom={wide ? 0 : u * 17 + insets.bottom} inset={wide ? BL.rightW : 0} onClose={() => setPagesOpen(false)}>
+        {/* new pages first, side by side, above the list */}
+        <View style={{ flexDirection: 'row', gap: 12, marginBottom: 18 }}>
+          <Pressable onPress={() => addPage('note')} style={[styles.halfPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>New notes page</Text></Pressable>
+          <Pressable onPress={() => addPage('sketch')} style={[styles.halfPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>New sketch page</Text></Pressable>
+        </View>
         <ScrollView style={{ maxHeight: Math.max(340, winH * 0.5) }} contentContainerStyle={{ gap: 14, paddingBottom: 6 }}>
           <Pressable onPress={() => { setI(BADGES); setPagesOpen(false); }} style={[styles.prow, i === BADGES && { borderColor: colors.green }]}>
             <View style={[styles.thumb, { backgroundColor: '#c9a227' }]}><Text style={styles.thumbNum}>★</Text></View>
@@ -517,10 +522,6 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
             </View>
           ))}
         </ScrollView>
-        <View style={{ alignItems: 'flex-end', gap: 12, marginTop: 26, marginBottom: 10 }}>
-          <Pressable onPress={() => addPage('note')} style={[styles.stackPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>New notes page</Text></Pressable>
-          <Pressable onPress={() => addPage('sketch')} style={[styles.stackPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>New sketch page</Text></Pressable>
-        </View>
       </Panel>
 
       {newAsk ? (
@@ -897,6 +898,7 @@ const styles = StyleSheet.create({
   prowSub: { color: '#bbb', fontSize: 14, fontWeight: '400', fontFamily: fonts.ui },
   pbtn: { width: 36, height: 36, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
   pbtnText: { color: colors.white, fontWeight: '700', fontSize: 18 },
+  halfPill: { flex: 1, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
   stackPill: { width: 200, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
   pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   choiceBack: { backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', zIndex: 60, padding: 30 },
