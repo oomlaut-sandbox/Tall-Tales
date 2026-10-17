@@ -110,7 +110,35 @@ export const FALLING = {
   ],
 };
 
-export const STORIES = [DIFFERENT, FALLING, SAMPLE_STORY];
+// "Small Wonders": six short nature poems. Pictures are public-domain natural history plates from the 1800s
+// (Wikimedia Commons): Köhler's Medizinal-Pflanzen 1887 (dandelion, fern, oak), Lovell's Edible Mollusca 1884
+// (snail), Hussey's Illustrations of British Mycology 1847 (mushroom), Audubon's Birds of America 1827–38 (robin).
+export const SMALL_WONDERS = {
+  id: 'small-wonders',
+  title: 'Small Wonders',
+  author: 'Oomlaut',
+  storeShelf: 'new',
+  blurb: 'Six little poems about the small wonders of nature, from a dandelion clock to a robin’s nest, each with a beautiful drawing from a natural history book of the 1800s.',
+  syllables: {
+    dandelion: ['dan', 'de', 'li', 'on'], little: ['lit', 'tle'], gently: ['gent', 'ly'], sleepy: ['sleep', 'y'],
+    lacy: ['la', 'cy'], hurry: ['hur', 'ry'], worry: ['wor', 'ry'], wherever: ['wher', 'ev', 'er'],
+    mushrooms: ['mush', 'rooms'], beneath: ['be', 'neath'], spotted: ['spot', 'ted'], village: ['vil', 'lage'],
+    overnight: ['o', 'ver', 'night'], acorn: ['a', 'corn'], mighty: ['might', 'y'], branches: ['branch', 'es'],
+    robin: ['rob', 'in'], babies: ['ba', 'bies'], mother: ['moth', 'er'], wonders: ['won', 'ders'],
+    nature: ['na', 'ture'], drawings: ['draw', 'ings'], poems: ['po', 'ems'], opens: ['o', 'pens'],
+  },
+  pages: [
+    { pid: 'sw01', titlePage: true, image: require('../assets/books/small-wonders/cover.jpg'), w: 1600, h: 1600, text: 'Small Wonders. Nature poems with drawings from the 1800s.' },
+    { pid: 'sw02', image: require('../assets/books/small-wonders/dandelion.jpg'), w: 1600, h: 1600, text: 'A dandelion, round and white,\na tiny moon of fluff and light.\nI make a wish and gently blow,\nand off the little seeds all go.' },
+    { pid: 'sw03', image: require('../assets/books/small-wonders/fern.jpg'), w: 1600, h: 1600, text: 'The fern unrolls a little curl,\na sleepy, green and folded swirl.\nEach day it opens, slow and wide,\nto show the lacy leaves inside.' },
+    { pid: 'sw04', image: require('../assets/books/small-wonders/snail.jpg'), w: 1600, h: 1600, text: 'The snail is never in a hurry,\nit never needs to fuss or worry.\nWherever it goes, by day or night,\nit brings its house, and that’s just right.' },
+    { pid: 'sw05', image: require('../assets/books/small-wonders/mushroom.jpg'), w: 1600, h: 1600, text: 'After the rain, beneath the trees,\nthe mushrooms pop up, if you please,\nin spotted hats of red and white,\na tiny village overnight.' },
+    { pid: 'sw06', image: require('../assets/books/small-wonders/acorn.jpg'), w: 1600, h: 1600, text: 'This little acorn, smooth and brown,\nwears a tiny cap upon its crown.\nInside it sleeps a mighty tree\nthat one day soon will wake, you’ll see.' },
+    { pid: 'sw07', image: require('../assets/books/small-wonders/robin.jpg'), w: 1600, h: 1600, text: 'Up in the branches, snug and round,\na robin’s nest sits safe and sound.\nThe babies peep, the mother sings,\nand soon they’ll try their little wings.' },
+  ],
+};
+
+export const STORIES = [DIFFERENT, SMALL_WONDERS, FALLING, SAMPLE_STORY];
 
 // Split text into words with their character ranges, so read-aloud progress can be mapped to a word.
 export function tokenize(text) {
@@ -134,4 +162,4 @@ export function syllablesFor(story, word) {
 
 // The books shown in My Library and the Book Store for now (Jörg will add two more later).
 // The others stay in the app, just hidden: add their ids back here to show them again.
-export const SHOWN_BOOKS = ['different'];
+export const SHOWN_BOOKS = ['different', 'small-wonders'];
