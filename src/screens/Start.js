@@ -81,7 +81,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
   const goTo = (target) => {
     if (leaving.current || busy.current) return;
     leaving.current = true;
-    settle(0, 1, () => go(target));
+    settle(0, 1, () => setTimeout(() => go(target), 500)); // shut, a half-second pause, then the page
   };
   // Dragging: the cover follows the finger the whole way (up / to the left opens it, down / to the
   // right closes it); let go past halfway and it falls open, otherwise it settles back shut.
