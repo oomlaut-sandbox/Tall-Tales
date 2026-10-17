@@ -23,7 +23,7 @@ export const PENS = [
   ['#1b1b1b', 'Black'], ['#c0392b', 'Red'], ['#e67e22', 'Orange'], ['#e5b81c', 'Yellow'],
   ['#4f8a3a', 'Green'], ['#2e6fb5', 'Blue'], ['#8a4f9e', 'Purple'], ['#8b5a3c', 'Brown'], ['#ffffff', 'White'],
 ];
-export const SIZES = [['thin', 0.008], ['medium', 0.018], ['thick', 0.04]];
+export const SIZES = [['thin', 0.007], ['medium', 0.015], ['thick', 0.032]]; // a sharp pencil, a crayon, a chunky crayon
 
 // is the point (x, y) close to any point of the stroke? (for the eraser)
 export function near(st, x, y, r) {
