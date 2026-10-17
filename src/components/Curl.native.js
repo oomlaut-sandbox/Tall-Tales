@@ -90,7 +90,9 @@ export function liftMatrix(M, nx, ny, t, textH) {
 // sideways: the book lies on its side (picture left, words right). The peel is worked out exactly as
 // upright (in a frame turned a quarter turn), so it looks and feels the same: W and H are then the
 // upright frame's size (W = the page height, H = twice that) and the pictures are turned to match.
-export function FlapPeel({ width: W, height: H, artH, t, corner, front, back, ox = 0, oy = 0, canvasW, canvasH, sideways }) {
+// matte: plain paper (no sheen on the lifted page, softer shadows), for the notebook.
+// round: the pages' corner radius (the notebook's pages are rounded), so the flat part keeps clean corners.
+export function FlapPeel({ width: W, height: H, artH, t, corner, front, back, ox = 0, oy = 0, canvasW, canvasH, sideways, matte, round = 0 }) {
   if (!front || !back || !W || !H) return null;
   const CW = canvasW || W, CH = canvasH || H;
   // upright frame -> screen. Sideways: a quarter turn, so the frame's top (the picture) lands on the left.
@@ -118,6 +120,7 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back, ox
   // all the shading fades away as the page lands (and fades in as a backward turn starts)
   const settle = 1 - Math.max(0, Math.min(1, (t - 0.82) / 0.18));
   const frontPath = toPath(fold.front);
+  const roundRect = round ? Skia.RRectXY(Skia.XYWHRect(0, 0, W, H), round, round) : null;
   const cut = toPath(fold.cut);
   const shadeW = Math.max(18, Math.min(60, depth * 0.55));
   const shadeA = Math.min(0.32, (depth / W) * 0.5 + 0.08) * settle;
@@ -145,10 +148,10 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back, ox
         <Group clip={rect(0, 0, W, artH - textH)} opacity={fadeIn}>{pic(back)}</Group>
       ) : null}
       {/* the part of the words half still lying flat */}
-      <Group clip={frontPath}>{pic(front)}</Group>
+      <Group clip={round ? roundRect : undefined}><Group clip={frontPath}>{pic(front)}</Group></Group>
       {/* the lifted part's shadow on the page */}
       <Group transform={reflect}>
-        <Path path={cut} color={`rgba(0,0,0,${(0.28 * settle).toFixed(3)})`}>
+        <Path path={cut} color={`rgba(0,0,0,${((matte ? 0.16 : 0.28) * settle).toFixed(3)})`}>
           <BlurMask blur={8} style="normal" />
         </Path>
       </Group>
@@ -161,7 +164,7 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back, ox
             <LinearGradient
               start={g0}
               end={vec(M[0] + nx * Math.max(1, depth), M[1] + ny * Math.max(1, depth))}
-              colors={[`rgba(0,0,0,${(0.2 * settle).toFixed(3)})`, 'rgba(0,0,0,0)', `rgba(255,255,255,${(0.12 * settle).toFixed(3)})`, `rgba(0,0,0,${(0.05 * settle).toFixed(3)})`]}
+              colors={matte ? [`rgba(0,0,0,${(0.1 * settle).toFixed(3)})`, 'rgba(0,0,0,0)', 'rgba(0,0,0,0)', 'rgba(0,0,0,0)'] : [`rgba(0,0,0,${(0.2 * settle).toFixed(3)})`, 'rgba(0,0,0,0)', `rgba(255,255,255,${(0.12 * settle).toFixed(3)})`, `rgba(0,0,0,${(0.05 * settle).toFixed(3)})`]}
               positions={[0, Math.min(0.5, 20 / Math.max(1, depth)), 0.55, 1]}
             />
           </Rect>

@@ -134,7 +134,9 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     }, 140);
     return () => clearTimeout(t);
   }, [intro, bookAt, nb]);
-  const opening = intro === 'fly' || intro === 'flip'; // the real notebook stays hidden under the flying cover
+  const opening = intro === 'fly' || intro === 'flip';
+  const introRef = useRef(intro);
+  introRef.current = intro; // the real notebook stays hidden under the flying cover
 
   // ---- turning pages: the paper peel on the phone (upright), a plain switch otherwise ----
   const refs = { cur: useRef(null), prev: useRef(null), next: useRef(null) };
@@ -247,6 +249,8 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   // and the page turns; otherwise it falls back. Taps still go to the squares.
   const drag = useRef({});
   const swipe = useRef(PanResponder.create({
+    // takes the touch from the squares as soon as it turns into a swipe (a tap still goes to them)
+    onMoveShouldSetPanResponderCapture: (_, g) => !busy.current && !introRef.current && (Math.abs(g.dx) > 10 || Math.abs(g.dy) > 10),
     onMoveShouldSetPanResponder: (_, g) => !busy.current && Math.abs(g.dx) + Math.abs(g.dy) > 12,
     onPanResponderTerminationRequest: () => false,
     onPanResponderGrant: (_, g) => {
@@ -476,10 +480,10 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 40 }]}>
           {wide ? (
             // sideways: the right page peels from its bottom-right corner over the spine (as in the books)
-            <PeelGuard><PeelLayer start={prog.current} sideways width={bookH} height={bookW} artH={bookH} corner="left" front={peel.front} back={peel.back}
+            <PeelGuard><PeelLayer start={prog.current} matte round={R} sideways width={bookH} height={bookW} artH={bookH} corner="left" front={peel.front} back={peel.back}
               ox={bookAt.x} oy={bookAt.y} canvasW={winW} canvasH={winH} /></PeelGuard>
           ) : (
-            <PeelGuard><PeelLayer start={prog.current} width={bookW} height={bookH} artH={side} corner="right" front={peel.front} back={peel.back}
+            <PeelGuard><PeelLayer start={prog.current} matte round={R} width={bookW} height={bookH} artH={side} corner="right" front={peel.front} back={peel.back}
               ox={bookAt.x} oy={bookAt.y} canvasW={winW} canvasH={winH} /></PeelGuard>
           )}
         </View>
