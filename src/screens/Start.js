@@ -135,7 +135,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
             <View style={[at2, styles.page, round, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.paper }]}>
               <View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden' }]}><Felt opacity={0.7} /></View>
               {/* spine shadow on the page: a soft one along the fold (the leather side gets the deeper one) */}
-              <View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden' }]}><Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.13)} max={0.2} /></View>
+              <View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden' }]}><Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.17)} max={0.32} /></View>
               <Spine wide={wide} />
               {/* the two items as one block, centred in the page */}
               <View style={{ gap: k * 8, transform: [{ translateX: k * 5 }] }}>{/* nudged a little to the right */}
