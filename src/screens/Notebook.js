@@ -463,10 +463,12 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
               </Animated.View>
             ) : null}
             <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { opacity: intro === 'fly' ? 0 : 1 }]}>{layers}</View>
-            {/* the folded corner stays until the paper actually starts to lift, and is back as soon as the page lands */}
+            {/* the corner spots: there until the paper starts to lift, back as soon as the page lands */}
             {!(flipPair && peelLive && !landed) && !intro ? (
               <>
-                <RoundEar size={Math.max(30, u * 9)} radius={R} onPress={next} label={i >= total - 1 ? 'Add a page' : 'Next page'} />
+                {/* no folded corner: the bottom-right corner is an invisible spot that turns to the next page */}
+                <Pressable onPress={next} accessibilityRole="button" accessibilityLabel={i >= total - 1 ? 'Add a page' : 'Next page'}
+                  style={{ position: 'absolute', right: 0, bottom: 0, width: Math.max(46, u * 13), height: Math.max(46, u * 13), zIndex: 20 }} />
                 {/* the bottom-left corner turns back a page (an invisible spot, like the folded corner on the right) */}
                 {i > 0 ? <Pressable onPress={() => turn(-1)} accessibilityRole="button" accessibilityLabel="Previous page"
                   style={{ position: 'absolute', left: 0, bottom: 0, width: Math.max(46, u * 13), height: Math.max(46, u * 13), zIndex: 20 }} /> : null}
