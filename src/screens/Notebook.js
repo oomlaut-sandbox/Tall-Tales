@@ -362,7 +362,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     </View>
   );
   const barBtns = (vertical) => (
-    <View style={vertical ? { alignItems: 'center', gap: 18 } : { flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+    <View style={vertical ? { alignItems: 'center', gap: 18, marginBottom: 26 } : { flexDirection: 'row', alignItems: 'center', gap: 14 }}>{/* sideways: lifted up from the corner */}
       <Pressable onPress={() => setPagesOpen(true)} hitSlop={8} accessibilityRole="button"><Text style={styles.btn}>Pages</Text></Pressable>
       <Pressable onPress={async () => { clearTimeout(timer.current); if (latest.current) await saveNotebook(latest.current); onDone(); }} hitSlop={8} accessibilityRole="button" accessibilityLabel="Close the notebook">
         <View style={styles.finish}><Text style={styles.btn}>Done</Text></View>
