@@ -441,31 +441,32 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               ))}
             </View>
           </View>
-        ) : (
-          <View style={{ flexDirection: 'row', gap: 10, marginTop: 30 /* well clear of the pages list */ }}>
-            <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('share'); }} disabled={making} style={[styles.wide, styles.pill]}>
-              <Text style={styles.wideText}>{making ? 'Working…' : 'Share as PDF'}</Text>
-            </Pressable>
-            <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('print'); }} disabled={making} style={[styles.wide, styles.pill]}>
-              <Text style={styles.wideText}>Print</Text>
-            </Pressable>
-          </View>
-        )}
-        {confirmDelete ? (
+        ) : confirmDelete ? (
           <View style={{ gap: 10, marginTop: 44 }}>
             <Text style={styles.warn}>Delete “{draft.title.trim() || 'Untitled story'}”, its pictures and any voice recordings? This can’t be undone.</Text>
             <View style={{ flexDirection: 'row', gap: 10 }}>
-              <Pressable onPress={deleteStory} style={[styles.wide, { backgroundColor: colors.highlight }]}><Text style={styles.wideText}>Delete story</Text></Pressable>
+              <Pressable onPress={deleteStory} style={[styles.wide, { backgroundColor: colors.highlight }]}><Text style={styles.wideText}>Delete book</Text></Pressable>
               <Pressable onPress={() => setConfirmDelete(false)} style={styles.wide}><Text style={styles.wideText}>Keep it</Text></Pressable>
             </View>
           </View>
         ) : (
-          // the store owner only: send this book to the Book Store
-          admin ? <Pressable onPress={publish} disabled={publishing} accessibilityRole="button" style={[styles.deletePill, { backgroundColor: colors.blue, marginBottom: 0 }]}><Text style={styles.wideText}>{publishing ? 'Publishing…' : 'Publish to the Book Store'}</Text></Pressable> : null
-        )}
-        {confirmDelete ? null : (
-          // a red pill, well apart from Share and Print
-          <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} accessibilityRole="button" style={[styles.deletePill, admin && { marginTop: 30 }]}><Text style={styles.wideText}>Delete this story</Text></Pressable>
+          // the pills stacked on the right, well clear of the pages list: Share as PDF, Print, (the owner's Publish), Delete Book
+          <View style={{ alignItems: 'flex-end', gap: 12, marginTop: 30, marginBottom: 10 }}>
+            <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('share'); }} disabled={making} style={[styles.stackPill, { backgroundColor: '#6b6b6b' }]} accessibilityRole="button">
+              <Text style={styles.wideText}>{making ? 'Working…' : 'Share as PDF'}</Text>
+            </Pressable>
+            <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('print'); }} disabled={making} style={[styles.stackPill, { backgroundColor: '#6b6b6b' }]} accessibilityRole="button">
+              <Text style={styles.wideText}>Print</Text>
+            </Pressable>
+            {admin ? (
+              <Pressable onPress={publish} disabled={publishing} style={[styles.stackPill, { backgroundColor: colors.blue }]} accessibilityRole="button">
+                <Text style={styles.wideText}>{publishing ? 'Publishing…' : 'Publish to Store'}</Text>
+              </Pressable>
+            ) : null}
+            <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} style={[styles.stackPill, { backgroundColor: colors.highlight }]} accessibilityRole="button">
+              <Text style={styles.wideText}>Delete Book</Text>
+            </Pressable>
+          </View>
         )}
       </Panel>
       {editing ? (
@@ -753,5 +754,6 @@ const styles = StyleSheet.create({
   pill: { flex: 1, backgroundColor: '#6b6b6b', borderRadius: 22, height: 44, paddingVertical: 0, justifyContent: 'center' }, // Share as PDF / Print: medium grey pills
   wide: { flex: 1, backgroundColor: colors.tile, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
   deletePill: { alignSelf: 'flex-start', height: 44, borderRadius: 22, paddingHorizontal: 26, backgroundColor: colors.highlight, alignItems: 'center', justifyContent: 'center', marginTop: 44, marginBottom: 14 },
+  stackPill: { width: 180, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' }, // the Pages box pills, stacked on the right
   wideText: { color: colors.white, fontWeight: '700', fontSize: 15, fontFamily: fonts.ui },
 });

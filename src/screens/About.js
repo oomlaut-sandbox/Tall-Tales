@@ -36,7 +36,7 @@ export default function About({ u, openMenu }) {
         <Text style={styles.tagline}>Picture books in your voice.</Text>
       </View>
       <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={[styles.body, { paddingBottom: 24 }]}>
+      <ScrollView contentContainerStyle={[styles.body, { paddingBottom: 24 }, phone && winH < 740 && { paddingTop: 12, gap: 12 }]}>
         <Text style={[styles.p, textStyle]}>
           Oomlaut Reader is a home for beautifully illustrated stories, made for children who are learning to read and the grown-ups who read with them.
         </Text>
