@@ -107,7 +107,7 @@ export default function Help({ u, openMenu, onAbout }) {
         <View style={styles.col}>
           {/* (a short video tour will go here later) */}
           {/* the search field sits in a stitched felt strip (with its own drop shadow) */}
-          <View style={{ width: '100%', aspectRatio: 1260 / 366, marginTop: 14, justifyContent: 'center' }}>
+          <View style={{ width: '100%', height: undefined, aspectRatio: 1260 / 366, marginTop: 14, justifyContent: 'center', overflow: 'visible' }}>
             <Image source={SEARCH_FELT} resizeMode="stretch" style={StyleSheet.absoluteFill} />
             <TextInput value={q} onChangeText={setQ} placeholder="Search help" placeholderTextColor="#666"
               style={[styles.search, { marginHorizontal: '9%' }]} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel="Search help" />
