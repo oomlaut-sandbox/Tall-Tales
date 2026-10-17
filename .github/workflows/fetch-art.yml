@@ -1,0 +1,30 @@
+# Looks up public-domain drawings on Wikimedia Commons (ci/art-queries.json) and saves the candidates
+# on the art-output branch, to be chosen and added to a book by hand. Run by hand or with [art] in a commit.
+name: Fetch art
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['ci/art-queries.json']
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node ci/fetch-art.js
+      - name: Save
+        run: |
+          mv art-out /tmp/art-out
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          git checkout -q --orphan art-output
+          git rm -rfq --cached . > /dev/null
+          rm -rf ./* .gitignore 2>/dev/null || true
+          cp -r /tmp/art-out ./art-out
+          git add -f art-out
+          git commit -qm "Art candidates"
+          git push -qf origin art-output
