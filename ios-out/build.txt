@@ -1,0 +1,54 @@
+spawn env -u CI -u GITHUB_ACTIONS -u CONTINUOUS_INTEGRATION npx --yes eas-cli@latest build --platform ios --profile production --auto-submit --no-wait
+⠧⠇⠏⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏⠋⠙⠹Resolved "production" environment for the build. Learn more: https://docs.expo.dev/eas/environment-variables/#setting-the-environment-for-your-builds
+No environment variables with visibility "Plain text" and "Sensitive" found for the "production" environment on EAS.
+⠋ Incrementing buildNumber from 65 to 66.⠙ Incrementing buildNumber from 65 to 66.✔ Incremented buildNumber from 65 to 66.
+You've used 43 builds beyond your included credits this billing period ($41.00 in additional usage so far).
+Additional builds continue at pay-as-you-go rates. See usage in billing.: https://expo.dev/accounts/oomlaut-code/settings/billing
+✔ Using remote iOS credentials (Expo server)
+⠋ Linking bundle identifier com.oomlaut.reader⠙ Linking bundle identifier com.oomlaut.reader⠹ Linking bundle identifier com.oomlaut.reader⠸ Linking bundle identifier com.oomlaut.reader✔ Bundle identifier registered com.oomlaut.reader
+⠋ Syncing capabilities⠙ Syncing capabilities⠹ Syncing capabilities⠸ Syncing capabilities⠼ Syncing capabilities✔ Synced capabilities: No updates
+⠋ Syncing capabilities identifiersSkipping capability identifier syncing because the current Apple authentication session is not using Cookies (username/password).
+⠋ Syncing capabilities identifiers✔ Synced capability identifiers: No updates
+⠋ Fetching Apple distribution certificates⠙ Fetching Apple distribution certificates✔ Fetched Apple distribution certificates
+⠋ Fetching Apple provisioning profiles⠙ Fetching Apple provisioning profiles⠹ Fetching Apple provisioning profiles⠸ Fetching Apple provisioning profiles⠼ Fetching Apple provisioning profiles⠴ Fetching Apple provisioning profiles⠦ Fetching Apple provisioning profiles⠧ Fetching Apple provisioning profiles✔ Fetched Apple provisioning profiles
+Project Credentials Configuration
+Project                   @oomlaut-code/tall-tales
+Bundle Identifier         com.oomlaut.reader
+App Store Configuration   
+Distribution Certificate  
+Serial Number             2536B53EE91073CBCC5E049F69006EF1
+Expiration Date           Wed, 13 Oct 2027 11:29:35 UTC
+Apple Team                657P4D6HBR 
+Updated                   4 days ago
+Provisioning Profile      
+Developer Portal ID       KC6QTR8SSN
+Status                    active
+Expiration                Wed, 13 Oct 2027 11:29:35 UTC
+Apple Team                657P4D6HBR 
+Updated                   3 days ago
+All credentials are ready to build @oomlaut-code/tall-tales (com.oomlaut.reader)
+Compressing project files and uploading to EAS Build. Learn more: https://expo.fyi/eas-build-archive
+⠋ Compressing project files⠙ Compressing project files⠹ Compressing project files⠸ Compressing project files⠼ Compressing project files⠴ Compressing project files⠦ Compressing project files⠧ Compressing project files⠇ Compressing project files⠏ Compressing project files⠋ Compressing project files⠙ Compressing project files⠹ Compressing project files⠸ Compressing project files⠼ Compressing project files⠴ Compressing project files⠦ Compressing project files⠧ Compressing project files⠇ Compressing project files⠏ Compressing project files⠋ Compressing project files⠙ Compressing project files⠹ Compressing project files⠸ Compressing project files⠼ Compressing project files⠴ Compressing project files⠦ Compressing project files⠧ Compressing project files⠇ Compressing project files⠏ Compressing project files⠋ Compressing project files⠙ Compressing project files⠹ Compressing project files⠸ Compressing project files⠼ Compressing project files⠴ Compressing project files⠦ Compressing project files⠧ Compressing project files⠇ Compressing project files⠏ Compressing project files⠋ Compressing project files⠙ Compressing project files⠹ Compressing project files⠸ Compressing project files⠼ Compressing project files⠴ Compressing project files⠦ Compressing project files✔ Compressed project files 6s (146 MB)
+⠋ Uploading to EAS Build (0 / 146 MB)⠙ Uploading to EAS Build (4.1 MB / 146 MB)⠹ Uploading to EAS Build (16.1 MB / 146 MB)⠸ Uploading to EAS Build (26.4 MB / 146 MB)⠼ Uploading to EAS Build (36.6 MB / 146 MB)⠴ Uploading to EAS Build (46.1 MB / 146 MB)⠦ Uploading to EAS Build (55.2 MB / 146 MB)⠧ Uploading to EAS Build (65.0 MB / 146 MB)⠇ Uploading to EAS Build (74.4 MB / 146 MB)⠏ Uploading to EAS Build (85.2 MB / 146 MB)⠋ Uploading to EAS Build (94.3 MB / 146 MB)⠙ Uploading to EAS Build (104 MB / 146 MB)⠹ Uploading to EAS Build (112 MB / 146 MB)⠸ Uploading to EAS Build (125 MB / 146 MB)⠼ Uploading to EAS Build (134 MB / 146 MB)⠴ Uploading to EAS Build (140 MB / 146 MB)⠦ Uploading to EAS Build (146 MB / 146 MB)⠧ Uploading to EAS Build (146 MB / 146 MB)⠇ Uploading to EAS Build (146 MB / 146 MB)✔ Uploaded to EAS 1s
+⠋ Computing project fingerprint⠙ Computing project fingerprint⠹ Computing project fingerprint⠸ Computing project fingerprint⠼ Computing project fingerprint⠴ Computing project fingerprint⠦ Computing project fingerprint⠧ Computing project fingerprint⠇ Computing project fingerprint⠏ Computing project fingerprint⠋ Computing project fingerprint⠙ Computing project fingerprint⠹ Computing project fingerprint⠸ Computing project fingerprint⠼ Computing project fingerprint⠴ Computing project fingerprint⠦ Computing project fingerprint⠧ Computing project fingerprint⠇ Computing project fingerprint⠏ Computing project fingerprint⠋ Computing project fingerprint⠙ Computing project fingerprint⠹ Computing project fingerprint⠸ Computing project fingerprint⠼ Computing project fingerprint⠴ Computing project fingerprint⠦ Computing project fingerprint⠧ Computing project fingerprint⠇ Computing project fingerprint⠏ Computing project fingerprint⠋ Computing project fingerprint⠙ Computing project fingerprint⠹ Computing project fingerprint⠸ Computing project fingerprint⠼ Computing project fingerprint⠴ Computing project fingerprint⠦ Computing project fingerprint⠧ Computing project fingerprint⠇ Computing project fingerprint⠏ Computing project fingerprint⠋ Computing project fingerprint⠙ Computing project fingerprint⠹ Computing project fingerprint⠸ Computing project fingerprint⠼ Computing project fingerprint⠴ Computing project fingerprint✔ Computed project fingerprint
+See logs: https://expo.dev/accounts/oomlaut-code/projects/tall-tales/builds/6a5195ff-6589-4a22-b941-cc4b541828b7
+ASC App ID:                 6822165068
+Project ID:                 c1175638-16e5-4be5-b443-b93246c7ec7f
+App Store Connect API Key:  
+    Key ID    :  7L86679WHW
+    Key Source:  local
+    Key Path  :  ./asc-api-key.p8
+Build:                      
+    Build ID    :  6a5195ff-6589-4a22-b941-cc4b541828b7
+    Build Date  :  10/17/2026, 5:39:05 PM
+    App Version :  0.1.0
+    Build number:  66
+⠋ Scheduling iOS submission⠙ Scheduling iOS submission⠹ Scheduling iOS submission✔ Scheduled iOS submission
+Submission details: https://expo.dev/accounts/oomlaut-code/projects/tall-tales/submissions/90c2e0c2-e289-4248-8919-9fd3381bea5c
+⠙npm notice
+npm notice New major version of npm available! 10.9.9 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+⠙
+exit 0
