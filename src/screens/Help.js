@@ -5,7 +5,7 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWin
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../theme';
-import { DESK_FELT, IS_TABLET } from '../look';
+import { DESK_FELT, IS_TABLET, DESK_BG } from '../look';
 import { Bar, Burger, WithBar } from '../components/Chrome';
 
 const BAND_FELT = require('../../assets/band-profile.jpg'); // the yellow-orange felt banner
@@ -149,7 +149,7 @@ export default function Help({ u, openMenu, onAbout }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.desk }, // the dark felt, as everywhere else
+  screen: { flex: 1, backgroundColor: DESK_BG }, // the dark felt, as everywhere else
   band: { backgroundColor: colors.orange, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 34, paddingBottom: 40, alignItems: 'center' },

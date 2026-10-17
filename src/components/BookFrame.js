@@ -4,7 +4,7 @@
 //
 // Upright (phones, and iPads held upright) the squares are stacked: picture above words. On a
 // screen that is clearly wider than tall (an iPad held sideways) they sit side by side.
-import { DeskFelt } from '../look';
+import { DeskFelt, DESK_BG } from '../look';
 import React from 'react';
 import { Image, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -88,8 +88,8 @@ export function Spine({ wide }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.desk },
-  desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.desk },
+  screen: { flex: 1, backgroundColor: DESK_BG },
+  desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: DESK_BG },
   shadow: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
   book: { flex: 1, overflow: 'hidden', backgroundColor: colors.paper },
   spineH: { position: 'absolute', left: 0, right: 0, top: 0, height: StyleSheet.hairlineWidth * 2, backgroundColor: '#4a4a4a' },

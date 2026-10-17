@@ -4,7 +4,7 @@ import { Animated, Easing, Image, PanResponder, Platform, Pressable, Share, Styl
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOOK_FONTS, colors, fonts } from '../theme';
-import { DESK_FELT, DeskFelt, Felt, IS_TABLET } from '../look';
+import { DESK_FELT, DeskFelt, Felt, IS_TABLET, DESK_BG } from '../look';
 import { tokenize, cleanWord, syllablesFor } from '../story';
 import { Fade, PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
 import { FLAP_PERSPECTIVE, flapTables } from '../flapStrips';
@@ -843,8 +843,8 @@ function RecTimer({ start, style }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.desk },
-  desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.desk },
+  screen: { flex: 1, backgroundColor: DESK_BG },
+  desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: DESK_BG },
   bookShadow: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
   book: { flex: 1, overflow: 'hidden', backgroundColor: colors.paper },
   mine: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 14, marginTop: 3 },

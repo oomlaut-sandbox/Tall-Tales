@@ -15,7 +15,7 @@ import { colors, fonts } from '../theme';
 import { Bar, Burger, DogEar, Panel } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
-import { DESK_FELT, DeskFelt, Felt } from '../look';
+import { DESK_FELT, DeskFelt, Felt, DESK_BG } from '../look';
 import ParentGate from '../components/ParentGate';
 import { StrokesView } from '../components/Strokes';
 import { EarArt } from '../components/Ear';
@@ -551,7 +551,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       {writing && page ? (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 50 }]}>
           <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.desk }]}>
-            <DeskFelt spot="notebook2" />
+            <DeskFelt spot="notebook2" overlay />
           </View>
           <View style={{ flex: 1, alignItems: 'center', paddingTop: insets.top + 34 }}>
             <View style={styles.editorHead}><Text style={styles.editorTitle}>My notes · Page {i + 1}</Text></View>
@@ -813,7 +813,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
     // sideways: a big page on the left (as tall as there's room for), the title and tools in a column on the right
     return (
       <View style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk }]}>
-        <DeskFelt spot="notebook3" />
+        <DeskFelt spot="notebook3" overlay />
         <View style={{ flex: 1, flexDirection: 'row', paddingLeft: insets.left + 24, paddingRight: insets.right + 24, paddingTop: Math.max(insets.top, 16) + 8, paddingBottom: Math.max(insets.bottom, 12) + 8, gap: 28 }}
           onLayout={(e) => setArea({ w: e.nativeEvent.layout.width - insets.left - insets.right - 48, h: e.nativeEvent.layout.height - Math.max(insets.top, 16) - Math.max(insets.bottom, 12) - 16 })}>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>{W ? paper : null}</View>
@@ -838,7 +838,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
   }
   return (
     <View style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk }]}>
-      <DeskFelt spot="notebook4" />
+      <DeskFelt spot="notebook4" overlay />
       <View style={{ flex: 1, alignItems: 'center', paddingTop: insets.top + 20, paddingBottom: insets.bottom + 10 }}>
         <View style={styles.editorHead}><Text style={styles.editorTitle}>{title}</Text></View>
         <View style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center' }} onLayout={(e) => setArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
@@ -864,8 +864,8 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.desk },
-  desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.desk },
+  screen: { flex: 1, backgroundColor: DESK_BG },
+  desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: DESK_BG },
   coverShadow: { backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 8 },
   bookShadow: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
   page: { flex: 1, backgroundColor: colors.paper, overflow: 'hidden' },

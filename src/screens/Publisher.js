@@ -10,7 +10,7 @@ import { BOOK_FONTS, bookFont, colors, fonts } from '../theme';
 import { Bar, Burger, DogEar, Panel, PageShape, Toast } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
-import { DESK_FELT, DeskFelt } from '../look';
+import { DESK_FELT, DeskFelt, DESK_BG } from '../look';
 import { COVER_COLORS, bylineStyle, coverTitleLook, titleStyle } from '../components/CoverArt';
 import { creditsLine } from '../userStories';
 import { playKey } from '../sound';
@@ -474,7 +474,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 50 }]}>
           <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: colors.desk, opacity: zoom }]}>
             {/* the charcoal felt (phones only; DESK_FELT is empty on iPad) */}
-            <DeskFelt spot="publisher2" />
+            <DeskFelt spot="publisher2" overlay />
           </Animated.View>
           <View style={[styles.editor, { flex: 1, paddingTop: insets.top + 34 }]}>
           <Animated.View style={[styles.editorHead, { opacity: zoom }]}>
@@ -541,7 +541,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       {coverOpen ? (
         // the Cover Editor stops at the black bar, which stays in view (its Pages and Finish fade out meanwhile)
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk, overflow: 'hidden' }, wide ? { right: BL.rightW } : { bottom: BL.barH }]}>
-          <DeskFelt spot="publisher3" />
+          <DeskFelt spot="publisher3" overlay />
           <View style={[styles.editor, { flex: 1, paddingTop: kbUp ? insets.top + 8 : insets.top + (winW > winH ? 12 : 34), paddingLeft: insets.left, paddingRight: insets.right }]}>
             {!kbUp ? <View style={styles.editorHead}><Text style={styles.editorTitle}>Cover</Text></View> : null}
             <View style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: kbUp ? 'center' : 'flex-start' }}
@@ -719,8 +719,8 @@ const styles = StyleSheet.create({
   choiceBtn: { backgroundColor: colors.tile, height: 50, borderRadius: 25, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
   choiceBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   choiceLink: { color: '#d6d6d6', fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, textAlign: 'center', paddingVertical: 4 },
-  screen: { flex: 1, backgroundColor: colors.desk },
-  desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.desk },
+  screen: { flex: 1, backgroundColor: DESK_BG },
+  desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: DESK_BG },
   bookShadow: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
   spine: { position: 'absolute', left: 0, right: 0, top: 0, height: StyleSheet.hairlineWidth * 2, backgroundColor: '#4a4a4a' },
   help: { position: 'absolute', top: 14, right: 14, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', zIndex: 5 },

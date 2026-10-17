@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
-import { DESK_FELT, Felt, IS_TABLET, Stitch } from '../look';
+import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG } from '../look';
 import { Bar, BarMeta, Burger, DogEar, Panel, WithBar } from '../components/Chrome';
 import { accessLabel, bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
@@ -390,7 +390,7 @@ function Badge({ book }) {
 const CARD_GREY = '#bdbdbd', CARD_INK = '#222222';
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.desk }, // same dark grey as reading
+  screen: { flex: 1, backgroundColor: DESK_BG }, // same dark grey as reading
   // a generous gap between the felt title band and the first row of books
   grid: { padding: 20, paddingTop: 42, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
   tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.55, shadowRadius: 9, elevation: 8 }, // a clear shadow, so covers lift off the felt

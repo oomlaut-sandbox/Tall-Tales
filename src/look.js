@@ -43,7 +43,11 @@ export const DESK_FELT = IS_TABLET ? null : require('../assets/desk-felt.jpg');
 // same spot on the screen (the whole window), and only shows the part that falls inside its own area, so
 // when one screen gives way to another the felt never shifts, scales or jumps.
 const feltSpots = {}; // where each felt area was last time (so it's right from the very first frame next time)
-export function DeskFelt({ spot = 'any' }) {
+// The whole app has one felt underneath everything (App.js); a screen's own felt only shows once it knows
+// exactly where it is, so until then the one underneath shows through and nothing ever jumps.
+// overlay: a full-screen layer on top (starts at the screen's corner, so it can show straight away).
+export const DESK_BG = DESK_FELT ? 'transparent' : '#3b3b3b';
+export function DeskFelt({ spot = 'any', overlay }) {
   const win = useWindowDimensions();
   const ref = React.useRef(null);
   const [at, setAt] = React.useState(feltSpots[spot] || null);
@@ -54,6 +58,7 @@ export function DeskFelt({ spot = 'any' }) {
     setAt((o) => (o && o.x === x && o.y === y ? o : n));
   });
   if (!DESK_FELT) return null;
+  if (!at && !overlay) return <View ref={ref} collapsable={false} onLayout={measure} pointerEvents="none" style={StyleSheet.absoluteFill} />;
   const o = at || { x: 0, y: 0 };
   return (
     <View ref={ref} collapsable={false} onLayout={measure} pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]}>

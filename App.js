@@ -157,6 +157,8 @@ function Root() {
       <SafeAreaInsetsContext.Provider value={screenInsets}>
       <LookContext.Provider value={look}>
       <View style={[styles.app, { width: W }]}>
+        {/* the one felt underneath everything, locked to the screen */}
+        <DeskFelt spot="root" overlay />
         {screen === 'start' && (
           // while the menu page is being turned, My Library is drawn underneath and shows through
           <View style={peek ? [StyleSheet.absoluteFill, { zIndex: 10 }] : { flex: 1 }}>

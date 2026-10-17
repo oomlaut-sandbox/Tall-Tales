@@ -72,7 +72,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
       {/* the dark grey with the reader's black bars fades in over the library */}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: bg, backgroundColor: colors.desk }]}>
         {/* the same charcoal felt as the library and the reader (phones), so it never drops to plain grey */}
-        <DeskFelt spot="bookopen1" />
+        <DeskFelt spot="bookopen1" overlay />
         <Felt />
         {L.wide ? (
           <>
