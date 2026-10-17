@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, Dimensions, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { StatusBar } from 'expo-status-bar';
 import { Asset } from 'expo-asset';
 import { SafeAreaInsetsContext, SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFonts, EBGaramond_400Regular, EBGaramond_400Regular_Italic, EBGaramond_500Medium, EBGaramond_700Bold } from '@expo-google-fonts/eb-garamond';
 import { SpecialElite_400Regular } from '@expo-google-fonts/special-elite';
+import { DancingScript_700Bold } from '@expo-google-fonts/dancing-script';
 import { colors, fonts, MAX_WIDTH } from './src/theme';
 import Start from './src/screens/Start';
 import { bookLayout, startRoom } from './src/components/BookFrame';
@@ -19,7 +20,7 @@ import { onUserChange } from './src/account';
 import ParentGate from './src/components/ParentGate';
 import Reader from './src/screens/Reader';
 import Publisher, { draftFrom } from './src/screens/Publisher';
-import Notebook from './src/screens/Notebook';
+import Notebook, { NOTEBOOK_COVER, R_EDGE, R_SPINE } from './src/screens/Notebook';
 import { onNewBadge } from './src/badges';
 import { SHOWN_BOOKS, STORIES } from './src/story';
 import { shareInvite } from './src/invite';
@@ -91,6 +92,21 @@ function Root() {
     setTimeout(() => toast(fresh.length > 1 ? `New badges! ${b.kind === 'book' ? 'You finished a book' : b.title} and more. See them in My Notebook.` : `New badge: ${name}! See it in My Notebook.`), 900);
   }), [toast]);
 
+  // From the start page to My Library: the closed notebook flies onto the shelf as the library fades in.
+  const [flyer, setFlyer] = useState(null); // { from, to } screen rectangles
+  const libFade = useRef(new Animated.Value(1)).current;
+  const flyP = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (!flyer) return undefined;
+    if (!flyer.to) { const t = setTimeout(() => { setFlyer(null); libFade.setValue(1); }, 1500); return () => clearTimeout(t); }
+    flyP.setValue(0);
+    Animated.parallel([
+      Animated.timing(flyP, { toValue: 1, duration: 700, easing: Easing.inOut(Easing.cubic), useNativeDriver: false }),
+      Animated.timing(libFade, { toValue: 1, duration: 700, easing: Easing.inOut(Easing.quad), useNativeDriver: false }),
+    ]).start(() => setFlyer(null));
+    return undefined;
+  }, [flyer && flyer.to]);
+  const [nbFrom, setNbFrom] = useState(null); // where the little notebook was on the shelf when it was opened
   const go = (s) => { stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen(s); };
   // A book with a title page opens onto its title page with a blank white page above it (the
   // inside of the cover); its cover picture is the cover. From My Library, the cover animates open.
@@ -137,12 +153,15 @@ function Root() {
         {screen === 'start' && (
           // while the menu page is being turned, My Library is drawn underneath and shows through
           <View style={peek ? [StyleSheet.absoluteFill, { zIndex: 10 }] : { flex: 1 }}>
-            <Start u={u} go={go} openMenu={coverOpen ? openMenu : () => toast('Start by opening your notebook.')} closed={!coverOpen} onOpened={() => setCoverOpen(true)} onClosed={() => setCoverOpen(false)} onPeek={(t) => setPeek(t || 'library')} />
+            <Start u={u} go={(t, rect) => { if (t === 'library' && rect) { libFade.setValue(0); setFlyer({ from: rect }); } go(t); }} openMenu={coverOpen ? openMenu : () => toast('Start by opening your notebook.')} closed={!coverOpen} onOpened={() => setCoverOpen(true)} onClosed={() => setCoverOpen(false)} onPeek={(t) => setPeek(t || 'library')} />
           </View>
         )}
+        {flyer && screen === 'library' && DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
         {(screen === 'library' || (screen === 'start' && peek === 'library')) && (
+          <Animated.View style={{ flex: 1, opacity: screen === 'library' ? libFade : 1 }}>
           <Library u={u} stories={[...STORIES.filter((s) => SHOWN_BOOKS.includes(s.id) && !removed.includes(s.id)), ...userStories]} openStory={openStory} openMenu={openMenu}
-            onNotebook={() => go('notebook')}
+            onNotebook={(rect) => { setNbFrom(rect); go('notebook'); }}
+            notebookHidden={!!flyer} onNotebookRect={(r) => setFlyer((f) => (f && !f.to && r ? { ...f, to: r } : f))}
             onCreate={() => openPublisher(null)} onEdit={openPublisher}
             removedCount={removed.length} onRestore={() => setRemovedSaved([])}
             onShare={(s) => shareInvite(s.title)} // an invitation to the app, not the book
@@ -154,8 +173,9 @@ function Root() {
               if (mine) setUserStories(mine);
               toast(list.length === 1 ? 'Book deleted.' : `${list.length} books deleted.`);
             }} />
+          </Animated.View>
         )}
-        {screen === 'notebook' && <Notebook u={u} openMenu={openMenu} toast={toast} onDone={() => go('library')} />}
+        {screen === 'notebook' && <Notebook u={u} from={nbFrom} openMenu={openMenu} toast={toast} onDone={() => go('library')} />}
         {screen === 'publisher' && draft && (
           <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} />
         )}
@@ -183,6 +203,18 @@ function Root() {
           <BookOpen u={u} story={opening.story} cover={opening.cover} rect={opening.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}
             onDone={() => { setStory(opening.story); go('reader'); setTimeout(() => setOpening(null), 60); }} />
         ) : null}
+        {flyer && flyer.to ? (() => {
+          const lerp = (a, b) => flyP.interpolate({ inputRange: [0, 1], outputRange: [a, b] });
+          const size = lerp(flyer.from.w, flyer.to.w);
+          const c = (f) => flyP.interpolate({ inputRange: [0, 1], outputRange: [flyer.from.w * f, flyer.to.w * f] });
+          const round = { borderTopLeftRadius: c(R_SPINE), borderTopRightRadius: c(R_SPINE), borderBottomLeftRadius: c(R_EDGE), borderBottomRightRadius: c(R_EDGE) };
+          return (
+            <Animated.View pointerEvents="none" style={[{ position: 'absolute', zIndex: 150, left: lerp(flyer.from.x, flyer.to.x), top: lerp(flyer.from.y, flyer.to.y), width: size, height: size,
+              backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 9 }, round]}>
+              <Animated.View style={[{ flex: 1, overflow: 'hidden' }, round]}><Image source={NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} /></Animated.View>
+            </Animated.View>
+          );
+        })() : null}
         <ParentGate visible={profileGate} reason="Your profile is for grown-ups." onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
         <Toast message={message} area={toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         <View pointerEvents="none" style={sideways
@@ -202,7 +234,7 @@ const HOME_PICTURE = require('./assets/leather.jpg');
 if (Platform.OS !== 'web') ScreenOrientation.unlockAsync().catch(() => {});
 
 export default function App() {
-  const [loaded] = useFonts({ EBGaramond_400Regular, EBGaramond_400Regular_Italic, EBGaramond_500Medium, EBGaramond_700Bold, SpecialElite_400Regular });
+  const [loaded] = useFonts({ EBGaramond_400Regular, EBGaramond_400Regular_Italic, EBGaramond_500Medium, EBGaramond_700Bold, SpecialElite_400Regular, DancingScript_700Bold });
   const [pictureReady, setPictureReady] = useState(false);
   useEffect(() => {
     let done = false;

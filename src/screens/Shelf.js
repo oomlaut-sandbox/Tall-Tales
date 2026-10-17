@@ -85,15 +85,18 @@ const NOTEBOOK_COVER = require('../../assets/leather-cover.jpg');
 
 // My Notebook on the shelf: a small copy of the leather notebook on the start page, with the same
 // rounded corners (tiny along the spine at the top, rounder at the bottom) and no dog-ear.
-function NotebookTile({ onPress }) {
+function NotebookTile({ onPress, hidden, onRect }) {
   const { width: winW } = useWindowDimensions();
   const [w, setW] = useState(0);
+  const ref = useRef(null);
+  // where the little notebook is on screen: the notebook flies from here when it opens, and lands here from the start page
+  const measure = (then) => (ref.current && ref.current.measureInWindow ? ref.current.measureInWindow((x, y, ww, h) => then(ww ? { x, y, w: ww, h } : null)) : then(null));
+  const corners = { borderTopLeftRadius: w * 0.012, borderTopRightRadius: w * 0.012, borderBottomLeftRadius: w * 0.102, borderBottomRightRadius: w * 0.102 };
   return (
-    <Pressable onPress={onPress} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel="My Notebook">
-      <View onLayout={(e) => setW(e.nativeEvent.layout.width)}
-        style={{ aspectRatio: 1, borderTopLeftRadius: w * 0.012, borderTopRightRadius: w * 0.012, borderBottomLeftRadius: w * 0.102, borderBottomRightRadius: w * 0.102,
-          backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, elevation: 8 }}>
-        <View style={{ flex: 1, overflow: 'hidden', borderTopLeftRadius: w * 0.012, borderTopRightRadius: w * 0.012, borderBottomLeftRadius: w * 0.102, borderBottomRightRadius: w * 0.102 }}>
+    <Pressable onPress={() => measure(onPress)} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel="My Notebook">
+      <View ref={ref} collapsable={false} onLayout={(e) => { setW(e.nativeEvent.layout.width); if (onRect) setTimeout(() => measure(onRect), 30); }}
+        style={[{ aspectRatio: 1, backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, elevation: 8, opacity: hidden ? 0 : 1 }, corners]}>
+        <View style={[{ flex: 1, overflow: 'hidden' }, corners]}>
           <Image source={NOTEBOOK_COVER} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
         </View>
       </View>
@@ -102,7 +105,7 @@ function NotebookTile({ onPress }) {
   );
 }
 
-export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook }) {
+export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
   const { width: winW } = useWindowDimensions();
   const [selecting, setSelecting] = useState(false);
   const [picked, setPicked] = useState([]);
@@ -141,7 +144,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
         sub={selecting ? (picked.length ? `${picked.length} selected` : 'Tap books to select them') : 'Your stories, ready to read'} />
       <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]}>
         {/* My Notebook: always the first book on the shelf (notes, drawings and reading badges) */}
-        {!selecting && onNotebook ? <NotebookTile onPress={onNotebook} /> : null}
+        {!selecting && onNotebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
         {!selecting && onNotebook ? <View style={{ width: '100%' }} /> : null}{/* the notebook has the top row to itself */}
         {stories.map((s) => (
           // just the title under each cover (no author, pages or other details)

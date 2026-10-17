@@ -58,6 +58,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
   const { width: winW, height: winH } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const leaving = useRef(false);
+  const coverRef = useRef(null); // the cover, measured when it's about to fly to the shelf
   // When the app opens the book is simply there on the felt, closed: no slide-in (Jörg's choice).
   const [opening, setOpening] = useState(false); // the cover is moving or open (hides the dog-ear)
   const [isOpen, setIsOpen] = useState(!closed);
@@ -85,7 +86,12 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
   const goTo = (target) => {
     if (leaving.current || busy.current) return;
     leaving.current = true;
-    settle(0, 1, () => setTimeout(() => go(target), 500)); // shut, a half-second pause, then the page
+    // shut, a half-second pause, then the page. My Library: the closed notebook then shrinks and slides onto the
+    // shelf (the app does that, so it's told where the notebook is); the Book Store just appears.
+    settle(0, 1, () => setTimeout(() => {
+      if (target === 'library' && coverRef.current && coverRef.current.measureInWindow) coverRef.current.measureInWindow((x, y, w, h) => go(target, w ? { x, y, w, h } : null));
+      else go(target);
+    }, 500));
   };
   // Dragging: the cover follows the finger the whole way (up / to the left opens it, down / to the
   // right closes it); let go past halfway and it falls open, otherwise it settles back shut.
@@ -156,7 +162,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
             {/* the cover */}
             {(
               // the cover keeps its shape (and drop shadow) while it turns: the rounded corners swing over to the far side
-              <Animated.View {...swipe.panHandlers} pointerEvents={isOpen ? 'none' : 'auto'} style={[at2, styles.page, round, { zIndex: 8, backgroundColor: COVER_BROWN }, leaf]}>
+              <Animated.View ref={coverRef} collapsable={false} {...swipe.panHandlers} pointerEvents={isOpen ? 'none' : 'auto'} style={[at2, styles.page, round, { zIndex: 8, backgroundColor: COVER_BROWN }, leaf]}>
                 <Animated.View style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: frontOp }]}>
                   {coverImg}
                   <Pressable style={StyleSheet.absoluteFill} onPress={open} accessibilityRole="button" accessibilityLabel="Open the book" />
