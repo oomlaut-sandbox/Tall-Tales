@@ -169,7 +169,13 @@ function Root() {
             go(t); }} openMenu={coverOpen ? openMenu : () => toast('Start by opening your notebook.')} closed={!coverOpen} onOpened={() => setCoverOpen(true)} onClosed={() => setCoverOpen(false)} onPeek={(t) => setPeek(t || 'library')} />
           </View>
         )}
-        {flyer && !flyer.hold && screen === 'library' && DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+        {flyer && !flyer.hold && screen === 'library' ? (
+          // while the notebook lands: the felt, and the black bar already in My Library's place, so it doesn't blink away
+          <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+            {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+            {!sideways ? <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: barH, backgroundColor: colors.bar }}><Felt /></View> : null}
+          </View>
+        ) : null}
         {(screen === 'library' || (screen === 'start' && peek === 'library')) && (
           <Animated.View style={{ flex: 1, opacity: screen === 'library' ? libFade : 1 }}>
           <Library u={u} stories={[...STORIES.filter((s) => SHOWN_BOOKS.includes(s.id) && !removed.includes(s.id)), ...userStories]} openStory={openStory} openMenu={openMenu}
