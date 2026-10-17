@@ -725,7 +725,9 @@ function UndoIcon() {
 
 // ---- The drawing editor: a page to draw on with your finger, with pens, an eraser, undo and clear ----
 function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
-  const { width: winW } = useWindowDimensions();
+  const { width: winW, height: winH } = useWindowDimensions();
+  const wideScreen = winW > winH * 1.1; // sideways: the page on the left, the tools on the right
+  const TOOLS_W = 270;
   const [strokes, setStrokes] = useState(start || []);
   const [live, setLive] = useState(null);
   const [pen, setPen] = useState(PENS[0][0]);
@@ -735,7 +737,8 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
   const S = useRef({});
   S.current = { strokes, pen, size, erase };
   const toolsH = 200;
-  const W = area ? Math.max(120, Math.floor(Math.min(winW - 2 * GAP, tall ? (area.h - toolsH) / 2 : area.h - toolsH))) : 0;
+  const W = !area ? 0 : wideScreen ? Math.max(120, Math.floor(Math.min(area.h, area.w - TOOLS_W - 28)))
+    : Math.max(120, Math.floor(Math.min(winW - 2 * GAP, tall ? (area.h - toolsH) / 2 : area.h - toolsH)));
   const Wref = useRef(W);
   Wref.current = W;
   const cur = useRef(null);
@@ -770,6 +773,66 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
       if (c) setStrokes((s) => [...s, c]);
     },
   })).current;
+  const paper = (
+    <View {...pad.panHandlers} style={[styles.drawPaper, { width: W, height: tall ? W * 2 : W }]}>
+      {photo ? <Image source={{ uri: photo }} style={StyleSheet.absoluteFill} resizeMode="cover" pointerEvents="none" /> : null}
+      <StrokesView strokes={strokes} live={live} width={W} height={tall ? W * 2 : W} />
+    </View>
+  );
+  const swatches = (w, perRow) => (
+    <View style={{ width: w, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 14 }}>
+      {PENS.map(([hex, name]) => (
+        <View key={hex} style={{ width: perRow ? w / perRow : undefined, alignItems: perRow ? 'center' : undefined }}>
+          <Pressable onPress={() => { setPen(hex); setErase(false); }} accessibilityLabel={`${name} pen`}
+            style={[styles.swatch, { backgroundColor: hex }, !erase && pen === hex && styles.swatchOn]} />
+        </View>
+      ))}
+    </View>
+  );
+  const sizesEl = (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+      {SIZES.map(([name, s]) => (
+        <Pressable key={name} onPress={() => { setSize(s); setErase(false); }} style={[styles.tool, !erase && size === s && styles.toolOn]} accessibilityLabel={`${name} pen`}>
+          <View style={{ width: 5 + s * 280, height: 5 + s * 280, borderRadius: 20, backgroundColor: colors.white }} />
+        </Pressable>
+      ))}
+      <Pressable onPress={() => setErase((x) => !x)} style={[styles.toolWide, erase && styles.toolOn]} accessibilityLabel="Eraser">
+        <Text style={styles.toolText}>Eraser</Text>
+      </Pressable>
+    </View>
+  );
+  const undoEl = (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+      <Pressable onPress={() => setStrokes((s) => s.slice(0, -1))} disabled={!strokes.length} style={[styles.tool, !strokes.length && { opacity: 0.35 }]} accessibilityLabel="Undo">
+        <UndoIcon />
+      </Pressable>
+      <Pressable onPress={() => setStrokes([])} disabled={!strokes.length} style={[styles.toolWide, !strokes.length && { opacity: 0.35 }]} accessibilityLabel="Clear the drawing">
+        <Text style={styles.toolText}>Clear</Text>
+      </Pressable>
+    </View>
+  );
+  const doneEl = <Pressable onPress={() => onDone(strokes)} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { marginBottom: 0 }]}><Text style={styles.pillText}>Done</Text></Pressable>;
+  if (wideScreen) {
+    // sideways: a big page on the left (as tall as there's room for), the title and tools in a column on the right
+    return (
+      <View style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk }]}>
+        {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+        <View style={{ flex: 1, flexDirection: 'row', paddingLeft: insets.left + 24, paddingRight: insets.right + 24, paddingTop: Math.max(insets.top, 16) + 8, paddingBottom: Math.max(insets.bottom, 12) + 8, gap: 28 }}
+          onLayout={(e) => setArea({ w: e.nativeEvent.layout.width - insets.left - insets.right - 48, h: e.nativeEvent.layout.height - Math.max(insets.top, 16) - Math.max(insets.bottom, 12) - 16 })}>
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>{W ? paper : null}</View>
+          <View style={{ width: TOOLS_W, justifyContent: 'space-between' }}>
+            <Text style={styles.editorTitle}>{title}</Text>
+            <View style={{ gap: 22 }}>
+              {swatches(TOOLS_W, 5)}
+              {sizesEl}
+              {undoEl}
+            </View>
+            <View style={{ alignItems: 'flex-end' }}>{doneEl}</View>
+          </View>
+        </View>
+      </View>
+    );
+  }
   return (
     <View style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk }]}>
       {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
@@ -778,43 +841,19 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
         <View style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center' }} onLayout={(e) => setArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
           {W ? (
             <>
-              <View {...pad.panHandlers} style={[styles.drawPaper, { width: W, height: tall ? W * 2 : W }]}>
-                {photo ? <Image source={{ uri: photo }} style={StyleSheet.absoluteFill} resizeMode="cover" pointerEvents="none" /> : null}
-                <StrokesView strokes={strokes} live={live} width={W} height={tall ? W * 2 : W} />
-              </View>
+              {paper}
               <View style={{ width: W, marginTop: 30, gap: 24 }}>{/* the tools line up with the page's left and right edges */}
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  {PENS.map(([hex, name]) => (
-                    <Pressable key={hex} onPress={() => { setPen(hex); setErase(false); }} accessibilityLabel={`${name} pen`}
-                      style={[styles.swatch, { backgroundColor: hex }, !erase && pen === hex && styles.swatchOn]} />
-                  ))}
-                </View>
+                {swatches(W)}
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    {SIZES.map(([name, s]) => (
-                      <Pressable key={name} onPress={() => { setSize(s); setErase(false); }} style={[styles.tool, !erase && size === s && styles.toolOn]} accessibilityLabel={`${name} pen`}>
-                        <View style={{ width: 5 + s * 280, height: 5 + s * 280, borderRadius: 20, backgroundColor: colors.white }} />
-                      </Pressable>
-                    ))}
-                    <Pressable onPress={() => setErase((x) => !x)} style={[styles.toolWide, erase && styles.toolOn]} accessibilityLabel="Eraser">
-                      <Text style={styles.toolText}>Eraser</Text>
-                    </Pressable>
-                  </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Pressable onPress={() => setStrokes((s) => s.slice(0, -1))} disabled={!strokes.length} style={[styles.tool, !strokes.length && { opacity: 0.35 }]} accessibilityLabel="Undo">
-                      <UndoIcon />
-                    </Pressable>
-                    <Pressable onPress={() => setStrokes([])} disabled={!strokes.length} style={[styles.toolWide, !strokes.length && { opacity: 0.35 }]} accessibilityLabel="Clear the drawing">
-                      <Text style={styles.toolText}>Clear</Text>
-                    </Pressable>
-                  </View>
+                  {sizesEl}
+                  {undoEl}
                 </View>
               </View>
             </>
           ) : null}
         </View>
         <View style={{ width: winW - 2 * GAP, alignItems: 'flex-end' }}>
-          <Pressable onPress={() => onDone(strokes)} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { marginBottom: 0 }]}><Text style={styles.pillText}>Done</Text></Pressable>
+          {doneEl}
         </View>
       </View>
     </View>
