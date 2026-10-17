@@ -499,9 +499,37 @@ function Lines({ side }) {
 // ---- The badge spread: the second spread of the notebook, over two white pages ----
 // Top page: the title, how much has been read, the milestones and the streaks.
 // Bottom page: the firsts, then a patch for every book finished (it scrolls if there are many).
+// Jörg's felt badges, cut out with drop shadows (300 px badge inside a 368 px picture). Locked: the grey ones.
+const BADGE_ART = {
+  read1: [require('../../assets/badges/read1.png'), require('../../assets/badges/read1-locked.png')],
+  read5: [require('../../assets/badges/read5.png'), require('../../assets/badges/read5-locked.png')],
+  read10: [require('../../assets/badges/read10.png'), require('../../assets/badges/read10-locked.png')],
+  read25: [require('../../assets/badges/read25.png'), require('../../assets/badges/read25-locked.png')],
+  read50: [require('../../assets/badges/read50.png'), require('../../assets/badges/read50-locked.png')],
+  streak3: [require('../../assets/badges/streak3.png'), require('../../assets/badges/streak3-locked.png')],
+  streak7: [require('../../assets/badges/streak7.png'), require('../../assets/badges/streak7-locked.png')],
+  streak30: [require('../../assets/badges/streak30.png'), require('../../assets/badges/streak30-locked.png')],
+  firstRecording: [require('../../assets/badges/firstRecording.png'), require('../../assets/badges/firstRecording-locked.png')],
+  firstBook: [require('../../assets/badges/firstBook.png'), require('../../assets/badges/firstBook-locked.png')],
+  firstDrawing: [require('../../assets/badges/firstDrawing.png'), require('../../assets/badges/firstDrawing-locked.png')],
+  bedtime: [require('../../assets/badges/bedtime.png'), require('../../assets/badges/bedtime-locked.png')],
+};
+const ART_PAD = 368 / 300;
+
 function Badge({ b, disc, cell, toast }) {
   const cover = b.kind === 'book' ? ((STORIES.find((s) => s.id === b.bookId) || {}).pages || [])[0]?.image || b.cover : null;
   const book = b.kind === 'book';
+  const art = BADGE_ART[b.id];
+  if (art) {
+    // the felt badge has its name stitched on, so no label under it
+    const pic = cell * 0.92;
+    return (
+      <Pressable onPress={() => toast(b.earned ? `${b.title}! ${b.how}` : `${b.title}: ${b.how}`)} style={{ width: cell, alignItems: 'center', marginBottom: disc * 0.06 }}
+        accessibilityRole="button" accessibilityLabel={`${b.title}${b.earned ? ', earned' : ', not earned yet'}`}>
+        <Image source={art[b.earned ? 0 : 1]} style={{ width: pic * ART_PAD, height: pic * ART_PAD, margin: -pic * (ART_PAD - 1) / 2, opacity: b.earned ? 1 : 0.55 }} resizeMode="contain" />
+      </Pressable>
+    );
+  }
   return (
     <Pressable onPress={() => toast(b.earned ? `${b.title}! ${b.how}` : `${b.title}: ${b.how}`)} style={{ width: cell, alignItems: 'center', marginBottom: disc * 0.18 }}
       accessibilityRole="button" accessibilityLabel={`${b.title}${b.earned ? ', earned' : ', not earned yet'}`}>

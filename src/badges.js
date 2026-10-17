@@ -1,9 +1,10 @@
 // Reading badges for My Notebook. Everything is kept on the phone.
 // What counts:
 //   - finishing a book (reading it to The End): one badge per book, with its cover
-//   - milestones: 1, 5, 10 and 25 different books finished
+//   - milestones: 1, 5, 10, 25 and 50 different books finished
 //   - streaks: reading on 3, 7 and 30 days in a row
-//   - firsts: the first recording of your own voice, the first book you made, the first drawing
+//   - firsts: the first recording of your own voice, the first book you made, the first drawing, a bedtime read
+// Their pictures are Jörg's felt badges (assets/badges, with a grey 'locked' version for ones not earned yet).
 // When a new badge is earned, everyone listening (the app shows a speech bubble) hears about it.
 import { loadJSON, saveJSON } from './storage';
 
@@ -50,6 +51,7 @@ const MILESTONES = [
   { id: 'read5', n: 5, title: 'Bookworm', how: 'Finish 5 different books.', mark: '5', color: '#3d6f9e' },
   { id: 'read10', n: 10, title: 'Story Explorer', how: 'Finish 10 different books.', mark: '10', color: '#8a4f9e' },
   { id: 'read25', n: 25, title: 'Super Reader', how: 'Finish 25 different books.', mark: '25', color: '#b5432f' },
+  { id: 'read50', n: 50, title: 'Book Champ', how: 'Finish 50 different books.', mark: '50', color: '#2f6b3a' },
 ];
 const STREAKS = [
   { id: 'streak3', n: 3, title: '3 Days in a Row', how: 'Read on 3 days in a row.', mark: '3', color: '#c9a227' },
@@ -60,6 +62,7 @@ const FIRSTS = [
   { id: 'firstRecording', title: 'First Recording', how: 'Record your own voice reading a page.', mark: '●', color: '#c0392b' },
   { id: 'firstBook', title: 'First Book Made', how: 'Make your own book with Create a Story.', mark: '+', color: '#4f7a3a' },
   { id: 'firstDrawing', title: 'First Drawing', how: 'Draw a picture in My Notebook.', mark: '✎', color: '#3d6f9e' },
+  { id: 'bedtime', title: 'Bedtime Read', how: 'Read a book in the evening, after 7 o’clock.', mark: '☾', color: '#24345e' },
 ];
 
 // Every badge, earned or not, in the order they're shown: the fixed ones, then one per finished book.
@@ -101,8 +104,11 @@ const change = (fn) => serial(async () => {
 // a book was opened and read today
 export const markReadToday = () => change((log) => {
   const t = today();
-  if (log.days.includes(t)) return false;
-  log.days = [...log.days, t].slice(-400);
+  let changed = false;
+  // reading in the evening earns Bedtime Read
+  if (new Date().getHours() >= 19 && !log.firsts.bedtime) { log.firsts = { ...log.firsts, bedtime: Date.now() }; changed = true; }
+  if (!log.days.includes(t)) { log.days = [...log.days, t].slice(-400); changed = true; }
+  if (!changed) return false;
 });
 
 // a book was read to The End. cover: a picture of the book's cover ({uri} or a bundled image) for its badge
