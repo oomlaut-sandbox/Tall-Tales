@@ -144,7 +144,8 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const refs = { cur: useRef(null), prev: useRef(null), next: useRef(null) };
   const [flipPair, setFlipPair] = useState(null); // { a, b, dir } while a page turns
   const [peel, setPeel] = useState(null); // { front, back } pictures
-  const [peelLive, setPeelLive] = useState(false); // the peel has drawn: the page underneath can switch
+  const [peelLive, setPeelLive] = useState(false);
+  const [landed, setLanded] = useState(false); // the turned page has landed (the peel is about to be taken away) // the peel has drawn: the page underneath can switch
   const prog = useRef(0);
   const busy = useRef(false);
   const st = useRef({});
@@ -184,7 +185,8 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       if (x < 1) requestAnimationFrame(step);
       else {
         if (commit) setI(t.to);
-        setTimeout(() => { setFlipPair(null); setPeel(null); busy.current = false; }, 40);
+        setLanded(true);
+        setTimeout(() => { setFlipPair(null); setPeel(null); setLanded(false); busy.current = false; }, 40);
       }
     };
     requestAnimationFrame(step);
@@ -448,7 +450,8 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           <View ref={bookRef} collapsable={false} onLayout={measureBook}
             style={[styles.bookShadow, shape, { width: bookW, height: bookH, opacity: intro === 'fly' ? 0 : 1 }, opening ? { backgroundColor: 'transparent', shadowOpacity: 0 } : null]}>
             {layers}
-            {!flipPair && !intro ? (
+            {/* the folded corner stays until the paper actually starts to lift, and is back as soon as the page lands */}
+            {!(flipPair && peelLive && !landed) && !intro ? (
               <>
                 <RoundEar size={Math.max(30, u * 9)} radius={R} onPress={next} label={i >= total - 1 ? 'Add a page' : 'Next page'} />
                 {/* the bottom-left corner turns back a page (an invisible spot, like the folded corner on the right) */}
