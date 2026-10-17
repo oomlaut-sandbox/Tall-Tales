@@ -15,6 +15,7 @@ import { artGesture } from '../components/ZoomArt';
 // The paper peel needs pictures of the pages (phone only). If drawing it ever fails, or the
 // pictures can't be taken, the page turns with the hinged strips instead.
 const peelWorks = { ok: true };
+const REC_DEMO = Platform.OS === 'web' && typeof window !== 'undefined' && /rec-demo/.test(window.location.hash);
 class PeelGuard extends React.Component {
   state = { failed: false };
   static getDerivedStateFromError() { peelWorks.ok = false; return { failed: true }; }
@@ -99,7 +100,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   useEffect(() => {
     if (!setToastSpot) return undefined;
     let t;
-    if (recording) {
+    if (recording || REC_DEMO) {
       const place = () => bookRef.current && bookRef.current.measureInWindow && bookRef.current.measureInWindow((x, y, w, h) => {
         if (!w) return;
         const sideways = w > h * 1.2;
@@ -112,6 +113,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     return () => clearTimeout(t);
   }, [recording, size]);
   useEffect(() => () => setToastSpot && setToastSpot(null), []);
+  // web preview only (#rec-demo): shows where the recording bubble goes
+  useEffect(() => { if (REC_DEMO) setTimeout(() => toast(`Recording page 2. Turn the page to keep going, or tap ● to stop.`), 1500); }, []);
   const [recView, setRecView] = useState('main'); // main | list | settings | help
   const [recList, setRecList] = useState([]);
   const [playView, setPlayView] = useState('main'); // 'main' | 'voices' inside Playback Options
