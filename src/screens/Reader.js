@@ -823,7 +823,7 @@ const styles = StyleSheet.create({
   book: { flex: 1, overflow: 'hidden', backgroundColor: colors.paper },
   mine: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 14, marginTop: 3 },
   recMark: { position: 'absolute', top: 12, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.highlight, opacity: 0.75, zIndex: 5 },
-  mineDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.highlight },
+  mineDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.deepRed },
   mineText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 12 },
   sideBar: { backgroundColor: colors.bar, alignItems: 'flex-end', zIndex: 30 },
   bottomBar: { backgroundColor: colors.bar, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, gap: 10, zIndex: 30 },

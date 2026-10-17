@@ -445,7 +445,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <View style={{ gap: 10, marginTop: 44 }}>
             <Text style={styles.warn}>Delete “{draft.title.trim() || 'Untitled story'}”, its pictures and any voice recordings? This can’t be undone.</Text>
             <View style={{ flexDirection: 'row', gap: 10 }}>
-              <Pressable onPress={deleteStory} style={[styles.wide, { backgroundColor: colors.highlight }]}><Text style={styles.wideText}>Delete book</Text></Pressable>
+              <Pressable onPress={deleteStory} style={[styles.wide, { backgroundColor: colors.deepRed }]}><Text style={styles.wideText}>Delete book</Text></Pressable>
               <Pressable onPress={() => setConfirmDelete(false)} style={styles.wide}><Text style={styles.wideText}>Keep it</Text></Pressable>
             </View>
           </View>
@@ -463,7 +463,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 <Text style={styles.wideText}>{publishing ? 'Publishing…' : 'Publish to Store'}</Text>
               </Pressable>
             ) : null}
-            <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} style={[styles.stackPill, { backgroundColor: colors.highlight }]} accessibilityRole="button">
+            <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} style={[styles.stackPill, { backgroundColor: colors.deepRed }]} accessibilityRole="button">
               <Text style={styles.wideText}>Delete Book</Text>
             </Pressable>
           </View>
@@ -753,7 +753,7 @@ const styles = StyleSheet.create({
   layLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
   pill: { flex: 1, backgroundColor: '#6b6b6b', borderRadius: 22, height: 44, paddingVertical: 0, justifyContent: 'center' }, // Share as PDF / Print: medium grey pills
   wide: { flex: 1, backgroundColor: colors.tile, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
-  deletePill: { alignSelf: 'flex-start', height: 44, borderRadius: 22, paddingHorizontal: 26, backgroundColor: colors.highlight, alignItems: 'center', justifyContent: 'center', marginTop: 44, marginBottom: 14 },
+  deletePill: { alignSelf: 'flex-start', height: 44, borderRadius: 22, paddingHorizontal: 26, backgroundColor: colors.deepRed, alignItems: 'center', justifyContent: 'center', marginTop: 44, marginBottom: 14 },
   stackPill: { width: 180, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' }, // the Pages box pills, stacked on the right
   wideText: { color: colors.white, fontWeight: '700', fontSize: 15, fontFamily: fonts.ui },
 });

@@ -2,7 +2,8 @@ import { Platform } from 'react-native';
 
 export const colors = {
   red: '#bd1212',
-  highlight: '#e3000f',
+  highlight: '#e3000f', // the record button (and its dot in the speech bubbles)
+  deepRed: '#a5121d', // red pill buttons and menu marks: a deeper, darker red
   wordRed: '#b0000c', // the word being read: a deeper red
   paper: '#c9c9c9',
   ink: '#111111',

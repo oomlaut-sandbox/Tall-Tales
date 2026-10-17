@@ -53,7 +53,7 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
         {wrong ? <Text style={styles.wrong}>That’s not quite right. Try again.</Text> : null}
         <View style={styles.row}>
           <Pressable onPress={onCancel} style={styles.btn}><Text style={styles.btnText}>Cancel</Text></Pressable>
-          <Pressable onPress={check} style={[styles.btn, { backgroundColor: colors.highlight }]}><Text style={styles.btnText}>Continue</Text></Pressable>
+          <Pressable onPress={check} style={[styles.btn, { backgroundColor: colors.deepRed }]}><Text style={styles.btnText}>Continue</Text></Pressable>
         </View>
       </View>
     </View>

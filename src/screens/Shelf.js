@@ -170,7 +170,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
             {chosen.length > mineCount ? ' Built-in books can be brought back later.' : ''}
           </Text>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <Pressable onPress={() => setGate('delete')} style={[styles.actBtn, { backgroundColor: colors.highlight }]}><Text style={styles.actText}>Delete</Text></Pressable>
+            <Pressable onPress={() => setGate('delete')} style={[styles.actBtn, { backgroundColor: colors.deepRed }]}><Text style={styles.actText}>Delete</Text></Pressable>
             <Pressable onPress={() => setConfirm(false)} style={[styles.actBtn, { backgroundColor: '#333' }]}><Text style={styles.actText}>Keep</Text></Pressable>
           </View>
         </View>

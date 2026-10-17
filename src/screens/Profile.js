@@ -69,7 +69,7 @@ export default function Profile({ u, openMenu, toast }) {
           <View style={styles.warnBox}>
             <Text style={styles.warn}>Delete your Oomlaut account? You’ll be signed out and the account is removed for good. Books and recordings on this phone stay here.</Text>
             <View style={{ flexDirection: 'row', gap: 10 }}>
-              <Pressable onPress={() => run(async () => { await deleteAccount(); setConfirmDelete(false); toast && toast('Your account was deleted.'); })} style={[styles.btn, { flex: 1, backgroundColor: colors.highlight }]}>
+              <Pressable onPress={() => run(async () => { await deleteAccount(); setConfirmDelete(false); toast && toast('Your account was deleted.'); })} style={[styles.btn, { flex: 1, backgroundColor: colors.deepRed }]}>
                 <Text style={styles.btnText}>Delete account</Text>
               </Pressable>
               <Pressable onPress={() => setConfirmDelete(false)} style={[styles.btn, { flex: 1 }]}><Text style={styles.btnText}>Keep it</Text></Pressable>
