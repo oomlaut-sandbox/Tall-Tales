@@ -77,7 +77,7 @@ export function allBadges(log) {
   const books = Object.entries(log.finished)
     .sort((a, b) => (a[1].at || 0) - (b[1].at || 0))
     .map(([id, f]) => ({ id: `book:${id}`, bookId: id, kind: 'book', title: f.title || 'A book', how: `You read “${f.title || 'this book'}” to The End.`, cover: f.cover || null, earned: true }));
-  return [...out, ...books];
+  return out; // (finished books are counted for the milestones, but have no badges of their own)
 }
 
 // After any change: tell the listeners about badges that weren't earned before.

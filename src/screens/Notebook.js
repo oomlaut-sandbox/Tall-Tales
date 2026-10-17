@@ -670,13 +670,13 @@ function BadgeSpread({ log, side, wide, toast }) {
   const streak = log ? currentStreak(log.days) : 0;
   const books = badges.filter((b) => b.kind === 'book');
   const topItems = badges.filter((b) => b.kind === 'milestone' || b.kind === 'streak');
-  const bottomItems = badges.filter((b) => b.kind === 'first' || b.kind === 'book');
+  const bottomItems = badges.filter((b) => b.kind === 'first');
   // the words get room of their own
   const titleBox = { x: side * 0.12, y: side * 0.05, w: side * 0.76, h: side * 0.2 };
   const hintBox = { x: side * 0.18, y: side * 0.78, w: side * 0.64, h: side * 0.16 };
   const m = side * 0.04;
   const top = useMemo(() => scatter(topItems, side, { x: m, y: side * 0.26, w: side - 2 * m, h: side * 0.6 }, 'top'), [side, topItems.map((b) => b.id + b.earned).join()]);
-  const bottom = useMemo(() => scatter(bottomItems, side, { x: m, y: side * 0.05, w: side - 2 * m, h: books.length ? side * 0.9 : side * 0.7 }, 'bottom'), [side, bottomItems.map((b) => b.id + b.earned).join()]);
+  const bottom = useMemo(() => scatter(bottomItems, side, { x: m, y: side * 0.05, w: side - 2 * m, h: side * 0.9 }, 'bottom'), [side, bottomItems.map((b) => b.id + b.earned).join()]);
   const pinned = ({ d, placed }) => placed.map(({ x, y, turn, it }) => (
     <View key={it.id} style={{ position: 'absolute', left: x, top: y, transform: [{ rotate: `${turn.toFixed(1)}deg` }] }}>
       <Badge b={it} d={d} toast={toast} />
@@ -687,7 +687,7 @@ function BadgeSpread({ log, side, wide, toast }) {
       <View style={{ width: side, height: side, backgroundColor: WHITE, overflow: 'hidden' }}>
         <Fade edge={wide ? 'right' : 'bottom'} size={Math.round(side * 0.1)} max={0.2} />
         <View style={{ position: 'absolute', left: titleBox.x, top: titleBox.y, width: titleBox.w, height: titleBox.h, justifyContent: 'center' }}>
-          <Text style={[styles.boardTitle, { fontSize: Math.min(28, side * 0.08) }]}>My Badges</Text>
+          <Text style={[styles.boardTitle, { fontSize: Math.min(22, side * 0.064) }]}>My Badges</Text>
           <Text style={styles.boardStats}>{count === 1 ? '1 book finished' : `${count} books finished`} · {streak === 1 ? '1 day of reading' : `${streak} days in a row`}</Text>
         </View>
         {pinned(top)}
@@ -695,11 +695,7 @@ function BadgeSpread({ log, side, wide, toast }) {
       <View style={{ width: side, height: side, backgroundColor: WHITE, overflow: 'hidden' }}>
         <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.09)} max={0.13} />
         <Spine wide={wide} />
-        {!books.length ? (
-          <View style={{ position: 'absolute', left: hintBox.x, top: hintBox.y, width: hintBox.w, height: hintBox.h, justifyContent: 'center' }}>
-            <Text style={styles.boardStats}>Read a book all the way to The End to earn a patch for it here.</Text>
-          </View>
-        ) : null}
+
         {pinned(bottom)}
       </View>
     </View>
