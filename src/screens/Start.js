@@ -151,7 +151,8 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
             <View style={[at2, styles.page, round, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.paper }]}>
               <View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden' }]}><Felt opacity={0.7} /></View>
               {/* spine shadow on the page: a soft one along the fold (the leather side gets the deeper one) */}
-              <View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden' }]}><Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.17)} max={0.32} /></View>
+              {/* (it grows in as the cover opens, so it never pops) */}
+              <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: p.interpolate({ inputRange: [0, 0.6, 1], outputRange: [0, 0.4, 1] }) }]}><Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.17)} max={0.32} /></Animated.View>
               <Spine wide={wide} />
               {/* the two items as one block, centred in the page */}
               <View style={{ gap: k * 8, transform: [{ translateX: k * 5 }] }}>{/* nudged a little to the right */}
@@ -171,7 +172,10 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
                 <Animated.View pointerEvents="none" accessibilityLabel="Oomlaut Reader" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: backOp }]}>
                   {coverImg}
                   {/* the big spine shadow on the leather: along the edge it turns on, so it travels with the cover as it opens and closes */}
-                  <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.24)} max={0.55} />
+                  {/* fades in from the moment the inside of the cover shows, instead of appearing all at once */}
+                  <Animated.View style={[StyleSheet.absoluteFill, { opacity: p.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] }) }]}>
+                    <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.24)} max={0.55} />
+                  </Animated.View>
                 </Animated.View>
                 <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { backgroundColor: '#000', opacity: shade }]} />
               </Animated.View>
