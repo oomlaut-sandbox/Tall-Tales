@@ -28,7 +28,7 @@ import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
-import { CircleIcon, HelpIcon, InfoIcon, LibraryIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
+import { CircleIcon, InfoIcon, LibraryIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
 import { DESK_FELT, Felt, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
 import { playSound, setEffects, setEffectsVolume } from './src/sound';
@@ -253,7 +253,7 @@ function Root() {
               setDrawer(false);
               if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else toast('Open a story first, then choose how it plays.');
             }} />
-            <Option glyph={<PlusIcon />} title="Create a Story" sub="Add your own pictures and words" onPress={() => openPublisher(null)} />
+            <Option glyph={<PlusIcon />} title="Create a Story" sub="Make your own book" onPress={() => openPublisher(null)} />
             {/* Help takes Profile's place (Profile is suspended for families; the store owner signs in from About: hold Skippy) */}
             <Option glyph={<CircleIcon />} title="Help" sub="How everything works" onPress={() => go('help')} />
             <Option glyph={<InfoIcon />} title="About" sub="Learn more about the app" onPress={() => go('about')} />

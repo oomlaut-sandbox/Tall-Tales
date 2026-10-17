@@ -300,14 +300,6 @@ export function PlusIcon({ size = MENU_ICON, color = colors.white, weight = 2 })
 export function CircleIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
   return <View style={{ width: size, height: size, borderRadius: size / 2, borderWidth: weight, borderColor: color }} />;
 }
-// Help: a question mark, in the same white as the other menu icons
-export function HelpIcon({ size = MENU_ICON, color = colors.white }) {
-  return (
-    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{ color, fontFamily: fonts.ui, fontWeight: '700', fontSize: size * 1.05, lineHeight: size * 1.2 }}>?</Text>
-    </View>
-  );
-}
 export function InfoIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'space-between', paddingVertical: 1 }}>
