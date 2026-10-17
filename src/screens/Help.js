@@ -113,7 +113,7 @@ export default function Help({ u, openMenu, onAbout }) {
           <View style={{ width: stripW, height: stripH, marginTop: 14, alignSelf: 'center', justifyContent: 'center' }}>
             <Image source={SEARCH_FELT} resizeMode="stretch" style={{ position: 'absolute', left: 0, top: 0, width: stripW, height: stripH }} />
             <TextInput value={q} onChangeText={setQ} placeholder="Search help" placeholderTextColor="#666"
-              style={[styles.search, { marginLeft: stripW * 0.1, marginRight: stripW * 0.1, marginTop: -stripH * 0.04 }]} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel="Search help" />
+              style={[styles.search, { position: 'absolute', zIndex: 2, left: stripW * 0.1, width: stripW * 0.8, top: (stripH - 44) / 2 - stripH * 0.03 }]} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel="Search help" />
           </View>
           {/* About lives here now (it left the main menu) */}
           <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>About Oomlaut Reader</Text></Pressable>
