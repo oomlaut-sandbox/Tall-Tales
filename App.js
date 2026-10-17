@@ -105,9 +105,10 @@ function Root() {
     if (flyer.hold) return undefined;
     if (!flyer.to) { const t = setTimeout(() => { setFlyer(null); libFade.setValue(1); }, 1500); return () => clearTimeout(t); }
     if (flyer.landed) return undefined;
-    Animated.parallel([
+    // first the notebook settles onto the shelf over the plain felt, then My Library dissolves in around it
+    Animated.sequence([
       Animated.timing(flyP, { toValue: 1, duration: 700, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
-      Animated.timing(libFade, { toValue: 1, duration: 700, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+      Animated.timing(libFade, { toValue: 1, duration: 650, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
     ]).start(() => { setFlyer((f) => (f ? { ...f, landed: true } : f)); setTimeout(() => setFlyer(null), 90); });
     return undefined;
   }, [flyer && flyer.to, flyer && flyer.landed]);
