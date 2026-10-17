@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../theme';
 import { IS_TABLET } from '../look';
 import { Bar, Burger, WithBar } from '../components/Chrome';
@@ -112,8 +113,13 @@ export default function Help({ u, openMenu, onAbout }) {
           {/* the search field sits in a stitched felt strip (with its own drop shadow) */}
           <View style={{ width: stripW, height: stripH, marginTop: 14, alignSelf: 'center', justifyContent: 'center' }}>
             <Image source={SEARCH_FELT} resizeMode="stretch" style={{ position: 'absolute', left: 0, top: 0, width: stripW, height: stripH }} />
-            <TextInput value={q} onChangeText={setQ} placeholder="Search help" placeholderTextColor="#666"
-              style={[styles.search, { position: 'absolute', zIndex: 2, left: stripW * 0.1, width: stripW * 0.8, top: (stripH - 44) / 2 - stripH * 0.03 }]} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel="Search help" />
+            {/* the search window: a white pill set into the felt, with a soft inner shadow along its top edge */}
+            <View style={[styles.searchWrap, { left: stripW * 0.1, width: stripW * 0.8, top: (stripH - 44) / 2 }]}>
+              <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.22)', 'rgba(0,0,0,0.06)', 'rgba(0,0,0,0)']} locations={[0, 0.35, 1]} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 14 }} />
+              <LinearGradient pointerEvents="none" start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['rgba(0,0,0,0.08)', 'rgba(0,0,0,0)']} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 16 }} />
+              <TextInput value={q} onChangeText={setQ} placeholder="Search help" placeholderTextColor="#666"
+                style={styles.search} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel="Search help" />
+            </View>
           </View>
           {/* About lives here now (it left the main menu) */}
           <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>About Oomlaut Reader</Text></Pressable>
@@ -155,8 +161,9 @@ const styles = StyleSheet.create({
   video: { aspectRatio: 16 / 9, backgroundColor: '#2b2b2b', borderRadius: 14, alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 8 },
   videoPlay: { color: 'rgba(255,255,255,0.85)', fontSize: 34 },
   videoText: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 14 },
-  search: { backgroundColor: 'rgba(255,255,255,0.88)', borderRadius: 22, height: 44, paddingHorizontal: 18, fontFamily: fonts.ui, fontSize: 16, color: colors.ink, outlineWidth: 0 },
-  aboutPill: { alignSelf: 'center', backgroundColor: colors.green, height: 44, borderRadius: 22, paddingHorizontal: 26, alignItems: 'center', justifyContent: 'center', marginTop: 10 },
+  searchWrap: { position: 'absolute', zIndex: 2, height: 44, borderRadius: 22, overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.92)' },
+  search: { flex: 1, backgroundColor: 'transparent', paddingHorizontal: 18, fontFamily: fonts.ui, fontSize: 16, color: colors.ink, outlineWidth: 0 },
+  aboutPill: { alignSelf: 'flex-start', backgroundColor: colors.green, height: 44, borderRadius: 22, paddingHorizontal: 26, alignItems: 'center', justifyContent: 'center', marginTop: 10 },
   aboutText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#555', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14, marginBottom: 8 },
   card: { backgroundColor: 'rgba(255,255,255,0.55)', borderRadius: 14, paddingHorizontal: 16, paddingVertical: 12 },
