@@ -1,7 +1,7 @@
 // Help: a searchable walk-through of the app, in plain words. In the main menu above About.
 // (A short explainer video will live at the top of this page later.)
 import React, { useMemo, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { IS_TABLET } from '../look';
@@ -85,6 +85,9 @@ export const HELP = [
 
 export default function Help({ u, openMenu, onAbout }) {
   const insets = useSafeAreaInsets();
+  const { width: winW } = useWindowDimensions();
+  // the felt strip: the column's width (its picture has a little room around it for the shadow)
+  const stripW = Math.min(520, winW - 48) + 16, stripH = stripW * 366 / 1260;
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(null); // the open topic's title (when not searching)
   const found = useMemo(() => {
@@ -107,10 +110,10 @@ export default function Help({ u, openMenu, onAbout }) {
         <View style={styles.col}>
           {/* (a short video tour will go here later) */}
           {/* the search field sits in a stitched felt strip (with its own drop shadow) */}
-          <View style={{ width: '100%', height: undefined, aspectRatio: 1260 / 366, marginTop: 14, justifyContent: 'center', overflow: 'visible' }}>
-            <Image source={SEARCH_FELT} resizeMode="stretch" style={StyleSheet.absoluteFill} />
+          <View style={{ width: stripW, height: stripH, marginTop: 14, alignSelf: 'center', justifyContent: 'center' }}>
+            <Image source={SEARCH_FELT} resizeMode="stretch" style={{ position: 'absolute', left: 0, top: 0, width: stripW, height: stripH }} />
             <TextInput value={q} onChangeText={setQ} placeholder="Search help" placeholderTextColor="#666"
-              style={[styles.search, { marginHorizontal: '9%' }]} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel="Search help" />
+              style={[styles.search, { marginLeft: stripW * 0.1, marginRight: stripW * 0.1, marginTop: -stripH * 0.04 }]} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel="Search help" />
           </View>
           {/* About lives here now (it left the main menu) */}
           <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>About Oomlaut Reader</Text></Pressable>
