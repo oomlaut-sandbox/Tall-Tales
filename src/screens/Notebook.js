@@ -596,7 +596,7 @@ function BadgeSpread({ log, side, wide, toast }) {
   const titleBox = { x: side * 0.12, y: side * 0.05, w: side * 0.76, h: side * 0.2 };
   const hintBox = { x: side * 0.18, y: side * 0.78, w: side * 0.64, h: side * 0.16 };
   const m = side * 0.04;
-  const top = useMemo(() => scatter(topItems, side, { x: m, y: side * 0.27, w: side - 2 * m, h: side * 0.7 }, 'top'), [side, topItems.map((b) => b.id + b.earned).join()]);
+  const top = useMemo(() => scatter(topItems, side, { x: m, y: side * 0.26, w: side - 2 * m, h: side * 0.6 }, 'top'), [side, topItems.map((b) => b.id + b.earned).join()]);
   const bottom = useMemo(() => scatter(bottomItems, side, { x: m, y: side * 0.05, w: side - 2 * m, h: books.length ? side * 0.9 : side * 0.7 }, 'bottom'), [side, bottomItems.map((b) => b.id + b.earned).join()]);
   const pinned = ({ d, placed }) => placed.map(({ x, y, turn, it }) => (
     <View key={it.id} style={{ position: 'absolute', left: x, top: y, transform: [{ rotate: `${turn.toFixed(1)}deg` }] }}>
