@@ -40,7 +40,7 @@ function MenuItem({ u, icon, title, sub, onPress }) {
   return (
     <Pressable onPress={onPress} accessibilityRole="button" style={{ flexDirection: 'row', alignItems: 'center', gap: u * 9 }}>
       {/* the icon: a stitched felt tile (Jörg's), with a slight drop shadow */}
-      <View style={{ shadowColor: '#000', shadowOffset: { width: 0.5, height: 1.5 }, shadowOpacity: 0.6, shadowRadius: 1.5, elevation: 3 }}>{/* a tight, darker shadow: pasted on the page */}
+      <View style={{ shadowColor: '#000', shadowOffset: { width: 1, height: 4 }, shadowOpacity: 0.55, shadowRadius: 5, elevation: 5 }}>{/* a darker shadow: the felt tile sits on the page */}
         <Image source={icon} resizeMode="contain" style={{ width: u * 19, height: u * 33 }} />
       </View>
       <View style={{ width: u * 54 }}>

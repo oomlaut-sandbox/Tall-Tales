@@ -432,17 +432,9 @@ export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLab
 }
 
 // The speech bubble: a white rounded box in the middle of the screen (between the bars). Tap it to close.
-// Jörg's clay speech bubble (576 × 293; the body is the top ~74%, the tail below at the left)
-const CLAY_BUBBLE = require('../../assets/bubble-clay.png');
-
 export function Toast({ message, area, onDismiss, center }) {
-  const win = useWindowDimensions();
   if (!message) return null;
-  if (center) {
-    const room = win.width - ((area && area.left) || 0) - ((area && area.right) || 0);
-    const bw = Math.min(420, room * 0.92), bh = bw * 293 / 576;
-    // the bubble over the picture page while recording: the clay one
-    return (
+  return (
       <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, zIndex: 60, alignItems: 'center', justifyContent: 'center' }, area]}>
         <Pressable onPress={onDismiss} accessibilityRole="button" accessibilityHint="Closes the message" style={{ width: bw, height: bh, marginTop: bh * 0.2 }}>{/* nudged down a little: the tail hangs below the body */}
           <Image source={CLAY_BUBBLE} resizeMode="stretch" style={{ position: 'absolute', left: 0, top: 0, width: bw, height: bh }} />
