@@ -243,7 +243,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           <View style={{ width: side, height: side, backgroundColor: WHITE, alignItems: 'center', justifyContent: 'center' }}>
             <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.17)} max={0.32} />
             <Spine wide={wide} />
-            <Text style={{ fontFamily: TITLE_FONT, fontSize: side * 0.15, color: '#2b2b2b' }}>My Notes</Text>
+            <Text style={{ fontFamily: TYPE, fontSize: side * 0.085, color: '#2b2b2b' }}>My Notes</Text>
           </View>
         </View>
       );
@@ -313,6 +313,17 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
 
   // the closed cover, flying in from the shelf and then swinging open (drawn over everything)
   let introEl = null;
+  // until the book's place is known, the little notebook just stays where it was on the shelf (no blink)
+  if (intro && from && !bookAt) {
+    const rr = { borderTopLeftRadius: from.w * R_SPINE, borderTopRightRadius: from.w * R_SPINE, borderBottomLeftRadius: from.w * R_EDGE, borderBottomRightRadius: from.w * R_EDGE };
+    introEl = (
+      <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 45 }]}>
+        <View style={[{ position: 'absolute', left: from.x, top: from.y, width: from.w, height: from.w }, styles.coverShadow, rr]}>
+          <View style={[StyleSheet.absoluteFill, rr, { overflow: 'hidden' }]}><Image source={NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} /></View>
+        </View>
+      </View>
+    );
+  }
   if (intro && bookAt && from) {
     // the cover sits where it will open, and is moved and scaled from the little one on the shelf
     const to = wide ? { x: bookAt.x + side, y: bookAt.y } : { x: bookAt.x, y: bookAt.y + side };
