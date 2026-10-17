@@ -128,18 +128,19 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   // after the real page is showing underneath it, so nothing blinks
   useEffect(() => {
     if (!intro || introStarted.current || !bookAt || !nb) return undefined;
-    // right away and quick: the notebook grows into place and its cover starts opening before it has quite landed
+    // right away and quick: the notebook grows into place, then its cover opens
     const t = setTimeout(() => {
       introStarted.current = true;
-      Animated.timing(fly, { toValue: 1, duration: 380, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
-      setTimeout(() => {
+      // the cover reaches its full size first, and only then starts to open: the page underneath only shows
+      // once the cover is exactly its size (opening early let the page stick out past a still-growing cover)
+      Animated.timing(fly, { toValue: 1, duration: 340, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(() => {
         setIntro('flip');
         playSound('coverOpen');
-        Animated.timing(swing, { toValue: 1, duration: 750, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => {
+        Animated.timing(swing, { toValue: 1, duration: 700, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => {
           setIntro('land');
           setTimeout(() => setIntro(null), 90);
         });
-      }, 260);
+      });
     }, 0);
     return () => clearTimeout(t);
   }, [intro, bookAt, nb]);
