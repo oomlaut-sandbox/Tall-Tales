@@ -5,7 +5,7 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWin
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../theme';
-import { IS_TABLET } from '../look';
+import { DESK_FELT, IS_TABLET } from '../look';
 import { Bar, Burger, WithBar } from '../components/Chrome';
 
 const BAND_FELT = require('../../assets/band-profile.jpg'); // the yellow-orange felt banner
@@ -102,7 +102,7 @@ export default function Help({ u, openMenu, onAbout }) {
   const searching = !!q.trim();
   let lastSection = null;
   return (
-    <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
+    <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
         <Text style={styles.title}>Help</Text>
@@ -110,21 +110,17 @@ export default function Help({ u, openMenu, onAbout }) {
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
         <View style={styles.col}>
           {/* (a short video tour will go here later) */}
-          {/* the search field sits in a stitched felt strip (with its own drop shadow) */}
-          <View style={{ width: stripW, height: stripH, marginTop: 14, alignSelf: 'center', justifyContent: 'center' }}>
-            <Image source={SEARCH_FELT} resizeMode="stretch" style={{ position: 'absolute', left: 0, top: 0, width: stripW, height: stripH }} />
-            {/* the search window: a white pill set into the felt, with a soft inner shadow along its top edge */}
-            <View style={[styles.searchWrap, { left: stripW * 0.1, width: stripW * 0.8, top: (stripH - 44) / 2 }]}>
-              <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.22)', 'rgba(0,0,0,0.06)', 'rgba(0,0,0,0)']} locations={[0, 0.35, 1]} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 14 }} />
-              <LinearGradient pointerEvents="none" start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['rgba(0,0,0,0.08)', 'rgba(0,0,0,0)']} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 16 }} />
-              <TextInput value={q} onChangeText={setQ} placeholder="Search help" placeholderTextColor="#666"
-                style={styles.search} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel="Search help" />
-            </View>
+          {/* the search window: a white pill the width of the topics, with a soft inner shadow along its top edge */}
+          <View style={[styles.searchWrap, { marginTop: 14 }]}>
+            <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.22)', 'rgba(0,0,0,0.06)', 'rgba(0,0,0,0)']} locations={[0, 0.35, 1]} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 14 }} />
+            <LinearGradient pointerEvents="none" start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['rgba(0,0,0,0.08)', 'rgba(0,0,0,0)']} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 16 }} />
+            <TextInput value={q} onChangeText={setQ} placeholder="Search help" placeholderTextColor="#666"
+              style={styles.search} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel="Search help" />
           </View>
           {/* About lives here now (it left the main menu) */}
           <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>About Oomlaut Reader</Text></Pressable>
           <View style={{ height: 18 }} />
-          {!found.length ? <Text style={styles.p}>Nothing found for “{q.trim()}”. Try another word.</Text> : null}
+          {!found.length ? <Text style={[styles.p, { color: colors.white }]}>Nothing found for “{q.trim()}”. Try another word.</Text> : null}
           {found.map((h) => {
             const head = h.section !== lastSection ? h.section : null;
             lastSection = h.section;
@@ -153,7 +149,7 @@ export default function Help({ u, openMenu, onAbout }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.paper },
+  screen: { flex: 1, backgroundColor: colors.desk }, // the dark felt, as everywhere else
   band: { backgroundColor: colors.orange, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 34, paddingBottom: 40, alignItems: 'center' },
@@ -161,12 +157,12 @@ const styles = StyleSheet.create({
   video: { aspectRatio: 16 / 9, backgroundColor: '#2b2b2b', borderRadius: 14, alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 8 },
   videoPlay: { color: 'rgba(255,255,255,0.85)', fontSize: 34 },
   videoText: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 14 },
-  searchWrap: { position: 'absolute', zIndex: 2, height: 44, borderRadius: 22, overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.92)' },
+  searchWrap: { height: 44, borderRadius: 22, overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.92)' },
   search: { flex: 1, backgroundColor: 'transparent', paddingHorizontal: 18, fontFamily: fonts.ui, fontSize: 16, color: colors.ink, outlineWidth: 0 },
   aboutPill: { alignSelf: 'flex-start', backgroundColor: colors.green, height: 44, borderRadius: 22, paddingHorizontal: 26, alignItems: 'center', justifyContent: 'center', marginTop: 10 },
   aboutText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
-  section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#555', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14, marginBottom: 8 },
-  card: { backgroundColor: 'rgba(255,255,255,0.55)', borderRadius: 14, paddingHorizontal: 16, paddingVertical: 12 },
+  section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14, marginBottom: 8 },
+  card: { backgroundColor: 'rgba(240,240,240,0.92)', shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 3, borderRadius: 14, paddingHorizontal: 16, paddingVertical: 12 },
   cardHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, minHeight: 28 },
   cardTitle: { flex: 1, fontFamily: fonts.ui, fontWeight: '700', fontSize: 17, color: colors.ink },
   chev: { fontFamily: fonts.ui, fontSize: 22, color: '#555', width: 22, textAlign: 'center' },
