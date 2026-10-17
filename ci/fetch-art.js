@@ -10,11 +10,13 @@ const UA = { 'User-Agent': 'OomlautReader/1.0 (book art lookup; contact via ooml
 const api = async (params) => {
   const u = 'https://commons.wikimedia.org/w/api.php?' + new URLSearchParams({ format: 'json', ...params });
   const r = await fetch(u, { headers: UA });
-  return r.json();
+  const t = await r.text();
+  try { return JSON.parse(t); } catch (e) { throw new Error(`API HTTP ${r.status}: ${t.slice(0, 200)}`); }
 };
 (async () => {
   const index = [];
   for (const [key, query] of Object.entries(QUERIES)) {
+   try {
     const titles = query.files
       ? query.files
       : ((await api({ action: 'query', list: 'search', srnamespace: '6', srlimit: '8', srsearch: query.search })).query?.search || []).map((x) => x.title);
@@ -36,6 +38,7 @@ const api = async (params) => {
       index.push(`${key}\t${file}\t${title}\t${lic}\t${date}\t${artist}\t${ii.descriptionurl}`);
       if (n >= (query.max || 4)) break;
     }
+   } catch (e) { index.push(`${key}\tERROR\t${e.message}`); }
   }
   fs.writeFileSync(path.join(OUT, 'index.txt'), index.join('\n') + '\n');
   console.log(index.join('\n'));

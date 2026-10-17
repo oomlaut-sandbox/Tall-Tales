@@ -16,9 +16,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node ci/fetch-art.js
+      - run: node ci/fetch-art.js || echo failed
       - name: Save
+        if: always()
         run: |
+          mkdir -p art-out
           mv art-out /tmp/art-out
           git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
           git checkout -q --orphan art-output
