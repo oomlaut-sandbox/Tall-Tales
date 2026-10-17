@@ -1,12 +1,13 @@
 // Draws notebook drawings on the phone with Skia, like pencil crayons: each line is laid down in a few
-// slightly offset, see-through passes, and the paper's grain shows through the colour.
+// slightly offset, see-through passes with rough, wobbly edges, and the paper's grain shows through the colour.
 // (The web preview uses Strokes.js.)
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { Canvas, Group, ImageShader, Paint, Path, Rect, Skia, rect, useImage } from '@shopify/react-native-skia';
+import { Canvas, DiscretePathEffect, Group, ImageShader, Paint, Path, Rect, Skia, rect, useImage } from '@shopify/react-native-skia';
 import { strokeD } from '../strokes';
 
 const GRAIN = require('../../assets/crayon-grain.png');
+const SEED = 7; // the same wobble every time a drawing is shown
 
 function One({ st, width }) {
   const path = useMemo(() => Skia.Path.MakeFromSVGString(strokeD(st, width)), [st, width]);
@@ -15,12 +16,12 @@ function One({ st, width }) {
   const o = Math.max(0.6, w * 0.22); // how far the extra passes wander from the line
   return (
     <Group>
-      <Path path={path} color={st.c} opacity={0.82} style="stroke" strokeWidth={w} strokeCap="round" strokeJoin="round" />
+      <Path path={path} color={st.c} opacity={0.82} style="stroke" strokeWidth={w} strokeCap="round" strokeJoin="round"><DiscretePathEffect length={Math.max(2, w * 0.5)} deviation={Math.max(0.6, w * 0.16)} seed={SEED} /></Path>
       <Group transform={[{ translateX: o }, { translateY: -o * 0.6 }]}>
-        <Path path={path} color={st.c} opacity={0.35} style="stroke" strokeWidth={w * 0.7} strokeCap="round" strokeJoin="round" />
+        <Path path={path} color={st.c} opacity={0.35} style="stroke" strokeWidth={w * 0.7} strokeCap="round" strokeJoin="round"><DiscretePathEffect length={Math.max(2, w * 0.5)} deviation={Math.max(0.6, w * 0.16)} seed={SEED} /></Path>
       </Group>
       <Group transform={[{ translateX: -o * 0.7 }, { translateY: o * 0.5 }]}>
-        <Path path={path} color={st.c} opacity={0.3} style="stroke" strokeWidth={w * 0.55} strokeCap="round" strokeJoin="round" />
+        <Path path={path} color={st.c} opacity={0.3} style="stroke" strokeWidth={w * 0.55} strokeCap="round" strokeJoin="round"><DiscretePathEffect length={Math.max(2, w * 0.5)} deviation={Math.max(0.6, w * 0.16)} seed={SEED} /></Path>
       </Group>
     </Group>
   );
