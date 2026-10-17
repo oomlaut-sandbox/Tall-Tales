@@ -209,7 +209,11 @@ function Root() {
           <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} />
         )}
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} />}
-        {screen === 'about' && <About u={u} openMenu={openMenu} />}
+        {screen === 'about' && <About u={u} openMenu={openMenu} onSecret={() => {
+          // the store owner: straight to the Store Manager when signed in, otherwise to the sign-in first
+          if (storeAdmin) go('storeManager');
+          else { go('profile'); toast('Sign in as the store owner to open the Store Manager.'); }
+        }} />}
         {screen === 'storeManager' && <StoreManager u={u} openMenu={openMenu} toast={toast} demo={storeDemo} />}
         {screen === 'profile' && <Profile u={u} openMenu={openMenu} toast={toast} />}
         {screen === 'reader' && story && (
@@ -248,9 +252,8 @@ function Root() {
               if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else toast('Open a story first, then choose how it plays.');
             }} />
             <Option glyph={<PlusIcon />} title="Create a Story" sub="Add your own pictures and words" onPress={() => openPublisher(null)} />
-            <Option glyph={<CircleIcon />} title="Profile" sub="Manage your Oomlaut account" onPress={() => { setDrawer(false); setProfileGate(true); }} />
+            {/* Profile is suspended for families for now (the store owner signs in from About: hold Skippy) */}
             <Option glyph={<InfoIcon />} title="About" sub="Learn more about the app" onPress={() => go('about')} />
-            {storeAdmin ? <Option glyph={<StoreIcon />} title="Store Manager" sub="Your Book Store's books" onPress={() => go('storeManager')} /> : null}
             <View style={{ height: 14 }} />
           </Panel>
         </View>
