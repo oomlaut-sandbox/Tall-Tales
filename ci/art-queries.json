@@ -1,36 +1,4 @@
 {
- "dandelion": {
-  "files": [
-   "File:Taraxacum officinale - Köhler–s Medizinal-Pflanzen-135.jpg"
-  ]
- },
- "robin": {
-  "files": [
-   "File:131 American Robin.jpg"
-  ]
- },
- "fern": {
-  "search": "nature-printed British ferns plate Polypodium"
- },
- "mushroom": {
-  "search": "Amanita muscaria plate"
- },
- "butterfly": {
-  "search": "Sepp Nederlandsche insecten Vanessa"
- },
- "snail": {
-  "search": "Helix pomatia plate"
- },
- "bee": {
-  "search": "Apis mellifera plate engraving"
- },
- "owl": {
-  "search": "Audubon Snowy Owl plate 121"
- },
- "hummingbird": {
-  "search": "Audubon Ruby-throated Hummingbird plate 47"
- },
- "poppy": {
-  "search": "Papaver rhoeas Köhler Medizinal-Pflanzen"
- }
+ "fernk": { "search": "filix-mas Köhler Medizinal-Pflanzen" },
+ "fernk2": { "search": "Aspidium Köhler Medizinal-Pflanzen" }
 }
