@@ -384,7 +384,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
             {layers}
             {!flipPair && !intro ? (
               <>
-                <DogEar u={u} under={colors.earUnder} onPress={next} label={i >= total - 1 ? 'Add a page' : 'Next page'} />
+                <RoundEar size={Math.max(30, u * 9)} radius={R} onPress={next} label={i >= total - 1 ? 'Add a page' : 'Next page'} />
                 {/* (no back button: swipe down or to the right to go back a page) */}
               </>
             ) : null}
@@ -647,6 +647,26 @@ function BadgeSpread({ log, side, wide, toast }) {
     </View>
   );
 }
+// The notebook's own dog-ear: its pages have rounded corners, so the folded corner is rounded too.
+// The flap (the page folded back) keeps the page's rounded corner, pointing up into the page; under it, the
+// next page shows, also with a rounded corner (the felt shows outside it).
+function RoundEar({ size: e, radius: R, onPress, label }) {
+  const r = Math.min(R, e * 0.9);
+  return (
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={label} hitSlop={10}
+      style={{ position: 'absolute', right: 0, bottom: 0, width: e + 16, height: e + 16, zIndex: 20, alignItems: 'flex-end', justifyContent: 'flex-end' }}>
+      <View style={{ width: e, height: e, overflow: 'hidden', borderBottomRightRadius: R }}>
+        {/* the folded flap: the page's rounded corner, turned back over the page */}
+        <View style={{ position: 'absolute', left: 0, top: 0, width: e, height: e, backgroundColor: '#fbfaf7', borderTopLeftRadius: r }} />
+        {/* the next page, uncovered by the fold (a triangle in the corner) */}
+        <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderTopWidth: e, borderRightWidth: e, borderTopColor: 'transparent', borderRightColor: colors.earUnder }} />
+        {/* a soft shadow along the fold */}
+        <View style={{ position: 'absolute', left: e * 0.5 - e * 0.72, top: e * 0.5 - 1.5, width: e * 1.44, height: 3, backgroundColor: 'rgba(0,0,0,0.12)', transform: [{ rotate: '-45deg' }] }} />
+      </View>
+    </Pressable>
+  );
+}
+
 // Undo: a simple arrow that loops back, drawn in the same thick white line as the app's other icons
 function UndoIcon() {
   return (
