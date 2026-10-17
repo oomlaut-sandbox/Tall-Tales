@@ -838,7 +838,7 @@
     "file": "swirl.mp3"
    },
    "each": {
-    "fp": "5a092962687f",
+    "fp": "d69c65052dff",
     "file": "each.mp3"
    },
    "opens": {
@@ -1254,7 +1254,7 @@
     "file": "says.mp3"
    },
    "every": {
-    "fp": "c38f52a7a528",
+    "fp": "96716f09c147",
     "file": "every.mp3"
    },
    "balloon": {
@@ -1322,7 +1322,7 @@
     "file": "calmer.mp3"
    },
    "now": {
-    "fp": "51baa439ae79",
+    "fp": "73d1130c0bba",
     "file": "now.mp3"
    },
    "noticed": {
@@ -1796,6 +1796,434 @@
    "beautiful": {
     "fp": "bef88a9fad03",
     "file": "beautiful.mp3"
+   },
+   "tips": {
+    "fp": "9eabf0131154",
+    "file": "tips.mp3"
+   },
+   "authors": {
+    "fp": "b480bbdf6f4d",
+    "file": "authors.mp3"
+   },
+   "ideas": {
+    "fp": "a7c4baf1638a",
+    "file": "ideas.mp3"
+   },
+   "making": {
+    "fp": "d0c999d30685",
+    "file": "making.mp3"
+   },
+   "your": {
+    "fp": "75e393f53899",
+    "file": "your.mp3"
+   },
+   "own": {
+    "fp": "5a33cef0ba29",
+    "file": "own.mp3"
+   },
+   "books": {
+    "fp": "7a2c3e9b4a1e",
+    "file": "books.mp3"
+   },
+   "grown-ups": {
+    "fp": "4d14552e4c3a",
+    "file": "grown_2dups.mp3"
+   },
+   "young": {
+    "fp": "a35f225e51b3",
+    "file": "young.mp3"
+   },
+   "alike": {
+    "fp": "d6f4aa34b3dc",
+    "file": "alike.mp3"
+   },
+   "family": {
+    "fp": "d7565c649870",
+    "file": "family.mp3"
+   },
+   "stories": {
+    "fp": "9023e7320254",
+    "file": "stories.mp3"
+   },
+   "worth": {
+    "fp": "a836e8719f14",
+    "file": "worth.mp3"
+   },
+   "keeping": {
+    "fp": "58801167b268",
+    "file": "keeping.mp3"
+   },
+   "camera": {
+    "fp": "b772ce1057cf",
+    "file": "camera.mp3"
+   },
+   "few": {
+    "fp": "207906691cde",
+    "file": "few.mp3"
+   },
+   "words": {
+    "fp": "24c48ec24801",
+    "file": "words.mp3"
+   },
+   "some": {
+    "fp": "42f46de9fa8d",
+    "file": "some.mp3"
+   },
+   "get": {
+    "fp": "033e1fbc576d",
+    "file": "get.mp3"
+   },
+   "our": {
+    "fp": "546b0f5cd69c",
+    "file": "our.mp3"
+   },
+   "big": {
+    "fp": "622111a2597c",
+    "file": "big.mp3"
+   },
+   "adventure": {
+    "fp": "560c639397f3",
+    "file": "adventure.mp3"
+   },
+   "today": {
+    "fp": "3305f548b911",
+    "file": "today.mp3"
+   },
+   "woods": {
+    "fp": "d5311755fc29",
+    "file": "woods.mp3"
+   },
+   "visit": {
+    "fp": "7d67246adbdc",
+    "file": "visit.mp3"
+   },
+   "grandma": {
+    "fp": "1061d5ef1cf2",
+    "file": "grandma.mp3"
+   },
+   "first": {
+    "fp": "21ec8ff80ce9",
+    "file": "first.mp3"
+   },
+   "tooth": {
+    "fp": "c22ea479d09d",
+    "file": "tooth.mp3"
+   },
+   "page": {
+    "fp": "b8e20ce43dd2",
+    "file": "page.mp3"
+   },
+   "let": {
+    "fp": "fe2b53104263",
+    "file": "let.mp3"
+   },
+   "child": {
+    "fp": "0c8c8cad6c25",
+    "file": "child.mp3"
+   },
+   "happened": {
+    "fp": "5a0938591024",
+    "file": "happened.mp3"
+   },
+   "we": {
+    "fp": "319dc985bf2f",
+    "file": "we.mp3"
+   },
+   "part": {
+    "fp": "52aad5452934",
+    "file": "part.mp3"
+   },
+   "collecting": {
+    "fp": "4f4e0ba2835a",
+    "file": "collecting.mp3"
+   },
+   "rocks": {
+    "fp": "f79da651a1e1",
+    "file": "rocks.mp3"
+   },
+   "bugs": {
+    "fp": "d76191b918cc",
+    "file": "bugs.mp3"
+   },
+   "flowers": {
+    "fp": "a31cec65495e",
+    "file": "flowers.mp3"
+   },
+   "photograph": {
+    "fp": "05c6d93f4f68",
+    "file": "photograph.mp3"
+   },
+   "draw": {
+    "fp": "581f0c55c3b3",
+    "file": "draw.mp3"
+   },
+   "find": {
+    "fp": "7a6b350ab6fa",
+    "file": "find.mp3"
+   },
+   "give": {
+    "fp": "76358fedd189",
+    "file": "give.mp3"
+   },
+   "name": {
+    "fp": "ae19ac7c0eb1",
+    "file": "name.mp3"
+   },
+   "fact": {
+    "fp": "44979ef47d4b",
+    "file": "fact.mp3"
+   },
+   "real": {
+    "fp": "2d5720669b14",
+    "file": "real.mp3"
+   },
+   "have": {
+    "fp": "5508c38ee219",
+    "file": "have.mp3"
+   },
+   "field": {
+    "fp": "7c12573ff7d9",
+    "file": "field.mp3"
+   },
+   "guide": {
+    "fp": "30aba03f7b40",
+    "file": "guide.mp3"
+   },
+   "drawing": {
+    "fp": "574014c993f2",
+    "file": "drawing.mp3"
+   },
+   "becomes": {
+    "fp": "bf43a6bb9c24",
+    "file": "becomes.mp3"
+   },
+   "story": {
+    "fp": "99912088e073",
+    "file": "story.mp3"
+   },
+   "type": {
+    "fp": "f289b2732e73",
+    "file": "type.mp3"
+   },
+   "exactly": {
+    "fp": "4ca4d0dbefd3",
+    "file": "exactly.mp3"
+   },
+   "say": {
+    "fp": "af90a5fe19f1",
+    "file": "say.mp3"
+   },
+   "lessons": {
+    "fp": "1f8a363f5240",
+    "file": "lessons.mp3"
+   },
+   "things": {
+    "fp": "de3a1f1464fd",
+    "file": "things.mp3"
+   },
+   "gentler": {
+    "fp": "54afa744efc0",
+    "file": "gentler.mp3"
+   },
+   "baby": {
+    "fp": "c82cb84b4e92",
+    "file": "baby.mp3"
+   },
+   "school": {
+    "fp": "4920bdd8af59",
+    "file": "school.mp3"
+   },
+   "brushing": {
+    "fp": "b434b11ad7f2",
+    "file": "brushing.mp3"
+   },
+   "teeth": {
+    "fp": "30625fab5e1c",
+    "file": "teeth.mp3"
+   },
+   "saying": {
+    "fp": "6824ac56c002",
+    "file": "saying.mp3"
+   },
+   "goodbye": {
+    "fp": "0cf9a071ceed",
+    "file": "goodbye.mp3"
+   },
+   "use": {
+    "fp": "be8048df1275",
+    "file": "use.mp3"
+   },
+   "photos": {
+    "fp": "6e257f346495",
+    "file": "photos.mp3"
+   },
+   "group": {
+    "fp": "fa47799503bb",
+    "file": "group.mp3"
+   },
+   "fun": {
+    "fp": "82ecfc86a414",
+    "file": "fun.mp3"
+   },
+   "class": {
+    "fp": "8d5b67ab89ba",
+    "file": "class.mp3"
+   },
+   "book": {
+    "fp": "870ece0537eb",
+    "file": "book.mp3"
+   },
+   "together": {
+    "fp": "1e5b842d5a5b",
+    "file": "together.mp3"
+   },
+   "makes": {
+    "fp": "7b7c34376137",
+    "file": "makes.mp3"
+   },
+   "trip": {
+    "fp": "12919d374c62",
+    "file": "trip.mp3"
+   },
+   "favourite": {
+    "fp": "87bbefc7e2a7",
+    "file": "favourite.mp3"
+   },
+   "animal": {
+    "fp": "4f06459571e2",
+    "file": "animal.mp3"
+   },
+   "want": {
+    "fp": "961cf8c2e729",
+    "file": "want.mp3"
+   },
+   "read": {
+    "fp": "7c3d8a65c6db",
+    "file": "read.mp3"
+   },
+   "aloud": {
+    "fp": "1972b5aa9a58",
+    "file": "aloud.mp3"
+   },
+   "record": {
+    "fp": "1c1d99d51719",
+    "file": "record.mp3"
+   },
+   "voice": {
+    "fp": "23c098caab24",
+    "file": "voice.mp3"
+   },
+   "reading": {
+    "fp": "11262e1b57a5",
+    "file": "reading.mp3"
+   },
+   "years": {
+    "fp": "caccde23b900",
+    "file": "years.mp3"
+   },
+   "treasure": {
+    "fp": "91f0956e7f9b",
+    "file": "treasure.mp3"
+   },
+   "more": {
+    "fp": "9a8eaae22429",
+    "file": "more.mp3"
+   },
+   "birthday": {
+    "fp": "d019ee444b40",
+    "file": "birthday.mp3"
+   },
+   "toy’s": {
+    "fp": "cab80260c36e",
+    "file": "toy_2019s.mp3"
+   },
+   "adventures": {
+    "fp": "9c06c9df9e85",
+    "file": "adventures.mp3"
+   },
+   "last": {
+    "fp": "a9f453dce0d7",
+    "file": "last.mp3"
+   },
+   "night’s": {
+    "fp": "37549ebf92b2",
+    "file": "night_2019s.mp3"
+   },
+   "dream": {
+    "fp": "4c4257456930",
+    "file": "dream.mp3"
+   },
+   "grandpa": {
+    "fp": "93e5c2f2cd53",
+    "file": "grandpa.mp3"
+   },
+   "remembering": {
+    "fp": "b175745e106d",
+    "file": "remembering.mp3"
+   },
+   "sentences": {
+    "fp": "629fd2546d33",
+    "file": "sentences.mp3"
+   },
+   "plenty": {
+    "fp": "203701d7393e",
+    "file": "plenty.mp3"
+   },
+   "daylight": {
+    "fp": "36a3f24becd0",
+    "file": "daylight.mp3"
+   },
+   "pages": {
+    "fp": "e8f49c1b08d0",
+    "file": "pages.mp3"
+   },
+   "square": {
+    "fp": "39130d20d93c",
+    "file": "square.mp3"
+   },
+   "leave": {
+    "fp": "166dcc58f264",
+    "file": "leave.mp3"
+   },
+   "room": {
+    "fp": "be6059cbb9c6",
+    "file": "room.mp3"
+   },
+   "edges": {
+    "fp": "4569ec8ea1d7",
+    "file": "edges.mp3"
+   },
+   "child’s": {
+    "fp": "40e00077be97",
+    "file": "child_2019s.mp3"
+   },
+   "cover": {
+    "fp": "662ae3da70cd",
+    "file": "cover.mp3"
+   },
+   "published": {
+    "fp": "2b8fca4c9540",
+    "file": "published.mp3"
+   },
+   "send": {
+    "fp": "498704c8f866",
+    "file": "send.mp3"
+   },
+   "oomlaut": {
+    "fp": "272639cc514e",
+    "file": "oomlaut.mp3"
+   },
+   "store": {
+    "fp": "511a1fb50399",
+    "file": "store.mp3"
+   },
+   "ready": {
+    "fp": "7892f50e2ca2",
+    "file": "ready.mp3"
+   },
+   "oomlautcom": {
+    "fp": "2d43913d499b",
+    "file": "oomlautcom.mp3"
    }
   },
   "parts": {}
@@ -2639,7 +3067,7 @@
     "file": "swirl.mp3"
    },
    "each": {
-    "fp": "f335a022b995",
+    "fp": "169876ef0816",
     "file": "each.mp3"
    },
    "opens": {
@@ -3055,7 +3483,7 @@
     "file": "says.mp3"
    },
    "every": {
-    "fp": "a38e5af7b364",
+    "fp": "bbc9e49f8f83",
     "file": "every.mp3"
    },
    "balloon": {
@@ -3123,7 +3551,7 @@
     "file": "calmer.mp3"
    },
    "now": {
-    "fp": "b7e55cc94baf",
+    "fp": "718db1b96e42",
     "file": "now.mp3"
    },
    "noticed": {
@@ -3597,6 +4025,434 @@
    "beautiful": {
     "fp": "53be1b8e5161",
     "file": "beautiful.mp3"
+   },
+   "tips": {
+    "fp": "862990962945",
+    "file": "tips.mp3"
+   },
+   "authors": {
+    "fp": "e85a97259fce",
+    "file": "authors.mp3"
+   },
+   "ideas": {
+    "fp": "22c149d25e71",
+    "file": "ideas.mp3"
+   },
+   "making": {
+    "fp": "60afb5528404",
+    "file": "making.mp3"
+   },
+   "your": {
+    "fp": "1dbe593780e8",
+    "file": "your.mp3"
+   },
+   "own": {
+    "fp": "b96cb2b82a6c",
+    "file": "own.mp3"
+   },
+   "books": {
+    "fp": "2bbdce37207a",
+    "file": "books.mp3"
+   },
+   "grown-ups": {
+    "fp": "97fc953e1313",
+    "file": "grown_2dups.mp3"
+   },
+   "young": {
+    "fp": "f55456f21eed",
+    "file": "young.mp3"
+   },
+   "alike": {
+    "fp": "02b5259b25a8",
+    "file": "alike.mp3"
+   },
+   "family": {
+    "fp": "3f587fe8e9fe",
+    "file": "family.mp3"
+   },
+   "stories": {
+    "fp": "5556edc32e99",
+    "file": "stories.mp3"
+   },
+   "worth": {
+    "fp": "74fa5a79e765",
+    "file": "worth.mp3"
+   },
+   "keeping": {
+    "fp": "f74248ae1a1d",
+    "file": "keeping.mp3"
+   },
+   "camera": {
+    "fp": "cd82f266102b",
+    "file": "camera.mp3"
+   },
+   "few": {
+    "fp": "fb7ead9b5ef6",
+    "file": "few.mp3"
+   },
+   "words": {
+    "fp": "e55316a80f24",
+    "file": "words.mp3"
+   },
+   "some": {
+    "fp": "40495e8676a6",
+    "file": "some.mp3"
+   },
+   "get": {
+    "fp": "86a6c88d7528",
+    "file": "get.mp3"
+   },
+   "our": {
+    "fp": "0aa04276887a",
+    "file": "our.mp3"
+   },
+   "big": {
+    "fp": "9b606a292dd1",
+    "file": "big.mp3"
+   },
+   "adventure": {
+    "fp": "c23b32692f15",
+    "file": "adventure.mp3"
+   },
+   "today": {
+    "fp": "fb931541bbef",
+    "file": "today.mp3"
+   },
+   "woods": {
+    "fp": "09f5e555cb4d",
+    "file": "woods.mp3"
+   },
+   "visit": {
+    "fp": "ebf568da3654",
+    "file": "visit.mp3"
+   },
+   "grandma": {
+    "fp": "f0040d4fa723",
+    "file": "grandma.mp3"
+   },
+   "first": {
+    "fp": "e434454e7fea",
+    "file": "first.mp3"
+   },
+   "tooth": {
+    "fp": "a36d3f47e361",
+    "file": "tooth.mp3"
+   },
+   "page": {
+    "fp": "1333273ea1d0",
+    "file": "page.mp3"
+   },
+   "let": {
+    "fp": "00a51ae4fde2",
+    "file": "let.mp3"
+   },
+   "child": {
+    "fp": "8e9fdb1d13fe",
+    "file": "child.mp3"
+   },
+   "happened": {
+    "fp": "4b59da0da088",
+    "file": "happened.mp3"
+   },
+   "we": {
+    "fp": "b93c584f0298",
+    "file": "we.mp3"
+   },
+   "part": {
+    "fp": "1dbf977e8607",
+    "file": "part.mp3"
+   },
+   "collecting": {
+    "fp": "2f476f7a3d67",
+    "file": "collecting.mp3"
+   },
+   "rocks": {
+    "fp": "20c702d5eafc",
+    "file": "rocks.mp3"
+   },
+   "bugs": {
+    "fp": "1be1b12ede16",
+    "file": "bugs.mp3"
+   },
+   "flowers": {
+    "fp": "c04b0736a0d1",
+    "file": "flowers.mp3"
+   },
+   "photograph": {
+    "fp": "0cab9c99e310",
+    "file": "photograph.mp3"
+   },
+   "draw": {
+    "fp": "6abc585639ef",
+    "file": "draw.mp3"
+   },
+   "find": {
+    "fp": "6d5bcf4419bc",
+    "file": "find.mp3"
+   },
+   "give": {
+    "fp": "4c724def34f1",
+    "file": "give.mp3"
+   },
+   "name": {
+    "fp": "2e577e6b6986",
+    "file": "name.mp3"
+   },
+   "fact": {
+    "fp": "f59122a713e9",
+    "file": "fact.mp3"
+   },
+   "real": {
+    "fp": "08e32b0aef43",
+    "file": "real.mp3"
+   },
+   "have": {
+    "fp": "d256d98d8407",
+    "file": "have.mp3"
+   },
+   "field": {
+    "fp": "c6ce5ab0710c",
+    "file": "field.mp3"
+   },
+   "guide": {
+    "fp": "9c9f96d8e7f1",
+    "file": "guide.mp3"
+   },
+   "drawing": {
+    "fp": "93443e95b38b",
+    "file": "drawing.mp3"
+   },
+   "becomes": {
+    "fp": "4a670698f19e",
+    "file": "becomes.mp3"
+   },
+   "story": {
+    "fp": "ea7f9a79fbec",
+    "file": "story.mp3"
+   },
+   "type": {
+    "fp": "c4b4d959c0ae",
+    "file": "type.mp3"
+   },
+   "exactly": {
+    "fp": "a9eb5cca398e",
+    "file": "exactly.mp3"
+   },
+   "say": {
+    "fp": "8429b4700b79",
+    "file": "say.mp3"
+   },
+   "lessons": {
+    "fp": "4280ae1f81fb",
+    "file": "lessons.mp3"
+   },
+   "things": {
+    "fp": "63e8d133c0d5",
+    "file": "things.mp3"
+   },
+   "gentler": {
+    "fp": "6252d3ddda3d",
+    "file": "gentler.mp3"
+   },
+   "baby": {
+    "fp": "a452784414f2",
+    "file": "baby.mp3"
+   },
+   "school": {
+    "fp": "f626d0cf9364",
+    "file": "school.mp3"
+   },
+   "brushing": {
+    "fp": "64a475501c93",
+    "file": "brushing.mp3"
+   },
+   "teeth": {
+    "fp": "df2bb0eaa447",
+    "file": "teeth.mp3"
+   },
+   "saying": {
+    "fp": "4f118bfedde2",
+    "file": "saying.mp3"
+   },
+   "goodbye": {
+    "fp": "a704dfbde63a",
+    "file": "goodbye.mp3"
+   },
+   "use": {
+    "fp": "8a09f4710f88",
+    "file": "use.mp3"
+   },
+   "photos": {
+    "fp": "86b0c66f6965",
+    "file": "photos.mp3"
+   },
+   "group": {
+    "fp": "903b7f62a122",
+    "file": "group.mp3"
+   },
+   "fun": {
+    "fp": "47f66dd1b7eb",
+    "file": "fun.mp3"
+   },
+   "class": {
+    "fp": "0d00ace9436b",
+    "file": "class.mp3"
+   },
+   "book": {
+    "fp": "192af6235935",
+    "file": "book.mp3"
+   },
+   "together": {
+    "fp": "bfcd6f07cd39",
+    "file": "together.mp3"
+   },
+   "makes": {
+    "fp": "680d52bfe5cd",
+    "file": "makes.mp3"
+   },
+   "trip": {
+    "fp": "02ded8bb7420",
+    "file": "trip.mp3"
+   },
+   "favourite": {
+    "fp": "25469640e6a2",
+    "file": "favourite.mp3"
+   },
+   "animal": {
+    "fp": "b5e5cbff5562",
+    "file": "animal.mp3"
+   },
+   "want": {
+    "fp": "7c7da6524cd6",
+    "file": "want.mp3"
+   },
+   "read": {
+    "fp": "d308e7800c6f",
+    "file": "read.mp3"
+   },
+   "aloud": {
+    "fp": "89d636bf735e",
+    "file": "aloud.mp3"
+   },
+   "record": {
+    "fp": "42526eeeb2ac",
+    "file": "record.mp3"
+   },
+   "voice": {
+    "fp": "f9858567cfa1",
+    "file": "voice.mp3"
+   },
+   "reading": {
+    "fp": "66d9a351663b",
+    "file": "reading.mp3"
+   },
+   "years": {
+    "fp": "cb67af7784b9",
+    "file": "years.mp3"
+   },
+   "treasure": {
+    "fp": "0cf9df5c76c7",
+    "file": "treasure.mp3"
+   },
+   "more": {
+    "fp": "6eb9a2a5bd5e",
+    "file": "more.mp3"
+   },
+   "birthday": {
+    "fp": "ee2d2a3b5461",
+    "file": "birthday.mp3"
+   },
+   "toy’s": {
+    "fp": "035244e09387",
+    "file": "toy_2019s.mp3"
+   },
+   "adventures": {
+    "fp": "38b130999ff5",
+    "file": "adventures.mp3"
+   },
+   "last": {
+    "fp": "f259d002e649",
+    "file": "last.mp3"
+   },
+   "night’s": {
+    "fp": "c33a0ef35dc1",
+    "file": "night_2019s.mp3"
+   },
+   "dream": {
+    "fp": "81c26c66c876",
+    "file": "dream.mp3"
+   },
+   "grandpa": {
+    "fp": "fbf9ac03e2f7",
+    "file": "grandpa.mp3"
+   },
+   "remembering": {
+    "fp": "934172b06eab",
+    "file": "remembering.mp3"
+   },
+   "sentences": {
+    "fp": "a759a49eb202",
+    "file": "sentences.mp3"
+   },
+   "plenty": {
+    "fp": "7a33b883a7e1",
+    "file": "plenty.mp3"
+   },
+   "daylight": {
+    "fp": "cb8a5725b3bc",
+    "file": "daylight.mp3"
+   },
+   "pages": {
+    "fp": "f70896c10dd1",
+    "file": "pages.mp3"
+   },
+   "square": {
+    "fp": "0596032be2c9",
+    "file": "square.mp3"
+   },
+   "leave": {
+    "fp": "e37e2adba235",
+    "file": "leave.mp3"
+   },
+   "room": {
+    "fp": "12068bc61574",
+    "file": "room.mp3"
+   },
+   "edges": {
+    "fp": "d69a78c4b70c",
+    "file": "edges.mp3"
+   },
+   "child’s": {
+    "fp": "71d6054151c9",
+    "file": "child_2019s.mp3"
+   },
+   "cover": {
+    "fp": "3038cbd5ac85",
+    "file": "cover.mp3"
+   },
+   "published": {
+    "fp": "16ee67e55c74",
+    "file": "published.mp3"
+   },
+   "send": {
+    "fp": "0bdc48d2def0",
+    "file": "send.mp3"
+   },
+   "oomlaut": {
+    "fp": "dbb9f37eb61d",
+    "file": "oomlaut.mp3"
+   },
+   "store": {
+    "fp": "bb3ea3fd0189",
+    "file": "store.mp3"
+   },
+   "ready": {
+    "fp": "685df5388f7a",
+    "file": "ready.mp3"
+   },
+   "oomlautcom": {
+    "fp": "483f904104cb",
+    "file": "oomlautcom.mp3"
    }
   },
   "parts": {}
