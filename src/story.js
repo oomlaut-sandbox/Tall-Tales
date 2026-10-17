@@ -171,7 +171,38 @@ export const ROUGH_LIVES = {
   ],
 };
 
-export const STORIES = [DIFFERENT, SMALL_WONDERS, ROUGH_LIVES, FALLING, SAMPLE_STORY];
+// "Two Snakes Walk into a Bar": Jörg's drawings (the rabbit is by Annika). Absurd, surreal, gentle.
+// The cover is the snakes, no words.
+export const TWO_SNAKES = {
+  id: 'two-snakes',
+  title: 'Two Snakes Walk into a Bar',
+  author: 'Oomlaut',
+  storeShelf: 'new',
+  blurb: 'A bean-shaped bee, a hamster who goes nowhere at all, an elephant made mostly of quiet and a horse who isn’t sure what he is. A small, strange book about how weird and how beautiful the world is.',
+  syllables: {
+    snakes: ['snakes'], chocolate: ['choc', 'late'], somewhere: ['some', 'where'], rabbit: ['rab', 'bit'],
+    nobody: ['no', 'bod', 'y'], around: ['a', 'round'], began: ['be', 'gan'], elephant: ['el', 'e', 'phant'],
+    mostly: ['most', 'ly'], hamster: ['ham', 'ster'], nowhere: ['no', 'where'], magic: ['mag', 'ic'],
+    anyway: ['an', 'y', 'way'], forgot: ['for', 'got'], tuesdays: ['tues', 'days'], happy: ['hap', 'py'],
+    scared: ['scared'], robot: ['ro', 'bot'], giant: ['gi', 'ant'], little: ['lit', 'tle'], beautiful: ['beau', 'ti', 'ful'],
+    strange: ['strange'], very: ['ver', 'y'], about: ['a', 'bout'], neither: ['nei', 'ther'],
+  },
+  pages: [
+    { pid: 'ts01', titlePage: true, image: require('../assets/books/two-snakes/snakes.jpg'), w: 1600, h: 1600, text: 'Two Snakes Walk into a Bar.' },
+    { pid: 'ts02', image: require('../assets/books/two-snakes/snakes.jpg'), w: 1600, h: 1600, text: 'Two snakes walked into a bar. It was a chocolate bar. They were very small snakes.' },
+    { pid: 'ts03', image: require('../assets/books/two-snakes/rabbit.jpg'), w: 1600, h: 1600, text: 'Somewhere, a rabbit is having the best day of her whole life, and nobody knows why. Not even the rabbit.' },
+    { pid: 'ts04', image: require('../assets/books/two-snakes/dogs.jpg'), w: 1600, h: 1600, text: 'Two dogs met in the park and went around and around, until nobody could tell where one dog ended and the other began.' },
+    { pid: 'ts05', image: require('../assets/books/two-snakes/elephant.jpg'), w: 1600, h: 1600, text: 'An elephant is mostly made of quiet. You can hear it if you stand very close.' },
+    { pid: 'ts06', image: require('../assets/books/two-snakes/hamster.jpg'), w: 1600, h: 1600, text: 'The hamster ran all night and went nowhere at all, which, if you think about it, is a kind of magic.' },
+    { pid: 'ts07', image: require('../assets/books/two-snakes/bee.jpg'), w: 1600, h: 1600, text: 'This bee is shaped like a bean. She does not know this. She flies anyway.' },
+    { pid: 'ts08', image: require('../assets/books/two-snakes/fox.jpg'), w: 1600, h: 1600, text: 'The fox jumped so high, he forgot what he was jumping for. Up there, it didn’t matter.' },
+    { pid: 'ts09', image: require('../assets/books/two-snakes/wolf.jpg'), w: 1600, h: 1600, text: 'Wolf’s hair stands up when he is happy, when he is scared, and on Tuesdays.' },
+    { pid: 'ts10', image: require('../assets/books/two-snakes/horse.jpg'), w: 1600, h: 1600, text: '“What are you?” asked the blue thing. “I’m not sure yet,” said the horse. “Me neither,” said the blue thing.' },
+    { pid: 'ts11', image: require('../assets/books/two-snakes/robot.jpg'), w: 1600, h: 1600, text: 'The robot took one giant step, and the whole world gave a little hop. What a strange, beautiful place it is.' },
+  ],
+};
+
+export const STORIES = [DIFFERENT, SMALL_WONDERS, ROUGH_LIVES, TWO_SNAKES, FALLING, SAMPLE_STORY];
 
 // Split text into words with their character ranges, so read-aloud progress can be mapped to a word.
 export function tokenize(text) {
@@ -195,4 +226,4 @@ export function syllablesFor(story, word) {
 
 // The books shown in My Library and the Book Store for now (Jörg will add two more later).
 // The others stay in the app, just hidden: add their ids back here to show them again.
-export const SHOWN_BOOKS = ['different', 'rough-lives'];
+export const SHOWN_BOOKS = ['different', 'rough-lives', 'two-snakes'];
