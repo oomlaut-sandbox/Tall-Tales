@@ -392,9 +392,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
             {!flipPair && !intro ? (
               <>
                 <DogEar u={u} under={colors.earUnder} onPress={next} label={i >= total - 1 ? 'Add a page' : 'Next page'} />
-                {i > 0 ? (
-                  <Pressable onPress={() => turn(-1)} hitSlop={10} style={[styles.back, { left: R * 0.6, bottom: R * 0.4 }]} accessibilityRole="button" accessibilityLabel="Previous page"><Text style={styles.backText}>‹</Text></Pressable>
-                ) : null}
+                {/* (no back button: swipe down or to the right to go back a page) */}
               </>
             ) : null}
           </View>

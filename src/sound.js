@@ -39,9 +39,11 @@ async function init() {
   try {
     await setAudioModeAsync({ playsInSilentMode: true });
   } catch (e) {}
+  // two players for each sound, taking turns: a quick second page turn starts fresh on the other one
+  // instead of being lost while the first is still being rewound
   for (const k of Object.keys(sources)) {
     try {
-      players[k] = createAudioPlayer(sources[k]);
+      players[k] = [createAudioPlayer(sources[k]), createAudioPlayer(sources[k])];
     } catch (e) {}
   }
 }
@@ -55,13 +57,16 @@ export function suspendSounds(on) { suspended = on; }
 let keyTurn = 0;
 export function playKey() { keyTurn = (keyTurn % 3) + 1; playSound(`key${keyTurn}`); }
 
+const turn = {};
 export function playSound(kind, volume = 1) {
   if (!enabled || suspended) return;
-  const p = players[kind];
-  if (!p) return;
+  const pair = players[kind];
+  if (!pair) return;
+  turn[kind] = ((turn[kind] || 0) + 1) % pair.length;
+  const p = pair[turn[kind]];
   try {
     p.volume = Math.min(1, (LEVEL[kind] || 0.5) * volume * master);
-    p.seekTo(0);
-    p.play();
+    // rewind first, then play (playing before the rewind has finished could start at the end and be silent)
+    Promise.resolve(p.seekTo(0)).catch(() => {}).then(() => { try { p.play(); } catch (e) {} });
   } catch (e) {}
 }
