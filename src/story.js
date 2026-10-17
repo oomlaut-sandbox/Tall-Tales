@@ -140,7 +140,29 @@ export const SMALL_WONDERS = {
   ],
 };
 
-export const STORIES = [DIFFERENT, SMALL_WONDERS, FALLING, SAMPLE_STORY];
+// "The Rough Lives of Animals": Jörg's pictures, short darkly funny verses. The cover is the ostrich, no words.
+export const ROUGH_LIVES = {
+  id: 'rough-lives',
+  title: 'The Rough Lives of Animals',
+  author: 'Oomlaut',
+  storeShelf: 'new',
+  blurb: 'A worried cat, an elephant who is totally fine, a fox who never gives up and an ostrich who has stopped reading the news. Cheeky little verses for anxious times.',
+  syllables: {
+    animals: ['an', 'i', 'mals'], rough: ['rough'], worried: ['wor', 'ried'], unravels: ['un', 'rav', 'els'],
+    everything: ['ev', 'ery', 'thing'], elephant: ['el', 'e', 'phant'], balloon: ['bal', 'loon'], holding: ['hold', 'ing'],
+    morning: ['morn', 'ing'], nobody: ['no', 'bod', 'y'], hustle: ['hus', 'tle'], ostrich: ['os', 'trich'],
+    calmer: ['calm', 'er'], noticed: ['no', 'ticed'], bottom: ['bot', 'tom'], away: ['a', 'way'],
+  },
+  pages: [
+    { pid: 'rl01', titlePage: true, image: require('../assets/books/rough-lives/cover.jpg'), w: 1600, h: 1600, text: 'The Rough Lives of Animals.' },
+    { pid: 'rl02', image: require('../assets/books/rough-lives/cat.jpg'), w: 1600, h: 1600, text: 'Cat has one ball of yarn.\nShe is too worried to play.\nWhat if it unravels?\nEverything unravels.' },
+    { pid: 'rl03', image: require('../assets/books/rough-lives/elephant.jpg'), w: 1600, h: 1600, text: 'Elephant is fine.\nHe says so every day.\nOne small red balloon\nis holding it all up.' },
+    { pid: 'rl04', image: require('../assets/books/rough-lives/fox.jpg'), w: 1600, h: 1600, text: 'Fox has jumped all morning.\nThe mouse moved away.\nNobody told Fox.\nHe calls it hustle.' },
+    { pid: 'rl05', image: require('../assets/books/rough-lives/cover.jpg'), w: 1600, h: 1600, text: 'Ostrich stopped the news.\nShe feels much calmer now.\nShe has not noticed yet\nthat her bottom is on fire.\nEverything is fine.' },
+  ],
+};
+
+export const STORIES = [DIFFERENT, SMALL_WONDERS, ROUGH_LIVES, FALLING, SAMPLE_STORY];
 
 // Split text into words with their character ranges, so read-aloud progress can be mapped to a word.
 export function tokenize(text) {
@@ -164,4 +186,4 @@ export function syllablesFor(story, word) {
 
 // The books shown in My Library and the Book Store for now (Jörg will add two more later).
 // The others stay in the app, just hidden: add their ids back here to show them again.
-export const SHOWN_BOOKS = ['different', 'small-wonders'];
+export const SHOWN_BOOKS = ['different', 'small-wonders', 'rough-lives'];
