@@ -44,13 +44,13 @@ const api = async (params) => {
       if (!/public domain|pd/i.test(lic)) { index.push(`${key}\tSKIP (${lic})\t${title}`); continue; } // public domain only
       const r = await get(ii.thumburl || ii.url);
       if (!r.ok) { index.push(`${key}\tHTTP ${r.status}\t${title}`); continue; }
-      const file = `${key}-${++n}${path.extname(new URL(ii.thumburl || ii.url).pathname).toLowerCase() || '.jpg'}`;
+      const file = `${key}-${Date.now().toString(36)}-${++n}${path.extname(new URL(ii.thumburl || ii.url).pathname).toLowerCase() || '.jpg'}`;
       fs.writeFileSync(path.join(OUT, file), Buffer.from(await r.arrayBuffer()));
       index.push(`${key}\t${file}\t${title}\t${lic}\t${date}\t${artist}\t${ii.descriptionurl}`);
       if (n >= (query.max || 4)) break;
     }
    } catch (e) { index.push(`${key}\tERROR\t${e.message}`); }
   }
-  fs.writeFileSync(path.join(OUT, 'index.txt'), index.join('\n') + '\n');
+  fs.appendFileSync(path.join(OUT, 'index.txt'), index.join('\n') + '\n'); // added to what earlier runs found
   console.log(index.join('\n'));
 })();

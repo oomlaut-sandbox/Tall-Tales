@@ -16,6 +16,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Keep what earlier runs found
+        run: git fetch -q origin art-output && git checkout origin/art-output -- art-out || true
       - run: node ci/fetch-art.js || echo failed
       - name: Save
         if: always()

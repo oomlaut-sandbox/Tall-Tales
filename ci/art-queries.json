@@ -1,20 +1,36 @@
 {
- "snail": {
-  "search": "snail shell plate 1800s Helix lithograph conchology"
+ "dandelion": {
+  "files": [
+   "File:Taraxacum officinale - Köhler–s Medizinal-Pflanzen-135.jpg"
+  ]
+ },
+ "robin": {
+  "files": [
+   "File:131 American Robin.jpg"
+  ]
  },
  "fern": {
-  "search": "Nature-printed British ferns"
+  "search": "nature-printed British ferns plate Polypodium"
  },
  "mushroom": {
-  "search": "Amanita muscaria chromolithograph 19th century"
+  "search": "Amanita muscaria plate"
  },
  "butterfly": {
-  "search": "Vanessa atalanta plate lithograph 19th century"
+  "search": "Sepp Nederlandsche insecten Vanessa"
+ },
+ "snail": {
+  "search": "Helix pomatia plate"
  },
  "bee": {
-  "search": "honey bee plate 19th century engraving Apis"
+  "search": "Apis mellifera plate engraving"
  },
- "acorn": {
-  "search": "Quercus robur Köhler Medizinal-Pflanzen"
+ "owl": {
+  "search": "Audubon Snowy Owl plate 121"
+ },
+ "hummingbird": {
+  "search": "Audubon Ruby-throated Hummingbird plate 47"
+ },
+ "poppy": {
+  "search": "Papaver rhoeas Köhler Medizinal-Pflanzen"
  }
 }
