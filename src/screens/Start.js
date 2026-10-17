@@ -10,6 +10,10 @@ import React, { useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, Felt } from '../look';
+// The felt Oomlaut Reader logo on the desk where the cover opens, so the open cover hides it.
+// To undo: set SHOW_DESK_LOGO to false (or remove these lines and assets/logo-felt.png).
+const SHOW_DESK_LOGO = true;
+const DESK_LOGO = require('../../assets/logo-felt.png'); // 1233 x 434
 import { Bar, Burger } from '../components/Chrome';
 import BookFrame, { Spine, startRoom } from '../components/BookFrame';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -130,6 +134,12 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
           // speech bubble. It never moves; when it's open the space above it is a bit smaller than below.
           <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: wide ? side * 2 : side, height: wide ? side : side * 2,
             transform: wide ? [] : [{ translateY: -Math.round(side * 0.14) }] }}>
+            {/* the felt logo, lying on the desk in the square the cover opens onto */}
+            {SHOW_DESK_LOGO ? (
+              <View pointerEvents="none" style={[at1, { justifyContent: 'center', alignItems: 'center' }]}>
+                <Image source={DESK_LOGO} resizeMode="contain" style={{ width: side * 0.86, height: side * 0.86 * 434 / 1233 }} accessibilityLabel="Oomlaut Reader" />
+              </View>
+            ) : null}
             {/* the words square: the menu */}
             {/* the menu page has the same rounded corners as the cover that lies on it */}
             <View style={[at2, styles.page, round, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.paper }]}>
