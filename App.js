@@ -188,7 +188,7 @@ function Root() {
               setNbFrom(rect);
               if (!rect) { go('notebook'); return; }
               flyP.setValue(0); setFlyer({ from: rect, hold: true });
-              Animated.timing(libFade, { toValue: 0, duration: 180, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => {
+              Animated.timing(libFade, { toValue: 0, duration: 110, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => {
                 go('notebook');
                 setTimeout(() => { setFlyer((f) => (f && f.hold ? null : f)); libFade.setValue(1); }, 160);
               });
