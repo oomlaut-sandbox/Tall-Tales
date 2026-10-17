@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
   card: { position: 'absolute', overflow: 'hidden' },
   cardTitle: { color: CARD_INK, fontFamily: 'EBGaramond_700Bold', fontSize: 30, lineHeight: 34 },
   sheetSub: { color: '#4a4a4a', fontFamily: fonts.story, fontSize: 18 },
-  sheetText: { color: CARD_INK, fontFamily: fonts.story, fontSize: 18, lineHeight: 25 },
+  sheetText: { color: CARD_INK, fontFamily: fonts.story, fontSize: 18, lineHeight: 25 , marginBottom: 22 },
   sheetBtn: { backgroundColor: colors.green, height: 40, borderRadius: 20, paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center' }, // a small solid green pill
   sheetBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   note: { width: '100%', backgroundColor: '#4a4a4a', padding: 16, fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, color: colors.white },

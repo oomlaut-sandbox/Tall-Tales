@@ -29,9 +29,11 @@ const COVER = require('../../assets/leather-cover.jpg');
 const COVER_WIDE = require('../../assets/leather-cover-wide.jpg');
 // The rounded corners, as a share of the square: tiny along the spine, larger at the far edge (from the picture).
 const R_SPINE = 0.012, R_EDGE = 0.102;
-const corners = (side, wide) => (wide
+const corners = (side, wide, flipped) => (flipped ? (wide
+  ? { borderTopRightRadius: side * R_SPINE, borderBottomRightRadius: side * R_SPINE, borderTopLeftRadius: side * R_EDGE, borderBottomLeftRadius: side * R_EDGE }
+  : { borderBottomLeftRadius: side * R_SPINE, borderBottomRightRadius: side * R_SPINE, borderTopLeftRadius: side * R_EDGE, borderTopRightRadius: side * R_EDGE }) : wide
   ? { borderTopLeftRadius: side * R_SPINE, borderBottomLeftRadius: side * R_SPINE, borderTopRightRadius: side * R_EDGE, borderBottomRightRadius: side * R_EDGE }
-  : { borderTopLeftRadius: side * R_SPINE, borderTopRightRadius: side * R_SPINE, borderBottomLeftRadius: side * R_EDGE, borderBottomRightRadius: side * R_EDGE });
+  : { borderTopLeftRadius: side * R_SPINE, borderTopRightRadius: side * R_SPINE, borderBottomLeftRadius: side * R_EDGE, borderBottomRightRadius: side * R_EDGE }));
 
 const TILE_LIBRARY = require('../../assets/tile-library.png');
 const TILE_STORE = require('../../assets/tile-store.png');
@@ -65,6 +67,8 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
     shade: p.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.25, 0] }),
     pageShadow: p.interpolate({ inputRange: [0, 0.6, 1], outputRange: [0, 0.4, 1], extrapolate: 'clamp' }),
     coverShadow: p.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1], extrapolate: 'clamp' }),
+    shutShadow: p.interpolate({ inputRange: [0, 0.25], outputRange: [1, 0], extrapolate: 'clamp' }),
+    openShadow: p.interpolate({ inputRange: [0.9, 1], outputRange: [0, 1], extrapolate: 'clamp' }),
   };
   // Choosing My Library or the Book Store: the cover turns shut, then the chosen page simply appears (no sliding).
   const { width: winW, height: winH } = useWindowDimensions();
@@ -174,8 +178,14 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
             </View>
             {/* the cover */}
             {(
-              // the cover keeps its shape (and drop shadow) while it turns: the rounded corners swing over to the far side
-              <Animated.View ref={coverRef} collapsable={false} {...swipe.panHandlers} pointerEvents={isOpen ? 'none' : 'auto'} style={[at2, styles.page, round, { zIndex: 8, backgroundColor: COVER_BROWN }, leaf]}>
+              // The turning cover casts no shadow of its own (a shadow on a turning view flickers on iPhone, which
+              // was the strobe). Its shadow comes from two still shapes underneath that fade smoothly instead:
+              // one where the cover lies shut, one where it lies open.
+              // (shut, the page underneath already casts the same shadow)
+              <Animated.View pointerEvents="none" style={[at1, styles.page, corners(side, wide, true), { backgroundColor: COVER_BROWN, opacity: A.current.openShadow }]} />
+            )}
+            {(
+              <Animated.View ref={coverRef} collapsable={false} {...swipe.panHandlers} pointerEvents={isOpen ? 'none' : 'auto'} style={[at2, round, { zIndex: 8, backgroundColor: COVER_BROWN }, leaf]}>
                 <Animated.View style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: frontOp }]}>
                   {coverImg}
                   <Pressable style={StyleSheet.absoluteFill} onPress={open} accessibilityRole="button" accessibilityLabel="Open the book" />
