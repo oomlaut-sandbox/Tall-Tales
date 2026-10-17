@@ -20,6 +20,7 @@ import { onUserChange } from './src/account';
 import ParentGate from './src/components/ParentGate';
 import Reader from './src/screens/Reader';
 import Publisher, { draftFrom } from './src/screens/Publisher';
+import CoverTest from './src/screens/CoverTest';
 import Help from './src/screens/Help';
 import Notebook, { NOTEBOOK_COVER, R_EDGE, R_SPINE } from './src/screens/Notebook';
 import { onNewBadge } from './src/badges';
@@ -218,7 +219,8 @@ function Root() {
           <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} />
         )}
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} />}
-        {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} />}
+        {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onCoverTest={() => go('covertest')} />}
+        {screen === 'covertest' && <CoverTest u={u} openMenu={openMenu} />}
         {screen === 'about' && <About u={u} openMenu={openMenu} onSecret={() => {
           // the store owner: straight to the Store Manager when signed in, otherwise to the sign-in first
           if (storeAdmin) go('storeManager');
