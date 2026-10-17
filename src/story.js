@@ -217,7 +217,7 @@ export const TIPS = {
   },
   pages: [
     { pid: 'tp01', titlePage: true, image: require('../assets/books/tips/cover.jpg'), w: 1600, h: 1600, text: 'Tips for Authors. Ideas for making your own books, for grown-ups and young authors alike.' },
-    { pid: 'tp02', image: require('../assets/books/tips/cover.jpg'), w: 1600, h: 1600, text: 'Every family has stories worth keeping. All you need is a camera, a few words and a little time. Here are some ideas to get you started.' },
+    { pid: 'tp02', image: require('../assets/books/two-snakes/horse.jpg'), w: 1600, h: 1600, text: 'Every family has stories worth keeping. All you need is a camera, a few words and a little time. Here are some ideas to get you started.' },
     { pid: 'tp03', image: require('../assets/books/rough-lives/fox.jpg'), w: 1600, h: 1600, text: 'Our Big Adventure Today. A walk in the woods, a visit to Grandma, a first lost tooth. Take one photo for each page and let your child tell what happened. First we… then we… the best part was…' },
     { pid: 'tp04', image: require('../assets/books/small-wonders/snail.jpg'), w: 1600, h: 1600, text: 'Collecting. Rocks, bugs, leaves and flowers. Photograph or draw each find, then give it a name and one fact, real or made up. Now you have your very own field guide.' },
     { pid: 'tp05', image: require('../assets/books/two-snakes/rabbit.jpg'), w: 1600, h: 1600, text: 'Drawings. Take a photo of a drawing and it becomes a page. Let your child tell the story, and type their words exactly as they say them.' },

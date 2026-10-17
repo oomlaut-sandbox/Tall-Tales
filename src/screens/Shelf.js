@@ -83,6 +83,25 @@ function Band({ color, felt, dark, title, sub, action, onAction }) {
 // My Notebook's cover: the brown leather of the notebook on the start page
 const NOTEBOOK_COVER = require('../../assets/leather-cover.jpg');
 
+// My Notebook on the shelf: a small copy of the leather notebook on the start page, with the same
+// rounded corners (tiny along the spine at the top, rounder at the bottom) and no dog-ear.
+function NotebookTile({ onPress }) {
+  const { width: winW } = useWindowDimensions();
+  const [w, setW] = useState(0);
+  return (
+    <Pressable onPress={onPress} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel="My Notebook">
+      <View onLayout={(e) => setW(e.nativeEvent.layout.width)}
+        style={{ aspectRatio: 1, borderTopLeftRadius: w * 0.012, borderTopRightRadius: w * 0.012, borderBottomLeftRadius: w * 0.102, borderBottomRightRadius: w * 0.102,
+          backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, elevation: 8 }}>
+        <View style={{ flex: 1, overflow: 'hidden', borderTopLeftRadius: w * 0.012, borderTopRightRadius: w * 0.012, borderBottomLeftRadius: w * 0.102, borderBottomRightRadius: w * 0.102 }}>
+          <Image source={NOTEBOOK_COVER} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+        </View>
+      </View>
+      <Text style={styles.tileTitle}>My Notebook</Text>
+    </Pressable>
+  );
+}
+
 export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook }) {
   const { width: winW } = useWindowDimensions();
   const [selecting, setSelecting] = useState(false);
@@ -122,7 +141,8 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
         sub={selecting ? (picked.length ? `${picked.length} selected` : 'Tap books to select them') : 'Your stories, ready to read'} />
       <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]}>
         {/* My Notebook: always the first book on the shelf (notes, drawings and reading badges) */}
-        {!selecting && onNotebook ? <Tile u={u} cover={NOTEBOOK_COVER} title="My Notebook" label="My Notebook" onPress={onNotebook} /> : null}
+        {!selecting && onNotebook ? <NotebookTile onPress={onNotebook} /> : null}
+        {!selecting && onNotebook ? <View style={{ width: '100%' }} /> : null}{/* the notebook has the top row to itself */}
         {stories.map((s) => (
           // just the title under each cover (no author, pages or other details)
           <Tile key={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title}
