@@ -65,10 +65,6 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
     frontOp: p.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [1, 1, 0, 0] }),
     backOp: p.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] }),
     shade: p.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.25, 0] }),
-    pageShadow: p.interpolate({ inputRange: [0, 0.6, 1], outputRange: [0, 0.4, 1], extrapolate: 'clamp' }),
-    coverShadow: p.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1], extrapolate: 'clamp' }),
-    shutShadow: p.interpolate({ inputRange: [0, 0.25], outputRange: [1, 0], extrapolate: 'clamp' }),
-    openShadow: p.interpolate({ inputRange: [0.9, 1], outputRange: [0, 1], extrapolate: 'clamp' }),
   };
   // Choosing My Library or the Book Store: the cover turns shut, then the chosen page simply appears (no sliding).
   const { width: winW, height: winH } = useWindowDimensions();
@@ -167,8 +163,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
             <View style={[at2, styles.page, round, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.paper }]}>
               <View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden' }]}><Felt opacity={0.7} /></View>
               {/* spine shadow on the page: a soft one along the fold (the leather side gets the deeper one) */}
-              {/* (it grows in as the cover opens, so it never pops) */}
-              <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: A.current.pageShadow }]}><Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.17)} max={0.32} /></Animated.View>
+              <View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden' }]}><Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.17)} max={0.32} /></View>
               <Spine wide={wide} />
               {/* the two items as one block, centred in the page */}
               <View style={{ gap: k * 8, transform: [{ translateX: k * 5 }] }}>{/* nudged a little to the right */}
@@ -178,14 +173,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
             </View>
             {/* the cover */}
             {(
-              // The turning cover casts no shadow of its own (a shadow on a turning view flickers on iPhone, which
-              // was the strobe). Its shadow comes from two still shapes underneath that fade smoothly instead:
-              // one where the cover lies shut, one where it lies open.
-              // (shut, the page underneath already casts the same shadow)
-              <Animated.View pointerEvents="none" style={[at1, styles.page, corners(side, wide, true), { backgroundColor: COVER_BROWN, opacity: A.current.openShadow }]} />
-            )}
-            {(
-              <Animated.View ref={coverRef} collapsable={false} {...swipe.panHandlers} pointerEvents={isOpen ? 'none' : 'auto'} style={[at2, round, { zIndex: 8, backgroundColor: COVER_BROWN }, leaf]}>
+              <Animated.View ref={coverRef} collapsable={false} {...swipe.panHandlers} pointerEvents={isOpen ? 'none' : 'auto'} style={[at2, styles.page, round, { zIndex: 8, backgroundColor: COVER_BROWN }, leaf]}>
                 <Animated.View style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: frontOp }]}>
                   {coverImg}
                   <Pressable style={StyleSheet.absoluteFill} onPress={open} accessibilityRole="button" accessibilityLabel="Open the book" />
@@ -194,10 +182,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
                 <Animated.View pointerEvents="none" accessibilityLabel="Oomlaut Reader" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: backOp }]}>
                   {coverImg}
                   {/* the big spine shadow on the leather: along the edge it turns on, so it travels with the cover as it opens and closes */}
-                  {/* fades in from the moment the inside of the cover shows, instead of appearing all at once */}
-                  <Animated.View style={[StyleSheet.absoluteFill, { opacity: A.current.coverShadow }]}>
-                    <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.24)} max={0.55} />
-                  </Animated.View>
+                  <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.24)} max={0.55} />
                 </Animated.View>
                 <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { backgroundColor: '#000', opacity: shade }]} />
               </Animated.View>

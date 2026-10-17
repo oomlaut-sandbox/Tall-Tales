@@ -116,6 +116,11 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const fly = useRef(new Animated.Value(0)).current;
   const swing = useRef(new Animated.Value(0)).current;
   const introStarted = useRef(false);
+  // (made once, so redraws never swap them for new ones and nothing blinks)
+  const fade = useRef({
+    out: fly.interpolate({ inputRange: [0, 0.5], outputRange: [1, 0], extrapolate: 'clamp' }),
+    in: fly.interpolate({ inputRange: [0.2, 1], outputRange: [0, 1], extrapolate: 'clamp' }),
+  }).current;
   // waits until the book has settled into its final size and place, then runs both steps on the native
   // driver (moves and scales only, so it stays smooth); the closed cover is only taken away a moment
   // after the real page is showing underneath it, so nothing blinks
@@ -398,7 +403,9 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 45 }]}>
         <Animated.View style={{ position: 'absolute', left: from.x, top: from.y, width: S0, height: S0,
           transform: [{ translateX: fly.interpolate({ inputRange: [0, 1], outputRange: [0, dx] }) }, { translateY: fly.interpolate({ inputRange: [0, 1], outputRange: [0, dy] }) }, { scale: fly.interpolate({ inputRange: [0, 1], outputRange: [1, k] }) }] }}>
-          <Animated.View style={[StyleSheet.absoluteFill, styles.coverShadow, round, leaf]}>
+          {/* the shelf notebook's own shadow, still (never on the turning cover: that flickers), fading as it grows */}
+          <Animated.View style={[StyleSheet.absoluteFill, round, { backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, opacity: fade.out }]} />
+          <Animated.View style={[StyleSheet.absoluteFill, round, { backgroundColor: '#7c5438' }, leaf]}>
             <Animated.View style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: frontOp }]}>
               <Image source={wide ? NOTEBOOK_COVER_WIDE : NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} />
             </Animated.View>
@@ -448,8 +455,15 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         <DeskFelt spot="notebook1" />
         {nb ? (
           <View ref={bookRef} collapsable={false} onLayout={measureBook}
-            style={[styles.bookShadow, shape, { width: bookW, height: bookH, opacity: intro === 'fly' ? 0 : 1 }, opening ? { backgroundColor: 'transparent', shadowOpacity: 0 } : null]}>
-            {layers}
+            style={[styles.bookShadow, shape, { width: bookW, height: bookH }, opening ? { backgroundColor: 'transparent', shadowOpacity: 0 } : null]}>
+            {/* While it opens, the book's shadow is a still felt-coloured shape underneath that grows in with the
+                flying cover; in the same frame it goes, the book's own shadow comes on, so it never flares. */}
+            {opening ? (
+              <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, shape, { backgroundColor: DESK_FELT ? '#262626' : DESK_BG, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, opacity: fade.in }]}>
+                <View style={[StyleSheet.absoluteFill, shape, { overflow: 'hidden' }]}><DeskFelt spot="notebookPlate" /></View>
+              </Animated.View>
+            ) : null}
+            <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { opacity: intro === 'fly' ? 0 : 1 }]}>{layers}</View>
             {/* the folded corner stays until the paper actually starts to lift, and is back as soon as the page lands */}
             {!(flipPair && peelLive && !landed) && !intro ? (
               <>

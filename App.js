@@ -98,6 +98,9 @@ function Root() {
   const [flyer, setFlyer] = useState(null); // { from, to } screen rectangles
   const libFade = useRef(new Animated.Value(1)).current;
   const flyP = useRef(new Animated.Value(0)).current;
+  // (made once, so redraws during the flight never swap them for new ones)
+  const flyShadowOut = useRef(flyP.interpolate({ inputRange: [0, 0.6], outputRange: [1, 0], extrapolate: 'clamp' })).current;
+  const flyShadowIn = useRef(flyP.interpolate({ inputRange: [0.3, 1], outputRange: [0, 1], extrapolate: 'clamp' })).current;
   // The closed notebook is drawn where it was from the very first frame (so it never vanishes), waits there
   // until the shelf spot is known, then moves and shrinks onto it (native driver, smooth). The shelf's own
   // notebook shows first, and the flying one is taken away a moment later, so there's no blink at the end.
@@ -237,12 +240,22 @@ function Root() {
           const tx = to ? to.x + to.w / 2 - (from.x + from.w / 2) : 0;
           const ty = to ? to.y + to.w / 2 - (from.y + from.w / 2) : 0;
           const k = to ? to.w / from.w : 1;
+          const shadowOn = screen === 'library' && !flyer.landed;
           const round = { borderTopLeftRadius: from.w * R_SPINE, borderTopRightRadius: from.w * R_SPINE, borderBottomLeftRadius: from.w * R_EDGE, borderBottomRightRadius: from.w * R_EDGE };
           return (
-            <Animated.View pointerEvents="none" style={[{ position: 'absolute', zIndex: 150, left: from.x, top: from.y, width: from.w, height: from.w,
-              transform: [{ translateX: flyP.interpolate({ inputRange: [0, 1], outputRange: [0, tx] }) }, { translateY: flyP.interpolate({ inputRange: [0, 1], outputRange: [0, ty] }) }, { scale: flyP.interpolate({ inputRange: [0, 1], outputRange: [1, k] }) }],
-              backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 2 / k, height: 5 / k }, shadowOpacity: flyer.landed ? 0 : 0.45, shadowRadius: 8 / k, /* sized so that, shrunk onto the shelf, it matches the shelf notebook's shadow exactly */ elevation: flyer.landed ? 0 : 9 }, round]}>{/* once landed, only the shelf's own notebook casts the shadow (two at once looked like a flare) */}
-              <View style={[{ flex: 1, overflow: 'hidden' }, round]}><Image source={NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} /></View>
+            <Animated.View pointerEvents="none" style={{ position: 'absolute', zIndex: 150, left: from.x, top: from.y, width: from.w, height: from.w,
+              transform: [{ translateX: flyP.interpolate({ inputRange: [0, 1], outputRange: [0, tx] }) }, { translateY: flyP.interpolate({ inputRange: [0, 1], outputRange: [0, ty] }) }, { scale: flyP.interpolate({ inputRange: [0, 1], outputRange: [1, k] }) }] }}>
+              {/* Its shadow: only one notebook casts one at any moment. While the page it came from is still on
+                  screen (with its own notebook and shadow underneath), it has none; it takes over in the same
+                  frame that page goes. Then two still shadows cross-fade as it shrinks: the big one it had where
+                  it was, and the small shelf one, so the shadow never jumps or flares. Gone once it has landed. */}
+              {shadowOn ? (
+                <>
+                  <Animated.View style={[StyleSheet.absoluteFill, round, { backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: flyer.hold ? 0.45 : 0.35, shadowRadius: flyer.hold ? 8 : 10, opacity: flyShadowOut }]} />
+                  {to ? <Animated.View style={[StyleSheet.absoluteFill, round, { backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 2 / k, height: 5 / k }, shadowOpacity: 0.45, shadowRadius: 8 / k, opacity: flyShadowIn }]} /> : null}
+                </>
+              ) : null}
+              <View style={[{ flex: 1, overflow: 'hidden', backgroundColor: '#7c5438' }, round]}><Image source={NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} /></View>
             </Animated.View>
           );
         })() : null}
