@@ -315,7 +315,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy }
   // under the cover: title, author, pages and price, then a short description
   const info = (
     <View style={{ gap: 8 }}>
-      <Text style={styles.cardTitle}>{book.title}</Text>
+      <Text style={[styles.cardTitle, { marginTop: 10 }]}>{book.title}</Text>
       {book.author ? <Text style={styles.sheetSub}>by {book.author}</Text> : null}
       <Text style={styles.sheetSub}>{meta}</Text>
       {blurb ? <Text style={[styles.sheetText, { marginTop: 6 }]}>{blurb}</Text> : null}

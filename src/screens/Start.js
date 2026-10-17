@@ -85,7 +85,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
     if (target === 0 && wasOpen) playSound('coverClose');
     if (target === 0) { openNow.current = false; setIsOpen(false); }
     const left = Math.abs(target - from);
-    Animated.timing(p, { toValue: target, duration: Math.max(180, (target ? 1200 : 1000) * left), easing: left > 0.9 ? Easing.inOut(Easing.cubic) : Easing.out(Easing.cubic), useNativeDriver: true }).start(() => {
+    Animated.timing(p, { toValue: target, duration: Math.max(180, (target ? 1200 : leaving.current ? 650 : 1000) * left), easing: left > 0.9 ? Easing.inOut(Easing.cubic) : Easing.out(Easing.cubic), useNativeDriver: true }).start(() => {
       busy.current = false;
       if (target === 1) { openNow.current = true; setIsOpen(true); if (!wasOpen) onOpened && onOpened(); }
       else { setOpening(false); if (wasOpen) onClosed && onClosed(); }
@@ -98,12 +98,12 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
   const goTo = (target) => {
     if (leaving.current || busy.current) return;
     leaving.current = true;
-    // shut, a half-second pause, then the page. My Library: the closed notebook then shrinks and slides onto the
+    // shut (quickly), a short pause, then the page. My Library: the closed notebook then shrinks and slides onto the
     // shelf (the app does that, so it's told where the notebook is); the Book Store just appears.
     settle(0, 1, () => setTimeout(() => {
       if (target === 'library' && coverRef.current && coverRef.current.measureInWindow) coverRef.current.measureInWindow((x, y, w, h) => go(target, w ? { x, y, w, h } : null));
       else go(target);
-    }, 500));
+    }, 150));
   };
   // Dragging: the cover follows the finger the whole way (up / to the left opens it, down / to the
   // right closes it); let go past halfway and it falls open, otherwise it settles back shut.
