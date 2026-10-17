@@ -1,3 +1,4 @@
+export const EAR_PAD = 12; // room for the flap's shadow
 // Shapes for the notebook's rounded dog-ear, in a square of size e with the page's corner at bottom right.
 export function earPaths(e, R) {
   const r = Math.max(2, Math.min(R, e * 0.9));
