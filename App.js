@@ -239,7 +239,7 @@ function Root() {
           return (
             <Animated.View pointerEvents="none" style={[{ position: 'absolute', zIndex: 150, left: from.x, top: from.y, width: from.w, height: from.w,
               transform: [{ translateX: flyP.interpolate({ inputRange: [0, 1], outputRange: [0, tx] }) }, { translateY: flyP.interpolate({ inputRange: [0, 1], outputRange: [0, ty] }) }, { scale: flyP.interpolate({ inputRange: [0, 1], outputRange: [1, k] }) }],
-              backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 9 }, round]}>
+              backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: flyer.landed ? 0 : 0.45, shadowRadius: 10, elevation: flyer.landed ? 0 : 9 }, round]}>{/* once landed, only the shelf's own notebook casts the shadow (two at once looked like a flare) */}
               <View style={[{ flex: 1, overflow: 'hidden' }, round]}><Image source={NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} /></View>
             </Animated.View>
           );
