@@ -137,6 +137,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const refs = { cur: useRef(null), prev: useRef(null), next: useRef(null) };
   const [flipPair, setFlipPair] = useState(null); // { a, b, dir } while a page turns
   const [peel, setPeel] = useState(null); // { front, back } pictures
+  const [peelLive, setPeelLive] = useState(false); // the peel has drawn: the page underneath can switch
   const prog = useRef(0);
   const busy = useRef(false);
   const st = useRef({});
@@ -156,7 +157,12 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     if (!fa || !fb) { setI(to); busy.current = false; return; }
     setPeel({ front: fa, back: fb });
     setProgress(dir > 0 ? 0 : 1);
+    setPeelLive(false);
     setFlipPair({ a, b: a + 1, dir });
+    // the page as it is stays on top for a few frames, until the paper peel has drawn itself (no flash)
+    await new Promise((r) => setTimeout(r, 90));
+    setPeelLive(true);
+    await new Promise((r) => requestAnimationFrame(() => r()));
     const target = dir > 0 ? 1 : 0, startP = prog.current, t0 = Date.now(), ms = 900;
     const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
     const step = () => {
@@ -360,12 +366,17 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   );
   if (flipPair && peel) {
     const { a, b } = flipPair;
-    layers.push(abs(b, `f${b}`, null, false));
-    layers.push(
-      <View key={`t${a}`} pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: side, height: side, overflow: 'hidden', ...(wide ? { borderTopLeftRadius: R, borderBottomLeftRadius: R } : { borderTopLeftRadius: R, borderTopRightRadius: R }) }}>
-        <View style={{ width: bookW, height: bookH }}>{spread(a, false)}</View>
-      </View>,
-    );
+    // the same keys as before the turn, so nothing is redrawn from scratch (no flash)
+    layers.push(abs(b, `p${b}`, null, false));
+    if (peelLive) {
+      layers.push(
+        <View key={`t${a}`} pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: side, height: side, overflow: 'hidden', ...(wide ? { borderTopLeftRadius: R, borderBottomLeftRadius: R } : { borderTopLeftRadius: R, borderTopRightRadius: R }) }}>
+          <View style={{ width: bookW, height: bookH }}>{spread(a, false)}</View>
+        </View>,
+      );
+    } else if (b !== i) {
+      layers.push(abs(i, `p${i}`, null, false)); // the page as it was stays on top until the peel has drawn
+    }
   } else {
     // (not while the cover is opening: the felt shows through where the cover will land)
     if (usePeel && !opening && i > 0) layers.push(abs(i - 1, `p${i - 1}`, refs.prev, false));
