@@ -313,7 +313,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           <View style={{ width: side, height: side, backgroundColor: WHITE, alignItems: 'center', justifyContent: 'center' }}>
             <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.17)} max={0.32} />
             <Spine wide={wide} />
-            <Text style={{ fontFamily: TYPE, fontSize: side * 0.085, color: '#2b2b2b' }}>My Notes</Text>
+            <Text style={{ fontFamily: TYPE, fontSize: side * 0.068, color: '#2b2b2b' }}>My Notes</Text>
           </View>
         </View>
       );

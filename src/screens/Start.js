@@ -70,6 +70,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
   const { width: winW, height: winH } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const leaving = useRef(false);
+  const pageRef = useRef(null); // the page under the cover (not turning), measured for the flight to the shelf
   const coverRef = useRef(null); // the cover, measured when it's about to fly to the shelf
   // When the app opens the book is simply there on the felt, closed: no slide-in (Jörg's choice).
   const [opening, setOpening] = useState(false); // the cover is moving or open (hides the dog-ear)
@@ -98,12 +99,14 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
   const goTo = (target) => {
     if (leaving.current || busy.current) return;
     leaving.current = true;
-    // shut (quickly), a short pause, then the page. My Library: the closed notebook then shrinks and slides onto the
-    // shelf (the app does that, so it's told where the notebook is); the Book Store just appears.
-    settle(0, 1, () => setTimeout(() => {
-      if (target === 'library' && coverRef.current && coverRef.current.measureInWindow) coverRef.current.measureInWindow((x, y, w, h) => go(target, w ? { x, y, w, h } : null));
+    // The cover starts to shut and, just before it lands, the page takes over (no waiting for it to settle).
+    // My Library: a closed notebook is laid exactly over the page and shrinks and slides onto the shelf (the
+    // app does that, so it's told where the page is); the Book Store just appears.
+    settle(0, 1);
+    setTimeout(() => {
+      if (target === 'library' && pageRef.current && pageRef.current.measureInWindow) pageRef.current.measureInWindow((x, y, w, h) => go(target, w ? { x, y, w, h } : null));
       else go(target);
-    }, 150));
+    }, 470); // three-quarters of the way through the 650ms close: the cover is all but shut
   };
   // Dragging: the cover follows the finger the whole way (up / to the left opens it, down / to the
   // right closes it); let go past halfway and it falls open, otherwise it settles back shut.
@@ -157,7 +160,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
             ) : null}
             {/* the words square: the menu */}
             {/* the menu page has the same rounded corners as the cover that lies on it */}
-            <View style={[at2, styles.page, round, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.paper }]}>
+            <View ref={pageRef} collapsable={false} style={[at2, styles.page, round, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.paper }]}>
               <View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden' }]}><Felt opacity={0.7} /></View>
               {/* spine shadow on the page: a soft one along the fold (the leather side gets the deeper one) */}
               <View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden' }]}><Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.17)} max={0.32} /></View>
