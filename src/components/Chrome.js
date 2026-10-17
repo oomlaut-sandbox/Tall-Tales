@@ -432,8 +432,26 @@ export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLab
 }
 
 // The speech bubble: a white rounded box in the middle of the screen (between the bars). Tap it to close.
+// Jörg's clay speech bubble (576 × 293; the body is the top ~74%, the tail below at the left)
+const CLAY_BUBBLE = require('../../assets/bubble-clay.png');
+
 export function Toast({ message, area, onDismiss, center }) {
   if (!message) return null;
+  if (center) {
+    // the bubble over the picture page while recording: the clay one
+    return (
+      <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, zIndex: 60, alignItems: 'center', justifyContent: 'center' }, area]}>
+        <Pressable onPress={onDismiss} accessibilityRole="button" accessibilityHint="Closes the message" style={{ width: '92%', maxWidth: 420, aspectRatio: 576 / 293 }}>
+          <Image source={CLAY_BUBBLE} resizeMode="stretch" style={StyleSheet.absoluteFill} />
+          <View style={{ position: 'absolute', left: '9%', right: '9%', top: '9%', height: '62%', alignItems: 'center', justifyContent: 'center' }}>
+            <Text adjustsFontSizeToFit numberOfLines={4} style={[styles.toast, { fontSize: 17, lineHeight: 22, color: '#2a2a2a' }]}>
+              {String(message).split('●').map((part, i) => (i ? [<Text key={i} style={{ color: colors.highlight }}>●</Text>, part] : part))}
+            </Text>
+          </View>
+        </Pressable>
+      </View>
+    );
+  }
   return (
     <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, zIndex: 60, alignItems: 'center', justifyContent: center ? 'center' : 'flex-end', paddingBottom: center ? 0 : 14 }, area]}>
       {/* Every speech bubble pops up in the same place: just above the bottom bar, most of the screen wide,
