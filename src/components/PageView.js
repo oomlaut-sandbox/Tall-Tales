@@ -135,7 +135,7 @@ export const PageView = forwardRef(function PageView(
           (() => {
             const word = (w, i, last, shown) => (
               <Text key={i} onPress={onWord ? () => onWord(i, w.word) : undefined} style={i === highlight ? styles.hl : null}>
-                {shown ?? w.word}{i < last ? ' ' : ''}
+                {shown ?? w.word}{i < last ? (page && page.text && /\n/.test(page.text.slice(w.end, words[i + 1] ? words[i + 1].start : w.end)) ? '\n' : ' ') : ''}{/* poems keep their line breaks */}
               </Text>
             );
             // A title page ("Title. Written and illustrated by …"): the title in bold on its own
