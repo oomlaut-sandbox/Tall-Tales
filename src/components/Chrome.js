@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
   closeBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   chev: { width: 22, height: 12 },
   chevBar: { position: 'absolute', top: 4, width: 14, height: 3, borderRadius: 1.5, backgroundColor: colors.white },
-  panelTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 24 },
+  panelTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 24, transform: [{ translateY: -3 }] }, // a nudge up, so it sits in the middle of the heading
   panelCols: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 22, rowGap: 16, paddingTop: 16, paddingBottom: 30 },
   panelList: { backgroundColor: colors.panel, paddingHorizontal: 22, paddingTop: 20, paddingBottom: 22, gap: 16 },
   opt: { flexDirection: 'row', alignItems: 'center', gap: 18 },
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
   optSub: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 14 },
   toastWrap: { position: 'absolute', left: 0, right: 0, top: 64, alignItems: 'center', zIndex: 60, paddingHorizontal: 24 },
   bubbleWrap: { width: '90%', maxWidth: 560, paddingBottom: 22, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.4, shadowRadius: 12, elevation: 10 },
-  bubble: { backgroundColor: colors.white, borderRadius: 22, paddingHorizontal: 26, paddingVertical: 20 },
+  bubble: { backgroundColor: colors.white, borderRadius: 22, paddingHorizontal: 26, paddingTop: 16, paddingBottom: 24 }, // the serif sits low, so a little more room below centres it
   bubbleTail: { position: 'absolute', left: '14%', bottom: 0, width: 0, height: 0, borderTopWidth: 23, borderRightWidth: 22, borderTopColor: colors.white, borderRightColor: 'transparent' },
   toast: { color: colors.ink, fontFamily: 'EBGaramond_500Medium', fontSize: 21, lineHeight: 28, textAlign: 'center' }, // the book serif
 });

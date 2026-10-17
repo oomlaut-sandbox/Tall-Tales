@@ -3,28 +3,30 @@ import React from 'react';
 import { Image, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
-import { Felt, Stitch } from '../look';
+import { IS_TABLET } from '../look';
 import { Bar, BarMeta, Burger, WithBar } from '../components/Chrome';
 
+const BAND_FELT = require('../../assets/band-about.jpg');
 const SKIPPY = require('../../assets/skippy/glasses-book.png'); // Skippy with his glasses and a book (449 × 600)
 
 const VERSION = require('../../app.json').expo.version;
 
 export default function About({ u, openMenu }) {
   const insets = useSafeAreaInsets();
-  const { width: winW } = useWindowDimensions();
+  const { width: winW, height: winH } = useWindowDimensions();
   // the words run the width of the page; Skippy stands on his own at the bottom right and stays put
   // (the words leave room for him at the end, so the last lines never sit behind him)
   const skW = Math.min(150, Math.round(winW * 0.32));
   const skH = Math.round(skW * 600 / 449);
   // phones: slightly smaller words so it all fits; the last paragraph runs beside Skippy, like a wrap
   const phone = winW < 600;
-  const textStyle = phone ? { fontSize: 17, lineHeight: 24 } : null;
+  const textStyle = phone ? (winH < 740 ? { fontSize: 14.5, lineHeight: 20 } : { fontSize: 17, lineHeight: 24 }) : null;
   const beside = { marginRight: skW - 4 };
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
-        <Felt /><Stitch inset={7} />
+        {/* Jörg's red felt, treated like the other banners (phones); iPad keeps the classic solid red */}
+        {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
         {/* the ® sits raised (superscript) after Oomlaut */}
         <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
           <Text style={styles.title}>Oomlaut</Text>
@@ -53,8 +55,8 @@ export default function About({ u, openMenu }) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
-  band: { backgroundColor: colors.red, paddingBottom: 30, paddingHorizontal: 24 },
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32 },
+  band: { backgroundColor: colors.red, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 }, // same drop shadow as the other banners
+  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
   reg: { color: colors.white, fontFamily: fonts.ui, fontSize: 13, lineHeight: 15, marginTop: 4, marginLeft: 1 }, // small raised ®
   tagline: { color: colors.white, fontFamily: 'EBGaramond_400Regular_Italic', fontSize: 20, marginTop: 6 }, // the real italic (iPhone doesn't slant a font by itself)
   body: { paddingHorizontal: 24, paddingTop: 24, gap: 16 },
