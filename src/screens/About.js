@@ -13,10 +13,10 @@ const VERSION = require('../../app.json').expo.version;
 export default function About({ u, openMenu }) {
   const insets = useSafeAreaInsets();
   const { width: winW } = useWindowDimensions();
-  // the words in a column about half the page wide (it scrolls); Skippy stands on his own in the right margin,
-  // at the bottom right, and stays put
-  const colW = Math.round(winW * 0.54);
-  const skW = Math.min(170, Math.round((winW - colW - 24 - 20) * 0.95));
+  // the words run the width of the page; Skippy stands on his own at the bottom right and stays put
+  // (the words leave room for him at the end, so the last lines never sit behind him)
+  const skW = Math.min(150, Math.round(winW * 0.32));
+  const skH = Math.round(skW * 600 / 449);
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
@@ -30,8 +30,7 @@ export default function About({ u, openMenu }) {
         <Text style={styles.tagline}>Picture books in your voice.</Text>
       </View>
       <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={[styles.body, { width: colW + 24 }]}>
-        <Text style={styles.p}>Welcome to the world of Oomlaut, pronounced [oom-lout].</Text>
+      <ScrollView contentContainerStyle={[styles.body, { paddingBottom: skH + 12 }]}>
         <Text style={styles.p}>
           Oomlaut Reader is a home for beautifully illustrated stories, made for children who are learning to read and the grown-ups who read with them.
         </Text>
@@ -42,7 +41,7 @@ export default function About({ u, openMenu }) {
         <Text style={styles.version}>Version {VERSION}</Text>
       </ScrollView>
       <Image source={SKIPPY} resizeMode="contain" accessibilityIgnoresInvertColors pointerEvents="none"
-        style={{ position: 'absolute', right: 14, bottom: 12, width: skW, height: skW * 600 / 449 }} />
+        style={{ position: 'absolute', right: 14, bottom: 12, width: skW, height: skH }} />
       </View>
     </WithBar>
   );
@@ -54,7 +53,7 @@ const styles = StyleSheet.create({
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32 },
   reg: { color: colors.white, fontFamily: fonts.ui, fontSize: 13, lineHeight: 15, marginTop: 4, marginLeft: 1 }, // small raised ®
   tagline: { color: colors.white, fontFamily: 'EBGaramond_400Regular_Italic', fontSize: 20, marginTop: 6 }, // the real italic (iPhone doesn't slant a font by itself)
-  body: { paddingLeft: 24, paddingTop: 24, paddingBottom: 40, gap: 16 },
+  body: { paddingHorizontal: 24, paddingTop: 24, gap: 16 },
   p: { fontFamily: fonts.story, fontSize: 19, lineHeight: 28, color: colors.ink },
   version: { fontFamily: fonts.ui, fontSize: 13, color: '#555', marginTop: 8 },
 });
