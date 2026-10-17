@@ -36,7 +36,7 @@ export default function About({ u, openMenu, onSecret }) {
         <Text style={styles.tagline}>Picture books in your voice.</Text>
       </View>
       <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={[styles.body, { paddingBottom: 24 }, phone && winH < 740 && { paddingTop: 12, gap: 12 }]}>
+      <ScrollView contentContainerStyle={[styles.body, { paddingBottom: 24 }, phone && winH < 740 && { paddingTop: 22, gap: 12 }]}>
         <Text style={[styles.p, textStyle]}>
           Oomlaut Reader is a home for beautifully illustrated stories, made for children who are learning to read and the grown-ups who read with them.
         </Text>
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
   reg: { color: colors.white, fontFamily: fonts.ui, fontSize: 13, lineHeight: 15, marginTop: 4, marginLeft: 1 }, // small raised ®
   tagline: { color: colors.white, fontFamily: 'EBGaramond_400Regular_Italic', fontSize: 20, marginTop: 6 }, // the real italic (iPhone doesn't slant a font by itself)
-  body: { paddingHorizontal: 24, paddingTop: 24, gap: 16 },
+  body: { paddingHorizontal: 24, paddingTop: 36, gap: 16 },
   p: { fontFamily: fonts.story, fontSize: 19, lineHeight: 28, color: colors.ink },
   version: { fontFamily: fonts.ui, fontSize: 13, color: '#555', marginTop: 8 },
 });
