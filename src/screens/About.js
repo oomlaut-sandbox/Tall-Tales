@@ -21,7 +21,7 @@ export default function About({ u, openMenu }) {
   // phones: slightly smaller words so it all fits; the last paragraph runs beside Skippy, like a wrap
   const phone = winW < 600;
   const textStyle = phone ? (winH < 740 ? { fontSize: 14.5, lineHeight: 20 } : { fontSize: 17, lineHeight: 24 }) : null;
-  const beside = { marginRight: skW - 4 };
+  const beside = { marginRight: skW + 16 }; // a little narrower, so Skippy has room
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
