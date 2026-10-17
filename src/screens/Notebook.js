@@ -823,7 +823,13 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
           <View style={{ width: TOOLS_W, justifyContent: 'space-between' }}>
             <Text style={styles.editorTitle}>{title}</Text>
             <View style={{ gap: 22 }}>
-              {swatches(TOOLS_W, 5)}
+              {/* all nine colours on one line, starting at the same left edge as the buttons below */}
+              <View style={{ flexDirection: 'row', gap: 4 }}>
+                {PENS.map(([hex, name]) => (
+                  <Pressable key={hex} onPress={() => { setPen(hex); setErase(false); }} accessibilityLabel={`${name} pen`} hitSlop={3}
+                    style={[styles.swatch, { width: 25, height: 25, borderRadius: 12.5, backgroundColor: hex }, !erase && pen === hex && styles.swatchOn]} />
+                ))}
+              </View>
               {sizesEl}
               {undoEl}
             </View>
