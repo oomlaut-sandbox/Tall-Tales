@@ -2,6 +2,7 @@
 // Saves are queued so quick autosaves never overwrite each other.
 import { deleteFile, keepFile, loadJSON, saveJSON } from './storage';
 import { pruneRecordings } from './recordings';
+import { markFirst } from './badges';
 
 let queue = Promise.resolve();
 const serial = (fn) => (queue = queue.then(fn, fn));
@@ -65,6 +66,7 @@ export function saveUserStory(draft) {
     }
     await saveJSON('stories', list);
     await pruneRecordings(draft.id, pages.map((p) => p.pid));
+    if (pages.length) markFirst('firstBook'); // a badge in My Notebook
     return list.map(fromSaved);
   });
 }

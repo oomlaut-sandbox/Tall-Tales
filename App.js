@@ -19,6 +19,8 @@ import { onUserChange } from './src/account';
 import ParentGate from './src/components/ParentGate';
 import Reader from './src/screens/Reader';
 import Publisher, { draftFrom } from './src/screens/Publisher';
+import Notebook from './src/screens/Notebook';
+import { onNewBadge } from './src/badges';
 import { SHOWN_BOOKS, STORIES } from './src/story';
 import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
@@ -82,6 +84,12 @@ function Root() {
     clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setMessage(''), 5500); // a little longer; tap the bubble to close it sooner
   }, []);
+  // a new reading badge: a little speech bubble (the badges are on the first page of My Notebook)
+  useEffect(() => onNewBadge((fresh) => {
+    const b = fresh[0];
+    const name = b.kind === 'book' ? `you finished “${b.title}”` : b.title;
+    setTimeout(() => toast(fresh.length > 1 ? `New badges! ${b.kind === 'book' ? 'You finished a book' : b.title} and more. See them in My Notebook.` : `New badge: ${name}! See it in My Notebook.`), 900);
+  }), [toast]);
 
   const go = (s) => { stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen(s); };
   // A book with a title page opens onto its title page with a blank white page above it (the
@@ -134,6 +142,7 @@ function Root() {
         )}
         {(screen === 'library' || (screen === 'start' && peek === 'library')) && (
           <Library u={u} stories={[...STORIES.filter((s) => SHOWN_BOOKS.includes(s.id) && !removed.includes(s.id)), ...userStories]} openStory={openStory} openMenu={openMenu}
+            onNotebook={() => go('notebook')}
             onCreate={() => openPublisher(null)} onEdit={openPublisher}
             removedCount={removed.length} onRestore={() => setRemovedSaved([])}
             onShare={(s) => shareInvite(s.title)} // an invitation to the app, not the book
@@ -146,6 +155,7 @@ function Root() {
               toast(list.length === 1 ? 'Book deleted.' : `${list.length} books deleted.`);
             }} />
         )}
+        {screen === 'notebook' && <Notebook u={u} openMenu={openMenu} toast={toast} onDone={() => go('library')} />}
         {screen === 'publisher' && draft && (
           <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} />
         )}

@@ -54,6 +54,7 @@ import { shareInvite } from '../invite';
 import { audioModeChanged, pauseVoice, playClips, playVoice, resumeVoice, stopVoice } from '../voice';
 import { WORDS } from '../narration/words';
 import { getRecording, listRecordings, pageKey, removeRecording, saveRecording } from '../recordings';
+import { markFinished, markFirst, markReadToday } from '../badges';
 import { AUDIO, TIMINGS } from '../narration';
 import { SAMPLES } from '../narration/samples';
 
@@ -81,6 +82,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const insets = useSafeAreaInsets();
   const pages = useMemo(() => [...story.pages, { end: true }], [story]);
   const [idx, setIdx] = useState(0);
+  // badges (My Notebook): a day with reading, and a book read all the way to The End
+  useEffect(() => { markReadToday(); }, []);
+  useEffect(() => { if (pages[idx] && pages[idx].end) markFinished(story, story.cover || (story.pages.find((pg) => pg.image) || {}).image); }, [idx]);
   const [size, setSize] = useState(null); // book area {w,h}
   const [hl, setHl] = useState(-1);
   const [bubble, setBubble] = useState(null);
@@ -271,6 +275,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         await saveRecording(story.id, pageKey(story.pages[page], page), recorder.uri, seconds);
         if (prefsRef.current.voice !== 'mine') setPrefs((p) => ({ ...p, voice: 'mine' }));
         toast(`Saved your voice for page ${page + 1}.`);
+        markFirst('firstRecording'); // a badge in My Notebook
         refreshRecPages();
       }
     } catch (e) {

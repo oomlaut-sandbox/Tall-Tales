@@ -80,7 +80,10 @@ function Band({ color, felt, dark, title, sub, action, onAction }) {
 // Select mode: tap books to pick them, then Share (one book, as a PDF) or Delete.
 // Your own stories are deleted for good; the built-in books are only removed from the shelf
 // and can be brought back with "Show removed books".
-export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onShare, onDelete, removedCount, onRestore }) {
+// My Notebook's cover: the brown leather of the notebook on the start page
+const NOTEBOOK_COVER = require('../../assets/leather-cover.jpg');
+
+export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook }) {
   const { width: winW } = useWindowDimensions();
   const [selecting, setSelecting] = useState(false);
   const [picked, setPicked] = useState([]);
@@ -118,6 +121,8 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
       <Band color={colors.green} felt="library" title={selecting ? 'Select books' : 'My Library'}
         sub={selecting ? (picked.length ? `${picked.length} selected` : 'Tap books to select them') : 'Your stories, ready to read'} />
       <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]}>
+        {/* My Notebook: always the first book on the shelf (notes, drawings and reading badges) */}
+        {!selecting && onNotebook ? <Tile u={u} cover={NOTEBOOK_COVER} title="My Notebook" label="My Notebook" onPress={onNotebook} /> : null}
         {stories.map((s) => (
           // just the title under each cover (no author, pages or other details)
           <Tile key={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title}
