@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme';
 import { bookLayout } from './BookFrame';
 import { Fade, PageView } from './PageView';
-import { Felt, DESK_FELT } from '../look';
+import { Felt, DESK_FELT, DeskFelt } from '../look';
 import { playSound } from '../sound';
 
 export default function BookOpen({ u, story, cover, rect, textScale, fontKey, onDone }) {
@@ -36,7 +36,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
   useEffect(() => {
     playSound('tap');
     Animated.sequence([
-      Animated.timing(bg, { toValue: 1, duration: 420, easing: Easing.inOut(Easing.quad), useNativeDriver: true }), // the shelf dissolves away to felt
+      Animated.timing(bg, { toValue: 1, duration: 200, easing: Easing.out(Easing.quad), useNativeDriver: true }), // a quick dissolve to the felt
       Animated.timing(mv, { toValue: 1, duration: 520, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
     ]).start(() => {
       setPhase(1);
@@ -72,7 +72,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
       {/* the dark grey with the reader's black bars fades in over the library */}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: bg, backgroundColor: colors.desk }]}>
         {/* the same charcoal felt as the library and the reader (phones), so it never drops to plain grey */}
-        {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+        <DeskFelt spot="bookopen1" />
         <Felt />
         {L.wide ? (
           <>

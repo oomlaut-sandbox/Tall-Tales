@@ -2,7 +2,7 @@
 // (desk, bars, menus, pages, title bands) gets a soft felt texture, and menus and buttons get
 // stitched edges, like the felt objects Jörg uses as inspiration.
 import React, { createContext, useContext } from 'react';
-import { Dimensions, Image, Platform, StyleSheet, View } from 'react-native';
+import { Dimensions, Image, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
 
 export const LOOKS = [['classic', 'Classic'], ['felt', 'Felt']];
 export const LookContext = createContext('classic');
@@ -38,3 +38,26 @@ export function Stitch({ inset = 5, radius = 0, color = 'rgba(255,255,255,0.5)',
 const { width: W0, height: H0 } = Dimensions.get('screen');
 export const IS_TABLET = Platform.isPad || Math.min(W0, H0) >= 600;
 export const DESK_FELT = IS_TABLET ? null : require('../assets/desk-felt.jpg');
+
+// The felt background, locked in place. Every screen draws the same picture at the same size and in the
+// same spot on the screen (the whole window), and only shows the part that falls inside its own area, so
+// when one screen gives way to another the felt never shifts, scales or jumps.
+const feltSpots = {}; // where each felt area was last time (so it's right from the very first frame next time)
+export function DeskFelt({ spot = 'any' }) {
+  const win = useWindowDimensions();
+  const ref = React.useRef(null);
+  const [at, setAt] = React.useState(feltSpots[spot] || null);
+  const measure = () => ref.current && ref.current.measureInWindow && ref.current.measureInWindow((x, y) => {
+    if (x == null || y == null) return;
+    const n = { x, y };
+    feltSpots[spot] = n;
+    setAt((o) => (o && o.x === x && o.y === y ? o : n));
+  });
+  if (!DESK_FELT) return null;
+  const o = at || { x: 0, y: 0 };
+  return (
+    <View ref={ref} collapsable={false} onLayout={measure} pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]}>
+      <Image source={DESK_FELT} resizeMode="cover" style={{ position: 'absolute', left: -o.x, top: -o.y, width: win.width, height: win.height }} />
+    </View>
+  );
+}

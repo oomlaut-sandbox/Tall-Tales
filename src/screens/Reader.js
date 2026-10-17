@@ -4,7 +4,7 @@ import { Animated, Easing, Image, PanResponder, Platform, Pressable, Share, Styl
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOOK_FONTS, colors, fonts } from '../theme';
-import { DESK_FELT, Felt, IS_TABLET } from '../look';
+import { DESK_FELT, DeskFelt, Felt, IS_TABLET } from '../look';
 import { tokenize, cleanWord, syllablesFor } from '../story';
 import { Fade, PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
 import { FLAP_PERSPECTIVE, flapTables } from '../flapStrips';
@@ -634,7 +634,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       <View style={wide ? { width: BL.leftW, backgroundColor: colors.bar } : { height: topH, backgroundColor: colors.bar }}><Felt /></View>
       <View style={styles.desk}>
         {/* the charcoal felt, as on the other screens */}
-        {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+        <DeskFelt spot="reader1" />
       <Felt />
       {/* a small, quiet red dot when this page has a voice recording: top right on phones, top left on iPad */}
       {recPages.includes(idx) && !recording ? (

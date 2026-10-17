@@ -10,7 +10,7 @@ import { BOOK_FONTS, bookFont, colors, fonts } from '../theme';
 import { Bar, Burger, DogEar, Panel, PageShape, Toast } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
-import { DESK_FELT } from '../look';
+import { DESK_FELT, DeskFelt } from '../look';
 import { COVER_COLORS, bylineStyle, coverTitleLook, titleStyle } from '../components/CoverArt';
 import { creditsLine } from '../userStories';
 import { playKey } from '../sound';
@@ -334,7 +334,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       <View style={wide ? { width: BL.leftW, backgroundColor: colors.bar } : { height: insets.top + spare / 2, backgroundColor: colors.bar }} />
       <View style={styles.desk} onLayout={(e) => setDesk({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
         {/* trying the charcoal felt instead of the plain dark grey */}
-        {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+        <DeskFelt spot="publisher1" />
       <View style={[styles.bookShadow, wide ? { width: side * 2, height: side } : { width: side, height: side * 2 }]}>
       <View style={[styles.page, wide && { flexDirection: 'row' }]}>
         <Pressable onPress={pickImage} style={[styles.art, { width: side, height: side }]} accessibilityRole="button" accessibilityLabel={page.uri ? 'Change image' : 'Add image'}>
@@ -474,7 +474,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 50 }]}>
           <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: colors.desk, opacity: zoom }]}>
             {/* the charcoal felt (phones only; DESK_FELT is empty on iPad) */}
-            {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+            <DeskFelt spot="publisher2" />
           </Animated.View>
           <View style={[styles.editor, { flex: 1, paddingTop: insets.top + 34 }]}>
           <Animated.View style={[styles.editorHead, { opacity: zoom }]}>
@@ -541,7 +541,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       {coverOpen ? (
         // the Cover Editor stops at the black bar, which stays in view (its Pages and Finish fade out meanwhile)
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk, overflow: 'hidden' }, wide ? { right: BL.rightW } : { bottom: BL.barH }]}>
-          {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+          <DeskFelt spot="publisher3" />
           <View style={[styles.editor, { flex: 1, paddingTop: kbUp ? insets.top + 8 : insets.top + (winW > winH ? 12 : 34), paddingLeft: insets.left, paddingRight: insets.right }]}>
             {!kbUp ? <View style={styles.editorHead}><Text style={styles.editorTitle}>Cover</Text></View> : null}
             <View style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: kbUp ? 'center' : 'flex-start' }}

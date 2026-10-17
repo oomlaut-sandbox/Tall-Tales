@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, ScrollView, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
-import { Felt, Stitch, useLook } from '../look';
+import { DeskFelt, Felt, Stitch, useLook } from '../look';
 
 export function Burger({ onPress, u }) {
   const w = u * 7, t = Math.max(3, u * 1), gap = u * 1.7;
@@ -44,7 +44,7 @@ export function WithBar({ bar, children, style, bg }) {
       {side ? <View style={{ width: insets.left, backgroundColor: colors.bar }} /> : null}
       <View style={{ flex: 1 }}>
         {/* an optional background picture (the charcoal felt) behind the page's content */}
-        {bg ? <Image source={bg} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+        {bg ? <DeskFelt spot="withbar" /> : null}
         <Felt />{children}
       </View>
       {bar(side)}

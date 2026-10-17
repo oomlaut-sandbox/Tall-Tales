@@ -4,6 +4,7 @@
 //
 // Upright (phones, and iPads held upright) the squares are stacked: picture above words. On a
 // screen that is clearly wider than tall (an iPad held sideways) they sit side by side.
+import { DeskFelt } from '../look';
 import React from 'react';
 import { Image, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -49,7 +50,7 @@ export default function BookFrame({ barMin, bar, children, deskProps, bookProps,
   const book = (
     <View style={styles.desk} {...deskProps}>
       {/* an optional picture for the desk (Jörg's charcoal felt, being tried on the start page) */}
-      {deskImage ? <Image source={deskImage} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+      {deskImage ? <DeskFelt spot="bookframe" /> : null}
       <Felt />
       {bare ? (
         <View style={{ width: L.bookW, height: L.bookH }} {...bookProps}>{children(L)}</View>

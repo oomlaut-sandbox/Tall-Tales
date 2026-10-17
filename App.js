@@ -29,7 +29,7 @@ import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
 import { CircleIcon, InfoIcon, LibraryIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
-import { DESK_FELT, Felt, LookContext } from './src/look';
+import { DESK_FELT, DeskFelt, Felt, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
 import { playSound, setEffects, setEffectsVolume } from './src/sound';
 import { stopSpeech } from './src/speech';
@@ -109,7 +109,7 @@ function Root() {
     // first the notebook settles onto the shelf over the plain felt, then My Library dissolves in around it
     Animated.sequence([
       Animated.timing(flyP, { toValue: 1, duration: 700, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
-      Animated.timing(libFade, { toValue: 1, duration: 650, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+      Animated.timing(libFade, { toValue: 1, duration: 220, easing: Easing.out(Easing.quad), useNativeDriver: true }),
     ]).start(() => { setFlyer((f) => (f ? { ...f, landed: true } : f)); setTimeout(() => setFlyer(null), 90); });
     return undefined;
   }, [flyer && flyer.to, flyer && flyer.landed]);
@@ -173,7 +173,7 @@ function Root() {
         {flyer && screen === 'library' ? (
           // while the notebook lands: the felt, and the black bar already in My Library's place, so it doesn't blink away
           <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-            {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+            <DeskFelt spot="app1" />
             {!sideways ? <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: barH, backgroundColor: colors.bar }}><Felt /></View> : null}
           </View>
         ) : null}
@@ -186,7 +186,7 @@ function Root() {
               setNbFrom(rect);
               if (!rect) { go('notebook'); return; }
               flyP.setValue(0); setFlyer({ from: rect, hold: true });
-              Animated.timing(libFade, { toValue: 0, duration: 320, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(() => {
+              Animated.timing(libFade, { toValue: 0, duration: 180, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => {
                 go('notebook');
                 setTimeout(() => { setFlyer((f) => (f && f.hold ? null : f)); libFade.setValue(1); }, 160);
               });

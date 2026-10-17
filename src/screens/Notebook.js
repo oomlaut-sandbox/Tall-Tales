@@ -15,7 +15,7 @@ import { colors, fonts } from '../theme';
 import { Bar, Burger, DogEar, Panel } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
-import { DESK_FELT, Felt } from '../look';
+import { DESK_FELT, DeskFelt, Felt } from '../look';
 import ParentGate from '../components/ParentGate';
 import { StrokesView } from '../components/Strokes';
 import { EarArt } from '../components/Ear';
@@ -441,14 +441,17 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     <View style={[styles.screen, wide && { flexDirection: 'row' }]}>
       <View style={wide ? { width: BL.leftW, backgroundColor: colors.bar } : { height: insets.top + spare / 2, backgroundColor: colors.bar }} />
       <View style={styles.desk} onLayout={(e) => { setDesk({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height }); measureBook(); }}>
-        {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+        <DeskFelt spot="notebook1" />
         {nb ? (
-          <View ref={bookRef} collapsable={false} onLayout={measureBook} {...swipe.panHandlers}
+          <View ref={bookRef} collapsable={false} onLayout={measureBook}
             style={[styles.bookShadow, shape, { width: bookW, height: bookH, opacity: intro === 'fly' ? 0 : 1 }, opening ? { backgroundColor: 'transparent', shadowOpacity: 0 } : null]}>
             {layers}
             {!flipPair && !intro ? (
               <>
                 <RoundEar size={Math.max(30, u * 9)} radius={R} onPress={next} label={i >= total - 1 ? 'Add a page' : 'Next page'} />
+                {/* the bottom-left corner turns back a page (an invisible spot, like the folded corner on the right) */}
+                {i > 0 ? <Pressable onPress={() => turn(-1)} accessibilityRole="button" accessibilityLabel="Previous page"
+                  style={{ position: 'absolute', left: 0, bottom: 0, width: Math.max(46, u * 13), height: Math.max(46, u * 13), zIndex: 20 }} /> : null}
                 {/* (no back button: swipe down or to the right to go back a page) */}
               </>
             ) : null}
@@ -548,7 +551,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       {writing && page ? (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 50 }]}>
           <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.desk }]}>
-            {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+            <DeskFelt spot="notebook2" />
           </View>
           <View style={{ flex: 1, alignItems: 'center', paddingTop: insets.top + 34 }}>
             <View style={styles.editorHead}><Text style={styles.editorTitle}>My notes · Page {i + 1}</Text></View>
@@ -822,7 +825,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
     // sideways: a big page on the left (as tall as there's room for), the title and tools in a column on the right
     return (
       <View style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk }]}>
-        {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+        <DeskFelt spot="notebook3" />
         <View style={{ flex: 1, flexDirection: 'row', paddingLeft: insets.left + 24, paddingRight: insets.right + 24, paddingTop: Math.max(insets.top, 16) + 8, paddingBottom: Math.max(insets.bottom, 12) + 8, gap: 28 }}
           onLayout={(e) => setArea({ w: e.nativeEvent.layout.width - insets.left - insets.right - 48, h: e.nativeEvent.layout.height - Math.max(insets.top, 16) - Math.max(insets.bottom, 12) - 16 })}>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>{W ? paper : null}</View>
@@ -847,7 +850,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
   }
   return (
     <View style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk }]}>
-      {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
+      <DeskFelt spot="notebook4" />
       <View style={{ flex: 1, alignItems: 'center', paddingTop: insets.top + 20, paddingBottom: insets.bottom + 10 }}>
         <View style={styles.editorHead}><Text style={styles.editorTitle}>{title}</Text></View>
         <View style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center' }} onLayout={(e) => setArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
