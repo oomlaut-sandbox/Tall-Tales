@@ -172,11 +172,11 @@ export function Store({ u, openStory, openMenu, toast }) {
     if (pull) setRefreshing(false);
   };
   useEffect(() => { cachedCatalog().then((c) => setCat((cur) => cur || c)); load(false); }, []);
-  // only the books shown for now (see SHOWN_BOOKS)
+  // only the books shown for now (see SHOWN_BOOKS); books marked libraryOnly (Tips for Authors) stay out of the Store
   // books inside the app that name a store shelf (storeShelf) appear there even before the online catalogue lists them
   const extra = cat ? STORIES.filter((st) => st.storeShelf && SHOWN_BOOKS.includes(st.id) && !cat.books.some((b) => b.id === st.id))
     .map((st, i) => ({ id: st.id, title: st.title, author: st.author || null, blurb: st.blurb || null, shelf_id: st.storeShelf, sort: i, access: 'free', bundled: true, featured: false })) : [];
-  const shown = cat ? { ...cat, books: [...cat.books.filter((b) => SHOWN_BOOKS.includes(b.id) || !b.bundled), ...extra] } : null; // plus every book published from the Store Manager
+  const shown = cat ? { ...cat, books: [...cat.books.filter((b) => (SHOWN_BOOKS.includes(b.id) || !b.bundled) && !STORIES.some((st) => st.id === b.id && st.libraryOnly)), ...extra] } : null; // plus every book published from the Store Manager
   const featured = shown ? shown.books.find((b) => b.featured) : null;
   // a book is on the shelves only once: the featured book isn't repeated on the shelf below
   const rows = shown ? shelvesWithBooks(featured ? { ...shown, books: shown.books.filter((b) => b.id !== featured.id) } : shown) : [];

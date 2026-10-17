@@ -202,7 +202,35 @@ export const TWO_SNAKES = {
   ],
 };
 
-export const STORIES = [DIFFERENT, SMALL_WONDERS, ROUGH_LIVES, TWO_SNAKES, FALLING, SAMPLE_STORY];
+// "Tips for Authors": the guide for parents and young authors, as a book in My Library (not in the Book Store).
+// Its pictures are borrowed from the other books.
+export const TIPS = {
+  id: 'tips',
+  title: 'Tips for Authors',
+  author: 'Oomlaut',
+  libraryOnly: true,
+  syllables: {
+    authors: ['au', 'thors'], adventure: ['ad', 'ven', 'ture'], collecting: ['col', 'lect', 'ing'], drawings: ['draw', 'ings'],
+    lessons: ['les', 'sons'], camera: ['cam', 'er', 'a'], grandma: ['grand', 'ma'], photograph: ['pho', 'to', 'graph'],
+    exactly: ['ex', 'act', 'ly'], gentler: ['gen', 'tler'], favourite: ['fa', 'vour', 'ite'], birthday: ['birth', 'day'],
+    daylight: ['day', 'light'], published: ['pub', 'lished'], oomlaut: ['oom', 'laut'], treasure: ['trea', 'sure'],
+  },
+  pages: [
+    { pid: 'tp01', titlePage: true, image: require('../assets/books/tips/cover.jpg'), w: 1600, h: 1600, text: 'Tips for Authors. Ideas for making your own books, for grown-ups and young authors alike.' },
+    { pid: 'tp02', image: require('../assets/books/tips/cover.jpg'), w: 1600, h: 1600, text: 'Every family has stories worth keeping. All you need is a camera, a few words and a little time. Here are some ideas to get you started.' },
+    { pid: 'tp03', image: require('../assets/books/rough-lives/fox.jpg'), w: 1600, h: 1600, text: 'Our Big Adventure Today. A walk in the woods, a visit to Grandma, a first lost tooth. Take one photo for each page and let your child tell what happened. First we… then we… the best part was…' },
+    { pid: 'tp04', image: require('../assets/books/small-wonders/snail.jpg'), w: 1600, h: 1600, text: 'Collecting. Rocks, bugs, leaves and flowers. Photograph or draw each find, then give it a name and one fact, real or made up. Now you have your very own field guide.' },
+    { pid: 'tp05', image: require('../assets/books/two-snakes/rabbit.jpg'), w: 1600, h: 1600, text: 'Drawings. Take a photo of a drawing and it becomes a page. Let your child tell the story, and type their words exactly as they say them.' },
+    { pid: 'tp06', image: require('../assets/books/two-snakes/elephant.jpg'), w: 1600, h: 1600, text: 'Lessons. A story can make big things gentler: a new baby, a new school, brushing teeth, saying goodbye. Use your own photos, so the story is about them.' },
+    { pid: 'tp07', image: require('../assets/books/two-snakes/dogs.jpg'), w: 1600, h: 1600, text: 'Group Fun. A whole class can make a book together. Each child makes one page: a class trip, a favourite animal, or what they want to be.' },
+    { pid: 'tp08', image: require('../assets/books/two-snakes/wolf.jpg'), w: 1600, h: 1600, text: 'Read It Aloud. Record your own voice reading the book. Years from now, that voice will be the treasure.' },
+    { pid: 'tp09', image: require('../assets/books/two-snakes/hamster.jpg'), w: 1600, h: 1600, text: 'More Ideas. An All About Me book on every birthday. A favourite toy’s adventures around the house. Last night’s dream. Grandpa remembering when he was little.' },
+    { pid: 'tp10', image: require('../assets/books/two-snakes/bee.jpg'), w: 1600, h: 1600, text: 'A Few Tips. One or two sentences a page is plenty. Take photos in daylight. Pages are square, so leave room around the edges. Use your child’s own drawing for the cover.' },
+    { pid: 'tp11', image: require('../assets/books/two-snakes/robot.jpg'), w: 1600, h: 1600, text: 'Get Published. Authors young and old can send their books to the Oomlaut Book Store. When your book is ready, visit oomlaut.com to find out how.' },
+  ],
+};
+
+export const STORIES = [DIFFERENT, SMALL_WONDERS, ROUGH_LIVES, TWO_SNAKES, FALLING, SAMPLE_STORY, TIPS];
 
 // Split text into words with their character ranges, so read-aloud progress can be mapped to a word.
 export function tokenize(text) {
@@ -226,4 +254,4 @@ export function syllablesFor(story, word) {
 
 // The books shown in My Library and the Book Store for now (Jörg will add two more later).
 // The others stay in the app, just hidden: add their ids back here to show them again.
-export const SHOWN_BOOKS = ['different', 'rough-lives', 'two-snakes'];
+export const SHOWN_BOOKS = ['different', 'rough-lives', 'two-snakes', 'tips'];
