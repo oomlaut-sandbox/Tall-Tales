@@ -406,7 +406,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
       {DESK_FELT ? <Image source={DESK_FELT} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} /> : null}
       <View style={{ flex: 1, alignItems: 'center', paddingTop: insets.top + 20, paddingBottom: insets.bottom + 10 }}>
         <View style={styles.editorHead}><Text style={styles.editorTitle}>{title}</Text></View>
-        <View style={{ flex: 1, width: '100%', alignItems: 'center' }} onLayout={(e) => setArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
+        <View style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center' }} onLayout={(e) => setArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
           {W ? (
             <>
               <View {...pad.panHandlers} style={[styles.drawPaper, { width: W, height: tall ? W * 2 : W }]}>
@@ -421,17 +421,17 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
                   ))}
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                     {SIZES.map(([name, s]) => (
                       <Pressable key={name} onPress={() => { setSize(s); setErase(false); }} style={[styles.tool, !erase && size === s && styles.toolOn]} accessibilityLabel={`${name} pen`}>
-                        <View style={{ width: 6 + s * 300, height: 6 + s * 300, borderRadius: 20, backgroundColor: colors.white }} />
+                        <View style={{ width: 5 + s * 280, height: 5 + s * 280, borderRadius: 20, backgroundColor: colors.white }} />
                       </Pressable>
                     ))}
                     <Pressable onPress={() => setErase((x) => !x)} style={[styles.toolWide, erase && styles.toolOn]} accessibilityLabel="Eraser">
                       <Text style={styles.toolText}>Eraser</Text>
                     </Pressable>
                   </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                     <Pressable onPress={() => setStrokes((s) => s.slice(0, -1))} disabled={!strokes.length} style={[styles.tool, !strokes.length && { opacity: 0.35 }]} accessibilityLabel="Undo">
                       <Text style={styles.toolText}>↶</Text>
                     </Pressable>
@@ -501,8 +501,8 @@ const styles = StyleSheet.create({
   drawPaper: { backgroundColor: SKETCH_PAPER, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
   swatch: { width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: 'rgba(255,255,255,0.35)' },
   swatchOn: { borderColor: colors.white, borderWidth: 3, transform: [{ scale: 1.15 }] },
-  tool: { width: 44, height: 40, borderRadius: 20, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
-  toolWide: { height: 40, borderRadius: 20, paddingHorizontal: 14, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
+  tool: { width: 38, height: 38, borderRadius: 19, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
+  toolWide: { height: 38, borderRadius: 19, paddingHorizontal: 11, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   toolOn: { backgroundColor: colors.green },
   toolText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
 });
