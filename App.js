@@ -77,6 +77,7 @@ function Root() {
   }, []);
   useEffect(() => { if (prefsLoaded.current) saveJSON('prefs', prefs); }, [prefs]);
   const [message, setMessage] = useState('');
+  const [toastSpot, setToastSpot] = useState(null); // while recording: bubbles sit in the middle of the picture page, clear of the words
   const [playMenu, setPlayMenu] = useState(0);
   const toastTimer = useRef(null);
 
@@ -188,7 +189,7 @@ function Root() {
         {screen === 'storeManager' && <StoreManager u={u} openMenu={openMenu} toast={toast} demo={storeDemo} />}
         {screen === 'profile' && <Profile u={u} openMenu={openMenu} toast={toast} />}
         {screen === 'reader' && story && (
-          <Reader u={u} story={story} prefs={prefs} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
+          <Reader u={u} story={story} setToastSpot={setToastSpot} prefs={prefs} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
         )}
         <Panel open={drawer} title="Menu" bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
           <Option glyph={<LibraryIcon size={MENU_ICON} />} title="My Library" sub="View purchased stories" onPress={() => go('library')} />
@@ -223,7 +224,7 @@ function Root() {
           );
         })() : null}
         <ParentGate visible={profileGate} reason="Your profile is for grown-ups." onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
-        <Toast message={message} area={toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
+        <Toast message={message} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         <View pointerEvents="none" style={sideways
           ? { position: 'absolute', left: 0, top: 0, bottom: 0, width: camBar, backgroundColor: colors.bar, zIndex: 200 }
           : { position: 'absolute', left: 0, right: 0, top: 0, height: camBar, backgroundColor: colors.bar, zIndex: 200 }}><Felt /></View>

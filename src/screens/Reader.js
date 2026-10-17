@@ -78,10 +78,13 @@ function Seg({ value, options, onChange, stacked }) {
   );
 }
 
-export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary, toast, menuRequest, landscape }) {
+export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary, toast, menuRequest, landscape, setToastSpot }) {
   const insets = useSafeAreaInsets();
   const pages = useMemo(() => [...story.pages, { end: true }], [story]);
   const [idx, setIdx] = useState(0);
+  // While recording (and a little after, for 'Saved your voice…'), speech bubbles sit in the middle of the
+  // picture page (top, or left when sideways) so they don't cover the words being read.
+  const bookRef = useRef(null);
   // badges (My Notebook): a day with reading, and a book read all the way to The End
   useEffect(() => { markReadToday(); }, []);
   useEffect(() => { if (pages[idx] && pages[idx].end) markFinished(story, story.cover || (story.pages.find((pg) => pg.image) || {}).image); }, [idx]);
@@ -93,6 +96,22 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const [panel, setPanel] = useState(null); // 'play' | 'rec' | null
   const [flipPair, setFlipPair] = useState(null); // {a, b, dir} while a page turn is on screen
   const [recording, setRecording] = useState(false);
+  useEffect(() => {
+    if (!setToastSpot) return undefined;
+    let t;
+    if (recording) {
+      const place = () => bookRef.current && bookRef.current.measureInWindow && bookRef.current.measureInWindow((x, y, w, h) => {
+        if (!w) return;
+        const sideways = w > h * 1.2;
+        setToastSpot(sideways ? { x, y, w: w / 2, h } : { x, y, w, h: h / 2 });
+      });
+      place();
+    } else {
+      t = setTimeout(() => setToastSpot(null), 6000); // 'Saved your voice…' still shows over the picture
+    }
+    return () => clearTimeout(t);
+  }, [recording, size]);
+  useEffect(() => () => setToastSpot && setToastSpot(null), []);
   const [recView, setRecView] = useState('main'); // main | list | settings | help
   const [recList, setRecList] = useState([]);
   const [playView, setPlayView] = useState('main'); // 'main' | 'voices' inside Playback Options
@@ -619,7 +638,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           style={[styles.recMark, IS_TABLET ? { left: 14 } : { right: 14 }]} />
       ) : null}
       <View style={[styles.bookShadow, { width: BL.bookW, height: BL.bookH }]}>
-      <View style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...pan.panHandlers}>
+      <View ref={bookRef} collapsable={false} style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...pan.panHandlers}>
         {size ? layers : null}
         {/* Tap anywhere along the left or right edge to turn back or forward (swipes work anywhere). */}
         {size && idx > 0 ? <Pressable onPress={() => flip(-1)} accessibilityLabel="Previous page" style={[styles.edge, { left: 0, width: edgeW }]} /> : null}

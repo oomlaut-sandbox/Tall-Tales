@@ -432,10 +432,10 @@ export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLab
 }
 
 // The speech bubble: a white rounded box in the middle of the screen (between the bars). Tap it to close.
-export function Toast({ message, area, onDismiss }) {
+export function Toast({ message, area, onDismiss, center }) {
   if (!message) return null;
   return (
-    <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, zIndex: 60, alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 14 }, area]}>
+    <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, zIndex: 60, alignItems: 'center', justifyContent: center ? 'center' : 'flex-end', paddingBottom: center ? 0 : 14 }, area]}>
       {/* Every speech bubble pops up in the same place: just above the bottom bar, most of the screen wide,
           shaped like Jörg's bubble (rounded box, a small straight point at the bottom left), with a soft shadow.
           Tap it to close it sooner. */}
