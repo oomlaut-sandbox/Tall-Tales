@@ -8,6 +8,7 @@ import { IS_TABLET } from '../look';
 import { Bar, Burger, WithBar } from '../components/Chrome';
 
 const BAND_FELT = require('../../assets/band-profile.jpg'); // the yellow-orange felt banner
+const SEARCH_FELT = require('../../assets/search-felt.png'); // Jörg's grey stitched felt strip, cut out with a shadow
 
 // Each topic: a title, the section it belongs to, and its steps or paragraphs.
 export const HELP = [
@@ -82,7 +83,7 @@ export const HELP = [
   ] },
 ];
 
-export default function Help({ u, openMenu }) {
+export default function Help({ u, openMenu, onAbout }) {
   const insets = useSafeAreaInsets();
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(null); // the open topic's title (when not searching)
@@ -105,8 +106,15 @@ export default function Help({ u, openMenu }) {
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
         <View style={styles.col}>
           {/* (a short video tour will go here later) */}
-          <TextInput value={q} onChangeText={setQ} placeholder="Search help" placeholderTextColor="#888"
-            style={styles.search} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel="Search help" />
+          {/* the search field sits in a stitched felt strip (with its own drop shadow) */}
+          <View style={{ width: '100%', aspectRatio: 1260 / 366, marginTop: 14, justifyContent: 'center' }}>
+            <Image source={SEARCH_FELT} resizeMode="stretch" style={StyleSheet.absoluteFill} />
+            <TextInput value={q} onChangeText={setQ} placeholder="Search help" placeholderTextColor="#666"
+              style={[styles.search, { marginHorizontal: '9%' }]} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel="Search help" />
+          </View>
+          {/* About lives here now (it left the main menu) */}
+          <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>About Oomlaut Reader</Text></Pressable>
+          <View style={{ height: 18 }} />
           {!found.length ? <Text style={styles.p}>Nothing found for “{q.trim()}”. Try another word.</Text> : null}
           {found.map((h) => {
             const head = h.section !== lastSection ? h.section : null;
@@ -121,7 +129,7 @@ export default function Help({ u, openMenu }) {
                     <Text style={styles.chev}>{shown ? '−' : '+'}</Text>
                   </Pressable>
                   {shown ? (
-                    <View style={{ gap: 10, paddingTop: 2 }}>
+                    <View style={{ gap: 10, paddingTop: 14 }}>{/* a clear gap under the topic's title */}
                       {h.text.map((t, k) => <Text key={k} style={styles.p}>{t}</Text>)}
                     </View>
                   ) : null}
@@ -144,7 +152,9 @@ const styles = StyleSheet.create({
   video: { aspectRatio: 16 / 9, backgroundColor: '#2b2b2b', borderRadius: 14, alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 8 },
   videoPlay: { color: 'rgba(255,255,255,0.85)', fontSize: 34 },
   videoText: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 14 },
-  search: { backgroundColor: colors.white, borderRadius: 22, height: 44, paddingHorizontal: 18, fontFamily: fonts.ui, fontSize: 16, color: colors.ink, marginBottom: 6 },
+  search: { backgroundColor: 'rgba(255,255,255,0.88)', borderRadius: 22, height: 44, paddingHorizontal: 18, fontFamily: fonts.ui, fontSize: 16, color: colors.ink, outlineWidth: 0 },
+  aboutPill: { alignSelf: 'center', backgroundColor: colors.green, height: 44, borderRadius: 22, paddingHorizontal: 26, alignItems: 'center', justifyContent: 'center', marginTop: 10 },
+  aboutText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#555', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14, marginBottom: 8 },
   card: { backgroundColor: 'rgba(255,255,255,0.55)', borderRadius: 14, paddingHorizontal: 16, paddingVertical: 12 },
   cardHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, minHeight: 28 },

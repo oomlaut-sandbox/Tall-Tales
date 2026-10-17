@@ -210,7 +210,7 @@ function Root() {
           <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} />
         )}
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} />}
-        {screen === 'help' && <Help u={u} openMenu={openMenu} />}
+        {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} />}
         {screen === 'about' && <About u={u} openMenu={openMenu} onSecret={() => {
           // the store owner: straight to the Store Manager when signed in, otherwise to the sign-in first
           if (storeAdmin) go('storeManager');
@@ -256,7 +256,7 @@ function Root() {
             <Option glyph={<PlusIcon />} title="Create a Story" sub="Make your own book" onPress={() => openPublisher(null)} />
             {/* Help takes Profile's place (Profile is suspended for families; the store owner signs in from About: hold Skippy) */}
             <Option glyph={<CircleIcon />} title="Help" sub="How everything works" onPress={() => go('help')} />
-            <Option glyph={<InfoIcon />} title="About" sub="Learn more about the app" onPress={() => go('about')} />
+            {/* (About is reached from Help) */}
             <View style={{ height: 14 }} />
           </Panel>
         </View>
