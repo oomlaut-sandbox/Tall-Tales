@@ -375,8 +375,9 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       </View>,
     );
   } else {
-    if (usePeel && i > 0) layers.push(abs(i - 1, `p${i - 1}`, refs.prev, false));
-    if (usePeel && i < total - 1) layers.push(abs(i + 1, `p${i + 1}`, refs.next, false));
+    // (not while the cover is opening: the felt shows through where the cover will land)
+    if (usePeel && !opening && i > 0) layers.push(abs(i - 1, `p${i - 1}`, refs.prev, false));
+    if (usePeel && !opening && i < total - 1) layers.push(abs(i + 1, `p${i + 1}`, refs.next, false));
     layers.push(abs(i, `p${i}`, refs.cur, true));
   }
 
