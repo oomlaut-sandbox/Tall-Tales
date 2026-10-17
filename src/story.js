@@ -146,19 +146,25 @@ export const ROUGH_LIVES = {
   title: 'The Rough Lives of Animals',
   author: 'Oomlaut',
   storeShelf: 'new',
-  blurb: 'A worried cat, an elephant who is totally fine, a fox who never gives up and an ostrich who has stopped reading the news. Cheeky little verses for anxious times.',
+  blurb: 'A worried cat, an elephant who is totally fine, a hedgehog who needs a hug, a wolf nobody follows and an ostrich who has stopped reading the news. Cheeky little verses for anxious times.',
   syllables: {
     animals: ['an', 'i', 'mals'], rough: ['rough'], worried: ['wor', 'ried'], unravels: ['un', 'rav', 'els'],
     everything: ['ev', 'ery', 'thing'], elephant: ['el', 'e', 'phant'], balloon: ['bal', 'loon'], holding: ['hold', 'ing'],
     morning: ['morn', 'ing'], nobody: ['no', 'bod', 'y'], hustle: ['hus', 'tle'], ostrich: ['os', 'trich'],
     calmer: ['calm', 'er'], noticed: ['no', 'ticed'], bottom: ['bot', 'tom'], away: ['a', 'way'],
+    hedgehog: ['hedge', 'hog'], very: ['ver', 'y'], circles: ['cir', 'cles'], thursday: ['thurs', 'day'],
+    networking: ['net', 'work', 'ing'], started: ['start', 'ed'], instead: ['in', 'stead'], photo: ['pho', 'to'],
   },
   pages: [
     { pid: 'rl01', titlePage: true, image: require('../assets/books/rough-lives/cover.jpg'), w: 1600, h: 1600, text: 'The Rough Lives of Animals.' },
     { pid: 'rl02', image: require('../assets/books/rough-lives/cat.jpg'), w: 1600, h: 1600, text: 'Cat has one ball of yarn.\nShe is too worried to play.\nWhat if it unravels?\nEverything unravels.' },
     { pid: 'rl03', image: require('../assets/books/rough-lives/elephant.jpg'), w: 1600, h: 1600, text: 'Elephant is fine.\nHe says so every day.\nOne small red balloon\nis holding it all up.' },
     { pid: 'rl04', image: require('../assets/books/rough-lives/fox.jpg'), w: 1600, h: 1600, text: 'Fox has jumped all morning.\nThe mouse moved away.\nNobody told Fox.\nHe calls it hustle.' },
-    { pid: 'rl05', image: require('../assets/books/rough-lives/cover.jpg'), w: 1600, h: 1600, text: 'Ostrich stopped the news.\nShe feels much calmer now.\nShe has not noticed yet\nthat her bottom is on fire.\nEverything is fine.' },
+    { pid: 'rl06', image: require('../assets/books/rough-lives/snail.jpg'), w: 1600, h: 1600, text: 'Snail owns his house.\nIt is very, very small.\nBut he is the only one\nwho owns a house at all.' },
+    { pid: 'rl07', image: require('../assets/books/rough-lives/hedgehog.jpg'), w: 1600, h: 1600, text: 'Hedgehog wants a hug.\nNobody hugs Hedgehog.\nHe says it’s not the spikes.\nIt is the spikes.' },
+    { pid: 'rl08', image: require('../assets/books/rough-lives/dogs.jpg'), w: 1600, h: 1600, text: 'Two dogs went in circles\nto meet a brand new friend.\nThey started on Thursday.\nThis is called networking.' },
+    { pid: 'rl09', image: require('../assets/books/rough-lives/wolf.jpg'), w: 1600, h: 1600, text: 'Wolf climbed up to howl.\nBut the view was so nice,\nhe took a photo instead.\nNobody liked it.' },
+    { pid: 'rl10', image: require('../assets/books/rough-lives/cover.jpg'), w: 1600, h: 1600, text: 'Ostrich stopped the news.\nShe feels much calmer now.\nShe has not noticed yet\nthat her bottom is on fire.\nEverything is fine.' },
   ],
 };
 
