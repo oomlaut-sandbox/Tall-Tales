@@ -96,16 +96,20 @@ function Root() {
   const [flyer, setFlyer] = useState(null); // { from, to } screen rectangles
   const libFade = useRef(new Animated.Value(1)).current;
   const flyP = useRef(new Animated.Value(0)).current;
+  // The closed notebook is drawn where it was from the very first frame (so it never vanishes), waits there
+  // until the shelf spot is known, then moves and shrinks onto it (native driver, smooth). The shelf's own
+  // notebook shows first, and the flying one is taken away a moment later, so there's no blink at the end.
   useEffect(() => {
     if (!flyer) return undefined;
     if (!flyer.to) { const t = setTimeout(() => { setFlyer(null); libFade.setValue(1); }, 1500); return () => clearTimeout(t); }
+    if (flyer.landed) return undefined;
     flyP.setValue(0);
     Animated.parallel([
-      Animated.timing(flyP, { toValue: 1, duration: 700, easing: Easing.inOut(Easing.cubic), useNativeDriver: false }),
-      Animated.timing(libFade, { toValue: 1, duration: 700, easing: Easing.inOut(Easing.quad), useNativeDriver: false }),
-    ]).start(() => setFlyer(null));
+      Animated.timing(flyP, { toValue: 1, duration: 700, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
+      Animated.timing(libFade, { toValue: 1, duration: 700, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+    ]).start(() => { setFlyer((f) => (f ? { ...f, landed: true } : f)); setTimeout(() => setFlyer(null), 90); });
     return undefined;
-  }, [flyer && flyer.to]);
+  }, [flyer && flyer.to, flyer && flyer.landed]);
   const [nbFrom, setNbFrom] = useState(null); // where the little notebook was on the shelf when it was opened
   const go = (s) => { stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen(s); };
   // A book with a title page opens onto its title page with a blank white page above it (the
@@ -161,7 +165,7 @@ function Root() {
           <Animated.View style={{ flex: 1, opacity: screen === 'library' ? libFade : 1 }}>
           <Library u={u} stories={[...STORIES.filter((s) => SHOWN_BOOKS.includes(s.id) && !removed.includes(s.id)), ...userStories]} openStory={openStory} openMenu={openMenu}
             onNotebook={(rect) => { setNbFrom(rect); go('notebook'); }}
-            notebookHidden={!!flyer} onNotebookRect={(r) => setFlyer((f) => (f && !f.to && r ? { ...f, to: r } : f))}
+            notebookHidden={!!flyer && !flyer.landed} onNotebookRect={(r) => setFlyer((f) => (f && !f.to && r ? { ...f, to: r } : f))}
             onCreate={() => openPublisher(null)} onEdit={openPublisher}
             removedCount={removed.length} onRestore={() => setRemovedSaved([])}
             onShare={(s) => shareInvite(s.title)} // an invitation to the app, not the book
@@ -203,15 +207,18 @@ function Root() {
           <BookOpen u={u} story={opening.story} cover={opening.cover} rect={opening.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}
             onDone={() => { setStory(opening.story); go('reader'); setTimeout(() => setOpening(null), 60); }} />
         ) : null}
-        {flyer && flyer.to ? (() => {
-          const lerp = (a, b) => flyP.interpolate({ inputRange: [0, 1], outputRange: [a, b] });
-          const size = lerp(flyer.from.w, flyer.to.w);
-          const c = (f) => flyP.interpolate({ inputRange: [0, 1], outputRange: [flyer.from.w * f, flyer.to.w * f] });
-          const round = { borderTopLeftRadius: c(R_SPINE), borderTopRightRadius: c(R_SPINE), borderBottomLeftRadius: c(R_EDGE), borderBottomRightRadius: c(R_EDGE) };
+        {flyer ? (() => {
+          const { from, to } = flyer;
+          const end = to || from;
+          const k = from.w / end.w;
+          const dx = from.x + from.w / 2 - (end.x + end.w / 2), dy = from.y + from.h / 2 - (end.y + end.h / 2);
+          const at = (a) => (to ? flyP.interpolate({ inputRange: [0, 1], outputRange: [a, a === k ? 1 : 0] }) : a);
+          const round = { borderTopLeftRadius: end.w * R_SPINE, borderTopRightRadius: end.w * R_SPINE, borderBottomLeftRadius: end.w * R_EDGE, borderBottomRightRadius: end.w * R_EDGE };
           return (
-            <Animated.View pointerEvents="none" style={[{ position: 'absolute', zIndex: 150, left: lerp(flyer.from.x, flyer.to.x), top: lerp(flyer.from.y, flyer.to.y), width: size, height: size,
+            <Animated.View pointerEvents="none" style={[{ position: 'absolute', zIndex: 150, left: end.x, top: end.y, width: end.w, height: end.w,
+              transform: [{ translateX: at(dx) }, { translateY: at(dy) }, { scale: at(k) }],
               backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 9 }, round]}>
-              <Animated.View style={[{ flex: 1, overflow: 'hidden' }, round]}><Image source={NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} /></Animated.View>
+              <View style={[{ flex: 1, overflow: 'hidden' }, round]}><Image source={NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} /></View>
             </Animated.View>
           );
         })() : null}
