@@ -633,7 +633,7 @@ function seeded(str) {
 
 // Scatter the badges over the free part of a square page: a loose grid, each badge nudged to a random
 // spot in its cell and slightly turned, so they spread out evenly but look pinned on by hand.
-function scatter(items, side, region, seed) {
+function scatter(items, side, region, seed, maxD) {
   const n = Math.max(1, items.length);
   const { x: rx, y: ry, w: rw, h: rh } = region;
   // the grid shape that best fits the region
@@ -645,7 +645,7 @@ function scatter(items, side, region, seed) {
   }
   const { cols, rows } = best;
   const cw = rw / cols, ch = rh / rows;
-  const d = Math.min(side * 0.26, Math.min(cw, ch) * 0.8);
+  const d = Math.min(maxD || side * 0.26, side * 0.26, Math.min(cw, ch) * 0.8);
   const rnd = seeded(`${seed}-${n}`);
   // which cells get a badge (when there are spare cells, a random few stay empty)
   const cells = Array.from({ length: cols * rows }, (_, k) => k);
@@ -676,7 +676,7 @@ function BadgeSpread({ log, side, wide, toast }) {
   const hintBox = { x: side * 0.18, y: side * 0.78, w: side * 0.64, h: side * 0.16 };
   const m = side * 0.04;
   const top = useMemo(() => scatter(topItems, side, { x: m, y: side * 0.26, w: side - 2 * m, h: side * 0.6 }, 'top'), [side, topItems.map((b) => b.id + b.earned).join()]);
-  const bottom = useMemo(() => scatter(bottomItems, side, { x: m, y: side * 0.05, w: side - 2 * m, h: side * 0.9 }, 'bottom'), [side, bottomItems.map((b) => b.id + b.earned).join()]);
+  const bottom = useMemo(() => scatter(bottomItems, side, { x: m, y: side * 0.05, w: side - 2 * m, h: side * 0.9 }, 'bottom', top.d) /* the same size as the top page's */, [side, bottomItems.map((b) => b.id + b.earned).join()]);
   const pinned = ({ d, placed }) => placed.map(({ x, y, turn, it }) => (
     <View key={it.id} style={{ position: 'absolute', left: x, top: y, transform: [{ rotate: `${turn.toFixed(1)}deg` }] }}>
       <Badge b={it} d={d} toast={toast} />
