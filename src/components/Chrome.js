@@ -435,22 +435,10 @@ export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLab
 export function Toast({ message, area, onDismiss, center }) {
   if (!message) return null;
   return (
-      <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, zIndex: 60, alignItems: 'center', justifyContent: 'center' }, area]}>
-        <Pressable onPress={onDismiss} accessibilityRole="button" accessibilityHint="Closes the message" style={{ width: bw, height: bh, marginTop: bh * 0.2 }}>{/* nudged down a little: the tail hangs below the body */}
-          <Image source={CLAY_BUBBLE} resizeMode="stretch" style={{ position: 'absolute', left: 0, top: 0, width: bw, height: bh }} />
-          <View style={{ position: 'absolute', left: bw * 0.1, width: bw * 0.8, top: bh * 0.1, height: bh * 0.58, alignItems: 'center', justifyContent: 'center' }}>
-            <Text adjustsFontSizeToFit numberOfLines={4} style={[styles.toast, { fontSize: Math.min(18, bw * 0.055), lineHeight: Math.min(23, bw * 0.072), color: '#2a2a2a', textAlign: 'center' }]}>
-              {String(message).split('●').map((part, i) => (i ? [<Text key={i} style={{ color: colors.highlight }}>●</Text>, part] : part))}
-            </Text>
-          </View>
-        </Pressable>
-      </View>
-    );
-  }
-  return (
     <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, zIndex: 60, alignItems: 'center', justifyContent: center ? 'center' : 'flex-end', paddingBottom: center ? 0 : 14 }, area]}>
       {/* Every speech bubble pops up in the same place: just above the bottom bar, most of the screen wide,
           shaped like Jörg's bubble (rounded box, a small straight point at the bottom left), with a soft shadow.
+          (center: in the middle of the given area instead, e.g. the picture page while recording.)
           Tap it to close it sooner. */}
       <Pressable onPress={onDismiss} accessibilityRole="button" accessibilityHint="Closes the message" style={styles.bubbleWrap}>
         <View style={styles.bubble}>
