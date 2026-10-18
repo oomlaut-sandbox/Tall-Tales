@@ -18,6 +18,7 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
   const insets = useSafeAreaInsets();
   const controls = useControls();
   const [open, setOpen] = useState(null);
+  const [heroW, setHeroW] = useState(0);
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
@@ -26,7 +27,7 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
       </View>
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.col}>
-          <View style={styles.hero}><Image source={PICTURE} style={StyleSheet.absoluteFill} resizeMode="cover" /></View>
+          <View style={styles.hero} onLayout={(e) => setHeroW(e.nativeEvent.layout.width)}>{heroW ? <Image source={PICTURE} style={{ width: heroW, height: heroW * 3 / 4 }} resizeMode="cover" /> : null}</View>
           <Text style={styles.lead}>{t('{n} ideas for books you can make together: your photos and drawings, your words, your voice.', { n: IDEA_COUNT })}</Text>
           <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
             {controls.create ? <Pressable onPress={onMake} style={[styles.pill, { backgroundColor: colors.blue }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Make a story')}</Text></Pressable> : null}
