@@ -84,7 +84,6 @@ export default function Profiles({ u, openMenu, setControls }) {
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
-        <Image source={require('../../assets/band-profile.jpg')} resizeMode="stretch" style={[StyleSheet.absoluteFill, { top: insets.top }]} />
         <Text style={styles.title}>{t('Profiles')}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.body}>
@@ -182,8 +181,8 @@ export default function Profiles({ u, openMenu, setControls }) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: DESK_BG },
-  band: { backgroundColor: '#c4630f', paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3, transform: [{ translateY: -3 }] },
+  band: { paddingBottom: 6, paddingHorizontal: 24 }, // just the title, on the felt (no banner)
+  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 24, paddingBottom: 140, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 26 },
   p: { fontFamily: fonts.ui, fontSize: 16, lineHeight: 22, color: '#e6e6e6' },
