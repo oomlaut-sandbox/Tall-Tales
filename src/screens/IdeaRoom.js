@@ -10,7 +10,7 @@ import { IDEA_SECTIONS, IDEA_COUNT } from '../ideas';
 import { useT } from '../i18n';
 import { useControls } from '../controls';
 
-const BAND_FELT = require('../../assets/band-about.jpg'); // the felt banner
+const BAND_FELT = require('../../assets/band-ideas.jpg'); // Jörg's pink felt banner
 const PICTURE = require('../../assets/idea-room.jpg'); // Jörg's happy blue felt creature under the rainbow
 
 export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
