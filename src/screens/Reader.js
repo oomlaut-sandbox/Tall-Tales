@@ -1,7 +1,7 @@
 // The reader: page curl, read-aloud with highlighting, learn-to-read, interactive pictures.
 import { getAmbient, onRecordRequest, setAmbientPlayer } from '../ambient';
-import { MusicIcon } from '../components/Chrome';
-import { useControls } from '../controls';
+import { LockIcon, MusicIcon } from '../components/Chrome';
+import { isRestricted, useControls } from '../controls';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Platform, Pressable, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
@@ -83,7 +83,7 @@ function Seg({ value, options, onChange, stacked }) {
   );
 }
 
-export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary, toast, menuRequest, landscape, setToastSpot, autoStart, onFinished }) {
+export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary, toast, menuRequest, landscape, setToastSpot, autoStart, onFinished, onSettings }) {
   const controls = useControls(); // parental controls: recording, sharing and printing may be switched off
   const insets = useSafeAreaInsets();
   const pages = useMemo(() => [...story.pages, { end: true }], [story]);
@@ -684,7 +684,13 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <View style={{ width: BL.rightW, alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
             <View style={{ alignItems: 'center' }}>
               <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
-              {/* music and sounds: the little floating tape player */}
+              {/* restricted kid mode: a small lock (Settings, behind the grown-up question) */}
+              {isRestricted(controls) && onSettings ? (
+                <Pressable onPress={onSettings} hitSlop={12} accessibilityRole="button" accessibilityLabel="Settings" style={[styles.small, { marginTop: u * 7 }]}>
+                  <LockIcon size={u * 6.2} weight={Math.max(2.5, u * 0.8)} />
+                </Pressable>
+              ) : null}
+              {/* music and sounds: the little floating Audio Player */}
               <Pressable onPress={() => setAmbientPlayer(!getAmbient().showPlayer)} hitSlop={12} accessibilityRole="button" accessibilityLabel="Music and Sounds" style={[styles.small, { marginTop: u * 7 }]}>
                 <MusicIcon size={u * 7} weight={Math.max(3, u)} />
               </Pressable>
@@ -711,7 +717,13 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       <View style={[styles.bottomBar, { height: barH, paddingBottom: insets.bottom }]}>
         <Felt />
         <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
-        {/* music and sounds: opens (or hides) the little floating tape player; a little apart from the menu */}
+        {/* restricted kid mode: a small lock, a little apart from the menu (Settings, behind the grown-up question) */}
+        {isRestricted(controls) && onSettings ? (
+          <Pressable onPress={onSettings} hitSlop={12} accessibilityRole="button" accessibilityLabel="Settings" style={[styles.small, { marginLeft: u * 7 }]}>
+            <LockIcon size={u * 6.2} weight={Math.max(2.5, u * 0.8)} />
+          </Pressable>
+        ) : null}
+        {/* music and sounds: opens (or hides) the little floating Audio Player; a little apart from the menu (or the lock) */}
         <Pressable onPress={() => setAmbientPlayer(!getAmbient().showPlayer)} hitSlop={12} accessibilityRole="button" accessibilityLabel="Music and Sounds" style={[styles.small, { marginLeft: u * 7 }]}>
           <MusicIcon size={u * 7} weight={Math.max(3, u)} />
         </Pressable>

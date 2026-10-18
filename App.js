@@ -311,7 +311,7 @@ function Root() {
         {screen === 'profile' && <Profile u={u} openMenu={openMenu} toast={toast} />}
         {screen === 'reader' && story && (
           <Reader key={queue ? `${queue.key}:${queue.i}` : 'one'} u={u} story={story} setToastSpot={setToastSpot} prefs={queue ? { ...prefs, mode: queue.listen ? 'listen' : 'auto' } : controls.playMode ? { ...prefs, mode: controls.playMode } : prefs}
-            autoStart={!!queue} onFinished={onBookFinished} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
+            autoStart={!!queue} onFinished={onBookFinished} onSettings={() => setSettingsGate(true)} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
         )}
         {opening ? (
           <BookOpen u={u} story={opening.story} cover={opening.cover} rect={opening.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}

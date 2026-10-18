@@ -26,5 +26,8 @@ export const lockedControls = (mode, childAge = null) => ({ store: false, notebo
 // child's age is set, only books rated for that age.
 export const quickSafeControls = (childAge = null) => ({ store: false, notebook: true, create: false, help: false, playback: false, playMode: 'page', recording: false, sharing: false, language: false, profiles: false, childAge });
 
+// restricted kid mode: a grown-up has switched something off or fixed how books play
+export const isRestricted = (c) => !!c && (!!c.playMode || Object.keys(DEFAULT_CONTROLS).some((k) => typeof DEFAULT_CONTROLS[k] === 'boolean' && c[k] === false));
+
 export const ControlsContext = createContext(DEFAULT_CONTROLS);
 export const useControls = () => useContext(ControlsContext);

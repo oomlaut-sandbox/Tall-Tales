@@ -235,6 +235,16 @@ export function MusicIcon({ size = 20, color = colors.white, weight = 2 }) {
     </View>
   );
 }
+// the restricted kid mode lock: a rounded body with a shackle on top
+export function LockIcon({ size = 20, color = colors.white, weight = 2 }) {
+  const bw = size * 0.72, bh = size * 0.5, sw = size * 0.46;
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'flex-end' }}>
+      <View style={{ position: 'absolute', top: size * 0.04, width: sw, height: size * 0.58, borderWidth: weight, borderColor: color, borderTopLeftRadius: sw / 2, borderTopRightRadius: sw / 2, borderBottomWidth: 0 }} />
+      <View style={{ width: bw, height: bh, borderRadius: size * 0.1, backgroundColor: color }} />
+    </View>
+  );
+}
 // Playlists: three lines of a list, the last one shorter, with a small play triangle beside it
 export function PlaylistIcon({ size = 20, color = colors.white, weight = 2.4 }) {
   const tri = size * 0.3;
