@@ -27,7 +27,7 @@ export default function AmbientControls() {
         <Chip label={s.playing ? t('Pause') : t('Play')} on={s.playing} onPress={s.playing ? pauseAmbient : playAmbient} />
         <Chip label={t('Off')} on={!s.sound && !s.music} onPress={stopAmbient} />
       </View>
-      <Text style={[styles.group, { marginTop: 18 }]}>{t('Nature sounds')}</Text>{/* a little room above it */}
+      <Text style={styles.group}>{t('Nature sounds')}</Text>
       <View style={styles.chips}>
         {SOUNDS.map((x) => <Chip key={x.id} label={t(x.name)} on={s.sound === x.id} onPress={() => pick('sound', x.id)} />)}
       </View>
@@ -54,7 +54,7 @@ export default function AmbientControls() {
 const styles = StyleSheet.create({
   help: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22 },
   small: { color: '#a9a9a9', fontFamily: fonts.ui, fontSize: 13, lineHeight: 18 },
-  group: { color: '#bdbdbd', fontFamily: fonts.ui, fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 4 },
+  group: { color: '#bdbdbd', fontFamily: fonts.ui, fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 18 }, // room between the sections, above each heading
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { paddingHorizontal: 12, height: 34, borderRadius: 17, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
   chipOn: { backgroundColor: colors.green },
