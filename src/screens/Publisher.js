@@ -44,7 +44,7 @@ export function draftFrom(story) {
 const POLAROID = require('../../assets/polaroid.jpg');
 function EmptyPicture({ side }) {
   // "Add Image" in white, in the exact middle of the blue square (no plus)
-  const cx = side * 0.497, cy = side * 0.464, fs = Math.max(16, Math.round(side * 0.06));
+  const cx = side * 0.497, cy = side * 0.464, fs = Math.max(14, Math.round(side * 0.048));
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       <Image source={POLAROID} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
