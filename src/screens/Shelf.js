@@ -336,8 +336,8 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
   const label = busy ? 'One moment…' : action === 'read' ? 'Read now' : action === 'buy' ? `Buy ${book.price_label || PRICES.book}` : action === 'join' ? 'Join to read' : 'Read now';
   const pill = (
     <Pressable disabled={!action || busy} onPress={() => (action === 'read' ? onRead({ x: boxX + M, y: boxY + M, w: cs, h: cs }) : action === 'buy' ? onBuy() : onJoin())}
-      style={[styles.sheetBtn, !action && { opacity: 0.45 }]} accessibilityRole="button">
-      <Text style={styles.sheetBtnText}>{label}</Text>
+      style={[styles.sheetBtn, { paddingHorizontal: 16 }, !action && { opacity: 0.45 }]} accessibilityRole="button">
+      <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={styles.sheetBtnText}>{label}</Text>
     </Pressable>
   );
   // under the cover: title, author, pages and price, then a short description
