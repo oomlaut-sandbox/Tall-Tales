@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { IS_TABLET } from '../look';
 import { Bar, BarMeta, Burger, WithBar } from '../components/Chrome';
+import { useT } from '../i18n';
 
 const BAND_FELT = require('../../assets/band-about.jpg');
 const SKIPPY = require('../../assets/skippy/glasses-book.png'); // Skippy with his glasses and a book (449 × 600)
@@ -12,6 +13,7 @@ const SKIPPY = require('../../assets/skippy/glasses-book.png'); // Skippy with h
 const VERSION = require('../../app.json').expo.version;
 
 export default function About({ u, openMenu, onSecret }) {
+  const t = useT();
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
   // the words run the width of the page; Skippy stands on his own at the bottom right and stays put
@@ -33,18 +35,18 @@ export default function About({ u, openMenu, onSecret }) {
           <Text style={styles.reg}>®</Text>
           <Text style={styles.title}> Reader</Text>
         </View>
-        <Text style={styles.tagline}>Picture books in your voice.</Text>
+        <Text style={styles.tagline}>{t('Picture books in your voice.')}</Text>
       </View>
       <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={[styles.body, { paddingBottom: 24 }, phone && winH < 740 && { paddingTop: 22, gap: 12 }]}>
         <Text style={[styles.p, textStyle]}>
-          Oomlaut Reader is a home for beautifully illustrated stories, made for children who are learning to read and the grown-ups who read with them.
+          {t('Oomlaut Reader is a home for beautifully illustrated stories, made for children who are learning to read and the grown-ups who read with them.')}
         </Text>
         <Text style={[styles.p, textStyle]}>
-          Every book can be read aloud by a warm narrator, with each word lighting up as it’s spoken. In Learn to Read mode, children tap any word to hear it sounded out, one part at a time. Parents can record themselves reading each page, so a favourite story can be heard in a familiar voice, any time. And families can make their own books, with their own pictures and words.
+          {t('Every book can be read aloud by a warm narrator, with each word lighting up as it’s spoken. In Learn to Read mode, children tap any word to hear it sounded out, one part at a time. Parents can record themselves reading each page, so a favourite story can be heard in a familiar voice, any time. And families can make their own books, with their own pictures and words.')}
         </Text>
-        <Text style={[styles.p, textStyle, beside]}>Oomlaut is always looking for new picture books. If you’ve written or illustrated a story, send it to us and join the Oomlaut author community. Visit oomlaut.com for more information.</Text>
-        <Text style={[styles.version, beside]}>Version {VERSION}</Text>
+        <Text style={[styles.p, textStyle, beside]}>{t('Oomlaut is always looking for new picture books. If you’ve written or illustrated a story, send it to us and join the Oomlaut author community. Visit oomlaut.com for more information.')}</Text>
+        <Text style={[styles.version, beside]}>{t('Version {v}', { v: VERSION })}</Text>
       </ScrollView>
       {/* the store owner's way in: hold Skippy for five seconds (nothing happens on a tap) */}
       <Pressable onLongPress={onSecret} delayLongPress={5000} style={{ position: 'absolute', right: 14, bottom: 12, width: skW, height: skH }} accessible={false}>

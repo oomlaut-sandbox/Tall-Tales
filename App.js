@@ -80,6 +80,8 @@ function Root() {
   const setBookLang = (l) => { setBookLangState(l); saveJSON('bookLang', l); };
   const setControls = (c) => { setControlsState(c); saveJSON('controls', c); };
   const t = (str, vars) => translate(lang, str, vars);
+  const langRef = useRef(lang);
+  langRef.current = lang;
   const [settingsGate, setSettingsGate] = useState(false); // Settings is for grown-ups
   const [memberOpen, setMemberOpen] = useState(false);
 
@@ -111,8 +113,8 @@ function Root() {
   // a new reading badge: a little speech bubble (the badges are on the first page of My Notebook)
   useEffect(() => onNewBadge((fresh) => {
     const b = fresh[0];
-    const name = b.kind === 'book' ? `you finished “${b.title}”` : b.title;
-    setTimeout(() => toast(fresh.length > 1 ? `New badges! ${b.kind === 'book' ? 'You finished a book' : b.title} and more. See them in My Notebook.` : `New badge: ${name}! See it in My Notebook.`), 900);
+    const tr = (str, v) => translate(langRef.current, str, v);
+    setTimeout(() => toast(fresh.length > 1 ? tr('New badges! {name} and more. See them in My Notebook.', { name: tr(b.title) }) : tr('New badge: {name}! See it in My Notebook.', { name: tr(b.title) })), 900);
   }), [toast]);
 
   // From the start page to My Library: the closed notebook flies onto the shelf as the library fades in.

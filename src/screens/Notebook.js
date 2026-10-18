@@ -631,9 +631,11 @@ const ART_PAD = 368 / 300;
 
 // A badge, pinned on the page at a slight angle. d: its size.
 function Badge({ b, d, toast }) {
+  const t = useT();
   const art = BADGE_ART[b.id];
-  const say = () => toast(b.earned ? `${b.title}! ${b.how}` : `${b.title}: ${b.how}`);
-  const label = `${b.title}${b.earned ? ', earned' : ', not earned yet'}`;
+  const title = t(b.title), how = t(b.how);
+  const say = () => toast(b.earned ? `${title}! ${how}` : `${title}: ${how}`);
+  const label = `${title}${b.earned ? ', earned' : ', not earned yet'}`;
   if (art) {
     // the felt badge has its name stitched on (and its shadow drawn in)
     return (
