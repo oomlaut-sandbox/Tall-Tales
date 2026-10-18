@@ -1,33 +1,32 @@
-// The little floating felt tape player (Jörg's picture) for the music and ambient sounds. Drag it anywhere;
-// it stays where it's left. Shown with the note in the reading bar (or from Music and Sounds).
-//   Record / Play / Pause: the three felt buttons (Record records your voice in the open book, like the red
-//     button in the reading bar; the little red light comes on only while recording)
+// The little floating felt Audio Player (Jörg's picture) for the music and nature sounds. Drag it anywhere;
+// it stays where it's left. Shown with the sound icon in the reading bar (or from Music and Sounds).
+//   Play / Pause: the green and grey felt buttons
 //   Sounds (top window) and Music (bottom window): tap a knob to click through the choices; the choice shows
-//     in the window in white, and the line on the knob turns a notch each click
-//   Volume (the slider top left, a grey felt dot on a stitched line): drag the dot, or tap the line
+//     in the window in white, and the line on the knob turns a notch each click (the knob itself stays still)
+//   Volume: the felt slider (drag its knob up and down, or tap the slot)
 //   the three lines at the top: open the Music and Sounds page; the down arrow: close the player
+// (recording your voice is on the reading bar's red button)
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fonts } from '../theme';
-import { MUSIC, SOUNDS, TRACKS, getAmbient, onAmbient, pauseAmbient, playAmbient, requestRecord, setAmbientPlayer, setAmbientVolume, setPlayerPos, stepAmbient } from '../ambient';
+import { MUSIC, SOUNDS, TRACKS, getAmbient, onAmbient, pauseAmbient, playAmbient, setAmbientPlayer, setAmbientVolume, setPlayerPos, stepAmbient } from '../ambient';
 import { useT } from '../i18n';
 
-const BODY = require('../../assets/tape-player.jpg');
-const KNOB1 = require('../../assets/tape-knob1.png');
-const DOT = require('../../assets/tape-volume.png');
-const KNOB2 = require('../../assets/tape-knob2.png');
-// the player's size: almost as tall as an iPhone is wide (a little less on a very small screen)
+const BODY = require('../../assets/audio-player.jpg');
+const THUMB = require('../../assets/audio-thumb.png');
+const IW = 2576, IH = 1314; // the picture's own units (Jörg's photo, in pixels)
+// the player's size: nearly as wide as an iPhone held upright (a little less on a very small screen)
 const sizeFor = (winW, winH) => {
-  const PH = Math.min(360, Math.round(Math.min(winW, winH) * 0.92));
-  const PW = Math.round(PH * 600 / 1196);
-  return { PW, PH, f: PW / 900 }; // f: the picture's own units (900 wide) to the screen
+  const PW = Math.min(380, Math.round(Math.min(winW, winH) * 0.94));
+  return { PW, PH: Math.round(PW * IH / IW), f: PW / IW };
 };
-// the volume slider, in the picture's units: the line runs from TX0 to TX1 at height TY
+// the volume slider's slot, in the picture's units: the knob's middle runs from Y_TOP (loudest) to Y_BOT (quietest)
 const VMIN = 0.05;
-const TX0 = 100, TX1 = 480, TY = 112, DOTD = 74;
+const SX = 1387, Y_TOP = 262, Y_BOT = 996, THUMB_D = 159;
+const SLOT = { x: 1287, y: 150, w: 200, h: 960 }; // where a finger can take the slider
 
-export default function TapePlayer({ bottomBar = 0, sideBar = 0, onMenu, toast }) {
+export default function TapePlayer({ bottomBar = 0, sideBar = 0, onMenu }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
@@ -39,7 +38,7 @@ export default function TapePlayer({ bottomBar = 0, sideBar = 0, onMenu, toast }
   // where it sits: where it was left, kept on screen (the first time: the right side, above the bar)
   const place = (p) => ({
     x: Math.max(6 + insets.left, Math.min(winW - PW - sideBar - 6, p ? p.x : winW - PW - sideBar - 12)),
-    y: Math.max(insets.top + 6, Math.min(winH - PH - bottomBar - 6, p ? p.y : winH - PH - bottomBar - 14)),
+    y: Math.max(insets.top + 6, Math.min(winH - PH - bottomBar - 10, p ? p.y : winH - PH - bottomBar - 16)),
   });
   const xy = useRef(new Animated.ValueXY(place(s.pos))).current;
   const placeRef = useRef(place);
@@ -58,96 +57,85 @@ export default function TapePlayer({ bottomBar = 0, sideBar = 0, onMenu, toast }
       setPlayerPos(p);
     },
   })).current;
-  // the knobs turn a notch for every click (all the way round over the choices and "off")
+  // the knobs' lines turn a notch for every click (all the way round over the choices and "off")
   const notch = (list, id) => (list.findIndex((x) => x.id === id) + 1) * (300 / list.length);
   const k1 = useRef(new Animated.Value(notch(SOUNDS, s.sound))).current;
   const k2 = useRef(new Animated.Value(notch(MUSIC, s.music))).current;
   useEffect(() => { Animated.spring(k1, { toValue: notch(SOUNDS, s.sound), useNativeDriver: true, friction: 6 }).start(); }, [s.sound]);
   useEffect(() => { Animated.spring(k2, { toValue: notch(MUSIC, s.music), useNativeDriver: true, friction: 6 }).start(); }, [s.music]);
-  // the volume slider: tap the line to jump there, drag the dot to slide
+  // the volume slider: tap the slot to jump there, drag the knob to slide (up is louder)
   const fRef = useRef(f);
   fRef.current = f;
-  const vx0 = useRef(0);
-  const volAt = (x) => {
-    const k = fRef.current; // x: from the slider area's left edge (at 40 in the picture's units)
-    return VMIN + (1 - VMIN) * Math.max(0, Math.min(1, (x / k + 40 - TX0) / (TX1 - TX0)));
+  const vy0 = useRef(0);
+  const volAt = (y) => { // y: from the top of the slider's touch area
+    const k = fRef.current;
+    return VMIN + (1 - VMIN) * Math.max(0, Math.min(1, (Y_BOT - (y / k + SLOT.y)) / (Y_BOT - Y_TOP)));
   };
   const volSlide = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onPanResponderTerminationRequest: () => false,
-    onPanResponderGrant: (e) => { vx0.current = e.nativeEvent.locationX; setAmbientVolume(volAt(vx0.current)); },
-    onPanResponderMove: (_, g) => setAmbientVolume(volAt(vx0.current + g.dx)),
+    onPanResponderGrant: (e) => { vy0.current = e.nativeEvent.locationY; setAmbientVolume(volAt(vy0.current)); },
+    onPanResponderMove: (_, g) => setAmbientVolume(volAt(vy0.current + g.dy)),
   })).current;
   const vol = Math.max(VMIN, Math.min(1, s.volume));
-  const dotX = TX0 + (TX1 - TX0) * (vol - VMIN) / (1 - VMIN);
+  const thumbY = Y_BOT - (Y_BOT - Y_TOP) * (vol - VMIN) / (1 - VMIN);
   const turn = (v) => ({ transform: [{ rotate: v.interpolate({ inputRange: [0, 360], outputRange: ['0deg', '360deg'] }) }] });
   if (!s.showPlayer) return null;
   const name = (id) => { const x = TRACKS.find((tr) => tr.id === id); return x ? t(x.name) : t('Off'); };
-  const record = () => { if (!requestRecord() && toast) toast(t('Open a book to record your voice.')); };
+  const label = { fontSize: 62 * f };
+  // the line on a knob's face: it turns around the face's middle (cx, cy)
+  const mark = (cx, cy, v) => (
+    <Animated.View pointerEvents="none" style={[at(cx - 60, cy - 60, 120, 120), turn(v)]}>
+      <View style={[styles.mark, { left: 54 * f, top: 12 * f, width: 12 * f, height: 38 * f }]} />
+    </Animated.View>
+  );
   return (
-    <Animated.View {...drag.panHandlers} style={[styles.body, { width: PW, height: PH, transform: xy.getTranslateTransform() }]} accessibilityLabel={t('Audio Player')}>
-      <View style={[styles.inner, { width: PW, height: PH }]}>
-      <Image source={BODY} style={{ width: PW, height: PH }} resizeMode="stretch" />
-      {/* the three lines: the Music and Sounds page; the down arrow: close the player */}
-      <Pressable onPress={onMenu} hitSlop={4} style={at(545, 30, 165, 170)} accessibilityRole="button" accessibilityLabel={t('Music and Sounds')} />
-      <Pressable onPress={() => setAmbientPlayer(false)} hitSlop={4} style={at(712, 20, 175, 180)} accessibilityRole="button" accessibilityLabel={t('Close the player')} />
-      {/* the volume knob, top left, with its name underneath */}
-      <View {...volSlide.panHandlers} style={at(40, 50, 510, 124)} accessibilityRole="adjustable" accessibilityLabel={t('Volume')}
-        accessibilityValue={{ min: 0, max: 100, now: Math.round(vol * 100) }}
-        accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
-        onAccessibilityAction={(e) => setAmbientVolume(vol + (e.nativeEvent.actionName === 'increment' ? 0.1 : -0.1))}>
-        <View pointerEvents="none" style={[at(TX0 - 40, TY - 50 - 6, TX1 - TX0, 12), styles.track]} />
-        <View pointerEvents="none" style={[at(TX0 - 40, TY - 50 - 6, dotX - TX0, 12), styles.track, styles.trackOn]} />
-        <Image pointerEvents="none" source={DOT} style={[at(dotX - 40 - DOTD / 2, TY - 50 - DOTD / 2, DOTD, DOTD)]} />
-      </View>
-      <Text numberOfLines={1} style={[styles.label, { fontSize: 54 * f, position: 'absolute', left: TX0 * f, top: 168 * f }]}>{t('Volume')}</Text>
-      {/* the little red light: only while recording */}
-      {s.recording ? <View pointerEvents="none" style={[at(660, 611, 54, 54), styles.light]} /> : null}
-      {/* Record, Play, Pause, with their names underneath */}
-      <Pressable onPress={record} style={at(115, 780, 150, 150)} accessibilityRole="button" accessibilityLabel={t('Record')} />
-      <Pressable onPress={playAmbient} style={at(370, 780, 150, 150)} accessibilityRole="button" accessibilityLabel={t('Play')} />
-      <Pressable onPress={pauseAmbient} style={at(620, 780, 150, 150)} accessibilityRole="button" accessibilityLabel={t('Pause')} />
-      {[[t('Record'), 190], [t('Play'), 445], [t('Pause'), 695]].map(([label, cx]) => (
-        <Text key={cx} numberOfLines={1} style={[styles.label, { fontSize: 54 * f, position: 'absolute', left: (cx - 120) * f, width: 240 * f, top: 945 * f, textAlign: 'center' }]}>{label}</Text>
-      ))}
-      {/* the two windows, named above them, with the choice in white */}
-      <Text style={[styles.label, { fontSize: 54 * f, position: 'absolute', left: 105 * f, top: 1100 * f }]}>{t('Sounds')}</Text>
-      <View pointerEvents="none" style={[at(118, 1205, 480, 96), styles.window]}>
-        <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.choice, { fontSize: 52 * f }, !s.sound && { opacity: 0.6 }]}>{name(s.sound)}</Text>
-      </View>
-      <Text style={[styles.label, { fontSize: 54 * f, position: 'absolute', left: 105 * f, top: 1404 * f }]}>{t('Music')}</Text>
-      <View pointerEvents="none" style={[at(118, 1507, 480, 96), styles.window]}>
-        <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.choice, { fontSize: 52 * f }, !s.music && { opacity: 0.6 }]}>{name(s.music)}</Text>
-      </View>
-      {/* the knobs: tap to click to the next choice */}
-      <Pressable onPress={() => stepAmbient('sound')} style={at(663, 1166, 168, 168)} accessibilityRole="button" accessibilityLabel={`${t('Sounds')}: ${name(s.sound)}`}>
-        <Image source={KNOB1} style={{ width: 168 * f, height: 168 * f }} />
-          {/* the knob stays put; only the little line on its face goes round */}
-          <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 0, top: 0, width: 168 * f, height: 168 * f }, turn(k1)]}>
-            <View style={[styles.mark, { left: 168 * f * 0.482, top: 168 * f * 0.1, width: 168 * f * 0.036, height: 168 * f * 0.19 }]} />
-          </Animated.View>
-      </Pressable>
-      <Pressable onPress={() => stepAmbient('music')} style={at(663, 1471, 168, 168)} accessibilityRole="button" accessibilityLabel={`${t('Music')}: ${name(s.music)}`}>
-        <Image source={KNOB2} style={{ width: 168 * f, height: 168 * f }} />
-          {/* the knob stays put; only the little line on its face goes round */}
-          <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 0, top: 0, width: 168 * f, height: 168 * f }, turn(k2)]}>
-            <View style={[styles.mark, { left: 168 * f * 0.482, top: 168 * f * 0.1, width: 168 * f * 0.036, height: 168 * f * 0.19 }]} />
-          </Animated.View>
-      </Pressable>
+    <Animated.View {...drag.panHandlers} style={[styles.body, { width: PW, height: PH, borderRadius: PW * 0.04, transform: xy.getTranslateTransform() }]} accessibilityLabel={t('Audio Player')}>
+      <View style={[styles.inner, { width: PW, height: PH, borderRadius: PW * 0.04 }]}>
+        <Image source={BODY} style={{ width: PW, height: PH }} resizeMode="stretch" />
+        {/* the three lines: the Music and Sounds page; the down arrow: close the player */}
+        <Pressable onPress={onMenu} hitSlop={4} style={at(2120, 120, 210, 160)} accessibilityRole="button" accessibilityLabel={t('Music and Sounds')} />
+        <Pressable onPress={() => setAmbientPlayer(false)} hitSlop={4} style={at(2335, 110, 170, 180)} accessibilityRole="button" accessibilityLabel={t('Close the player')} />
+        {/* Play and Pause, with their names underneath */}
+        <Pressable onPress={playAmbient} style={at(161, 142, 264, 270)} accessibilityRole="button" accessibilityLabel={t('Play')} />
+        <Pressable onPress={pauseAmbient} style={at(490, 187, 161, 161)} accessibilityRole="button" accessibilityLabel={t('Pause')} />
+        {[[t('Play'), 293, 418], [t('Pause'), 570, 376]].map(([l, cx, top]) => (
+          <Text key={cx} numberOfLines={1} style={[styles.label, label, { position: 'absolute', left: (cx - 150) * f, width: 300 * f, top: top * f, textAlign: 'center' }]}>{l}</Text>
+        ))}
+        {/* the two windows, named above them, with the choice in white */}
+        <Text style={[styles.label, label, { position: 'absolute', left: 178 * f, top: 500 * f }]}>{t('Sounds')}</Text>
+        <View pointerEvents="none" style={[at(186, 593, 704, 110), styles.window]}>
+          <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.choice, { fontSize: 66 * f }, !s.sound && { opacity: 0.6 }]}>{name(s.sound)}</Text>
+        </View>
+        <Text style={[styles.label, label, { position: 'absolute', left: 172 * f, top: 806 * f }]}>{t('Music')}</Text>
+        <View pointerEvents="none" style={[at(180, 900, 704, 106), styles.window]}>
+          <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.choice, { fontSize: 66 * f }, !s.music && { opacity: 0.6 }]}>{name(s.music)}</Text>
+        </View>
+        {/* the knobs stay put; tap one to click to the next choice (only the line on its face goes round) */}
+        <Pressable onPress={() => stepAmbient('sound')} style={at(920, 540, 220, 220)} accessibilityRole="button" accessibilityLabel={`${t('Sounds')}: ${name(s.sound)}`} />
+        <Pressable onPress={() => stepAmbient('music')} style={at(914, 838, 220, 220)} accessibilityRole="button" accessibilityLabel={`${t('Music')}: ${name(s.music)}`} />
+        {mark(1030, 631, k1)}
+        {mark(1024, 929, k2)}
+        {/* the volume slider: its felt knob slides up (louder) and down (quieter) in the stitched slot */}
+        <View {...volSlide.panHandlers} style={at(SLOT.x, SLOT.y, SLOT.w, SLOT.h)} accessibilityRole="adjustable" accessibilityLabel={t('Volume')}
+          accessibilityValue={{ min: 0, max: 100, now: Math.round(vol * 100) }}
+          accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+          onAccessibilityAction={(e) => setAmbientVolume(vol + (e.nativeEvent.actionName === 'increment' ? 0.1 : -0.1))}>
+          <Image pointerEvents="none" source={THUMB} style={at(SX - SLOT.x - THUMB_D / 2, thumbY - SLOT.y - THUMB_D / 2, THUMB_D, THUMB_D)} />
+        </View>
+        <Text numberOfLines={1} style={[styles.label, label, { position: 'absolute', left: (SX - 200) * f, width: 400 * f, top: 1112 * f, textAlign: 'center' }]}>{t('Volume')}</Text>
       </View>
     </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  body: { position: 'absolute', left: 0, top: 0, zIndex: 170, borderRadius: 10,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.5, shadowRadius: 9, elevation: 12 },
-  inner: { borderRadius: 10, overflow: 'hidden' },
-  light: { borderRadius: 30, backgroundColor: '#a5121d', shadowColor: '#ff3b30', shadowOpacity: 0.8, shadowRadius: 4, shadowOffset: { width: 0, height: 0 } },
+  // a soft drop shadow all round, a little deeper below
+  body: { position: 'absolute', left: 0, top: 0, zIndex: 170,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.55, shadowRadius: 14, elevation: 14 },
+  inner: { overflow: 'hidden' },
   label: { fontFamily: fonts.ui, fontWeight: '600', color: '#4a4a4a' },
-  mark: { position: 'absolute', borderRadius: 2, backgroundColor: '#2a2a2d' },
-  track: { borderRadius: 6, backgroundColor: '#7c7b7a' },
-  trackOn: { backgroundColor: '#3f3f44' },
-  window: { justifyContent: 'center', paddingHorizontal: 3 },
+  mark: { position: 'absolute', borderRadius: 3, backgroundColor: '#2a2a2d' },
+  window: { justifyContent: 'center', paddingHorizontal: 4 },
   choice: { fontFamily: fonts.ui, fontWeight: '600', color: '#ffffff' },
 });
