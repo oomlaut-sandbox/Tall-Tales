@@ -223,6 +223,17 @@ export function AgainIcon({ size = 14, color = colors.white, weight = 3.5, bg = 
   );
 }
 // My Library: books standing on a shelf (an outlined square with upright lines).
+// A musical note, in the same plain white strokes as the other icons: an oval head, a stem and one flag.
+export function NoteIcon({ size = 20, color = colors.white, weight = 2 }) {
+  const head = size * 0.42;
+  return (
+    <View style={{ width: size, height: size }}>
+      <View style={{ position: 'absolute', left: size * 0.12, bottom: size * 0.02, width: head, height: head * 0.74, borderRadius: head, backgroundColor: color, transform: [{ rotate: '-22deg' }] }} />
+      <View style={{ position: 'absolute', left: size * 0.12 + head - weight * 0.9, bottom: size * 0.22, width: weight, height: size * 0.76, backgroundColor: color }} />
+      <View style={{ position: 'absolute', left: size * 0.12 + head - weight * 0.9, top: size * 0.02, width: size * 0.34, height: weight, backgroundColor: color, transformOrigin: 'left', transform: [{ rotate: '38deg' }] }} />
+    </View>
+  );
+}
 export function LibraryIcon({ size = 14, color = colors.white, weight = 2 }) {
   return (
     <View style={{ width: size, height: size, borderWidth: weight, borderColor: color, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'stretch', paddingVertical: 2 }}>

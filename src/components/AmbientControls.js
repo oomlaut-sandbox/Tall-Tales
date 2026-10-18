@@ -21,7 +21,6 @@ export default function AmbientControls() {
   const pick = (id) => (s.track === id && s.playing ? pauseAmbient() : playAmbient(id));
   return (
     <View style={{ gap: 10 }}>
-      <Text style={styles.help}>{t('Music and sounds')}</Text>
       <Text style={styles.small}>{t('Relaxing sounds and gentle music that keep playing while you use the app. Lovely at bedtime.')}</Text>
       <View style={styles.chips}>
         <Chip label={t('Off')} on={!s.track || !s.playing} onPress={stopAmbient} />

@@ -52,13 +52,15 @@ export default function TapePlayer({ bottomBar = 0 }) {
     spin.setValue(0); loop.start();
     return () => loop.stop();
   }, [s.playing]);
-  if (!s.track || !s.showPlayer) return null;
+  if (!s.showPlayer) return null; // opened with the note in the reading bar (or Music and Sounds)
   const track = TRACKS.find((x) => x.id === s.track);
   return (
     <Animated.View {...drag.panHandlers} style={[styles.body, { transform: xy.getTranslateTransform() }]} accessibilityLabel={t('Music player')}>
+      {/* put the player away (the music keeps playing; the note in the reading bar brings it back) */}
+      <Pressable onPress={() => setAmbientPlayer(false)} hitSlop={10} style={styles.close} accessibilityLabel={t('Hide')}><Text style={styles.closeText}>×</Text></Pressable>
       {/* the label strip with what's playing */}
-      <View style={styles.label}>
-        <Text numberOfLines={1} style={styles.labelText}>{track ? t(track.name) : ''}</Text>
+      <View style={[styles.label, { marginRight: 20 }]}>
+        <Text numberOfLines={1} style={styles.labelText}>{track ? t(track.name) : t('Music and Sounds')}</Text>
       </View>
       {/* the cassette window with its two reels */}
       <View style={styles.window}>
@@ -70,7 +72,7 @@ export default function TapePlayer({ bottomBar = 0 }) {
         <Pressable onPress={() => nextAmbient(-1)} hitSlop={6} style={styles.key} accessibilityLabel={t('Previous')}><Text style={styles.keyText}>◀◀</Text></Pressable>
         <Pressable onPress={toggleAmbient} hitSlop={6} style={[styles.key, styles.keyMain]} accessibilityLabel={s.playing ? t('Pause') : t('Play')}><Text style={styles.keyText}>{s.playing ? '❚❚' : '▶'}</Text></Pressable>
         <Pressable onPress={() => nextAmbient(1)} hitSlop={6} style={styles.key} accessibilityLabel={t('Next')}><Text style={styles.keyText}>▶▶</Text></Pressable>
-        <Pressable onPress={() => { stopAmbient(); setAmbientPlayer(true); }} hitSlop={6} style={styles.key} accessibilityLabel={t('Stop the music')}><Text style={styles.keyText}>■</Text></Pressable>
+        <Pressable onPress={stopAmbient} hitSlop={6} style={styles.key} accessibilityLabel={t('Stop the music')}><Text style={styles.keyText}>■</Text></Pressable>
       </View>
     </Animated.View>
   );
@@ -83,6 +85,8 @@ const styles = StyleSheet.create({
   labelText: { fontFamily: 'SpecialElite_400Regular', fontSize: 10, color: '#2b2b2b' },
   window: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#1a1a1a', borderRadius: 6, paddingHorizontal: 14, height: 30 },
   tape: { flex: 1, height: 10, marginHorizontal: 6, backgroundColor: '#5a4636', borderRadius: 2 },
+  close: { position: 'absolute', right: 6, top: 5, width: 18, height: 18, borderRadius: 9, backgroundColor: '#4a4a4a', alignItems: 'center', justifyContent: 'center', zIndex: 2 },
+  closeText: { color: colors.white, fontSize: 13, lineHeight: 15, fontWeight: '700' },
   keys: { flexDirection: 'row', justifyContent: 'space-between', gap: 4 },
   key: { flex: 1, height: 20, borderRadius: 4, backgroundColor: '#4a4a4a', alignItems: 'center', justifyContent: 'center' },
   keyMain: { backgroundColor: colors.green },

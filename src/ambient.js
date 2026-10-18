@@ -23,7 +23,7 @@ export const SLEEP_TIMES = [0, 15, 30, 60]; // minutes (0: keep playing)
 
 // track: the chosen one (null: off); playing: sounding now; volume 0..1; showPlayer: the floating tape player;
 // sleep: minutes until it fades out (0 = no timer), sleepAt: when; pos: where the player was left
-let state = { track: null, playing: false, volume: 0.4, showPlayer: true, sleep: 0, sleepAt: null, pos: null };
+let state = { track: null, playing: false, volume: 0.4, showPlayer: false, sleep: 0, sleepAt: null, pos: null };
 const listeners = new Set();
 const set = (patch) => {
   state = { ...state, ...patch };

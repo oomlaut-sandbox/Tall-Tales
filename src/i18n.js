@@ -257,6 +257,8 @@ const T = {
   'Soft piano': { de: 'Sanftes Klavier', fr: 'Piano doux', es: 'Piano suave', ja: 'やさしい ピアノ' },
   'Gentle guitar': { de: 'Sanfte Gitarre', fr: 'Guitare douce', es: 'Guitarra suave', ja: 'やさしい ギター' },
   'Dreamy harp': { de: 'Träumerische Harfe', fr: 'Harpe rêveuse', es: 'Arpa de ensueño', ja: 'ゆめみる ハープ' },
+  'Music and Sounds': { de: 'Musik und Klänge', fr: 'Musique et sons', es: 'Música y sonidos', ja: 'おんがくと しぜんの音' },
+  'Relaxing sounds and gentle music': { de: 'Entspannende Klänge und sanfte Musik', fr: 'Sons apaisants et musique douce', es: 'Sonidos relajantes y música suave', ja: 'やさしい音と おんがく' },
   'Done': { de: 'Fertig', fr: 'Terminé', es: 'Listo', ja: 'かんりょう' },
   'Read Yourself': { de: 'Selbst lesen', fr: 'Lire seul', es: 'Leer solo', ja: '自分でよむ' },
   'Learn to Read': { de: 'Lesen lernen', fr: 'Apprendre à lire', es: 'Aprender a leer', ja: 'よむれんしゅう' },
