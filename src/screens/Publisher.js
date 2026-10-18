@@ -394,14 +394,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   {page.text || 'To add text, tap here. Two or three sentences reads best.'}
                 </Text>
               </View>
-              {/* no words yet: a small Polaroid in the bottom corner offers a second picture instead */}
+              {/* no words yet: a small grey plus in the bottom corner offers a second picture instead */}
               {!page.text.trim() ? (
                 <Pressable onPress={() => setImgAsk('page2')} hitSlop={6} accessibilityRole="button" accessibilityLabel="Add another image page"
-                  style={{ position: 'absolute', left: side * 0.07, bottom: side * 0.07, flexDirection: 'row', alignItems: 'center', gap: side * 0.035 }}>
-                  {/* just the Polaroid itself, cut from the big picture (its frame: 25–74.5% across, 21–81% down) */}
-                  <View style={{ width: side * 0.17, height: side * 0.17 * 0.6 / 0.495, overflow: 'hidden' }}>
-                    <Image source={POLAROID} style={{ position: 'absolute', width: side * 0.17 / 0.495, height: side * 0.17 / 0.495, left: -side * 0.17 / 0.495 * 0.25, top: -side * 0.17 / 0.495 * 0.21 }} resizeMode="cover" />
-                  </View>
+                  style={{ position: 'absolute', left: side * 0.07, bottom: side * 0.07, flexDirection: 'row', alignItems: 'center', gap: side * 0.02 }}>
+                  {/* a small grey plus, then the words */}
+                  <Text style={{ fontFamily: fonts.ui, fontWeight: '300', fontSize: Math.max(18, Math.round(side * 0.07)), lineHeight: Math.max(18, Math.round(side * 0.07)) * 1.05, color: '#777' }}>+</Text>
                   <Text numberOfLines={1} style={{ fontFamily: fonts.ui, fontSize: Math.max(12, Math.round(side * 0.04)), color: '#555', maxWidth: side * 0.56 }}>Add another image page</Text>
                 </Pressable>
               ) : null}

@@ -37,10 +37,13 @@ import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
-import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
+import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PlaylistIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
 import { DESK_FELT, DeskFelt, Felt, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
 import Profiles from './src/screens/Profiles';
+import Playlists from './src/screens/Playlists';
+import { playOrder } from './src/playlists';
+import { ageAllowed, ageOf } from './src/catalog';
 import { loadProfiles, onProfiles } from './src/profiles';
 import { playSound, setEffects, setEffectsVolume } from './src/sound';
 import { stopSpeech } from './src/speech';
@@ -150,6 +153,7 @@ function Root() {
   const [nbFrom, setNbFrom] = useState(null); // where the little notebook was on the shelf when it was opened
   // (anything the parental controls hide can't be reached either)
   const go = (s) => {
+    if (s !== 'reader') setQueue(null); // leaving the reader ends a playlist
     if ((s === 'store' && !controls.store) || (s === 'notebook' && !controls.notebook) || ((s === 'help' || s === 'about' || s === 'ideas') && !controls.help)) s = 'library';
     stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen(s);
   };
@@ -164,6 +168,36 @@ function Root() {
     setStory(ready); go('reader');
   };
   const openMenu = () => { setDrawer((d) => !d); };
+  // the books on this child's shelf (My Library's books, without those rated for older children)
+  const shelf = [...STORIES.filter((s) => SHOWN_BOOKS.includes(s.id) && !removed.includes(s.id)).map((s) => localizeStory(s, readLang)), ...userStories];
+  const childShelf = shelf.filter((s) => ageAllowed(ageOf(null, s), controls.childAge));
+  // a playlist playing: its books one after another, each reading itself (Auto Play) and the next opening
+  // a moment after The End
+  const [queue, setQueue] = useState(null); // { ids, i }
+  const queueRef = useRef(null);
+  queueRef.current = queue;
+  const openQueued = (q) => { const s = childShelf.find((x) => x.id === q.ids[q.i]); if (!s) return; const s2 = s.langs ? localizeStory(s, readLang) : s; setStory(prepared(s2)); stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen('reader'); };
+  const playPlaylist = (pl) => {
+    const ids = playOrder(pl, childShelf);
+    if (!ids.length) return;
+    const q = { ids, i: 0, key: Date.now() };
+    setQueue(q); openQueued(q);
+  };
+  const queueNext = useRef(null);
+  const onBookFinished = () => {
+    const q = queueRef.current;
+    if (!q) return;
+    clearTimeout(queueNext.current);
+    if (q.i + 1 >= q.ids.length) { queueNext.current = setTimeout(() => setQueue(null), 500); return; }
+    queueNext.current = setTimeout(() => {
+      if (queueRef.current !== q) return; // stopped meanwhile
+      const n = { ...q, i: q.i + 1 };
+      setQueue(n); openQueued(n);
+      const nx = childShelf.find((x) => x.id === n.ids[n.i]);
+      if (nx) toast(t('Next: {title} ({a} of {b})', { title: nx.title, a: n.i + 1, b: n.ids.length }));
+    }, 3500);
+  };
+  useEffect(() => () => clearTimeout(queueNext.current), []);
   const look = 'classic'; // one look for now (the Looks setting was dropped)
   const openPublisher = (story) => { setDraft(draftFrom(story)); go('publisher'); };
 
@@ -222,7 +256,7 @@ function Root() {
         ) : null}
         {(screen === 'library' || (screen === 'start' && peek === 'library')) && (
           <Animated.View style={{ flex: 1, opacity: screen === 'library' ? libFade : 1 }}>
-          <Library u={u} stories={[...STORIES.filter((s) => SHOWN_BOOKS.includes(s.id) && !removed.includes(s.id)).map((s) => localizeStory(s, readLang)), ...userStories]} openStory={openStory} openMenu={openMenu}
+          <Library u={u} stories={shelf} openStory={openStory} openMenu={openMenu}
             onNotebook={(rect) => {
               // the notebook stays where it is while the shelf dissolves away to plain felt; then the notebook
               // screen takes over (its own notebook is already in the same spot) and the held one is taken away
@@ -258,6 +292,7 @@ function Root() {
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} />}
         {screen === 'music' && <MusicSounds u={u} openMenu={openMenu} />}
         {screen === 'profiles' && <Profiles u={u} openMenu={openMenu} setControls={setControls} />}
+        {screen === 'playlists' && <Playlists u={u} openMenu={openMenu} shelf={childShelf} onPlay={playPlaylist} />}
         {screen === 'settings' && <Settings u={u} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
           controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} />}
         {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} />}
@@ -271,7 +306,8 @@ function Root() {
         {screen === 'storeManager' && <StoreManager u={u} openMenu={openMenu} toast={toast} demo={storeDemo} />}
         {screen === 'profile' && <Profile u={u} openMenu={openMenu} toast={toast} />}
         {screen === 'reader' && story && (
-          <Reader u={u} story={story} setToastSpot={setToastSpot} prefs={controls.playMode ? { ...prefs, mode: controls.playMode } : prefs} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
+          <Reader key={queue ? `${queue.key}:${queue.i}` : 'one'} u={u} story={story} setToastSpot={setToastSpot} prefs={queue ? { ...prefs, mode: 'auto' } : controls.playMode ? { ...prefs, mode: controls.playMode } : prefs}
+            autoStart={!!queue} onFinished={onBookFinished} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
         )}
         {opening ? (
           <BookOpen u={u} story={opening.story} cover={opening.cover} rect={opening.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}
@@ -316,12 +352,13 @@ function Root() {
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
           <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
             <Option glyph={<LibraryIcon size={MENU_ICON} />} title={t('My Library')} sub={t('View purchased stories')} onPress={() => go('library')} />
+            <Option glyph={<PlaylistIcon size={MENU_ICON} />} title={t('Playlists')} sub={t('Books read one after another')} onPress={() => go('playlists')} />
             {controls.store ? <Option glyph={<StoreIcon />} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => go('store')} /> : null}
             {controls.playback && !controls.playMode ? <Option glyph={<PlayGlyph />} title={t('Playback Settings')} sub={t('Reader controls')} onPress={() => {
               setDrawer(false);
               if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else toast(t('Open a story first, then choose how it plays.'));
             }} /> : null}
-            <Option glyph={<MusicIcon />} title={t('Music and Sounds')} sub={t('Relaxing sounds and gentle music')} onPress={() => go('music')} />
+            <Option glyph={<MusicIcon size={24} weight={3.4} /* the same shape as the reading bar's note */ />} title={t('Music and Sounds')} sub={t('Relaxing sounds and gentle music')} onPress={() => go('music')} />
             {controls.create ? <Option glyph={<PlusIcon />} title={t('Create a Story')} sub={t('Make your own book')} onPress={() => openPublisher(null)} /> : null}
             {/* Help takes Profile's place (Profile is suspended for families; the store owner signs in from About: hold Skippy) */}
             {controls.help ? <Option glyph={<CircleIcon />} title={t('Help')} sub={t('How everything works')} onPress={() => go('help')} /> : null}

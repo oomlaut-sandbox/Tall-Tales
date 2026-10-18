@@ -82,7 +82,7 @@ function Seg({ value, options, onChange, stacked }) {
   );
 }
 
-export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary, toast, menuRequest, landscape, setToastSpot }) {
+export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary, toast, menuRequest, landscape, setToastSpot, autoStart, onFinished }) {
   const controls = useControls(); // parental controls: recording, sharing and printing may be switched off
   const insets = useSafeAreaInsets();
   const pages = useMemo(() => [...story.pages, { end: true }], [story]);
@@ -92,7 +92,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const bookRef = useRef(null);
   // badges (My Notebook): a day with reading, and a book read all the way to The End
   useEffect(() => { markReadToday(); }, []);
-  useEffect(() => { if (pages[idx] && pages[idx].end) markFinished(story, story.cover || (story.pages.find((pg) => pg.image) || {}).image); }, [idx]);
+  useEffect(() => { if (pages[idx] && pages[idx].end) { markFinished(story, story.cover || (story.pages.find((pg) => pg.image) || {}).image); if (onFinished) onFinished(); } }, [idx]);
   const [size, setSize] = useState(null); // book area {w,h}
   const [hl, setHl] = useState(-1);
   const [bubble, setBubble] = useState(null);
@@ -265,6 +265,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     }
     narrate();
   }, [prefs.speed, prefs.rate, prefs.voice, prefs.narrator, story]);
+  // a playlist: each book starts reading by itself
+  useEffect(() => { if (!autoStart) return undefined; const tm = setTimeout(() => readPage(0), 1200); return () => clearTimeout(tm); }, []);
 
   useEffect(() => {
     if (pendingRec.current) { pendingRec.current = false; recAuto.current = true; setTimeout(startRec, 350); }
