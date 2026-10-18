@@ -21,7 +21,7 @@ import ParentGate from '../components/ParentGate';
 import { StrokesView } from '../components/Strokes';
 import { EarArt } from '../components/Ear';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
-import { PENS, SIZES, near } from '../strokes';
+import { PENS, SIZES, makeFill, near } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
 import { STORIES } from '../story';
@@ -747,6 +747,17 @@ function RoundEar({ size: e, radius: R, onPress, label }) {
 }
 
 // Undo: a simple arrow that loops back, drawn in the same thick white line as the app's other icons
+// a little paint bucket, tipped over, with a drop falling from it
+function BucketIcon() {
+  return (
+    <View style={{ width: 24, height: 22 }}>
+      <View style={{ position: 'absolute', left: 3, top: 3, width: 13, height: 14, borderWidth: 2.5, borderTopWidth: 0, borderColor: colors.white, borderBottomLeftRadius: 4, borderBottomRightRadius: 4, transform: [{ rotate: '-35deg' }] }} />
+      <View style={{ position: 'absolute', left: 1, top: 4, width: 16, height: 2.5, backgroundColor: colors.white, borderRadius: 1, transform: [{ rotate: '-35deg' }] }} />
+      <View style={{ position: 'absolute', right: 1, top: 11, width: 7, height: 9, backgroundColor: colors.white, borderRadius: 4, borderTopLeftRadius: 0, transform: [{ rotate: '45deg' }] }} />
+    </View>
+  );
+}
+
 function UndoIcon() {
   return (
     <View style={{ width: 22, height: 18 }}>
@@ -766,9 +777,10 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
   const [pen, setPen] = useState(PENS[0][0]);
   const [size, setSize] = useState(SIZES[1][1]);
   const [erase, setErase] = useState(false);
+  const [bucket, setBucket] = useState(false); // the paint bucket: a tap fills the shape with the colour
   const [area, setArea] = useState(null);
   const S = useRef({});
-  S.current = { strokes, pen, size, erase };
+  S.current = { strokes, pen, size, erase, bucket, tall };
   const toolsH = 200;
   const W = !area ? 0 : wideScreen ? Math.max(120, Math.floor(Math.min(area.h, area.w - TOOLS_W - 28)))
     : Math.max(120, Math.floor(Math.min(winW - 2 * GAP, tall ? (area.h - toolsH) / 2 : area.h - toolsH)));
@@ -787,12 +799,18 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
     onPanResponderGrant: (e) => {
       const [x, y] = at(e);
       if (S.current.erase) { rub(x, y); return; }
+      if (S.current.bucket) {
+        const f = makeFill(S.current.strokes, x, y, S.current.tall ? 2 : 1, S.current.pen);
+        if (f) setStrokes((s) => [...s, f]);
+        return;
+      }
       cur.current = { c: S.current.pen, s: S.current.size, p: [+x.toFixed(4), +y.toFixed(4)] };
       setLive({ ...cur.current });
     },
     onPanResponderMove: (e) => {
       const [x, y] = at(e);
       if (S.current.erase) { rub(x, y); return; }
+      if (S.current.bucket) return;
       const c = cur.current;
       if (!c) return;
       const n = c.p.length;
@@ -825,12 +843,16 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
   const sizesEl = (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
       {SIZES.map(([name, s]) => (
-        <Pressable key={name} onPress={() => { setSize(s); setErase(false); }} style={[styles.tool, !erase && size === s && styles.toolOn]} accessibilityLabel={`${name} pen`}>
+        <Pressable key={name} onPress={() => { setSize(s); setErase(false); setBucket(false); }} style={[styles.tool, !erase && !bucket && size === s && styles.toolOn]} accessibilityLabel={`${name} pen`}>
           <View style={{ width: 5 + s * 280, height: 5 + s * 280, borderRadius: 20, backgroundColor: colors.white }} />
         </Pressable>
       ))}
-      <Pressable onPress={() => setErase((x) => !x)} style={[styles.toolWide, erase && styles.toolOn]} accessibilityLabel="Eraser">
+      <Pressable onPress={() => { setErase((x) => !x); setBucket(false); }} style={[styles.toolWide, erase && styles.toolOn]} accessibilityLabel="Eraser">
         <Text style={styles.toolText}>Eraser</Text>
+      </Pressable>
+      {/* the paint bucket: tap inside a shape to fill it with the colour */}
+      <Pressable onPress={() => { setBucket((x) => !x); setErase(false); }} style={[styles.tool, bucket && styles.toolOn]} accessibilityLabel="Fill (paint bucket)">
+        <BucketIcon />
       </Pressable>
     </View>
   );
@@ -883,7 +905,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
               {paper}
               <View style={{ width: W, marginTop: 30, gap: 24 }}>{/* the tools line up with the page's left and right edges */}
                 {swatches(W)}
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', rowGap: 12 }}>
                   {sizesEl}
                   {undoEl}
                 </View>
