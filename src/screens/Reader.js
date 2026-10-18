@@ -2,6 +2,7 @@
 import { getAmbient, onRecordRequest, setAmbientPlayer } from '../ambient';
 import { LockIcon, MusicIcon } from '../components/Chrome';
 import { isRestricted, useControls } from '../controls';
+import { useT } from '../i18n';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Platform, Pressable, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
@@ -84,6 +85,7 @@ export function Seg({ value, options, onChange, stacked }) {
 }
 
 export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary, toast, menuRequest, landscape, setToastSpot, autoStart, onFinished, onSettings }) {
+  const tr = useT(); // the reader's own panel, in the app's language
   const controls = useControls(); // parental controls: recording, sharing and printing may be switched off
   const insets = useSafeAreaInsets();
   const pages = useMemo(() => [...story.pages, { end: true }], [story]);
@@ -758,56 +760,56 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           )}
         </View>
       ) : null}
-      <Panel open={panel === 'play'} side="right" title={playView === 'voices' ? 'Voices' : 'Playback Options'} {...panelPos} onClose={() => { setPanel(null); setPlayView('main'); }}>
+      <Panel open={panel === 'play'} side="right" title={playView === 'voices' ? tr('Voices') : tr('Playback Options')} {...panelPos} onClose={() => { setPanel(null); setPlayView('main'); }}>
         {playView === 'voices' ? (
           <>
             {NARRATORS.map(([k, label]) => (
               // tapping a voice chooses it and plays a short sample of it
-              <Option key={k} glyph={<BubbleIcon />} title={label} sub={k === 'lily' ? 'Warm and gentle' : 'Pleasant older man'} selected={narratorOf(prefs) === k}
-                onPress={() => { stopReading(); setPrefs((p) => ({ ...p, narrator: k })); if (SAMPLES[k]) playVoice(SAMPLES[k]); toast(`${label} will read the stories.`); }} />
+              <Option key={k} glyph={<BubbleIcon />} title={label} sub={tr(k === 'lily' ? 'Warm and gentle' : 'Pleasant older man')} selected={narratorOf(prefs) === k}
+                onPress={() => { stopReading(); setPrefs((p) => ({ ...p, narrator: k })); if (SAMPLES[k]) playVoice(SAMPLES[k]); toast(tr('{name} will read the stories.', { name: label })); }} />
             ))}
-            <Text style={styles.help}>The voice reads the stories aloud and sounds out words in Learn to Read. Pages you recorded in your own voice still play in yours.</Text>
-            <Pressable onPress={() => setPlayView('main')} hitSlop={8}><Text style={styles.backlink}>‹ Back to Playback Options</Text></Pressable>
+            <Text style={styles.help}>{tr('The voice reads the stories aloud and sounds out words in Learn to Read. Pages you recorded in your own voice still play in yours.')}</Text>
+            <Pressable onPress={() => setPlayView('main')} hitSlop={8}><Text style={styles.backlink}>{tr('‹ Back to Playback Options')}</Text></Pressable>
           </>
         ) : (
           <>
         {MODES.map(([g, id, t, s]) => (
           <React.Fragment key={id}>
-          <Option glyph={g} title={t} sub={s} selected={prefs.mode === id} onPress={() => {
+          <Option glyph={g} title={tr(t)} sub={tr(s)} selected={prefs.mode === id} onPress={() => {
             stopReading();
             setPrefs((p) => ({ ...p, mode: id }));
             st.current.mode = id === 'listen' ? 'auto' : id;
             setPanel(null);
             if (id === 'auto' || id === 'page' || id === 'listen') setTimeout(() => readPage(st.current.idx), 300);
-            else if (id === 'learn') toast('Tap any word to hear it.');
-            else if (id === 'self') toast('Reading on your own. Turn the page when you’re ready.');
+            else if (id === 'learn') toast(tr('Tap any word to hear it.'));
+            else if (id === 'self') toast(tr('Reading on your own. Turn the page when you’re ready.'));
             else toast('Tap the glowing circles in the picture.');
           }} />
           </React.Fragment>
         ))}
-        <Option glyph={<BubbleIcon />} title="Voices" sub={`Narrator: ${(NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1]}`} onPress={() => setPlayView('voices')} />
+        <Option glyph={<BubbleIcon />} title={tr('Voices')} sub={tr('Narrator: {name}', { name: (NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1] })} onPress={() => setPlayView('voices')} />
         <View style={styles.setting}>
-          <Text style={styles.help}>Playback speed</Text>
-          <Slider value={speedDraft ?? speedOf(prefs)} min={0.5} max={1.5} step={0.05} leftLabel="Slower" rightLabel="Faster"
+          <Text style={styles.help}>{tr('Playback speed')}</Text>
+          <Slider value={speedDraft ?? speedOf(prefs)} min={0.5} max={1.5} step={0.05} leftLabel={tr('Slower')} rightLabel={tr('Faster')}
             format={(v) => `${v.toFixed(2).replace(/0$/, '')}×`}
             onChange={setSpeedDraft}
             onDone={(v) => { setSpeedDraft(null); setPrefs((p) => ({ ...p, rate: Math.round(v * 100) / 100 })); }} />
         </View>
         <View style={styles.setting}>
-          <Text style={styles.help}>Text size</Text>
-          <Seg value={prefs.textScale || 1} options={TEXT_SIZES.map(([label, v]) => [v, label])} onChange={(v) => setPrefs((p) => ({ ...p, textScale: v }))} />
+          <Text style={styles.help}>{tr('Text size')}</Text>
+          <Seg value={prefs.textScale || 1} options={TEXT_SIZES.map(([label, v]) => [v, tr(label)])} onChange={(v) => setPrefs((p) => ({ ...p, textScale: v }))} />
         </View>
         <View style={styles.setting}>
-          <Text style={styles.help}>Book font</Text>
-          <Seg stacked value={prefs.font || 'serif'} options={Object.entries(BOOK_FONTS).map(([k, f]) => [k, f.label, f.family])} onChange={(v) => setPrefs((p) => ({ ...p, font: v }))} />
+          <Text style={styles.help}>{tr('Book font')}</Text>
+          <Seg stacked value={prefs.font || 'serif'} options={Object.entries(BOOK_FONTS).map(([k, f]) => [k, tr(f.label), f.family])} onChange={(v) => setPrefs((p) => ({ ...p, font: v }))} />
         </View>
         <View style={styles.setting}>
-          <Text style={styles.help}>Sound effects</Text>
-          <Seg value={prefs.sound ? 'on' : 'off'} options={[['off', 'Off'], ['on', 'On']]}
+          <Text style={styles.help}>{tr('Sound effects')}</Text>
+          <Seg value={prefs.sound ? 'on' : 'off'} options={[['off', tr('Off')], ['on', tr('On')]]}
             onChange={(v) => { const on = v === 'on'; setPrefs((p) => ({ ...p, sound: on })); setEffects(on); if (on) playSound('swish'); }} />
           {/* how loud the sound effects are (only while they're on); a swish plays at the new level */}
           {prefs.sound ? (
-            <Slider value={volDraft ?? (prefs.soundVol == null ? 0.5 : prefs.soundVol)} min={0.05} max={1} step={0.05} leftLabel="Quieter" rightLabel="Louder"
+            <Slider value={volDraft ?? (prefs.soundVol == null ? 0.5 : prefs.soundVol)} min={0.05} max={1} step={0.05} leftLabel={tr('Quieter')} rightLabel={tr('Louder')}
               format={(v) => `${Math.round(v * 100)}%`} showValue={false}
               onChange={setVolDraft}
               onDone={(v) => { setVolDraft(null); const vol = Math.round(v * 100) / 100; setPrefs((p) => ({ ...p, soundVol: vol })); setEffectsVolume(vol); playSound('swish'); }} />
@@ -815,12 +817,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         </View>
         {/* Print: two choices, each a little picture of the page (not when the parental controls turn sharing off) */}
         {controls.sharing ? <View style={styles.setting}>
-          <Text style={styles.help}>{printing ? 'Getting ready to print…' : 'Print this book'}</Text>
+          <Text style={styles.help}>{printing ? tr('Getting ready to print…') : tr('Print this book')}</Text>
           <View style={{ flexDirection: 'row', gap: 14, opacity: printing ? 0.4 : 1 }}>
             {[['stacked', 'Portrait'], ['landscape', 'Landscape']].map(([lay, label]) => (
               <Pressable key={lay} disabled={printing} onPress={() => { setPanel(null); setPrintGate(lay); }} accessibilityRole="button" accessibilityLabel={`Print, ${label.toLowerCase()} pages`} style={styles.printBtn}>
                 <View style={styles.printIc}><PageShape wide={lay === 'landscape'} /></View>
-                <Text style={styles.printLabel}>{label}</Text>
+                <Text style={styles.printLabel}>{tr(label)}</Text>
               </Pressable>
             ))}
           </View>
