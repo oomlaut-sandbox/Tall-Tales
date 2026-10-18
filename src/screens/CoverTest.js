@@ -34,11 +34,14 @@ export default function CoverTest({ u, openMenu }) {
     turn: flip.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '180deg'] }),
     frontOp: flip.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [1, 1, 0, 0] }),
     backOp: flip.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] }),
-    shade: flip.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.25, 0] }),
+    // darker only while it stands up; none at all near either end (it showed as a dark moment just before shutting)
+    shade: flip.interpolate({ inputRange: [0, 0.3, 0.5, 0.7, 1], outputRange: [0, 0, 0.22, 0, 0], extrapolate: 'clamp' }),
     landShadow: flip.interpolate({ inputRange: [0.5, 1], outputRange: [0, 1], extrapolate: 'clamp' }),
     // fully open, a turned layer can vanish on iPhone (at exactly 180° it isn't drawn), so the last sliver of the
     // turn hands over to a flat, still copy of the open cover (the same trick the book cover uses when it lands)
-    leafOp: flip.interpolate({ inputRange: [0, 0.985, 1], outputRange: [1, 1, 0], extrapolate: 'clamp' }),
+    // the same at the shut end: the last sliver of closing hands over to a flat, still shut cover
+    leafOp: flip.interpolate({ inputRange: [0, 0.015, 0.985, 1], outputRange: [0, 1, 1, 0], extrapolate: 'clamp' }),
+    shutOp: flip.interpolate({ inputRange: [0, 0.015], outputRange: [1, 0], extrapolate: 'clamp' }),
     flatOp: flip.interpolate({ inputRange: [0, 0.985, 1], outputRange: [0, 0, 1], extrapolate: 'clamp' }),
   }).current;
   const openNow = useRef(false);
@@ -104,6 +107,8 @@ export default function CoverTest({ u, openMenu }) {
             <View {...swipe.panHandlers} style={{ position: 'absolute', left: 0, top: 0, width: side, height: 2 * side, zIndex: 5 }}>
               <Pressable onPress={toggle} accessibilityRole="button" accessibilityLabel="Open or close the notebook" style={StyleSheet.absoluteFill} />
             </View>
+            {/* the shut cover lying flat on the page (shown only while it's all the way shut) */}
+            <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, top: side, width: side, height: side, zIndex: 4, opacity: A.shutOp }}>{leather}</Animated.View>
             {/* the open cover lying flat (shown only once it's all the way open) */}
             <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: side, height: side, zIndex: 4, opacity: A.flatOp, transform: [{ scaleY: -1 }] }}>
               {leather}
