@@ -1,8 +1,8 @@
 // Playlists: books lined up to be read one after another, in order or shuffled (each child has their own).
-// [{ id, name, books: [bookId], shuffle }]. "Bedtime" is there from the start.
+// [{ id, name, books: [bookId], shuffle, listen }] (listen: Listen Only, for bedtime). "Bedtime" is there from the start.
 import { loadJSON, saveJSON } from './storage';
 
-const starter = () => [{ id: 'bedtime', name: 'Bedtime', books: [], shuffle: false }];
+const starter = () => [{ id: 'bedtime', name: 'Bedtime', books: [], shuffle: false, listen: true }];
 
 export async function loadPlaylists() {
   const l = await loadJSON('playlists', null);

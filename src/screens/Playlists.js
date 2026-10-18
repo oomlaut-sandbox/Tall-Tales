@@ -61,7 +61,7 @@ export default function Playlists({ u, openMenu, shelf, onPlay }) {
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
                       <View style={{ flex: 1, minWidth: 0 }}>
                         <Text numberOfLines={1} style={styles.cardTitle}>{nameOf(p)}</Text>
-                        <Text style={styles.small}>{bs.length === 1 ? t('1 book') : t('{n} books', { n: bs.length })}{p.shuffle ? ` · ${t('Shuffle')}` : ''}</Text>
+                        <Text style={styles.small}>{bs.length === 1 ? t('1 book') : t('{n} books', { n: bs.length })}{p.shuffle ? ` · ${t('Shuffle')}` : ''}{p.listen ? ` · ${t('Listen only')}` : ''}</Text>
                       </View>
                       <Pressable onPress={() => { setEdit(p.id); setAdding(false); }} hitSlop={8} accessibilityRole="button"><Text style={styles.link}>{t('Change')}</Text></Pressable>
                     </View>
@@ -74,6 +74,9 @@ export default function Playlists({ u, openMenu, shelf, onPlay }) {
                     <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
                       <Pressable disabled={!bs.length} onPress={() => onPlay(p)} style={[styles.pill, { backgroundColor: colors.green }, !bs.length && { opacity: 0.4 }]} accessibilityRole="button">
                         <Text style={styles.pillText}>▶  {t('Play')}</Text>
+                      </Pressable>
+                      <Pressable onPress={() => set(p.id, { listen: !p.listen })} style={[styles.chip, p.listen && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.listen }}>
+                        <Text style={[styles.chipText, p.listen && { color: colors.white }]}>{t('Listen only')}</Text>
                       </Pressable>
                       <Pressable onPress={() => set(p.id, { shuffle: !p.shuffle })} style={[styles.chip, p.shuffle && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.shuffle }}>
                         <Text style={[styles.chipText, p.shuffle && { color: colors.white }]}>{p.shuffle ? t('Shuffle') : t('In order')}</Text>

@@ -280,6 +280,8 @@ const T = {
   'Add books': { de: 'Bücher hinzufügen', fr: 'Ajouter des livres', es: 'Añadir libros', ja: 'ほんをついか' },
   'Delete this playlist': { de: 'Diese Playlist löschen', fr: 'Supprimer cette liste', es: 'Borrar esta lista', ja: 'このプレイリストをけす' },
   'Next: {title} ({a} of {b})': { de: 'Als Nächstes: {title} ({a} von {b})', fr: 'Ensuite : {title} ({a} sur {b})', es: 'Ahora: {title} ({a} de {b})', ja: 'つぎ：{title}（{a}/{b}）' },
+  'Listen only': { de: 'Nur zuhören', fr: 'Écouter seulement', es: 'Solo escuchar', ja: 'きくだけ' },
+  'Listen Only': { de: 'Nur zuhören', fr: 'Écouter seulement', es: 'Solo escuchar', ja: 'きくだけ' },
   'Profiles': { de: 'Profile', fr: 'Profils', es: 'Perfiles', ja: 'プロフィール' },
   'Close the player': { de: 'Spieler schließen', fr: 'Fermer le lecteur', es: 'Cerrar el reproductor', ja: 'プレーヤーをとじる' },
   'Previous': { de: 'Zurück', fr: 'Précédent', es: 'Anterior', ja: 'まえ' },

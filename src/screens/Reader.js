@@ -33,7 +33,7 @@ function PeelLayer({ start, ...props }) {
 }
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { Bar, BarMeta, BubbleIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, GearIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon } from '../components/Chrome';
+import { Bar, BarMeta, BubbleIcon, MoonIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, GearIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
@@ -67,6 +67,7 @@ const MODES = [
   [<TextIcon text="Aa" />, 'learn', 'Learn to Read', 'Says a word when you touch it'],
   [<PlayGlyph count={2} />, 'auto', 'Auto Play', 'Reads the full story with audio'],
   [<PlayGlyph />, 'page', 'Page by Page Play', 'Reads a page at a time with audio'],
+  [<MoonIcon />, 'listen', 'Listen Only', 'Reads by itself, nothing to tap. For bedtime'],
   // ['✦', 'interactive', 'Interactive', 'Image interaction with touch'],  (hidden for now; hotspot code kept)
 ];
 
@@ -161,7 +162,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 
   const refs = { prev: useRef(null), cur: useRef(null), next: useRef(null) };
   const st = useRef({});
-  st.current = { idx, size, reading, paused, mode: prefs.mode, turning: !!flipPair, pages, recording };
+  // Listen Only (bedtime and quiet time): reads like Auto Play, but the words, page turns and play buttons
+  // rest, and the screen dims to a soft night level
+  const listen = prefs.mode === 'listen';
+  st.current = { idx, size, reading, paused, mode: listen ? 'auto' : prefs.mode, turning: !!flipPair, pages, recording };
   if (idx > pages.length - 1) setIdx(pages.length - 1);
   const pendingRead = useRef(false);
   const autoTimer = useRef(null);
@@ -176,7 +180,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const wide = BL.wide;
   st.current.wide = wide;
   const topH = BL.topH;
-  const showControls = prefs.mode !== 'self' || recording;
+  const showControls = (prefs.mode !== 'self' && !listen) || recording;
   const barH = BL.barH;
   // a small 'Your voice' mark when this page will play the parent's recording
   const mineHere = prefs.voice === 'mine' && recPages.includes(idx) && prefs.mode !== 'self' && !recording;
@@ -266,7 +270,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     narrate();
   }, [prefs.speed, prefs.rate, prefs.voice, prefs.narrator, story]);
   // a playlist: each book starts reading by itself
-  useEffect(() => { if (!autoStart) return undefined; const tm = setTimeout(() => readPage(0), 1200); return () => clearTimeout(tm); }, []);
+  useEffect(() => { if (!autoStart && !listen) return undefined; const tm = setTimeout(() => readPage(0), 1200); return () => clearTimeout(tm); }, []);
 
   useEffect(() => {
     if (pendingRec.current) { pendingRec.current = false; recAuto.current = true; setTimeout(startRec, 350); }
@@ -565,7 +569,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const prevEl = idx > 0 ? <PageView key={`p${idx - 1}`} ref={refs.prev} {...pageProps(idx - 1)} /> : null;
   const nextEl = idx < pages.length - 1 ? <PageView key={`p${idx + 1}`} ref={refs.next} {...pageProps(idx + 1)} /> : null;
   const curEl = (
-    <PageView key={`p${idx}`} ref={refs.cur} {...pageProps(idx)} zoomable highlight={hl} onWord={onWord}
+    <PageView key={`p${idx}`} ref={refs.cur} {...pageProps(idx)} zoomable={!listen} highlight={hl} onWord={listen ? undefined : onWord}
       showHotspots={showHot} onHotspot={onHotspot} bubble={bubble} />
   );
   const abs = (el, k, style) => (el ? <Animated.View key={k} style={[StyleSheet.absoluteFill, style]}>{el}</Animated.View> : null);
@@ -661,15 +665,17 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           style={[styles.recMark, IS_TABLET ? { left: 14 } : { right: 14 }]} />
       ) : null}
       <View style={[styles.bookShadow, { width: BL.bookW, height: BL.bookH }]}>
-      <View ref={bookRef} collapsable={false} style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...pan.panHandlers}>
+      <View ref={bookRef} collapsable={false} style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...(listen ? {} : pan.panHandlers)}>
         {size ? layers : null}
         {/* Tap anywhere along the left or right edge to turn back or forward (swipes work anywhere). */}
-        {size && idx > 0 ? <Pressable onPress={() => flip(-1)} accessibilityLabel="Previous page" style={[styles.edge, { left: 0, width: edgeW }]} /> : null}
-        {size && idx < pages.length - 1 ? <Pressable onPress={() => flip(1)} accessibilityLabel="Next page" style={[styles.edge, { right: 0, width: edgeW }]} /> : null}
+        {size && idx > 0 && !listen ? <Pressable onPress={() => flip(-1)} accessibilityLabel="Previous page" style={[styles.edge, { left: 0, width: edgeW }]} /> : null}
+        {size && idx < pages.length - 1 && !listen ? <Pressable onPress={() => flip(1)} accessibilityLabel="Next page" style={[styles.edge, { right: 0, width: edgeW }]} /> : null}
         {/* the dog-ear hides while a page is turning, and comes back once the new page has landed */}
-        {idx < pages.length - 1 && !flipPair ? <View style={{ position: 'absolute', right: 0, bottom: 0, zIndex: 20 }}><DogEar u={u} under={colors.earUnder} onPress={() => flip(1)} /></View> : null}
+        {idx < pages.length - 1 && !flipPair && !listen ? <View style={{ position: 'absolute', right: 0, bottom: 0, zIndex: 20 }}><DogEar u={u} under={colors.earUnder} onPress={() => flip(1)} /></View> : null}
       </View>
       </View>
+      {/* Listen Only: the soft night level (nothing under it can be touched) */}
+      {listen ? <View pointerEvents={pages[idx] && pages[idx].end ? 'none' : 'auto'} style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: 0.35, zIndex: 25 }]} /> : null}{/* (The End's buttons still work) */}
       </View>
       {wide ? (
         // sideways: the menu bar runs down the right side; same icons, page tag shortened to "2/16"
@@ -758,9 +764,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <Option glyph={g} title={t} sub={s} selected={prefs.mode === id} onPress={() => {
             stopReading();
             setPrefs((p) => ({ ...p, mode: id }));
-            st.current.mode = id;
+            st.current.mode = id === 'listen' ? 'auto' : id;
             setPanel(null);
-            if (id === 'auto' || id === 'page') setTimeout(() => readPage(st.current.idx), 300);
+            if (id === 'auto' || id === 'page' || id === 'listen') setTimeout(() => readPage(st.current.idx), 300);
             else if (id === 'learn') toast('Tap any word to hear it.');
             else if (id === 'self') toast('Reading on your own. Turn the page when you’re ready.');
             else toast('Tap the glowing circles in the picture.');

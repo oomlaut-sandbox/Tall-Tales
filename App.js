@@ -43,6 +43,7 @@ import { hideSplash } from './src/launch';
 import Profiles from './src/screens/Profiles';
 import Playlists from './src/screens/Playlists';
 import { playOrder } from './src/playlists';
+import { fadeOutAmbient } from './src/ambient';
 import { ageAllowed, ageOf } from './src/catalog';
 import { loadProfiles, onProfiles } from './src/profiles';
 import { playSound, setEffects, setEffectsVolume } from './src/sound';
@@ -180,15 +181,18 @@ function Root() {
   const playPlaylist = (pl) => {
     const ids = playOrder(pl, childShelf);
     if (!ids.length) return;
-    const q = { ids, i: 0, key: Date.now() };
+    const q = { ids, i: 0, key: Date.now(), listen: !!pl.listen };
     setQueue(q); openQueued(q);
   };
   const queueNext = useRef(null);
   const onBookFinished = () => {
     const q = queueRef.current;
+    // Listen Only, after the last book: the music fades away slowly
+    const listening = q ? q.listen : (controls.playMode || prefs.mode) === 'listen';
+    if (listening && (!q || q.i + 1 >= q.ids.length)) fadeOutAmbient(30000);
     if (!q) return;
     clearTimeout(queueNext.current);
-    if (q.i + 1 >= q.ids.length) { queueNext.current = setTimeout(() => setQueue(null), 500); return; }
+    if (q.i + 1 >= q.ids.length) return; // the last one stays on The End (the playlist ends when the reader is left)
     queueNext.current = setTimeout(() => {
       if (queueRef.current !== q) return; // stopped meanwhile
       const n = { ...q, i: q.i + 1 };
@@ -306,7 +310,7 @@ function Root() {
         {screen === 'storeManager' && <StoreManager u={u} openMenu={openMenu} toast={toast} demo={storeDemo} />}
         {screen === 'profile' && <Profile u={u} openMenu={openMenu} toast={toast} />}
         {screen === 'reader' && story && (
-          <Reader key={queue ? `${queue.key}:${queue.i}` : 'one'} u={u} story={story} setToastSpot={setToastSpot} prefs={queue ? { ...prefs, mode: 'auto' } : controls.playMode ? { ...prefs, mode: controls.playMode } : prefs}
+          <Reader key={queue ? `${queue.key}:${queue.i}` : 'one'} u={u} story={story} setToastSpot={setToastSpot} prefs={queue ? { ...prefs, mode: queue.listen ? 'listen' : 'auto' } : controls.playMode ? { ...prefs, mode: controls.playMode } : prefs}
             autoStart={!!queue} onFinished={onBookFinished} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
         )}
         {opening ? (

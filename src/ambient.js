@@ -90,6 +90,12 @@ export function playAmbient() {
 }
 export function pauseAmbient() { set({ playing: false }); syncAll(); }
 export function toggleAmbient() { if (state.playing) pauseAmbient(); else playAmbient(); }
+// bedtime: the music fades away slowly and stops (after the last book in Listen Only)
+export function fadeOutAmbient(ms = 20000) {
+  if (!state.playing) return;
+  for (const c of Object.values(ch)) { const p = c.player; ramp(c, state.volume, 0, ms, () => { try { p && p.pause(); } catch (e) {} }); }
+  setTimeout(() => set({ playing: false }), ms);
+}
 export function stopAmbient() { set({ playing: false, sound: null, music: null }); clearTimeout(sleepTimer); syncAll(); }
 
 // choose a track on a channel (null: off); choosing one starts playing

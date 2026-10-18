@@ -284,6 +284,15 @@ export function PageShape({ wide }) {
   );
 }
 // Simple round glasses: two perfect circles side by side, joined by an arched bridge over the nose.
+// Listen Only: a crescent moon (a ring drawn thick on one side only)
+export function MoonIcon({ size = MENU_ICON, color = colors.white }) {
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: size * 0.9, height: size * 0.9, borderRadius: size, borderLeftWidth: size * 0.26, borderBottomWidth: size * 0.08, borderTopWidth: size * 0.02,
+        borderColor: 'transparent', borderLeftColor: color, borderBottomColor: color, borderTopColor: color, transform: [{ rotate: '-25deg' }] }} />
+    </View>
+  );
+}
 export function GlassesIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
   // smaller than it was, so it sits in its tile like the other icons
   const d = Math.round(size * 0.5); // each lens
