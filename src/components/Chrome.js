@@ -224,7 +224,7 @@ export function AgainIcon({ size = 14, color = colors.white, weight = 3.5, bg = 
 }
 // My Library: books standing on a shelf (an outlined square with upright lines).
 // A musical note, in the same plain white strokes as the other icons: an oval head, a stem and one flag.
-export function NoteIcon({ size = 20, color = colors.white, weight = 2 }) {
+export function MusicIcon({ size = 20, color = colors.white, weight = 2 }) {
   const head = size * 0.42;
   return (
     <View style={{ width: size, height: size }}>

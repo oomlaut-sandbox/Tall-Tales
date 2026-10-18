@@ -1,5 +1,6 @@
 // The reader: page curl, read-aloud with highlighting, learn-to-read, interactive pictures.
 import { getAmbient, setAmbientPlayer } from '../ambient';
+import { MusicIcon } from '../components/Chrome';
 import { useControls } from '../controls';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Platform, Pressable, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
@@ -32,7 +33,7 @@ function PeelLayer({ start, ...props }) {
 }
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { Bar, BarMeta, BubbleIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, GearIcon, ListIcon, NoteIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon } from '../components/Chrome';
+import { Bar, BarMeta, BubbleIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, GearIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
@@ -669,7 +670,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
               <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
               {/* music and sounds: the little floating tape player */}
               <Pressable onPress={() => setAmbientPlayer(!getAmbient().showPlayer)} hitSlop={12} accessibilityRole="button" accessibilityLabel="Music and Sounds" style={[styles.small, { marginTop: u * 7 }]}>
-                <NoteIcon size={u * 7} weight={Math.max(3, u)} />
+                <MusicIcon size={u * 7} weight={Math.max(3, u)} />
               </Pressable>
             </View>
             <View style={{ alignItems: 'center' }}>
@@ -696,7 +697,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
         {/* music and sounds: opens (or hides) the little floating tape player; a little apart from the menu */}
         <Pressable onPress={() => setAmbientPlayer(!getAmbient().showPlayer)} hitSlop={12} accessibilityRole="button" accessibilityLabel="Music and Sounds" style={[styles.small, { marginLeft: u * 7 }]}>
-          <NoteIcon size={u * 7} weight={Math.max(3, u)} />
+          <MusicIcon size={u * 7} weight={Math.max(3, u)} />
         </Pressable>
         {/* no page numbers in the reader (the store shows how long a book is) */}
         <View style={{ flex: 1 }} />
