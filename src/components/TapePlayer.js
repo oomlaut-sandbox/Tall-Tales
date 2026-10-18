@@ -28,7 +28,7 @@ const VMIN = 0.05;
 const angleOf = (v) => -135 + 270 * (Math.max(VMIN, Math.min(1, v)) - VMIN) / (1 - VMIN);
 const STEPS = [0.2, 0.4, 0.6, 0.8, 1];
 
-export default function TapePlayer({ bottomBar = 0, onMenu, toast }) {
+export default function TapePlayer({ bottomBar = 0, sideBar = 0, onMenu, toast }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
@@ -39,14 +39,14 @@ export default function TapePlayer({ bottomBar = 0, onMenu, toast }) {
   useEffect(() => onAmbient(setS), []);
   // where it sits: where it was left, kept on screen (the first time: the right side, above the bar)
   const place = (p) => ({
-    x: Math.max(6, Math.min(winW - PW - 6, p ? p.x : winW - PW - 12)),
+    x: Math.max(6 + insets.left, Math.min(winW - PW - sideBar - 6, p ? p.x : winW - PW - sideBar - 12)),
     y: Math.max(insets.top + 6, Math.min(winH - PH - bottomBar - 6, p ? p.y : winH - PH - bottomBar - 14)),
   });
   const xy = useRef(new Animated.ValueXY(place(s.pos))).current;
   const placeRef = useRef(place);
   placeRef.current = place;
   // when it shows, and when the phone turns: where it was left, kept on the screen
-  useEffect(() => { xy.setValue(place(getAmbient().pos)); }, [winW, winH, s.showPlayer]);
+  useEffect(() => { xy.setValue(place(getAmbient().pos)); }, [winW, winH, s.showPlayer, sideBar, bottomBar]);
   const start = useRef({ x: 0, y: 0 });
   const drag = useRef(PanResponder.create({
     onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) + Math.abs(g.dy) > 6,
