@@ -260,6 +260,19 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   // sideways) for the next page, down (or to the right) to go back. Let go past halfway, or with a flick,
   // and the page turns; otherwise it falls back. Taps still go to the squares.
   const drag = useRef({});
+  // A flick turns the page the same way a corner tap does (the page doesn't follow the finger): a quick swipe
+  // left or up for the next page, right or down to go back. Taps still go to the squares and the corners.
+  const flickTo = useRef(null);
+  flickTo.current = (dir) => { if (dir > 0) next(); else if (i > 0) turn(-1); };
+  const flick = useRef(PanResponder.create({
+    onMoveShouldSetPanResponderCapture: (_, g) => !busy.current && !introRef.current && (Math.abs(g.dx) > 14 || Math.abs(g.dy) > 14),
+    onPanResponderTerminationRequest: () => false,
+    onPanResponderRelease: (_, g) => {
+      const vert = Math.abs(g.dy) >= Math.abs(g.dx);
+      const d = vert ? g.dy : g.dx, v = vert ? g.vy : g.vx;
+      if (Math.abs(d) > 40 || Math.abs(v) > 0.4) flickTo.current(d < 0 ? 1 : -1);
+    },
+  })).current;
   const swipe = useRef(PanResponder.create({
     // takes the touch from the squares as soon as it turns into a swipe (a tap still goes to them)
     onMoveShouldSetPanResponderCapture: (_, g) => !busy.current && !introRef.current && (Math.abs(g.dx) > 10 || Math.abs(g.dy) > 10),
@@ -448,13 +461,14 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     layers.push(abs(i, `p${i}`, refs.cur, true));
   }
 
+  const corner = Math.max(70, Math.round(side * 0.24)); // the invisible corner spots that turn the page: big and easy to hit
   return (
     <View style={[styles.screen, wide && { flexDirection: 'row' }]}>
       <View style={wide ? { width: BL.leftW, backgroundColor: colors.bar } : { height: insets.top + spare / 2, backgroundColor: colors.bar }} />
       <View style={styles.desk} onLayout={(e) => { setDesk({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height }); measureBook(); }}>
         <DeskFelt spot="notebook1" />
         {nb ? (
-          <View ref={bookRef} collapsable={false} onLayout={measureBook}
+          <View ref={bookRef} collapsable={false} onLayout={measureBook} {...flick.panHandlers}
             style={[styles.bookShadow, shape, { width: bookW, height: bookH }, opening ? { backgroundColor: 'transparent', shadowOpacity: 0 } : null]}>
             {/* While it opens, the book's shadow is a still felt-coloured shape underneath that grows in with the
                 flying cover; in the same frame it goes, the book's own shadow comes on, so it never flares. */}
@@ -469,10 +483,10 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
               <>
                 {/* no folded corner: the bottom-right corner is an invisible spot that turns to the next page */}
                 <Pressable onPress={next} accessibilityRole="button" accessibilityLabel={i >= total - 1 ? 'Add a page' : 'Next page'}
-                  style={{ position: 'absolute', right: 0, bottom: 0, width: Math.max(46, u * 13), height: Math.max(46, u * 13), zIndex: 20 }} />
+                  style={{ position: 'absolute', right: 0, bottom: 0, width: corner, height: corner, zIndex: 20 }} />
                 {/* the bottom-left corner turns back a page (an invisible spot, like the folded corner on the right) */}
                 {i > 0 ? <Pressable onPress={() => turn(-1)} accessibilityRole="button" accessibilityLabel="Previous page"
-                  style={{ position: 'absolute', left: 0, bottom: 0, width: Math.max(46, u * 13), height: Math.max(46, u * 13), zIndex: 20 }} /> : null}
+                  style={{ position: 'absolute', left: 0, bottom: 0, width: corner, height: corner, zIndex: 20 }} /> : null}
                 {/* (no back button: swipe down or to the right to go back a page) */}
               </>
             ) : null}
