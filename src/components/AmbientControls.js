@@ -42,7 +42,7 @@ export default function AmbientControls() {
       <View style={styles.chips}>
         {SLEEP_TIMES.map((m) => <Chip key={m} label={m ? t('{n} min', { n: m }) : t('Off')} on={s.sleep === m} onPress={() => setSleepTimer(m)} />)}
       </View>
-      <Text style={styles.group}>{t('Tape player on screen')}</Text>
+      <Text style={styles.group}>{t('Audio Player on screen')}</Text>
       <View style={styles.chips}>
         <Chip label={t('Show')} on={s.showPlayer} onPress={() => setAmbientPlayer(true)} />
         <Chip label={t('Hide')} on={!s.showPlayer} onPress={() => setAmbientPlayer(false)} />

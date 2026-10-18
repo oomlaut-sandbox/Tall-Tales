@@ -85,7 +85,7 @@ export default function TapePlayer({ bottomBar = 0, sideBar = 0, onMenu, toast }
   const name = (id) => { const x = TRACKS.find((tr) => tr.id === id); return x ? t(x.name) : t('Off'); };
   const record = () => { if (!requestRecord() && toast) toast(t('Open a book to record your voice.')); };
   return (
-    <Animated.View {...drag.panHandlers} style={[styles.body, { width: PW, height: PH, transform: xy.getTranslateTransform() }]} accessibilityLabel={t('Music player')}>
+    <Animated.View {...drag.panHandlers} style={[styles.body, { width: PW, height: PH, transform: xy.getTranslateTransform() }]} accessibilityLabel={t('Audio Player')}>
       <View style={[styles.inner, { width: PW, height: PH }]}>
       <Image source={BODY} style={{ width: PW, height: PH }} resizeMode="stretch" />
       {/* the three lines: the Music and Sounds page; the down arrow: close the player */}
