@@ -6,6 +6,7 @@
 // Opened from My Library, the little notebook grows into place and its cover swings open like the one on
 // the start page. After that the white pages turn with the paper peel, like the books.
 // Everything saves on its own. Turn pages with the dog-ear or by swiping; "Pages" lists them all.
+import { useT } from '../i18n';
 import StripCover from '../components/StripCover';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, KeyboardAvoidingView, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
@@ -55,6 +56,7 @@ function PeelLayer({ start, ...props }) {
 }
 
 export default function Notebook({ u, openMenu, toast, onDone, from }) {
+  const t = useT();
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
   const [nb, setNb] = useState(null);
@@ -326,7 +328,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           <View style={{ width: side, height: side, backgroundColor: WHITE, alignItems: 'center', justifyContent: 'center' }}>
             <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.17)} max={0.32} />
             <Spine wide={wide} />
-            <Text style={{ fontFamily: TYPE, fontSize: side * 0.068, color: '#2b2b2b' }}>My Notes</Text>
+            <Text style={{ fontFamily: TYPE, fontSize: side * 0.068, color: '#2b2b2b' }}>{t('My Notes')}</Text>
           </View>
         </View>
       );
@@ -342,7 +344,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           <StrokesView strokes={strokes} width={side} height={side} />
           <Fade edge={edge} size={Math.round(side * 0.09)} max={0.15} />
           {spine ? <Spine wide={wide} /> : null}
-          {!strokes.length ? <Text style={styles.hint}>Tap to draw</Text> : null}
+          {!strokes.length ? <Text style={styles.hint}>{t('Tap to draw')}</Text> : null}
         </Pressable>
       );
       return (
@@ -360,7 +362,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           {!pg.uri && !pg.strokes.length ? (
             <View style={{ alignItems: 'center' }}>
               <Text style={[styles.plus, { fontSize: u * 24, lineHeight: u * 24 }]}>+</Text>
-              <Text style={styles.addImage}>Add a picture</Text>
+              <Text style={styles.addImage}>{t('Add a picture')}</Text>
               <Text style={styles.addSub}>or a drawing</Text>
             </View>
           ) : null}
@@ -371,25 +373,25 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           <Spine wide={wide} />
           <Lines side={side} />
           <Text style={[styles.notes, !pg.text && { color: '#777', textAlign: 'center' }]} numberOfLines={9}>
-            {pg.text || 'Add new note'}
+            {pg.text || t('Add new note')}
           </Text>
         </Pressable>
       </View>
     );
   };
 
-  const header = i === COVER_SPREAD ? 'My Notes' : i === BADGES ? 'Badges' : page && page.kind === 'sketch' ? 'Sketch' : 'Notes';
+  const header = i === COVER_SPREAD ? t('My Notes') : i === BADGES ? t('Badges') : page && page.kind === 'sketch' ? t('Sketch') : t('Notes');
   const barTitle = (
     <View style={{ flex: 1, minWidth: 0, paddingLeft: 12 }}>
-      <Text numberOfLines={1} style={styles.title}>My Notebook</Text>
+      <Text numberOfLines={1} style={styles.title}>{t('My Notebook')}</Text>
       <Text numberOfLines={1} style={styles.sub}>{header} · {i + 1} of {total} · {saved ? 'Saved' : 'Saving…'}</Text>
     </View>
   );
   const barBtns = (vertical) => (
     <View style={vertical ? { alignItems: 'center', gap: 18, marginBottom: 26 } : { flexDirection: 'row', alignItems: 'center', gap: 14 }}>{/* sideways: lifted up from the corner */}
-      <Pressable onPress={() => setPagesOpen(true)} hitSlop={8} accessibilityRole="button"><Text style={styles.btn}>Pages</Text></Pressable>
+      <Pressable onPress={() => setPagesOpen(true)} hitSlop={8} accessibilityRole="button"><Text style={styles.btn}>{t('Pages')}</Text></Pressable>
       <Pressable onPress={async () => { clearTimeout(timer.current); if (latest.current) await saveNotebook(latest.current); onDone(); }} hitSlop={8} accessibilityRole="button" accessibilityLabel="Close the notebook">
-        <View style={styles.finish}><Text style={styles.btn}>Done</Text></View>
+        <View style={styles.finish}><Text style={styles.btn}>{t('Done')}</Text></View>
       </Pressable>
     </View>
   );
@@ -515,8 +517,8 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       <Panel open={pagesOpen} side="right" title="Pages" portraitWidth="94%" bottom={wide ? 0 : u * 17 + insets.bottom} inset={wide ? BL.rightW : 0} onClose={() => setPagesOpen(false)}>
         {/* new pages first, side by side, above the list */}
         <View style={{ flexDirection: 'row', gap: 12, marginBottom: 18 }}>
-          <Pressable onPress={() => addPage('note')} style={[styles.halfPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>New notes page</Text></Pressable>
-          <Pressable onPress={() => addPage('sketch')} style={[styles.halfPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>New sketch page</Text></Pressable>
+          <Pressable onPress={() => addPage('note')} style={[styles.halfPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('New notes page')}</Text></Pressable>
+          <Pressable onPress={() => addPage('sketch')} style={[styles.halfPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('New sketch page')}</Text></Pressable>
         </View>
         <ScrollView style={{ maxHeight: Math.max(340, winH * 0.5) }} contentContainerStyle={{ gap: 14, paddingBottom: 6 }}>
           <Pressable onPress={() => { setI(BADGES); setPagesOpen(false); }} style={[styles.prow, i === BADGES && { borderColor: colors.green }]}>
@@ -547,10 +549,10 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       {newAsk ? (
         <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
-            <Text style={styles.choiceTitle}>Add a new page</Text>
-            <Pressable onPress={() => addPage('note')} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Notes page</Text></Pressable>
-            <Pressable onPress={() => addPage('sketch')} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Sketch page</Text></Pressable>
-            <Pressable onPress={() => setNewAsk(false)} style={[styles.choiceBtn, { marginTop: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Cancel</Text></Pressable>
+            <Text style={styles.choiceTitle}>{t('Add a new page')}</Text>
+            <Pressable onPress={() => addPage('note')} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Notes page')}</Text></Pressable>
+            <Pressable onPress={() => addPage('sketch')} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Sketch page')}</Text></Pressable>
+            <Pressable onPress={() => setNewAsk(false)} style={[styles.choiceBtn, { marginTop: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Cancel')}</Text></Pressable>
           </View>
         </View>
       ) : null}
@@ -560,10 +562,10 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           <View style={styles.choice}>
             <Text style={styles.choiceTitle}>{page.uri || page.strokes.length ? 'Change the picture' : 'Add a picture'}</Text>
             <Pressable onPress={() => { setPicAsk(false); setDrawing('top'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{page.uri ? 'Draw on the photo' : page.strokes.length ? 'Keep drawing' : 'Make a drawing'}</Text></Pressable>
-            <Pressable onPress={() => { setPicAsk(false); choosePhoto('library'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Choose a photo</Text></Pressable>
-            <Pressable onPress={() => { setPicAsk(false); setCamGate(true); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Take a photo</Text></Pressable>
-            {page.uri ? <Pressable onPress={() => { setPicAsk(false); dropNotebookPicture(page.uri); update({ uri: null, w: 1, h: 1 }); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Remove the photo</Text></Pressable> : null}
-            <Pressable onPress={() => setPicAsk(false)} style={[styles.choiceBtn, { marginTop: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Cancel</Text></Pressable>
+            <Pressable onPress={() => { setPicAsk(false); choosePhoto('library'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Choose a photo')}</Text></Pressable>
+            <Pressable onPress={() => { setPicAsk(false); setCamGate(true); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Take a photo')}</Text></Pressable>
+            {page.uri ? <Pressable onPress={() => { setPicAsk(false); dropNotebookPicture(page.uri); update({ uri: null, w: 1, h: 1 }); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Remove the photo')}</Text></Pressable> : null}
+            <Pressable onPress={() => setPicAsk(false)} style={[styles.choiceBtn, { marginTop: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Cancel')}</Text></Pressable>
           </View>
         </View>
       ) : null}
@@ -582,7 +584,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
                 multiline autoFocus style={[styles.editorInput, { outlineWidth: 0 }]} accessibilityLabel="Notes" />
             </View>
             <View style={{ width: winW - 2 * GAP, alignItems: 'flex-end' }}>
-              <Pressable onPress={() => setWriting(false)} hitSlop={8} accessibilityRole="button" style={styles.donePill}><Text style={styles.pillText}>Done</Text></Pressable>
+              <Pressable onPress={() => setWriting(false)} hitSlop={8} accessibilityRole="button" style={styles.donePill}><Text style={styles.pillText}>{t('Done')}</Text></Pressable>
             </View>
           </View>
         </KeyboardAvoidingView>
@@ -681,6 +683,7 @@ function scatter(items, side, region, seed, maxD) {
 // Top page: the title and how much has been read, with the milestones and the streaks scattered around it.
 // Bottom page: the firsts and a patch for every book finished, scattered too.
 function BadgeSpread({ log, side, wide, toast }) {
+  const t = useT();
   const badges = useMemo(() => (log ? allBadges(log) : []), [log]);
   const count = log ? Object.keys(log.finished).length : 0;
   const streak = log ? currentStreak(log.days) : 0;
@@ -705,8 +708,8 @@ function BadgeSpread({ log, side, wide, toast }) {
       <View style={{ width: side, height: side, backgroundColor: WHITE, overflow: 'hidden' }}>
         <Fade edge={wide ? 'right' : 'bottom'} size={Math.round(side * 0.1)} max={0.2} />
         <View style={{ position: 'absolute', left: titleBox.x, top: titleBox.y, width: titleBox.w, height: titleBox.h, justifyContent: 'center' }}>
-          <Text style={[styles.boardTitle, { fontSize: Math.min(22, side * 0.064) }]}>My Badges</Text>
-          <Text style={[styles.boardStats, { marginTop: 10 }]}>{count === 1 ? '1 book finished' : `${count} books finished`} · {streak === 1 ? '1 day of reading' : `${streak} days in a row`}</Text>
+          <Text style={[styles.boardTitle, { fontSize: Math.min(22, side * 0.064) }]}>{t('My Badges')}</Text>
+          <Text style={[styles.boardStats, { marginTop: 10 }]}>{count === 1 ? t('1 book finished') : t('{n} books finished', { n: count })} · {streak === 1 ? t('1 day of reading') : t('{n} days in a row', { n: streak })}</Text>
         </View>
         {pinned(top)}
       </View>
@@ -757,6 +760,7 @@ function UndoIcon() {
 
 // ---- The drawing editor: a page to draw on with your finger, with pens, an eraser, undo and clear ----
 function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
+  const t = useT();
   const { width: winW, height: winH } = useWindowDimensions();
   const wideScreen = winW > winH * 1.1; // sideways: the page on the left, the tools on the right
   const TOOLS_W = 270;
@@ -836,7 +840,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
         </Pressable>
       ))}
       <Pressable onPress={() => { setErase((x) => !x); setBucket(false); }} style={[styles.toolWide, erase && styles.toolOn]} accessibilityLabel="Eraser">
-        <Text style={styles.toolText}>Eraser</Text>
+        <Text style={styles.toolText}>{t('Eraser')}</Text>
       </Pressable>
       {/* the paint bucket: tap inside a shape to fill it with the colour */}
       <Pressable onPress={() => { setBucket((x) => !x); setErase(false); }} style={[styles.tool, bucket && styles.toolOn]} accessibilityLabel="Fill (paint roller)">
@@ -850,11 +854,11 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
         <UndoIcon />
       </Pressable>
       <Pressable onPress={() => setStrokes([])} disabled={!strokes.length} style={[styles.toolWide, !strokes.length && { opacity: 0.35 }]} accessibilityLabel="Clear the drawing">
-        <Text style={styles.toolText}>Clear</Text>
+        <Text style={styles.toolText}>{t('Clear')}</Text>
       </Pressable>
     </View>
   );
-  const doneEl = <Pressable onPress={() => onDone(strokes)} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { marginBottom: 0 }]}><Text style={styles.pillText}>Done</Text></Pressable>;
+  const doneEl = <Pressable onPress={() => onDone(strokes)} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { marginBottom: 0 }]}><Text style={styles.pillText}>{t('Done')}</Text></Pressable>;
   if (wideScreen) {
     // sideways: a big page on the left (as tall as there's room for), the title and tools in a column on the right
     return (
