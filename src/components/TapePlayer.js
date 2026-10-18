@@ -72,11 +72,11 @@ export default function TapePlayer({ bottomBar = 0, onMenu, toast }) {
         <Text key={cx} numberOfLines={1} style={[styles.label, { position: 'absolute', left: (cx - 120) * f, width: 240 * f, top: 945 * f, textAlign: 'center' }]}>{label}</Text>
       ))}
       {/* the two windows, named above them, with the choice in white */}
-      <Text style={[styles.label, { position: 'absolute', left: 105 * f, top: 1132 * f }]}>{t('Sounds')}</Text>
+      <Text style={[styles.label, { position: 'absolute', left: 105 * f, top: 1100 * f }]}>{t('Sounds')}</Text>
       <View pointerEvents="none" style={[at(118, 1205, 480, 96), styles.window]}>
         <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.choice, !s.sound && { opacity: 0.6 }]}>{name(s.sound)}</Text>
       </View>
-      <Text style={[styles.label, { position: 'absolute', left: 105 * f, top: 1435 * f }]}>{t('Music')}</Text>
+      <Text style={[styles.label, { position: 'absolute', left: 105 * f, top: 1404 * f }]}>{t('Music')}</Text>
       <View pointerEvents="none" style={[at(118, 1507, 480, 96), styles.window]}>
         <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.choice, !s.music && { opacity: 0.6 }]}>{name(s.music)}</Text>
       </View>
@@ -98,6 +98,6 @@ const styles = StyleSheet.create({
   inner: { width: PW, height: PH, borderRadius: 10, overflow: 'hidden' },
   light: { borderRadius: 30, backgroundColor: '#a5121d', shadowColor: '#ff3b30', shadowOpacity: 0.8, shadowRadius: 4, shadowOffset: { width: 0, height: 0 } },
   label: { fontFamily: fonts.ui, fontSize: 8, fontWeight: '600', color: '#4a4a4a' },
-  window: { justifyContent: 'center', paddingHorizontal: 5 },
-  choice: { fontFamily: fonts.ui, fontSize: 9.5, fontWeight: '600', color: '#ffffff' },
+  window: { justifyContent: 'center', paddingHorizontal: 3 },
+  choice: { fontFamily: fonts.ui, fontSize: 7.6, fontWeight: '600', color: '#ffffff' },
 });
