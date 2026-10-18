@@ -10,11 +10,11 @@ export const GUIDE_STEPS = [
   { title: 'Turn the page', body: 'Tap the folded corner at the bottom right to add the next page. To go back to an earlier page, tap Pages and choose it.' },
   { title: 'Arrange your pages', body: 'Tap Pages to jump to any page, move it up or down, or delete it.' },
   { title: 'Name it and finish', body: 'Tap the title in the bottom bar to rename your story. Everything saves as you go. Tap Done when you’re finished. To change it later, hold its cover in My Library.' },
-  { title: 'Read it in your voice', body: 'Open your story and tap the red button to record yourself reading each page. Your child will hear your voice every time.' },
+  { title: 'Read it in your voice', body: 'Open your story and tap the red button to record yourself reading each page. Your child will hear your voice every time.', ideas: true },
 ];
 
 // area: the space between the bars, so the card sits right in the middle of the book
-export default function StoryGuide({ visible, onClose, area }) {
+export default function StoryGuide({ visible, onClose, area, onIdeas }) {
   const [step, setStep] = useState(0);
   const [w, setW] = useState(0); // the width of the text area
   useEffect(() => { if (visible) setStep(0); }, [visible]);
@@ -36,6 +36,12 @@ export default function StoryGuide({ visible, onClose, area }) {
               <View key={k} style={{ width: w, gap: 12 }} accessibilityElementsHidden={k !== step} importantForAccessibility={k === step ? 'auto' : 'no-hide-descendants'}>
                 <Text style={styles.title}>{g.title}</Text>
                 <Text style={styles.body}>{g.body}</Text>
+                {/* the last step points to the Idea Room for inspiration */}
+                {g.ideas ? (
+                  <Text style={styles.body}>Need ideas or inspiration?{' '}
+                    {onIdeas ? <Text onPress={onIdeas} accessibilityRole="link" style={styles.link}>Visit the Idea Room in Help</Text> : 'Visit the Idea Room in Help.'}
+                  </Text>
+                ) : null}
               </View>
             ))}
           </View>
@@ -71,5 +77,6 @@ const styles = StyleSheet.create({
   skip: { color: colors.muted, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
   btn: { backgroundColor: colors.tile, paddingHorizontal: 20, height: 44, borderRadius: 22, justifyContent: 'center', overflow: 'hidden' }, // pills
   btnMain: { backgroundColor: colors.blue }, // primary blue (the red is kept for recording)
+  link: { color: '#6fb1ff', fontWeight: '700', textDecorationLine: 'underline' },
   btnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
 });

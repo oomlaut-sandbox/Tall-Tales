@@ -8,6 +8,7 @@ import { colors, fonts } from '../theme';
 import { DESK_FELT, IS_TABLET, DESK_BG } from '../look';
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import { useT } from '../i18n';
+import { IDEA_COUNT } from '../ideas';
 
 const BAND_FELT = require('../../assets/band-profile.jpg'); // the yellow-orange felt banner
 const SEARCH_FELT = require('../../assets/search-felt.png'); // Jörg's grey stitched felt strip, cut out with a shadow
@@ -98,7 +99,7 @@ export const HELP = [
   ] },
 ];
 
-export default function Help({ u, openMenu, onAbout }) {
+export default function Help({ u, openMenu, onAbout, onIdeas }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const { width: winW } = useWindowDimensions();
@@ -125,6 +126,12 @@ export default function Help({ u, openMenu, onAbout }) {
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
         <View style={styles.col}>
           {/* (a short video tour will go here later) */}
+          {/* the Idea Room, at the very top: ideas for every kind of book a family can make */}
+          <Pressable onPress={onIdeas} accessibilityRole="button" style={styles.ideas}>
+            <Text style={styles.ideasTitle}>{t('Idea Room')}</Text>
+            <Text style={styles.ideasText}>{t('{n} ideas for books you can make together: your photos and drawings, your words, your voice.', { n: IDEA_COUNT })}</Text>
+            <Text style={styles.ideasGo}>{t('Visit the Idea Room')} ›</Text>
+          </Pressable>
           {/* the search window: a white pill the width of the topics, with a soft inner shadow along its top edge */}
           <View style={[styles.searchWrap, { marginTop: 14 }]}>
             <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.22)', 'rgba(0,0,0,0.06)', 'rgba(0,0,0,0)']} locations={[0, 0.35, 1]} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 14 }} />
@@ -174,6 +181,10 @@ const styles = StyleSheet.create({
   videoText: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 14 },
   searchWrap: { height: 44, borderRadius: 22, overflow: 'hidden', backgroundColor: '#d6d6d6' }, // light grey
   search: { flex: 1, backgroundColor: 'transparent', paddingHorizontal: 18, fontFamily: fonts.ui, fontSize: 16, color: colors.ink, outlineWidth: 0 },
+  ideas: { backgroundColor: colors.green, borderRadius: 14, padding: 18, gap: 6, shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 3 },
+  ideasTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.white },
+  ideasText: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: colors.white },
+  ideasGo: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, color: colors.white, marginTop: 4 },
   aboutPill: { alignSelf: 'flex-start', backgroundColor: colors.green, height: 44, borderRadius: 22, paddingHorizontal: 26, alignItems: 'center', justifyContent: 'center', marginTop: 10 },
   aboutText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14, marginBottom: 8 },

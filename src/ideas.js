@@ -1,0 +1,91 @@
+// The Idea Room (Help → Idea Room, and the last step of the story-making guide): everything a picture book
+// in your own words, pictures and voice can be used for. Each idea: a title, what it is, and how to make it
+// with the app (photos, drawings, your voice, the notebook).
+export const IDEA_SECTIONS = [
+  { title: 'Big moments and changes', intro: 'A book makes a big change feel familiar before it happens, and something to come back to afterwards.', ideas: [
+    { title: 'A new baby is coming', text: 'Who the baby is, what babies do (sleep, cry, eat), and the special job of being a big sister or brother.', how: 'Photos of your child as a baby, the crib, the car seat. Record it in your voice so it can be read again and again.' },
+    { title: 'We’re moving house', text: 'The old house, the new house, the boxes, the moving day, where the toys will go, the new bedroom.', how: 'Take photos of both houses and the new route. End with “Our home is wherever we are together.”' },
+    { title: 'First day at school or daycare', text: 'The door, the cubby, the teacher’s name, what happens at lunch, and who picks them up at the end.', how: 'Ask the school for a few photos. Read it every evening the week before.' },
+    { title: 'Going to the doctor or dentist', text: 'The waiting room, the chair that goes up and down, the light, the toothbrush prize.', how: 'Keep it calm and step by step: first, then, after that.' },
+    { title: 'A stay in hospital', text: 'What will happen, who will be there, what the room looks like, and that you’ll be close by.', how: 'Ask the nurses which steps to show. Your recorded voice can be played when you can’t be there.' },
+    { title: 'Two homes', text: 'Mum’s house and Dad’s house, the calendar, the special things that travel between them.', how: 'Both parents can record pages, so the book has both voices.' },
+    { title: 'Someone is away for a while', text: 'A parent travelling, working away or deployed: where they are, when they’ll be back, how you’ll talk.', how: 'Record it before they leave: their voice reads it every night.' },
+    { title: 'Saying goodbye to a pet', text: 'The happy days, the favourite tricks, what happened, and how we remember them.', how: 'Their photos, a drawing by your child, gentle words.' },
+    { title: 'A new pet is coming', text: 'How to be gentle, what it eats, where it sleeps, and its name.', how: 'Draw the pet together before it arrives, then add real photos.' },
+  ] },
+  { title: 'Everyday routines', intro: 'Step-by-step picture books (sometimes called social stories) help little ones know what comes next.', ideas: [
+    { title: 'Our bedtime routine', text: 'Bath, pyjamas, teeth, two books, a song, lights out.', how: 'One photo per step. Your child can be the model.' },
+    { title: 'Getting ready in the morning', text: 'Wake up, get dressed, breakfast, shoes, coat, out the door.', how: 'Keep it on My Library for slow mornings.' },
+    { title: 'Using the potty', text: 'When to go, what to do, washing hands, a cheer at the end.', how: 'Draw it instead of photos. Celebrate with a badge page.' },
+    { title: 'Brushing teeth', text: 'Top teeth, bottom teeth, the tongue, spit, rinse, smile.', how: 'Count the brushing out loud in your recording.' },
+    { title: 'At the swimming pool', text: 'The changing room, the shower, the teacher, the float, the deep end and the shallow end.', how: 'Great before a first lesson.' },
+    { title: 'When we go to the shop', text: 'Holding hands, the trolley, the list, the queue, the bag.', how: 'Your child can tick off pictures as you shop.' },
+    { title: 'A day at Grandma’s', text: 'The drive, the door, what we do there, what we eat, the drive home.', how: 'Grandma can record it in her voice.' },
+  ] },
+  { title: 'Feelings', intro: 'Stories give children words for big feelings, and a safe way to talk about them.', ideas: [
+    { title: 'When I feel angry', text: 'What anger feels like in my body, and three things I can do: breathe, squeeze, ask for a hug.', how: 'Draw faces together for each feeling.' },
+    { title: 'Being brave', text: 'A time your child was brave, and what helped.', how: 'Use their own words, written as they say them.' },
+    { title: 'My worry monster', text: 'A little monster that eats worries. What did we feed it today?', how: 'Your child draws the monster; you write the story.' },
+    { title: 'Kindness every day', text: 'Small kind things the family did this week.', how: 'Add a page each week. It grows into a long book.' },
+    { title: 'I’m sorry', text: 'What happened, how the other person felt, how we made it better.', how: 'Short and gentle. Read it together, not as a punishment.' },
+  ] },
+  { title: 'Family and memories', intro: 'Your family’s own stories, kept in your own voices.', ideas: [
+    { title: 'When you were born', text: 'The day, the weather, who came to visit, the first photo, the first word.', how: 'Old photos and the story told the way you tell it.' },
+    { title: 'When Grandpa was little', text: 'Where he grew up, his school, his first job, the games he played.', how: 'Ask a grandparent to tell it and record their voice for each page.' },
+    { title: 'How we met', text: 'The story of the family, told for children.', how: 'A favourite to read on anniversaries.' },
+    { title: 'Our holiday', text: 'Where we went, what we ate, the best day, the funny moment.', how: 'Pick ten photos. Your child chooses the words.' },
+    { title: 'The story of your name', text: 'Why we chose it, what it means, who else had it.', how: 'A lovely birthday gift.' },
+    { title: 'Family recipes', text: 'Grandma’s pancakes, step by step, with pictures of little hands helping.', how: 'Cook it together and photograph each step.' },
+    { title: 'Our traditions', text: 'How we celebrate the holidays, birthdays and the first snow.', how: 'Add a page every year.' },
+    { title: 'A year in our family', text: 'Twelve pages, one for each month.', how: 'Keep it going all year: a page at the end of each month.' },
+  ] },
+  { title: 'Learning', intro: 'Learning sticks when the book is about their own world.', ideas: [
+    { title: 'Our family ABC', text: 'A is for Aunt Anna, B is for Bubbles the cat…', how: 'One letter per page with a family photo.' },
+    { title: 'Counting at home', text: 'One sofa, two shoes, three spoons, four chairs…', how: 'Hunt for numbers around the house together.' },
+    { title: 'Colours in our house', text: 'Red things, blue things, yellow things…', how: 'Your child takes the photos.' },
+    { title: 'Two languages', text: 'The same simple sentences in both of your family’s languages.', how: 'Record each page twice: once in each language.' },
+    { title: 'The seasons in our garden', text: 'The same tree in spring, summer, autumn and winter.', how: 'Take a photo from the same spot each season.' },
+    { title: 'How things grow', text: 'A seed, a sprout, a plant, a flower, a tomato.', how: 'Grow something together and photograph it every week.' },
+    { title: 'Sight words', text: 'A short story using the words your child is learning to read this week.', how: 'Use Learn to Read so they can tap each word.' },
+  ] },
+  { title: 'Adventures and imagination', intro: 'Your child is the hero: the most exciting kind of story.', ideas: [
+    { title: 'You are the hero', text: 'Your child rescues the cat, finds the treasure, flies to the moon.', how: 'Photos of your child in dress-up, plus their drawings for the magic parts.' },
+    { title: 'The toys come alive', text: 'What do the toys do at night when everyone is asleep?', how: 'Pose the toys and photograph them. Very funny and very easy.' },
+    { title: 'A dragon in the garden', text: 'Something wonderful hiding in your own backyard.', how: 'Your child draws the creature; you photograph the real places.' },
+    { title: 'The made-up creature', text: 'Turn one of your child’s drawings into the main character of a book.', how: 'Use the drawing on every page, and ask your child what happens next.' },
+    { title: 'The bedtime journey', text: 'A gentle trip that ends in bed, getting sleepier with every page.', how: 'Record it in a whisper.' },
+    { title: 'Round-robin story', text: 'Each person in the family adds one page without planning ahead.', how: 'Great on holidays and rainy days.' },
+  ] },
+  { title: 'Collections and projects', intro: 'Children love to show what they’ve found and made.', ideas: [
+    { title: 'My rock collection', text: 'Each rock, where we found it, what it looks like.', how: 'Close-up photos and your child’s own descriptions.' },
+    { title: 'The nature walk', text: 'Leaves, feathers, bugs and puddles from one walk.', how: 'Take the phone along and make the book together afterwards.' },
+    { title: 'Our bug guide', text: 'Every bug we spotted this summer, with its name and a fun fact.', how: 'One bug per page.' },
+    { title: 'My building creations', text: 'Block and brick models before they get taken apart.', how: 'A page for each creation, with its name and what it does.' },
+    { title: 'My art gallery', text: 'A year of drawings and paintings, kept in one place.', how: 'Photograph the art from the fridge before it’s recycled.' },
+    { title: 'Our garden', text: 'What we planted, what grew, what the snails ate.', how: 'Ask your child to narrate it.' },
+  ] },
+  { title: 'Messages and keepsakes', intro: 'A book can be a gift, a letter or a hug from far away.', ideas: [
+    { title: 'A book from far away', text: 'A grandparent in another city reads a book to your child in their own voice.', how: 'They make it or record it; your child hears it every night.' },
+    { title: 'While I’m away', text: 'For a work trip: where I’ll be each day and how many sleeps until I’m back.', how: 'One page per day of the trip.' },
+    { title: 'Thank you, teacher', text: 'What we loved about this year, from your child.', how: 'Their words, their drawings, a class photo.' },
+    { title: 'Happy birthday', text: 'A book for a friend or family member’s birthday.', how: 'Photos of the two of them together.' },
+    { title: 'Welcome to our family', text: 'For a babysitter or a new carer: our routines, the favourite toy, how to say goodnight.', how: 'Practical and friendly.' },
+    { title: 'A letter to future me', text: 'What I like now, my best friends, what I want to be. Open it in ten years.', how: 'Keep it in My Library and read it on a later birthday.' },
+    { title: 'From big brother or sister', text: 'Made by an older child for a new baby: everything they’ll teach them.', how: 'The older child draws and writes; you help with the words.' },
+  ] },
+  { title: 'Together with others', intro: 'Stories made by a group become everyone’s favourite.', ideas: [
+    { title: 'Our class book', text: 'Every child makes one page about themselves.', how: 'Teachers: collect photos and drawings, then read it with the class in your voice.' },
+    { title: 'The sleepover story', text: 'Friends make up a silly story together before bed.', how: 'Each friend records their own page.' },
+    { title: 'Cousins’ book', text: 'All the cousins together: who’s the oldest, the fastest, the funniest.', how: 'Each family sends a few photos.' },
+    { title: 'The club or team book', text: 'Our team, our season, our best game.', how: 'A lovely end-of-season gift.' },
+  ] },
+  { title: 'Communication support', intro: 'Pictures and a familiar voice help every child understand and be understood.', ideas: [
+    { title: 'A visual schedule', text: 'The plan for the day, one step per page.', how: 'Read it in the morning; turn the page as each step is done.' },
+    { title: 'What happens when…', text: 'A social story for something new: a haircut, a fire drill, a birthday party, a flight.', how: 'Simple sentences: “First… then… after that…”' },
+    { title: 'All about me', text: 'For a new teacher or carer: what I like, what I don’t, how I show I’m happy or upset, what helps me calm down.', how: 'Your child can help choose the pictures.' },
+    { title: 'Words I can sign', text: 'A photo of each sign your child is learning, with the word.', how: 'Record yourself saying each word.' },
+    { title: 'Getting ready for surgery or a procedure', text: 'What will happen, step by step, and what comes after (ice cream!).', how: 'Ask the care team which steps to show.' },
+  ] },
+];
+
+export const IDEA_COUNT = IDEA_SECTIONS.reduce((n, s) => n + s.ideas.length, 0);

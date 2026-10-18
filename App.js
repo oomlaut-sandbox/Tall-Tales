@@ -22,6 +22,7 @@ import Reader from './src/screens/Reader';
 import Publisher, { draftFrom } from './src/screens/Publisher';
 import CoverTest from './src/screens/CoverTest';
 import Help from './src/screens/Help';
+import IdeaRoom from './src/screens/IdeaRoom';
 import Settings from './src/screens/Settings';
 import Membership from './src/components/Membership';
 import { LangContext, deviceLang, translate } from './src/i18n';
@@ -139,7 +140,7 @@ function Root() {
   const [nbFrom, setNbFrom] = useState(null); // where the little notebook was on the shelf when it was opened
   // (anything the parental controls hide can't be reached either)
   const go = (s) => {
-    if ((s === 'store' && !controls.store) || (s === 'notebook' && !controls.notebook) || ((s === 'help' || s === 'about') && !controls.help)) s = 'library';
+    if ((s === 'store' && !controls.store) || (s === 'notebook' && !controls.notebook) || ((s === 'help' || s === 'about' || s === 'ideas') && !controls.help)) s = 'library';
     stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen(s);
   };
   // A book with a title page opens onto its title page with a blank white page above it (the
@@ -241,12 +242,13 @@ function Root() {
         )}
         {screen === 'notebook' && <Notebook u={u} from={nbFrom} openMenu={openMenu} toast={toast} onDone={() => go('library')} />}
         {screen === 'publisher' && draft && (
-          <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} />
+          <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} onIdeas={() => go('ideas')} />
         )}
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} />}
         {screen === 'settings' && <Settings u={u} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
           controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} />}
-        {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} />}
+        {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} />}
+        {screen === 'ideas' && <IdeaRoom u={u} openMenu={openMenu} onMake={() => openPublisher(null)} onHelp={() => go('help')} />}
         {screen === 'covertest' && <CoverTest u={u} openMenu={openMenu} />}
         {screen === 'about' && <About u={u} openMenu={openMenu} onSecret={() => {
           // the store owner: straight to the Store Manager when signed in, otherwise to the sign-in first

@@ -39,7 +39,7 @@ export function draftFrom(story) {
   };
 }
 
-export default function Publisher({ u, initial, fontKey, openMenu, toast, onChange, onDone, storeAdmin }) {
+export default function Publisher({ u, initial, fontKey, openMenu, toast, onChange, onDone, storeAdmin, onIdeas }) {
   const insets = useSafeAreaInsets();
   const [draft, setDraft] = useState(initial);
   const [i, setI] = useState(0);
@@ -678,7 +678,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         </View>
       ) : null}
       <ParentGate visible={!!camGate} reason="Taking a photo opens the camera." onPass={() => { const t = camGate; setCamGate(null); setTimeout(() => placeImage(t, 'camera'), 250); }} onCancel={() => setCamGate(null)} />
-      <StoryGuide visible={guide} onClose={closeGuide} area={wide ? { left: BL.leftW, right: BL.rightW } : { top: BL.topH, bottom: BL.barH }} />
+      <StoryGuide visible={guide} onClose={closeGuide} onIdeas={onIdeas ? () => { closeGuide(); onIdeas(); } : null} area={wide ? { left: BL.leftW, right: BL.rightW } : { top: BL.topH, bottom: BL.barH }} />
       <ParentGate visible={!!gateFor} reason={gateFor?.mode === 'print' ? 'Printing opens your phone’s print options.' : 'Sharing sends this story outside the app.'} onPass={() => makePdf(gateFor)} onCancel={() => setGateFor(null)} />
     </KeyboardAvoidingView>
   );
