@@ -282,7 +282,7 @@ const T = {
   'Next: {title} ({a} of {b})': { de: 'Als Nächstes: {title} ({a} von {b})', fr: 'Ensuite : {title} ({a} sur {b})', es: 'Ahora: {title} ({a} de {b})', ja: 'つぎ：{title}（{a}/{b}）' },
   'Listen only': { de: 'Nur zuhören', fr: 'Écouter seulement', es: 'Solo escuchar', ja: 'きくだけ' },
   'Listen Only': { de: 'Nur zuhören', fr: 'Écouter seulement', es: 'Solo escuchar', ja: 'きくだけ' },
-  'Playback Options': { de: 'Wiedergabe', fr: 'Options de lecture', es: 'Opciones de reproducción', ja: 'さいせいの せってい' },
+  'Playback Options': { de: 'Vorlese-Einstellungen', fr: 'Réglages de lecture', es: 'Ajustes de lectura', ja: 'よみあげのせってい' }, // the same as the menu's name for it
   'Voices': { de: 'Stimmen', fr: 'Voix', es: 'Voces', ja: 'こえ' },
   'Page by page with no audio': { de: 'Seite für Seite, ohne Ton', fr: 'Page par page, sans son', es: 'Página a página, sin audio', ja: 'おとなしで 1ページずつ' },
   'Says a word when you touch it': { de: 'Sagt ein Wort, wenn du es berührst', fr: 'Dit un mot quand tu le touches', es: 'Dice una palabra cuando la tocas', ja: 'ことばに さわると よみます' },
@@ -293,7 +293,7 @@ const T = {
   'Warm and gentle': { de: 'Warm und sanft', fr: 'Chaleureuse et douce', es: 'Cálida y suave', ja: 'あたたかく やさしい' },
   'Pleasant older man': { de: 'Freundlicher älterer Herr', fr: 'Monsieur âgé et agréable', es: 'Señor mayor y amable', ja: 'やさしい おじいさん' },
   'The voice reads the stories aloud and sounds out words in Learn to Read. Pages you recorded in your own voice still play in yours.': { de: 'Die Stimme liest die Geschichten vor und spricht beim Lesenlernen die Wörter. Seiten, die du selbst aufgenommen hast, hörst du weiter mit deiner Stimme.', fr: 'La voix lit les histoires et prononce les mots dans Apprendre à lire. Les pages que tu as enregistrées restent avec ta voix.', es: 'La voz lee los cuentos y pronuncia las palabras en Aprender a leer. Las páginas que grabaste siguen sonando con tu voz.', ja: 'こえが おはなしを よみ、「よみかたを まなぶ」で ことばを よみます。じぶんで ろくおんした ページは じぶんの こえの ままです。' },
-  '‹ Back to Playback Options': { de: '‹ Zurück zur Wiedergabe', fr: '‹ Retour aux options de lecture', es: '‹ Volver a las opciones', ja: '‹ さいせいの せっていに もどる' },
+  '‹ Back to Playback Options': { de: '‹ Zurück zu den Vorlese-Einstellungen', fr: '‹ Retour aux réglages de lecture', es: '‹ Volver a los ajustes de lectura', ja: '‹ よみあげのせっていに もどる' },
   'Playback speed': { de: 'Vorlesetempo', fr: 'Vitesse de lecture', es: 'Velocidad de lectura', ja: 'よむ はやさ' },
   'Slower': { de: 'Langsamer', fr: 'Plus lent', es: 'Más lento', ja: 'ゆっくり' },
   'Faster': { de: 'Schneller', fr: 'Plus rapide', es: 'Más rápido', ja: 'はやく' },
