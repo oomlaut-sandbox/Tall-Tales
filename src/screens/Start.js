@@ -194,18 +194,38 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
       }}
     </BookFrame>
     {/* the languages, small and light grey in the top left corner, above everything (the cover opens
-        underneath them). Tap one to switch (unless the parental controls keep the language fixed). */}
-    <View pointerEvents="box-none" style={{ position: 'absolute', left: 16, top: insets.top + 10, right: 16, zIndex: 100, flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+        underneath them). Tap one to switch (unless the parental controls keep the language fixed).
+        A soft black glow under the letters keeps them readable on the felt. */}
+    <View pointerEvents="box-none" style={{ position: 'absolute', left: 16, top: insets.top + 22, maxWidth: winW - 32 - 96, zIndex: 100, flexDirection: 'row', flexWrap: 'wrap', columnGap: 12, rowGap: 6 }}>
       {LANGS.map(([k, name]) => (
         <Pressable key={k} disabled={!controls.language} onPress={() => setLang(k)} hitSlop={6} accessibilityRole="button" accessibilityLabel={name} accessibilityState={{ selected: lang === k }}>
-          <Text style={{ fontFamily: fonts.ui, fontSize: 12, color: lang === k ? 'rgba(235,235,235,0.9)' : 'rgba(200,200,200,0.5)' }}>{name}</Text>
+          <Text style={[styles.corner, { color: lang === k ? 'rgba(235,235,235,0.9)' : 'rgba(200,200,200,0.5)' }]}>{name}</Text>
         </Pressable>
       ))}
+    </View>
+    {/* Profiles, the same way in the top right corner: one for each child */}
+    <View pointerEvents="box-none" style={{ position: 'absolute', right: 16, top: insets.top + 22, zIndex: 100 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }} accessibilityLabel={t('Profiles')}>
+        <UserIcon color="rgba(235,235,235,0.9)" />
+        <Text style={[styles.corner, { color: 'rgba(235,235,235,0.9)' }]}>{t('Profiles')}</Text>
+      </View>
     </View>
     </View>
   );
 }
 
+// a small person: a round head over rounded shoulders, with the same soft glow as the letters
+function UserIcon({ color, size = 11 }) {
+  const glow = { shadowColor: '#000', shadowOpacity: 0.8, shadowRadius: 3, shadowOffset: { width: 0, height: 0 } };
+  return (
+    <View style={{ width: size, height: size }}>
+      <View style={[{ position: 'absolute', left: size * 0.29, top: 0, width: size * 0.42, height: size * 0.42, borderRadius: size, backgroundColor: color }, glow]} />
+      <View style={[{ position: 'absolute', left: 0, bottom: 0, width: size, height: size * 0.46, borderTopLeftRadius: size * 0.5, borderTopRightRadius: size * 0.5, backgroundColor: color }, glow]} />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  corner: { fontFamily: fonts.ui, fontSize: 12, textShadowColor: 'rgba(0,0,0,0.85)', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 6 },
   page: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
 });

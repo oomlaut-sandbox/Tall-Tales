@@ -240,6 +240,7 @@ const T = {
   'Show': { de: 'Zeigen', fr: 'Afficher', es: 'Mostrar', ja: 'みせる' },
   'Hide': { de: 'Verbergen', fr: 'Masquer', es: 'Ocultar', ja: 'かくす' },
   'Music player': { de: 'Musikspieler', fr: 'Lecteur de musique', es: 'Reproductor de música', ja: 'おんがくプレーヤー' },
+  'Profiles': { de: 'Profile', fr: 'Profils', es: 'Perfiles', ja: 'プロフィール' },
   'Close the player': { de: 'Spieler schließen', fr: 'Fermer le lecteur', es: 'Cerrar el reproductor', ja: 'プレーヤーをとじる' },
   'Previous': { de: 'Zurück', fr: 'Précédent', es: 'Anterior', ja: 'まえ' },
   'Next': { de: 'Weiter', fr: 'Suivant', es: 'Siguiente', ja: 'つぎ' },
