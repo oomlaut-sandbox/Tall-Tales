@@ -39,19 +39,16 @@ export function draftFrom(story) {
   };
 }
 
-// The empty picture square: Jörg's light grey Polaroid, a plus in the exact middle of its blue square, and
-// "Add Image" in dark grey just under the frame (measured from the picture: the blue square's middle is at
-// 49.7% across and 46.4% down; the frame ends 81% down).
+// The empty picture square: Jörg's light grey Polaroid with "Add Image" in white in the exact middle of its
+// blue square (measured from the picture: the blue square's middle is 49.7% across and 46.4% down).
 const POLAROID = require('../../assets/polaroid.jpg');
 function EmptyPicture({ side }) {
-  const len = Math.round(side * 0.19), th = Math.max(2, Math.round(side * 0.008));
-  const cx = side * 0.497, cy = side * 0.464;
+  // "Add Image" in white, in the exact middle of the blue square (no plus)
+  const cx = side * 0.497, cy = side * 0.464, fs = Math.max(16, Math.round(side * 0.06));
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       <Image source={POLAROID} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
-      <View style={{ position: 'absolute', left: cx - len / 2, top: cy - th / 2, width: len, height: th, backgroundColor: colors.white }} />
-      <View style={{ position: 'absolute', left: cx - th / 2, top: cy - len / 2, width: th, height: len, backgroundColor: colors.white }} />
-      <Text style={{ position: 'absolute', left: 0, right: 0, top: side * 0.835, textAlign: 'center', color: '#4a4a4a', fontFamily: fonts.ui, fontWeight: '700', fontSize: Math.max(15, Math.round(side * 0.055)) }}>Add Image</Text>
+      <Text style={{ position: 'absolute', left: cx - side * 0.25, width: side * 0.5, top: cy - fs * 0.62, textAlign: 'center', color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: fs, lineHeight: fs * 1.24 }}>Add Image</Text>
     </View>
   );
 }
