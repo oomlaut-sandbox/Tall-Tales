@@ -194,18 +194,18 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
         );
       }}
     </BookFrame>
-    {/* the languages, small and light grey in the top left corner, above everything (the cover opens
-        underneath them). Tap one to switch (unless the parental controls keep the language fixed).
-        A soft black glow under the letters keeps them readable on the felt. */}
-    <View pointerEvents="box-none" style={{ position: 'absolute', left: 16, top: insets.top + 22, maxWidth: winW - 32 - 70, zIndex: 100, flexDirection: 'row', flexWrap: 'wrap', columnGap: 11, rowGap: 6 }}>
-      {LANGS.map(([k, name]) => (
-        <Pressable key={k} disabled={!controls.language} onPress={() => setLang(k)} hitSlop={6} accessibilityRole="button" accessibilityLabel={name} accessibilityState={{ selected: lang === k }}>
-          <Text style={[styles.corner, { color: lang === k ? 'rgba(235,235,235,0.9)' : 'rgba(200,200,200,0.5)' }]}>{name}</Text>
-        </Pressable>
-      ))}
-    </View>
-    {/* Profiles, the same way in the top right corner: one for each child (the child reading now, once there are profiles) */}
-    <View pointerEvents="box-none" style={{ position: 'absolute', right: 16, top: insets.top + 22, zIndex: 100 }}>
+    {/* A thin see-through black strip across the top, above everything (the cover opens underneath it):
+        the languages on the left (tap one to switch, unless the parental controls keep the language fixed)
+        and Profiles on the right (the child reading now, once there are profiles), centred in the strip. */}
+    <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top + 4, height: 32, zIndex: 100, backgroundColor: 'rgba(0,0,0,0.5)',
+      flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, gap: 10 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 11, flexShrink: 1, flexWrap: 'wrap' }}>
+        {LANGS.map(([k, name]) => (
+          <Pressable key={k} disabled={!controls.language} onPress={() => setLang(k)} hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }} accessibilityRole="button" accessibilityLabel={name} accessibilityState={{ selected: lang === k }}>
+            <Text style={[styles.corner, { color: lang === k ? 'rgba(235,235,235,0.9)' : 'rgba(200,200,200,0.5)' }]}>{name}</Text>
+          </Pressable>
+        ))}
+      </View>
       <Pressable onPress={() => go('profiles')} hitSlop={8} style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }} accessibilityRole="button" accessibilityLabel={t('Profiles')}>
         <UserIcon color="rgba(235,235,235,0.9)" />
         <Text numberOfLines={1} style={[styles.corner, { color: 'rgba(235,235,235,0.9)', maxWidth: 90 }]}>{(activeProfile() || {}).name || t('Profiles')}</Text>
@@ -215,9 +215,9 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
   );
 }
 
-// a small person: a round head over rounded shoulders, with the same soft glow as the letters
+// a small person: a round head over rounded shoulders
 function UserIcon({ color, size = 11 }) {
-  const glow = { shadowColor: '#000', shadowOpacity: 0.8, shadowRadius: 3, shadowOffset: { width: 0, height: 0 } };
+  const glow = null;
   return (
     <View style={{ width: size, height: size }}>
       <View style={[{ position: 'absolute', left: size * 0.29, top: 0, width: size * 0.42, height: size * 0.42, borderRadius: size, backgroundColor: color }, glow]} />
@@ -227,6 +227,6 @@ function UserIcon({ color, size = 11 }) {
 }
 
 const styles = StyleSheet.create({
-  corner: { fontFamily: fonts.ui, fontSize: 12, textShadowColor: 'rgba(0,0,0,0.85)', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 6 },
+  corner: { fontFamily: fonts.ui, fontSize: 12 },
   page: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
 });
