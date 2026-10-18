@@ -196,7 +196,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
     {/* the languages, small and light grey in the top left corner, above everything (the cover opens
         underneath them). Tap one to switch (unless the parental controls keep the language fixed).
         A soft black glow under the letters keeps them readable on the felt. */}
-    <View pointerEvents="box-none" style={{ position: 'absolute', left: 16, top: insets.top + 22, maxWidth: winW - 32 - 96, zIndex: 100, flexDirection: 'row', flexWrap: 'wrap', columnGap: 12, rowGap: 6 }}>
+    <View pointerEvents="box-none" style={{ position: 'absolute', left: 16, top: insets.top + 22, maxWidth: winW - 32 - 70, zIndex: 100, flexDirection: 'row', flexWrap: 'wrap', columnGap: 11, rowGap: 6 }}>
       {LANGS.map(([k, name]) => (
         <Pressable key={k} disabled={!controls.language} onPress={() => setLang(k)} hitSlop={6} accessibilityRole="button" accessibilityLabel={name} accessibilityState={{ selected: lang === k }}>
           <Text style={[styles.corner, { color: lang === k ? 'rgba(235,235,235,0.9)' : 'rgba(200,200,200,0.5)' }]}>{name}</Text>
