@@ -111,7 +111,7 @@ export default function TapePlayer({ onMenu }) {
       </View>
     </View>
     {/* the way out, under the player on the left */}
-    <Pressable onPress={() => setAmbientPlayer(false)} hitSlop={12} style={{ marginTop: 14 }} accessibilityRole="button">
+    <Pressable onPress={() => setAmbientPlayer(false)} hitSlop={14} style={{ marginTop: 12 }} accessibilityRole="button">
       <Text style={styles.close}>{t('Close Audio Player')}</Text>
     </Pressable>
     </View>
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   inner: { overflow: 'hidden' },
   label: { fontFamily: fonts.ui, fontWeight: '600', color: '#4a4a4a' },
   mark: { position: 'absolute', borderRadius: 3, backgroundColor: '#2a2a2d' },
-  close: { fontFamily: fonts.ui, fontSize: 16, fontWeight: '600', color: '#ffffff' },
+  close: { fontFamily: fonts.ui, fontSize: 12, color: '#ffffff' },
   window: { justifyContent: 'center', paddingHorizontal: 4 },
   choice: { fontFamily: fonts.ui, fontWeight: '600', color: '#ffffff' },
 });
