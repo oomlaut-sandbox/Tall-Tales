@@ -225,13 +225,15 @@ export function AgainIcon({ size = 14, color = colors.white, weight = 3.5, bg = 
 // My Library: books standing on a shelf (an outlined square with upright lines).
 // A musical note, in the same plain white strokes as the other icons: an oval head, a stem and one flag.
 export function MusicIcon({ size = 20, color = colors.white, weight = 2 }) {
-  // a round, smooth head (a true circle) with the stem rising from its right side
-  const head = Math.round(size * 0.4);
-  const left = Math.round((size - head) / 2 - size * 0.06);
+  // three curved sound lines, growing outwards from a point on the left (like sound spreading out)
+  const cx = size * 0.06, cy = size / 2;
+  const radii = [size * 0.3, size * 0.62, size * 0.94];
   return (
     <View style={{ width: size, height: size }}>
-      <View style={{ position: 'absolute', left, bottom: 0, width: head, height: head, borderRadius: head / 2, backgroundColor: color }} />
-      <View style={{ position: 'absolute', left: left + head - weight, bottom: head / 2, width: weight, height: size - head / 2, borderRadius: weight / 2, backgroundColor: color }} />
+      {radii.map((r) => (
+        <View key={r} style={{ position: 'absolute', left: cx - r, top: cy - r, width: r * 2, height: r * 2, borderRadius: r,
+          borderWidth: weight, borderColor: 'transparent', borderRightColor: color }} />
+      ))}
     </View>
   );
 }
