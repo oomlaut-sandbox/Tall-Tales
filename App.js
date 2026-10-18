@@ -43,7 +43,7 @@ import { hideSplash } from './src/launch';
 import Profiles from './src/screens/Profiles';
 import Playlists from './src/screens/Playlists';
 import { playOrder } from './src/playlists';
-import { fadeOutAmbient } from './src/ambient';
+import { fadeOutAmbient, setAmbientPlayer } from './src/ambient';
 import { ageAllowed, ageOf } from './src/catalog';
 import { loadProfiles, onProfiles } from './src/profiles';
 import { playSound, setEffects, setEffectsVolume } from './src/sound';
@@ -350,8 +350,8 @@ function Root() {
         <Membership visible={memberOpen} onClose={() => setMemberOpen(false)} toast={toast} />
         <ParentGate visible={profileGate} reason="Your profile is for grown-ups." onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
         <Toast message={message} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
-        {/* the little floating tape player for music and ambient sounds (Playback Options → Music and sounds) */}
-        <TapePlayer bottomBar={sideways ? 0 : barH} sideBar={sideways ? Math.round(u * 17 * 1.15) + insets.right : 0} onMenu={() => go('music')} toast={toast} />
+        {/* the Audio Player for music and nature sounds: in the middle of the screen over a dark layer until it's closed */}
+        <TapePlayer onMenu={() => { setAmbientPlayer(false); go('music'); }} />
         {/* the main menu always slides in over everything else on screen (pop-ups, pages boxes, speech bubbles) */}
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
           <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>

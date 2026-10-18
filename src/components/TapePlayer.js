@@ -1,5 +1,6 @@
-// The little floating felt Audio Player (Jörg's picture) for the music and nature sounds. Drag it anywhere;
-// it stays where it's left. Shown with the sound icon in the reading bar (or from Music and Sounds).
+// The felt Audio Player (Jörg's picture) for the music and nature sounds. It opens in the middle of the
+// screen over a half-dark layer that keeps everything underneath from being touched, and stays until it's
+// closed with its down arrow. Opened with the sound icon in the reading bar (or from Music and Sounds).
 //   Play / Pause: the green and grey felt buttons
 //   Sounds (top window) and Music (bottom window): tap a knob to click through the choices; the choice shows
 //     in the window in white, and the line on the knob turns a notch each click (the knob itself stays still)
@@ -10,12 +11,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fonts } from '../theme';
-import { MUSIC, SOUNDS, TRACKS, getAmbient, onAmbient, pauseAmbient, playAmbient, setAmbientPlayer, setAmbientVolume, setPlayerPos, stepAmbient } from '../ambient';
+import { MUSIC, SOUNDS, TRACKS, getAmbient, onAmbient, pauseAmbient, playAmbient, setAmbientPlayer, setAmbientVolume, stepAmbient } from '../ambient';
 import { useT } from '../i18n';
 
 const BODY = require('../../assets/audio-player.jpg');
 const THUMB = require('../../assets/audio-thumb.png');
 const IW = 2576, IH = 1314; // the picture's own units (Jörg's photo, in pixels)
+const R = 42; // the corners: rounded to follow the stitching (it runs about 28 in from the edge, with a small curve)
 // the player's size: nearly as wide as an iPhone held upright (a little less on a very small screen)
 const sizeFor = (winW, winH) => {
   const PW = Math.min(380, Math.round(Math.min(winW, winH) * 0.94));
@@ -26,7 +28,7 @@ const VMIN = 0.05;
 const SX = 1387, Y_TOP = 262, Y_BOT = 996, THUMB_D = 159;
 const SLOT = { x: 1287, y: 150, w: 200, h: 960 }; // where a finger can take the slider
 
-export default function TapePlayer({ bottomBar = 0, sideBar = 0, onMenu }) {
+export default function TapePlayer({ onMenu }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
@@ -35,28 +37,9 @@ export default function TapePlayer({ bottomBar = 0, sideBar = 0, onMenu }) {
   const at = (x, y, w, h) => ({ position: 'absolute', left: x * f, top: y * f, width: w * f, height: h * f });
   const [s, setS] = useState(getAmbient());
   useEffect(() => onAmbient(setS), []);
-  // where it sits: where it was left, kept on screen (the first time: the right side, above the bar)
-  const place = (p) => ({
-    x: Math.max(6 + insets.left, Math.min(winW - PW - sideBar - 6, p ? p.x : winW - PW - sideBar - 12)),
-    y: Math.max(insets.top + 6, Math.min(winH - PH - bottomBar - 10, p ? p.y : winH - PH - bottomBar - 16)),
-  });
-  const xy = useRef(new Animated.ValueXY(place(s.pos))).current;
-  const placeRef = useRef(place);
-  placeRef.current = place;
-  // when it shows, and when the phone turns: where it was left, kept on the screen
-  useEffect(() => { xy.setValue(place(getAmbient().pos)); }, [winW, winH, s.showPlayer, sideBar, bottomBar]);
-  const start = useRef({ x: 0, y: 0 });
-  const drag = useRef(PanResponder.create({
-    onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) + Math.abs(g.dy) > 6,
-    onMoveShouldSetPanResponderCapture: (_, g) => Math.abs(g.dx) + Math.abs(g.dy) > 10,
-    onPanResponderGrant: () => { start.current = { x: xy.x._value, y: xy.y._value }; },
-    onPanResponderMove: (_, g) => xy.setValue({ x: start.current.x + g.dx, y: start.current.y + g.dy }),
-    onPanResponderRelease: (_, g) => {
-      const p = placeRef.current({ x: start.current.x + g.dx, y: start.current.y + g.dy });
-      Animated.spring(xy, { toValue: p, useNativeDriver: false, friction: 7 }).start();
-      setPlayerPos(p);
-    },
-  })).current;
+  // it fades in with its dark layer
+  const fade = useRef(new Animated.Value(0)).current;
+  useEffect(() => { if (s.showPlayer) { fade.setValue(0); Animated.timing(fade, { toValue: 1, duration: 200, useNativeDriver: true }).start(); } }, [s.showPlayer]);
   // the knobs' lines turn a notch for every click (all the way round over the choices and "off")
   const notch = (list, id) => (list.findIndex((x) => x.id === id) + 1) * (300 / list.length);
   const k1 = useRef(new Animated.Value(notch(SOUNDS, s.sound))).current;
@@ -90,8 +73,10 @@ export default function TapePlayer({ bottomBar = 0, sideBar = 0, onMenu }) {
     </Animated.View>
   );
   return (
-    <Animated.View {...drag.panHandlers} style={[styles.body, { width: PW, height: PH, borderRadius: PW * 0.04, transform: xy.getTranslateTransform() }]} accessibilityLabel={t('Audio Player')}>
-      <View style={[styles.inner, { width: PW, height: PH, borderRadius: PW * 0.04 }]}>
+    // the half-dark layer takes every touch, so nothing underneath can be used until the player is closed
+    <Animated.View style={[StyleSheet.absoluteFill, styles.scrim, { opacity: fade }]} onStartShouldSetResponder={() => true} accessibilityViewIsModal>
+    <View style={[styles.body, { width: PW, height: PH, borderRadius: R * f }]} accessibilityLabel={t('Audio Player')}>
+      <View style={[styles.inner, { width: PW, height: PH, borderRadius: R * f }]}>
         <Image source={BODY} style={{ width: PW, height: PH }} resizeMode="stretch" />
         {/* the three lines: the Music and Sounds page; the down arrow: close the player */}
         <Pressable onPress={onMenu} hitSlop={4} style={at(2120, 120, 210, 160)} accessibilityRole="button" accessibilityLabel={t('Music and Sounds')} />
@@ -125,13 +110,15 @@ export default function TapePlayer({ bottomBar = 0, sideBar = 0, onMenu }) {
         </View>
         <Text numberOfLines={1} style={[styles.label, label, { position: 'absolute', left: (SX - 200) * f, width: 400 * f, top: 1112 * f, textAlign: 'center' }]}>{t('Volume')}</Text>
       </View>
+    </View>
     </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
   // a soft drop shadow all round, a little deeper below
-  body: { position: 'absolute', left: 0, top: 0, zIndex: 170,
+  scrim: { zIndex: 170, backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center' },
+  body: {
     shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.55, shadowRadius: 14, elevation: 14 },
   inner: { overflow: 'hidden' },
   label: { fontFamily: fonts.ui, fontWeight: '600', color: '#4a4a4a' },

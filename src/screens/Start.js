@@ -197,7 +197,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
     {/* A thin see-through black strip across the top, above everything (the cover opens underneath it):
         the languages on the left (tap one to switch, unless the parental controls keep the language fixed)
         and Profiles on the right (the child reading now, once there are profiles), centred in the strip. */}
-    <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top + 4, height: 32, zIndex: 100, backgroundColor: 'rgba(0,0,0,0.5)',
+    <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, height: 32, zIndex: 100, backgroundColor: 'rgba(0,0,0,0.5)',
       flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, gap: 10 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 11, flexShrink: 1, flexWrap: 'wrap' }}>
         {LANGS.map(([k, name]) => (
