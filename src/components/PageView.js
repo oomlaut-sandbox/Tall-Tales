@@ -115,6 +115,8 @@ export const PageView = forwardRef(function PageView(
       </View>
       <View style={[styles.textBox, { paddingHorizontal: L.padX, paddingTop: L.padY, paddingBottom: L.padY + bottomInset }]}>
         <Felt opacity={0.7} />
+        {/* a page of two pictures: the second fills the words square */}
+        {!end && page?.image2 && !(page.text || '').trim() ? <Image source={page.image2} style={styles.fill} resizeMode="cover" /> : null}
         {L.wide ? <Fade edge="left" size={Math.round(L.textW * 0.09)} max={0.13} /> : <Fade edge="top" size={Math.round(L.textH * 0.09)} max={0.13} />}
         {/* the spine: a thin dark grey line where the two squares meet */}
         <View pointerEvents="none" style={L.wide ? styles.spineV : styles.spine} />

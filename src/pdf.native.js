@@ -84,16 +84,18 @@ export async function buildStoryHtml(story0, layout = 'stacked', fontKey = 'seri
   const story = { ...story0, pages: story0.pages.filter((p) => !p.titlePage) }; // the PDF makes its own title page
   const face = await fontFace(fontKey);
   const pics = [];
-  for (const p of story.pages) pics.push(await imageData(p.image));
+  const pics2 = []; // the second picture of a page of two pictures (in place of the words)
+  for (const p of story.pages) { pics.push(await imageData(p.image)); pics2.push(p.image2 && !(p.text || '').trim() ? await imageData(p.image2) : null); }
   const out = [];
   out.push(`<div class="pg title"><h1>${esc(story.title)}</h1>${story.author ? `<div class="by">by ${esc(story.author)}</div>` : ''}<div class="made">Made with Oomlaut Reader</div></div>`);
   story.pages.forEach((p, i) => {
     const pic = pics[i];
     if (layout === 'spreads') {
       if (pic) out.push(`<div class="pg full"><img src="${pic}"/></div>`);
+      if (pics2[i]) out.push(`<div class="pg full"><img src="${pics2[i]}"/></div>`);
       if (p.text && p.text.trim()) out.push(`<div class="pg words"><p>${esc(p.text)}</p></div>`);
     } else {
-      out.push(`<div class="pg"><div class="book${layout === 'landscape' ? ' row' : ''}"><div class="sq">${pic ? `<img src="${pic}"/>` : ''}</div><div class="sq txt">${p.text ? `<p>${esc(p.text)}</p>` : ''}</div></div><div class="num">${i + 1}</div></div>`);
+      out.push(`<div class="pg"><div class="book${layout === 'landscape' ? ' row' : ''}"><div class="sq">${pic ? `<img src="${pic}"/>` : ''}</div>${pics2[i] ? `<div class="sq"><img src="${pics2[i]}"/></div>` : `<div class="sq txt">${p.text ? `<p>${esc(p.text)}</p>` : ''}</div>`}</div><div class="num">${i + 1}</div></div>`);
     }
   });
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${css(face, bookFont(fontKey).css, layout)}</style></head><body>${out.join('')}</body></html>`;

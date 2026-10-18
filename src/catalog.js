@@ -92,7 +92,7 @@ export async function loadStoreBook(book) {
     ? (() => { const w = (c.writer || '').trim(), a = (c.artist || '').trim(); if (w && a) return w.toLowerCase() === a.toLowerCase() ? `Written and illustrated by ${w}.` : `Written by ${w} and illustrated by ${a}.`; return w ? `Written by ${w}.` : `Illustrated by ${a}.`; })()
     : '';
   const coverImg = c.cover ? { uri: fresh(base(c.cover)) } : null;
-  const pages = c.pages.map((p) => ({ pid: p.pid, text: p.text || '', image: p.image ? { uri: fresh(base(p.image)) } : null, w: p.w || 1, h: p.h || 1 }));
+  const pages = c.pages.map((p) => ({ pid: p.pid, text: p.text || '', image: p.image ? { uri: fresh(base(p.image)) } : null, w: p.w || 1, h: p.h || 1, image2: p.image2 ? { uri: fresh(base(p.image2)) } : null }));
   // like the books made in the app: the cover, a blank back of the cover, then a title page with the credits
   const titlePage = { pid: `title-${c.id}`, titlePage: true, text: `${(c.title || '').replace(/\.+$/, '')}.${credits ? ` ${credits}` : ''}`, image: coverImg, w: 1600, h: 1600 };
   return {

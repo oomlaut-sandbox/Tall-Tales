@@ -34,7 +34,7 @@ async function upload(path, bytes, contentType) {
 // onStep(text) reports progress. The book goes in hidden; the Store Manager shows it.
 export async function publishToStore(story, onStep = () => {}) {
   if (!(await isStoreAdmin())) throw new Error('Only the store owner can publish books.');
-  const pages = story.pages.filter((p) => (p.text && p.text.trim()) || p.uri);
+  const pages = story.pages.filter((p) => (p.text && p.text.trim()) || p.uri || p.uri2);
   if (!pages.length) throw new Error('This book has no pages yet.');
   // the same store book each time this book is published
   const { data: existing } = await supabase.from('books').select('id,shelf_id,sort,blurb,published').eq('source_story', story.id).maybeSingle();
@@ -46,7 +46,9 @@ export async function publishToStore(story, onStep = () => {}) {
     onStep(`Uploading page ${n} of ${pages.length}…`);
     let image = null;
     if (p.uri) { image = `pages/${p.pid}.jpg`; await upload(`${id}/${image}`, await readBytes(p.uri), 'image/jpeg'); }
-    outPages.push({ pid: p.pid, text: (p.text || '').trim(), image, w: p.w || 1600, h: p.h || 1600 });
+    let image2 = null; // a second picture where the words would be (a page of two pictures)
+    if (p.uri2 && !(p.text || '').trim()) { image2 = `pages/${p.pid}-2.jpg`; await upload(`${id}/${image2}`, await readBytes(p.uri2), 'image/jpeg'); }
+    outPages.push({ pid: p.pid, text: (p.text || '').trim(), image, w: p.w || 1600, h: p.h || 1600, ...(image2 ? { image2, w2: p.w2 || 1600, h2: p.h2 || 1600 } : {}) });
   }
   onStep('Uploading the cover…');
   const coverUri = (story.cover && story.cover.uri) || (pages.find((p) => p.uri) || {}).uri;

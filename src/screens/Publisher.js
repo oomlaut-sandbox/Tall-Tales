@@ -34,7 +34,7 @@ export function draftFrom(story) {
     title: story.title,
     writer: story.writer || '',
     artist: story.artist || '',
-    pages: story.pages.filter((p) => !p.titlePage).map((p) => ({ pid: p.pid, text: p.text, uri: p.image ? p.image.uri : null, w: p.w, h: p.h })),
+    pages: story.pages.filter((p) => !p.titlePage).map((p) => ({ pid: p.pid, text: p.text, uri: p.image ? p.image.uri : null, w: p.w, h: p.h, uri2: p.image2 ? p.image2.uri : null, w2: p.w2 || 1, h2: p.h2 || 1 })),
     cover: story.cover || null,
   };
 }
@@ -102,12 +102,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const makePdf = async ({ mode, layout }) => {
     setGateFor(null);
     const d = latest.current;
-    const pages = d.pages.filter((p) => p.text.trim() || p.uri);
+    const pages = d.pages.filter((p) => p.text.trim() || p.uri || p.uri2);
     if (!pages.length) return toast('Add a page with a picture or words first.');
     setMaking(true);
     toast(mode === 'print' ? 'Getting your story ready to print…' : 'Making your PDF…');
     try {
-      const st = { title: d.title.trim() || 'My story', pages: pages.map((p) => ({ text: p.text.trim(), image: p.uri ? { uri: p.uri } : null })) };
+      const st = { title: d.title.trim() || 'My story', pages: pages.map((p) => ({ text: p.text.trim(), image: p.uri ? { uri: p.uri } : null, image2: p.uri2 && !p.text.trim() ? { uri: p.uri2 } : null })) };
       if (mode === 'print') await printStory(st, layout, fontKey);
       else await shareStoryPdf(st, layout, fontKey);
     } catch (e) {
@@ -250,7 +250,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
 
   // Add Image asks first: choose a picture from the phone, or take a photo (a drawing, say).
   // Taking a photo opens the camera, so a grown-up answers a question before it opens.
-  const [imgAsk, setImgAsk] = useState(null); // 'page' | 'cover': which square the picture is for
+  const [imgAsk, setImgAsk] = useState(null); // 'page' | 'page2' | 'cover': which square the picture is for
+  // ('page2': a second picture in the words square, for a page of two pictures and no words)
   const [camGate, setCamGate] = useState(null); // 'page' | 'cover' waiting for the grown-up check
   const pickImage = () => setImgAsk('page');
   const placeImage = async (target, source) => {
@@ -258,6 +259,11 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     try {
       const ph = await choosePhoto(source);
       if (!ph) return;
+      if (target === 'page2') {
+        if (page.uri2) dropPicture(page.uri2);
+        update({ uri2: ph.uri, w2: ph.w, h2: ph.h });
+        return;
+      }
       if (page.uri) dropPicture(page.uri);
       update(ph);
     } catch (e) {
@@ -270,10 +276,14 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     if (page.uri) dropPicture(page.uri);
     update({ uri: null, w: 1, h: 1 });
   };
+  const removeImage2 = () => {
+    if (page.uri2) dropPicture(page.uri2);
+    update({ uri2: null, w2: 1, h2: 1 });
+  };
 
   const next = () => {
     if (i === draft.pages.length - 1) {
-      if (!page.text.trim() && !page.uri) return toast('Add a picture or some words before the next page.');
+      if (!page.text.trim() && !page.uri && !page.uri2) return toast('Add a picture or some words before the next page.');
       if (draft.pages.length >= MAX_PAGES) return toast(FULL);
       setDraft((d) => ({ ...d, pages: [...d.pages, blank()] }));
     }
@@ -302,6 +312,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const removePage = (k) => {
     const p = draft.pages[k];
     if (p.uri) dropPicture(p.uri);
+    if (p.uri2) dropPicture(p.uri2);
     setDraft((d) => {
       const pages = d.pages.filter((_, n) => n !== k);
       return { ...d, pages: pages.length ? pages : [blank()] };
@@ -315,7 +326,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     clearTimeout(timer.current);
     try {
       const list = await saveUserStory(latest.current);
-      const hasPages = latest.current.pages.some((p) => p.text.trim() || p.uri);
+      const hasPages = latest.current.pages.some((p) => p.text.trim() || p.uri || p.uri2);
       toast(hasPages ? 'Saved to My Library.' : 'Nothing to save yet, so no story was added.');
       onDone(list);
     } catch (e) {
@@ -325,7 +336,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
 
   const deleteStory = async () => {
     clearTimeout(timer.current);
-    draft.pages.forEach((p) => p.uri && dropPicture(p.uri));
+    draft.pages.forEach((p) => { if (p.uri) dropPicture(p.uri); if (p.uri2) dropPicture(p.uri2); });
     const list = await deleteUserStory(draft.id);
     toast(`“${draft.title.trim() || 'Untitled story'}” deleted.`);
     onDone(list);
@@ -365,15 +376,36 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           )}
           {!wide ? <Fade edge="bottom" size={Math.round(side * 0.1)} max={0.22} /> : null}
         </Pressable>
-        <Pressable onPress={openWords} accessibilityRole="button" accessibilityLabel={`Words for page ${i + 1}`} ref={wordsRef} collapsable={false} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>{/* the whole words square opens the editor */}
+        <Pressable onPress={page.uri2 ? () => setImgAsk('page2') : openWords} accessibilityRole="button" accessibilityLabel={page.uri2 ? 'Change the second image' : `Words for page ${i + 1}`} ref={wordsRef} collapsable={false} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>{/* the whole words square opens the editor */}
+          {/* a second picture instead of words: a page of two pictures */}
+          {page.uri2 ? <Image source={{ uri: page.uri2 }} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" /> : null}
           {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
           <Spine wide={wide} />
-          {/* Tapping the words opens a big editor (just the words page, above the keyboard). */}
-          <View style={{ flex: 1, justifyContent: 'center', minHeight: 0 }}>
-            <Text style={[styles.input, { fontFamily: 'SpecialElite_400Regular' }, !page.text && { color: '#666' }]} numberOfLines={7}>
-              {page.text || 'To add text, tap here. Two or three sentences reads best.'}
-            </Text>
-          </View>
+          {page.uri2 ? (
+            <View style={[styles.artBtns, { bottom: 12 }]}>
+              <Text style={styles.chip}>Change image</Text>
+              <Pressable onPress={removeImage2} hitSlop={6} accessibilityLabel="Remove the second image"><Text style={styles.chip}>Remove</Text></Pressable>
+            </View>
+          ) : (
+            <>
+              {/* Tapping the words opens a big editor (just the words page, above the keyboard). */}
+              <View style={{ flex: 1, justifyContent: 'center', minHeight: 0 }}>
+                <Text style={[styles.input, { fontFamily: 'SpecialElite_400Regular' }, !page.text && { color: '#666' }]} numberOfLines={7}>
+                  {page.text || 'To add text, tap here. Two or three sentences reads best.'}
+                </Text>
+              </View>
+              {/* no words yet: a small Polaroid in the bottom corner offers a second picture instead */}
+              {!page.text.trim() ? (
+                <Pressable onPress={() => setImgAsk('page2')} hitSlop={6} accessibilityRole="button" accessibilityLabel="Add another image page"
+                  style={{ position: 'absolute', left: side * 0.07, bottom: side * 0.07, flexDirection: 'row', alignItems: 'center', gap: side * 0.035 }}>
+                  <View style={{ width: side * 0.22, height: side * 0.22, shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 3, shadowOffset: { width: 0, height: 2 } }}>
+                    <Image source={POLAROID} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+                  </View>
+                  <Text style={{ fontFamily: fonts.ui, fontSize: Math.max(12, Math.round(side * 0.04)), color: '#555', maxWidth: side * 0.42 }}>Add another image page</Text>
+                </Pressable>
+              ) : null}
+            </>
+          )}
         </Pressable>
         <DogEar u={u} under={colors.earUnder} onPress={next} label="Next page" />
         <Pressable onPress={() => setGuide(true)} style={[styles.help, { top: 10, right: 10 }]} hitSlop={8} accessibilityLabel="How to make a story">
@@ -427,7 +459,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               {/* beside the picture: the page's name on top (level with the picture's top), its buttons at the bottom */}
               <View style={{ flex: 1, minWidth: 0, height: 64, justifyContent: 'space-between' }}>
               <Pressable onPress={() => { setI(k); setPagesOpen(false); }}>
-                <Text numberOfLines={1} style={styles.prowTitle}>Page {k + 1}<Text style={styles.prowSub}>{'  ·  '}{p.text.trim() || (p.uri ? 'Picture only' : 'Empty')}</Text></Text>
+                <Text numberOfLines={1} style={styles.prowTitle}>Page {k + 1}<Text style={styles.prowSub}>{'  ·  '}{p.text.trim() || (p.uri && p.uri2 ? 'Two pictures' : p.uri || p.uri2 ? 'Picture only' : 'Empty')}</Text></Text>
               </Pressable>
               <View style={{ flexDirection: 'row', gap: 8 }}>
               <Pressable onPress={() => move(k, -1)} disabled={k === 0} hitSlop={6} style={[styles.pbtn, k === 0 && { opacity: 0.3 }]} accessibilityLabel={`Move page ${k + 1} up`}><Text style={styles.pbtnText}>↑</Text></Pressable>

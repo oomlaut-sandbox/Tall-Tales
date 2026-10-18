@@ -25,7 +25,7 @@ export function creditsLine(writer, artist) {
 }
 
 function fromSaved(s) {
-  const bodyPages = s.pages.map((p, i) => ({ pid: p.pid || `i${i}`, text: p.text || '', image: p.uri ? { uri: p.uri } : null, w: p.w || 1, h: p.h || 1 }));
+  const bodyPages = s.pages.map((p, i) => ({ pid: p.pid || `i${i}`, text: p.text || '', image: p.uri ? { uri: p.uri } : null, w: p.w || 1, h: p.h || 1, image2: p.uri2 && !(p.text || '').trim() ? { uri: p.uri2 } : null, w2: p.w2 || 1, h2: p.h2 || 1 }));
   const credits = creditsLine(s.writer, s.artist);
   const coverImg = s.cover && s.cover.uri ? { uri: s.cover.uri } : (bodyPages[0] && bodyPages[0].image) || null;
   // Every book opens like 'Different': the cover, a blank back of the cover, and a title page with the credits.
@@ -42,7 +42,7 @@ function fromSaved(s) {
   };
 }
 
-const hasContent = (p) => (p.text && p.text.trim()) || p.uri;
+const hasContent = (p) => (p.text && p.text.trim()) || p.uri || p.uri2;
 
 // Copy a just-picked photo into the story's own folder so it survives.
 export async function keepPicture(storyId, uri) {
@@ -55,7 +55,7 @@ export function dropPicture(uri) {
 // draft: { id, title, pages: [{ pid, text, uri, w, h }] }. Empty pages are left out.
 export function saveUserStory(draft) {
   return serial(async () => {
-    const pages = draft.pages.filter(hasContent).map((p) => ({ pid: p.pid, text: p.text.trim(), uri: p.uri || null, w: p.w, h: p.h }));
+    const pages = draft.pages.filter(hasContent).map((p) => ({ pid: p.pid, text: p.text.trim(), uri: p.uri || null, w: p.w, h: p.h, uri2: (!p.text.trim() && p.uri2) || null, w2: p.w2 || 1, h2: p.h2 || 1 }));
     const list = await loadJSON('stories', []);
     const i = list.findIndex((s) => s.id === draft.id);
     if (!pages.length) {
