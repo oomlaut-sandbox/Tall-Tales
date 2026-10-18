@@ -7,6 +7,9 @@ import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG } from '../look';
 import { Bar, BarMeta, Burger, DogEar, Panel, WithBar } from '../components/Chrome';
 import { accessLabel, bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
+import Membership from '../components/Membership';
+import { buyBook, canOpen, usePurchases } from '../purchases';
+import { PRICES } from '../prices';
 import CoverArt from '../components/CoverArt';
 import { SHOWN_BOOKS, STORIES } from '../story';
 import { BlurView } from 'expo-blur';
@@ -194,6 +197,18 @@ export function Store({ u, openStory, openMenu, toast }) {
   const [cat, setCat] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [open, setOpen] = useState(null); // the book whose details are showing
+  const ps = usePurchases(); // member? which single books are bought?
+  const [pay, setPay] = useState(null); // { kind: 'join' | 'buy', book } waiting for the grown-up question
+  const [member, setMember] = useState(false); // the membership screen
+  const [buying, setBuying] = useState(null);
+  const passed = async () => {
+    const p = pay; setPay(null);
+    if (!p) return;
+    if (p.kind === 'join') { setMember(true); return; }
+    setBuying(p.book.id);
+    try { const r = await buyBook(p.book); if (r === 'done') toast && toast(`“${p.book.title}” is yours. Tap Read now.`); } catch (e) { toast && toast(e.message); }
+    setBuying(null);
+  };
   const load = async (pull) => {
     if (pull) setRefreshing(true);
     try { const c = await refreshCatalog(); if (c) setCat(c); } catch (e) { /* offline: keep the saved copy */ }
@@ -240,8 +255,13 @@ export function Store({ u, openStory, openMenu, toast }) {
       {open ? (
         <BookCard key={open.book.id} u={u} book={open.book} rect={open.rect} sideways={sideways}
           barH={sideways ? 0 : u * 17 + insets.bottom} barW={sideways ? Math.round(u * 17 * 1.15) : 0}
-          busy={fetching === open.book.id} onClose={() => setOpen(null)} onRead={(rect) => read(open.book, rect)} />
+          busy={fetching === open.book.id || buying === open.book.id} onClose={() => setOpen(null)} onRead={(rect) => read(open.book, rect)}
+          allowed={canOpen(ps, open.book)} onJoin={() => setPay({ kind: 'join', book: open.book })} onBuy={() => setPay({ kind: 'buy', book: open.book })} />
       ) : null}
+      {/* buying is for grown-ups: the grown-up question first */}
+      <ParentGate visible={!!pay} reason={pay && pay.kind === 'buy' ? `Buying “${pay.book.title}” for ${pay.book.price_label || PRICES.book}.` : 'The membership is a paid subscription.'}
+        onPass={passed} onCancel={() => setPay(null)} />
+      <Membership visible={member} onClose={() => setMember(false)} toast={toast} />
     </WithBar>
   );
 }
@@ -249,7 +269,7 @@ export function Store({ u, openStory, openMenu, toast }) {
 // A book's details as a floating card in the middle of the screen. The tapped cover first slides
 // and grows into the card's top-left corner, then the card fades in around it, with the title and
 // details underneath (beside it when the phone is sideways). Closing runs it backwards.
-function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy }) {
+function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, allowed, onJoin, onBuy }) {
   const { width: winW, height: winH } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const areaW = winW - barW, areaH = winH - barH;
@@ -304,12 +324,16 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy }
   const blurb = book.blurb || (bundledStory(book.id) || {}).blurb; // the catalog's text, or the bundled book's own
   const pageCount = bundledStory(book.id) ? bundledStory(book.id).pages.length * 2 : book.page_count;
   const meta = [pageCount ? `${pageCount} pages` : null, book.age_range ? `ages ${book.age_range}` : null, accessLabel(book)].filter(Boolean).join(' · ');
-  const canRead = book.access === 'free' && (bundledStory(book.id) || !book.bundled); // bundled, or downloaded from the store
-  // the action: a small solid green pill beside the cover, level with its bottom
+  const here = !!(bundledStory(book.id) || !book.bundled); // in the app, or downloadable from the store
+  const canRead = allowed && here; // free, a member, or a single book they bought
+  // the action: a small solid green pill beside the cover, level with its bottom.
+  // Read now when it can be read; otherwise Buy (single books) or Join to read (members' books)
+  const action = canRead ? 'read' : book.access === 'paid' ? 'buy' : book.access === 'member' ? 'join' : null;
+  const label = busy ? 'One moment…' : action === 'read' ? 'Read now' : action === 'buy' ? `Buy ${book.price_label || PRICES.book}` : action === 'join' ? 'Join to read' : 'Read now';
   const pill = (
-    <Pressable disabled={!canRead || busy} onPress={() => onRead({ x: boxX + M, y: boxY + M, w: cs, h: cs })}
-      style={[styles.sheetBtn, !canRead && { opacity: 0.45 }]} accessibilityRole="button">
-      <Text style={styles.sheetBtnText}>{busy ? 'Opening…' : book.access === 'free' ? 'Read now' : 'Buy now'}</Text>
+    <Pressable disabled={!action || busy} onPress={() => (action === 'read' ? onRead({ x: boxX + M, y: boxY + M, w: cs, h: cs }) : action === 'buy' ? onBuy() : onJoin())}
+      style={[styles.sheetBtn, !action && { opacity: 0.45 }]} accessibilityRole="button">
+      <Text style={styles.sheetBtnText}>{label}</Text>
     </Pressable>
   );
   // under the cover: title, author, pages and price, then a short description
@@ -319,7 +343,9 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy }
       {book.author ? <Text style={styles.sheetSub}>by {book.author}</Text> : null}
       <Text style={styles.sheetSub}>{meta}</Text>
       {blurb ? <Text style={[styles.sheetText, { marginTop: 6 }]}>{blurb}</Text> : null}
-      {!canRead ? <Text style={[styles.sheetText, { marginTop: 6 }]}>{book.access === 'free' ? 'Downloading new books arrives in the next update.' : 'Memberships and buying single books arrive in the next update.'}</Text> : null}
+      {!here ? <Text style={[styles.sheetText, { marginTop: 6 }]}>Downloading new books arrives in the next update.</Text> : null}
+      {/* a single book can also be read with the membership */}
+      {action === 'buy' ? <Pressable onPress={onJoin} hitSlop={8} accessibilityRole="button"><Text style={[styles.sheetSub, { textDecorationLine: 'underline', marginBottom: 18 }]}>Or read every book with the membership</Text></Pressable> : null}
     </View>
   );
   return (

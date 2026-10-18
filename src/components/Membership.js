@@ -1,0 +1,95 @@
+// The membership screen (for grown-ups; the store asks the grown-up question first). Two plans, yearly
+// picked to start with, a 7-day free trial, Restore Purchases, and the renewal terms Apple asks for.
+// Until purchases are switched on (see purchases.native.js) it shows the prices and says it's coming soon.
+import React, { useState } from 'react';
+import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { colors, fonts } from '../theme';
+import { PRICES, PRIVACY_URL, TERMS_URL } from '../prices';
+import { joinMembership, planPrice, purchasesReady, restorePurchases, usePurchases } from '../purchases';
+
+export default function Membership({ visible, onClose, toast }) {
+  const s = usePurchases();
+  const [plan, setPlan] = useState('yearly');
+  const [busy, setBusy] = useState(null); // 'join' | 'restore'
+  if (!visible) return null;
+  const live = purchasesReady && s.ready && !!s.plans;
+  const join = async () => {
+    setBusy('join');
+    try {
+      const r = await joinMembership(plan);
+      if (r === 'done') { toast && toast('Welcome! Every book in the Book Store is yours to read.'); onClose(); }
+    } catch (e) { toast && toast(e.message); }
+    setBusy(null);
+  };
+  const restore = async () => {
+    setBusy('restore');
+    try {
+      const r = await restorePurchases();
+      toast && toast(r === 'restored' ? 'Your purchases are back.' : 'No earlier purchases were found for this Apple ID.');
+      if (r === 'restored') onClose();
+    } catch (e) { toast && toast(e.message); }
+    setBusy(null);
+  };
+  const Plan = ({ id, title, price, per, note }) => (
+    <Pressable onPress={() => setPlan(id)} accessibilityRole="radio" accessibilityState={{ selected: plan === id }} style={[styles.plan, plan === id && styles.planOn]}>
+      <View style={[styles.dot, plan === id && styles.dotOn]} />
+      <View style={{ flex: 1 }}>
+        <Text style={styles.planTitle}>{title}</Text>
+        {note ? <Text style={styles.planNote}>{note}</Text> : null}
+      </View>
+      <Text style={styles.planPrice}>{price}<Text style={styles.per}>{per}</Text></Text>
+    </Pressable>
+  );
+  return (
+    <View style={styles.scrim}>
+      <View style={styles.card}>
+        <ScrollView contentContainerStyle={{ gap: 14 }} bounces={false}>
+          <Text style={styles.kicker}>For grown-ups</Text>
+          <Text style={styles.title}>Oomlaut Reader Membership</Text>
+          <Text style={styles.body}>Every book in the Book Store, and every new book as it arrives. Read them aloud, record your own voice, keep reading together.</Text>
+          <View style={{ gap: 10 }}>
+            <Plan id="yearly" title="Yearly" price={planPrice(s, 'yearly')} per=" / year" note="Best value: about a third off" />
+            <Plan id="monthly" title="Monthly" price={planPrice(s, 'monthly')} per=" / month" />
+          </View>
+          <Pressable onPress={join} disabled={!live || !!busy} accessibilityRole="button" style={[styles.join, (!live || busy) && { opacity: 0.5 }]}>
+            {busy === 'join' ? <ActivityIndicator color={colors.white} /> : <Text style={styles.joinText}>{`Try ${PRICES.trialDays} days free`}</Text>}
+          </Pressable>
+          {!live ? <Text style={styles.soon}>Memberships are being set up and arrive in the next update.</Text> : null}
+          <Text style={styles.small}>
+            {`Free for ${PRICES.trialDays} days, then ${planPrice(s, plan)} a ${plan === 'yearly' ? 'year' : 'month'}. Payment is charged to your Apple ID. The membership renews automatically unless it’s cancelled at least 24 hours before the end of the period. You can manage or cancel it any time in your App Store account settings.`}
+          </Text>
+          <View style={styles.links}>
+            <Pressable onPress={restore} disabled={!purchasesReady || !!busy} hitSlop={8}><Text style={[styles.link, !purchasesReady && { opacity: 0.5 }]}>{busy === 'restore' ? 'Restoring…' : 'Restore Purchases'}</Text></Pressable>
+            <Pressable onPress={() => Linking.openURL(TERMS_URL)} hitSlop={8}><Text style={styles.link}>Terms of Use</Text></Pressable>
+            {PRIVACY_URL ? <Pressable onPress={() => Linking.openURL(PRIVACY_URL)} hitSlop={8}><Text style={styles.link}>Privacy Policy</Text></Pressable> : null}
+          </View>
+          <Pressable onPress={onClose} style={styles.close} accessibilityRole="button"><Text style={styles.closeText}>Not now</Text></Pressable>
+        </ScrollView>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  scrim: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', paddingHorizontal: 20, paddingVertical: 50, zIndex: 85 },
+  card: { backgroundColor: colors.panel, padding: 24, maxHeight: '100%', alignSelf: 'center', width: '100%', maxWidth: 480 },
+  kicker: { color: colors.muted, fontFamily: fonts.ui, fontSize: 13, fontWeight: '700' },
+  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 24 },
+  body: { color: '#e2e2e2', fontFamily: fonts.ui, fontSize: 15, lineHeight: 21 },
+  plan: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#2e2e2e', borderRadius: 14, paddingHorizontal: 14, paddingVertical: 14, borderWidth: 2, borderColor: 'transparent' },
+  planOn: { borderColor: colors.green },
+  dot: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: '#8a8a8a' },
+  dotOn: { borderColor: colors.green, backgroundColor: colors.green },
+  planTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 17 },
+  planNote: { color: '#bdbdbd', fontFamily: fonts.ui, fontSize: 13, marginTop: 2 },
+  planPrice: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 17 },
+  per: { fontWeight: '400', fontSize: 14, color: '#cfcfcf' },
+  join: { backgroundColor: colors.green, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
+  joinText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 17 },
+  soon: { color: '#e2e2e2', fontFamily: fonts.ui, fontSize: 14, textAlign: 'center' },
+  small: { color: '#a9a9a9', fontFamily: fonts.ui, fontSize: 12, lineHeight: 17 },
+  links: { flexDirection: 'row', flexWrap: 'wrap', gap: 18 },
+  link: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 13, textDecorationLine: 'underline' },
+  close: { alignSelf: 'center', paddingVertical: 6, paddingHorizontal: 18 },
+  closeText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
+});

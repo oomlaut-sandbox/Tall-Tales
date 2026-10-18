@@ -102,4 +102,4 @@ export async function loadStoreBook(book) {
   };
 }
 
-export const accessLabel = (b) => (b.access === 'free' ? 'Free' : b.access === 'member' ? 'Members' : b.price_label || 'Members or buy');
+export const accessLabel = (b) => (b.access === 'free' ? 'Free' : b.access === 'member' ? 'Members' : `Members or ${b.price_label || '$2.99'}`);

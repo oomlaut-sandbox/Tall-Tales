@@ -17,8 +17,32 @@ Things agreed with Jörg for when we build the store publishing pipeline. Not st
 - Moments chosen by hand, or suggested and approved by Jörg; every clip listened to before it ships.
 - Check ElevenLabs' commercial-use terms for the plan before shipping.
 
-## Memberships and purchases
-- RevenueCat. Jörg must accept the Paid Apps Agreement and apply for the Small Business Program.
+## Memberships and purchases (prices decided by Jörg, 18 Oct 2026)
+- Free to download, with three free books (marked 'free' in the Store Manager).
+- Membership: $4.99 a month or $39.99 a year (USD; Apple sets other countries), 7-day free trial on both.
+  Unlocks every book. Raise for new members later as the library grows (e.g. $6.99 / $49.99 at 30+ books);
+  existing members keep their price.
+- Single books: $2.99 each, to keep (books marked 'paid'; members can read them too).
+- Built in the app (src/purchases*.js, src/prices.js, src/components/Membership.js, Book Store card):
+  Join to read / Buy $2.99 / Restore Purchases, all behind the grown-up question. Switched off until the
+  REVENUECAT_IOS_KEY GitHub secret exists (RevenueCat's public iOS SDK key; the TestFlight build writes it in).
+
+### Setting it up (Jörg; never paste keys or secrets in chat)
+1. App Store Connect → Business: accept the Paid Apps Agreement, add banking and tax. Apply for the
+   App Store Small Business Program (15% instead of 30%).
+2. App Store Connect → the app → Subscriptions: a group "Oomlaut Reader Membership" with
+   - oomlaut.member.monthly — $4.99, 1 month, introductory offer: free for 1 week
+   - oomlaut.member.yearly — $39.99, 1 year, introductory offer: free for 1 week
+3. App Store Connect → In-App Purchases (non-consumable), one per paid book:
+   oomlaut.book.<book id with - turned into _>, $2.99 (e.g. oomlaut.book.rough_lives)
+4. RevenueCat (free account): add the iOS app (bundle id com.oomlaut.reader) with an App Store Connect
+   in-app purchase key; import the products; make an entitlement "member" with both subscriptions; make the
+   default offering with the monthly and annual packages.
+5. GitHub → repository secrets: REVENUECAT_IOS_KEY = RevenueCat's public iOS API key (starts with appl_).
+6. Then build; test with a Sandbox tester (App Store Connect → Users and Access → Sandbox).
+- Still to do before launch: a privacy policy page (its link goes on the membership screen and in the App
+  Store listing), and making sure paid books that aren't inside the app can only be downloaded by members or
+  buyers (the download check on the server).
 - Possible members-only extra: storyteller (ElevenLabs) narration for books parents make, with a monthly limit.
 
 ## Later: the felt pebble mascot (Jörg, 14 Oct 2026)
