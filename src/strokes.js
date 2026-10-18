@@ -72,6 +72,22 @@ export function makeFill(strokes, x, y, aspect, colour) {
     const nb = [cx > 0 ? c - 1 : -1, cx < cols - 1 ? c + 1 : -1, cy > 0 ? c - cols : -1, cy < rows - 1 ? c + cols : -1];
     for (const q of nb) if (q >= 0 && !fill[q] && !wall[q]) { fill[q] = 1; stack.push(q); }
   }
+  // take in the tiny pockets left where lines meet (little white specks right next to the fill)
+  const seen = new Uint8Array(cols * rows);
+  for (let c0 = 0; c0 < cols * rows; c0++) {
+    if (seen[c0] || fill[c0] || wall[c0]) continue;
+    const comp = [c0]; seen[c0] = 1; let touches = false;
+    for (let k = 0; k < comp.length && comp.length <= 60; k++) {
+      const c = comp[k], cx = c % cols;
+      const nb = [cx > 0 ? c - 1 : -1, cx < cols - 1 ? c + 1 : -1, c >= cols ? c - cols : -1, c + cols < cols * rows ? c + cols : -1];
+      for (const q of nb) {
+        if (q < 0) continue;
+        if (fill[q]) touches = true;
+        else if (!wall[q] && !seen[q]) { seen[q] = 1; comp.push(q); }
+      }
+    }
+    if (comp.length <= 60 && touches) for (const c of comp) fill[c] = 1;
+  }
   // grow it a little, so it tucks under the lines around it
   let grown = fill;
   for (let pass = 0; pass < 2; pass++) {
