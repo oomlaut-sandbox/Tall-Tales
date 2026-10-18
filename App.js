@@ -41,6 +41,7 @@ import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, MENU_ICON, Opti
 import { DESK_FELT, DeskFelt, Felt, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
 import Profiles from './src/screens/Profiles';
+import PlaybackPanel from './src/components/PlaybackPanel';
 import Playlists from './src/screens/Playlists';
 import { playOrder } from './src/playlists';
 import { fadeOutAmbient, setAmbientPlayer } from './src/ambient';
@@ -115,6 +116,7 @@ function Root() {
   const [message, setMessage] = useState('');
   const [toastSpot, setToastSpot] = useState(null); // while recording: bubbles sit in the middle of the picture page, clear of the words
   const [playMenu, setPlayMenu] = useState(0);
+  const [playOpen, setPlayOpen] = useState(false); // Playback Options away from a book
   const toastTimer = useRef(null);
 
   const toast = useCallback((m) => {
@@ -352,6 +354,9 @@ function Root() {
         <Toast message={message} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         {/* the Audio Player for music and nature sounds: in the middle of the screen over a dark layer until it's closed */}
         <TapePlayer onMenu={() => { setAmbientPlayer(false); go('music'); }} />
+        <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 175 }]}>
+          <PlaybackPanel open={playOpen && screen !== 'reader'} onClose={() => setPlayOpen(false)} prefs={prefs} setPrefs={setPrefs} toast={toast} bottom={drawerBottom} inset={drawerRight} />
+        </View>
         {/* the main menu always slides in over everything else on screen (pop-ups, pages boxes, speech bubbles) */}
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
           <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
@@ -359,7 +364,8 @@ function Root() {
             {controls.store ? <Option glyph={<StoreIcon />} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => go('store')} /> : null}
             {controls.playback && !controls.playMode ? <Option glyph={<PlayGlyph />} title={t('Playback Settings')} sub={t('Reader controls')} onPress={() => {
               setDrawer(false);
-              if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else toast(t('Open a story first, then choose how it plays.'));
+              // in a book: the reader's own panel; anywhere else: the same choices in their own panel
+              if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else setTimeout(() => setPlayOpen(true), 300);
             }} /> : null}
             <Option glyph={<MusicIcon size={24} weight={3.4} /* the same shape as the reading bar's note */ />} title={t('Music and Sounds')} sub={t('Relaxing sounds and gentle music')} onPress={() => go('music')} />
             {controls.create ? <Option glyph={<PlusIcon />} title={t('Create a Story')} sub={t('Make your own book')} onPress={() => openPublisher(null)} /> : null}

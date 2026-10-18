@@ -42,7 +42,7 @@ export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : 
 // Book narrators (ElevenLabs). Fatima (voice key 'lily') is the default.
 // A tiny printed page: white sheet with the picture and words squares, upright or sideways.
 export const NARRATORS = [['lily', 'Fatima'], ['gregory', 'Henry']]; // add more voices here (and in ci/narrate.js)
-const narratorOf = (prefs) => (NARRATORS.some(([k]) => k === prefs.narrator) ? prefs.narrator : 'lily');
+export const narratorOf = (prefs) => (NARRATORS.some(([k]) => k === prefs.narrator) ? prefs.narrator : 'lily');
 const NARRATOR = 0.92; // the phone voice's normal pace
 const VOICE_RECORDING = {
   ...RecordingPresets.HIGH_QUALITY,
@@ -62,7 +62,7 @@ import { markFinished, markFirst, markReadToday } from '../badges';
 import { AUDIO, TIMINGS } from '../narration';
 import { SAMPLES } from '../narration/samples';
 
-const MODES = [
+export const MODES = [
   [<GlassesIcon />, 'self', 'Read Yourself', 'Page by page with no audio'],
   [<TextIcon text="Aa" />, 'learn', 'Learn to Read', 'Says a word when you touch it'],
   [<PlayGlyph count={2} />, 'auto', 'Auto Play', 'Reads the full story with audio'],
@@ -71,7 +71,7 @@ const MODES = [
   // ['✦', 'interactive', 'Interactive', 'Image interaction with touch'],  (hidden for now; hotspot code kept)
 ];
 
-function Seg({ value, options, onChange, stacked }) {
+export function Seg({ value, options, onChange, stacked }) {
   return (
     <View style={stacked ? { gap: 8 } : { flexDirection: 'row', gap: 8 }}>
       {options.map(([v, l, family]) => (
