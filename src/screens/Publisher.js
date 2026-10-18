@@ -398,10 +398,11 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               {!page.text.trim() ? (
                 <Pressable onPress={() => setImgAsk('page2')} hitSlop={6} accessibilityRole="button" accessibilityLabel="Add another image page"
                   style={{ position: 'absolute', left: side * 0.07, bottom: side * 0.07, flexDirection: 'row', alignItems: 'center', gap: side * 0.035 }}>
-                  <View style={{ width: side * 0.22, height: side * 0.22, shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 3, shadowOffset: { width: 0, height: 2 } }}>
-                    <Image source={POLAROID} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+                  {/* just the Polaroid itself, cut from the big picture (its frame: 25–74.5% across, 21–81% down) */}
+                  <View style={{ width: side * 0.17, height: side * 0.17 * 0.6 / 0.495, overflow: 'hidden' }}>
+                    <Image source={POLAROID} style={{ position: 'absolute', width: side * 0.17 / 0.495, height: side * 0.17 / 0.495, left: -side * 0.17 / 0.495 * 0.25, top: -side * 0.17 / 0.495 * 0.21 }} resizeMode="cover" />
                   </View>
-                  <Text style={{ fontFamily: fonts.ui, fontSize: Math.max(12, Math.round(side * 0.04)), color: '#555', maxWidth: side * 0.42 }}>Add another image page</Text>
+                  <Text numberOfLines={1} style={{ fontFamily: fonts.ui, fontSize: Math.max(12, Math.round(side * 0.04)), color: '#555', maxWidth: side * 0.56 }}>Add another image page</Text>
                 </Pressable>
               ) : null}
             </>
