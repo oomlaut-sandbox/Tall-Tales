@@ -23,6 +23,9 @@ Things agreed with Jörg for when we build the store publishing pipeline. Not st
   Unlocks every book. Raise for new members later as the library grows (e.g. $6.99 / $49.99 at 30+ books);
   existing members keep their price.
 - Single books: $2.99 each, to keep (books marked 'paid'; members can read them too).
+- Launch target (Jörg, 18 Oct 2026): 12 books — 3 free + 9 for members — then a steady 1–2 new books a month,
+  with a few ready before launch. (Now: Different, The Rough Lives of Animals, Two Snakes Walk into a Bar;
+  pictures saved for a third in book-art/third-book.)
 - Built in the app (src/purchases*.js, src/prices.js, src/components/Membership.js, Book Store card):
   Join to read / Buy $2.99 / Restore Purchases, all behind the grown-up question. Switched off until the
   REVENUECAT_IOS_KEY GitHub secret exists (RevenueCat's public iOS SDK key; the TestFlight build writes it in).
