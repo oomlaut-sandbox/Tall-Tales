@@ -37,7 +37,7 @@ import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
-import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PlaylistIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
+import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
 import { DESK_FELT, DeskFelt, Felt, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
 import Profiles from './src/screens/Profiles';
@@ -276,7 +276,7 @@ function Root() {
               });
             }}
             notebookHidden={!!flyer && !flyer.landed} onNotebookRect={(r) => setFlyer((f) => (f && !f.to && !f.hold && r ? { ...f, to: r } : f))}
-            onCreate={() => openPublisher(null)} onEdit={openPublisher}
+            onCreate={() => openPublisher(null)} onEdit={openPublisher} onPlaylists={() => go('playlists')}
             removedCount={removed.length} onRestore={() => setRemovedSaved([])}
             onShare={(s) => shareInvite(s.title)} // an invitation to the app, not the book
             onDelete={async (list) => {
@@ -356,7 +356,6 @@ function Root() {
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
           <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
             <Option glyph={<LibraryIcon size={MENU_ICON} />} title={t('My Library')} sub={t('View purchased stories')} onPress={() => go('library')} />
-            <Option glyph={<PlaylistIcon size={MENU_ICON} />} title={t('Playlists')} sub={t('Books read one after another')} onPress={() => go('playlists')} />
             {controls.store ? <Option glyph={<StoreIcon />} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => go('store')} /> : null}
             {controls.playback && !controls.playMode ? <Option glyph={<PlayGlyph />} title={t('Playback Settings')} sub={t('Reader controls')} onPress={() => {
               setDrawer(false);

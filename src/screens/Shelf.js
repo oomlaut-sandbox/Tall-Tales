@@ -4,7 +4,7 @@ import { Animated, Easing, Image, Platform, Pressable, RefreshControl, ScrollVie
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG } from '../look';
-import { Bar, BarMeta, Burger, DogEar, Panel, WithBar } from '../components/Chrome';
+import { Bar, BarMeta, Burger, DogEar, Panel, PlaylistIcon, WithBar } from '../components/Chrome';
 import { ageAllowed, ageOf, ageText, bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
 import Membership from '../components/Membership';
@@ -24,7 +24,7 @@ const TILE = { 2: 47, 3: 31, 4: 22.5 };
 const tileWidth = (w) => `${TILE[COLS(w)]}%`;
 const gridGap = (w) => { const n = COLS(w); return `${(100 - n * TILE[n]) / (n - 1)}%`; };
 
-function Tile({ u, cover, coverArt, title, sub, onPress, onLongPress, plus, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
+function Tile({ u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
   const { width: winW } = useWindowDimensions();
   const ear = u * 3;
   const coverRef = useRef(null);
@@ -41,6 +41,7 @@ function Tile({ u, cover, coverArt, title, sub, onPress, onLongPress, plus, sele
       <View ref={coverRef} collapsable={false} style={{ aspectRatio: 1, backgroundColor: '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
         {coverArt ? <CoverArt cover={coverArt} /> : cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }} resizeMode="cover" /> : null}
         {plus ? <Text style={{ color: colors.white, fontSize: 64, fontWeight: '300' }}>+</Text> : null}
+        {glyph || null}
         {/* a small dog-ear (My Library only; the Book Store covers have none) */}
         {showEar ? <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderLeftWidth: ear, borderBottomWidth: ear, borderLeftColor: 'transparent', borderBottomColor: colors.earUnder }} /> : null}
         {showEar ? <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderRightWidth: ear, borderTopWidth: ear, borderRightColor: 'transparent', borderTopColor: colors.white }} /> : null}
@@ -52,7 +53,7 @@ function Tile({ u, cover, coverArt, title, sub, onPress, onLongPress, plus, sele
         ) : null}
       </View>
       </View>
-      {title ? <Text style={[styles.tileTitle, plus && styles.tileOption]}>{title}</Text> : null}{/* 'Create a story' is an app option, so it's in Helvetica */}
+      {title ? <Text style={[styles.tileTitle, (plus || glyph) && styles.tileOption]}>{title}</Text> : null}{/* 'Create a story' is an app option, so it's in Helvetica */}
       {sub ? <Text style={styles.tileSub}>{sub}</Text> : null}
     </Pressable>
   );
@@ -111,7 +112,7 @@ function NotebookTile({ onPress, hidden, onRect }) {
   );
 }
 
-export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
+export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
   const t = useT();
   const controls = useControls(); // parental controls: My Notebook, Create a story and Select may be hidden
   const { width: winW } = useWindowDimensions();
@@ -165,6 +166,8 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
         {/* Create a story always starts its own row, below the books */}
         {!selecting ? <View style={{ width: '100%' }} /> : null}
         {!selecting && controls.create ? <Tile u={u} plus title="Create a story" onPress={onCreate} /> : null}
+        {/* Playlists (a picture of its own comes later) */}
+        {!selecting && onPlaylists ? <Tile u={u} glyph={<PlaylistIcon size={44} weight={4} />} title={t('Playlists')} onPress={onPlaylists} /> : null}
         {!selecting && removedCount ? (
           <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
             <Text style={styles.restore}>Show removed books ({removedCount})</Text>
