@@ -384,7 +384,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const barTitle = (
     <View style={{ flex: 1, minWidth: 0, paddingLeft: 12 }}>
       <Text numberOfLines={1} style={styles.title}>{t('My Notebook')}</Text>
-      <Text numberOfLines={1} style={styles.sub}>{header} · {i + 1} of {total} · {saved ? 'Saved' : 'Saving…'}</Text>
+      <Text numberOfLines={1} style={styles.sub}>{header} · {t('{a} of {b}', { a: i + 1, b: total })} · {saved ? t('Saved') : t('Saving…')}</Text>
     </View>
   );
   const barBtns = (vertical) => (
