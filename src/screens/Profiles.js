@@ -3,8 +3,8 @@
 // The books, the membership, parents' recordings, the language and the music are the family's.
 // Kids can switch between profiles by tapping (unless a grown-up has turned that off); adding, changing and
 // removing a profile is behind the grown-up question.
-import React, { useEffect, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, DESK_BG } from '../look';
@@ -25,12 +25,15 @@ function Choice({ label, on, onPress }) {
   );
 }
 
-// a coloured sewing button: the child's own (their name is written underneath)
-export function ProfileTile({ p, size, active }) {
+// a coloured sewing button: the child's own (their name is written underneath), with a soft drop shadow.
+// The child reading now (or the colour chosen) is a little bigger.
+export function ProfileTile({ p, size, active, grow = 1.3 }) {
+  const k = useRef(new Animated.Value(active ? grow : 1)).current;
+  useEffect(() => { Animated.spring(k, { toValue: active ? grow : 1, friction: 6, useNativeDriver: true }).start(); }, [active]);
   return (
-    <View style={[{ width: size, height: size, borderRadius: size / 2, alignItems: 'center', justifyContent: 'center' }, active && styles.activeRing]}>
-      <Image source={feltFor(p.color)} style={{ width: active ? size - 10 : size, height: active ? size - 10 : size }} resizeMode="contain" />
-    </View>
+    <Animated.View style={[styles.buttonShadow, { width: size, height: size, transform: [{ scale: k }] }]}>
+      <Image source={feltFor(p.color)} style={{ width: size, height: size }} resizeMode="contain" />
+    </Animated.View>
   );
 }
 
@@ -94,7 +97,7 @@ export default function Profiles({ u, openMenu, setControls }) {
               return (
                 <Pressable key={p.id} disabled={!editing && (!canSwitch || on)} onPress={() => (editing ? openForm(p) : switchProfile(p.id))}
                   accessibilityRole="button" accessibilityLabel={p.name} accessibilityState={{ selected: on }} style={[styles.cell, { width: side }]}>
-                  <ProfileTile p={p} size={side} active={on} />
+                  <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}><ProfileTile p={p} size={Math.round(side * 0.68)} active={on} /></View>
                   <Text numberOfLines={1} style={styles.name}>{p.name}</Text>
                   <Text style={styles.age}>{on ? t('Reading now') : ages[p.id] != null ? t('Age {n}', { n: ages[p.id] }) : ' '}</Text>
                 </Pressable>
@@ -102,8 +105,10 @@ export default function Profiles({ u, openMenu, setControls }) {
             })}
             {s.list.length < MAX_PROFILES ? (
               <Pressable onPress={() => setGate('add')} style={[styles.cell, { width: side }]} accessibilityRole="button" accessibilityLabel={t('Add a child')}>
-                <View style={[styles.addTile, { width: side, height: side, borderRadius: side / 2 }]}>{/* round, like the buttons */}
-                  <Text style={[styles.plus, { fontSize: side * 0.42 }]}>+</Text>
+                <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={[styles.addTile, { width: Math.round(side * 0.68), height: Math.round(side * 0.68), borderRadius: side }]}>{/* round, like the buttons */}
+                    <Text style={[styles.plus, { fontSize: side * 0.3 }]}>+</Text>
+                  </View>
                 </View>
                 <Text numberOfLines={1} style={styles.name}>{t('Add a child')}</Text>
                 <Text style={styles.age}> </Text>
@@ -125,7 +130,7 @@ export default function Profiles({ u, openMenu, setControls }) {
           <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20, paddingTop: insets.top + 20 }} keyboardShouldPersistTaps="handled">
             <View style={styles.card}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-                <ProfileTile p={{ name: form.name || '?', color: form.color }} size={64} />
+                <ProfileTile p={{ name: form.name || '?', color: form.color }} size={60} />
                 <TextInput value={form.name} onChangeText={(name) => setForm({ ...form, name })} placeholder={t('Name')} placeholderTextColor="#8a8a8a"
                   style={styles.input} maxLength={20} autoCapitalize="words" autoCorrect={false} returnKeyType="done" accessibilityLabel={t('Name')} />
               </View>
@@ -133,14 +138,16 @@ export default function Profiles({ u, openMenu, setControls }) {
               <View style={styles.choices}>
                 {PROFILE_COLORS.map(([c, img]) => (
                   <Pressable key={c} onPress={() => setForm({ ...form, color: c })} accessibilityRole="radio" accessibilityLabel={c} accessibilityState={{ selected: form.color === c }}
-                    style={[styles.swatch, form.color === c && styles.swatchOn]}>
-                    <Image source={img} style={{ width: 38, height: 38 }} resizeMode="contain" />
+                    style={styles.swatch}>
+                    <ProfileTile p={{ color: c }} size={34} active={form.color === c} grow={1.35} />
                   </Pressable>
                 ))}
               </View>
               <Text style={styles.section}>{t('Age')}</Text>
               <View style={styles.choices}>
                 <Choice label={t('Show every book')} on={form.age == null} onPress={() => setForm({ ...form, age: null })} />
+              </View>
+              <View style={styles.choices}>
                 {AGES.map((a) => <Choice key={a} label={String(a)} on={form.age === a} onPress={() => setForm({ ...form, age: a })} />)}
               </View>
               <Text style={styles.small}>{t('Books rated for older children are hidden.')}</Text>
@@ -177,11 +184,11 @@ const styles = StyleSheet.create({
   band: { backgroundColor: '#c4630f', paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 24, paddingBottom: 140, alignItems: 'center' },
-  col: { width: '100%', maxWidth: 520, gap: 16 },
+  col: { width: '100%', maxWidth: 520, gap: 26 },
   p: { fontFamily: fonts.ui, fontSize: 16, lineHeight: 22, color: '#e6e6e6' },
   small: { fontFamily: fonts.ui, fontSize: 13, lineHeight: 18, color: '#bdbdbd' },
   link: { fontFamily: fonts.ui, fontSize: 14, color: '#ff9a8a', textDecorationLine: 'underline', marginTop: 4 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 16, rowGap: 22 },
   cell: { alignItems: 'center', gap: 6 },
   activeRing: { borderWidth: 3, borderColor: colors.white },
   initial: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
@@ -192,13 +199,14 @@ const styles = StyleSheet.create({
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 24, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
   pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 50 },
-  card: { backgroundColor: '#3a3a3a', borderRadius: 16, padding: 18, gap: 12, width: '100%', maxWidth: 480, alignSelf: 'center' },
+  card: { backgroundColor: '#3a3a3a', borderRadius: 16, padding: 20, gap: 16, width: '100%', maxWidth: 480, alignSelf: 'center' },
   input: { flex: 1, minWidth: 0, height: 48, borderRadius: 10, backgroundColor: '#d6d6d6', paddingHorizontal: 14, fontFamily: fonts.ui, fontSize: 20, color: '#222' },
-  section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 4 },
+  section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14 },
   choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   choice: { paddingHorizontal: 14, height: 36, borderRadius: 18, backgroundColor: '#2a2a2a', alignItems: 'center', justifyContent: 'center' },
   choiceOn: { backgroundColor: colors.green },
   choiceText: { fontFamily: fonts.ui, fontSize: 15, color: '#dcdcdc', fontWeight: '600' },
-  swatch: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
+  swatch: { width: 50, height: 50, alignItems: 'center', justifyContent: 'center' },
+  buttonShadow: { shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.55, shadowRadius: 6, elevation: 6 },
   swatchOn: { borderWidth: 3, borderColor: colors.white },
 });
