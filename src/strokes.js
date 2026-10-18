@@ -90,7 +90,7 @@ export function makeFill(strokes, x, y, aspect, colour) {
   }
   // grow it a little, so it tucks under the lines around it
   let grown = fill;
-  for (let pass = 0; pass < 2; pass++) {
+  for (let pass = 0; pass < 3; pass++) {
     const g2 = grown.slice();
     for (let c = 0; c < cols * rows; c++) if (grown[c]) {
       const cx = c % cols;
