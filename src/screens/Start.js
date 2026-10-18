@@ -198,7 +198,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
         the languages on the left (tap one to switch, unless the parental controls keep the language fixed)
         and Profiles on the right (the child reading now, once there are profiles), centred in the strip. */}
     <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, height: 32, zIndex: 100, backgroundColor: 'rgba(0,0,0,0.5)',
-      flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingBottom: 6, gap: 10 }}>{/* (the words sit a few points above the middle) */}
+      flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingBottom: 2, gap: 10 }}>{/* (the words sit a point above the middle) */}
       <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 11, flexShrink: 1, flexWrap: 'wrap' }}>
         {LANGS.map(([k, name]) => (
           <Pressable key={k} disabled={!controls.language} onPress={() => setLang(k)} hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }} accessibilityRole="button" accessibilityLabel={name} accessibilityState={{ selected: lang === k }}>
