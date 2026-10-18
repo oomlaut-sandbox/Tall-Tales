@@ -308,7 +308,7 @@ function Root() {
         <ParentGate visible={profileGate} reason="Your profile is for grown-ups." onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
         <Toast message={message} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         {/* the little floating tape player for music and ambient sounds (Playback Options → Music and sounds) */}
-        <TapePlayer bottomBar={sideways ? 0 : barH} />
+        <TapePlayer bottomBar={sideways ? 0 : barH} onMenu={() => go('music')} toast={toast} />
         {/* the main menu always slides in over everything else on screen (pop-ups, pages boxes, speech bubbles) */}
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
           <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>

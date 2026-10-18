@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme';
 import { Slider } from './Chrome';
-import { SLEEP_TIMES, TRACKS, getAmbient, onAmbient, pauseAmbient, playAmbient, setAmbientPlayer, setAmbientVolume, setSleepTimer, stopAmbient } from '../ambient';
+import { MUSIC, SLEEP_TIMES, SOUNDS, chooseAmbient, getAmbient, onAmbient, pauseAmbient, playAmbient, setAmbientPlayer, setAmbientVolume, setSleepTimer, stopAmbient } from '../ambient';
 import { useT } from '../i18n';
 
 const Chip = ({ label, on, onPress }) => (
@@ -18,20 +18,22 @@ export default function AmbientControls() {
   const [s, setS] = useState(getAmbient());
   const [vol, setVol] = useState(null);
   useEffect(() => onAmbient(setS), []);
-  const pick = (id) => (s.track === id && s.playing ? pauseAmbient() : playAmbient(id));
+  // tap one to choose it (it starts playing); tap it again to switch that one off. A sound and a piece of music can play together.
+  const pick = (kind, id) => chooseAmbient(kind, s[kind] === id ? null : id);
   return (
     <View style={{ gap: 10 }}>
       <Text style={styles.small}>{t('Relaxing sounds and gentle music that keep playing while you use the app. Lovely at bedtime.')}</Text>
       <View style={styles.chips}>
-        <Chip label={t('Off')} on={!s.track || !s.playing} onPress={stopAmbient} />
+        <Chip label={s.playing ? t('Pause') : t('Play')} on={s.playing} onPress={s.playing ? pauseAmbient : playAmbient} />
+        <Chip label={t('Off')} on={!s.sound && !s.music} onPress={stopAmbient} />
       </View>
       <Text style={styles.group}>{t('Nature sounds')}</Text>
       <View style={styles.chips}>
-        {TRACKS.filter((x) => x.kind === 'sound').map((x) => <Chip key={x.id} label={t(x.name)} on={s.track === x.id && s.playing} onPress={() => pick(x.id)} />)}
+        {SOUNDS.map((x) => <Chip key={x.id} label={t(x.name)} on={s.sound === x.id} onPress={() => pick('sound', x.id)} />)}
       </View>
       <Text style={styles.group}>{t('Music')}</Text>
       <View style={styles.chips}>
-        {TRACKS.filter((x) => x.kind === 'music').map((x) => <Chip key={x.id} label={t(x.name)} on={s.track === x.id && s.playing} onPress={() => pick(x.id)} />)}
+        {MUSIC.map((x) => <Chip key={x.id} label={t(x.name)} on={s.music === x.id} onPress={() => pick('music', x.id)} />)}
       </View>
       <Text style={styles.group}>{t('Volume')}</Text>
       <Slider value={vol ?? s.volume} min={0.05} max={1} step={0.05} leftLabel={t('Quieter')} rightLabel={t('Louder')} showValue={false}

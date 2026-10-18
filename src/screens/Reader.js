@@ -1,5 +1,5 @@
 // The reader: page curl, read-aloud with highlighting, learn-to-read, interactive pictures.
-import { getAmbient, setAmbientPlayer } from '../ambient';
+import { getAmbient, onRecordRequest, setAmbientPlayer } from '../ambient';
 import { MusicIcon } from '../components/Chrome';
 import { useControls } from '../controls';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -291,6 +291,14 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       toast('Recording couldn’t start. Try again.');
     }
   };
+
+  // the felt tape player's Record button: records (or stops) here, like the red button in the bar
+  const recToggle = useRef(null);
+  recToggle.current = () => {
+    if (!controls.recording) return;
+    if (st.current.recording) stopRec(true); else startRec();
+  };
+  useEffect(() => onRecordRequest(() => recToggle.current && recToggle.current()), []);
 
   const stopRec = async (save) => {
     if (!st.current.recording) return;
