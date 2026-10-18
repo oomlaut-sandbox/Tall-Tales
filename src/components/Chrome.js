@@ -228,9 +228,8 @@ export function MusicIcon({ size = 20, color = colors.white, weight = 2 }) {
   const head = size * 0.42;
   return (
     <View style={{ width: size, height: size }}>
-      <View style={{ position: 'absolute', left: size * 0.12, bottom: size * 0.02, width: head, height: head * 0.74, borderRadius: head, backgroundColor: color, transform: [{ rotate: '-22deg' }] }} />
-      <View style={{ position: 'absolute', left: size * 0.12 + head - weight * 0.9, bottom: size * 0.22, width: weight, height: size * 0.76, backgroundColor: color }} />
-      <View style={{ position: 'absolute', left: size * 0.12 + head - weight * 0.9, top: size * 0.02, width: size * 0.34, height: weight, backgroundColor: color, transformOrigin: 'left', transform: [{ rotate: '38deg' }] }} />
+      <View style={{ position: 'absolute', left: size * 0.27, bottom: size * 0.02, width: head, height: head * 0.74, borderRadius: head, backgroundColor: color, transform: [{ rotate: '-22deg' }] }} />
+      <View style={{ position: 'absolute', left: size * 0.27 + head - weight * 0.9, bottom: size * 0.22, width: weight, height: size * 0.76, backgroundColor: color }} />
     </View>
   );
 }
