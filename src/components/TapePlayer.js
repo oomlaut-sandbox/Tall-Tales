@@ -84,7 +84,7 @@ export default function TapePlayer({ onMenu }) {
         {/* Play and Pause, with their names underneath */}
         <Pressable onPress={playAmbient} style={at(161, 142, 264, 270)} accessibilityRole="button" accessibilityLabel={t('Play')} />
         <Pressable onPress={pauseAmbient} style={at(490, 187, 161, 161)} accessibilityRole="button" accessibilityLabel={t('Pause')} />
-        {[[t('Play'), 293, 446], [t('Pause'), 570, 446]].map(([l, cx, top]) => (
+        {[[t('Play'), 293, 470], [t('Pause'), 570, 470]].map(([l, cx, top]) => (
           <Text key={cx} numberOfLines={1} style={[styles.label, label, { position: 'absolute', left: (cx - 150) * f, width: 300 * f, top: top * f, textAlign: 'center' }]}>{l}</Text>
         ))}
         {/* the two windows, named above them, with the choice in white */}
@@ -129,5 +129,5 @@ const styles = StyleSheet.create({
   mark: { position: 'absolute', borderRadius: 3, backgroundColor: '#2a2a2d' },
   close: { fontFamily: fonts.ui, fontSize: 10, color: 'rgba(255,255,255,0.85)' },
   window: { justifyContent: 'center' },
-  choice: { fontFamily: fonts.ui, fontWeight: '600', color: '#ffffff' },
+  choice: { fontFamily: fonts.ui, fontWeight: '600', color: '#ffffff', textAlign: 'center', marginTop: 4 }, // in the middle of the dark felt
 });
