@@ -39,6 +39,23 @@ export function draftFrom(story) {
   };
 }
 
+// The empty picture square: Jörg's light grey Polaroid, a plus in the exact middle of its blue square, and
+// "Add Image" in dark grey just under the frame (measured from the picture: the blue square's middle is at
+// 49.7% across and 46.4% down; the frame ends 81% down).
+const POLAROID = require('../../assets/polaroid.jpg');
+function EmptyPicture({ side }) {
+  const len = Math.round(side * 0.19), th = Math.max(2, Math.round(side * 0.008));
+  const cx = side * 0.497, cy = side * 0.464;
+  return (
+    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      <Image source={POLAROID} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
+      <View style={{ position: 'absolute', left: cx - len / 2, top: cy - th / 2, width: len, height: th, backgroundColor: colors.white }} />
+      <View style={{ position: 'absolute', left: cx - th / 2, top: cy - len / 2, width: th, height: len, backgroundColor: colors.white }} />
+      <Text style={{ position: 'absolute', left: 0, right: 0, top: side * 0.835, textAlign: 'center', color: '#4a4a4a', fontFamily: fonts.ui, fontWeight: '700', fontSize: Math.max(15, Math.round(side * 0.055)) }}>Add Image</Text>
+    </View>
+  );
+}
+
 export default function Publisher({ u, initial, fontKey, openMenu, toast, onChange, onDone, storeAdmin, onIdeas }) {
   const insets = useSafeAreaInsets();
   const [draft, setDraft] = useState(initial);
@@ -347,10 +364,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               </View>
             </>
           ) : (
-            <View style={{ alignItems: 'center' }}>
-              <Text style={[styles.plus, { fontSize: u * 30, lineHeight: u * 30 }]}>+</Text>
-              <Text style={styles.addImage}>Add Image</Text>
-            </View>
+            <EmptyPicture side={side} />
           )}
           {!wide ? <Fade edge="bottom" size={Math.round(side * 0.1)} max={0.22} /> : null}
         </Pressable>
@@ -562,8 +576,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                     </Pressable>
                   ) : (
                     <Pressable onPress={() => setImgAsk('cover')} style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]} accessibilityRole="button">
-                      <Text style={[styles.plus, { fontSize: u * 30, lineHeight: u * 30 }]}>+</Text>
-                      <Text style={styles.addImage}>Add Image</Text>
+                      <EmptyPicture side={W} />
                     </Pressable>
                   )}
                   {/* the title: type in it, drag it anywhere on the cover */}
