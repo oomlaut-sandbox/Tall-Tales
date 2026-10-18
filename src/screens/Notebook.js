@@ -634,6 +634,7 @@ function Badge({ b, d, toast }) {
   const t = useT();
   const art = BADGE_ART[b.id];
   const title = t(b.title), how = t(b.how);
+  // its name and how it's earned, written under the badges (no speech bubble)
   const say = () => toast(b.earned ? `${title}! ${how}` : `${title}: ${how}`);
   const label = `${title}${b.earned ? ', earned' : ', not earned yet'}`;
   if (art) {
@@ -686,6 +687,7 @@ function scatter(items, side, region, seed, maxD) {
 // Bottom page: the firsts and a patch for every book finished, scattered too.
 function BadgeSpread({ log, side, wide, toast }) {
   const t = useT();
+  const [note, setNote] = useState(null); // the tapped badge's words, shown under the second set of badges
   const badges = useMemo(() => (log ? allBadges(log) : []), [log]);
   const count = log ? Object.keys(log.finished).length : 0;
   const streak = log ? currentStreak(log.days) : 0;
@@ -702,7 +704,7 @@ function BadgeSpread({ log, side, wide, toast }) {
   const bottom = useMemo(() => scatter(bottomItems, side, { x: m, y: side * 0.14, w: side - 2 * m, h: side * 0.58 }, 'bottom', top.d) /* clear of the spine, the same rows as on top */ /* the same size as the top page's */, [side, bottomItems.map((b) => b.id + b.earned).join()]);
   const pinned = ({ d, placed }) => placed.map(({ x, y, turn, it }) => (
     <View key={it.id} style={{ position: 'absolute', left: x, top: y, transform: [{ rotate: `${turn.toFixed(1)}deg` }] }}>
-      <Badge b={it} d={d} toast={toast} />
+      <Badge b={it} d={d} toast={setNote} />
     </View>
   ));
   return (
@@ -718,8 +720,13 @@ function BadgeSpread({ log, side, wide, toast }) {
       <View style={{ width: side, height: side, backgroundColor: WHITE, overflow: 'hidden' }}>
         <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.09)} max={0.13} />
         <Spine wide={wide} />
-
         {pinned(bottom)}
+        {/* the tapped badge: its name and how to earn it, in the small typewriter writing */}
+        {note ? (
+          <View pointerEvents="none" style={{ position: 'absolute', left: hintBox.x, top: hintBox.y, width: hintBox.w, height: hintBox.h, justifyContent: 'center' }}>
+            <Text style={[styles.boardStats, { marginTop: 0, lineHeight: 18 }]}>{note}</Text>
+          </View>
+        ) : null}
       </View>
     </View>
   );
