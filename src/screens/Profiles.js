@@ -31,8 +31,9 @@ export function ProfileTile({ p, size, active, grow = 1.3 }) {
   const k = useRef(new Animated.Value(active ? grow : 1)).current;
   useEffect(() => { Animated.spring(k, { toValue: active ? grow : 1, friction: 6, useNativeDriver: true }).start(); }, [active]);
   return (
-    <Animated.View style={[styles.buttonShadow, { width: size, height: size, transform: [{ scale: k }] }]}>
-      <Image source={feltFor(p.color)} style={{ width: size, height: size }} resizeMode="contain" />
+    <Animated.View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center', transform: [{ scale: k }] }}>
+      {/* the picture has the shadow drawn in (the button is 300 of its 360 pixels) */}
+      <Image source={feltFor(p.color)} style={{ width: size * 1.2, height: size * 1.2 }} resizeMode="contain" />
     </Animated.View>
   );
 }
