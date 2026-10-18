@@ -1,4 +1,5 @@
 // The reader: page curl, read-aloud with highlighting, learn-to-read, interactive pictures.
+import { useControls } from '../controls';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Platform, Pressable, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
@@ -80,6 +81,7 @@ function Seg({ value, options, onChange, stacked }) {
 }
 
 export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary, toast, menuRequest, landscape, setToastSpot }) {
+  const controls = useControls(); // parental controls: recording, sharing and printing may be switched off
   const insets = useSafeAreaInsets();
   const pages = useMemo(() => [...story.pages, { end: true }], [story]);
   const [idx, setIdx] = useState(0);
@@ -541,7 +543,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   }, [W, H]);
   const pageProps = (i) => ({
     page: pages[i], end: !!pages[i]?.end, width: W, height: H, textScale: prefs.textScale || 1, fontKey: prefs.font || 'serif',
-    onReadAgain: () => { stopReading(); setIdx(0); }, onLibrary: goLibrary, onShare: () => setShareGate(true),
+    onReadAgain: () => { stopReading(); setIdx(0); }, onLibrary: goLibrary, onShare: controls.sharing ? () => setShareGate(true) : null,
   });
   const showHot = false; // Interactive mode is switched off for now
   const layers = [];
@@ -672,10 +674,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
               <View style={[styles.small, { alignItems: 'center', gap: 14 }]}>
                 {/* while recording, the time so far floats in a small grey box just above the pulsing record button
                     (it takes no room, so the buttons never move) */}
+{controls.recording ? (
                 <View>
                   {recording ? <RecTimer start={recStart.current} style={{ position: 'absolute', left: -20, right: -20, bottom: '100%', marginBottom: 16, alignItems: 'center' }} /> : null}
                   <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
                 </View>
+                ) : null}
                 <PauseButton onPress={onPause} disabled={recording} />
                 <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
               </View>
@@ -698,10 +702,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <View style={[styles.small, { flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
             {/* while recording, the time so far floats in a small grey box just left of the pulsing record button
                 (it takes no room, so the buttons never move) */}
+{controls.recording ? (
             <View>
               {recording ? <RecTimer start={recStart.current} style={{ position: 'absolute', right: '100%', marginRight: 14, top: 0, bottom: 0, justifyContent: 'center' }} /> : null}
               <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
             </View>
+            ) : null}
             <PauseButton onPress={onPause} disabled={recording} />
             <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
           </View>
@@ -776,8 +782,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
               onDone={(v) => { setVolDraft(null); const vol = Math.round(v * 100) / 100; setPrefs((p) => ({ ...p, soundVol: vol })); setEffectsVolume(vol); playSound('swish'); }} />
           ) : null}
         </View>
-        {/* Print: two choices, each a little picture of the page */}
-        <View style={styles.setting}>
+        {/* Print: two choices, each a little picture of the page (not when the parental controls turn sharing off) */}
+        {controls.sharing ? <View style={styles.setting}>
           <Text style={styles.help}>{printing ? 'Getting ready to print…' : 'Print this book'}</Text>
           <View style={{ flexDirection: 'row', gap: 14, opacity: printing ? 0.4 : 1 }}>
             {[['stacked', 'Portrait'], ['landscape', 'Landscape']].map(([lay, label]) => (
@@ -787,7 +793,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
               </Pressable>
             ))}
           </View>
-        </View>
+        </View> : null}
           </>
         )}
       </Panel>

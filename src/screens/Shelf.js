@@ -5,11 +5,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG } from '../look';
 import { Bar, BarMeta, Burger, DogEar, Panel, WithBar } from '../components/Chrome';
-import { accessLabel, bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
+import { bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
 import Membership from '../components/Membership';
 import { buyBook, canOpen, usePurchases } from '../purchases';
 import { PRICES } from '../prices';
+import { useT } from '../i18n';
+import { useControls } from '../controls';
 import CoverArt from '../components/CoverArt';
 import { SHOWN_BOOKS, STORIES } from '../story';
 import { BlurView } from 'expo-blur';
@@ -89,6 +91,7 @@ const NOTEBOOK_COVER = require('../../assets/leather-cover.jpg');
 // My Notebook on the shelf: a small copy of the leather notebook on the start page, with the same
 // rounded corners (tiny along the spine at the top, rounder at the bottom) and no dog-ear.
 function NotebookTile({ onPress, hidden, onRect }) {
+  const t = useT();
   const { width: winW } = useWindowDimensions();
   const [w, setW] = useState(0);
   const ref = useRef(null);
@@ -96,19 +99,21 @@ function NotebookTile({ onPress, hidden, onRect }) {
   const measure = (then) => (ref.current && ref.current.measureInWindow ? ref.current.measureInWindow((x, y, ww, h) => then(ww ? { x, y, w: ww, h } : null)) : then(null));
   const corners = { borderTopLeftRadius: w * 0.012, borderTopRightRadius: w * 0.012, borderBottomLeftRadius: w * 0.102, borderBottomRightRadius: w * 0.102 };
   return (
-    <Pressable onPress={() => measure(onPress)} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel="My Notebook">
+    <Pressable onPress={() => measure(onPress)} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={t('My Notebook')}>
       <View ref={ref} collapsable={false} onLayout={(e) => { setW(e.nativeEvent.layout.width); if (onRect) setTimeout(() => measure(onRect), 30); }}
         style={[{ aspectRatio: 1, backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, elevation: 8, opacity: hidden ? 0 : 1 }, corners]}>
         <View style={[{ flex: 1, overflow: 'hidden' }, corners]}>
           <Image source={NOTEBOOK_COVER} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
         </View>
       </View>
-      <Text style={styles.tileTitle}>My Notebook</Text>
+      <Text style={styles.tileTitle}>{t('My Notebook')}</Text>
     </Pressable>
   );
 }
 
 export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
+  const t = useT();
+  const controls = useControls(); // parental controls: My Notebook, Create a story and Select may be hidden
   const { width: winW } = useWindowDimensions();
   const [selecting, setSelecting] = useState(false);
   const [picked, setPicked] = useState([]);
@@ -139,15 +144,15 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
         <Bar u={u} vertical={v}>
           <Burger u={u} onPress={openMenu} />
           <View style={{ flex: 1 }} />
-          {/* Select: in the bottom right corner of the bar */}
-          <Pressable onPress={() => setSelecting(true)} hitSlop={10} style={styles.barBtn} accessibilityRole="button"><Text style={styles.barSmall}>Select</Text></Pressable>
+          {/* Select: in the bottom right corner of the bar (not when the parental controls turn sharing off) */}
+          {controls.sharing ? <Pressable onPress={() => setSelecting(true)} hitSlop={10} style={styles.barBtn} accessibilityRole="button"><Text style={styles.barSmall}>{t('Select')}</Text></Pressable> : null}
         </Bar>
       ))}>
-      <Band color={colors.green} felt="library" title={selecting ? 'Select books' : 'My Library'}
+      <Band color={colors.green} felt="library" title={selecting ? 'Select books' : t('My Library')}
         sub={selecting ? (picked.length ? `${picked.length} selected` : 'Tap books to select them') : 'Your stories, ready to read'} />
       <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]}>
         {/* My Notebook: always the first book on the shelf (notes, drawings and reading badges) */}
-        {!selecting && onNotebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
+        {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
         {!selecting && onNotebook ? <View style={{ width: '100%' }} /> : null}{/* the notebook has the top row to itself */}
         {stories.map((s) => (
           // just the title under each cover (no author, pages or other details)
@@ -158,7 +163,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
         ))}
         {/* Create a story always starts its own row, below the books */}
         {!selecting ? <View style={{ width: '100%' }} /> : null}
-        {!selecting ? <Tile u={u} plus title="Create a story" onPress={onCreate} /> : null}
+        {!selecting && controls.create ? <Tile u={u} plus title="Create a story" onPress={onCreate} /> : null}
         {!selecting && removedCount ? (
           <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
             <Text style={styles.restore}>Show removed books ({removedCount})</Text>
@@ -191,6 +196,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
 
 // The Book Store: shelves of books from the catalog you curate in Supabase (see src/catalog.js).
 export function Store({ u, openStory, openMenu, toast }) {
+  const t = useT();
   const { width: winW, height: winH } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const sideways = winW > winH * 1.1;
@@ -238,11 +244,11 @@ export function Store({ u, openStory, openMenu, toast }) {
   };
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
-      <Band color={colors.blue} felt="store" title="Book Store" sub="Discover and buy new books" />
+      <Band color={colors.blue} felt="store" title={t('Book Store')} sub={t('Discover and buy new books')} />
       <ScrollView contentContainerStyle={{ paddingTop: 46, paddingBottom: 24, gap: 30 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.white} />}>
         {/* laid out like My Library: whole covers in a grid, nothing cut off, no sideways scrolling */}
-        {[...(featured ? [{ id: 'featured', title: 'Featured', books: [featured] }] : []), ...rows].map((sh) => (
+        {[...(featured ? [{ id: 'featured', title: t('Featured'), books: [featured] }] : []), ...rows].map((sh) => (
           <View key={sh.id} style={{ gap: 14 }}>
             <Text style={styles.shelfTitle}>{sh.title}</Text>
             <View style={[styles.shelfGrid, { columnGap: gridGap(winW) }]}>
@@ -263,7 +269,7 @@ export function Store({ u, openStory, openMenu, toast }) {
           allowed={canOpen(ps, open.book)} onJoin={() => setPay({ kind: 'join', book: open.book })} onBuy={() => setPay({ kind: 'buy', book: open.book })} />
       ) : null}
       {/* buying is for grown-ups: the grown-up question first */}
-      <ParentGate visible={!!pay} reason={pay && pay.kind === 'buy' ? `Buying “${pay.book.title}” for ${pay.book.price_label || PRICES.book}.` : 'The membership is a paid subscription.'}
+      <ParentGate visible={!!pay} reason={pay && pay.kind === 'buy' ? t('Buying “{title}” for {price}.', { title: pay.book.title, price: pay.book.price_label || PRICES.book }) : t('The membership is a paid subscription.')}
         onPass={passed} onCancel={() => setPay(null)} />
       <Membership visible={member} onClose={() => setMember(false)} toast={toast} />
     </WithBar>
@@ -274,6 +280,7 @@ export function Store({ u, openStory, openMenu, toast }) {
 // and grows into the card's top-left corner, then the card fades in around it, with the title and
 // details underneath (beside it when the phone is sideways). Closing runs it backwards.
 function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, allowed, onJoin, onBuy }) {
+  const t = useT();
   const { width: winW, height: winH } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const areaW = winW - barW, areaH = winH - barH;
@@ -327,13 +334,14 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
   // every square is a page (a screen is a picture page and a words page), so bundled books count both
   const blurb = book.blurb || (bundledStory(book.id) || {}).blurb; // the catalog's text, or the bundled book's own
   const pageCount = bundledStory(book.id) ? bundledStory(book.id).pages.length * 2 : book.page_count;
-  const meta = [pageCount ? `${pageCount} pages` : null, book.age_range ? `ages ${book.age_range}` : null, accessLabel(book)].filter(Boolean).join(' · ');
+  const access = book.access === 'free' ? t('Free') : book.access === 'member' ? t('Members') : t('Members or {price}', { price: book.price_label || PRICES.book });
+  const meta = [pageCount ? t('{n} pages', { n: pageCount }) : null, book.age_range ? t('ages {n}', { n: book.age_range }) : null, access].filter(Boolean).join(' · ');
   const here = !!(bundledStory(book.id) || !book.bundled); // in the app, or downloadable from the store
   const canRead = allowed && here; // free, a member, or a single book they bought
   // the action: a small solid green pill beside the cover, level with its bottom.
   // Read now when it can be read; otherwise Buy (single books) or Join to read (members' books)
   const action = canRead ? 'read' : book.access === 'paid' ? 'buy' : book.access === 'member' ? 'join' : null;
-  const label = busy ? 'One moment…' : action === 'read' ? 'Read now' : action === 'buy' ? `Buy ${book.price_label || PRICES.book}` : action === 'join' ? 'Join to read' : 'Read now';
+  const label = busy ? t('One moment…') : action === 'read' ? t('Read now') : action === 'buy' ? t('Buy {price}', { price: book.price_label || PRICES.book }) : action === 'join' ? t('Join to read') : t('Read now');
   const pill = (
     <Pressable disabled={!action || busy} onPress={() => (action === 'read' ? onRead({ x: boxX + M, y: boxY + M, w: cs, h: cs }) : action === 'buy' ? onBuy() : onJoin())}
       style={[styles.sheetBtn, { paddingHorizontal: 16 }, !action && { opacity: 0.45 }]} accessibilityRole="button">
@@ -344,12 +352,12 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
   const info = (
     <View style={{ gap: 8 }}>
       <Text style={[styles.cardTitle, { marginTop: 10 }]}>{book.title}</Text>
-      {book.author ? <Text style={styles.sheetSub}>by {book.author}</Text> : null}
+      {book.author ? <Text style={styles.sheetSub}>{t('by {name}', { name: book.author })}</Text> : null}
       <Text style={styles.sheetSub}>{meta}</Text>
       {blurb ? <Text style={[styles.sheetText, { marginTop: 6 }]}>{blurb}</Text> : null}
-      {!here ? <Text style={[styles.sheetText, { marginTop: 6 }]}>Downloading new books arrives in the next update.</Text> : null}
+      {!here ? <Text style={[styles.sheetText, { marginTop: 6 }]}>{t('Downloading new books arrives in the next update.')}</Text> : null}
       {/* a single book can also be read with the membership */}
-      {action === 'buy' ? <Pressable onPress={onJoin} hitSlop={8} accessibilityRole="button"><Text style={[styles.sheetSub, { textDecorationLine: 'underline', marginBottom: 18 }]}>Or read every book with the membership</Text></Pressable> : null}
+      {action === 'buy' ? <Pressable onPress={onJoin} hitSlop={8} accessibilityRole="button"><Text style={[styles.sheetSub, { textDecorationLine: 'underline', marginBottom: 18 }]}>{t('Or read every book with the membership')}</Text></Pressable> : null}
     </View>
   );
   return (
@@ -406,11 +414,12 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
 
 // The access label: a small solid tag (green for Free, blue for members, orange to buy) with a soft shadow.
 function Badge({ book }) {
+  const t = useT();
   const bg = book.access === 'free' ? colors.green : book.access === 'member' ? colors.blue : colors.orange;
   return (
     <View style={styles.badgeShadow}>
       <View style={[styles.badge, { backgroundColor: bg }]}>
-        <Text style={[styles.badgeText, book.access === 'paid' && { color: colors.ink }]}>{accessLabel(book)}</Text>
+        <Text style={[styles.badgeText, book.access === 'paid' && { color: colors.ink }]}>{book.access === 'free' ? t('Free') : book.access === 'member' ? t('Members') : t('Members or {price}', { price: book.price_label || PRICES.book })}</Text>
       </View>
     </View>
   );

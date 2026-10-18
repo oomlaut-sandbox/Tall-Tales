@@ -3,9 +3,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
 
-const NUMBER_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+import { NUMBER_WORDS, useLang, useT } from '../i18n';
 
 export default function ParentGate({ visible, reason, onPass, onCancel }) {
+  const t = useT();
+  const words = NUMBER_WORDS[useLang()] || NUMBER_WORDS.en;
   const [q, setQ] = useState({ a: 7, b: 8 });
   const [answer, setAnswer] = useState('');
   const [wrong, setWrong] = useState(false);
@@ -37,8 +39,8 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
     <View ref={scrimRef} style={[styles.scrim, { paddingBottom: covered }]}
       onLayout={() => scrimRef.current && scrimRef.current.measureInWindow((x, y, w, h) => setFrame({ y, h: h || winH }))}>
       <View style={styles.card}>
-        <Text style={styles.kicker}>For grown-ups</Text>
-        <Text style={styles.title}>What is {NUMBER_WORDS[q.a]} times {NUMBER_WORDS[q.b]}?</Text>
+        <Text style={styles.kicker}>{t('For grown-ups')}</Text>
+        <Text style={styles.title}>{t('What is {a} times {b}?', { a: words[q.a], b: words[q.b] })}</Text>
         {reason ? <Text style={styles.body}>{reason}</Text> : null}
         <TextInput
           value={answer}
@@ -48,12 +50,12 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
           autoFocus
           onSubmitEditing={check}
           style={styles.input}
-          accessibilityLabel="Answer"
+          accessibilityLabel={t('Answer')}
         />
-        {wrong ? <Text style={styles.wrong}>That’s not quite right. Try again.</Text> : null}
+        {wrong ? <Text style={styles.wrong}>{t('That’s not quite right. Try again.')}</Text> : null}
         <View style={styles.row}>
-          <Pressable onPress={onCancel} style={styles.btn}><Text style={styles.btnText}>Cancel</Text></Pressable>
-          <Pressable onPress={check} style={[styles.btn, { backgroundColor: colors.deepRed }]}><Text style={styles.btnText}>Continue</Text></Pressable>
+          <Pressable onPress={onCancel} style={styles.btn}><Text style={styles.btnText}>{t('Cancel')}</Text></Pressable>
+          <Pressable onPress={check} style={[styles.btn, { backgroundColor: colors.deepRed }]}><Text style={styles.btnText}>{t('Continue')}</Text></Pressable>
         </View>
       </View>
     </View>

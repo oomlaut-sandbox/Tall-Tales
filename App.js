@@ -22,6 +22,10 @@ import Reader from './src/screens/Reader';
 import Publisher, { draftFrom } from './src/screens/Publisher';
 import CoverTest from './src/screens/CoverTest';
 import Help from './src/screens/Help';
+import Settings from './src/screens/Settings';
+import Membership from './src/components/Membership';
+import { LangContext, deviceLang, translate } from './src/i18n';
+import { ControlsContext, DEFAULT_CONTROLS } from './src/controls';
 import Notebook, { NOTEBOOK_COVER, R_EDGE, R_SPINE } from './src/screens/Notebook';
 import { onNewBadge } from './src/badges';
 import { SHOWN_BOOKS, STORIES } from './src/story';
@@ -29,7 +33,7 @@ import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
-import { CircleIcon, InfoIcon, LibraryIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
+import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
 import { DESK_FELT, DeskFelt, Felt, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
 import { playSound, setEffects, setEffectsVolume } from './src/sound';
@@ -62,6 +66,21 @@ function Root() {
   const setRemovedSaved = (r) => { setRemoved(r); saveJSON('removedBooks', r); };
   const [draft, setDraft] = useState(null);
   const prefsLoaded = useRef(false);
+  // the language (the phone's own at first, then whatever is chosen in Settings or on the start page)
+  const [lang, setLangState] = useState(deviceLang());
+  const [bookLang, setBookLangState] = useState(null); // members: books in another language (null: same as the app)
+  const [controls, setControlsState] = useState(DEFAULT_CONTROLS); // parental controls (Settings)
+  useEffect(() => {
+    loadJSON('lang', null).then((l) => l && setLangState(l));
+    loadJSON('bookLang', null).then((l) => l && setBookLangState(l));
+    loadJSON('controls', null).then((c) => c && setControlsState({ ...DEFAULT_CONTROLS, ...c }));
+  }, []);
+  const setLang = (l) => { setLangState(l); saveJSON('lang', l); };
+  const setBookLang = (l) => { setBookLangState(l); saveJSON('bookLang', l); };
+  const setControls = (c) => { setControlsState(c); saveJSON('controls', c); };
+  const t = (str, vars) => translate(lang, str, vars);
+  const [settingsGate, setSettingsGate] = useState(false); // Settings is for grown-ups
+  const [memberOpen, setMemberOpen] = useState(false);
 
   useEffect(() => {
     loadUserStories().then(setUserStories).catch(() => {});
@@ -118,7 +137,11 @@ function Root() {
     return undefined;
   }, [flyer && flyer.to, flyer && flyer.landed]);
   const [nbFrom, setNbFrom] = useState(null); // where the little notebook was on the shelf when it was opened
-  const go = (s) => { stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen(s); };
+  // (anything the parental controls hide can't be reached either)
+  const go = (s) => {
+    if ((s === 'store' && !controls.store) || (s === 'notebook' && !controls.notebook) || ((s === 'help' || s === 'about') && !controls.help)) s = 'library';
+    stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen(s);
+  };
   // A book with a title page opens onto its title page with a blank white page above it (the
   // inside of the cover); its cover picture is the cover. From My Library, the cover animates open.
   const prepared = (s) => (s.pages[0] && s.pages[0].titlePage ? { ...s, pages: [{ ...s.pages[0], image: null, whiteArt: true }, ...s.pages.slice(1)] } : s);
@@ -160,6 +183,8 @@ function Root() {
       <StatusBar style="light" />
       <SafeAreaInsetsContext.Provider value={screenInsets}>
       <LookContext.Provider value={look}>
+      <LangContext.Provider value={{ lang, setLang }}>
+      <ControlsContext.Provider value={controls}>
       <View style={[styles.app, { width: W }]}>
         {/* the one felt underneath everything, locked to the screen */}
         <DeskFelt spot="root" overlay />
@@ -173,7 +198,7 @@ function Root() {
               setTimeout(() => go(t), 90);
               return;
             }
-            go(t); }} openMenu={coverOpen ? openMenu : () => toast('Start by opening your notebook.')} closed={!coverOpen} onOpened={() => setCoverOpen(true)} onClosed={() => setCoverOpen(false)} onPeek={(t) => setPeek(t || 'library')} />
+            go(t); }} openMenu={coverOpen ? openMenu : () => toast(t('Start by opening your notebook.'))} closed={!coverOpen} onOpened={() => setCoverOpen(true)} onClosed={() => setCoverOpen(false)} onPeek={(t) => setPeek(t || 'library')} />
           </View>
         )}
         {flyer && screen === 'library' ? (
@@ -219,7 +244,9 @@ function Root() {
           <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} />
         )}
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} />}
-        {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onCoverTest={() => go('covertest')} />}
+        {screen === 'settings' && <Settings u={u} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
+          controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} />}
+        {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} />}
         {screen === 'covertest' && <CoverTest u={u} openMenu={openMenu} />}
         {screen === 'about' && <About u={u} openMenu={openMenu} onSecret={() => {
           // the store owner: straight to the Store Manager when signed in, otherwise to the sign-in first
@@ -229,7 +256,7 @@ function Root() {
         {screen === 'storeManager' && <StoreManager u={u} openMenu={openMenu} toast={toast} demo={storeDemo} />}
         {screen === 'profile' && <Profile u={u} openMenu={openMenu} toast={toast} />}
         {screen === 'reader' && story && (
-          <Reader u={u} story={story} setToastSpot={setToastSpot} prefs={prefs} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
+          <Reader u={u} story={story} setToastSpot={setToastSpot} prefs={controls.playMode ? { ...prefs, mode: controls.playMode } : prefs} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
         )}
         {opening ? (
           <BookOpen u={u} story={opening.story} cover={opening.cover} rect={opening.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}
@@ -264,20 +291,24 @@ function Root() {
             </Animated.View>
           );
         })() : null}
+        <ParentGate visible={settingsGate} reason={t('Changing settings is for grown-ups.')} onPass={() => { setSettingsGate(false); go('settings'); }} onCancel={() => setSettingsGate(false)} />
+        <Membership visible={memberOpen} onClose={() => setMemberOpen(false)} toast={toast} />
         <ParentGate visible={profileGate} reason="Your profile is for grown-ups." onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
         <Toast message={message} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         {/* the main menu always slides in over everything else on screen (pop-ups, pages boxes, speech bubbles) */}
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
-          <Panel open={drawer} title="Menu" bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
-            <Option glyph={<LibraryIcon size={MENU_ICON} />} title="My Library" sub="View purchased stories" onPress={() => go('library')} />
-            <Option glyph={<StoreIcon />} title="Book Store" sub="Discover and buy new books" onPress={() => go('store')} />
-            <Option glyph={<PlayGlyph />} title="Playback Settings" sub="Reader controls" onPress={() => {
+          <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
+            <Option glyph={<LibraryIcon size={MENU_ICON} />} title={t('My Library')} sub={t('View purchased stories')} onPress={() => go('library')} />
+            {controls.store ? <Option glyph={<StoreIcon />} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => go('store')} /> : null}
+            {controls.playback && !controls.playMode ? <Option glyph={<PlayGlyph />} title={t('Playback Settings')} sub={t('Reader controls')} onPress={() => {
               setDrawer(false);
-              if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else toast('Open a story first, then choose how it plays.');
-            }} />
-            <Option glyph={<PlusIcon />} title="Create a Story" sub="Make your own book" onPress={() => openPublisher(null)} />
+              if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else toast(t('Open a story first, then choose how it plays.'));
+            }} /> : null}
+            {controls.create ? <Option glyph={<PlusIcon />} title={t('Create a Story')} sub={t('Make your own book')} onPress={() => openPublisher(null)} /> : null}
             {/* Help takes Profile's place (Profile is suspended for families; the store owner signs in from About: hold Skippy) */}
-            <Option glyph={<CircleIcon />} title="Help" sub="How everything works" onPress={() => go('help')} />
+            {controls.help ? <Option glyph={<CircleIcon />} title={t('Help')} sub={t('How everything works')} onPress={() => go('help')} /> : null}
+            {/* Settings: always last, always behind the grown-up question */}
+            <Option glyph={<GearIcon size={MENU_ICON} />} title={t('Settings')} sub={t('Language and parental controls')} onPress={() => { setDrawer(false); setSettingsGate(true); }} />
             {/* (About is reached from Help) */}
             <View style={{ height: 14 }} />
           </Panel>
@@ -286,6 +317,8 @@ function Root() {
           ? { position: 'absolute', left: 0, top: 0, bottom: 0, width: camBar, backgroundColor: colors.bar, zIndex: 200 }
           : { position: 'absolute', left: 0, right: 0, top: 0, height: camBar, backgroundColor: colors.bar, zIndex: 200 }}><Felt /></View>
       </View>
+      </ControlsContext.Provider>
+      </LangContext.Provider>
       </LookContext.Provider>
       </SafeAreaInsetsContext.Provider>
     </View>

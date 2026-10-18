@@ -1,0 +1,167 @@
+// The app's languages: English, Deutsch, Français, Español, 日本語 (Jörg, 18 Oct 2026).
+// Every word on screen is written in English in the code and looked up here: t('My Library').
+// Anything not translated yet simply shows in English. The chosen language is kept on the phone;
+// the first time, it follows the phone's own language (when it's one of these five).
+import React, { createContext, useContext } from 'react';
+
+export const LANGS = [
+  ['en', 'English'],
+  ['de', 'Deutsch'],
+  ['fr', 'Français'],
+  ['es', 'Español'],
+  ['ja', '日本語'],
+];
+
+export function deviceLang() {
+  try {
+    const loc = (Intl.DateTimeFormat().resolvedOptions().locale || 'en').slice(0, 2).toLowerCase();
+    return LANGS.some(([k]) => k === loc) ? loc : 'en';
+  } catch (e) { return 'en'; }
+}
+
+// English → each language. {n} etc. are filled in by t('…', { n: 3 }).
+const T = {
+  // ---- main menu ----
+  'Menu': { de: 'Menü', fr: 'Menu', es: 'Menú', ja: 'メニュー' },
+  'My Library': { de: 'Meine Bibliothek', fr: 'Ma bibliothèque', es: 'Mi biblioteca', ja: 'わたしの本だな' },
+  'View purchased stories': { de: 'Deine Bücher ansehen', fr: 'Voir tes histoires', es: 'Ver tus cuentos', ja: 'もっている本を見る' },
+  'Book Store': { de: 'Buchladen', fr: 'Librairie', es: 'Librería', ja: '本やさん' },
+  'Discover and buy new books': { de: 'Neue Bücher entdecken und kaufen', fr: 'Découvrir et acheter de nouveaux livres', es: 'Descubre y compra libros nuevos', ja: 'あたらしい本をさがして買う' },
+  'Playback Settings': { de: 'Vorlese-Einstellungen', fr: 'Réglages de lecture', es: 'Ajustes de lectura', ja: 'よみあげのせってい' },
+  'Reader controls': { de: 'Wie gelesen wird', fr: 'Comment on lit', es: 'Cómo se lee', ja: 'よみかたをえらぶ' },
+  'Create a Story': { de: 'Geschichte erstellen', fr: 'Créer une histoire', es: 'Crear un cuento', ja: 'お話をつくる' },
+  'Make your own book': { de: 'Mach dein eigenes Buch', fr: 'Fais ton propre livre', es: 'Haz tu propio libro', ja: '自分の本をつくろう' },
+  'Help': { de: 'Hilfe', fr: 'Aide', es: 'Ayuda', ja: 'ヘルプ' },
+  'How everything works': { de: 'So funktioniert alles', fr: 'Comment tout fonctionne', es: 'Cómo funciona todo', ja: 'つかいかた' },
+  'Settings': { de: 'Einstellungen', fr: 'Réglages', es: 'Ajustes', ja: 'せってい' },
+  'Language and parental controls': { de: 'Sprache und Kindersicherung', fr: 'Langue et contrôle parental', es: 'Idioma y control parental', ja: 'ことばと保護者のせってい' },
+  'Open a story first, then choose how it plays.': { de: 'Öffne zuerst eine Geschichte und wähle dann, wie sie gelesen wird.', fr: 'Ouvre d’abord une histoire, puis choisis comment elle est lue.', es: 'Primero abre un cuento y luego elige cómo se lee.', ja: 'まずお話をひらいてから、よみかたをえらんでね。' },
+
+  // ---- start screen ----
+  'Find and read your\nfavorite books': { de: 'Finde und lies deine\nLieblingsbücher', fr: 'Trouve et lis tes\nlivres préférés', es: 'Encuentra y lee tus\nlibros favoritos', ja: 'すきな本を\nさがしてよもう' },
+  'Start by opening your notebook.': { de: 'Öffne zuerst dein Notizbuch.', fr: 'Commence par ouvrir ton carnet.', es: 'Empieza abriendo tu cuaderno.', ja: 'まずノートをひらいてね。' },
+  'Open the book': { de: 'Buch öffnen', fr: 'Ouvrir le livre', es: 'Abrir el libro', ja: '本をひらく' },
+
+  // ---- library, store ----
+  'My Notebook': { de: 'Mein Notizbuch', fr: 'Mon carnet', es: 'Mi cuaderno', ja: 'わたしのノート' },
+  'Select': { de: 'Auswählen', fr: 'Choisir', es: 'Elegir', ja: 'えらぶ' },
+  'Featured': { de: 'Empfohlen', fr: 'À la une', es: 'Destacado', ja: 'おすすめ' },
+  'Read now': { de: 'Jetzt lesen', fr: 'Lire', es: 'Leer ahora', ja: 'よむ' },
+  'Join to read': { de: 'Mitglied werden', fr: 'Devenir membre', es: 'Hazte miembro', ja: 'メンバーになってよむ' },
+  'Buy {price}': { de: 'Kaufen {price}', fr: 'Acheter {price}', es: 'Comprar {price}', ja: '{price}で買う' },
+  'One moment…': { de: 'Einen Moment …', fr: 'Un instant…', es: 'Un momento…', ja: 'すこしまってね…' },
+  'by {name}': { de: 'von {name}', fr: 'de {name}', es: 'de {name}', ja: '{name} さく' },
+  '{n} pages': { de: '{n} Seiten', fr: '{n} pages', es: '{n} páginas', ja: '{n}ページ' },
+  'ages {n}': { de: 'Alter {n}', fr: '{n} ans', es: '{n} años', ja: '{n}さい' },
+  'Free': { de: 'Gratis', fr: 'Gratuit', es: 'Gratis', ja: 'むりょう' },
+  'Members': { de: 'Für Mitglieder', fr: 'Membres', es: 'Miembros', ja: 'メンバー' },
+  'Members or {price}': { de: 'Mitglieder oder {price}', fr: 'Membres ou {price}', es: 'Miembros o {price}', ja: 'メンバー または {price}' },
+  'Or read every book with the membership': { de: 'Oder lies alle Bücher mit der Mitgliedschaft', fr: 'Ou lis tous les livres avec l’abonnement', es: 'O lee todos los libros con la membresía', ja: 'メンバーになると、ぜんぶの本がよめます' },
+  'Downloading new books arrives in the next update.': { de: 'Das Laden neuer Bücher kommt mit dem nächsten Update.', fr: 'Le téléchargement de nouveaux livres arrive dans la prochaine mise à jour.', es: 'La descarga de libros nuevos llega en la próxima actualización.', ja: 'あたらしい本のダウンロードは、つぎのアップデートでできるようになります。' },
+
+  // ---- membership ----
+  'For grown-ups': { de: 'Für Erwachsene', fr: 'Pour les grands', es: 'Para adultos', ja: 'おとなのかたへ' },
+  'Oomlaut Reader Membership': { de: 'Oomlaut Reader Mitgliedschaft', fr: 'Abonnement Oomlaut Reader', es: 'Membresía de Oomlaut Reader', ja: 'Oomlaut Reader メンバーシップ' },
+  'Every book in the Book Store, and every new book as it arrives. Read them aloud, record your own voice, keep reading together.': {
+    de: 'Alle Bücher im Buchladen, und jedes neue Buch, sobald es da ist. Vorlesen lassen, mit eigener Stimme aufnehmen, gemeinsam weiterlesen.',
+    fr: 'Tous les livres de la librairie, et chaque nouveau livre dès sa sortie. Écoutez-les, enregistrez votre propre voix, lisez ensemble.',
+    es: 'Todos los libros de la librería, y cada libro nuevo en cuanto llega. Escúchalos, graba tu propia voz, sigan leyendo juntos.',
+    ja: '本やさんのすべての本と、これから出るあたらしい本がよめます。よみあげ、自分の声でのろくおん、いっしょによむじかんを。' },
+  'Yearly': { de: 'Jährlich', fr: 'Annuel', es: 'Anual', ja: '1年' },
+  'Monthly': { de: 'Monatlich', fr: 'Mensuel', es: 'Mensual', ja: '1か月' },
+  ' / year': { de: ' / Jahr', fr: ' / an', es: ' / año', ja: ' / 年' },
+  ' / month': { de: ' / Monat', fr: ' / mois', es: ' / mes', ja: ' / 月' },
+  'Best value: about a third off': { de: 'Am günstigsten: rund ein Drittel gespart', fr: 'Le meilleur prix : environ un tiers de moins', es: 'Mejor precio: cerca de un tercio menos', ja: 'いちばんおとく:やく3わりびき' },
+  'Try {n} days free': { de: '{n} Tage gratis testen', fr: 'Essai gratuit de {n} jours', es: 'Prueba {n} días gratis', ja: '{n}日間むりょうでためす' },
+  'Memberships are being set up and arrive in the next update.': { de: 'Die Mitgliedschaft wird gerade eingerichtet und kommt mit dem nächsten Update.', fr: 'Les abonnements arrivent dans la prochaine mise à jour.', es: 'Las membresías llegan en la próxima actualización.', ja: 'メンバーシップはつぎのアップデートではじまります。' },
+  'Restore Purchases': { de: 'Käufe wiederherstellen', fr: 'Restaurer les achats', es: 'Restaurar compras', ja: '購入をふくげん' },
+  'Restoring…': { de: 'Wird wiederhergestellt …', fr: 'Restauration…', es: 'Restaurando…', ja: 'ふくげんちゅう…' },
+  'Terms of Use': { de: 'Nutzungsbedingungen', fr: 'Conditions d’utilisation', es: 'Términos de uso', ja: '利用規約' },
+  'Privacy Policy': { de: 'Datenschutz', fr: 'Confidentialité', es: 'Privacidad', ja: 'プライバシーポリシー' },
+  'Not now': { de: 'Nicht jetzt', fr: 'Pas maintenant', es: 'Ahora no', ja: 'あとで' },
+  'Free for {n} days, then {price} a {period}. Payment is charged to your Apple ID. The membership renews automatically unless it’s cancelled at least 24 hours before the end of the period. You can manage or cancel it any time in your App Store account settings.': {
+    de: '{n} Tage gratis, danach {price} pro {period}. Die Zahlung erfolgt über deine Apple-ID. Die Mitgliedschaft verlängert sich automatisch, wenn sie nicht spätestens 24 Stunden vor Ablauf gekündigt wird. Du kannst sie jederzeit in den Einstellungen deines App-Store-Kontos verwalten oder kündigen.',
+    fr: 'Gratuit pendant {n} jours, puis {price} par {period}. Le paiement est débité de votre identifiant Apple. L’abonnement se renouvelle automatiquement sauf s’il est annulé au moins 24 heures avant la fin de la période. Vous pouvez le gérer ou l’annuler à tout moment dans les réglages de votre compte App Store.',
+    es: 'Gratis durante {n} días, luego {price} por {period}. El pago se cobra a tu ID de Apple. La membresía se renueva automáticamente salvo que se cancele al menos 24 horas antes de que termine el periodo. Puedes gestionarla o cancelarla cuando quieras en los ajustes de tu cuenta del App Store.',
+    ja: '{n}日間むりょう、そのあと{period}ごとに{price}。お支払いはApple IDにせいきゅうされます。期間がおわる24時間前までにキャンセルしないかぎり、じどうでこうしんされます。App Storeのアカウントせっていから、いつでもかんりやキャンセルができます。' },
+  'year': { de: 'Jahr', fr: 'an', es: 'año', ja: '1年' },
+  'month': { de: 'Monat', fr: 'mois', es: 'mes', ja: '1か月' },
+  'Welcome! Every book in the Book Store is yours to read.': { de: 'Willkommen! Alle Bücher im Buchladen gehören jetzt dir.', fr: 'Bienvenue ! Tous les livres de la librairie sont à toi.', es: '¡Bienvenido! Todos los libros de la librería son tuyos.', ja: 'ようこそ!本やさんの本がぜんぶよめます。' },
+  'Your purchases are back.': { de: 'Deine Käufe sind wieder da.', fr: 'Vos achats sont restaurés.', es: 'Tus compras se restauraron.', ja: '購入がもどりました。' },
+  'No earlier purchases were found for this Apple ID.': { de: 'Für diese Apple-ID wurden keine Käufe gefunden.', fr: 'Aucun achat trouvé pour cet identifiant Apple.', es: 'No se encontraron compras para este ID de Apple.', ja: 'このApple IDの購入は見つかりませんでした。' },
+  'The membership is a paid subscription.': { de: 'Die Mitgliedschaft ist ein kostenpflichtiges Abo.', fr: 'L’abonnement est payant.', es: 'La membresía es una suscripción de pago.', ja: 'メンバーシップはゆうりょうのていきこうどくです。' },
+  'Buying “{title}” for {price}.': { de: '„{title}“ für {price} kaufen.', fr: 'Acheter « {title} » pour {price}.', es: 'Comprar «{title}» por {price}.', ja: '「{title}」を{price}で買います。' },
+
+  // ---- the grown-up check ----
+  'What is {a} times {b}?': { de: 'Was ist {a} mal {b}?', fr: 'Combien font {a} fois {b} ?', es: '¿Cuánto es {a} por {b}?', ja: '{a} かける {b} は?' },
+  'That’s not quite right. Try again.': { de: 'Nicht ganz richtig. Versuch es noch einmal.', fr: 'Ce n’est pas tout à fait ça. Réessayez.', es: 'No es correcto. Inténtalo de nuevo.', ja: 'ちがいます。もういちど。' },
+  'Cancel': { de: 'Abbrechen', fr: 'Annuler', es: 'Cancelar', ja: 'キャンセル' },
+  'Continue': { de: 'Weiter', fr: 'Continuer', es: 'Continuar', ja: 'つづける' },
+  'Answer': { de: 'Antwort', fr: 'Réponse', es: 'Respuesta', ja: 'こたえ' },
+
+  // ---- settings ----
+  'Language': { de: 'Sprache', fr: 'Langue', es: 'Idioma', ja: 'ことば' },
+  'The app speaks this language.': { de: 'Die App spricht diese Sprache.', fr: 'L’application utilise cette langue.', es: 'La app usa este idioma.', ja: 'アプリはこのことばになります。' },
+  'Read books in': { de: 'Bücher lesen auf', fr: 'Lire les livres en', es: 'Leer libros en', ja: '本のことば' },
+  'Same as the app': { de: 'Wie die App', fr: 'Comme l’application', es: 'Igual que la app', ja: 'アプリとおなじ' },
+  'Members can read books in another language than the app’s: a German book in an English app, for example. Each book can be read in the languages it has been translated into.': {
+    de: 'Mitglieder können Bücher in einer anderen Sprache lesen als die App, zum Beispiel ein deutsches Buch in der englischen App. Jedes Buch gibt es in den Sprachen, in die es übersetzt wurde.',
+    fr: 'Les membres peuvent lire les livres dans une autre langue que celle de l’application : un livre en allemand dans l’application en anglais, par exemple. Chaque livre existe dans les langues dans lesquelles il a été traduit.',
+    es: 'Los miembros pueden leer los libros en otro idioma distinto al de la app: un libro en alemán en la app en inglés, por ejemplo. Cada libro está en los idiomas a los que se ha traducido.',
+    ja: 'メンバーは、アプリとちがうことばで本をよめます(たとえば、えいごのアプリでドイツごの本)。本は、ほんやくされたことばでよめます。' },
+  'Join the membership to choose': { de: 'Mit der Mitgliedschaft wählbar', fr: 'Avec l’abonnement', es: 'Con la membresía', ja: 'メンバーになるとえらべます' },
+  'Parental controls': { de: 'Kindersicherung', fr: 'Contrôle parental', es: 'Control parental', ja: '保護者のせってい' },
+  'Choose exactly what your child can see and do. Settings always asks the grown-up question first.': {
+    de: 'Lege genau fest, was dein Kind sehen und tun kann. Die Einstellungen fragen immer zuerst die Erwachsenen-Frage.',
+    fr: 'Choisissez exactement ce que votre enfant peut voir et faire. Les réglages posent toujours d’abord la question pour les grands.',
+    es: 'Elige exactamente lo que tu hijo puede ver y hacer. Los ajustes siempre hacen primero la pregunta para adultos.',
+    ja: 'お子さまが見られるもの、できることを、えらべます。せっていをひらくときは、いつもおとなのしつもんがでます。' },
+  'Changing settings is for grown-ups.': { de: 'Einstellungen ändern ist Sache der Erwachsenen.', fr: 'Changer les réglages, c’est pour les grands.', es: 'Cambiar los ajustes es cosa de adultos.', ja: 'せっていをかえるのは、おとなのかたです。' },
+  'Show the Book Store': { de: 'Buchladen zeigen', fr: 'Afficher la librairie', es: 'Mostrar la librería', ja: '本やさんを見せる' },
+  'Show My Notebook': { de: 'Mein Notizbuch zeigen', fr: 'Afficher mon carnet', es: 'Mostrar mi cuaderno', ja: 'わたしのノートを見せる' },
+  'Show Create a Story': { de: '„Geschichte erstellen“ zeigen', fr: 'Afficher « Créer une histoire »', es: 'Mostrar «Crear un cuento»', ja: '「お話をつくる」を見せる' },
+  'Show Help': { de: 'Hilfe zeigen', fr: 'Afficher l’aide', es: 'Mostrar la ayuda', ja: 'ヘルプを見せる' },
+  'Let my child change playback': { de: 'Vorlese-Einstellungen änderbar', fr: 'Mon enfant peut changer la lecture', es: 'Mi hijo puede cambiar la lectura', ja: 'こどもがよみかたをかえられる' },
+  'Always play like this': { de: 'Immer so vorlesen', fr: 'Toujours lire ainsi', es: 'Leer siempre así', ja: 'いつもこのよみかた' },
+  'Recording own voice': { de: 'Eigene Stimme aufnehmen', fr: 'Enregistrer sa voix', es: 'Grabar su propia voz', ja: '自分の声でろくおん' },
+  'Sharing and printing': { de: 'Teilen und drucken', fr: 'Partager et imprimer', es: 'Compartir e imprimir', ja: 'シェアといんさつ' },
+  'Let my child change the language': { de: 'Sprache änderbar', fr: 'Mon enfant peut changer la langue', es: 'Mi hijo puede cambiar el idioma', ja: 'こどもがことばをかえられる' },
+  'Lock everything': { de: 'Alles sperren', fr: 'Tout verrouiller', es: 'Bloquear todo', ja: 'すべてロック' },
+  'Only My Library and the books in it, read the way you chose.': { de: 'Nur Meine Bibliothek mit ihren Büchern, vorgelesen wie gewählt.', fr: 'Seulement Ma bibliothèque et ses livres, lus comme vous l’avez choisi.', es: 'Solo Mi biblioteca y sus libros, leídos como elegiste.', ja: 'わたしの本だなと、そこにある本だけ。えらんだよみかたでよみます。' },
+  'Unlock everything': { de: 'Alles freigeben', fr: 'Tout déverrouiller', es: 'Desbloquear todo', ja: 'すべてかいじょ' },
+  'Done': { de: 'Fertig', fr: 'Terminé', es: 'Listo', ja: 'かんりょう' },
+  'Read Yourself': { de: 'Selbst lesen', fr: 'Lire seul', es: 'Leer solo', ja: '自分でよむ' },
+  'Learn to Read': { de: 'Lesen lernen', fr: 'Apprendre à lire', es: 'Aprender a leer', ja: 'よむれんしゅう' },
+  'Auto Play': { de: 'Automatisch vorlesen', fr: 'Lecture automatique', es: 'Lectura automática', ja: 'じどうでよむ' },
+  'Page by Page Play': { de: 'Seite für Seite', fr: 'Page par page', es: 'Página por página', ja: '1ページずつ' },
+  'Your child can choose': { de: 'Dein Kind darf wählen', fr: 'Votre enfant choisit', es: 'Tu hijo elige', ja: 'こどもがえらぶ' },
+  'Help and About': { de: 'Hilfe und Info', fr: 'Aide et à propos', es: 'Ayuda e información', ja: 'ヘルプとアプリについて' },
+  'Settings is locked. A grown-up can open it from the menu.': { de: 'Gesperrt. Erwachsene können es im Menü öffnen.', fr: 'Verrouillé. Un adulte peut l’ouvrir depuis le menu.', es: 'Bloqueado. Un adulto puede abrirlo desde el menú.', ja: 'ロックされています。おとなのかたがメニューからひらけます。' },
+  'Search help': { de: 'Hilfe durchsuchen', fr: 'Rechercher dans l’aide', es: 'Buscar en la ayuda', ja: 'ヘルプをけんさく' },
+  'About Oomlaut Reader': { de: 'Über Oomlaut Reader', fr: 'À propos d’Oomlaut Reader', es: 'Acerca de Oomlaut Reader', ja: 'Oomlaut Readerについて' },
+  'Books in this language arrive as they are translated.': { de: 'Bücher in dieser Sprache kommen nach und nach dazu.', fr: 'Les livres dans cette langue arrivent au fur et à mesure des traductions.', es: 'Los libros en este idioma llegan a medida que se traducen.', ja: 'このことばの本は、ほんやくができしだいふえていきます。' },
+};
+
+// number words for the grown-up question (zero to nine)
+export const NUMBER_WORDS = {
+  en: ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'],
+  de: ['null', 'eins', 'zwei', 'drei', 'vier', 'fünf', 'sechs', 'sieben', 'acht', 'neun'],
+  fr: ['zéro', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'],
+  es: ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve'],
+  ja: ['ぜろ', 'いち', 'に', 'さん', 'よん', 'ご', 'ろく', 'なな', 'はち', 'きゅう'],
+};
+
+export function translate(lang, s, vars) {
+  const row = T[s];
+  let out = (row && lang !== 'en' && row[lang]) || s;
+  if (vars) for (const k of Object.keys(vars)) out = out.split(`{${k}}`).join(String(vars[k]));
+  return out;
+}
+
+// the language, shared with every screen
+export const LangContext = createContext({ lang: 'en', setLang: () => {} });
+export const useLang = () => useContext(LangContext).lang;
+export function useT() {
+  const { lang } = useContext(LangContext);
+  return (s, vars) => translate(lang, s, vars);
+}

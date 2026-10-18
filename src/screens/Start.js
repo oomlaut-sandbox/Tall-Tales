@@ -7,7 +7,9 @@
 // follows it the whole way. Tapping or dragging the open cover closes it again;
 // only My Library or the Book Store take you to another screen.
 import StripCover from '../components/StripCover';
-import React, { useRef, useState } from 'react';
+import { LANGS, LangContext, useT } from '../i18n';
+import { useControls } from '../controls';
+import React, { useContext, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, DeskFelt, Felt } from '../look';
@@ -56,6 +58,9 @@ function MenuItem({ u, icon, title, sub, onPress }) {
 }
 
 export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onPeek }) {
+  const t = useT();
+  const { lang, setLang } = useContext(LangContext);
+  const controls = useControls(); // parental controls: the Book Store and changing the language may be off
   const p = useRef(new Animated.Value(closed ? 0 : 1)).current; // 0 = cover shut, 1 = cover fully open
   // The animations driven by p are made once (not on every redraw): a redraw at the end of the opening
   // (when the app hears the book is open) used to swap them for new ones, and the shadows blinked.
@@ -166,8 +171,8 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
               <Spine wide={wide} />
               {/* the two items as one block, centred in the page */}
               <View style={{ gap: k * 8, transform: [{ translateX: k * 5 }] }}>{/* nudged a little to the right */}
-                <MenuItem u={k} icon={TILE_LIBRARY} title="My Library" sub={"Find and read your\nfavorite books"} onPress={() => goTo('library')} />
-                <MenuItem u={k} icon={TILE_STORE} title="Book Store" sub="Discover and buy new books" onPress={() => goTo('store')} />
+                <MenuItem u={k} icon={TILE_LIBRARY} title={t('My Library')} sub={t('Find and read your\nfavorite books')} onPress={() => goTo('library')} />
+                {controls.store ? <MenuItem u={k} icon={TILE_STORE} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => goTo('store')} /> : null}
               </View>
             </View>
             {/* where the open cover lands: a still felt-coloured shape with the cover's shadow, growing in as it
@@ -188,6 +193,15 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
         );
       }}
     </BookFrame>
+    {/* the languages, small and light grey in the top left corner, above everything (the cover opens
+        underneath them). Tap one to switch (unless the parental controls keep the language fixed). */}
+    <View pointerEvents="box-none" style={{ position: 'absolute', left: 16, top: insets.top + 10, right: 16, zIndex: 100, flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+      {LANGS.map(([k, name]) => (
+        <Pressable key={k} disabled={!controls.language} onPress={() => setLang(k)} hitSlop={6} accessibilityRole="button" accessibilityLabel={name} accessibilityState={{ selected: lang === k }}>
+          <Text style={{ fontFamily: fonts.ui, fontSize: 12, color: lang === k ? 'rgba(235,235,235,0.9)' : 'rgba(200,200,200,0.5)' }}>{name}</Text>
+        </Pressable>
+      ))}
+    </View>
     </View>
   );
 }

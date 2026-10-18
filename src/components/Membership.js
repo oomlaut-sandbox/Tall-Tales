@@ -5,9 +5,11 @@ import React, { useState } from 'react';
 import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme';
 import { PRICES, PRIVACY_URL, TERMS_URL } from '../prices';
+import { useT } from '../i18n';
 import { joinMembership, planPrice, purchasesReady, restorePurchases, usePurchases } from '../purchases';
 
 export default function Membership({ visible, onClose, toast }) {
+  const t = useT();
   const s = usePurchases();
   const [plan, setPlan] = useState('yearly');
   const [busy, setBusy] = useState(null); // 'join' | 'restore'
@@ -17,7 +19,7 @@ export default function Membership({ visible, onClose, toast }) {
     setBusy('join');
     try {
       const r = await joinMembership(plan);
-      if (r === 'done') { toast && toast('Welcome! Every book in the Book Store is yours to read.'); onClose(); }
+      if (r === 'done') { toast && toast(t('Welcome! Every book in the Book Store is yours to read.')); onClose(); }
     } catch (e) { toast && toast(e.message); }
     setBusy(null);
   };
@@ -25,7 +27,7 @@ export default function Membership({ visible, onClose, toast }) {
     setBusy('restore');
     try {
       const r = await restorePurchases();
-      toast && toast(r === 'restored' ? 'Your purchases are back.' : 'No earlier purchases were found for this Apple ID.');
+      toast && toast(r === 'restored' ? t('Your purchases are back.') : t('No earlier purchases were found for this Apple ID.'));
       if (r === 'restored') onClose();
     } catch (e) { toast && toast(e.message); }
     setBusy(null);
@@ -44,26 +46,26 @@ export default function Membership({ visible, onClose, toast }) {
     <View style={styles.scrim}>
       <View style={styles.card}>
         <ScrollView contentContainerStyle={{ gap: 14 }} bounces={false}>
-          <Text style={styles.kicker}>For grown-ups</Text>
-          <Text style={styles.title}>Oomlaut Reader Membership</Text>
-          <Text style={styles.body}>Every book in the Book Store, and every new book as it arrives. Read them aloud, record your own voice, keep reading together.</Text>
+          <Text style={styles.kicker}>{t('For grown-ups')}</Text>
+          <Text style={styles.title}>{t('Oomlaut Reader Membership')}</Text>
+          <Text style={styles.body}>{t('Every book in the Book Store, and every new book as it arrives. Read them aloud, record your own voice, keep reading together.')}</Text>
           <View style={{ gap: 10 }}>
-            <Plan id="yearly" title="Yearly" price={planPrice(s, 'yearly')} per=" / year" note="Best value: about a third off" />
-            <Plan id="monthly" title="Monthly" price={planPrice(s, 'monthly')} per=" / month" />
+            <Plan id="yearly" title={t('Yearly')} price={planPrice(s, 'yearly')} per={t(' / year')} note={t('Best value: about a third off')} />
+            <Plan id="monthly" title={t('Monthly')} price={planPrice(s, 'monthly')} per={t(' / month')} />
           </View>
           <Pressable onPress={join} disabled={!live || !!busy} accessibilityRole="button" style={[styles.join, (!live || busy) && { opacity: 0.5 }]}>
-            {busy === 'join' ? <ActivityIndicator color={colors.white} /> : <Text style={styles.joinText}>{`Try ${PRICES.trialDays} days free`}</Text>}
+            {busy === 'join' ? <ActivityIndicator color={colors.white} /> : <Text style={styles.joinText}>{t('Try {n} days free', { n: PRICES.trialDays })}</Text>}
           </Pressable>
-          {!live ? <Text style={styles.soon}>Memberships are being set up and arrive in the next update.</Text> : null}
+          {!live ? <Text style={styles.soon}>{t('Memberships are being set up and arrive in the next update.')}</Text> : null}
           <Text style={styles.small}>
-            {`Free for ${PRICES.trialDays} days, then ${planPrice(s, plan)} a ${plan === 'yearly' ? 'year' : 'month'}. Payment is charged to your Apple ID. The membership renews automatically unless it’s cancelled at least 24 hours before the end of the period. You can manage or cancel it any time in your App Store account settings.`}
+            {t('Free for {n} days, then {price} a {period}. Payment is charged to your Apple ID. The membership renews automatically unless it’s cancelled at least 24 hours before the end of the period. You can manage or cancel it any time in your App Store account settings.', { n: PRICES.trialDays, price: planPrice(s, plan), period: t(plan === 'yearly' ? 'year' : 'month') })}
           </Text>
           <View style={styles.links}>
-            <Pressable onPress={restore} disabled={!purchasesReady || !!busy} hitSlop={8}><Text style={[styles.link, !purchasesReady && { opacity: 0.5 }]}>{busy === 'restore' ? 'Restoring…' : 'Restore Purchases'}</Text></Pressable>
-            <Pressable onPress={() => Linking.openURL(TERMS_URL)} hitSlop={8}><Text style={styles.link}>Terms of Use</Text></Pressable>
-            {PRIVACY_URL ? <Pressable onPress={() => Linking.openURL(PRIVACY_URL)} hitSlop={8}><Text style={styles.link}>Privacy Policy</Text></Pressable> : null}
+            <Pressable onPress={restore} disabled={!purchasesReady || !!busy} hitSlop={8}><Text style={[styles.link, !purchasesReady && { opacity: 0.5 }]}>{busy === 'restore' ? t('Restoring…') : t('Restore Purchases')}</Text></Pressable>
+            <Pressable onPress={() => Linking.openURL(TERMS_URL)} hitSlop={8}><Text style={styles.link}>{t('Terms of Use')}</Text></Pressable>
+            {PRIVACY_URL ? <Pressable onPress={() => Linking.openURL(PRIVACY_URL)} hitSlop={8}><Text style={styles.link}>{t('Privacy Policy')}</Text></Pressable> : null}
           </View>
-          <Pressable onPress={onClose} style={styles.close} accessibilityRole="button"><Text style={styles.closeText}>Not now</Text></Pressable>
+          <Pressable onPress={onClose} style={styles.close} accessibilityRole="button"><Text style={styles.closeText}>{t('Not now')}</Text></Pressable>
         </ScrollView>
       </View>
     </View>

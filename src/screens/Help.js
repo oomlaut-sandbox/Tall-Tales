@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, IS_TABLET, DESK_BG } from '../look';
 import { Bar, Burger, WithBar } from '../components/Chrome';
+import { useT } from '../i18n';
 
 const BAND_FELT = require('../../assets/band-profile.jpg'); // the yellow-orange felt banner
 const SEARCH_FELT = require('../../assets/search-felt.png'); // Jörg's grey stitched felt strip, cut out with a shadow
@@ -81,6 +82,12 @@ export const HELP = [
     'Some books can also be bought on their own, to keep, for $2.99. Members can read those too.',
     'Buying is for grown-ups: the app asks a grown-up question first, and payment goes through your Apple ID. Cancel the membership any time in your App Store account settings. On a new phone, use Restore Purchases on the membership screen.',
   ] },
+  { section: 'Grown-ups', title: 'Settings and parental controls', text: [
+    'Settings is the last item in the menu. It always asks the grown-up question first.',
+    'Language: choose English, Deutsch, Français, Español or 日本語 for the app. Members can also read books in a different language from the app’s. The languages are also listed at the top of the start page: tap one to switch.',
+    'Parental controls: choose exactly what your child can see and do. Hide the Book Store, My Notebook, Create a Story or Help; switch off recording, sharing and printing; keep the language fixed; and make every book play one way (for example, always Page by Page).',
+    'Lock everything leaves only My Library and its books, read the way you chose. Unlock everything brings it all back.',
+  ] },
   { section: 'Grown-ups', title: 'The grown-up check', text: [
     'Some things, like taking photos, printing, sharing and deleting, first ask a quick question only a grown-up can answer.',
   ] },
@@ -89,7 +96,8 @@ export const HELP = [
   ] },
 ];
 
-export default function Help({ u, openMenu, onAbout, onCoverTest }) {
+export default function Help({ u, openMenu, onAbout }) {
+  const t = useT();
   const insets = useSafeAreaInsets();
   const { width: winW } = useWindowDimensions();
   // the felt strip: the column's width (its picture has a little room around it for the shadow)
@@ -110,7 +118,7 @@ export default function Help({ u, openMenu, onAbout, onCoverTest }) {
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
-        <Text style={styles.title}>Help</Text>
+        <Text style={styles.title}>{t('Help')}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
         <View style={styles.col}>
@@ -119,11 +127,11 @@ export default function Help({ u, openMenu, onAbout, onCoverTest }) {
           <View style={[styles.searchWrap, { marginTop: 14 }]}>
             <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.22)', 'rgba(0,0,0,0.06)', 'rgba(0,0,0,0)']} locations={[0, 0.35, 1]} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 14 }} />
             <LinearGradient pointerEvents="none" start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['rgba(0,0,0,0.08)', 'rgba(0,0,0,0)']} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 16 }} />
-            <TextInput value={q} onChangeText={setQ} placeholder="Search help" placeholderTextColor="#666"
+            <TextInput value={q} onChangeText={setQ} placeholder={t('Search help')} placeholderTextColor="#666"
               style={styles.search} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel="Search help" />
           </View>
           {/* About lives here now (it left the main menu) */}
-          <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>About Oomlaut Reader</Text></Pressable>
+          <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>{t('About Oomlaut Reader')}</Text></Pressable>
           <View style={{ height: 18 }} />
           {!found.length ? <Text style={[styles.p, { color: colors.white }]}>Nothing found for “{q.trim()}”. Try another word.</Text> : null}
           {found.map((h) => {

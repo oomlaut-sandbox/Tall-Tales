@@ -123,7 +123,7 @@ export const PageView = forwardRef(function PageView(
             <Text style={storyStyle}>Thank you for reading.</Text>
             {/* stacked: a square icon and black text beside it, like the start page */}
             <View style={{ gap: 12, marginTop: 20, alignSelf: 'center' }}>
-              {[[<AgainIcon />, 'Read Again', onReadAgain], [<LibraryIcon />, 'My Library', onLibrary], [<HeartIcon />, 'Share Book', onShare]].map(([g, label, fn]) => (
+              {[[<AgainIcon />, 'Read Again', onReadAgain], [<LibraryIcon />, 'My Library', onLibrary], [<HeartIcon />, 'Share Book', onShare]].filter(([, , fn]) => !!fn).map(([g, label, fn]) => (
                 <Pressable key={label} onPress={fn} style={styles.endBtn} accessibilityRole="button">
                   <View style={styles.endIc}>{g}</View>
                   <Text style={styles.endBtnText}>{label}</Text>
