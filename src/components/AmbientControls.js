@@ -27,7 +27,7 @@ export default function AmbientControls() {
         <Chip label={s.playing ? t('Pause') : t('Play')} on={s.playing} onPress={s.playing ? pauseAmbient : playAmbient} />
         <Chip label={t('Off')} on={!s.sound && !s.music} onPress={stopAmbient} />
       </View>
-      <Text style={styles.group}>{t('Nature sounds')}</Text>
+      <Text style={[styles.group, { marginTop: 18 }]}>{t('Nature sounds')}</Text>{/* a little room above it */}
       <View style={styles.chips}>
         {SOUNDS.map((x) => <Chip key={x.id} label={t(x.name)} on={s.sound === x.id} onPress={() => pick('sound', x.id)} />)}
       </View>

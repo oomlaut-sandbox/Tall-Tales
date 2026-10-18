@@ -129,7 +129,6 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
           {/* (a short video tour will go here later) */}
           {/* the Idea Room, at the very top: ideas for every kind of book a family can make */}
           <Pressable onPress={onIdeas} accessibilityRole="button" style={[styles.ideas, { flexDirection: 'row', gap: 14, alignItems: 'center' }]}>
-            <Image source={IDEA_PICTURE} style={{ width: 84, height: 84, borderRadius: 12 }} resizeMode="cover" />
             <View style={{ flex: 1, gap: 6 }}>
               <Text style={styles.ideasTitle}>{t('Idea Room')}</Text>
               <Text style={styles.ideasText}>{t('{n} ideas for books you can make together: your photos and drawings, your words, your voice.', { n: IDEA_COUNT })}</Text>
