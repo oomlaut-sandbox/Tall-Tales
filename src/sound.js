@@ -1,6 +1,7 @@
 // Sound effects (ElevenLabs, chosen by Jörg). Off by default; the Playback menu turns them on.
 // Every call is wrapped so a sound problem can never break reading.
 import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
+import { holdAmbient } from './ambient';
 
 const sources = {
   coverOpen: require('../assets/sfx/cover-open.mp3'),
@@ -50,7 +51,8 @@ async function init() {
 init();
 
 // Recording turns effects off so they don't end up on the recording.
-export function suspendSounds(on) { suspended = on; }
+// (while recording, the music and ambient sounds pause too, so the microphone only hears the voice)
+export function suspendSounds(on) { suspended = on; holdAmbient(on); }
 
 // kind: one of the names above. volume: 0..1 on top of the effect's own level.
 // One typewriter key strike (in the story editor), taking turns between three recordings.

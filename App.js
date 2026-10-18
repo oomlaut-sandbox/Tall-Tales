@@ -25,6 +25,7 @@ import Help from './src/screens/Help';
 import IdeaRoom from './src/screens/IdeaRoom';
 import Settings from './src/screens/Settings';
 import Membership from './src/components/Membership';
+import TapePlayer from './src/components/TapePlayer';
 import { LangContext, deviceLang, translate } from './src/i18n';
 import { ControlsContext, DEFAULT_CONTROLS } from './src/controls';
 import Notebook, { NOTEBOOK_COVER, R_EDGE, R_SPINE } from './src/screens/Notebook';
@@ -304,6 +305,8 @@ function Root() {
         <Membership visible={memberOpen} onClose={() => setMemberOpen(false)} toast={toast} />
         <ParentGate visible={profileGate} reason="Your profile is for grown-ups." onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
         <Toast message={message} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
+        {/* the little floating tape player for music and ambient sounds (Playback Options → Music and sounds) */}
+        <TapePlayer bottomBar={sideways ? 0 : barH} />
         {/* the main menu always slides in over everything else on screen (pop-ups, pages boxes, speech bubbles) */}
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
           <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>

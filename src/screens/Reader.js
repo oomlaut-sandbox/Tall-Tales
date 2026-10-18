@@ -1,4 +1,5 @@
 // The reader: page curl, read-aloud with highlighting, learn-to-read, interactive pictures.
+import AmbientControls from '../components/AmbientControls';
 import { useControls } from '../controls';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Platform, Pressable, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
@@ -775,6 +776,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
               onDone={(v) => { setVolDraft(null); const vol = Math.round(v * 100) / 100; setPrefs((p) => ({ ...p, soundVol: vol })); setEffectsVolume(vol); playSound('swish'); }} />
           ) : null}
         </View>
+        {/* Music and sounds: relaxing loops and gentle music that keep playing all through the app */}
+        <View style={styles.setting}><AmbientControls /></View>
         {/* Print: two choices, each a little picture of the page (not when the parental controls turn sharing off) */}
         {controls.sharing ? <View style={styles.setting}>
           <Text style={styles.help}>{printing ? 'Getting ready to print…' : 'Print this book'}</Text>
