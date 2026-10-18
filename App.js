@@ -40,6 +40,8 @@ import { loadJSON, saveJSON } from './src/storage';
 import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
 import { DESK_FELT, DeskFelt, Felt, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
+import Profiles from './src/screens/Profiles';
+import { loadProfiles, onProfiles } from './src/profiles';
 import { playSound, setEffects, setEffectsVolume } from './src/sound';
 import { stopSpeech } from './src/speech';
 import { stopVoice } from './src/voice';
@@ -255,6 +257,7 @@ function Root() {
         )}
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} />}
         {screen === 'music' && <MusicSounds u={u} openMenu={openMenu} />}
+        {screen === 'profiles' && <Profiles u={u} openMenu={openMenu} setControls={setControls} />}
         {screen === 'settings' && <Settings u={u} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
           controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} />}
         {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} />}
@@ -349,6 +352,13 @@ if (Platform.OS !== 'web') ScreenOrientation.unlockAsync().catch(() => {});
 export default function App() {
   const [loaded] = useFonts({ EBGaramond_400Regular, EBGaramond_400Regular_Italic, EBGaramond_500Medium, EBGaramond_700Bold, SpecialElite_400Regular, DancingScript_700Bold });
   const [pictureReady, setPictureReady] = useState(false);
+  // the child whose things the app shows (Profiles): read before anything else; switching children starts
+  // the app afresh with their notebook, badges, playlists and settings
+  const [who, setWho] = useState(null);
+  useEffect(() => {
+    loadProfiles().then((s) => setWho(s.active), () => setWho('main'));
+    return onProfiles((s) => setWho(s.active));
+  }, []);
   useEffect(() => {
     let done = false;
     const finish = () => { if (!done) { done = true; setPictureReady(true); } };
@@ -357,11 +367,11 @@ export default function App() {
     const t = setTimeout(finish, 1500); // never wait longer than this
     return () => clearTimeout(t);
   }, []);
-  if (!loaded || !pictureReady) return <View style={{ flex: 1, backgroundColor: colors.desk }} />;
+  if (!loaded || !pictureReady || !who) return <View style={{ flex: 1, backgroundColor: colors.desk }} />;
   return (
     <SafeAreaProvider>
       <View style={{ flex: 1 }} onLayout={hideSplash}>
-      <Root />
+      <Root key={who} />
       </View>
     </SafeAreaProvider>
   );

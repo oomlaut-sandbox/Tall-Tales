@@ -8,6 +8,7 @@
 // only My Library or the Book Store take you to another screen.
 import StripCover from '../components/StripCover';
 import { LANGS, LangContext, useT } from '../i18n';
+import { activeProfile } from '../profiles';
 import { useControls } from '../controls';
 import React, { useContext, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
@@ -203,12 +204,12 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
         </Pressable>
       ))}
     </View>
-    {/* Profiles, the same way in the top right corner: one for each child */}
+    {/* Profiles, the same way in the top right corner: one for each child (the child reading now, once there are profiles) */}
     <View pointerEvents="box-none" style={{ position: 'absolute', right: 16, top: insets.top + 22, zIndex: 100 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }} accessibilityLabel={t('Profiles')}>
+      <Pressable onPress={() => go('profiles')} hitSlop={8} style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }} accessibilityRole="button" accessibilityLabel={t('Profiles')}>
         <UserIcon color="rgba(235,235,235,0.9)" />
-        <Text style={[styles.corner, { color: 'rgba(235,235,235,0.9)' }]}>{t('Profiles')}</Text>
-      </View>
+        <Text numberOfLines={1} style={[styles.corner, { color: 'rgba(235,235,235,0.9)', maxWidth: 90 }]}>{(activeProfile() || {}).name || t('Profiles')}</Text>
+      </Pressable>
     </View>
     </View>
   );

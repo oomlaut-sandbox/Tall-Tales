@@ -1,5 +1,6 @@
 // Saves app data on the phone (document folder, kept until the app is deleted).
 // The full app will sync this to the account later; the shape stays the same.
+import { keyFor, scopedKey } from './scope';
 import { Directory, File, Paths } from 'expo-file-system';
 
 function dir(name) {
@@ -8,7 +9,7 @@ function dir(name) {
   return d;
 }
 
-export async function loadJSON(name, fallback) {
+async function rawLoad(name, fallback) {
   try {
     const f = new File(dir('data'), `${name}.json`);
     if (!f.exists) return fallback;
@@ -18,7 +19,7 @@ export async function loadJSON(name, fallback) {
   }
 }
 
-export async function saveJSON(name, value) {
+async function rawSave(name, value) {
   try {
     const f = new File(dir('data'), `${name}.json`);
     f.write(JSON.stringify(value));
@@ -44,3 +45,10 @@ export function deleteFile(uri) {
 export async function readBytes(uri) {
   return new File(uri).bytes();
 }
+
+// (a child's own things are kept under their profile: see scope.js)
+export const loadJSON = (name, fallback) => rawLoad(scopedKey(name), fallback);
+export const saveJSON = (name, value) => rawSave(scopedKey(name), value);
+// another child's copy (the Profiles page)
+export const loadJSONFor = (id, name, fallback) => rawLoad(keyFor(id, name), fallback);
+export const saveJSONFor = (id, name, value) => rawSave(keyFor(id, name), value);

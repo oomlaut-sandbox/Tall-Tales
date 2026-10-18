@@ -96,6 +96,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
             <Toggle label={t('Recording own voice')} value={controls.recording} onChange={(v) => set({ recording: v })} />
             <Toggle label={t('Sharing and printing')} value={controls.sharing} onChange={(v) => set({ sharing: v })} />
             <Toggle label={t('Let my child change the language')} value={controls.language} onChange={(v) => set({ language: v })} />
+            <Toggle label={t('Let my child switch profiles')} value={controls.profiles !== false} onChange={(v) => set({ profiles: v })} />
             <Toggle label={t('Let my child change playback')} value={controls.playback} onChange={(v) => set({ playback: v })} />
             <Text style={[styles.cardTitle, { marginTop: 8 }]}>{t('Always play like this')}</Text>
             <View style={styles.choices}>
