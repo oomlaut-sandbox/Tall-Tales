@@ -5,6 +5,10 @@ const fs = require('fs');
 const KEY = process.env.ELEVENLABS_API_KEY;
 const SOUNDS = [
   ['crickets', 'Gentle crickets chirping softly on a warm summer night in a quiet meadow, calm and steady, far-off and peaceful, no other animals, no music, seamless loop.'],
+  // three friendlier crickets to choose from (the first one sounded creepy)
+  ['crickets-a', 'A cosy summer evening on a farm porch: just a few crickets chirping slowly and softly in the distance, warm and friendly, sparse and relaxed, a light breeze in the grass, no buzzing, no insects close up, no other animals, no music, seamless loop.'],
+  ['crickets-b', 'Crickets heard from inside a cosy cabin through an open window at night: soft, muffled, slow and gentle chirping, warm and sleepy, very calm, no buzzing, no other animals, no music, seamless loop.'],
+  ['crickets-c', 'A peaceful summer meadow at dusk: soft, slow crickets with a gentle trickling stream nearby and a warm breeze, friendly and soothing for a child falling asleep, no buzzing, no owls, no music, seamless loop.'],
   ['brook', 'A babbling brook: clear water trickling softly over smooth stones in a quiet forest, steady and soothing, no birds, no music, seamless loop.'],
   ['forest-birds', 'Birds singing softly in a peaceful forest in the early morning: gentle distant birdsong, leaves rustling lightly in a breeze, calm and relaxing, no music, seamless loop.'],
   ['rain', 'Soft steady rain falling on a roof and leaves, cosy and calm, no thunder, no wind gusts, no music, seamless loop.'],
