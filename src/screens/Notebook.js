@@ -6,7 +6,7 @@
 // Opened from My Library, the little notebook grows into place and its cover swings open like the one on
 // the start page. After that the white pages turn with the paper peel, like the books.
 // Everything saves on its own. Turn pages with the dog-ear or by swiping; "Pages" lists them all.
-import { flipStyle, makeFlip } from '../flip';
+import StripCover from '../components/StripCover';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, KeyboardAvoidingView, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -121,7 +121,6 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const fade = useRef({
     out: fly.interpolate({ inputRange: [0, 0.5], outputRange: [1, 0], extrapolate: 'clamp' }),
     in: fly.interpolate({ inputRange: [0.2, 1], outputRange: [0, 1], extrapolate: 'clamp' }),
-    flip: makeFlip(swing),
   }).current;
   // waits until the book has settled into its final size and place, then runs both steps on the native
   // driver (moves and scales only, so it stays smooth); the closed cover is only taken away a moment
@@ -408,28 +407,14 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     const round = wide
       ? { borderTopLeftRadius: S0 * R_SPINE, borderBottomLeftRadius: S0 * R_SPINE, borderTopRightRadius: S0 * R_EDGE, borderBottomRightRadius: S0 * R_EDGE }
       : { borderTopLeftRadius: S0 * R_SPINE, borderTopRightRadius: S0 * R_SPINE, borderBottomLeftRadius: S0 * R_EDGE, borderBottomRightRadius: S0 * R_EDGE };
-    const frontOp = swing.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [1, 1, 0, 0] });
-    const backOp = swing.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] });
-    const shade = swing.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.25, 0] });
-    const leaf = flipStyle(fade.flip, wide); // a flat flip over the spine (a 3D turn strobes on iPhone)
     introEl = (
       <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 45 }]}>
         <Animated.View style={{ position: 'absolute', left: from.x, top: from.y, width: S0, height: S0,
           transform: [{ translateX: fly.interpolate({ inputRange: [0, 1], outputRange: [0, dx] }) }, { translateY: fly.interpolate({ inputRange: [0, 1], outputRange: [0, dy] }) }, { scale: fly.interpolate({ inputRange: [0, 1], outputRange: [1, k] }) }] }}>
           {/* the shelf notebook's own shadow, still (never on the turning cover: that flickers), fading as it grows */}
           <Animated.View style={[StyleSheet.absoluteFill, round, { backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, opacity: fade.out }]} />
-          <Animated.View style={[StyleSheet.absoluteFill, round, { backgroundColor: '#7c5438' }, leaf]}>
-            <Animated.View style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: frontOp }]}>
-              <Image source={wide ? NOTEBOOK_COVER_WIDE : NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} />
-            </Animated.View>
-            <Animated.View style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: backOp }]}>
-              <Image source={wide ? NOTEBOOK_COVER_WIDE : NOTEBOOK_COVER} resizeMode="cover" style={{ width: '100%', height: '100%' }} />
-              <Animated.View style={[StyleSheet.absoluteFill, { opacity: swing.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] }) }]}>
-                <Fade edge={wide ? 'left' : 'top'} size={Math.round(S0 * 0.24)} max={0.55} />
-              </Animated.View>
-            </Animated.View>
-            <Animated.View style={[StyleSheet.absoluteFill, round, { backgroundColor: '#000', opacity: shade }]} />
-          </Animated.View>
+          {/* the cover: the strip method from the Cover test (flat strips, no 3D, always solid) */}
+          <StripCover p={swing} side={S0} wide={wide} style={StyleSheet.absoluteFill} />
         </Animated.View>
       </View>
     );

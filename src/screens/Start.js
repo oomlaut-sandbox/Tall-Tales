@@ -6,11 +6,11 @@
 // inside (also brown) lands in the picture square. The cover can also be dragged with a finger and
 // follows it the whole way. Tapping or dragging the open cover closes it again;
 // only My Library or the Book Store take you to another screen.
-import { flipStyle, makeFlip } from '../flip';
+import StripCover from '../components/StripCover';
 import React, { useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
-import { DESK_FELT, Felt } from '../look';
+import { DESK_FELT, DeskFelt, Felt } from '../look';
 // The felt Oomlaut Reader logo on the desk where the cover opens, so the open cover hides it.
 // To undo: set SHOW_DESK_LOGO to false (or remove these lines and assets/logo-felt.png).
 const SHOW_DESK_LOGO = true;
@@ -61,7 +61,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
   // (when the app hears the book is open) used to swap them for new ones, and the shadows blinked.
   const A = useRef(null);
   if (!A.current) A.current = {
-    flip: makeFlip(p),
+    landShadow: p.interpolate({ inputRange: [0.5, 1], outputRange: [0, 1], extrapolate: 'clamp' }),
     frontOp: p.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [1, 1, 0, 0] }),
     backOp: p.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] }),
     shade: p.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.25, 0] }),
@@ -146,7 +146,6 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
         const frontOp = A.current.frontOp;
         const backOp = A.current.backOp;
         const shade = A.current.shade;
-        const leaf = flipStyle(A.current.flip, wide); // a flat flip over the spine (a 3D turn strobes on iPhone)
         return (
           // Upright, the whole notebook sits a little higher than centred, so the closed cover rests just above the
           // speech bubble. It never moves; when it's open the space above it is a bit smaller than below.
@@ -171,22 +170,18 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
                 <MenuItem u={k} icon={TILE_STORE} title="Book Store" sub="Discover and buy new books" onPress={() => goTo('store')} />
               </View>
             </View>
-            {/* the cover */}
-            {(
-              <Animated.View ref={coverRef} collapsable={false} {...swipe.panHandlers} pointerEvents={isOpen ? 'none' : 'auto'} style={[at2, styles.page, round, { zIndex: 8, backgroundColor: COVER_BROWN }, leaf]}>
-                <Animated.View style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: frontOp }]}>
-                  {coverImg}
-                  <Pressable style={StyleSheet.absoluteFill} onPress={open} accessibilityRole="button" accessibilityLabel="Open the book" />
-                </Animated.View>
-                {/* inside of the cover: the same leather, seen from the other side once it's turned over */}
-                <Animated.View pointerEvents="none" accessibilityLabel="Oomlaut Reader" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden', opacity: backOp }]}>
-                  {coverImg}
-                  {/* the big spine shadow on the leather: along the edge it turns on, so it travels with the cover as it opens and closes */}
-                  <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.24)} max={0.55} />
-                </Animated.View>
-                <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { backgroundColor: '#000', opacity: shade }]} />
-              </Animated.View>
-            )}
+            {/* where the open cover lands: a still felt-coloured shape with the cover's shadow, growing in as it
+                arrives (the turning cover itself casts none) */}
+            <Animated.View pointerEvents="none" style={[at1, corners(side, wide, true), { backgroundColor: DESK_FELT ? '#262626' : colors.desk, opacity: A.current.landShadow,
+              shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10 }]}>
+              <View style={[StyleSheet.absoluteFill, corners(side, wide, true), { overflow: 'hidden' }]}><DeskFelt spot="startPlate" /></View>
+            </Animated.View>
+            {/* the cover: the strip method from the Cover test (flat strips, no 3D, always solid) */}
+            <StripCover p={p} side={side} wide={wide} style={[at2, { zIndex: 8 }]} />
+            {/* the shut cover's touch area: tap to open, or swipe it */}
+            <View ref={coverRef} collapsable={false} {...swipe.panHandlers} pointerEvents={isOpen ? 'none' : 'auto'} style={[at2, { zIndex: 9 }]}>
+              <Pressable style={StyleSheet.absoluteFill} onPress={open} accessibilityRole="button" accessibilityLabel="Open the book" />
+            </View>
             {/* the open cover (picture square): tap or swipe it to close the book again */}
             {isOpen ? <View {...swipe.panHandlers} style={[at1, { zIndex: 9 }]}><Pressable style={StyleSheet.absoluteFill} onPress={close} accessibilityRole="button" accessibilityLabel="Close the book" /></View> : null}
           </Animated.View>
