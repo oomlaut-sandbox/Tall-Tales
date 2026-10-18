@@ -99,11 +99,11 @@ export default function TapePlayer({ bottomBar = 0, sideBar = 0, onMenu }) {
         {/* Play and Pause, with their names underneath */}
         <Pressable onPress={playAmbient} style={at(161, 142, 264, 270)} accessibilityRole="button" accessibilityLabel={t('Play')} />
         <Pressable onPress={pauseAmbient} style={at(490, 187, 161, 161)} accessibilityRole="button" accessibilityLabel={t('Pause')} />
-        {[[t('Play'), 293, 410], [t('Pause'), 570, 370]].map(([l, cx, top]) => (
+        {[[t('Play'), 293, 432], [t('Pause'), 570, 370]].map(([l, cx, top]) => (
           <Text key={cx} numberOfLines={1} style={[styles.label, label, { position: 'absolute', left: (cx - 150) * f, width: 300 * f, top: top * f, textAlign: 'center' }]}>{l}</Text>
         ))}
         {/* the two windows, named above them, with the choice in white */}
-        <Text style={[styles.label, label, { position: 'absolute', left: 178 * f, top: 514 * f }]}>{t('Sounds')}</Text>
+        <Text style={[styles.label, label, { position: 'absolute', left: 178 * f, top: 518 * f }]}>{t('Sounds')}</Text>
         <View pointerEvents="none" style={[at(186, 593, 704, 110), styles.window]}>
           <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.choice, { fontSize: 66 * f }, !s.sound && { opacity: 0.6 }]}>{name(s.sound)}</Text>
         </View>
