@@ -62,7 +62,7 @@ export const HELP = [
   ] },
   { section: 'My Notebook', title: 'Drawing and notes', text: [
     'Tap a picture square to make a drawing, choose a photo or take one. You can also draw on top of a photo.',
-    'Draw with your finger in crayon colours. Pick a thin, medium or thick crayon. The paint bucket fills a shape with the colour you pick: tap inside it. The eraser rubs out whole lines and fills; undo takes back the last line or fill; Clear starts over.',
+    'Draw with your finger in crayon colours. Pick a thin, medium or thick crayon. The paint roller fills a shape with the colour you pick: tap inside it. The eraser rubs out whole lines and fills; undo takes back the last line or fill; Clear starts over.',
     'Tap the lined square to write notes.',
   ] },
   { section: 'My Notebook', title: 'Badges', text: [

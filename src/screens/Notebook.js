@@ -732,13 +732,16 @@ function RoundEar({ size: e, radius: R, onPress, label }) {
 }
 
 // Undo: a simple arrow that loops back, drawn in the same thick white line as the app's other icons
-// a little paint bucket, tipped over, with a drop falling from it
+// a simple paint roller: the roller on top, its frame bending down to the handle
 function BucketIcon() {
+  const w = colors.white;
   return (
-    <View style={{ width: 24, height: 22 }}>
-      <View style={{ position: 'absolute', left: 3, top: 3, width: 13, height: 14, borderWidth: 2.5, borderTopWidth: 0, borderColor: colors.white, borderBottomLeftRadius: 4, borderBottomRightRadius: 4, transform: [{ rotate: '-35deg' }] }} />
-      <View style={{ position: 'absolute', left: 1, top: 4, width: 16, height: 2.5, backgroundColor: colors.white, borderRadius: 1, transform: [{ rotate: '-35deg' }] }} />
-      <View style={{ position: 'absolute', right: 1, top: 11, width: 7, height: 9, backgroundColor: colors.white, borderRadius: 4, borderTopLeftRadius: 0, transform: [{ rotate: '45deg' }] }} />
+    <View style={{ width: 24, height: 24 }}>
+      <View style={{ position: 'absolute', left: 1, top: 2, width: 17, height: 7, borderRadius: 2.5, backgroundColor: w }} />
+      <View style={{ position: 'absolute', left: 18, top: 4.5, width: 4, height: 2, backgroundColor: w }} />
+      <View style={{ position: 'absolute', left: 20, top: 4.5, width: 2, height: 8, backgroundColor: w }} />
+      <View style={{ position: 'absolute', left: 10, top: 11, width: 12, height: 2, backgroundColor: w }} />
+      <View style={{ position: 'absolute', left: 9, top: 12, width: 4, height: 11, borderRadius: 2, backgroundColor: w }} />
     </View>
   );
 }
@@ -836,7 +839,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
         <Text style={styles.toolText}>Eraser</Text>
       </Pressable>
       {/* the paint bucket: tap inside a shape to fill it with the colour */}
-      <Pressable onPress={() => { setBucket((x) => !x); setErase(false); }} style={[styles.tool, bucket && styles.toolOn]} accessibilityLabel="Fill (paint bucket)">
+      <Pressable onPress={() => { setBucket((x) => !x); setErase(false); }} style={[styles.tool, bucket && styles.toolOn]} accessibilityLabel="Fill (paint roller)">
         <BucketIcon />
       </Pressable>
     </View>
