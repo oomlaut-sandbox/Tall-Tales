@@ -3,7 +3,7 @@
 //   Record / Play / Pause: the three felt buttons (Record records your voice in the open book, like the red
 //     button in the reading bar; the little red light comes on only while recording)
 //   Sounds (top window) and Music (bottom window): tap a knob to click through the choices; the choice shows
-//     in the window in white, and the knob turns a notch each click
+//     in the window in white, and the line on the knob turns a notch each click
 //   Volume (the slider top left, a grey felt dot on a stitched line): drag the dot, or tap the line
 //   the three lines at the top: open the Music and Sounds page; the down arrow: close the player
 import React, { useEffect, useRef, useState } from 'react';
@@ -121,10 +121,18 @@ export default function TapePlayer({ bottomBar = 0, sideBar = 0, onMenu, toast }
       </View>
       {/* the knobs: tap to click to the next choice */}
       <Pressable onPress={() => stepAmbient('sound')} style={at(663, 1166, 168, 168)} accessibilityRole="button" accessibilityLabel={`${t('Sounds')}: ${name(s.sound)}`}>
-        <Animated.Image source={KNOB1} style={[{ width: 168 * f, height: 168 * f }, turn(k1)]} />
+        <Image source={KNOB1} style={{ width: 168 * f, height: 168 * f }} />
+          {/* the knob stays put; only the little line on its face goes round */}
+          <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 0, top: 0, width: 168 * f, height: 168 * f }, turn(k1)]}>
+            <View style={[styles.mark, { left: 168 * f * 0.482, top: 168 * f * 0.1, width: 168 * f * 0.036, height: 168 * f * 0.19 }]} />
+          </Animated.View>
       </Pressable>
       <Pressable onPress={() => stepAmbient('music')} style={at(663, 1471, 168, 168)} accessibilityRole="button" accessibilityLabel={`${t('Music')}: ${name(s.music)}`}>
-        <Animated.Image source={KNOB2} style={[{ width: 168 * f, height: 168 * f }, turn(k2)]} />
+        <Image source={KNOB2} style={{ width: 168 * f, height: 168 * f }} />
+          {/* the knob stays put; only the little line on its face goes round */}
+          <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 0, top: 0, width: 168 * f, height: 168 * f }, turn(k2)]}>
+            <View style={[styles.mark, { left: 168 * f * 0.482, top: 168 * f * 0.1, width: 168 * f * 0.036, height: 168 * f * 0.19 }]} />
+          </Animated.View>
       </Pressable>
       </View>
     </Animated.View>
@@ -137,6 +145,7 @@ const styles = StyleSheet.create({
   inner: { borderRadius: 10, overflow: 'hidden' },
   light: { borderRadius: 30, backgroundColor: '#a5121d', shadowColor: '#ff3b30', shadowOpacity: 0.8, shadowRadius: 4, shadowOffset: { width: 0, height: 0 } },
   label: { fontFamily: fonts.ui, fontWeight: '600', color: '#4a4a4a' },
+  mark: { position: 'absolute', borderRadius: 2, backgroundColor: '#2a2a2d' },
   track: { borderRadius: 6, backgroundColor: '#7c7b7a' },
   trackOn: { backgroundColor: '#3f3f44' },
   window: { justifyContent: 'center', paddingHorizontal: 3 },
