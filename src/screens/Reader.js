@@ -30,7 +30,7 @@ function PeelLayer({ start, ...props }) {
 }
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { Bar, BarMeta, BubbleIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, GearIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon } from '../components/Chrome';
+import { Bar, BarMeta, BubbleIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, GearIcon, LibraryIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
@@ -661,6 +661,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <View style={{ width: BL.rightW, alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
             <View style={{ alignItems: 'center' }}>
               <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
+              {/* back to My Library, a little below the menu */}
+              <Pressable onPress={() => { stopReading(); goLibrary && goLibrary(); }} disabled={recording} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back to My Library"
+                style={[styles.small, { marginTop: u * 6, opacity: recording ? 0.35 : 1 }]}>
+                <LibraryIcon size={u * 6.4} weight={Math.max(2, u * 0.7)} />
+              </Pressable>
             </View>
             <View style={{ alignItems: 'center' }}>
             {showControls ? (
@@ -682,6 +687,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       <View style={[styles.bottomBar, { height: barH, paddingBottom: insets.bottom }]}>
         <Felt />
         <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
+        {/* back to My Library (only while reading a book): a little apart from the menu */}
+        <Pressable onPress={() => { stopReading(); goLibrary && goLibrary(); }} disabled={recording} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back to My Library"
+          style={[styles.small, { marginLeft: u * 6, opacity: recording ? 0.35 : 1 }]}>
+          <LibraryIcon size={u * 6.4} weight={Math.max(2, u * 0.7)} />
+        </Pressable>
         {/* no page numbers in the reader (the store shows how long a book is) */}
         <View style={{ flex: 1 }} />
         {showControls ? (
