@@ -10,6 +10,7 @@ import { Bar, Burger, WithBar } from '../components/Chrome';
 import { useT } from '../i18n';
 import { IDEA_COUNT } from '../ideas';
 
+const IDEA_PICTURE = require('../../assets/idea-room.jpg');
 const BAND_FELT = require('../../assets/band-profile.jpg'); // the yellow-orange felt banner
 const SEARCH_FELT = require('../../assets/search-felt.png'); // Jörg's grey stitched felt strip, cut out with a shadow
 
@@ -127,10 +128,13 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
         <View style={styles.col}>
           {/* (a short video tour will go here later) */}
           {/* the Idea Room, at the very top: ideas for every kind of book a family can make */}
-          <Pressable onPress={onIdeas} accessibilityRole="button" style={styles.ideas}>
-            <Text style={styles.ideasTitle}>{t('Idea Room')}</Text>
-            <Text style={styles.ideasText}>{t('{n} ideas for books you can make together: your photos and drawings, your words, your voice.', { n: IDEA_COUNT })}</Text>
-            <Text style={styles.ideasGo}>{t('Visit the Idea Room')} ›</Text>
+          <Pressable onPress={onIdeas} accessibilityRole="button" style={[styles.ideas, { flexDirection: 'row', gap: 14, alignItems: 'center' }]}>
+            <Image source={IDEA_PICTURE} style={{ width: 84, height: 84, borderRadius: 12 }} resizeMode="cover" />
+            <View style={{ flex: 1, gap: 6 }}>
+              <Text style={styles.ideasTitle}>{t('Idea Room')}</Text>
+              <Text style={styles.ideasText}>{t('{n} ideas for books you can make together: your photos and drawings, your words, your voice.', { n: IDEA_COUNT })}</Text>
+              <Text style={styles.ideasGo}>{t('Visit the Idea Room')} ›</Text>
+            </View>
           </Pressable>
           {/* the search window: a white pill the width of the topics, with a soft inner shadow along its top edge */}
           <View style={[styles.searchWrap, { marginTop: 14 }]}>

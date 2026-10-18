@@ -225,6 +225,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     const narrate = () => {
       const voiceKey = narratorOf(prefs);
       // books from the store bring their own narration (downloaded); the app's own books have it built in
+      // a book shown in another language has no narration in that language yet: the phone reads it in that language
+      if (story.lang && story.lang !== 'en') { speakTracked(p.text, { lang: story.lang, rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage }); return; }
       const own = story.narration ? (story.narration[voiceKey]?.[p.pid] || story.narration.lily?.[p.pid]) : null;
       const audio = own ? { uri: own.uri } : AUDIO[voiceKey]?.[story.id]?.[p.pid] || AUDIO.lily?.[story.id]?.[p.pid];
       const times = own ? own.words : (TIMINGS[AUDIO[voiceKey]?.[story.id]?.[p.pid] ? voiceKey : 'lily']?.[story.id]?.[p.pid] || {}).words;
@@ -238,13 +240,13 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         onDone: afterPage,
         onFail: () => { // the narration file wouldn't play: read it with the phone's voice instead
           usingVoice.current = false;
-          if (st.current.idx === pageIndex) speakTracked(p.text, { rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage });
+          if (st.current.idx === pageIndex) speakTracked(p.text, { lang: story.lang, rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage });
         },
       })) {
         usingVoice.current = true;
         return;
       }
-      speakTracked(p.text, { rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage });
+      speakTracked(p.text, { lang: story.lang, rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage });
     };
     if (prefs.voice === 'mine') {
       getRecording(story.id, pageKey(p, pageIndex)).then((rec) => {
@@ -356,9 +358,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     const done = () => setTimeout(() => setHl(-1), 400);
     if (mode === 'learn') {
       // Say the whole word once, clearly, in the chosen narrator's voice (the phone's voice if needed).
-      const wordClip = WORDS[narratorOf(prefsRef.current)]?.[w.toLowerCase()];
+      const foreign = story.lang && story.lang !== 'en'; // a translated book: the phone says the word in that language
+      const wordClip = foreign ? null : WORDS[narratorOf(prefsRef.current)]?.[w.toLowerCase()];
       if (wordClip) { playClips([wordClip], { onDone: done }); return; }
-      speakQueue([{ text: w, rate: 0.7 }], done);
+      speakQueue([{ text: w, rate: 0.7, lang: story.lang }], done);
     }
   };
 

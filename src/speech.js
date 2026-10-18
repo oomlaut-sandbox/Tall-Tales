@@ -26,7 +26,10 @@ export function stopSpeech() {
 
 // Speak `text`; onWord(charIndex) is called as speech progresses (real boundaries when the
 // platform reports them, otherwise an estimate), onDone when finished or stopped.
-export function speakTracked(text, { rate = 0.92, onWord, onDone } = {}) {
+// lang: the book's language ('de', 'fr', 'es', 'ja'); the phone's own voice for that language is used
+const LOCALES = { en: 'en-US', de: 'de-DE', fr: 'fr-FR', es: 'es-ES', ja: 'ja-JP' };
+const voiceFor = (lang) => (!lang || lang === 'en' ? { language: 'en-US', voice: voiceId } : { language: LOCALES[lang] || lang });
+export function speakTracked(text, { rate = 0.92, onWord, onDone, lang } = {}) {
   stopSpeech();
   const my = session;
   let gotBoundary = false;
@@ -43,8 +46,7 @@ export function speakTracked(text, { rate = 0.92, onWord, onDone } = {}) {
   Speech.speak(text, {
     rate,
     pitch: 1.05,
-    language: 'en-US',
-    voice: voiceId,
+    ...voiceFor(lang),
     onBoundary: (e) => {
       gotBoundary = true;
       const ch = e && (e.charIndex ?? e.charIndexStart);
@@ -69,7 +71,7 @@ export function speakQueue(items, onDone) {
     if (my !== session) return;
     if (i >= items.length) return onDone && onDone();
     const it = items[i++];
-    Speech.speak(it.text, { rate: it.rate ?? 0.8, language: 'en-US', voice: voiceId, onDone: () => setTimeout(next, it.pause ?? 180), onError: next });
+    Speech.speak(it.text, { rate: it.rate ?? 0.8, ...voiceFor(it.lang), onDone: () => setTimeout(next, it.pause ?? 180), onError: next });
   };
   next();
 }

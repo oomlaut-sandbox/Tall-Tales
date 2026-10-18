@@ -29,7 +29,8 @@ import { LangContext, deviceLang, translate } from './src/i18n';
 import { ControlsContext, DEFAULT_CONTROLS } from './src/controls';
 import Notebook, { NOTEBOOK_COVER, R_EDGE, R_SPINE } from './src/screens/Notebook';
 import { onNewBadge } from './src/badges';
-import { SHOWN_BOOKS, STORIES } from './src/story';
+import { SHOWN_BOOKS, STORIES, localizeStory } from './src/story';
+import { usePurchases } from './src/purchases';
 import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
@@ -83,6 +84,9 @@ function Root() {
   const langRef = useRef(lang);
   langRef.current = lang;
   const [settingsGate, setSettingsGate] = useState(false); // Settings is for grown-ups
+  // the books' language: members can choose one in Settings; otherwise the app's language
+  const purchases = usePurchases();
+  const readLang = (purchases.member && bookLang) || lang;
   const [memberOpen, setMemberOpen] = useState(false);
 
   useEffect(() => {
@@ -149,7 +153,8 @@ function Root() {
   // inside of the cover); its cover picture is the cover. From My Library, the cover animates open.
   const prepared = (s) => (s.pages[0] && s.pages[0].titlePage ? { ...s, pages: [{ ...s.pages[0], image: null, whiteArt: true }, ...s.pages.slice(1)] } : s);
   const [opening, setOpening] = useState(null); // { story, cover, rect } while a book opens from the library
-  const openStory = (s, rect) => {
+  const openStory = (s0, rect) => {
+    const s = s0 && s0.langs ? localizeStory(s0, readLang) : s0; // a translated book opens in the reading language
     const ready = prepared(s);
     if (rect && (screen === 'library' || screen === 'store')) { setOpening({ story: ready, cover: s.cover && s.cover.uri ? { uri: s.cover.uri } : s.pages[0] && s.pages[0].image, rect }); return; }
     setStory(ready); go('reader');
@@ -213,7 +218,7 @@ function Root() {
         ) : null}
         {(screen === 'library' || (screen === 'start' && peek === 'library')) && (
           <Animated.View style={{ flex: 1, opacity: screen === 'library' ? libFade : 1 }}>
-          <Library u={u} stories={[...STORIES.filter((s) => SHOWN_BOOKS.includes(s.id) && !removed.includes(s.id)), ...userStories]} openStory={openStory} openMenu={openMenu}
+          <Library u={u} stories={[...STORIES.filter((s) => SHOWN_BOOKS.includes(s.id) && !removed.includes(s.id)).map((s) => localizeStory(s, readLang)), ...userStories]} openStory={openStory} openMenu={openMenu}
             onNotebook={(rect) => {
               // the notebook stays where it is while the shelf dissolves away to plain felt; then the notebook
               // screen takes over (its own notebook is already in the same spot) and the held one is taken away

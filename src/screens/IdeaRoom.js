@@ -11,6 +11,7 @@ import { useT } from '../i18n';
 import { useControls } from '../controls';
 
 const BAND_FELT = require('../../assets/band-about.jpg'); // the felt banner
+const PICTURE = require('../../assets/idea-room.jpg'); // Jörg's happy blue felt creature under the rainbow
 
 export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
   const t = useT();
@@ -25,6 +26,7 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
       </View>
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.col}>
+          <View style={styles.hero}><Image source={PICTURE} style={StyleSheet.absoluteFill} resizeMode="cover" /></View>
           <Text style={styles.lead}>{t('{n} ideas for books you can make together: your photos and drawings, your words, your voice.', { n: IDEA_COUNT })}</Text>
           <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
             {controls.create ? <Pressable onPress={onMake} style={[styles.pill, { backgroundColor: colors.blue }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Make a story')}</Text></Pressable> : null}
@@ -61,6 +63,7 @@ const styles = StyleSheet.create({
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 28, paddingBottom: 40, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 14 },
+  hero: { width: '100%', aspectRatio: 4 / 3, borderRadius: 16, overflow: 'hidden', backgroundColor: '#3a3a3a' },
   lead: { fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, color: colors.white },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 18 },
   intro: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#cfcfcf' },

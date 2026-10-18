@@ -10,7 +10,7 @@ import ParentGate from '../components/ParentGate';
 import Membership from '../components/Membership';
 import { buyBook, canOpen, usePurchases } from '../purchases';
 import { PRICES } from '../prices';
-import { useT } from '../i18n';
+import { useLang, useT } from '../i18n';
 import { useControls } from '../controls';
 import CoverArt from '../components/CoverArt';
 import { SHOWN_BOOKS, STORIES } from '../story';
@@ -285,6 +285,8 @@ export function Store({ u, openStory, openMenu, toast }) {
 // details underneath (beside it when the phone is sideways). Closing runs it backwards.
 function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, allowed, onJoin, onBuy }) {
   const t = useT();
+  const lang = useLang();
+  const L = ((bundledStory(book.id) || {}).langs || {})[lang]; // a translated book inside the app: its title and description
   const { width: winW, height: winH } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const areaW = winW - barW, areaH = winH - barH;
@@ -336,7 +338,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
   const dim = fade.interpolate({ inputRange: [0, 1], outputRange: [0, 0.55] });
   const cover = coverFor(book);
   // every square is a page (a screen is a picture page and a words page), so bundled books count both
-  const blurb = book.blurb || (bundledStory(book.id) || {}).blurb; // the catalog's text, or the bundled book's own
+  const blurb = (L && L.blurb) || book.blurb || (bundledStory(book.id) || {}).blurb; // the catalog's text, or the bundled book's own
   const pageCount = bundledStory(book.id) ? bundledStory(book.id).pages.length * 2 : book.page_count;
   const access = book.access === 'free' ? t('Free') : book.access === 'member' ? t('Members') : t('Members or {price}', { price: book.price_label || PRICES.book });
   const meta = [pageCount ? t('{n} pages', { n: pageCount }) : null, ageText(ageOf(book, bundledStory(book.id))) ? t('ages {n}', { n: ageText(ageOf(book, bundledStory(book.id))) }) : book.age_range ? t('ages {n}', { n: book.age_range }) : null, access].filter(Boolean).join(' · ');
@@ -355,7 +357,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
   // under the cover: title, author, pages and price, then a short description
   const info = (
     <View style={{ gap: 8 }}>
-      <Text style={[styles.cardTitle, { marginTop: 10 }]}>{book.title}</Text>
+      <Text style={[styles.cardTitle, { marginTop: 10 }]}>{(L && L.title) || book.title}</Text>
       {book.author ? <Text style={styles.sheetSub}>{t('by {name}', { name: book.author })}</Text> : null}
       <Text style={styles.sheetSub}>{meta}</Text>
       {blurb ? <Text style={[styles.sheetText, { marginTop: 6 }]}>{blurb}</Text> : null}
