@@ -1,6 +1,6 @@
 // My Library and Book Store.
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG } from '../look';
@@ -220,6 +220,10 @@ export function Store({ u, openStory, openMenu, toast }) {
   const extra = cat ? STORIES.filter((st) => st.storeShelf && SHOWN_BOOKS.includes(st.id) && !cat.books.some((b) => b.id === st.id))
     .map((st, i) => ({ id: st.id, title: st.title, author: st.author || null, blurb: st.blurb || null, shelf_id: st.storeShelf, sort: i, access: 'free', bundled: true, featured: false })) : [];
   const shown = cat ? { ...cat, books: [...cat.books.filter((b) => (SHOWN_BOOKS.includes(b.id) || !b.bundled) && !STORIES.some((st) => st.id === b.id && st.libraryOnly)), ...extra] } : null; // plus every book published from the Store Manager
+  // (web preview only, #pay-demo: two books shown as a members' book and a single book to buy)
+  if (shown && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash === '#pay-demo') {
+    shown.books = shown.books.map((b) => (b.id === 'rough-lives' ? { ...b, access: 'member' } : b.id === 'two-snakes' ? { ...b, access: 'paid', price_label: '$2.99' } : b));
+  }
   const featured = shown ? shown.books.find((b) => b.featured) : null;
   // a book is on the shelves only once: the featured book isn't repeated on the shelf below
   const rows = shown ? shelvesWithBooks(featured ? { ...shown, books: shown.books.filter((b) => b.id !== featured.id) } : shown) : [];
