@@ -211,6 +211,7 @@ export const TWO_SNAKES = {
 // Its pictures are borrowed from the other books.
 export const TIPS = {
   id: 'tips',
+  minAge: 18, // a guide for grown-ups: hidden whenever a child's age is set in Settings
   title: 'Tips for Authors',
   author: 'Oomlaut',
   libraryOnly: true,
