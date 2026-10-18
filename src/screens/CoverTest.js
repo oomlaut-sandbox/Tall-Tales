@@ -43,7 +43,7 @@ function stripTables(side) {
       const a = proj(i * h, th), b = proj((i + 1) * h, th), m = proj((i + 0.5) * h, th);
       let k = (b.y - a.y) / h;
       if (Math.abs(k) < 0.001) k = k < 0 ? -0.001 : 0.001; // never exactly flat
-      ty.push(a.y); sy.push(k * 1.02); sx.push(m.f); // (a hair taller, so neighbours always meet)
+      ty.push(a.y); sy.push(k); sx.push(m.f);
     }
     out.push({ ty, sy, sx });
   }
@@ -153,8 +153,9 @@ export default function CoverTest({ u, openMenu }) {
             </Animated.View>
             {/* the turning cover: strips, each only moved and stretched (see stripTables) */}
             <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, top: side, width: side, height: side, zIndex: 4, opacity: A.leafOp }}>
+              {/* (each strip runs on under the next one, which is drawn over it, so no seams ever show) */}
               {strips.map((st, n) => (
-                <Animated.View key={n} style={{ position: 'absolute', left: 0, top: 0, width: side, height: h, overflow: 'hidden', transformOrigin: 'top', transform: st.transform }}>
+                <Animated.View key={n} style={{ position: 'absolute', left: 0, top: 0, width: side, height: n === STRIPS - 1 ? h : 2 * h, overflow: 'hidden', transformOrigin: 'top', transform: st.transform }}>
                   <View style={{ position: 'absolute', left: 0, top: -n * h, width: side, height: side }}>
                     <Animated.View style={[StyleSheet.absoluteFill, { opacity: A.frontOp }]}>{leather}</Animated.View>
                     <Animated.View style={[StyleSheet.absoluteFill, { opacity: A.backOp }]}>
