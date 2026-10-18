@@ -67,7 +67,7 @@ const MODES = [
   [<TextIcon text="Aa" />, 'learn', 'Learn to Read', 'Says a word when you touch it'],
   [<PlayGlyph count={2} />, 'auto', 'Auto Play', 'Reads the full story with audio'],
   [<PlayGlyph />, 'page', 'Page by Page Play', 'Reads a page at a time with audio'],
-  [<MoonIcon />, 'listen', 'Listen Only', 'Reads by itself, nothing to tap. For bedtime'],
+  [<MoonIcon />, 'listen', 'Listen Only', 'Reads by itself, nothing to tap'],
   // ['✦', 'interactive', 'Interactive', 'Image interaction with touch'],  (hidden for now; hotspot code kept)
 ];
 
@@ -692,7 +692,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
               ) : null}
               {/* music and sounds: the little floating Audio Player */}
               <Pressable onPress={() => setAmbientPlayer(!getAmbient().showPlayer)} hitSlop={12} accessibilityRole="button" accessibilityLabel="Music and Sounds" style={[styles.small, { marginTop: isRestricted(controls) && onSettings ? u * 4 : u * 7 }]}>{/* closer when it sits beside the lock */}
-                <MusicIcon size={u * 7} weight={Math.max(3, u)} />
+                <MusicIcon size={u * 5.6} weight={Math.max(2.6, u * 0.85)} />
               </Pressable>
             </View>
             <View style={{ alignItems: 'center' }}>
@@ -725,7 +725,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         ) : null}
         {/* music and sounds: opens (or hides) the little floating Audio Player; a little apart from the menu (or the lock) */}
         <Pressable onPress={() => setAmbientPlayer(!getAmbient().showPlayer)} hitSlop={12} accessibilityRole="button" accessibilityLabel="Music and Sounds" style={[styles.small, { marginLeft: isRestricted(controls) && onSettings ? u * 4 : u * 7 }]}>{/* closer when it sits beside the lock */}
-          <MusicIcon size={u * 7} weight={Math.max(3, u)} />
+          <MusicIcon size={u * 5.6} weight={Math.max(2.6, u * 0.85)} />
         </Pressable>
         {/* no page numbers in the reader (the store shows how long a book is) */}
         <View style={{ flex: 1 }} />
