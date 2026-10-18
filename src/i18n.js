@@ -283,6 +283,7 @@ const T = {
   'Listen only': { de: 'Nur zuhören', fr: 'Écouter seulement', es: 'Solo escuchar', ja: 'きくだけ' },
   'Listen Only': { de: 'Nur zuhören', fr: 'Écouter seulement', es: 'Solo escuchar', ja: 'きくだけ' },
   'Profiles': { de: 'Profile', fr: 'Profils', es: 'Perfiles', ja: 'プロフィール' },
+  'Close Audio Player': { de: 'Audio-Player schließen', fr: 'Fermer le lecteur audio', es: 'Cerrar el reproductor de audio', ja: 'オーディオプレーヤーをとじる' },
   'Close the player': { de: 'Spieler schließen', fr: 'Fermer le lecteur', es: 'Cerrar el reproductor', ja: 'プレーヤーをとじる' },
   'Previous': { de: 'Zurück', fr: 'Précédent', es: 'Anterior', ja: 'まえ' },
   'Next': { de: 'Weiter', fr: 'Suivant', es: 'Siguiente', ja: 'つぎ' },

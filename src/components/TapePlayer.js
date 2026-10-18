@@ -5,7 +5,7 @@
 //   Sounds (top window) and Music (bottom window): tap a knob to click through the choices; the choice shows
 //     in the window in white, and the line on the knob turns a notch each click (the knob itself stays still)
 //   Volume: the felt slider (drag its knob up and down, or tap the slot)
-//   the three lines at the top: open the Music and Sounds page; the down arrow: close the player
+//   the three lines at the top: open the Music and Sounds page; 'Close Audio Player' underneath closes it
 // (recording your voice is on the reading bar's red button)
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
@@ -75,24 +75,24 @@ export default function TapePlayer({ onMenu }) {
   return (
     // the half-dark layer takes every touch, so nothing underneath can be used until the player is closed
     <Animated.View style={[StyleSheet.absoluteFill, styles.scrim, { opacity: fade }]} onStartShouldSetResponder={() => true} accessibilityViewIsModal>
+    <View style={{ alignItems: 'flex-start' }}>
     <View style={[styles.body, { width: PW, height: PH, borderRadius: R * f }]} accessibilityLabel={t('Audio Player')}>
       <View style={[styles.inner, { width: PW, height: PH, borderRadius: R * f }]}>
         <Image source={BODY} style={{ width: PW, height: PH }} resizeMode="stretch" />
         {/* the three lines: the Music and Sounds page; the down arrow: close the player */}
-        <Pressable onPress={onMenu} hitSlop={4} style={at(2120, 120, 210, 160)} accessibilityRole="button" accessibilityLabel={t('Music and Sounds')} />
-        <Pressable onPress={() => setAmbientPlayer(false)} hitSlop={4} style={at(2335, 110, 170, 180)} accessibilityRole="button" accessibilityLabel={t('Close the player')} />
+        <Pressable onPress={onMenu} hitSlop={4} style={at(2250, 110, 240, 180)} accessibilityRole="button" accessibilityLabel={t('Music and Sounds')} />
         {/* Play and Pause, with their names underneath */}
         <Pressable onPress={playAmbient} style={at(161, 142, 264, 270)} accessibilityRole="button" accessibilityLabel={t('Play')} />
         <Pressable onPress={pauseAmbient} style={at(490, 187, 161, 161)} accessibilityRole="button" accessibilityLabel={t('Pause')} />
-        {[[t('Play'), 293, 432], [t('Pause'), 570, 370]].map(([l, cx, top]) => (
+        {[[t('Play'), 293, 432], [t('Pause'), 570, 432]].map(([l, cx, top]) => (
           <Text key={cx} numberOfLines={1} style={[styles.label, label, { position: 'absolute', left: (cx - 150) * f, width: 300 * f, top: top * f, textAlign: 'center' }]}>{l}</Text>
         ))}
         {/* the two windows, named above them, with the choice in white */}
-        <Text style={[styles.label, label, { position: 'absolute', left: 178 * f, top: 518 * f }]}>{t('Sounds')}</Text>
+        <Text style={[styles.label, label, { position: 'absolute', left: 186 * f, top: 726 * f }]}>{t('Sounds')}</Text>
         <View pointerEvents="none" style={[at(186, 593, 704, 110), styles.window]}>
           <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.choice, { fontSize: 66 * f }, !s.sound && { opacity: 0.6 }]}>{name(s.sound)}</Text>
         </View>
-        <Text style={[styles.label, label, { position: 'absolute', left: 172 * f, top: 820 * f }]}>{t('Music')}</Text>
+        <Text style={[styles.label, label, { position: 'absolute', left: 180 * f, top: 1030 * f }]}>{t('Music')}</Text>
         <View pointerEvents="none" style={[at(180, 900, 704, 106), styles.window]}>
           <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.choice, { fontSize: 66 * f }, !s.music && { opacity: 0.6 }]}>{name(s.music)}</Text>
         </View>
@@ -108,8 +108,12 @@ export default function TapePlayer({ onMenu }) {
           onAccessibilityAction={(e) => setAmbientVolume(vol + (e.nativeEvent.actionName === 'increment' ? 0.1 : -0.1))}>
           <Image pointerEvents="none" source={THUMB} style={at(SX - SLOT.x - THUMB_D / 2, thumbY - SLOT.y - THUMB_D / 2, THUMB_D, THUMB_D)} />
         </View>
-        <Text numberOfLines={1} style={[styles.label, label, { position: 'absolute', left: (SX - 200) * f, width: 400 * f, top: 1112 * f, textAlign: 'center' }]}>{t('Volume')}</Text>
       </View>
+    </View>
+    {/* the way out, under the player on the left */}
+    <Pressable onPress={() => setAmbientPlayer(false)} hitSlop={12} style={{ marginTop: 14 }} accessibilityRole="button">
+      <Text style={styles.close}>{t('Close Audio Player')}</Text>
+    </Pressable>
     </View>
     </Animated.View>
   );
@@ -117,12 +121,13 @@ export default function TapePlayer({ onMenu }) {
 
 const styles = StyleSheet.create({
   // a soft drop shadow all round, a little deeper below
-  scrim: { zIndex: 170, backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center' },
+  scrim: { zIndex: 170, backgroundColor: 'rgba(0,0,0,0.65)', alignItems: 'center', justifyContent: 'center' },
   body: {
     shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.55, shadowRadius: 14, elevation: 14 },
   inner: { overflow: 'hidden' },
   label: { fontFamily: fonts.ui, fontWeight: '600', color: '#4a4a4a' },
   mark: { position: 'absolute', borderRadius: 3, backgroundColor: '#2a2a2d' },
+  close: { fontFamily: fonts.ui, fontSize: 16, fontWeight: '600', color: '#ffffff' },
   window: { justifyContent: 'center', paddingHorizontal: 4 },
   choice: { fontFamily: fonts.ui, fontWeight: '600', color: '#ffffff' },
 });
