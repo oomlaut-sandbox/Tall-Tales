@@ -1,7 +1,7 @@
 // Cover test (reached only from the end of Help): the notebook's cover opened the same way a book's cover
 // opens in the reader (BookOpen.js), to try it out on the phone before it goes anywhere else.
 // The same recipe as the book cover:
-//   - a real 3D turn over the spine (perspective 2600, rotateX 0 → 180°), on the native driver
+//   - the look of a 3D turn over the spine (perspective 2600), drawn with flat strips (no 3D at all)
 //   - front and back faces swapped by opacity at the halfway point
 //   - a darkening at mid-turn
 //   - it follows the finger (swipe up to open, down to close) or turns by itself from a tap
@@ -24,6 +24,31 @@ import { playSound } from '../sound';
 const LEATHER = require('../../assets/leather-cover-round.png');
 const TYPE = 'SpecialElite_400Regular';
 const R_SPINE = 0.012, R_EDGE = 0.102; // the rounded corners, as a share of the square (same as the picture)
+
+// The turn, worked out ahead of time: the cover is cut into thin strips across its width, and each strip is
+// only moved and stretched (translate and scale, all flat) to where it would be seen if the cover were really
+// turning in perspective. Nothing is turned in 3D, which is what made covers strobe and vanish on iPhone.
+const STRIPS = 40;
+const STEPS = 48; // samples of the turn
+const EYE = 2600; // how far the eye is (the same perspective the book cover uses)
+const TS = Array.from({ length: STEPS + 1 }, (_, k) => k / STEPS);
+function stripTables(side) {
+  const h = side / STRIPS;
+  const proj = (d, th) => { const z = d * Math.sin(th); const f = EYE / (EYE - z); return { y: d * Math.cos(th) * f, f }; };
+  const out = [];
+  for (let i = 0; i < STRIPS; i++) {
+    const ty = [], sy = [], sx = [];
+    for (const t of TS) {
+      const th = Math.PI * t;
+      const a = proj(i * h, th), b = proj((i + 1) * h, th), m = proj((i + 0.5) * h, th);
+      let k = (b.y - a.y) / h;
+      if (Math.abs(k) < 0.001) k = k < 0 ? -0.001 : 0.001; // never exactly flat
+      ty.push(a.y); sy.push(k * 1.02); sx.push(m.f); // (a hair taller, so neighbours always meet)
+    }
+    out.push({ ty, sy, sx });
+  }
+  return out;
+}
 
 export default function CoverTest({ u, openMenu }) {
   const { width: winW, height: winH } = useWindowDimensions();
@@ -62,6 +87,7 @@ export default function CoverTest({ u, openMenu }) {
   // or the finger: the cover follows it the whole way (up opens, down closes); let go past halfway and it
   // falls open, otherwise it settles back (a quick flick counts too)
   const sideRef = useRef(1);
+  const stripMemo = useRef({ side: 0, list: [] });
   const drag = useRef({ start: 0, v: 0 });
   const swipe = useRef(PanResponder.create({
     onMoveShouldSetPanResponder: (_, g) => !busy.current && Math.abs(g.dy) > 8 && Math.abs(g.dy) > Math.abs(g.dx),
@@ -85,6 +111,17 @@ export default function CoverTest({ u, openMenu }) {
   const pageRound = { borderTopLeftRadius: side * R_SPINE, borderTopRightRadius: side * R_SPINE, borderBottomLeftRadius: side * R_EDGE, borderBottomRightRadius: side * R_EDGE };
   const landRound = { borderBottomLeftRadius: side * R_SPINE, borderBottomRightRadius: side * R_SPINE, borderTopLeftRadius: side * R_EDGE, borderTopRightRadius: side * R_EDGE };
   const shadow = { shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 };
+  if (side && stripMemo.current.side !== side) {
+    stripMemo.current = { side, list: stripTables(side).map((tb) => ({
+      transform: [
+        { translateY: flip.interpolate({ inputRange: TS, outputRange: tb.ty }) },
+        { scaleX: flip.interpolate({ inputRange: TS, outputRange: tb.sx }) },
+        { scaleY: flip.interpolate({ inputRange: TS, outputRange: tb.sy }) },
+      ],
+    })) };
+  }
+  const strips = stripMemo.current.list;
+  const h = side / STRIPS;
   const leather = <Image source={LEATHER} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="stretch" />;
 
   return (
@@ -114,16 +151,20 @@ export default function CoverTest({ u, openMenu }) {
               {leather}
               <Fade edge="top" size={Math.round(side * 0.24)} max={0.55} />
             </Animated.View>
-            <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, top: side, width: side, height: side, zIndex: 4, opacity: A.leafOp,
-              transformOrigin: 'top', transform: [{ perspective: 2600 }, { rotateX: A.turn }] }}>
-              <Animated.View style={[StyleSheet.absoluteFill, { opacity: A.frontOp }]}>{leather}</Animated.View>
-              <Animated.View style={[StyleSheet.absoluteFill, { opacity: A.backOp }]}>
-                {leather}
-                {/* the deep spine shadow on the inside of the cover, along the edge it turns on */}
-                <Fade edge="top" size={Math.round(side * 0.24)} max={0.55} />
-              </Animated.View>
-              {/* darker as it stands up: the same picture tinted black, so it keeps the rounded corners */}
-              <Animated.Image source={LEATHER} resizeMode="stretch" style={{ position: 'absolute', left: 0, top: 0, width: side, height: side, tintColor: '#000', opacity: A.shade }} />
+            {/* the turning cover: strips, each only moved and stretched (see stripTables) */}
+            <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, top: side, width: side, height: side, zIndex: 4, opacity: A.leafOp }}>
+              {strips.map((st, n) => (
+                <Animated.View key={n} style={{ position: 'absolute', left: 0, top: 0, width: side, height: h, overflow: 'hidden', transformOrigin: 'top', transform: st.transform }}>
+                  <View style={{ position: 'absolute', left: 0, top: -n * h, width: side, height: side }}>
+                    <Animated.View style={[StyleSheet.absoluteFill, { opacity: A.frontOp }]}>{leather}</Animated.View>
+                    <Animated.View style={[StyleSheet.absoluteFill, { opacity: A.backOp }]}>
+                      {leather}
+                      {n * h < side * 0.24 ? <Fade edge="top" size={Math.round(side * 0.24)} max={0.55} /> : null}
+                    </Animated.View>
+                    <Animated.Image source={LEATHER} resizeMode="stretch" style={{ position: 'absolute', left: 0, top: 0, width: side, height: side, tintColor: '#000', opacity: A.shade }} />
+                  </View>
+                </Animated.View>
+              ))}
             </Animated.View>
           </View>
         ) : null}
