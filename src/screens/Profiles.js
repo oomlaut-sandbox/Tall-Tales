@@ -102,7 +102,7 @@ export default function Profiles({ u, openMenu, setControls }) {
             })}
             {s.list.length < MAX_PROFILES ? (
               <Pressable onPress={() => setGate('add')} style={[styles.cell, { width: side }]} accessibilityRole="button" accessibilityLabel={t('Add a child')}>
-                <View style={[styles.addTile, { width: side, height: side, borderRadius: side * 0.16 }]}>
+                <View style={[styles.addTile, { width: side, height: side, borderRadius: side / 2 }]}>{/* round, like the buttons */}
                   <Text style={[styles.plus, { fontSize: side * 0.42 }]}>+</Text>
                 </View>
                 <Text numberOfLines={1} style={styles.name}>{t('Add a child')}</Text>
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 50 },
   card: { backgroundColor: '#3a3a3a', borderRadius: 16, padding: 18, gap: 12, width: '100%', maxWidth: 480, alignSelf: 'center' },
-  input: { flex: 1, height: 48, borderRadius: 10, backgroundColor: '#d6d6d6', paddingHorizontal: 14, fontFamily: fonts.ui, fontSize: 20, color: '#222' },
+  input: { flex: 1, minWidth: 0, height: 48, borderRadius: 10, backgroundColor: '#d6d6d6', paddingHorizontal: 14, fontFamily: fonts.ui, fontSize: 20, color: '#222' },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 4 },
   choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   choice: { paddingHorizontal: 14, height: 36, borderRadius: 18, backgroundColor: '#2a2a2a', alignItems: 'center', justifyContent: 'center' },
