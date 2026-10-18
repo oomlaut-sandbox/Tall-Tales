@@ -5,7 +5,7 @@
 //   - front and back faces swapped by opacity at the halfway point
 //   - a darkening at mid-turn
 //   - it follows the finger (swipe up to open, down to close) or turns by itself from a tap
-//   - fully open, a flat still copy takes over (a layer turned exactly 180° can vanish on iPhone)
+//   - the strips are the cover at every moment, shut and open too (always fully solid: no fading between copies)
 //   - every animation made once, so a redraw never swaps them mid-turn
 //   - no shadow on the turning cover: the shadows sit on still shapes underneath (the page's own, and a
 //     felt-coloured shape where the cover lands, growing in as it gets there)
@@ -144,15 +144,8 @@ export default function CoverTest({ u, openMenu }) {
             <View {...swipe.panHandlers} style={{ position: 'absolute', left: 0, top: 0, width: side, height: 2 * side, zIndex: 5 }}>
               <Pressable onPress={toggle} accessibilityRole="button" accessibilityLabel="Open or close the notebook" style={StyleSheet.absoluteFill} />
             </View>
-            {/* the shut cover lying flat on the page (shown only while it's all the way shut) */}
-            <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, top: side, width: side, height: side, zIndex: 4, opacity: A.shutOp }}>{leather}</Animated.View>
-            {/* the open cover lying flat (shown only once it's all the way open) */}
-            <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: side, height: side, zIndex: 4, opacity: A.flatOp, transform: [{ scaleY: -1 }] }}>
-              {leather}
-              <Fade edge="top" size={Math.round(side * 0.24)} max={0.55} />
-            </Animated.View>
             {/* the turning cover: strips, each only moved and stretched (see stripTables) */}
-            <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, top: side, width: side, height: side, zIndex: 4, opacity: A.leafOp }}>
+            <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, top: side, width: side, height: side, zIndex: 4 }}>
               {/* (each strip runs on under the next one, which is drawn over it, so no seams ever show) */}
               {strips.map((st, n) => (
                 <Animated.View key={n} style={{ position: 'absolute', left: 0, top: 0, width: side, height: n === STRIPS - 1 ? h : 2 * h, overflow: 'hidden', transformOrigin: 'top', transform: st.transform }}>
