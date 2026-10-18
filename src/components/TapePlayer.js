@@ -84,16 +84,16 @@ export default function TapePlayer({ onMenu }) {
         {/* Play and Pause, with their names underneath */}
         <Pressable onPress={playAmbient} style={at(161, 142, 264, 270)} accessibilityRole="button" accessibilityLabel={t('Play')} />
         <Pressable onPress={pauseAmbient} style={at(490, 187, 161, 161)} accessibilityRole="button" accessibilityLabel={t('Pause')} />
-        {[[t('Play'), 293, 432], [t('Pause'), 570, 432]].map(([l, cx, top]) => (
+        {[[t('Play'), 293, 446], [t('Pause'), 570, 446]].map(([l, cx, top]) => (
           <Text key={cx} numberOfLines={1} style={[styles.label, label, { position: 'absolute', left: (cx - 150) * f, width: 300 * f, top: top * f, textAlign: 'center' }]}>{l}</Text>
         ))}
         {/* the two windows, named above them, with the choice in white */}
-        <Text style={[styles.label, label, { position: 'absolute', left: 186 * f, top: 726 * f }]}>{t('Sounds')}</Text>
-        <View pointerEvents="none" style={[at(186, 593, 704, 110), styles.window]}>
+        <Text style={[styles.label, label, { position: 'absolute', left: 172 * f, top: 742 * f }]}>{t('Sounds')}</Text>
+        <View pointerEvents="none" style={[at(172, 586, 728, 124), styles.window, { paddingHorizontal: 34 * f }]}>{/* the dark felt inside the stitching */}
           <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.choice, { fontSize: 66 * f }, !s.sound && { opacity: 0.6 }]}>{name(s.sound)}</Text>
         </View>
-        <Text style={[styles.label, label, { position: 'absolute', left: 180 * f, top: 1030 * f }]}>{t('Music')}</Text>
-        <View pointerEvents="none" style={[at(180, 900, 704, 106), styles.window]}>
+        <Text style={[styles.label, label, { position: 'absolute', left: 166 * f, top: 1042 * f }]}>{t('Music')}</Text>
+        <View pointerEvents="none" style={[at(166, 888, 734, 122), styles.window, { paddingHorizontal: 34 * f }]}>
           <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.choice, { fontSize: 66 * f }, !s.music && { opacity: 0.6 }]}>{name(s.music)}</Text>
         </View>
         {/* the knobs stay put; tap one to click to the next choice (only the line on its face goes round) */}
@@ -111,7 +111,7 @@ export default function TapePlayer({ onMenu }) {
       </View>
     </View>
     {/* the way out, under the player on the left */}
-    <Pressable onPress={() => setAmbientPlayer(false)} hitSlop={14} style={{ marginTop: 12 }} accessibilityRole="button">
+    <Pressable onPress={() => setAmbientPlayer(false)} hitSlop={16} style={{ marginTop: 10 }} accessibilityRole="button">
       <Text style={styles.close}>{t('Close Audio Player')}</Text>
     </Pressable>
     </View>
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   inner: { overflow: 'hidden' },
   label: { fontFamily: fonts.ui, fontWeight: '600', color: '#4a4a4a' },
   mark: { position: 'absolute', borderRadius: 3, backgroundColor: '#2a2a2d' },
-  close: { fontFamily: fonts.ui, fontSize: 12, color: '#ffffff' },
-  window: { justifyContent: 'center', paddingHorizontal: 4 },
+  close: { fontFamily: fonts.ui, fontSize: 10, color: 'rgba(255,255,255,0.85)' },
+  window: { justifyContent: 'center' },
   choice: { fontFamily: fonts.ui, fontWeight: '600', color: '#ffffff' },
 });
