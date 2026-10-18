@@ -58,11 +58,11 @@ export const HELP = [
   { section: 'My Notebook', title: 'Your notebook', text: [
     'My Notebook is always at the top of My Library. Tap it to open it.',
     'The first page is the inside cover with “My Notes”. Turn the page to see your badges, then your own pages.',
-    'Tap the folded corner on the last page to add a page: a Notes page (a picture or drawing with your notes below) or a Sketch page (two squares to draw on).',
+    'Turn the pages by tapping the bottom-right corner or swiping left or up; tap the bottom-left corner or swipe right or down to go back. On the last page, the bottom-right corner adds a page: a Notes page (a picture or drawing with your notes below) or a Sketch page (two squares to draw on).',
   ] },
   { section: 'My Notebook', title: 'Drawing and notes', text: [
     'Tap a picture square to make a drawing, choose a photo or take one. You can also draw on top of a photo.',
-    'Draw with your finger in crayon colours. Pick a thin, medium or thick crayon. The eraser rubs out whole lines; undo takes back the last line; Clear starts over.',
+    'Draw with your finger in crayon colours. Pick a thin, medium or thick crayon. The paint bucket fills a shape with the colour you pick: tap inside it. The eraser rubs out whole lines and fills; undo takes back the last line or fill; Clear starts over.',
     'Tap the lined square to write notes.',
   ] },
   { section: 'My Notebook', title: 'Badges', text: [
