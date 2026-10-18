@@ -142,10 +142,6 @@ export default function Help({ u, openMenu, onAbout, onCoverTest }) {
               </View>
             );
           })}
-          {/* (for trying things out: the notebook cover opened the way book covers open) */}
-          <Pressable onPress={onCoverTest} accessibilityRole="link" hitSlop={8} style={{ alignSelf: 'center', marginTop: 28, marginBottom: 12 }}>
-            <Text style={{ color: 'rgba(255,255,255,0.6)', fontFamily: fonts.ui, fontSize: 14, textDecorationLine: 'underline' }}>Cover test</Text>
-          </Pressable>
         </View>
       </ScrollView>
     </WithBar>
