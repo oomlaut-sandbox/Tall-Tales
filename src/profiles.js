@@ -8,11 +8,11 @@ import { DEFAULT_CONTROLS } from './controls';
 
 export const MAX_PROFILES = 6;
 export const PROFILE_COLORS = [
-  ['red', require('../assets/profile-red.jpg')],
-  ['blue', require('../assets/profile-blue.jpg')],
-  ['green', require('../assets/profile-green.jpg')],
-  ['orange', require('../assets/profile-orange.jpg')],
-  ['pink', require('../assets/profile-pink.jpg')],
+  ['red', require('../assets/profile-red.png')],
+  ['blue', require('../assets/profile-blue.png')],
+  ['green', require('../assets/profile-green.png')],
+  ['orange', require('../assets/profile-orange.png')],
+  ['pink', require('../assets/profile-pink.png')],
 ];
 export const feltFor = (color) => (PROFILE_COLORS.find(([c]) => c === color) || PROFILE_COLORS[0])[1];
 

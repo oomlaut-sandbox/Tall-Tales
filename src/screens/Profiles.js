@@ -25,12 +25,11 @@ function Choice({ label, on, onPress }) {
   );
 }
 
-// a felt square with the child's first letter
+// a coloured sewing button: the child's own (their name is written underneath)
 export function ProfileTile({ p, size, active }) {
   return (
-    <View style={[{ width: size, height: size, borderRadius: size * 0.16, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }, active && styles.activeRing]}>
-      <Image source={feltFor(p.color)} style={StyleSheet.absoluteFill} resizeMode="cover" />
-      <Text style={[styles.initial, { fontSize: size * 0.46 }]}>{(p.name || '?').trim().charAt(0).toUpperCase()}</Text>
+    <View style={[{ width: size, height: size, borderRadius: size / 2, alignItems: 'center', justifyContent: 'center' }, active && styles.activeRing]}>
+      <Image source={feltFor(p.color)} style={{ width: active ? size - 10 : size, height: active ? size - 10 : size }} resizeMode="contain" />
     </View>
   );
 }
@@ -135,7 +134,7 @@ export default function Profiles({ u, openMenu, setControls }) {
                 {PROFILE_COLORS.map(([c, img]) => (
                   <Pressable key={c} onPress={() => setForm({ ...form, color: c })} accessibilityRole="radio" accessibilityLabel={c} accessibilityState={{ selected: form.color === c }}
                     style={[styles.swatch, form.color === c && styles.swatchOn]}>
-                    <Image source={img} style={StyleSheet.absoluteFill} resizeMode="cover" />
+                    <Image source={img} style={{ width: 38, height: 38 }} resizeMode="contain" />
                   </Pressable>
                 ))}
               </View>
@@ -200,6 +199,6 @@ const styles = StyleSheet.create({
   choice: { paddingHorizontal: 14, height: 36, borderRadius: 18, backgroundColor: '#2a2a2a', alignItems: 'center', justifyContent: 'center' },
   choiceOn: { backgroundColor: colors.green },
   choiceText: { fontFamily: fonts.ui, fontSize: 15, color: '#dcdcdc', fontWeight: '600' },
-  swatch: { width: 44, height: 44, borderRadius: 10, overflow: 'hidden' },
+  swatch: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
   swatchOn: { borderWidth: 3, borderColor: colors.white },
 });
