@@ -1,0 +1,37 @@
+# Makes the music and ambient sounds with ElevenLabs. Saves them to the ambient-output branch.
+name: Ambient sounds
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Only these (comma separated ids)'
+        required: false
+        default: ''
+permissions:
+  contents: write
+jobs:
+  ambient:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Generate
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ONLY: ${{ github.event.inputs.only }}
+        run: node ci/ambient.js 2>&1 | tee /tmp/ambient.txt
+      - name: Save
+        if: always()
+        run: |
+          cp -r ambient-out /tmp/ambient-out 2>/dev/null || mkdir -p /tmp/ambient-out
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          git checkout -q --orphan ambient-output
+          git rm -rfq --cached . > /dev/null
+          rm -rf ./* .gitignore 2>/dev/null || true
+          cp -r /tmp/ambient-out ambient; cp /tmp/ambient.txt report.txt
+          git add -f ambient report.txt
+          git commit -qm "Ambient sounds"
+          git push -qf origin ambient-output
