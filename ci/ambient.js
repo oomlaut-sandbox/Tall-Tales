@@ -9,6 +9,10 @@ const SOUNDS = [
   ['crickets-a', 'A cosy summer evening on a farm porch: just a few crickets chirping slowly and softly in the distance, warm and friendly, sparse and relaxed, a light breeze in the grass, no buzzing, no insects close up, no other animals, no music, seamless loop.'],
   ['crickets-b', 'Crickets heard from inside a cosy cabin through an open window at night: soft, muffled, slow and gentle chirping, warm and sleepy, very calm, no buzzing, no other animals, no music, seamless loop.'],
   ['crickets-c', 'A peaceful summer meadow at dusk: soft, slow crickets with a gentle trickling stream nearby and a warm breeze, friendly and soothing for a child falling asleep, no buzzing, no owls, no music, seamless loop.'],
+  // late summer night on the porch (round two)
+  ['crickets-d', 'Field recording of a late summer night from a wooden front porch in the countryside: a steady, soothing chorus of field crickets chirping in the grass nearby, natural and realistic, relaxing, nothing else, no music, seamless loop.'],
+  ['crickets-e', 'Late August night on a porch: crickets chirping in a slow, even rhythm in the yard, a soft warm breeze, the quiet stillness of a sleeping house, natural nature recording, peaceful and nostalgic, no music, seamless loop.'],
+  ['crickets-f', 'Realistic nighttime nature ambience recorded on a back porch at the end of summer: classic cricket chirps, gentle and consistent, mid-distance, very peaceful, like falling asleep with the window open, no music, seamless loop.'],
   ['brook', 'A babbling brook: clear water trickling softly over smooth stones in a quiet forest, steady and soothing, no birds, no music, seamless loop.'],
   ['forest-birds', 'Birds singing softly in a peaceful forest in the early morning: gentle distant birdsong, leaves rustling lightly in a breeze, calm and relaxing, no music, seamless loop.'],
   ['rain', 'Soft steady rain falling on a roof and leaves, cosy and calm, no thunder, no wind gusts, no music, seamless loop.'],
