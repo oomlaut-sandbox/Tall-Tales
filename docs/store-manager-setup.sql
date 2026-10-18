@@ -44,6 +44,11 @@ drop policy if exists "admins delete books" on storage.objects;
 create policy "admins delete books" on storage.objects for delete to authenticated
   using (bucket_id = 'books' and public.is_store_admin());
 
+-- Age ratings (set per book in the Store Manager): the youngest age a book is for, and the oldest it's aimed at
+-- (empty = "and up"). Parents can show only the books rated for their child's age.
+alter table public.books add column if not exists min_age int check (min_age between 0 and 18);
+alter table public.books add column if not exists max_age int check (max_age between 0 and 18);
+
 -- Make yourself the owner: put your sign-in email between the quotes.
 insert into public.store_admins (user_id)
   select id from auth.users where lower(email) = lower('YOUR-EMAIL-HERE')

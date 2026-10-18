@@ -50,6 +50,7 @@ export const SAMPLE_STORY = {
 // each printed spread (one picture + one line) becomes one reader page.
 export const DIFFERENT = {
   id: 'different',
+  minAge: 4, maxAge: 8, // age rating (the Store Manager's rating wins when set there)
   title: 'Different',
   // PLACEHOLDER synopsis (Jörg will replace this with his own text)
   blurb: 'A gentle story about the quiet feeling of not quite fitting in, and the warm discovery that the things that make us different are the very things that make us belong.',
@@ -83,6 +84,7 @@ export const DIFFERENT = {
 // "Falling" by Jörg Schmidt: converted from his PDF (cover, then words page + picture page pairs).
 export const FALLING = {
   id: 'falling',
+  minAge: 4, maxAge: 8, // age rating (the Store Manager's rating wins when set there)
   title: 'Falling',
   author: 'Jörg Schmidt',
   syllables: {
@@ -115,6 +117,7 @@ export const FALLING = {
 // (snail), Hussey's Illustrations of British Mycology 1847 (mushroom), Audubon's Birds of America 1827–38 (robin).
 export const SMALL_WONDERS = {
   id: 'small-wonders',
+  minAge: 3, maxAge: 7, // age rating (the Store Manager's rating wins when set there)
   title: 'Small Wonders',
   author: 'Oomlaut',
   storeShelf: 'new',
@@ -143,6 +146,7 @@ export const SMALL_WONDERS = {
 // "The Rough Lives of Animals": Jörg's pictures, short darkly funny verses. The cover is the ostrich, no words.
 export const ROUGH_LIVES = {
   id: 'rough-lives',
+  minAge: 6, maxAge: 10, // age rating (the Store Manager's rating wins when set there)
   title: 'The Rough Lives of Animals',
   author: 'Oomlaut',
   storeShelf: 'new',
@@ -175,6 +179,7 @@ export const ROUGH_LIVES = {
 // The cover is the snakes, no words.
 export const TWO_SNAKES = {
   id: 'two-snakes',
+  minAge: 4, maxAge: 8, // age rating (the Store Manager's rating wins when set there)
   title: 'Two Snakes Walk into a Bar',
   author: 'Oomlaut',
   storeShelf: 'new',

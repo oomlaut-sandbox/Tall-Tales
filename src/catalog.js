@@ -27,9 +27,10 @@ export async function refreshCatalog() {
   const cols = 'id,title,author,blurb,shelf_id,sort,access,price_label,product_id,featured,bundled,cover_path,content_path,page_count,age_range,updated_at';
   let [sh, bk] = await Promise.all([
     supabase.from('shelves').select('id,title,sort').order('sort'),
-    supabase.from('books').select(`${cols},cover_title`).order('sort'),
+    supabase.from('books').select(`${cols},cover_title,min_age,max_age`).order('sort'),
   ]);
-  // before the Store Manager's setup has run there's no cover_title column yet
+  // before the Store Manager's setup has run there are no cover_title / age rating columns yet
+  if (bk.error) bk = await supabase.from('books').select(`${cols},cover_title`).order('sort');
   if (bk.error) bk = await supabase.from('books').select(cols).order('sort');
   if (sh.error || bk.error) throw sh.error || bk.error;
   const c = { shelves: sh.data, books: bk.data, fetchedAt: Date.now() };
@@ -103,3 +104,15 @@ export async function loadStoreBook(book) {
 }
 
 export const accessLabel = (b) => (b.access === 'free' ? 'Free' : b.access === 'member' ? 'Members' : `Members or ${b.price_label || '$2.99'}`);
+
+// A book's age rating: the youngest age it's for (and the oldest it's aimed at, or null for "and up").
+// Set per book in the Store Manager; books inside the app have their own (story.js: minAge / maxAge).
+export function ageOf(book, story) {
+  const min = book && book.min_age != null ? book.min_age : story && story.minAge != null ? story.minAge : null;
+  const max = book && book.min_age != null ? (book.max_age != null ? book.max_age : null) : story && story.maxAge != null ? story.maxAge : null;
+  return { min, max };
+}
+// shown as "4–7" or "7+"
+export const ageText = ({ min, max }) => (min == null ? null : max != null ? `${min}–${max}` : `${min}+`);
+// may a child of this age see it? (only books rated older than the child are hidden; younger books are fine)
+export const ageAllowed = (rating, childAge) => childAge == null || rating.min == null || rating.min <= childAge;

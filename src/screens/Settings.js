@@ -10,7 +10,7 @@ import { colors, fonts } from '../theme';
 import { DESK_FELT, DESK_BG } from '../look';
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import { LANGS, useT } from '../i18n';
-import { lockedControls, DEFAULT_CONTROLS } from '../controls';
+import { lockedControls, quickSafeControls, DEFAULT_CONTROLS } from '../controls';
 import { usePurchases } from '../purchases';
 
 const MODES = [['self', 'Read Yourself'], ['learn', 'Learn to Read'], ['auto', 'Auto Play'], ['page', 'Page by Page Play']];
@@ -38,7 +38,10 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
   const insets = useSafeAreaInsets();
   const ps = usePurchases();
   const set = (patch) => setControls({ ...controls, ...patch });
-  const allOn = Object.keys(DEFAULT_CONTROLS).every((k) => controls[k] === DEFAULT_CONTROLS[k]);
+  // (the child's age is its own setting: Lock and Unlock everything keep it)
+  const same = (a, b) => Object.keys(DEFAULT_CONTROLS).every((k) => k === 'childAge' || a[k] === b[k]);
+  const allOn = same(controls, DEFAULT_CONTROLS);
+  const quick = same(controls, quickSafeControls());
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
@@ -64,6 +67,26 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
           </View>
 
           <Text style={styles.section}>{t('Parental controls')}</Text>
+          {/* the recommended one-tap setup for a child reading alone */}
+          <View style={[styles.card, { borderWidth: 2, borderColor: quick ? colors.green : 'transparent' }]}>
+            <Text style={[styles.cardTitle, { fontSize: 18 }]}>{t('Quick and Safe Kid')}</Text>
+            <Text style={styles.small}>{t('Recommended for a child reading alone')}</Text>
+            <Text style={styles.p}>{t('The simplest, most foolproof setup: only My Library and My Notebook. Every book reads itself aloud a page at a time, and your child turns the page when ready. Nothing can be bought, shared, printed, recorded or changed. With your child’s age set, only books rated for that age.')}</Text>
+            {quick ? <Text style={[styles.p, { color: colors.white, fontWeight: '700' }]}>{t('Quick and Safe Kid is on.')}</Text> : (
+              <Pressable onPress={() => setControls(quickSafeControls(controls.childAge))} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button">
+                <Text style={styles.pillText}>{t('Use Quick and Safe Kid')}</Text>
+              </Pressable>
+            )}
+          </View>
+          {/* the child's age: books rated for older children are hidden everywhere */}
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>{t('Your child’s age')}</Text>
+            <View style={styles.choices}>
+              <Choice label={t('Show every book')} on={controls.childAge == null} onPress={() => set({ childAge: null })} />
+              {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((a) => <Choice key={a} label={String(a)} on={controls.childAge === a} onPress={() => set({ childAge: a })} />)}
+            </View>
+            <Text style={styles.small}>{t('Each book has an age rating. Books rated for older children are hidden in My Library and the Book Store.')}</Text>
+          </View>
           <View style={styles.card}>
             <Text style={styles.p}>{t('Choose exactly what your child can see and do. Settings always asks the grown-up question first.')}</Text>
             <Toggle label={t('Show the Book Store')} value={controls.store} onChange={(v) => set({ store: v })} />
@@ -81,12 +104,12 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
             </View>
           </View>
           <View style={styles.card}>
-            <Pressable onPress={() => setControls(lockedControls(controls.playMode || mode))} style={[styles.pill, { backgroundColor: colors.deepRed }]} accessibilityRole="button">
+            <Pressable onPress={() => setControls(lockedControls(controls.playMode || mode, controls.childAge))} style={[styles.pill, { backgroundColor: colors.deepRed }]} accessibilityRole="button">
               <Text style={styles.pillText}>{t('Lock everything')}</Text>
             </Pressable>
             <Text style={styles.small}>{t('Only My Library and the books in it, read the way you chose.')}</Text>
             {!allOn ? (
-              <Pressable onPress={() => setControls(DEFAULT_CONTROLS)} style={[styles.pill, { backgroundColor: '#5f5f5f', marginTop: 6 }]} accessibilityRole="button">
+              <Pressable onPress={() => setControls({ ...DEFAULT_CONTROLS, childAge: controls.childAge })} style={[styles.pill, { backgroundColor: '#5f5f5f', marginTop: 6 }]} accessibilityRole="button">
                 <Text style={styles.pillText}>{t('Unlock everything')}</Text>
               </Pressable>
             ) : null}

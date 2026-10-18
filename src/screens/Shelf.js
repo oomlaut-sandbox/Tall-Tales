@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG } from '../look';
 import { Bar, BarMeta, Burger, DogEar, Panel, WithBar } from '../components/Chrome';
-import { bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
+import { ageAllowed, ageOf, ageText, bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
 import Membership from '../components/Membership';
 import { buyBook, canOpen, usePurchases } from '../purchases';
@@ -154,7 +154,8 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
         {/* My Notebook: always the first book on the shelf (notes, drawings and reading badges) */}
         {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
         {!selecting && onNotebook ? <View style={{ width: '100%' }} /> : null}{/* the notebook has the top row to itself */}
-        {stories.map((s) => (
+        {/* (the parental controls can hide books rated for older children) */}
+        {stories.filter((s) => ageAllowed(ageOf(null, s), controls.childAge)).map((s) => (
           // just the title under each cover (no author, pages or other details)
           <Tile key={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title}
             selecting={selecting} selected={picked.includes(s.id)}
@@ -197,6 +198,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onEdit, onS
 // The Book Store: shelves of books from the catalog you curate in Supabase (see src/catalog.js).
 export function Store({ u, openStory, openMenu, toast }) {
   const t = useT();
+  const controls = useControls();
   const { width: winW, height: winH } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const sideways = winW > winH * 1.1;
@@ -230,6 +232,8 @@ export function Store({ u, openStory, openMenu, toast }) {
   if (shown && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash === '#pay-demo') {
     shown.books = shown.books.map((b) => (b.id === 'rough-lives' ? { ...b, access: 'member' } : b.id === 'two-snakes' ? { ...b, access: 'paid', price_label: '$2.99' } : b));
   }
+  // the parental controls can hide books rated for older children
+  if (shown && controls.childAge != null) shown.books = shown.books.filter((b) => ageAllowed(ageOf(b, bundledStory(b.id)), controls.childAge));
   const featured = shown ? shown.books.find((b) => b.featured) : null;
   // a book is on the shelves only once: the featured book isn't repeated on the shelf below
   const rows = shown ? shelvesWithBooks(featured ? { ...shown, books: shown.books.filter((b) => b.id !== featured.id) } : shown) : [];
@@ -335,7 +339,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
   const blurb = book.blurb || (bundledStory(book.id) || {}).blurb; // the catalog's text, or the bundled book's own
   const pageCount = bundledStory(book.id) ? bundledStory(book.id).pages.length * 2 : book.page_count;
   const access = book.access === 'free' ? t('Free') : book.access === 'member' ? t('Members') : t('Members or {price}', { price: book.price_label || PRICES.book });
-  const meta = [pageCount ? t('{n} pages', { n: pageCount }) : null, book.age_range ? t('ages {n}', { n: book.age_range }) : null, access].filter(Boolean).join(' · ');
+  const meta = [pageCount ? t('{n} pages', { n: pageCount }) : null, ageText(ageOf(book, bundledStory(book.id))) ? t('ages {n}', { n: ageText(ageOf(book, bundledStory(book.id))) }) : book.age_range ? t('ages {n}', { n: book.age_range }) : null, access].filter(Boolean).join(' · ');
   const here = !!(bundledStory(book.id) || !book.bundled); // in the app, or downloadable from the store
   const canRead = allowed && here; // free, a member, or a single book they bought
   // the action: a small solid green pill beside the cover, level with its bottom.

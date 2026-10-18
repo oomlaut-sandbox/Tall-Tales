@@ -86,6 +86,8 @@ export const HELP = [
     'Settings is the last item in the menu. It always asks the grown-up question first.',
     'Language: choose English, Deutsch, Français, Español or 日本語 for the app. Members can also read books in a different language from the app’s. The languages are also listed at the top of the start page: tap one to switch.',
     'Parental controls: choose exactly what your child can see and do. Hide the Book Store, My Notebook, Create a Story or Help; switch off recording, sharing and printing; keep the language fixed; and make every book play one way (for example, always Page by Page).',
+    'Quick and Safe Kid is the recommended setup for a child reading alone: only My Library and My Notebook, every book read aloud a page at a time, and nothing to buy, share, print, record or change.',
+    'Your child’s age: every book has an age rating, and books rated for older children are hidden.',
     'Lock everything leaves only My Library and its books, read the way you chose. Unlock everything brings it all back.',
   ] },
   { section: 'Grown-ups', title: 'The grown-up check', text: [

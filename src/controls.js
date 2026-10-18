@@ -13,10 +13,17 @@ export const DEFAULT_CONTROLS = {
   recording: true,  // recording your own voice
   sharing: true,    // sharing and printing books
   language: true,   // the child may change the language (the list on the start page)
+  childAge: null,   // the child's age: books rated for older children are hidden (null: show every book)
 };
 
 // everything off: only My Library and its books, played the way they're set now
-export const lockedControls = (mode) => ({ store: false, notebook: false, create: false, help: false, playback: false, playMode: mode || 'page', recording: false, sharing: false, language: false });
+export const lockedControls = (mode, childAge = null) => ({ store: false, notebook: false, create: false, help: false, playback: false, playMode: mode || 'page', recording: false, sharing: false, language: false, childAge });
+
+// Quick and Safe Kid: the simplest, most foolproof way for a child to read alone. Only My Library and
+// My Notebook; every book reads itself aloud one page at a time (the child turns the page when ready, and
+// can't get lost in menus); nothing can be bought, shared, printed, recorded or changed; and, when the
+// child's age is set, only books rated for that age.
+export const quickSafeControls = (childAge = null) => ({ store: false, notebook: true, create: false, help: false, playback: false, playMode: 'page', recording: false, sharing: false, language: false, childAge });
 
 export const ControlsContext = createContext(DEFAULT_CONTROLS);
 export const useControls = () => useContext(ControlsContext);

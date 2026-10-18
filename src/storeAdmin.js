@@ -80,7 +80,7 @@ export async function startNarration(id) {
 export async function loadAllForManager() {
   const [sh, bk] = await Promise.all([
     supabase.from('shelves').select('id,title,sort,published').order('sort'),
-    supabase.from('books').select('id,title,author,blurb,shelf_id,sort,access,featured,published,bundled,cover_path,cover_title,page_count,age_range,narration_status,narration_note,source_story').order('sort'),
+    supabase.from('books').select('id,title,author,blurb,shelf_id,sort,access,featured,published,bundled,cover_path,cover_title,page_count,age_range,min_age,max_age,price_label,narration_status,narration_note,source_story').order('sort'),
   ]);
   if (sh.error || bk.error) throw new Error((sh.error || bk.error).message);
   return { shelves: sh.data, books: bk.data };

@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import CoverArt from '../components/CoverArt';
-import { coverFor, storageUrl } from '../catalog';
+import { ageText, coverFor, storageUrl } from '../catalog';
 import { addShelf, loadAllForManager, removeFromStore, startNarration, updateBook, updateShelf } from '../storeAdmin';
 
 const NARRATION = { none: 'No narration yet', working: 'Narration being made…', ready: 'Narration ready', failed: 'Narration failed' };
@@ -25,10 +25,11 @@ function Choice({ options, value, onChange }) {
   );
 }
 
+const AGES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
 function BookRow({ book, shelves, siblings, onChanged, toast }) {
   const [open, setOpen] = useState(false);
   const [blurb, setBlurb] = useState(book.blurb || '');
-  const [age, setAge] = useState(book.age_range || '');
   const [confirmRemove, setConfirmRemove] = useState(false);
   const save = async (patch, note) => {
     try { await updateBook(book.id, patch); if (note) toast(note); onChanged(); } catch (e) { toast(`Couldn’t save: ${e.message}`); }
@@ -73,9 +74,21 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
           <Text style={styles.label}>Synopsis</Text>
           <TextInput value={blurb} onChangeText={setBlurb} onBlur={() => blurb !== (book.blurb || '') && save({ blurb: blurb.trim() || null }, 'Synopsis saved.')}
             multiline placeholder="A few sentences about the book" placeholderTextColor="#888" style={[styles.input, { minHeight: 90 }]} />
-          <Text style={styles.label}>Ages</Text>
-          <TextInput value={age} onChangeText={setAge} onBlur={() => age !== (book.age_range || '') && save({ age_range: age.trim() || null }, 'Ages saved.')}
-            placeholder="e.g. 3–6" placeholderTextColor="#888" style={styles.input} />
+          <Text style={styles.label}>Who can read it</Text>
+          <Choice options={[['free', 'Free'], ['member', 'Members'], ['paid', 'Members or $2.99']]} value={book.access || 'member'}
+            onChange={(v) => save(v === 'paid' ? { access: v, price_label: book.price_label || '$2.99' } : { access: v }, v === 'free' ? 'Free for everyone.' : v === 'member' ? 'For members.' : 'For members, or $2.99 on its own.')} />
+          {/* the age rating: parents can show only the books rated for their child's age (Settings) */}
+          <Text style={styles.label}>Age rating: from age</Text>
+          <Choice options={[[null, 'Not set'], ...AGES.map((a) => [a, String(a)])]} value={book.min_age == null ? null : book.min_age}
+            onChange={(v) => save({ min_age: v, max_age: v == null ? null : book.max_age != null && book.max_age < v ? v : book.max_age, age_range: v == null ? null : ageText({ min: v, max: book.max_age != null && book.max_age >= v ? book.max_age : null }) }, v == null ? 'Age rating removed.' : 'Age rating saved.')} />
+          {book.min_age != null ? (
+            <>
+              <Text style={styles.label}>Up to age</Text>
+              <Choice options={[[null, 'And up'], ...AGES.filter((a) => a >= book.min_age).map((a) => [a, String(a)])]} value={book.max_age == null ? null : book.max_age}
+                onChange={(v) => save({ max_age: v, age_range: ageText({ min: book.min_age, max: v }) }, 'Age rating saved.')} />
+              <Text style={styles.note}>Shown in the store as “ages {ageText({ min: book.min_age, max: book.max_age })}”.</Text>
+            </>
+          ) : null}
           {!book.bundled ? (
             <>
               <Text style={styles.label}>Narration (Fatima and Henry)</Text>
