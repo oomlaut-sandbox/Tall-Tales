@@ -5,6 +5,7 @@
 //   - front and back faces swapped by opacity at the halfway point
 //   - a darkening at mid-turn
 //   - it follows the finger (swipe up to open, down to close) or turns by itself from a tap
+//   - fully open, a flat still copy takes over (a layer turned exactly 180° can vanish on iPhone)
 //   - every animation made once, so a redraw never swaps them mid-turn
 //   - no shadow on the turning cover: the shadows sit on still shapes underneath (the page's own, and a
 //     felt-coloured shape where the cover lands, growing in as it gets there)
@@ -35,6 +36,10 @@ export default function CoverTest({ u, openMenu }) {
     backOp: flip.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] }),
     shade: flip.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.25, 0] }),
     landShadow: flip.interpolate({ inputRange: [0.5, 1], outputRange: [0, 1], extrapolate: 'clamp' }),
+    // fully open, a turned layer can vanish on iPhone (at exactly 180° it isn't drawn), so the last sliver of the
+    // turn hands over to a flat, still copy of the open cover (the same trick the book cover uses when it lands)
+    leafOp: flip.interpolate({ inputRange: [0, 0.985, 1], outputRange: [1, 1, 0], extrapolate: 'clamp' }),
+    flatOp: flip.interpolate({ inputRange: [0, 0.985, 1], outputRange: [0, 0, 1], extrapolate: 'clamp' }),
   }).current;
   const openNow = useRef(false);
   const busy = useRef(false);
@@ -99,7 +104,12 @@ export default function CoverTest({ u, openMenu }) {
             <View {...swipe.panHandlers} style={{ position: 'absolute', left: 0, top: 0, width: side, height: 2 * side, zIndex: 5 }}>
               <Pressable onPress={toggle} accessibilityRole="button" accessibilityLabel="Open or close the notebook" style={StyleSheet.absoluteFill} />
             </View>
-            <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, top: side, width: side, height: side, zIndex: 4,
+            {/* the open cover lying flat (shown only once it's all the way open) */}
+            <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: side, height: side, zIndex: 4, opacity: A.flatOp, transform: [{ scaleY: -1 }] }}>
+              {leather}
+              <Fade edge="top" size={Math.round(side * 0.24)} max={0.55} />
+            </Animated.View>
+            <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, top: side, width: side, height: side, zIndex: 4, opacity: A.leafOp,
               transformOrigin: 'top', transform: [{ perspective: 2600 }, { rotateX: A.turn }] }}>
               <Animated.View style={[StyleSheet.absoluteFill, { opacity: A.frontOp }]}>{leather}</Animated.View>
               <Animated.View style={[StyleSheet.absoluteFill, { opacity: A.backOp }]}>
