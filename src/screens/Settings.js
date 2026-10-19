@@ -113,6 +113,18 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
               {MODES.map(([k, label]) => <Choice key={k} label={t(label)} on={controls.playMode === k} onPress={() => set({ playMode: k })} />)}
             </View>
           </View>
+          {/* Lock everything / Unlock everything: right after the parental controls */}
+          <View style={styles.card}>
+            <Pressable onPress={() => setControls({ ...lockedControls(controls.playMode || mode, controls.childAge), ...night })} style={[styles.pill, { backgroundColor: colors.deepRed }]} accessibilityRole="button">
+              <Text style={styles.pillText}>{t('Lock everything')}</Text>
+            </Pressable>
+            <Text style={styles.small}>{t('Only My Library and the books in it, read the way you chose.')}</Text>
+            {!allOn ? (
+              <Pressable onPress={() => setControls({ ...DEFAULT_CONTROLS, childAge: controls.childAge, ...night })} style={[styles.pill, { backgroundColor: '#5f5f5f', marginTop: 6 }]} accessibilityRole="button">
+                <Text style={styles.pillText}>{t('Unlock everything')}</Text>
+              </Pressable>
+            ) : null}
+          </View>
           {/* the nightlight in Listen Only: a clock, and a gentle wake-up alarm */}
           <Text style={styles.section}>{t('Nightlight')}</Text>
           <View style={styles.card}>
@@ -124,17 +136,6 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
           <Text style={styles.section}>{t('Haptic feedback')}</Text>
           <View style={styles.card}>
             <Toggle label={t('Feel a soft click on dials, knobs and buttons')} value={hap} onChange={setHapticsOn} />
-          </View>
-          <View style={styles.card}>
-            <Pressable onPress={() => setControls({ ...lockedControls(controls.playMode || mode, controls.childAge), ...night })} style={[styles.pill, { backgroundColor: colors.deepRed }]} accessibilityRole="button">
-              <Text style={styles.pillText}>{t('Lock everything')}</Text>
-            </Pressable>
-            <Text style={styles.small}>{t('Only My Library and the books in it, read the way you chose.')}</Text>
-            {!allOn ? (
-              <Pressable onPress={() => setControls({ ...DEFAULT_CONTROLS, childAge: controls.childAge, ...night })} style={[styles.pill, { backgroundColor: '#5f5f5f', marginTop: 6 }]} accessibilityRole="button">
-                <Text style={styles.pillText}>{t('Unlock everything')}</Text>
-              </Pressable>
-            ) : null}
           </View>
           <Pressable onPress={onDone} style={[styles.pill, { alignSelf: 'flex-end', backgroundColor: colors.green, marginTop: 8 }]} accessibilityRole="button">
             <Text style={styles.pillText}>{t('Done')}</Text>
