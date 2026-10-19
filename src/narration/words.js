@@ -558,6 +558,8 @@ export const WORDS = {
     "store": require("../../assets/narration/lily/words/store.mp3"),
     "ready": require("../../assets/narration/lily/words/ready.mp3"),
     "oomlautcom": require("../../assets/narration/lily/words/oomlautcom.mp3"),
+    "jörg": require("../../assets/narration/lily/words/j_f6rg.mp3"),
+    "1800s": require("../../assets/narration/lily/words/1800s.mp3"),
   },
   gregory: {
     "different": require("../../assets/narration/gregory/words/different.mp3"),
@@ -1116,6 +1118,8 @@ export const WORDS = {
     "store": require("../../assets/narration/gregory/words/store.mp3"),
     "ready": require("../../assets/narration/gregory/words/ready.mp3"),
     "oomlautcom": require("../../assets/narration/gregory/words/oomlautcom.mp3"),
+    "jörg": require("../../assets/narration/gregory/words/j_f6rg.mp3"),
+    "1800s": require("../../assets/narration/gregory/words/1800s.mp3"),
   },
 };
 
