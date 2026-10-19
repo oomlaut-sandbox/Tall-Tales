@@ -189,8 +189,8 @@ const styles = StyleSheet.create({
   p: { fontFamily: fonts.ui, fontSize: 16, lineHeight: 22, color: '#e6e6e6' },
   small: { fontFamily: fonts.ui, fontSize: 13, lineHeight: 18, color: '#bdbdbd' },
   link: { fontFamily: fonts.ui, fontSize: 14, color: '#ff9a8a', textDecorationLine: 'underline', marginTop: 4 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 16, rowGap: 22 },
-  cell: { alignItems: 'center', gap: 6, paddingBottom: 14, borderRadius: 16, borderWidth: 1, borderColor: 'transparent' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 16, rowGap: 22, marginTop: 18 }, // room under the words above
+  cell: { alignItems: 'center', gap: 6, paddingTop: 22, paddingBottom: 16, borderRadius: 16, borderWidth: 1, borderColor: 'transparent' },
   cellOn: { backgroundColor: 'rgba(0,0,0,0.35)', borderColor: 'rgba(255,255,255,0.9)' }, // a large see-through black box with a thin white line
   activeRing: { borderWidth: 3, borderColor: colors.white },
   initial: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
