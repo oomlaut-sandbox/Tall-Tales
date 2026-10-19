@@ -30,7 +30,7 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
           <View style={styles.hero} onLayout={(e) => setHeroW(e.nativeEvent.layout.width)}>{heroW ? <Image source={PICTURE} style={{ width: heroW, height: heroW * 3 / 4 }} resizeMode="cover" /> : null}</View>
           <Text style={styles.lead}>{t('Many ideas for books you can make together: your photos and drawings, your words, your voice.')}</Text>
           <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
-            {controls.create ? <Pressable onPress={onMake} style={[styles.pill, { backgroundColor: colors.blue }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Make a story')}</Text></Pressable> : null}
+            {controls.create ? <Pressable onPress={onMake} style={[styles.pill, { backgroundColor: '#9fd0f0' }]} accessibilityRole="button"><Text style={[styles.pillText, { color: '#16324a' }]}>{t('Make a story')}</Text></Pressable> : null}
             <Pressable onPress={onHelp} style={[styles.pill, { backgroundColor: '#5f5f5f' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Ideas and Support')}</Text></Pressable>
           </View>
           {IDEA_SECTIONS.map((sec) => (
