@@ -130,13 +130,13 @@ export default function Profiles({ u, openMenu, setControls }) {
         <View style={styles.scrim}>
           <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20, paddingTop: insets.top + 20 }} keyboardShouldPersistTaps="handled">
             <View style={styles.card}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 28 }}>{/* room for the character (drawn a little wider than its box) */}
                 <ProfileTile p={{ name: form.name || '?', color: form.color }} size={60} />
                 <TextInput value={form.name} onChangeText={(name) => setForm({ ...form, name })} placeholder={t('Name')} placeholderTextColor="#8a8a8a"
                   style={styles.input} maxLength={20} autoCapitalize="words" autoCorrect={false} returnKeyType="done" accessibilityLabel={t('Name')} />
               </View>
               <Text style={styles.section}>{t('Character')}</Text>
-              <View style={styles.choices}>
+              <View style={[styles.choices, { marginTop: 14 }]}>
                 {PROFILE_COLORS.map(([c, img]) => (
                   <Pressable key={c} onPress={() => setForm({ ...form, color: c })} accessibilityRole="radio" accessibilityLabel={c} accessibilityState={{ selected: form.color === c }}
                     style={styles.swatch}>
