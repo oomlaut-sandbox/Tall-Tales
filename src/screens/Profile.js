@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { colors, fonts } from '../theme';
 import { Felt, IS_TABLET, Stitch } from '../look';
+import { useT } from '../i18n';
 
 const BAND_FELT = require('../../assets/band-profile.jpg');
 import { Bar, BarMeta, Burger, Toast, WithBar } from '../components/Chrome';
@@ -13,6 +14,7 @@ import {
   accountsReady, appleAvailable, currentUser, deleteAccount, onUserChange, sendEmailCode, signInWithApple, signOut, updateProfile, verifyEmailCode,
 } from '../account';
 
+// gives an English message; it is translated where it's shown
 const nice = (e) => {
   const m = (e && e.message) || String(e);
   if (/ERR_REQUEST_CANCELED|canceled/i.test(m)) return '';
@@ -23,6 +25,7 @@ const nice = (e) => {
 };
 
 export default function Profile({ u, openMenu, toast }) {
+  const t = useT();
   const insets = useSafeAreaInsets();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -51,32 +54,32 @@ export default function Profile({ u, openMenu, toast }) {
 
   let body;
   if (!accountsReady) {
-    body = <Text style={styles.p}>Accounts are almost ready. In a coming update you’ll be able to sign in here, so your stories and recordings are kept safe.</Text>;
+    body = <Text style={styles.p}>{t('Accounts are almost ready. In a coming update you’ll be able to sign in here, so your stories and recordings are kept safe.')}</Text>;
   } else if (loading) {
     body = <ActivityIndicator color={colors.ink} />;
   } else if (user) {
     body = (
       <>
-        <Text style={styles.label}>Signed in as</Text>
-        <Text style={styles.value}>{user.email || 'Your Apple ID (email hidden)'}</Text>
-        <Text style={[styles.label, { marginTop: 18 }]}>Your name</Text>
-        <TextInput value={name} onChangeText={setName} placeholder="Your name" placeholderTextColor="#777" style={styles.input}
+        <Text style={styles.label}>{t('Signed in as')}</Text>
+        <Text style={styles.value}>{user.email || t('Your Apple ID (email hidden)')}</Text>
+        <Text style={[styles.label, { marginTop: 18 }]}>{t('Your name')}</Text>
+        <TextInput value={name} onChangeText={setName} placeholder={t('Your name')} placeholderTextColor="#777" style={styles.input}
           autoCapitalize="words" returnKeyType="done"
-          onEndEditing={() => name !== (user.user_metadata?.name || '') && run(async () => { await updateProfile({ name: name.trim() }); toast && toast('Saved.'); })} />
-        <Text style={styles.small}>Coming next: your stories and recordings backed up, and on all your family’s devices.</Text>
-        <Pressable onPress={() => run(signOut)} style={styles.btn} accessibilityRole="button"><Text style={styles.btnText}>Sign out</Text></Pressable>
+          onEndEditing={() => name !== (user.user_metadata?.name || '') && run(async () => { await updateProfile({ name: name.trim() }); toast && toast(t('Saved.')); })} />
+        <Text style={styles.small}>{t('Coming next: your stories and recordings backed up, and on all your family’s devices.')}</Text>
+        <Pressable onPress={() => run(signOut)} style={styles.btn} accessibilityRole="button"><Text style={styles.btnText}>{t('Sign out')}</Text></Pressable>
         {confirmDelete ? (
           <View style={styles.warnBox}>
-            <Text style={styles.warn}>Delete your Oomlaut account? You’ll be signed out and the account is removed for good. Books and recordings on this phone stay here.</Text>
+            <Text style={styles.warn}>{t('Delete your Oomlaut account? You’ll be signed out and the account is removed for good. Books and recordings on this phone stay here.')}</Text>
             <View style={{ flexDirection: 'row', gap: 10 }}>
-              <Pressable onPress={() => run(async () => { await deleteAccount(); setConfirmDelete(false); toast && toast('Your account was deleted.'); })} style={[styles.btn, { flex: 1, backgroundColor: colors.deepRed }]}>
-                <Text style={styles.btnText}>Delete account</Text>
+              <Pressable onPress={() => run(async () => { await deleteAccount(); setConfirmDelete(false); toast && toast(t('Your account was deleted.')); })} style={[styles.btn, { flex: 1, backgroundColor: colors.deepRed }]}>
+                <Text style={styles.btnText}>{t('Delete account')}</Text>
               </Pressable>
-              <Pressable onPress={() => setConfirmDelete(false)} style={[styles.btn, { flex: 1 }]}><Text style={styles.btnText}>Keep it</Text></Pressable>
+              <Pressable onPress={() => setConfirmDelete(false)} style={[styles.btn, { flex: 1 }]}><Text style={styles.btnText}>{t('Keep it')}</Text></Pressable>
             </View>
           </View>
         ) : (
-          <Pressable onPress={() => setConfirmDelete(true)} hitSlop={8}><Text style={styles.deleteLink}>Delete account…</Text></Pressable>
+          <Pressable onPress={() => setConfirmDelete(true)} hitSlop={8}><Text style={styles.deleteLink}>{t('Delete account…')}</Text></Pressable>
         )}
       </>
     );
@@ -87,41 +90,41 @@ export default function Profile({ u, openMenu, toast }) {
         <View style={{ height: 33 }} />
         {apple ? (
           // our own button so both match (same font, size and dark grey); Apple's logo and wording kept
-          <Pressable onPress={() => run(signInWithApple)} style={[styles.btn, { flexDirection: 'row', justifyContent: 'center', gap: 7 }]} accessibilityRole="button" accessibilityLabel="Sign in with Apple">
+          <Pressable onPress={() => run(signInWithApple)} style={[styles.btn, { flexDirection: 'row', justifyContent: 'center', gap: 7 }]} accessibilityRole="button" accessibilityLabel={t('Sign in with Apple')}>
             <Text style={[styles.btnText, { fontSize: 18, marginTop: -2 }]}>{'\uF8FF'}</Text>
-            <Text style={styles.btnText}>Sign in with Apple</Text>
+            <Text style={styles.btnText}>{t('Sign in with Apple')}</Text>
           </Pressable>
         ) : null}
         <Pressable onPress={() => { setErr(''); setStep('email'); }} style={styles.btn} accessibilityRole="button">
-          <Text style={styles.btnText}>{apple ? 'Use email instead' : 'Sign in with email'}</Text>
+          <Text style={styles.btnText}>{apple ? t('Use email instead') : t('Sign in with email')}</Text>
         </Pressable>
       </>
     );
   } else if (step === 'email') {
     body = (
       <>
-        <Text style={styles.p}>We’ll email you a 6-digit code.</Text>
+        <Text style={styles.p}>{t('We’ll email you a 6-digit code.')}</Text>
         <TextInput value={email} onChangeText={setEmail} placeholder="you@example.com" placeholderTextColor="#777" style={styles.input}
           keyboardType="email-address" autoCapitalize="none" autoCorrect={false} textContentType="emailAddress" autoComplete="email" />
         <Pressable disabled={busy || !/.+@.+\..+/.test(email)} onPress={() => run(async () => { await sendEmailCode(email); setStep('code'); })}
           style={[styles.btn, (busy || !/.+@.+\..+/.test(email)) && styles.off]} accessibilityRole="button">
-          <Text style={styles.btnText}>{busy ? 'Sending…' : 'Send code'}</Text>
+          <Text style={styles.btnText}>{busy ? t('Sending…') : t('Send code')}</Text>
         </Pressable>
-        <Pressable onPress={() => setStep('start')} hitSlop={8}><Text style={styles.link}>‹ Back</Text></Pressable>
+        <Pressable onPress={() => setStep('start')} hitSlop={8}><Text style={styles.link}>‹ {t('Back')}</Text></Pressable>
       </>
     );
   } else {
     body = (
       <>
-        <Text style={styles.p}>Enter the code we sent to {email.trim()}.</Text>
-        <TextInput value={code} onChangeText={(t) => setCode(t.replace(/\D/g, '').slice(0, 6))} placeholder="123456" placeholderTextColor="#777"
+        <Text style={styles.p}>{t('Enter the code we sent to {email}.', { email: email.trim() })}</Text>
+        <TextInput value={code} onChangeText={(v) => setCode(v.replace(/\D/g, '').slice(0, 6))} placeholder="123456" placeholderTextColor="#777"
           style={[styles.input, styles.codeInput]} keyboardType="number-pad" textContentType="oneTimeCode" autoComplete="one-time-code" maxLength={6} />
         <Pressable disabled={busy || code.length !== 6} onPress={() => run(() => verifyEmailCode(email, code))}
           style={[styles.btn, (busy || code.length !== 6) && styles.off]} accessibilityRole="button">
-          <Text style={styles.btnText}>{busy ? 'Checking…' : 'Sign in'}</Text>
+          <Text style={styles.btnText}>{busy ? t('Checking…') : t('Sign in')}</Text>
         </Pressable>
-        <Pressable onPress={() => run(() => sendEmailCode(email))} hitSlop={8}><Text style={styles.link}>Send a new code</Text></Pressable>
-        <Pressable onPress={() => { setCode(''); setStep('email'); }} hitSlop={8}><Text style={styles.link}>‹ Use a different email</Text></Pressable>
+        <Pressable onPress={() => run(() => sendEmailCode(email))} hitSlop={8}><Text style={styles.link}>{t('Send a new code')}</Text></Pressable>
+        <Pressable onPress={() => { setCode(''); setStep('email'); }} hitSlop={8}><Text style={styles.link}>‹ {t('Use a different email')}</Text></Pressable>
       </>
     );
   }
@@ -132,16 +135,16 @@ export default function Profile({ u, openMenu, toast }) {
         {/* Jörg's stitched orange felt, treated like the My Library and Book Store banners */}
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}{/* iPad: the classic solid orange */}
         {/* just the title, centred top to bottom in the band (like My Library and the Book Store) */}
-        <Text style={styles.title}>Profile</Text>
+        <Text style={styles.title}>{t('Profile')}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
         <View style={styles.col}>
           {body}
-          {err ? <Text style={styles.err}>{err}</Text> : null}
+          {err ? <Text style={styles.err}>{t(err)}</Text> : null}
         </View>
       </ScrollView>
       {/* for grown-ups: a speech bubble at the bottom (tap it to put it away) */}
-      {accountsReady && step === 'start' && !user && !loading && tip ? <Toast message="Parents, sign into your Oomlaut account." onDismiss={() => setTip(false)} /> : null}
+      {accountsReady && step === 'start' && !user && !loading && tip ? <Toast message={t('Parents, sign into your Oomlaut account.')} onDismiss={() => setTip(false)} /> : null}
     </WithBar>
   );
 }

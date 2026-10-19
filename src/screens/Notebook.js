@@ -212,7 +212,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
 
   const addPage = (kind) => {
     setNewAsk(false); setPagesOpen(false);
-    if (pages.length >= MAX_PAGES) return toast(`Your notebook is full (${MAX_PAGES} pages). Delete a page to make room.`);
+    if (pages.length >= MAX_PAGES) return toast(t('Your notebook is full ({n} pages). Delete a page to make room.', { n: MAX_PAGES }));
     const p = kind === 'sketch' ? blankSketch() : blankNote();
     const at = Math.max(0, i - FIRST_PAGE + 1); // right after the page you're on
     setNb((n) => ({ ...n, pages: [...n.pages.slice(0, at), p, ...n.pages.slice(at)] }));
@@ -230,7 +230,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     if (p.uri) dropNotebookPicture(p.uri);
     setNb((n) => { const ps = n.pages.filter((_, m) => m !== k); return { ...n, pages: ps.length ? ps : [blankNote()] }; });
     setI((x) => (x > k + FIRST_PAGE ? x - 1 : Math.min(x, Math.max(FIRST_PAGE, pages.length - 1 + FIRST_PAGE - 1))));
-    toast('Page deleted.');
+    toast(t('Page deleted.'));
   };
 
   // a photo for the picture square (from the phone, or the camera after the grown-up check)
@@ -240,7 +240,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       let r;
       if (source === 'camera') {
         const perm = await ImagePicker.requestCameraPermissionsAsync();
-        if (!perm.granted) return toast('Oomlaut Reader isn’t allowed to use the camera. You can turn it on in Settings.');
+        if (!perm.granted) return toast(t('Oomlaut Reader isn’t allowed to use the camera. You can turn it on in Settings.'));
         r = await ImagePicker.launchCameraAsync(opts);
       } else r = await ImagePicker.launchImageLibraryAsync(opts);
       if (r.canceled || !r.assets || !r.assets[0]) return;
@@ -253,7 +253,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       if (page && page.uri) dropNotebookPicture(page.uri);
       update({ uri, w, h });
     } catch (e) {
-      toast(source === 'camera' ? 'Couldn’t open the camera.' : 'Couldn’t open your photos. Check that Oomlaut Reader is allowed to use Photos in Settings.');
+      toast(source === 'camera' ? t('Couldn’t open the camera.') : t('Couldn’t open your photos. Check that Oomlaut Reader is allowed to use Photos in Settings.'));
     }
   };
 
@@ -340,7 +340,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       // a sketch spread: two square pages to draw on
       const sq = (which, strokes, edge, spine) => (
         <Pressable disabled={!live} onPress={() => setDrawing(which)} style={{ width: side, height: side, backgroundColor: WHITE, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}
-          accessibilityRole="button" accessibilityLabel={which === 'top' ? 'Draw on the top page' : 'Draw on the bottom page'}>
+          accessibilityRole="button" accessibilityLabel={which === 'top' ? t('Draw on the top page') : t('Draw on the bottom page')}>
           <StrokesView strokes={strokes} width={side} height={side} />
           <Fade edge={edge} size={Math.round(side * 0.09)} max={0.15} />
           {spine ? <Spine wide={wide} /> : null}
@@ -356,19 +356,19 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     }
     return (
       <View style={[StyleSheet.absoluteFill, { flexDirection: wide ? 'row' : 'column' }]}>
-        <Pressable disabled={!live} onPress={() => setPicAsk(true)} style={[styles.art, { width: side, height: side }]} accessibilityRole="button" accessibilityLabel={pg.uri || pg.strokes.length ? 'Change the picture' : 'Add a picture or a drawing'}>
+        <Pressable disabled={!live} onPress={() => setPicAsk(true)} style={[styles.art, { width: side, height: side }]} accessibilityRole="button" accessibilityLabel={pg.uri || pg.strokes.length ? t('Change the picture') : t('Add a picture or a drawing')}>
           {pg.uri ? <Image source={{ uri: pg.uri }} style={styles.fill} resizeMode="cover" /> : <View style={[styles.fill, { backgroundColor: WHITE }]} />}
           <StrokesView strokes={pg.strokes} width={side} height={side} />
           {!pg.uri && !pg.strokes.length ? (
             <View style={{ alignItems: 'center' }}>
               <Text style={[styles.plus, { fontSize: u * 24, lineHeight: u * 24 }]}>+</Text>
               <Text style={styles.addImage}>{t('Add a picture')}</Text>
-              <Text style={styles.addSub}>or a drawing</Text>
+              <Text style={styles.addSub}>{t('or a drawing')}</Text>
             </View>
           ) : null}
           <Fade edge={wide ? 'right' : 'bottom'} size={Math.round(side * 0.1)} max={0.22} />
         </Pressable>
-        <Pressable disabled={!live} onPress={() => setWriting(true)} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.07, backgroundColor: WHITE }]} accessibilityRole="button" accessibilityLabel="Notes for this page">
+        <Pressable disabled={!live} onPress={() => setWriting(true)} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.07, backgroundColor: WHITE }]} accessibilityRole="button" accessibilityLabel={t('Notes for this page')}>
           <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.09)} max={0.13} />
           <Spine wide={wide} />
           <Lines side={side} />
@@ -390,7 +390,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const barBtns = (vertical) => (
     <View style={vertical ? { alignItems: 'center', gap: 18, marginBottom: 26 } : { flexDirection: 'row', alignItems: 'center', gap: 14 }}>{/* sideways: lifted up from the corner */}
       <Pressable onPress={() => setPagesOpen(true)} hitSlop={8} accessibilityRole="button"><Text style={styles.btn}>{t('Pages')}</Text></Pressable>
-      <Pressable onPress={async () => { clearTimeout(timer.current); if (latest.current) await saveNotebook(latest.current); onDone(); }} hitSlop={8} accessibilityRole="button" accessibilityLabel="Close the notebook">
+      <Pressable onPress={async () => { clearTimeout(timer.current); if (latest.current) await saveNotebook(latest.current); onDone(); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Close the notebook')}>
         <View style={styles.finish}><Text style={styles.btn}>{t('Done')}</Text></View>
       </Pressable>
     </View>
@@ -469,10 +469,10 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
             {!(flipPair && peelLive && !landed) && !intro ? (
               <>
                 {/* no folded corner: the bottom-right corner is an invisible spot that turns to the next page */}
-                <Pressable onPress={next} accessibilityRole="button" accessibilityLabel={i >= total - 1 ? 'Add a page' : 'Next page'}
+                <Pressable onPress={next} accessibilityRole="button" accessibilityLabel={i >= total - 1 ? t('Add a page') : t('Next page')}
                   style={{ position: 'absolute', right: 0, bottom: 0, width: corner, height: corner, zIndex: 20 }} />
                 {/* the bottom-left corner turns back a page (an invisible spot, like the folded corner on the right) */}
-                {i > 0 ? <Pressable onPress={() => turn(-1)} accessibilityRole="button" accessibilityLabel="Previous page"
+                {i > 0 ? <Pressable onPress={() => turn(-1)} accessibilityRole="button" accessibilityLabel={t('Previous page')}
                   style={{ position: 'absolute', left: 0, bottom: 0, width: corner, height: corner, zIndex: 20 }} /> : null}
                 {/* (no back button: swipe down or to the right to go back a page) */}
               </>
@@ -514,7 +514,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         </View>
       ) : null}
       {introEl}
-      <Panel open={pagesOpen} side="right" title="Pages" portraitWidth="94%" bottom={wide ? 0 : u * 17 + insets.bottom} inset={wide ? BL.rightW : 0} onClose={() => setPagesOpen(false)}>
+      <Panel open={pagesOpen} side="right" title={t('Pages')} portraitWidth="94%" bottom={wide ? 0 : u * 17 + insets.bottom} inset={wide ? BL.rightW : 0} onClose={() => setPagesOpen(false)}>
         {/* new pages first, side by side, above the list */}
         <View style={{ flexDirection: 'row', gap: 12, marginBottom: 18 }}>
           <Pressable onPress={() => addPage('note')} style={[styles.halfPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('New notes page')}</Text></Pressable>
@@ -523,22 +523,22 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         <ScrollView style={{ maxHeight: Math.max(340, winH * 0.5) }} contentContainerStyle={{ gap: 14, paddingBottom: 6 }}>
           <Pressable onPress={() => { setI(BADGES); setPagesOpen(false); }} style={[styles.prow, i === BADGES && { borderColor: colors.green }]}>
             <View style={[styles.thumb, { backgroundColor: '#c9a227' }]}><Text style={styles.thumbNum}>★</Text></View>
-            <View style={{ flex: 1, justifyContent: 'center', height: 64 }}><Text style={styles.prowTitle}>Badges<Text style={styles.prowSub}>{'  ·  '}Page 2</Text></Text></View>
+            <View style={{ flex: 1, justifyContent: 'center', height: 64 }}><Text style={styles.prowTitle}>{t('Badges')}<Text style={styles.prowSub}>{'  ·  '}{t('Page {n}', { n: 2 })}</Text></Text></View>
           </Pressable>
           {pages.map((p, k) => (
             <View key={p.pid} style={[styles.prow, i === k + FIRST_PAGE && { borderColor: colors.green }]}>
-              <Pressable onPress={() => { setI(k + FIRST_PAGE); setPagesOpen(false); }} style={[styles.thumb, { backgroundColor: WHITE }]} accessibilityLabel={`Go to page ${k + 3}`}>
+              <Pressable onPress={() => { setI(k + FIRST_PAGE); setPagesOpen(false); }} style={[styles.thumb, { backgroundColor: WHITE }]} accessibilityLabel={t('Go to page {n}', { n: k + 3 })}>
                 {p.uri ? <Image source={{ uri: p.uri }} style={styles.fill} resizeMode="cover" /> : null}
                 <StrokesView strokes={p.strokes} width={64} height={64} />
               </Pressable>
               <View style={{ flex: 1, minWidth: 0, height: 64, justifyContent: 'space-between' }}>
                 <Pressable onPress={() => { setI(k + FIRST_PAGE); setPagesOpen(false); }}>
-                  <Text numberOfLines={1} style={styles.prowTitle}>{p.kind === 'sketch' ? 'Sketch' : 'Notes'}<Text style={styles.prowSub}>{'  ·  '}Page {k + 3}{p.text.trim() ? `  ·  ${p.text.trim()}` : ''}</Text></Text>
+                  <Text numberOfLines={1} style={styles.prowTitle}>{p.kind === 'sketch' ? t('Sketch') : t('Notes')}<Text style={styles.prowSub}>{'  ·  '}{t('Page {n}', { n: k + 3 })}{p.text.trim() ? `  ·  ${p.text.trim()}` : ''}</Text></Text>
                 </Pressable>
                 <View style={{ flexDirection: 'row', gap: 8 }}>
-                  <Pressable onPress={() => move(k, -1)} disabled={k === 0} hitSlop={6} style={[styles.pbtn, k === 0 && { opacity: 0.3 }]} accessibilityLabel="Move up"><Text style={styles.pbtnText}>↑</Text></Pressable>
-                  <Pressable onPress={() => move(k, 1)} disabled={k === pages.length - 1} hitSlop={6} style={[styles.pbtn, k === pages.length - 1 && { opacity: 0.3 }]} accessibilityLabel="Move down"><Text style={styles.pbtnText}>↓</Text></Pressable>
-                  <Pressable onPress={() => removePage(k)} hitSlop={6} style={styles.pbtn} accessibilityLabel="Delete page"><Text style={styles.pbtnText}>✕</Text></Pressable>
+                  <Pressable onPress={() => move(k, -1)} disabled={k === 0} hitSlop={6} style={[styles.pbtn, k === 0 && { opacity: 0.3 }]} accessibilityLabel={t('Move up')}><Text style={styles.pbtnText}>↑</Text></Pressable>
+                  <Pressable onPress={() => move(k, 1)} disabled={k === pages.length - 1} hitSlop={6} style={[styles.pbtn, k === pages.length - 1 && { opacity: 0.3 }]} accessibilityLabel={t('Move down')}><Text style={styles.pbtnText}>↓</Text></Pressable>
+                  <Pressable onPress={() => removePage(k)} hitSlop={6} style={styles.pbtn} accessibilityLabel={t('Delete page')}><Text style={styles.pbtnText}>✕</Text></Pressable>
                 </View>
               </View>
             </View>
@@ -560,8 +560,8 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       {picAsk && page ? (
         <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
-            <Text style={styles.choiceTitle}>{page.uri || page.strokes.length ? 'Change the picture' : 'Add a picture'}</Text>
-            <Pressable onPress={() => { setPicAsk(false); setDrawing('top'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{page.uri ? 'Draw on the photo' : page.strokes.length ? 'Keep drawing' : 'Make a drawing'}</Text></Pressable>
+            <Text style={styles.choiceTitle}>{page.uri || page.strokes.length ? t('Change the picture') : t('Add a picture')}</Text>
+            <Pressable onPress={() => { setPicAsk(false); setDrawing('top'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{page.uri ? t('Draw on the photo') : page.strokes.length ? t('Keep drawing') : t('Make a drawing')}</Text></Pressable>
             <Pressable onPress={() => { setPicAsk(false); choosePhoto('library'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Choose a photo')}</Text></Pressable>
             <Pressable onPress={() => { setPicAsk(false); setCamGate(true); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Take a photo')}</Text></Pressable>
             {page.uri ? <Pressable onPress={() => { setPicAsk(false); dropNotebookPicture(page.uri); update({ uri: null, w: 1, h: 1 }); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Remove the photo')}</Text></Pressable> : null}
@@ -569,7 +569,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           </View>
         </View>
       ) : null}
-      <ParentGate visible={camGate} reason="Taking a photo opens the camera." onPass={() => { setCamGate(false); setTimeout(() => choosePhoto('camera'), 250); }} onCancel={() => setCamGate(false)} />
+      <ParentGate visible={camGate} reason={t('Taking a photo opens the camera.')} onPass={() => { setCamGate(false); setTimeout(() => choosePhoto('camera'), 250); }} onCancel={() => setCamGate(false)} />
 
       {writing && page ? (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 50 }]}>
@@ -577,11 +577,11 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
             <DeskFelt spot="notebook2" overlay />
           </View>
           <View style={{ flex: 1, alignItems: 'center', paddingTop: insets.top + 34 }}>
-            <View style={styles.editorHead}><Text style={styles.editorTitle}>My notes · Page {i + 1}</Text></View>
+            <View style={styles.editorHead}><Text style={styles.editorTitle}>{t('My notes · Page {n}', { n: i + 1 })}</Text></View>
             <View style={[styles.editorPage, { width: winW - 2 * GAP, maxHeight: winW - 2 * GAP }]}>
               <TextInput value={page.text} onChangeText={(text) => { if (text.length > (page.text || '').length) playKey(); update({ text }); }}
-                placeholder="Write anything: what you read, what you saw today, a story idea…" placeholderTextColor="#666"
-                multiline autoFocus style={[styles.editorInput, { outlineWidth: 0 }]} accessibilityLabel="Notes" />
+                placeholder={t('Write anything: what you read, what you saw today, a story idea…')} placeholderTextColor="#666"
+                multiline autoFocus style={[styles.editorInput, { outlineWidth: 0 }]} accessibilityLabel={t('Notes')} />
             </View>
             <View style={{ width: winW - 2 * GAP, alignItems: 'flex-end' }}>
               <Pressable onPress={() => setWriting(false)} hitSlop={8} accessibilityRole="button" style={styles.donePill}><Text style={styles.pillText}>{t('Done')}</Text></Pressable>
@@ -592,7 +592,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
 
       {drawing && page ? (
         <DrawEditor insets={insets} photo={page.kind === 'sketch' ? null : page.uri} strokes={drawing === 'bottom' ? page.strokes2 || [] : page.strokes}
-          title={page.kind === 'sketch' ? `Sketch · Page ${i + 1}` : `Drawing · Page ${i + 1}`}
+          title={page.kind === 'sketch' ? t('Sketch · Page {n}', { n: i + 1 }) : t('Drawing · Page {n}', { n: i + 1 })}
           onDone={(strokes) => { update(drawing === 'bottom' ? { strokes2: strokes } : { strokes }); setDrawing(false); if (strokes.length) markFirst('firstDrawing'); }} />
       ) : null}
     </View>
@@ -636,7 +636,7 @@ function Badge({ b, d, toast }) {
   const title = t(b.title), how = t(b.how);
   // its name and how it's earned, written under the badges (no speech bubble)
   const say = () => toast(b.earned ? `${title}! ${how}` : `${title}: ${how}`);
-  const label = `${title}${b.earned ? ', earned' : ', not earned yet'}`;
+  const label = `${title}${b.earned ? t(', earned') : t(', not earned yet')}`;
   if (art) {
     // the felt badge has its name stitched on (and its shadow drawn in)
     return (
@@ -835,7 +835,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
     <View style={{ width: w, flexDirection: 'row', flexWrap: 'wrap', justifyContent: perRow ? 'flex-start' : 'space-between', rowGap: 14 }}>
       {PENS.map(([hex, name]) => (
         <View key={hex} style={{ width: perRow ? w / perRow : undefined, alignItems: perRow ? 'center' : undefined }}>
-          <Pressable onPress={() => { setPen(hex); setErase(false); }} accessibilityLabel={`${name} pen`}
+          <Pressable onPress={() => { setPen(hex); setErase(false); }} accessibilityLabel={t('{name} pen', { name: t(name) })}
             style={[styles.swatch, { backgroundColor: hex }, !erase && pen === hex && styles.swatchOn]} />
         </View>
       ))}
@@ -844,25 +844,25 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
   const sizesEl = (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
       {SIZES.map(([name, s]) => (
-        <Pressable key={name} onPress={() => { setSize(s); setErase(false); setBucket(false); }} style={[styles.tool, !erase && !bucket && size === s && styles.toolOn]} accessibilityLabel={`${name} pen`}>
+        <Pressable key={name} onPress={() => { setSize(s); setErase(false); setBucket(false); }} style={[styles.tool, !erase && !bucket && size === s && styles.toolOn]} accessibilityLabel={t('{name} pen', { name: t(name) })}>
           <View style={{ width: 5 + s * 280, height: 5 + s * 280, borderRadius: 20, backgroundColor: colors.white }} />
         </Pressable>
       ))}
-      <Pressable onPress={() => { setErase((x) => !x); setBucket(false); }} style={[styles.toolWide, erase && styles.toolOn]} accessibilityLabel="Eraser">
+      <Pressable onPress={() => { setErase((x) => !x); setBucket(false); }} style={[styles.toolWide, erase && styles.toolOn]} accessibilityLabel={t('Eraser')}>
         <Text style={styles.toolText}>{t('Eraser')}</Text>
       </Pressable>
       {/* the paint bucket: tap inside a shape to fill it with the colour */}
-      <Pressable onPress={() => { setBucket((x) => !x); setErase(false); }} style={[styles.tool, bucket && styles.toolOn]} accessibilityLabel="Fill (paint roller)">
+      <Pressable onPress={() => { setBucket((x) => !x); setErase(false); }} style={[styles.tool, bucket && styles.toolOn]} accessibilityLabel={t('Fill (paint roller)')}>
         <BucketIcon />
       </Pressable>
     </View>
   );
   const undoEl = (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-      <Pressable onPress={() => setStrokes((s) => s.slice(0, -1))} disabled={!strokes.length} style={[styles.tool, !strokes.length && { opacity: 0.35 }]} accessibilityLabel="Undo">
+      <Pressable onPress={() => setStrokes((s) => s.slice(0, -1))} disabled={!strokes.length} style={[styles.tool, !strokes.length && { opacity: 0.35 }]} accessibilityLabel={t('Undo')}>
         <UndoIcon />
       </Pressable>
-      <Pressable onPress={() => setStrokes([])} disabled={!strokes.length} style={[styles.toolWide, !strokes.length && { opacity: 0.35 }]} accessibilityLabel="Clear the drawing">
+      <Pressable onPress={() => setStrokes([])} disabled={!strokes.length} style={[styles.toolWide, !strokes.length && { opacity: 0.35 }]} accessibilityLabel={t('Clear the drawing')}>
         <Text style={styles.toolText}>{t('Clear')}</Text>
       </Pressable>
     </View>
@@ -882,7 +882,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
               {/* all nine colours on one line, starting at the same left edge as the buttons below */}
               <View style={{ flexDirection: 'row', gap: 4 }}>
                 {PENS.map(([hex, name]) => (
-                  <Pressable key={hex} onPress={() => { setPen(hex); setErase(false); }} accessibilityLabel={`${name} pen`} hitSlop={3}
+                  <Pressable key={hex} onPress={() => { setPen(hex); setErase(false); }} accessibilityLabel={t('{name} pen', { name: t(name) })} hitSlop={3}
                     style={[styles.swatch, { width: 25, height: 25, borderRadius: 12.5, backgroundColor: hex }, !erase && pen === hex && styles.swatchOn]} />
                 ))}
               </View>
