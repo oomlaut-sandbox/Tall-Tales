@@ -546,22 +546,18 @@ const styles = StyleSheet.create({
 });
 
 
-// an alarm clock: a round face with two hands, two little bells on top and two short feet
+// an alarm clock, kept simple: a ring with two hands and two short strokes on top for the bells
 export function AlarmClockIcon({ size = 20, color = colors.white, weight = 1.8 }) {
-  const d = size * 0.74, top = size * 0.16, b = size * 0.26;
-  const bell = (left) => (
-    <View style={{ position: 'absolute', top: 0, left: left ? size * 0.02 : undefined, right: left ? undefined : size * 0.02, width: b, height: b / 2, borderTopLeftRadius: b / 2, borderTopRightRadius: b / 2, backgroundColor: color, transform: [{ rotate: left ? '-38deg' : '38deg' }] }} />
-  );
-  const foot = (left) => (
-    <View style={{ position: 'absolute', bottom: 0, left: left ? size * 0.2 : undefined, right: left ? undefined : size * 0.2, width: weight, height: size * 0.16, borderRadius: weight / 2, backgroundColor: color, transform: [{ rotate: left ? '35deg' : '-35deg' }] }} />
+  const d = size * 0.8;
+  const ear = (left) => (
+    <View style={{ position: 'absolute', top: size * 0.06, left: left ? size * 0.02 : undefined, right: left ? undefined : size * 0.02, width: size * 0.26, height: weight, borderRadius: weight / 2, backgroundColor: color, transform: [{ rotate: left ? '-45deg' : '45deg' }] }} />
   );
   return (
     <View style={{ width: size, height: size }}>
-      {bell(true)}{bell(false)}
-      {foot(true)}{foot(false)}
-      <View style={{ position: 'absolute', top, left: (size - d) / 2, width: d, height: d, borderRadius: d / 2, borderWidth: weight, borderColor: color }}>
-        <View style={{ position: 'absolute', left: d / 2 - weight * 1.5, top: d * 0.2, width: weight, height: d * 0.32, borderRadius: weight / 2, backgroundColor: color }} />
-        <View style={{ position: 'absolute', left: d / 2 - weight * 1.5, top: d / 2 - weight * 1.5, width: d * 0.24, height: weight, borderRadius: weight / 2, backgroundColor: color }} />
+      {ear(true)}{ear(false)}
+      <View style={{ position: 'absolute', bottom: 0, left: (size - d) / 2, width: d, height: d, borderRadius: d / 2, borderWidth: weight, borderColor: color }}>
+        <View style={{ position: 'absolute', left: d / 2 - weight * 1.5, top: d * 0.22, width: weight, height: d * 0.3, borderRadius: weight / 2, backgroundColor: color }} />
+        <View style={{ position: 'absolute', left: d / 2 - weight * 1.5, top: d / 2 - weight * 1.5, width: d * 0.22, height: weight, borderRadius: weight / 2, backgroundColor: color }} />
       </View>
     </View>
   );
