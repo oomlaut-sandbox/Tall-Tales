@@ -71,12 +71,24 @@ async function sync(kind) {
   try {
     await setAudioModeAsync({ playsInSilentMode: true });
     release(c);
-    c.player = createAudioPlayer(t.src);
+    const p = createAudioPlayer(t.src);
+    c.player = p;
     c.id = want;
-    c.player.loop = true;
-    c.player.volume = 0;
-    c.player.play();
+    p.loop = true;
+    p.volume = 0;
+    p.play();
     ramp(c, 0, state.volume, 1200); // fades in
+    // a freshly made player may not be ready yet, and then the first play() does nothing (it used to take a
+    // second tap): play again as soon as it has loaded, and check once more shortly after
+    const still = () => c.player === p && state.playing && !held && state[kind] === want;
+    try {
+      const sub = p.addListener('playbackStatusUpdate', (st) => {
+        if (!still()) { try { sub.remove(); } catch (e) {} return; }
+        if (st.isLoaded && !st.playing) { try { p.play(); } catch (e) {} }
+        if (st.playing) { try { sub.remove(); } catch (e) {} }
+      });
+    } catch (e) {}
+    [250, 700, 1500].forEach((ms) => setTimeout(() => { try { if (still() && !p.playing) p.play(); } catch (e) {} }, ms));
   } catch (e) { release(c); }
 }
 const syncAll = () => { sync('sound'); sync('music'); };

@@ -19,7 +19,11 @@ export default function AmbientControls() {
   const [vol, setVol] = useState(null);
   useEffect(() => onAmbient(setS), []);
   // tap one to choose it (it starts playing); tap it again to switch that one off. A sound and a piece of music can play together.
-  const pick = (kind, id) => chooseAmbient(kind, s[kind] === id ? null : id);
+  // (tapping the one already chosen while it's paused plays it, instead of switching it off)
+  const pick = (kind, id) => {
+    if (s[kind] === id && !s.playing) { playAmbient(); return; }
+    chooseAmbient(kind, s[kind] === id ? null : id);
+  };
   return (
     <View style={{ gap: 10 }}>
       <Text style={styles.small}>{t('Relaxing sounds and gentle music that keep playing while you use the app. Lovely at bedtime.')}</Text>
@@ -27,13 +31,13 @@ export default function AmbientControls() {
         <Chip label={s.playing ? t('Pause') : t('Play')} on={s.playing} onPress={s.playing ? pauseAmbient : playAmbient} />
         <Chip label={t('Off')} on={!s.sound && !s.music} onPress={stopAmbient} />
       </View>
-      <Text style={styles.group}>{t('Nature sounds')}</Text>
-      <View style={styles.chips}>
-        {SOUNDS.map((x) => <Chip key={x.id} label={t(x.name)} on={s.sound === x.id} onPress={() => pick('sound', x.id)} />)}
-      </View>
       <Text style={styles.group}>{t('Music')}</Text>
       <View style={styles.chips}>
         {MUSIC.map((x) => <Chip key={x.id} label={t(x.name)} on={s.music === x.id} onPress={() => pick('music', x.id)} />)}
+      </View>
+      <Text style={styles.group}>{t('Nature sounds')}</Text>
+      <View style={styles.chips}>
+        {SOUNDS.map((x) => <Chip key={x.id} label={t(x.name)} on={s.sound === x.id} onPress={() => pick('sound', x.id)} />)}
       </View>
       <Text style={styles.group}>{t('Volume')}</Text>
       <Slider value={vol ?? s.volume} min={0.05} max={1} step={0.05} leftLabel={t('Quieter')} rightLabel={t('Louder')} showValue={false}
