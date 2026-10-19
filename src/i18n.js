@@ -3,6 +3,10 @@
 // Anything not translated yet simply shows in English. The chosen language is kept on the phone;
 // the first time, it follows the phone's own language (when it's one of these five).
 import React, { createContext, useContext } from 'react';
+import READER_T from './strings/reader';
+import NOTEBOOK_T from './strings/notebook';
+import HELP_T from './strings/help';
+import IDEAS_T from './strings/ideas';
 
 export const LANGS = [
   ['en', 'English'],
@@ -459,6 +463,9 @@ export const NUMBER_WORDS = {
   es: ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve'],
   ja: ['ぜろ', 'いち', 'に', 'さん', 'よん', 'ご', 'ろく', 'なな', 'はち', 'きゅう'],
 };
+
+// more translations, kept in their own files by area (reading and recording, notebook, Help, the Idea Room)
+Object.assign(T, READER_T, NOTEBOOK_T, HELP_T, IDEAS_T);
 
 export function translate(lang, s, vars) {
   const row = T[s];
