@@ -205,14 +205,17 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
       {tip && !selecting ? (
         <View style={styles.tipWrap} pointerEvents="box-none">
           <View style={styles.tipBubble}>
-            <Image source={TIP_CHAR} style={styles.tipChar} resizeMode="contain" accessibilityIgnoresInvertColors />
             <Text style={styles.tipTitle}>{t('The Audio Player')}</Text>
             <Text style={styles.tipText}>{t('While you read, tap the music note on the black bar. Turn the knobs to choose a nature sound and some music, press Play, and slide to set the volume. Close it with “Close Audio Player”.')}</Text>
             <Pressable onPress={() => setNoMore((x) => !x)} style={styles.tipCheckRow} accessibilityRole="checkbox" accessibilityState={{ checked: noMore }} hitSlop={6}>
               <View style={[styles.tipBox, noMore && styles.tipBoxOn]}>{noMore ? <Text style={styles.tipTick}>✓</Text> : null}</View>
               <Text style={styles.tipCheck}>{t('Don’t show this message again')}</Text>
             </Pressable>
-            <Pressable onPress={closeTip} style={styles.tipOk} accessibilityRole="button"><Text style={styles.tipOkText}>{t('OK')}</Text></Pressable>
+            {/* OK on the left; the headphones character stands below it on the right, with lots of room around him */}
+            <View style={styles.tipFoot}>
+              <Pressable onPress={closeTip} style={styles.tipOk} accessibilityRole="button"><Text style={styles.tipOkText}>{t('OK')}</Text></Pressable>
+              <Image source={TIP_CHAR} style={styles.tipChar} resizeMode="contain" accessibilityIgnoresInvertColors />
+            </View>
           </View>
           <View style={styles.tipTail} />
         </View>
@@ -464,7 +467,8 @@ const styles = StyleSheet.create({
   tipWrap: { position: 'absolute', left: 16, right: 16, bottom: 24, alignItems: 'flex-start', zIndex: 60 },
   tipBubble: { width: '100%', maxWidth: 420, alignSelf: 'center', backgroundColor: '#f4f1ea', borderRadius: 22, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 24, gap: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 12, elevation: 10 },
   tipTail: { marginLeft: 46, width: 0, height: 0, borderLeftWidth: 12, borderRightWidth: 12, borderTopWidth: 14, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: '#f4f1ea' },
-  tipChar: { width: 96, height: 126, alignSelf: 'center', marginBottom: 18 }, // plenty of room between him and the words
+  tipFoot: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: 14 },
+  tipChar: { width: 92, height: 121, marginTop: 24, marginRight: 34, marginBottom: 30 },
   tipTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 19, color: '#2b2b2b' },
   tipText: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#2b2b2b' },
   tipCheckRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 2 },
@@ -472,7 +476,7 @@ const styles = StyleSheet.create({
   tipBoxOn: { backgroundColor: colors.green, borderColor: colors.green },
   tipTick: { color: colors.white, fontWeight: '700', fontSize: 14, lineHeight: 16 },
   tipCheck: { fontFamily: fonts.ui, fontSize: 14, color: '#3a3a3a' },
-  tipOk: { marginTop: 6, alignSelf: 'flex-end', backgroundColor: colors.green, borderRadius: 20, paddingHorizontal: 24, height: 40, alignItems: 'center', justifyContent: 'center' },
+  tipOk: { marginLeft: -4, backgroundColor: colors.green, borderRadius: 20, paddingHorizontal: 24, height: 40, alignItems: 'center', justifyContent: 'center' },
   tipOkText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
   screen: { flex: 1, backgroundColor: DESK_BG }, // same dark grey as reading
   // a generous gap between the felt title band and the first row of books
