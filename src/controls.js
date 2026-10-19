@@ -15,7 +15,13 @@ export const DEFAULT_CONTROLS = {
   language: true,   // the child may change the language (the list on the start page)
   childAge: null,   // the child's age: books rated for older children are hidden (null: show every book)
   profiles: true,   // the child may switch to another child's profile (Start page → Profiles)
+  clock: false,     // the nightlight (Listen Only) shows the time
+  alarm: false,     // the nightlight wakes the child: at alarmTime the sun rises and a gentle sound plays
+  alarmTime: '07:00',
+  alarmSound: 'forest-birds',
 };
+// settings that add something rather than limit the child (not counted as restricted)
+const EXTRAS = ['clock', 'alarm'];
 
 // everything off: only My Library and its books, played the way they're set now
 export const lockedControls = (mode, childAge = null) => ({ store: false, notebook: false, create: false, help: false, playback: false, playMode: mode || 'page', recording: false, sharing: false, language: false, profiles: false, childAge });
@@ -27,7 +33,7 @@ export const lockedControls = (mode, childAge = null) => ({ store: false, notebo
 export const quickSafeControls = (childAge = null) => ({ store: false, notebook: true, create: false, help: false, playback: false, playMode: 'page', recording: false, sharing: false, language: false, profiles: false, childAge });
 
 // restricted kid mode: a grown-up has switched something off or fixed how books play
-export const isRestricted = (c) => !!c && (!!c.playMode || Object.keys(DEFAULT_CONTROLS).some((k) => typeof DEFAULT_CONTROLS[k] === 'boolean' && c[k] === false));
+export const isRestricted = (c) => !!c && (!!c.playMode || Object.keys(DEFAULT_CONTROLS).some((k) => !EXTRAS.includes(k) && typeof DEFAULT_CONTROLS[k] === 'boolean' && c[k] === false));
 
 export const ControlsContext = createContext(DEFAULT_CONTROLS);
 export const useControls = () => useContext(ControlsContext);

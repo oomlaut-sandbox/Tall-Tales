@@ -12,6 +12,7 @@ import { DESK_FELT, DESK_BG, IS_TABLET } from '../look';
 const BAND_FELT = require('../../assets/band-settings.jpg'); // Jörg's grey stitched felt banner
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import { LANGS, useT } from '../i18n';
+import { addMin, fmtTime } from '../clock';
 import { lockedControls, quickSafeControls, DEFAULT_CONTROLS } from '../controls';
 import { usePurchases } from '../purchases';
 
@@ -41,7 +42,10 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
   const ps = usePurchases();
   const set = (patch) => setControls({ ...controls, ...patch });
   // (the child's age is its own setting: Lock and Unlock everything keep it)
-  const same = (a, b) => Object.keys(DEFAULT_CONTROLS).every((k) => k === 'childAge' || a[k] === b[k]);
+  // the nightlight's clock and alarm are kept whatever preset is chosen (and don't count when comparing)
+  const NIGHT = ['clock', 'alarm', 'alarmTime', 'alarmSound'];
+  const night = Object.fromEntries(NIGHT.map((k) => [k, controls[k] ?? DEFAULT_CONTROLS[k]]));
+  const same = (a, b) => Object.keys(DEFAULT_CONTROLS).every((k) => k === 'childAge' || NIGHT.includes(k) || a[k] === b[k]);
   const allOn = same(controls, DEFAULT_CONTROLS);
   const quick = same(controls, quickSafeControls());
   return (
@@ -76,7 +80,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
             <Text style={styles.small}>{t('Recommended for a child reading alone')}</Text>
             <Text style={styles.p}>{t('The simplest, most foolproof setup: only My Library and My Notebook. Every book reads itself aloud a page at a time, and your child turns the page when ready. Nothing can be bought, shared, printed, recorded or changed. With your child’s age set, only books rated for that age.')}</Text>
             {quick ? <Text style={[styles.p, { color: colors.white, fontWeight: '700' }]}>{t('Quick and Safe Kid is on.')}</Text> : (
-              <Pressable onPress={() => setControls(quickSafeControls(controls.childAge))} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button">
+              <Pressable onPress={() => setControls({ ...quickSafeControls(controls.childAge), ...night })} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button">
                 <Text style={styles.pillText}>{t('Use Quick and Safe Kid')}</Text>
               </Pressable>
             )}
@@ -107,13 +111,39 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
               {MODES.map(([k, label]) => <Choice key={k} label={t(label)} on={controls.playMode === k} onPress={() => set({ playMode: k })} />)}
             </View>
           </View>
+          {/* the nightlight in Listen Only: a clock, and a gentle wake-up alarm */}
+          <Text style={styles.section}>{t('Nightlight')}</Text>
           <View style={styles.card}>
-            <Pressable onPress={() => setControls(lockedControls(controls.playMode || mode, controls.childAge))} style={[styles.pill, { backgroundColor: colors.deepRed }]} accessibilityRole="button">
+            <Text style={styles.small}>{t('In Listen Only, the screen becomes a soft nightlight. It can also show the time and wake your child gently.')}</Text>
+            <Toggle label={t('Show a clock')} value={!!controls.clock} onChange={(v) => set({ clock: v })} />
+            <Toggle label={t('Wake-up alarm')} value={!!controls.alarm} onChange={(v) => set({ alarm: v })} />
+            {controls.alarm ? (
+              <>
+                {/* the wake-up time: tap the arrows (hours, and minutes in fives) */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
+                  <Choice label={'−1 h'} on={false} onPress={() => set({ alarmTime: addMin(controls.alarmTime, -60) })} />
+                  <Choice label={'−5'} on={false} onPress={() => set({ alarmTime: addMin(controls.alarmTime, -5) })} />
+                  <Text style={styles.alarmTime}>{fmtTime(controls.alarmTime || '07:00')}</Text>
+                  <Choice label={'+5'} on={false} onPress={() => set({ alarmTime: addMin(controls.alarmTime, 5) })} />
+                  <Choice label={'+1 h'} on={false} onPress={() => set({ alarmTime: addMin(controls.alarmTime, 60) })} />
+                </View>
+                <Text style={[styles.cardTitle, { marginTop: 8 }]}>{t('Wake-up sound')}</Text>
+                <View style={styles.choices}>
+                  {[['forest-birds', 'Birds in the forest'], ['wind-chimes', 'Wind chimes'], ['music-box', 'Music box lullaby'], ['gentle-guitar', 'Gentle guitar']].map(([id, label]) => (
+                    <Choice key={id} label={t(label)} on={(controls.alarmSound || 'forest-birds') === id} onPress={() => set({ alarmSound: id })} />
+                  ))}
+                </View>
+                <Text style={styles.small}>{t('The alarm works while the nightlight is on: keep the app open in Listen Only, with the phone plugged in.')}</Text>
+              </>
+            ) : null}
+          </View>
+          <View style={styles.card}>
+            <Pressable onPress={() => setControls({ ...lockedControls(controls.playMode || mode, controls.childAge), ...night })} style={[styles.pill, { backgroundColor: colors.deepRed }]} accessibilityRole="button">
               <Text style={styles.pillText}>{t('Lock everything')}</Text>
             </Pressable>
             <Text style={styles.small}>{t('Only My Library and the books in it, read the way you chose.')}</Text>
             {!allOn ? (
-              <Pressable onPress={() => setControls({ ...DEFAULT_CONTROLS, childAge: controls.childAge })} style={[styles.pill, { backgroundColor: '#5f5f5f', marginTop: 6 }]} accessibilityRole="button">
+              <Pressable onPress={() => setControls({ ...DEFAULT_CONTROLS, childAge: controls.childAge, ...night })} style={[styles.pill, { backgroundColor: '#5f5f5f', marginTop: 6 }]} accessibilityRole="button">
                 <Text style={styles.pillText}>{t('Unlock everything')}</Text>
               </Pressable>
             ) : null}
@@ -133,6 +163,7 @@ const styles = StyleSheet.create({
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 24, paddingBottom: 40, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 12 },
+  alarmTime: { fontFamily: fonts.ui, fontSize: 22, fontWeight: '300', color: colors.white, minWidth: 92, textAlign: 'center' },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14 },
   card: { backgroundColor: '#3a3a3a', borderRadius: 14, padding: 16, gap: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 3 },
   cardTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, color: colors.white },
