@@ -40,17 +40,23 @@ export function draftFrom(story) {
   };
 }
 
-// The empty picture square: Jörg's light grey Polaroid with "Add Image" in white in the exact middle of its
-// blue square (measured from the picture: the blue square's middle is 49.7% across and 46.4% down).
+// The empty picture square: Jörg's light grey Polaroid with "Add Image" in white in the middle of its blue
+// square (measured from the picture: the blue runs 28.3%–71.1% across and 24.3%–68.4% down).
 const POLAROID = require('../../assets/polaroid.jpg');
+const BLUE = { l: 0.283, r: 0.711, t: 0.243, b: 0.684 };
 function EmptyPicture({ side }) {
   const tr = useT();
-  // "Add Image" in white, in the exact middle of the blue square (no plus)
-  const cx = side * 0.497, cy = side * 0.464, fs = Math.max(14, Math.round(side * 0.048));
+  // the words sit well inside the blue (a good margin all round), wrap onto more lines when they're long
+  // (in any language), and are always centred across and top to bottom
+  const fs = Math.max(14, Math.round(side * 0.048));
+  const bw = (BLUE.r - BLUE.l) * side, bh = (BLUE.b - BLUE.t) * side, m = bw * 0.16;
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       <Image source={POLAROID} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
-      <Text style={{ position: 'absolute', left: cx - side * 0.25, width: side * 0.5, top: cy - fs * 0.62, textAlign: 'center', color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: fs, lineHeight: fs * 1.24 }}>{tr('Add Image')}</Text>
+      <View style={{ position: 'absolute', left: BLUE.l * side + m, top: BLUE.t * side + m, width: bw - 2 * m, height: bh - 2 * m, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ width: '100%', textAlign: 'center', color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: fs, lineHeight: fs * 1.24 }}
+          textBreakStrategy="balanced" lineBreakStrategyIOS="standard">{tr('Add Image')}</Text>
+      </View>
     </View>
   );
 }
