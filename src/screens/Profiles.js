@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
   pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 50 },
   card: { backgroundColor: '#3a3a3a', borderRadius: 16, padding: 20, gap: 16, width: '100%', maxWidth: 480, alignSelf: 'center' },
-  input: { flex: 1, minWidth: 0, height: 48, borderRadius: 10, backgroundColor: '#d6d6d6', paddingHorizontal: 14, fontFamily: fonts.ui, fontSize: 20, color: '#222' },
+  input: { flex: 1, minWidth: 0, height: 48, borderRadius: 10, backgroundColor: '#d6d6d6', paddingHorizontal: 14, paddingTop: 0, paddingBottom: 5, fontFamily: fonts.ui, fontSize: 20, color: '#222' },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14 },
   choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   choice: { paddingHorizontal: 14, height: 36, borderRadius: 18, backgroundColor: '#2a2a2a', alignItems: 'center', justifyContent: 'center' },
