@@ -108,7 +108,7 @@ export default function TapePlayer({ onMenu }) {
       </View>
     </View>
     {/* the way out: small, under the player on the right */}
-    <Pressable onPress={() => setAmbientPlayer(false)} hitSlop={16} style={{ marginTop: 12 }} accessibilityRole="button">
+    <Pressable onPress={() => setAmbientPlayer(false)} hitSlop={16} style={{ marginTop: 12, marginRight: 5 }} accessibilityRole="button">
       <Text style={styles.close}>{t('Close Audio Player')}</Text>
     </Pressable>
     </View>
