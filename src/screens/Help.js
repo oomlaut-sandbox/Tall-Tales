@@ -103,6 +103,8 @@ export const HELP = [
 const IDEAS_FELT = require('../../assets/ideas-felt.png');
 
 export default function Help({ u, openMenu, onAbout, onIdeas }) {
+  const { width: winWf } = useWindowDimensions();
+  const feltW = Math.min(520, winWf - 48); // the felt patch, as wide as the column
   const t = useT();
   const lang = useLang();
   const insets = useSafeAreaInsets();
@@ -134,8 +136,8 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
           {/* (a short video tour will go here later) */}
           {/* the Idea Room, at the very top: ideas for every kind of book a family can make */}
           {/* in Jörg's green felt patch, the words inside its stitching */}
-          <Pressable onPress={onIdeas} accessibilityRole="button" style={styles.ideas}>
-            <Image source={IDEAS_FELT} style={StyleSheet.absoluteFill} resizeMode="stretch" />
+          <Pressable onPress={onIdeas} accessibilityRole="button" style={[styles.ideas, { width: feltW, height: Math.round(feltW * 805 / 1100) }]}>
+            <Image source={IDEAS_FELT} style={{ position: 'absolute', left: 0, top: 0, width: feltW, height: Math.round(feltW * 805 / 1100) }} resizeMode="stretch" />
             <View style={{ flex: 1, gap: 6, justifyContent: 'center', paddingHorizontal: '9%', paddingVertical: '8%' }}>
               <Text style={styles.ideasTitle}>{t('Ideas Room')}</Text>
               <Text style={styles.ideasText}>{t('Many ideas for books you can make together: your photos and drawings, your words, your voice.')}</Text>
@@ -191,7 +193,7 @@ const styles = StyleSheet.create({
   videoText: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 14 },
   searchWrap: { height: 44, borderRadius: 22, overflow: 'hidden', backgroundColor: '#d6d6d6' }, // light grey
   search: { flex: 1, backgroundColor: 'transparent', paddingHorizontal: 18, fontFamily: fonts.ui, fontSize: 16, color: colors.ink, outlineWidth: 0 },
-  ideas: { width: '100%', aspectRatio: 1100 / 805, borderRadius: 26, shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, elevation: 5 },
+  ideas: { borderRadius: 26, shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, elevation: 5 },
   ideasTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.white },
   ideasText: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: colors.white, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 },
   ideasGo: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, color: colors.white, marginTop: 4 },
