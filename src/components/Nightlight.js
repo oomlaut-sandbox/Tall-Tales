@@ -165,7 +165,7 @@ function FingerWheel({ size, value, onChange, label }) {
         style={[styles.wheel, { width: size, height: size, borderRadius: size / 2 }]}>
         {/* the dial turns: its one dimple points at the alarm time */}
         <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: size, height: size, alignItems: 'center', transform: [{ rotate: `${deg}deg` }] }}>
-          <View style={[styles.dimple, { marginTop: size / 2 - r - dim / 2, width: dim, height: dim, borderRadius: dim / 2 }]} />
+          <View style={[styles.dimple, { marginTop: size / 2 - r - dim / 2, width: dim, height: dim, borderRadius: dim / 2, transform: [{ rotate: `${-deg}deg` }] }]} />{/* turned back, so its shadow always falls from the top left like the light on the dial */}
         </View>
         <Text pointerEvents="none" style={styles.wheelTime}>{fmtTime(value)}</Text>
       </View>
