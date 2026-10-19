@@ -7,14 +7,15 @@ import { currentProfile, setScope } from './scope';
 import { DEFAULT_CONTROLS } from './controls';
 
 export const MAX_PROFILES = 6;
+// each child picks one of Jörg's felt reading characters (kept under the colour names saved before)
 export const PROFILE_COLORS = [
-  ['red', require('../assets/profile-red.png')],
-  ['blue', require('../assets/profile-blue.png')],
-  ['green', require('../assets/profile-green.png')],
-  ['orange', require('../assets/profile-orange.png')],
-  ['pink', require('../assets/profile-pink.png')],
+  ['red', require('../assets/profile-char-red.png')],
+  ['blue', require('../assets/profile-char-blue.png')],
+  ['green', require('../assets/profile-char-green.png')],
+  ['orange', require('../assets/profile-char-orange.png')],
+  ['grey', require('../assets/profile-char-grey.png')],
 ];
-export const feltFor = (color) => (PROFILE_COLORS.find(([c]) => c === color) || PROFILE_COLORS[0])[1];
+export const feltFor = (color) => (PROFILE_COLORS.find(([c]) => c === (color === 'pink' ? 'grey' : color)) || PROFILE_COLORS[0])[1];
 
 let state = { list: [], active: 'main' };
 const listeners = new Set();

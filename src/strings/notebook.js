@@ -69,4 +69,6 @@ export default {
   'Profile': { de: 'Profil', fr: 'Profil', es: 'Perfil', ja: 'プロフィール' },
   'Parents, sign into your Oomlaut account.': { de: 'Eltern: Meldet euch bei eurem Oomlaut-Konto an.', fr: 'Parents, connectez-vous à votre compte Oomlaut.', es: 'Padres: inicien sesión en su cuenta de Oomlaut.', ja: 'おうちの かたへ: Oomlaut の アカウントに サインインしてください。' },
   'Fill': { de: 'Füllen', fr: 'Remplir', es: 'Rellenar', ja: 'ぬる' },
+  'Character': { de: 'Figur', fr: 'Personnage', es: 'Personaje', ja: 'キャラクター' },
+  'Tap a child to change their name, character or age.': { de: 'Tippe auf ein Kind, um Name, Figur oder Alter zu ändern.', fr: 'Touchez un enfant pour changer son prénom, son personnage ou son âge.', es: 'Toca a un niño para cambiar su nombre, personaje o edad.', ja: 'こどもを タップして、なまえ・キャラクター・ねんれいを かえます。' },
 };

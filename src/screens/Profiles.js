@@ -25,15 +25,15 @@ function Choice({ label, on, onPress }) {
   );
 }
 
-// a coloured sewing button: the child's own (their name is written underneath), with a soft drop shadow.
+// a felt reading character: the child's own (their name is written underneath), with a soft drop shadow.
 // The child reading now (or the colour chosen) is a little bigger.
 export function ProfileTile({ p, size, active, grow = 1.3 }) {
   const k = useRef(new Animated.Value(active ? grow : 1)).current;
   useEffect(() => { Animated.spring(k, { toValue: active ? grow : 1, friction: 6, useNativeDriver: true }).start(); }, [active]);
   return (
     <Animated.View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center', transform: [{ scale: k }] }}>
-      {/* the picture has the shadow drawn in (the button is 300 of its 360 pixels) */}
-      <Image source={feltFor(p.color)} style={{ width: size * 1.2, height: size * 1.2 }} resizeMode="contain" />
+      {/* the child's felt character (it stands on the bottom of its picture) */}
+      <Image source={feltFor(p.color)} style={{ width: size * 1.3, height: size * 1.3 }} resizeMode="contain" />
     </Animated.View>
   );
 }
@@ -89,7 +89,7 @@ export default function Profiles({ u, openMenu, setControls }) {
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.col}>
           <Text style={styles.p}>{s.list.length
-            ? (editing ? t('Tap a child to change their name, colour or age.') : t('Who is reading? Tap your name.'))
+            ? (editing ? t('Tap a child to change their name, character or age.') : t('Who is reading? Tap your name.'))
             : t('Give each child their own notebook, badges, playlists and settings. Their age decides which books they see.')}</Text>
           <View style={styles.grid}>
             {s.list.map((p) => {
@@ -134,12 +134,12 @@ export default function Profiles({ u, openMenu, setControls }) {
                 <TextInput value={form.name} onChangeText={(name) => setForm({ ...form, name })} placeholder={t('Name')} placeholderTextColor="#8a8a8a"
                   style={styles.input} maxLength={20} autoCapitalize="words" autoCorrect={false} returnKeyType="done" accessibilityLabel={t('Name')} />
               </View>
-              <Text style={styles.section}>{t('Colour')}</Text>
+              <Text style={styles.section}>{t('Character')}</Text>
               <View style={styles.choices}>
                 {PROFILE_COLORS.map(([c, img]) => (
                   <Pressable key={c} onPress={() => setForm({ ...form, color: c })} accessibilityRole="radio" accessibilityLabel={c} accessibilityState={{ selected: form.color === c }}
                     style={styles.swatch}>
-                    <ProfileTile p={{ color: c }} size={34} active={form.color === c} grow={1.35} />
+                    <ProfileTile p={{ color: c }} size={40} active={form.color === c} grow={1.3} />
                   </Pressable>
                 ))}
               </View>
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   choice: { paddingHorizontal: 14, height: 36, borderRadius: 18, backgroundColor: '#2a2a2a', alignItems: 'center', justifyContent: 'center' },
   choiceOn: { backgroundColor: colors.green },
   choiceText: { fontFamily: fonts.ui, fontSize: 15, color: '#dcdcdc', fontWeight: '600' },
-  swatch: { width: 50, height: 50, alignItems: 'center', justifyContent: 'center' },
+  swatch: { width: 56, height: 56, alignItems: 'center', justifyContent: 'center' },
   buttonShadow: { shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.55, shadowRadius: 6, elevation: 6 },
   swatchOn: { borderWidth: 3, borderColor: colors.white },
 });
