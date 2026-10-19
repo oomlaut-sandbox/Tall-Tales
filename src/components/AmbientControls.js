@@ -38,25 +38,22 @@ export default function AmbientControls() {
   return (
     <View style={{ gap: 10 }}>
       {/* the words and Play / Off in a narrower column on the left, the guitar player beside them on the right */}
-      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
-        <View style={{ flex: 1, minWidth: 0, gap: 10 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'stretch', gap: 12 }}>
+        <View style={{ flex: 1, minWidth: 0, justifyContent: 'space-between', gap: 10 }}>
           <Text style={styles.small}>{t('Relaxing sounds and gentle music that keep playing while you use the app. Lovely at bedtime.')}</Text>
-          {/* opens the Audio Player over the page */}
-          <Pressable onPress={withTap(() => setAmbientPlayer(true))} style={styles.openBtn} accessibilityRole="button">
+          {/* opens the Audio Player over the page; its bottom lines up with the bottom of the player picture */}
+          <Pressable onPress={withTap(() => setAmbientPlayer(true))} style={[styles.openBtn, { marginTop: 0 }]} accessibilityRole="button">
             <Text style={styles.openText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{t('Open Audio Player')}</Text>
           </Pressable>
-          <View style={styles.chips}>
-            <Chip label={s.playing ? t('Pause') : t('Play')} on={s.playing} onPress={s.playing ? pauseAmbient : playAmbient} />
-            <Chip label={t('Off')} on={!s.sound && !s.music} onPress={stopAmbient} />
-          </View>
         </View>
-        <Pressable onPress={() => setAmbientPlayer(true)} accessibilityRole="button" accessibilityLabel={t('Open Audio Player')} style={{ marginRight: 4, marginTop: -6 }}>
+        <Pressable onPress={() => setAmbientPlayer(true)} accessibilityRole="button" accessibilityLabel={t('Open Audio Player')} style={{ marginRight: 4 }}>
           <Image source={PLAYER} style={{ width: 118, height: Math.round(118 * 562 / 440) }} resizeMode="contain" accessibilityIgnoresInvertColors />
         </Pressable>
       </View>
+      <Text style={styles.small}>{t('Tap a sound or a piece of music to hear it. Tap it again to turn it off.')}</Text>
       <Text style={styles.group}>{t('Music')}</Text>
       <View style={styles.chips}>
-        {MUSIC.map((x) => <Chip key={x.id} label={x.mine ? x.name : t(x.name)} on={s.music === x.id} onPress={() => pick('music', x.id)}
+        {MUSIC.map((x) => <Chip key={x.id} label={x.mine ? x.name : t(x.name)} on={s.playing && s.music === x.id} onPress={() => pick('music', x.id)}
           onLongPress={x.mine ? () => setGate({ reason: t('Remove “{name}”', { name: x.name }), run: () => removeMusic(x.id) }) : undefined} />)}
       </View>
       {/* the family's own music: upload a file or record one (behind the grown-ups' question), then name it */}
@@ -68,7 +65,7 @@ export default function AmbientControls() {
       <ParentGate visible={!!gate} reason={gate ? gate.reason : ''} onPass={() => { const g = gate; setGate(null); if (g) setTimeout(g.run, 350); }} onCancel={() => setGate(null)} />
       <Text style={styles.group}>{t('Nature sounds')}</Text>
       <View style={styles.chips}>
-        {SOUNDS.map((x) => <Chip key={x.id} label={t(x.name)} on={s.sound === x.id} onPress={() => pick('sound', x.id)} />)}
+        {SOUNDS.map((x) => <Chip key={x.id} label={t(x.name)} on={s.playing && s.sound === x.id} onPress={() => pick('sound', x.id)} />)}
       </View>
       <Text style={styles.group}>{t('Volume')}</Text>
       <Slider value={vol ?? s.volume} min={0.05} max={1} step={0.05} leftLabel={t('Quieter')} rightLabel={t('Louder')} showValue={false}

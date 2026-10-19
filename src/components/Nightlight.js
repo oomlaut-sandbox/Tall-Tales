@@ -331,12 +331,12 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
     }, Math.max(0, sleepAt - Date.now()));
     return () => clearTimeout(tm);
   }, [sleepAt]);
-  const left = sleepAt ? Math.max(1, Math.ceil((sleepAt - now.getTime()) / 60000)) : 0;
   // the countdown under the title ticks every second while the sleep timer runs
   const [tick, setTick] = useState(Date.now());
   useEffect(() => { if (!sleepAt) return undefined; const iv = setInterval(() => setTick(Date.now()), 1000); return () => clearInterval(iv); }, [sleepAt]);
   const secs = sleepAt ? Math.max(0, Math.round((sleepAt - tick) / 1000)) : 0;
   const countdown = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
+  const left = sleepAt ? Math.max(1, Math.ceil(secs / 60)) : 0; // whole minutes left (agrees with the countdown)
 
   // sizes: most of the upper part of the screen (upright), or the left side (sideways)
   const S = wide ? Math.min(area.width * 0.55, area.height * 0.78) : Math.min(area.width * 1.05, area.height * 0.58);
