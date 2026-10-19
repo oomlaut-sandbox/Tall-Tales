@@ -4,10 +4,12 @@
 //   My Notebook, Create a Story, Help), whether the child may change playback (or it always plays one way),
 //   recording, sharing and printing, and changing the language. "Lock everything" leaves only My Library.
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
-import { DESK_FELT, DESK_BG } from '../look';
+import { DESK_FELT, DESK_BG, IS_TABLET } from '../look';
+
+const BAND_FELT = require('../../assets/band-settings.jpg'); // Jörg's grey stitched felt banner
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import { LANGS, useT } from '../i18n';
 import { lockedControls, quickSafeControls, DEFAULT_CONTROLS } from '../controls';
@@ -45,6 +47,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
+        {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
         <Text style={styles.title}>{t('Settings')}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.body}>
