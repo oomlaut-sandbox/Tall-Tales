@@ -221,7 +221,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
             </View>
           </View>
           {/* the tail points down at the music note on the bar (upright; sideways the bar is on the right, so no tail) */}
-          {!tipWide ? <View style={[styles.tipTail, { marginLeft: Math.max(12, u * 22.2 - 16 - 12) }]} /> : null}
+          {!tipWide ? <View style={[styles.tipTail, { marginLeft: Math.max(12, u * 26 - 28) }]} /> : null}
         </View>
       ) : null}
     </WithBar>

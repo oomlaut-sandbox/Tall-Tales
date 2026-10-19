@@ -1,7 +1,7 @@
 // Playback Options → Music and sounds: pick a nature sound or a piece of gentle music to play the whole time
 // the app is open, how loud, a sleep timer, and whether the little tape player shows.
-import React, { useEffect, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme';
 import { Slider } from './Chrome';
 import { MUSIC, SLEEP_TIMES, SOUNDS, chooseAmbient, getAmbient, onAmbient, pauseAmbient, playAmbient, setAmbientPlayer, setAmbientRate, setAmbientVolume, setSleepTimer, stopAmbient } from '../ambient';
@@ -27,6 +27,7 @@ export default function AmbientControls() {
   const [rate, setRate] = useState(null);
   // a grown-up adds the family's own music (behind the grown-ups' question); a long press on one takes it away again
   const [gate, setGate] = useState(null); // { reason, run }
+  const lastGate = useRef(null); if (gate) lastGate.current = gate;
   const [sheet, setSheet] = useState(false);
   useEffect(() => onAmbient(setS), []);
   // tap one to choose it (it starts playing); tap it again to switch that one off. A sound and a piece of music can play together.
@@ -50,8 +51,8 @@ export default function AmbientControls() {
           <Image source={PLAYER} style={{ width: 118, height: Math.round(118 * 562 / 440) }} resizeMode="contain" accessibilityIgnoresInvertColors />
         </Pressable>
       </View>
-      <Text style={styles.small}>{t('Tap a sound or a piece of music to hear it. Tap it again to turn it off.')}</Text>
       <Text style={styles.group}>{t('Music')}</Text>
+      <Text style={styles.small}>{t('Tap a sound or a piece of music to hear it. Tap it again to turn it off.')}</Text>
       <View style={styles.chips}>
         {MUSIC.map((x) => <Chip key={x.id} label={x.mine ? x.name : t(x.name)} on={s.playing && s.music === x.id} onPress={() => pick('music', x.id)}
           onLongPress={x.mine ? () => setGate({ reason: t('Remove “{name}”', { name: x.name }), run: () => removeMusic(x.id) }) : undefined} />)}
@@ -62,7 +63,11 @@ export default function AmbientControls() {
       </Pressable>
       {MUSIC.some((x) => x.mine) ? <Text style={styles.hint}>{t('Press and hold your own music to remove it.')}</Text> : null}
       <MyMusicSheet visible={sheet} onClose={() => setSheet(false)} />
-      <ParentGate visible={!!gate} reason={gate ? gate.reason : ''} onPass={() => { const g = gate; setGate(null); if (g) setTimeout(g.run, 350); }} onCancel={() => setGate(null)} />
+      {/* the question keeps its words while it fades away (they used to vanish first and the box jumped) */}
+      {/* (in its own full-screen layer: inside the page it sat in the middle of the long list and jumped about) */}
+      <Modal visible={!!gate} transparent animationType="fade" onRequestClose={() => setGate(null)}>
+        <ParentGate visible reason={(gate || lastGate.current || {}).reason || ''} onPass={() => { const g = gate; setGate(null); if (g) setTimeout(g.run, 600); }} onCancel={() => setGate(null)} />
+      </Modal>
       <Text style={styles.group}>{t('Nature sounds')}</Text>
       <View style={styles.chips}>
         {SOUNDS.map((x) => <Chip key={x.id} label={t(x.name)} on={s.playing && s.sound === x.id} onPress={() => pick('sound', x.id)} />)}
