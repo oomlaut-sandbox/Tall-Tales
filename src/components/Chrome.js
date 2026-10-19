@@ -230,8 +230,8 @@ export function AgainIcon({ size = 14, color = colors.white, weight = 3.5, bg = 
 // A musical note, in the same plain white strokes as the other icons: an oval head, a stem and one flag.
 const MUSIC_NOTE = require('../../assets/icon-music.png');
 // Music and Sounds: two beamed notes in white
-export function MusicIcon({ size = 20 }) {
-  return <Image source={MUSIC_NOTE} style={{ width: size, height: size }} resizeMode="contain" />;
+export function MusicIcon({ size = 20, color }) {
+  return <Image source={MUSIC_NOTE} style={{ width: size, height: size, tintColor: color }} resizeMode="contain" />;
 }
 // the restricted kid mode lock: a rounded body with a shackle on top
 export function LockIcon({ size = 20, color = colors.white, weight = 2 }) {
@@ -257,7 +257,7 @@ export function PlaylistIcon({ size = 20, color = colors.white, weight = 2.4 }) 
 }
 export function LibraryIcon({ size = 14, color = colors.white, weight = 2 }) {
   return (
-    <View style={{ width: size, height: size, borderWidth: weight, borderColor: color, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'stretch', paddingVertical: 2 }}>
+    <View style={{ width: size, height: size, borderWidth: weight, borderColor: color, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'stretch' }}>{/* the two lines run the whole height of the box */}
       {[0, 1].map((k) => <View key={k} style={{ width: weight, backgroundColor: color }} />)}
     </View>
   );

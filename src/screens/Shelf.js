@@ -4,7 +4,8 @@ import { Animated, Easing, Image, Platform, Pressable, RefreshControl, ScrollVie
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG } from '../look';
-import { Bar, BarMeta, Burger, DogEar, Panel, PlaylistIcon, WithBar } from '../components/Chrome';
+import { Bar, BarMeta, Burger, DogEar, MusicIcon, Panel, PlaylistIcon, WithBar } from '../components/Chrome';
+import { loadJSON, saveJSON } from '../storage';
 import { ageAllowed, ageOf, ageText, bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
 import Membership from '../components/Membership';
@@ -125,6 +126,11 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
   const toggle = (id) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
   const stop = () => { setSelecting(false); setPicked([]); setConfirm(false); };
   const mineCount = chosen.filter((s) => s.mine).length;
+  // the Audio Player tip: shown when My Library opens, until "Don't show this message again" is ticked
+  const [tip, setTip] = useState(false);
+  const [noMore, setNoMore] = useState(false);
+  useEffect(() => { loadJSON('tipAudioPlayer', null).then((v) => { if (!v) setTip(true); }); }, []);
+  const closeTip = () => { setTip(false); if (noMore) saveJSON('tipAudioPlayer', { hide: true }); };
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => (selecting ? (
         <Bar u={u} vertical={v}>
@@ -195,6 +201,23 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
           if (g === 'share' && chosen[0]) onShare(chosen[0]);
           if (g === 'delete') { onDelete(chosen); stop(); }
         }} />
+      {tip && !selecting ? (
+        <View style={styles.tipWrap} pointerEvents="box-none">
+          <View style={styles.tipBubble}>
+            <View style={styles.tipHead}>
+              <MusicIcon size={22} />
+              <Text style={styles.tipTitle}>{t('The Audio Player')}</Text>
+            </View>
+            <Text style={styles.tipText}>{t('While you read, tap the music note on the black bar. Turn the knobs to choose a nature sound and some music, press Play, and slide to set the volume. Close it with “Close Audio Player”.')}</Text>
+            <Pressable onPress={() => setNoMore((x) => !x)} style={styles.tipCheckRow} accessibilityRole="checkbox" accessibilityState={{ checked: noMore }} hitSlop={6}>
+              <View style={[styles.tipBox, noMore && styles.tipBoxOn]}>{noMore ? <Text style={styles.tipTick}>✓</Text> : null}</View>
+              <Text style={styles.tipCheck}>{t('Don’t show this message again')}</Text>
+            </Pressable>
+            <Pressable onPress={closeTip} style={styles.tipOk} accessibilityRole="button"><Text style={styles.tipOkText}>{t('OK')}</Text></Pressable>
+          </View>
+          <View style={styles.tipTail} />
+        </View>
+      ) : null}
     </WithBar>
   );
 }
@@ -439,6 +462,19 @@ function Badge({ book }) {
 const CARD_GREY = '#bdbdbd', CARD_INK = '#222222';
 
 const styles = StyleSheet.create({
+  tipWrap: { position: 'absolute', left: 16, right: 16, bottom: 24, alignItems: 'flex-start', zIndex: 60 },
+  tipBubble: { width: '100%', maxWidth: 420, alignSelf: 'center', backgroundColor: '#f4f1ea', borderRadius: 18, padding: 18, gap: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 12, elevation: 10 },
+  tipTail: { marginLeft: 46, width: 0, height: 0, borderLeftWidth: 12, borderRightWidth: 12, borderTopWidth: 14, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: '#f4f1ea' },
+  tipHead: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#3a3a3a', alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10 },
+  tipTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, color: colors.white },
+  tipText: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#2b2b2b' },
+  tipCheckRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 2 },
+  tipBox: { width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: '#7a7a7a', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.white },
+  tipBoxOn: { backgroundColor: colors.green, borderColor: colors.green },
+  tipTick: { color: colors.white, fontWeight: '700', fontSize: 14, lineHeight: 16 },
+  tipCheck: { fontFamily: fonts.ui, fontSize: 14, color: '#3a3a3a' },
+  tipOk: { alignSelf: 'flex-end', backgroundColor: colors.green, borderRadius: 20, paddingHorizontal: 24, height: 40, alignItems: 'center', justifyContent: 'center' },
+  tipOkText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
   screen: { flex: 1, backgroundColor: DESK_BG }, // same dark grey as reading
   // a generous gap between the felt title band and the first row of books
   grid: { padding: 20, paddingTop: 42, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },

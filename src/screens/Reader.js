@@ -698,7 +698,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
               ) : null}
               {/* music and sounds: the little floating Audio Player */}
               <Pressable onPress={() => setAmbientPlayer(!getAmbient().showPlayer)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.small, { marginTop: isRestricted(controls) && onSettings ? u * 4 : u * 7 }]}>{/* closer when it sits beside the lock */}
-                <MusicIcon size={u * 5.6} weight={Math.max(2.6, u * 0.85)} />
+                <MusicIcon size={u * 5.6} color="#8e8e8e" />
               </Pressable>
             </View>
             <View style={{ alignItems: 'center' }}>
@@ -731,7 +731,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         ) : null}
         {/* music and sounds: opens (or hides) the little floating Audio Player; a little apart from the menu (or the lock) */}
         <Pressable onPress={() => setAmbientPlayer(!getAmbient().showPlayer)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.small, { marginLeft: isRestricted(controls) && onSettings ? u * 4 : u * 7 }]}>{/* closer when it sits beside the lock */}
-          <MusicIcon size={u * 5.6} weight={Math.max(2.6, u * 0.85)} />
+          <MusicIcon size={u * 5.6} color="#8e8e8e" />
         </Pressable>
         {/* no page numbers in the reader (the store shows how long a book is) */}
         <View style={{ flex: 1 }} />
