@@ -11,3 +11,10 @@ export function inviteMessage(title) {
 export function shareInvite(title) {
   return Share.share({ message: inviteMessage(title) }).catch(() => {});
 }
+
+// a playlist: its name and its books, with the app link
+export function sharePlaylist(name, titles, t) {
+  const list = titles.map((x, i) => `${i + 1}. ${x}`).join('\n');
+  const message = `${t('Our playlist “{name}” in Oomlaut Reader:', { name })}\n${list}\n\n${APP_LINK}`;
+  return Share.share({ message }).catch(() => {});
+}

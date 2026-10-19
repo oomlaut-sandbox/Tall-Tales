@@ -9,6 +9,8 @@ import { DESK_FELT, DESK_BG, IS_TABLET } from '../look';
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import { useT } from '../i18n';
 import { loadPlaylists, newPlaylist, savePlaylists } from '../playlists';
+import { sharePlaylist } from '../invite';
+import { useControls } from '../controls';
 
 export const coverOf = (s) => (s && s.cover && s.cover.uri ? { uri: s.cover.uri } : s && s.pages && s.pages[0] ? s.pages[0].image : null);
 
@@ -41,6 +43,7 @@ export default function Playlists({ u, openMenu, shelf, onPlay }) {
     if (j < 0 || j >= b.length) return;
     [b[k], b[j]] = [b[j], b[k]]; set(pl.id, { books: b });
   };
+  const controls = useControls();
   const nameOf = (pl) => (pl.id === 'bedtime' && pl.name === 'Bedtime' ? t('Bedtime') : pl.name);
   if (!lists) return <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}><View /></WithBar>;
   const pl = edit ? lists.find((p) => p.id === edit) : null;
@@ -57,7 +60,6 @@ export default function Playlists({ u, openMenu, shelf, onPlay }) {
             <>
               {/* Jörg's felt cassette, centred, about half the column wide (its soft shadow is part of the picture) */}
               <Image source={TAPE} style={{ width: tapeW, height: tapeW * 675 / 920, alignSelf: 'center', marginBottom: 6 }} resizeMode="contain" accessibilityIgnoresInvertColors />
-              <Text style={styles.p}>{t('Line up books to be read one after another, in order or shuffled.')}</Text>
               {lists.map((p) => {
                 const bs = books(p);
                 return (
@@ -89,6 +91,12 @@ export default function Playlists({ u, openMenu, shelf, onPlay }) {
                       <Pressable onPress={() => set(p.id, { loop: !p.loop })} style={[styles.chip, p.loop && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.loop }}>
                         <Text style={[styles.chipText, p.loop && { color: colors.white }]}>{t('Loop')}</Text>
                       </Pressable>
+                      {/* Share: the playlist's name and books, with the app link (not when sharing is switched off) */}
+                      {controls.sharing !== false && bs.length ? (
+                        <Pressable onPress={() => sharePlaylist(nameOf(p), bs.map((b) => b.title), t)} style={styles.chip} accessibilityRole="button">
+                          <Text style={styles.chipText}>{t('Share playlist')}</Text>
+                        </Pressable>
+                      ) : null}
                     </View>
                   </View>
                 );
