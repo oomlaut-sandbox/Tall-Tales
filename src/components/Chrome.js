@@ -555,8 +555,8 @@ export function AlarmClockIcon({ size = 20, color = colors.white, weight }) {
   const bw = size * 0.3, bh = size * 0.13; // a bell
   const bell = (left) => {
     // its middle sits on the ring at 45 degrees from the top
-    const r = d / 2, cx = size / 2 + (left ? -1 : 1) * r * 0.74, cy = top + r - r * 0.74;
-    return <View style={{ position: 'absolute', left: cx - bw / 2, top: cy - bh / 2 - bh * 0.35, width: bw, height: bh, borderRadius: bh * 0.25, backgroundColor: color, transform: [{ rotate: left ? '-45deg' : '45deg' }] }} />;
+    const r = d / 2, cx = size / 2 + (left ? -1 : 1) * r * 0.7, cy = top + r - r * 0.7;
+    return <View style={{ position: 'absolute', left: cx - bw / 2, top: cy - bh / 2 + w * 0.2, width: bw, height: bh, borderRadius: bh * 0.25, backgroundColor: color, transform: [{ rotate: left ? '-45deg' : '45deg' }] }} />;
   };
   return (
     <View style={{ width: size, height: size }}>
