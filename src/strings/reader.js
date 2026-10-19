@@ -1,3 +1,89 @@
-// Translations for reader (English source string -> { de, fr, es, ja }). Merged into the main table in src/i18n.js.
+// Reading, recording, the library and the store: English → each language (see src/i18n.js).
 export default {
+  // ---- reader: printing, recording toasts ----
+  'Getting the book ready to print…': { de: 'Das Buch wird zum Drucken vorbereitet …', fr: 'On prépare le livre pour l’impression…', es: 'Preparando el libro para imprimir…', ja: 'ほんを いんさつする じゅんびちゅう…' },
+  'Oomlaut Reader needs the microphone to record. You can allow it in Settings.': { de: 'Oomlaut Reader braucht das Mikrofon zum Aufnehmen. Du kannst es in den Einstellungen erlauben.', fr: 'Oomlaut Reader a besoin du micro pour enregistrer. Tu peux l’autoriser dans les Réglages.', es: 'Oomlaut Reader necesita el micrófono para grabar. Puedes permitirlo en Ajustes.', ja: 'ろくおんには マイクが ひつようです。「せってい」で きょかできます。' },
+  'Recording page {n}. Turn the page to keep going, or tap ● to stop.': { de: 'Seite {n} wird aufgenommen. Blättere um, um weiterzulesen, oder tippe auf ●, um aufzuhören.', fr: 'Enregistrement de la page {n}. Tourne la page pour continuer, ou touche ● pour arrêter.', es: 'Grabando la página {n}. Pasa la página para seguir, o toca ● para parar.', ja: '{n}ページを ろくおんちゅう。ページを めくって つづけてね。とめるときは ● を タップ。' },
+  'Recording couldn’t start. Try again.': { de: 'Die Aufnahme konnte nicht starten. Versuch es noch einmal.', fr: 'L’enregistrement n’a pas pu démarrer. Réessaie.', es: 'No se pudo empezar a grabar. Inténtalo de nuevo.', ja: 'ろくおんを はじめられませんでした。もういちど ためしてね。' },
+  'Saved your voice for page {n}.': { de: 'Deine Stimme für Seite {n} ist gespeichert.', fr: 'Ta voix est enregistrée pour la page {n}.', es: 'Tu voz se guardó para la página {n}.', ja: '{n}ページの こえを ほぞんしたよ。' },
+  'That recording couldn’t be saved.': { de: 'Diese Aufnahme konnte nicht gespeichert werden.', fr: 'Cet enregistrement n’a pas pu être sauvegardé.', es: 'No se pudo guardar esa grabación.', ja: 'この ろくおんは ほぞんできませんでした。' },
+  'Read Yourself is on, so there’s no audio. Pick another mode to listen.': { de: '„Selbst lesen“ ist an, darum gibt es keinen Ton. Wähle eine andere Art, um zuzuhören.', fr: '« Lire seul » est activé, donc il n’y a pas de son. Choisis un autre mode pour écouter.', es: '«Leer solo» está activado, así que no hay sonido. Elige otro modo para escuchar.', ja: '「じぶんで よむ」なので おとは でません。きくときは ほかの よみかたを えらんでね。' },
+  'This red dot means you’ve recorded this page in your own voice.': { de: 'Der rote Punkt heißt: Diese Seite hast du mit deiner eigenen Stimme aufgenommen.', fr: 'Ce point rouge veut dire que tu as enregistré cette page avec ta propre voix.', es: 'Este punto rojo significa que grabaste esta página con tu propia voz.', ja: 'あかい まるは、このページを じぶんの こえで ろくおんした しるしだよ。' },
+  'This page has a voice recording': { de: 'Diese Seite hat eine Sprachaufnahme', fr: 'Cette page a un enregistrement de voix', es: 'Esta página tiene una grabación de voz', ja: 'このページには ろくおんが あります' },
+  'Previous page': { de: 'Vorherige Seite', fr: 'Page précédente', es: 'Página anterior', ja: 'まえの ページ' },
+  'Tap the glowing circles in the picture.': { de: 'Tippe auf die leuchtenden Kreise im Bild.', fr: 'Touche les cercles lumineux dans l’image.', es: 'Toca los círculos brillantes del dibujo.', ja: 'えの なかの ひかる まるを タップしてね。' },
+  'Print, portrait pages': { de: 'Drucken, Hochformat', fr: 'Imprimer, pages en portrait', es: 'Imprimir, páginas en vertical', ja: 'いんさつ、たての ページ' },
+  'Print, landscape pages': { de: 'Drucken, Querformat', fr: 'Imprimer, pages en paysage', es: 'Imprimir, páginas en horizontal', ja: 'いんさつ、よこの ページ' },
+  'Sharing opens your phone’s messages and email.': { de: 'Teilen öffnet die Nachrichten und E-Mails deines Telefons.', fr: 'Partager ouvre les messages et les e-mails de votre téléphone.', es: 'Compartir abre los mensajes y el correo de tu teléfono.', ja: 'シェアすると、でんわの メッセージや メールが ひらきます。' },
+
+  // ---- reader: the recording panel ----
+  'Recording Options': { de: 'Aufnahme', fr: 'Options d’enregistrement', es: 'Opciones de grabación', ja: 'ろくおん' },
+  'Start Recording': { de: 'Aufnahme starten', fr: 'Commencer l’enregistrement', es: 'Empezar a grabar', ja: 'ろくおんを はじめる' },
+  'Read this story in your own voice, starting on page {n}': { de: 'Lies diese Geschichte mit deiner eigenen Stimme, ab Seite {n}', fr: 'Lis cette histoire avec ta propre voix, à partir de la page {n}', es: 'Lee este cuento con tu propia voz, desde la página {n}', ja: '{n}ページから、じぶんの こえで よもう' },
+  'Your Recordings': { de: 'Deine Aufnahmen', fr: 'Tes enregistrements', es: 'Tus grabaciones', ja: 'じぶんの ろくおん' },
+  'Listen to or remove the pages you recorded': { de: 'Aufgenommene Seiten anhören oder entfernen', fr: 'Écouter ou retirer les pages que tu as enregistrées', es: 'Escucha o quita las páginas que grabaste', ja: 'ろくおんした ページを きく・けす' },
+  'Recording Settings': { de: 'Aufnahme-Einstellungen', fr: 'Réglages d’enregistrement', es: 'Ajustes de grabación', ja: 'ろくおんの せってい' },
+  'Choose whose voice reads the story': { de: 'Wähle, wessen Stimme die Geschichte liest', fr: 'Choisis quelle voix lit l’histoire', es: 'Elige qué voz lee el cuento', ja: 'だれの こえで よむか えらぶ' },
+  'How recording works': { de: 'So funktioniert die Aufnahme', fr: 'Comment fonctionne l’enregistrement', es: 'Cómo funciona la grabación', ja: 'ろくおんの しかた' },
+  '‹ Back': { de: '‹ Zurück', fr: '‹ Retour', es: '‹ Atrás', ja: '‹ もどる' },
+  'Page {n} · {s}s': { de: 'Seite {n} · {s} s', fr: 'Page {n} · {s} s', es: 'Página {n} · {s} s', ja: '{n}ページ · {s}びょう' },
+  'Removed your recording of page {n}.': { de: 'Deine Aufnahme von Seite {n} ist entfernt.', fr: 'Ton enregistrement de la page {n} est retiré.', es: 'Se quitó tu grabación de la página {n}.', ja: '{n}ページの ろくおんを けしたよ。' },
+  'Nothing recorded yet. Tap Start Recording to read this story in your own voice.': { de: 'Noch nichts aufgenommen. Tippe auf „Aufnahme starten“, um diese Geschichte mit deiner eigenen Stimme zu lesen.', fr: 'Rien d’enregistré pour l’instant. Touche « Commencer l’enregistrement » pour lire cette histoire avec ta propre voix.', es: 'Aún no hay nada grabado. Toca «Empezar a grabar» para leer este cuento con tu propia voz.', ja: 'まだ ろくおんは ありません。「ろくおんを はじめる」を タップして、じぶんの こえで よんでみよう。' },
+  'Who reads the story aloud': { de: 'Wer liest die Geschichte vor?', fr: 'Qui lit l’histoire à voix haute', es: 'Quién lee el cuento en voz alta', ja: 'だれが こえに だして よむ？' },
+  'Narrator': { de: 'Vorleser', fr: 'Narrateur', es: 'Narrador', ja: 'よみて' },
+  'Your voice': { de: 'Deine Stimme', fr: 'Ta voix', es: 'Tu voz', ja: 'じぶんの こえ' },
+  'Pages you haven’t recorded use the narrator.': { de: 'Seiten, die du nicht aufgenommen hast, liest der Vorleser.', fr: 'Les pages que tu n’as pas enregistrées sont lues par le narrateur.', es: 'Las páginas que no grabaste las lee el narrador.', ja: 'ろくおんしていない ページは よみてが よみます。' },
+  'Tap Start Recording and read the page out loud. Turn the page and keep reading: each page saves on its own.': { de: 'Tippe auf „Aufnahme starten“ und lies die Seite laut vor. Blättere um und lies weiter: Jede Seite wird von selbst gespeichert.', fr: 'Touche « Commencer l’enregistrement » et lis la page à voix haute. Tourne la page et continue : chaque page s’enregistre toute seule.', es: 'Toca «Empezar a grabar» y lee la página en voz alta. Pasa la página y sigue leyendo: cada página se guarda sola.', ja: '「ろくおんを はじめる」を タップして、ページを こえに だして よもう。ページを めくって よみつづけてね。ページごとに じどうで ほぞんされるよ。' },
+  'Tap the red button to stop. Your recordings stay on this phone, and the story will read back in your voice.': { de: 'Tippe auf den roten Knopf, um aufzuhören. Deine Aufnahmen bleiben auf diesem Telefon, und die Geschichte wird mit deiner Stimme vorgelesen.', fr: 'Touche le bouton rouge pour arrêter. Tes enregistrements restent sur ce téléphone, et l’histoire sera lue avec ta voix.', es: 'Toca el botón rojo para parar. Tus grabaciones se quedan en este teléfono y el cuento se leerá con tu voz.', ja: 'とめるときは あかい ボタンを タップ。ろくおんは この でんわに のこり、おはなしは あなたの こえで よまれます。' },
+  'Recording, {n} seconds': { de: 'Aufnahme, {n} Sekunden', fr: 'Enregistrement, {n} secondes', es: 'Grabando, {n} segundos', ja: 'ろくおんちゅう、{n}びょう' },
+
+  // ---- the last page ----
+  'The End': { de: 'Ende', fr: 'Fin', es: 'Fin', ja: 'おしまい' },
+  'Thank you for reading.': { de: 'Danke fürs Lesen.', fr: 'Merci d’avoir lu.', es: 'Gracias por leer.', ja: 'よんでくれて ありがとう。' },
+  'Read Again': { de: 'Nochmal lesen', fr: 'Relire', es: 'Leer otra vez', ja: 'もういちど よむ' },
+  'Share Book': { de: 'Buch teilen', fr: 'Partager le livre', es: 'Compartir el libro', ja: 'ほんを シェア' },
+
+  // ---- My Library, Book Store ----
+  'Share': { de: 'Teilen', fr: 'Partager', es: 'Compartir', ja: 'シェア' },
+  'Edit': { de: 'Bearbeiten', fr: 'Modifier', es: 'Editar', ja: 'なおす' },
+  'Delete': { de: 'Löschen', fr: 'Supprimer', es: 'Borrar', ja: 'けす' },
+  'Select books': { de: 'Bücher auswählen', fr: 'Choisir des livres', es: 'Elegir libros', ja: 'ほんを えらぶ' },
+  '{n} selected': { de: '{n} ausgewählt', fr: '{n} choisi(s)', es: '{n} elegidos', ja: '{n}さつ えらんだよ' },
+  'Tap books to select them': { de: 'Tippe Bücher an, um sie auszuwählen', fr: 'Touche des livres pour les choisir', es: 'Toca los libros para elegirlos', ja: 'ほんを タップして えらんでね' },
+  'Your stories, ready to read': { de: 'Deine Geschichten, bereit zum Lesen', fr: 'Tes histoires, prêtes à lire', es: 'Tus cuentos, listos para leer', ja: 'よむ じゅんびが できた おはなし' },
+  'Create a story': { de: 'Geschichte erstellen', fr: 'Créer une histoire', es: 'Crear un cuento', ja: 'おはなしを つくる' },
+  'Show removed books ({n})': { de: 'Entfernte Bücher zeigen ({n})', fr: 'Afficher les livres retirés ({n})', es: 'Mostrar libros quitados ({n})', ja: 'けした ほんを だす（{n}）' },
+  'Delete “{title}”?': { de: '„{title}“ löschen?', fr: 'Supprimer « {title} » ?', es: '¿Borrar «{title}»?', ja: '「{title}」を けしますか？' },
+  'Delete {n} books?': { de: '{n} Bücher löschen?', fr: 'Supprimer {n} livres ?', es: '¿Borrar {n} libros?', ja: '{n}さつの ほんを けしますか？' },
+  'Stories you made, with their pictures and recordings, are deleted for good.': { de: 'Selbst gemachte Geschichten werden mit ihren Bildern und Aufnahmen für immer gelöscht.', fr: 'Les histoires que tu as faites, avec leurs images et enregistrements, sont supprimées pour toujours.', es: 'Los cuentos que hiciste, con sus dibujos y grabaciones, se borran para siempre.', ja: 'じぶんで つくった おはなしは、えや ろくおんと いっしょに きえて もどせません。' },
+  'Built-in books can be brought back later.': { de: 'Mitgelieferte Bücher kannst du später zurückholen.', fr: 'Les livres de l’app peuvent revenir plus tard.', es: 'Los libros incluidos se pueden recuperar después.', ja: 'はじめから ある ほんは あとで もどせます。' },
+  'Sharing sends an invitation to Oomlaut Reader by message or email.': { de: 'Beim Teilen wird eine Einladung zu Oomlaut Reader per Nachricht oder E-Mail verschickt.', fr: 'Partager envoie une invitation à Oomlaut Reader par message ou e-mail.', es: 'Compartir envía una invitación a Oomlaut Reader por mensaje o correo.', ja: 'シェアすると、Oomlaut Reader への しょうたいを メッセージか メールで おくります。' },
+  'Deleting books from the library.': { de: 'Bücher aus der Bibliothek löschen.', fr: 'Supprimer des livres de la bibliothèque.', es: 'Borrar libros de la biblioteca.', ja: 'ほんだなから ほんを けします。' },
+  '“{title}” is yours. Tap Read now.': { de: '„{title}“ gehört jetzt dir. Tippe auf „Jetzt lesen“.', fr: '« {title} » est à toi. Touche « Lire ».', es: '«{title}» ya es tuyo. Toca «Leer ahora».', ja: '「{title}」は あなたの ほんに なったよ。「よむ」を タップしてね。' },
+  'Free to read': { de: 'Kostenlos lesen', fr: 'À lire gratuitement', es: 'Gratis para leer', ja: 'むりょうで よめる' },
+  'Selected': { de: 'Ausgewählt', fr: 'Choisi', es: 'Elegido', ja: 'えらんだ' },
+  'Not selected': { de: 'Nicht ausgewählt', fr: 'Pas choisi', es: 'No elegido', ja: 'えらんでいない' },
+  '{title}, featured': { de: '{title}, empfohlen', fr: '{title}, à la une', es: '{title}, destacado', ja: '{title}、おすすめ' },
+  'Close': { de: 'Schließen', fr: 'Fermer', es: 'Cerrar', ja: 'とじる' },
+  'Book deleted.': { de: 'Buch gelöscht.', fr: 'Livre supprimé.', es: 'Libro borrado.', ja: 'ほんを けしたよ。' },
+  '{n} books deleted.': { de: '{n} Bücher gelöscht.', fr: '{n} livres supprimés.', es: '{n} libros borrados.', ja: '{n}さつの ほんを けしたよ。' },
+  'Your profile is for grown-ups.': { de: 'Das Profil ist für Erwachsene.', fr: 'Le profil est pour les grands.', es: 'El perfil es para adultos.', ja: 'プロフィールは おとなの かたむけです。' },
+
+  // ---- bars and menus ----
+  'Recording options': { de: 'Aufnahme', fr: 'Options d’enregistrement', es: 'Opciones de grabación', ja: 'ろくおん' },
+  'Close menu': { de: 'Menü schließen', fr: 'Fermer le menu', es: 'Cerrar el menú', ja: 'メニューを とじる' },
+  'Closes the message': { de: 'Schließt die Nachricht', fr: 'Ferme le message', es: 'Cierra el mensaje', ja: 'メッセージを とじます' },
+
+  // ---- Create a Story ----
+  'Books can have up to {n} pages. That’s a long story!': { de: 'Ein Buch kann bis zu {n} Seiten haben. Das ist eine lange Geschichte!', fr: 'Un livre peut avoir jusqu’à {n} pages. Quelle longue histoire !', es: 'Un libro puede tener hasta {n} páginas. ¡Qué cuento tan largo!', ja: 'ほんは {n}ページまで つくれるよ。ながい おはなしだね！' },
+  'Portrait pages': { de: 'Hochformat-Seiten', fr: 'Pages en portrait', es: 'Páginas en vertical', ja: 'たての ページ' },
+  'Landscape pages': { de: 'Querformat-Seiten', fr: 'Pages en paysage', es: 'Páginas en horizontal', ja: 'よこの ページ' },
+
+  // ---- buying and downloading (thrown in English, shown translated) ----
+  'Memberships aren’t available yet.': { de: 'Mitgliedschaften gibt es noch nicht.', fr: 'Les abonnements ne sont pas encore disponibles.', es: 'Las membresías aún no están disponibles.', ja: 'メンバーシップは まだ りようできません。' },
+  'Buying books isn’t available yet.': { de: 'Bücher kaufen geht noch nicht.', fr: 'L’achat de livres n’est pas encore disponible.', es: 'Aún no se pueden comprar libros.', ja: 'ほんは まだ かえません。' },
+  'Purchases aren’t available yet.': { de: 'Käufe sind noch nicht möglich.', fr: 'Les achats ne sont pas encore disponibles.', es: 'Las compras aún no están disponibles.', ja: 'おかいものは まだ できません。' },
+  'The purchase didn’t go through. Please try again.': { de: 'Der Kauf hat nicht geklappt. Bitte versuch es noch einmal.', fr: 'L’achat n’a pas abouti. Veuillez réessayer.', es: 'La compra no se completó. Inténtalo de nuevo.', ja: 'おかいものが できませんでした。もういちど ためしてください。' },
+  'This book can’t be bought just yet.': { de: 'Dieses Buch kann man noch nicht kaufen.', fr: 'Ce livre ne peut pas encore être acheté.', es: 'Este libro aún no se puede comprar.', ja: 'この ほんは まだ かえません。' },
+  'This book could not be downloaded. Check the internet connection and try again.': { de: 'Dieses Buch konnte nicht geladen werden. Prüfe die Internetverbindung und versuch es noch einmal.', fr: 'Ce livre n’a pas pu être téléchargé. Vérifie la connexion Internet et réessaie.', es: 'No se pudo descargar este libro. Revisa la conexión a internet e inténtalo de nuevo.', ja: 'この ほんを ダウンロードできませんでした。インターネットの せつぞくを たしかめて、もういちど ためしてね。' },
 };

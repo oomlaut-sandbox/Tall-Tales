@@ -4,6 +4,7 @@ import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, Vie
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DeskFelt, Felt, Stitch, useLook } from '../look';
+import { useT } from '../i18n';
 
 export function Burger({ onPress, u }) {
   const w = u * 7, t = Math.max(3, u * 1), gap = u * 1.7;
@@ -68,6 +69,7 @@ export function BarMeta({ title, sub, vertical, serif, page }) {
 }
 
 export function RecordButton({ onPress, active }) {
+  const tr = useT();
   const pulse = useRef(new Animated.Value(1)).current;
   useEffect(() => {
     if (!active) return pulse.setValue(1);
@@ -79,7 +81,7 @@ export function RecordButton({ onPress, active }) {
     return () => loop.stop();
   }, [active]);
   return (
-    <Pressable onPress={onPress} hitSlop={8} style={styles.ctl} accessibilityLabel="Recording options">
+    <Pressable onPress={onPress} hitSlop={8} style={styles.ctl} accessibilityLabel={tr('Recording options')}>
       <Animated.View style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: colors.highlight, transform: [{ scale: pulse }] }} />
     </Pressable>
   );
@@ -110,12 +112,13 @@ export function PlayButton({ onPress, active, disabled }) {
 // soft shadow onto the page (a few faint, slightly larger triangles behind it).
 // flap: the colour of the folded-over corner (white paper in books; lighter brown on the leather cover)
 export function DogEar({ u, onPress, label = 'Next page', under = colors.earUnder, flap = colors.white }) {
+  const tr = useT();
   const e = Math.max(24, u * 7.5);
   const tri = (size, color, off = 0) => (
     <View key={`${size}-${off}`} style={{ position: 'absolute', right: off * 0.4, bottom: off * 0.4, width: 0, height: 0, borderRightWidth: size, borderTopWidth: size, borderRightColor: 'transparent', borderTopColor: color }} />
   );
   return (
-    <Pressable onPress={onPress} accessibilityLabel={label} style={[styles.ear, { width: Math.max(48, e + 16), height: Math.max(48, e + 16) }]}>
+    <Pressable onPress={onPress} accessibilityLabel={tr(label)} style={[styles.ear, { width: Math.max(48, e + 16), height: Math.max(48, e + 16) }]}>
       <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderLeftWidth: e, borderBottomWidth: e, borderLeftColor: 'transparent', borderBottomColor: under }} />
       {/* soft shadow: many faint layers, each a little larger, so it fades smoothly */}
       {Array.from({ length: 10 }, (_, i) => (10 - i) * 0.8).map((d) => tri(e + d, 'rgba(0,0,0,0.018)', d))}
@@ -145,6 +148,7 @@ const HEAD_ARROW_WIDE = 14 + 22; // sideways head: top padding + half the 44-poi
 const openPanels = new Map(); // id -> close function
 let panelSeq = 0;
 export function Panel({ open, title, onClose, bottom, inset = 0, children, portraitWidth }) {
+  const tr = useT();
   const x = useRef(new Animated.Value(open ? 0 : 1)).current;
   const id = useRef(++panelSeq).current;
   const closeRef = useRef(onClose);
@@ -179,7 +183,7 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children, portr
   return (
     <>
       {/* tapping outside closes the menu, but the bar stays live, so its other buttons (record, Pages…) still work */}
-      {open ? <Pressable style={[StyleSheet.absoluteFill, wide ? { right: rightW } : { bottom: bottom || 0 }]} onPress={onClose} accessibilityLabel="Close menu" /> : null}
+      {open ? <Pressable style={[StyleSheet.absoluteFill, wide ? { right: rightW } : { bottom: bottom || 0 }]} onPress={onClose} accessibilityLabel={tr('Close menu')} /> : null}
       {/* the clip: everything up to the edge of the menu bar */}
       <View pointerEvents="box-none" style={[styles.panelClip, wide ? { right: rightW } : { bottom: bottom || 0 }]}>
         <Animated.View
@@ -192,7 +196,7 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children, portr
             <Text style={[styles.panelTitle, { flex: 1 }, wide && { fontSize: 20 }]}>{title}</Text>
             {/* Close: a small chevron pointing back at the menu bar it goes into (down when upright,
                 right when sideways). Tapping outside the menu still closes it too. */}
-            <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close menu" style={styles.closeBtn}>
+            <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Close menu')} style={styles.closeBtn}>
               <View style={[styles.chev, wide && { transform: [{ rotate: '-90deg' }] }]}>
                 <View style={[styles.chevBar, { left: 0, transform: [{ rotate: '40deg' }] }]} />
                 <View style={[styles.chevBar, { right: 0, transform: [{ rotate: '-40deg' }] }]} />
@@ -478,6 +482,7 @@ export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLab
 
 // The speech bubble: a white rounded box in the middle of the screen (between the bars). Tap it to close.
 export function Toast({ message, area, onDismiss, center }) {
+  const tr = useT();
   if (!message) return null;
   return (
     <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, zIndex: 60, alignItems: 'center', justifyContent: center ? 'center' : 'flex-end', paddingBottom: center ? 0 : 14 }, area]}>
@@ -485,7 +490,7 @@ export function Toast({ message, area, onDismiss, center }) {
           shaped like Jörg's bubble (rounded box, a small straight point at the bottom left), with a soft shadow.
           (center: in the middle of the given area instead, e.g. the picture page while recording.)
           Tap it to close it sooner. */}
-      <Pressable onPress={onDismiss} accessibilityRole="button" accessibilityHint="Closes the message" style={styles.bubbleWrap}>
+      <Pressable onPress={onDismiss} accessibilityRole="button" accessibilityHint={tr('Closes the message')} style={styles.bubbleWrap}>
         <View style={styles.bubble}>
           {/* a ● in the message is drawn in the record button's red */}
           <Text style={styles.toast}>{String(message).split('●').map((part, i) => (i ? [<Text key={i} style={{ color: colors.highlight }}>●</Text>, part] : part))}</Text>

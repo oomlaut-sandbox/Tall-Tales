@@ -121,7 +121,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   }, [recording, size]);
   useEffect(() => () => setToastSpot && setToastSpot(null), []);
   // web preview only (#rec-demo): shows where the recording bubble goes
-  useEffect(() => { if (REC_DEMO) setTimeout(() => toast(`Recording page 2. Turn the page to keep going, or tap ● to stop.`), 1500); }, []);
+  useEffect(() => { if (REC_DEMO) setTimeout(() => toast(tr('Recording page {n}. Turn the page to keep going, or tap ● to stop.', { n: 2 })), 1500); }, []);
   const [recView, setRecView] = useState('main'); // main | list | settings | help
   const [recList, setRecList] = useState([]);
   const [playView, setPlayView] = useState('main'); // 'main' | 'voices' inside Playback Options
@@ -133,11 +133,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const doPrint = async (layout) => {
     setPrintGate(null);
     setPrinting(true);
-    toast('Getting the book ready to print…');
+    toast(tr('Getting the book ready to print…'));
     try {
       await printStory({ title: story.title, author: story.author, pages: story.pages.map((p) => ({ text: p.text, image: p.image, image2: p.image2 })) }, layout, prefs.font);
     } catch (e) {
-      toast('Couldn’t print the book. Please try again.'); // plain words, never the phone's technical message
+      toast(tr('Couldn’t print the book. Please try again.')); // plain words, never the phone's technical message
     }
     setPrinting(false);
   };
@@ -289,7 +289,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     setPanel(null);
     try {
       const perm = await AudioModule.requestRecordingPermissionsAsync();
-      if (!perm.granted) return toast('Oomlaut Reader needs the microphone to record. You can allow it in Settings.');
+      if (!perm.granted) return toast(tr('Oomlaut Reader needs the microphone to record. You can allow it in Settings.'));
       await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
       audioModeChanged();
       await recorder.prepareToRecordAsync();
@@ -297,10 +297,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       recStart.current = Date.now();
       suspendSounds(true);
       setRecording(true);
-      if (!recAuto.current) toast(`Recording page ${st.current.idx + 1}. Turn the page to keep going, or tap ● to stop.`);
+      if (!recAuto.current) toast(tr('Recording page {n}. Turn the page to keep going, or tap ● to stop.', { n: st.current.idx + 1 }));
       recAuto.current = false;
     } catch (e) {
-      toast('Recording couldn’t start. Try again.');
+      toast(tr('Recording couldn’t start. Try again.'));
     }
   };
 
@@ -325,12 +325,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       if (save && recorder.uri && seconds > 0.7) {
         await saveRecording(story.id, pageKey(story.pages[page], page), recorder.uri, seconds);
         if (prefsRef.current.voice !== 'mine') setPrefs((p) => ({ ...p, voice: 'mine' }));
-        toast(`Saved your voice for page ${page + 1}.`);
+        toast(tr('Saved your voice for page {n}.', { n: page + 1 }));
         markFirst('firstRecording'); // a badge in My Notebook
         refreshRecPages();
       }
     } catch (e) {
-      toast('That recording couldn’t be saved.');
+      toast(tr('That recording couldn’t be saved.'));
     }
     suspendSounds(false);
   };
@@ -355,7 +355,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const onPlay = () => {
     const mode = st.current.mode;
     if (!mode) return setPanel('play');
-    if (mode === 'self') return toast('Read Yourself is on, so there’s no audio. Pick another mode to listen.');
+    if (mode === 'self') return toast(tr('Read Yourself is on, so there’s no audio. Pick another mode to listen.'));
     if (st.current.recording) return;
     if (paused) { usingVoice.current ? resumeVoice() : resumeSpeech(); setPaused(false); return; }
     // Play always (re)reads the page, so it can never get stuck thinking it's still reading.
@@ -666,16 +666,16 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       {/* a small, quiet red dot when this page has a voice recording: top right on phones, top left on iPad */}
       {recPages.includes(idx) && !recording ? (
         // tap it (it's small, so the finger gets a generous area) to hear what it means
-        <Pressable onPress={() => toast('This red dot means you’ve recorded this page in your own voice.')} hitSlop={20}
-          accessibilityRole="button" accessibilityLabel="This page has a voice recording"
+        <Pressable onPress={() => toast(tr('This red dot means you’ve recorded this page in your own voice.'))} hitSlop={20}
+          accessibilityRole="button" accessibilityLabel={tr('This page has a voice recording')}
           style={[styles.recMark, IS_TABLET ? { left: 14 } : { right: 14 }]} />
       ) : null}
       <View style={[styles.bookShadow, { width: BL.bookW, height: BL.bookH }]}>
       <View ref={bookRef} collapsable={false} style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...(listen ? {} : pan.panHandlers)}>
         {size ? layers : null}
         {/* Tap anywhere along the left or right edge to turn back or forward (swipes work anywhere). */}
-        {size && idx > 0 && !listen ? <Pressable onPress={() => flip(-1)} accessibilityLabel="Previous page" style={[styles.edge, { left: 0, width: edgeW }]} /> : null}
-        {size && idx < pages.length - 1 && !listen ? <Pressable onPress={() => flip(1)} accessibilityLabel="Next page" style={[styles.edge, { right: 0, width: edgeW }]} /> : null}
+        {size && idx > 0 && !listen ? <Pressable onPress={() => flip(-1)} accessibilityLabel={tr('Previous page')} style={[styles.edge, { left: 0, width: edgeW }]} /> : null}
+        {size && idx < pages.length - 1 && !listen ? <Pressable onPress={() => flip(1)} accessibilityLabel={tr('Next page')} style={[styles.edge, { right: 0, width: edgeW }]} /> : null}
         {/* the dog-ear hides while a page is turning, and comes back once the new page has landed */}
         {idx < pages.length - 1 && !flipPair && !listen ? <View style={{ position: 'absolute', right: 0, bottom: 0, zIndex: 20 }}><DogEar u={u} under={colors.earUnder} onPress={() => flip(1)} /></View> : null}
       </View>
@@ -692,12 +692,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
               <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
               {/* restricted kid mode: a small lock (Settings, behind the grown-up question) */}
               {isRestricted(controls) && onSettings ? (
-                <Pressable onPress={onSettings} hitSlop={12} accessibilityRole="button" accessibilityLabel="Settings" style={[styles.small, { marginTop: u * 7 }]}>
+                <Pressable onPress={onSettings} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Settings')} style={[styles.small, { marginTop: u * 7 }]}>
                   <LockIcon size={u * 6.2} weight={Math.max(2.5, u * 0.8)} />
                 </Pressable>
               ) : null}
               {/* music and sounds: the little floating Audio Player */}
-              <Pressable onPress={() => setAmbientPlayer(!getAmbient().showPlayer)} hitSlop={12} accessibilityRole="button" accessibilityLabel="Music and Sounds" style={[styles.small, { marginTop: isRestricted(controls) && onSettings ? u * 4 : u * 7 }]}>{/* closer when it sits beside the lock */}
+              <Pressable onPress={() => setAmbientPlayer(!getAmbient().showPlayer)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.small, { marginTop: isRestricted(controls) && onSettings ? u * 4 : u * 7 }]}>{/* closer when it sits beside the lock */}
                 <MusicIcon size={u * 5.6} weight={Math.max(2.6, u * 0.85)} />
               </Pressable>
             </View>
@@ -725,12 +725,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
         {/* restricted kid mode: a small lock, a little apart from the menu (Settings, behind the grown-up question) */}
         {isRestricted(controls) && onSettings ? (
-          <Pressable onPress={onSettings} hitSlop={12} accessibilityRole="button" accessibilityLabel="Settings" style={[styles.small, { marginLeft: u * 7 }]}>
+          <Pressable onPress={onSettings} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Settings')} style={[styles.small, { marginLeft: u * 7 }]}>
             <LockIcon size={u * 6.2} weight={Math.max(2.5, u * 0.8)} />
           </Pressable>
         ) : null}
         {/* music and sounds: opens (or hides) the little floating Audio Player; a little apart from the menu (or the lock) */}
-        <Pressable onPress={() => setAmbientPlayer(!getAmbient().showPlayer)} hitSlop={12} accessibilityRole="button" accessibilityLabel="Music and Sounds" style={[styles.small, { marginLeft: isRestricted(controls) && onSettings ? u * 4 : u * 7 }]}>{/* closer when it sits beside the lock */}
+        <Pressable onPress={() => setAmbientPlayer(!getAmbient().showPlayer)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.small, { marginLeft: isRestricted(controls) && onSettings ? u * 4 : u * 7 }]}>{/* closer when it sits beside the lock */}
           <MusicIcon size={u * 5.6} weight={Math.max(2.6, u * 0.85)} />
         </Pressable>
         {/* no page numbers in the reader (the store shows how long a book is) */}
@@ -787,7 +787,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             if (id === 'auto' || id === 'page' || id === 'listen') setTimeout(() => readPage(st.current.idx), 300);
             else if (id === 'learn') toast(tr('Tap any word to hear it.'));
             else if (id === 'self') toast(tr('Reading on your own. Turn the page when you’re ready.'));
-            else toast('Tap the glowing circles in the picture.');
+            else toast(tr('Tap the glowing circles in the picture.'));
           }} />
           </React.Fragment>
         ))}
@@ -824,7 +824,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <Text style={styles.help}>{printing ? tr('Getting ready to print…') : tr('Print this book')}</Text>
           <View style={{ flexDirection: 'row', gap: 14, opacity: printing ? 0.4 : 1 }}>
             {[['stacked', 'Portrait'], ['landscape', 'Landscape']].map(([lay, label]) => (
-              <Pressable key={lay} disabled={printing} onPress={() => { setPanel(null); setPrintGate(lay); }} accessibilityRole="button" accessibilityLabel={`Print, ${label.toLowerCase()} pages`} style={styles.printBtn}>
+              <Pressable key={lay} disabled={printing} onPress={() => { setPanel(null); setPrintGate(lay); }} accessibilityRole="button" accessibilityLabel={tr(lay === 'stacked' ? 'Print, portrait pages' : 'Print, landscape pages')} style={styles.printBtn}>
                 <View style={styles.printIc}><PageShape wide={lay === 'landscape'} /></View>
                 <Text style={styles.printLabel}>{tr(label)}</Text>
               </Pressable>
@@ -834,44 +834,44 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           </>
         )}
       </Panel>
-      <ParentGate visible={shareGate} reason="Sharing opens your phone’s messages and email." onCancel={() => setShareGate(false)}
+      <ParentGate visible={shareGate} reason={tr('Sharing opens your phone’s messages and email.')} onCancel={() => setShareGate(false)}
         onPass={() => {
           setShareGate(false);
           shareInvite(story.title);
         }} />
-      <ParentGate visible={!!printGate} reason="Printing opens your phone’s print options." onPass={() => doPrint(printGate)} onCancel={() => setPrintGate(null)} />
+      <ParentGate visible={!!printGate} reason={tr('Printing opens your phone’s print options.')} onPass={() => doPrint(printGate)} onCancel={() => setPrintGate(null)} />
 
-      <Panel open={panel === 'rec'} side="right" title="Recording Options" {...panelPos} onClose={() => setPanel(null)}>
+      <Panel open={panel === 'rec'} side="right" title={tr('Recording Options')} {...panelPos} onClose={() => setPanel(null)}>
         {recView === 'main' ? (
           <>
-            <Option glyph={<DotIcon />} title="Start Recording" sub={`Read this story in your own voice, starting on page ${Math.min(idx + 1, n)}`} disabled={idx >= n} onPress={startRec} />
-            <Option glyph={<ListIcon />} title="Your Recordings" sub="Listen to or remove the pages you recorded" onPress={openRecList} />
-            <Option glyph={<GearIcon size={MENU_ICON} />} title="Recording Settings" sub="Choose whose voice reads the story" onPress={() => setRecView('settings')} />
-            <Option glyph={<TextIcon text="?" />} title="Help" sub="How recording works" onPress={() => setRecView('help')} />
+            <Option glyph={<DotIcon />} title={tr('Start Recording')} sub={tr('Read this story in your own voice, starting on page {n}', { n: Math.min(idx + 1, n) })} disabled={idx >= n} onPress={startRec} />
+            <Option glyph={<ListIcon />} title={tr('Your Recordings')} sub={tr('Listen to or remove the pages you recorded')} onPress={openRecList} />
+            <Option glyph={<GearIcon size={MENU_ICON} />} title={tr('Recording Settings')} sub={tr('Choose whose voice reads the story')} onPress={() => setRecView('settings')} />
+            <Option glyph={<TextIcon text="?" />} title={tr('Help')} sub={tr('How recording works')} onPress={() => setRecView('help')} />
           </>
         ) : (
-          <Pressable onPress={() => setRecView('main')} hitSlop={8}><Text style={styles.back}>‹ Back</Text></Pressable>
+          <Pressable onPress={() => setRecView('main')} hitSlop={8}><Text style={styles.back}>{tr('‹ Back')}</Text></Pressable>
         )}
         {recView === 'list' ? (
           recList.length ? recList.map((r) => (
             <View key={r.pid} style={styles.row}>
-              <Text style={styles.rowText}>Page {r.page + 1} · {Math.round(r.seconds)}s</Text>
-              <Pressable style={styles.rowBtn} onPress={() => { stopReading(); playVoice(r.uri); }}><Text style={styles.rowBtnText}>Play</Text></Pressable>
-              <Pressable style={styles.rowBtn} onPress={async () => { stopVoice(); await removeRecording(story.id, r.pid); openRecList(); toast(`Removed your recording of page ${r.page + 1}.`); }}><Text style={styles.rowBtnText}>Remove</Text></Pressable>
+              <Text style={styles.rowText}>{tr('Page {n} · {s}s', { n: r.page + 1, s: Math.round(r.seconds) })}</Text>
+              <Pressable style={styles.rowBtn} onPress={() => { stopReading(); playVoice(r.uri); }}><Text style={styles.rowBtnText}>{tr('Play')}</Text></Pressable>
+              <Pressable style={styles.rowBtn} onPress={async () => { stopVoice(); await removeRecording(story.id, r.pid); openRecList(); toast(tr('Removed your recording of page {n}.', { n: r.page + 1 })); }}><Text style={styles.rowBtnText}>{tr('Remove')}</Text></Pressable>
             </View>
-          )) : <Text style={styles.help}>Nothing recorded yet. Tap Start Recording to read this story in your own voice.</Text>
+          )) : <Text style={styles.help}>{tr('Nothing recorded yet. Tap Start Recording to read this story in your own voice.')}</Text>
         ) : null}
         {recView === 'settings' ? (
           <>
-            <Text style={styles.help}>Who reads the story aloud</Text>
-            <Seg value={prefs.voice || 'narrator'} options={[['narrator', 'Narrator'], ['mine', 'Your voice']]} onChange={(v) => { stopReading(); setPrefs((p) => ({ ...p, voice: v })); }} />
-            <Text style={styles.help}>Pages you haven’t recorded use the narrator.</Text>
+            <Text style={styles.help}>{tr('Who reads the story aloud')}</Text>
+            <Seg value={prefs.voice || 'narrator'} options={[['narrator', tr('Narrator')], ['mine', tr('Your voice')]]} onChange={(v) => { stopReading(); setPrefs((p) => ({ ...p, voice: v })); }} />
+            <Text style={styles.help}>{tr('Pages you haven’t recorded use the narrator.')}</Text>
           </>
         ) : null}
         {recView === 'help' ? (
           <>
-            <Text style={styles.help}>Tap Start Recording and read the page out loud. Turn the page and keep reading: each page saves on its own.</Text>
-            <Text style={styles.help}>Tap the red button to stop. Your recordings stay on this phone, and the story will read back in your voice.</Text>
+            <Text style={styles.help}>{tr('Tap Start Recording and read the page out loud. Turn the page and keep reading: each page saves on its own.')}</Text>
+            <Text style={styles.help}>{tr('Tap the red button to stop. Your recordings stay on this phone, and the story will read back in your voice.')}</Text>
           </>
         ) : null}
       </Panel>
@@ -881,6 +881,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 
 // The recording timer: a small grey box with the time recorded so far (0:03), beside the pulsing record button.
 function RecTimer({ start, style }) {
+  const tr = useT();
   const [secs, setSecs] = useState(0);
   useEffect(() => {
     const t = setInterval(() => setSecs(Math.floor((Date.now() - start) / 1000)), 250);
@@ -888,7 +889,7 @@ function RecTimer({ start, style }) {
   }, [start]);
   return (
     <View pointerEvents="none" style={style}>
-      <View style={styles.recBox} accessibilityLabel={`Recording, ${secs} seconds`}>
+      <View style={styles.recBox} accessibilityLabel={tr('Recording, {n} seconds', { n: secs })}>
         <Text style={styles.recBoxTime}>{Math.floor(secs / 60)}:{String(secs % 60).padStart(2, '0')}</Text>
       </View>
     </View>

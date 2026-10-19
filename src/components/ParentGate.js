@@ -41,7 +41,7 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
       <View style={styles.card}>
         <Text style={styles.kicker}>{t('For grown-ups')}</Text>
         <Text style={styles.title}>{t('What is {a} times {b}?', { a: words[q.a], b: words[q.b] })}</Text>
-        {reason ? <Text style={styles.body}>{reason}</Text> : null}
+        {reason ? <Text style={styles.body}>{t(reason)}</Text> : null}
         <TextInput
           value={answer}
           onChangeText={(t) => { setAnswer(t.replace(/\D/g, '')); setWrong(false); }}

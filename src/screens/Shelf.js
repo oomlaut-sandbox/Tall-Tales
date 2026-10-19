@@ -25,6 +25,7 @@ const tileWidth = (w) => `${TILE[COLS(w)]}%`;
 const gridGap = (w) => { const n = COLS(w); return `${(100 - n * TILE[n]) / (n - 1)}%`; };
 
 function Tile({ u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
+  const t = useT();
   const { width: winW } = useWindowDimensions();
   const ear = u * 3;
   const coverRef = useRef(null);
@@ -47,7 +48,7 @@ function Tile({ u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyp
         {showEar ? <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderRightWidth: ear, borderTopWidth: ear, borderRightColor: 'transparent', borderTopColor: colors.white }} /> : null}
         {badge ? <View style={styles.badgeAt}>{badge}</View> : null}
         {selecting ? (
-          <View style={[styles.check, selected && styles.checkOn]} accessibilityLabel={selected ? 'Selected' : 'Not selected'}>
+          <View style={[styles.check, selected && styles.checkOn]} accessibilityLabel={selected ? t('Selected') : t('Not selected')}>
             {selected ? <Text style={styles.checkMark}>✓</Text> : null}
           </View>
         ) : null}
@@ -128,18 +129,18 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => (selecting ? (
         <Bar u={u} vertical={v}>
           <Pressable onPress={() => setGate('share')} disabled={chosen.length !== 1} style={[styles.barBtn, chosen.length !== 1 && styles.barBtnOff]} accessibilityRole="button">
-            <Text style={styles.barBtnText}>Share</Text>
+            <Text style={styles.barBtnText}>{t('Share')}</Text>
           </Pressable>
           {/* Edit: only for a single book you made yourself */}
           <Pressable onPress={() => { const b = chosen[0]; stop(); onEdit(b); }} disabled={!(chosen.length === 1 && chosen[0].mine)} style={[styles.barBtn, !(chosen.length === 1 && chosen[0].mine) && styles.barBtnOff]} accessibilityRole="button">
-            <Text style={styles.barBtnText}>Edit</Text>
+            <Text style={styles.barBtnText}>{t('Edit')}</Text>
           </Pressable>
           <Pressable onPress={() => setConfirm(true)} disabled={!chosen.length} style={[styles.barBtn, !chosen.length && styles.barBtnOff]} accessibilityRole="button">
-            <Text style={[styles.barBtnText, { color: '#ff6b6b' }]}>Delete</Text>
+            <Text style={[styles.barBtnText, { color: '#ff6b6b' }]}>{t('Delete')}</Text>
           </Pressable>
           <View style={{ flex: 1 }} />{/* (Edit and Share simply grey out when they can't be used) */}
           {/* Cancel sits where Select was: the bottom right of the bar */}
-          <Pressable onPress={stop} hitSlop={10} style={styles.barBtn} accessibilityRole="button"><Text style={styles.barSmall}>Cancel</Text></Pressable>
+          <Pressable onPress={stop} hitSlop={10} style={styles.barBtn} accessibilityRole="button"><Text style={styles.barSmall}>{t('Cancel')}</Text></Pressable>
         </Bar>
       ) : (
         <Bar u={u} vertical={v}>
@@ -149,8 +150,8 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
           {controls.sharing ? <Pressable onPress={() => setSelecting(true)} hitSlop={10} style={styles.barBtn} accessibilityRole="button"><Text style={styles.barSmall}>{t('Select')}</Text></Pressable> : null}
         </Bar>
       ))}>
-      <Band color={colors.green} felt="library" title={selecting ? 'Select books' : t('My Library')}
-        sub={selecting ? (picked.length ? `${picked.length} selected` : 'Tap books to select them') : 'Your stories, ready to read'} />
+      <Band color={colors.green} felt="library" title={selecting ? t('Select books') : t('My Library')}
+        sub={selecting ? (picked.length ? t('{n} selected', { n: picked.length }) : t('Tap books to select them')) : t('Your stories, ready to read')} />
       <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]}>
         {/* My Notebook: always the first book on the shelf (notes, drawings and reading badges) */}
         {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
@@ -165,29 +166,29 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
         ))}
         {/* Create a story always starts its own row, below the books */}
         {!selecting ? <View style={{ width: '100%' }} /> : null}
-        {!selecting && controls.create ? <Tile u={u} plus title="Create a story" onPress={onCreate} /> : null}
+        {!selecting && controls.create ? <Tile u={u} plus title={t('Create a story')} onPress={onCreate} /> : null}
         {/* Playlists (a picture of its own comes later) */}
         {!selecting && onPlaylists ? <Tile u={u} glyph={<PlaylistIcon size={44} weight={4} />} title={t('Playlists')} onPress={onPlaylists} /> : null}
         {!selecting && removedCount ? (
           <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
-            <Text style={styles.restore}>Show removed books ({removedCount})</Text>
+            <Text style={styles.restore}>{t('Show removed books ({n})', { n: removedCount })}</Text>
           </Pressable>
         ) : null}
       </ScrollView>
       {confirm ? (
         <View style={styles.confirm}>
           <Text style={styles.confirmText}>
-            {`Delete ${chosen.length === 1 ? `“${chosen[0].title}”` : `${chosen.length} books`}?`}
-            {mineCount ? ' Stories you made, with their pictures and recordings, are deleted for good.' : ''}
-            {chosen.length > mineCount ? ' Built-in books can be brought back later.' : ''}
+            {chosen.length === 1 ? t('Delete “{title}”?', { title: chosen[0].title }) : t('Delete {n} books?', { n: chosen.length })}
+            {mineCount ? ' ' + t('Stories you made, with their pictures and recordings, are deleted for good.') : ''}
+            {chosen.length > mineCount ? ' ' + t('Built-in books can be brought back later.') : ''}
           </Text>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <Pressable onPress={() => setGate('delete')} style={[styles.actBtn, { backgroundColor: colors.deepRed }]}><Text style={styles.actText}>Delete</Text></Pressable>
-            <Pressable onPress={() => setConfirm(false)} style={[styles.actBtn, { backgroundColor: '#333' }]}><Text style={styles.actText}>Keep</Text></Pressable>
+            <Pressable onPress={() => setGate('delete')} style={[styles.actBtn, { backgroundColor: colors.deepRed }]}><Text style={styles.actText}>{t('Delete')}</Text></Pressable>
+            <Pressable onPress={() => setConfirm(false)} style={[styles.actBtn, { backgroundColor: '#333' }]}><Text style={styles.actText}>{t('Keep')}</Text></Pressable>
           </View>
         </View>
       ) : null}
-      <ParentGate visible={!!gate} reason={gate === 'share' ? 'Sharing sends an invitation to Oomlaut Reader by message or email.' : 'Deleting books from the library.'}
+      <ParentGate visible={!!gate} reason={gate === 'share' ? t('Sharing sends an invitation to Oomlaut Reader by message or email.') : t('Deleting books from the library.')}
         onCancel={() => setGate(null)}
         onPass={() => {
           const g = gate; setGate(null);
@@ -217,7 +218,7 @@ export function Store({ u, openStory, openMenu, toast }) {
     if (!p) return;
     if (p.kind === 'join') { setMember(true); return; }
     setBuying(p.book.id);
-    try { const r = await buyBook(p.book); if (r === 'done') toast && toast(`“${p.book.title}” is yours. Tap Read now.`); } catch (e) { toast && toast(e.message); }
+    try { const r = await buyBook(p.book); if (r === 'done') toast && toast(t('“{title}” is yours. Tap Read now.', { title: p.book.title })); } catch (e) { toast && toast(t(e.message)); }
     setBuying(null);
   };
   const load = async (pull) => {
@@ -246,7 +247,7 @@ export function Store({ u, openStory, openMenu, toast }) {
     const st = bundledStory(b.id);
     if (st) return openStory(st, rect);
     setFetching(b.id);
-    try { openStory(await loadStoreBook(b), rect); } catch (e) { toast && toast(e.message); }
+    try { openStory(await loadStoreBook(b), rect); } catch (e) { toast && toast(t(e.message)); }
     setFetching(null);
   };
   return (
@@ -257,11 +258,11 @@ export function Store({ u, openStory, openMenu, toast }) {
         {/* laid out like My Library: whole covers in a grid, nothing cut off, no sideways scrolling */}
         {[...(featured ? [{ id: 'featured', title: t('Featured'), books: [featured] }] : []), ...rows].map((sh) => (
           <View key={sh.id} style={{ gap: 14 }}>
-            <Text style={styles.shelfTitle}>{sh.title}</Text>
+            <Text style={styles.shelfTitle}>{t(sh.title)}</Text>
             <View style={[styles.shelfGrid, { columnGap: gridGap(winW) }]}>
               {sh.books.map((b) => (
                 // covers only: the title and author are in the details box that opens on a tap
-                <Tile key={b.id} u={u} ear={false} cover={coverFor(b)} coverArt={coverArtFor(b)} label={sh.id === 'featured' ? `${b.title}, featured` : b.title}
+                <Tile key={b.id} u={u} ear={false} cover={coverFor(b)} coverArt={coverArtFor(b)} label={sh.id === 'featured' ? t('{title}, featured', { title: b.title }) : b.title}
                   badge={<Badge book={b} />}
                   onPress={(rect) => setOpen({ book: b, rect })} />
               ))}
@@ -372,7 +373,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
   return (
     <View style={[StyleSheet.absoluteFill, { zIndex: 60 }]}>
       <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: dim }]}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={() => close()} accessibilityLabel="Close" />
+        <Pressable style={StyleSheet.absoluteFill} onPress={() => close()} accessibilityLabel={t('Close')} />
       </Animated.View>
       {/* the card (it also measures itself so it can sit in the middle) */}
       <View onLayout={(e) => setBoxH(e.nativeEvent.layout.height)}
@@ -408,7 +409,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
         </Animated.View>
         {/* close: a dog-ear in the top-right corner, folded like a page corner (it replaces the ×) */}
         <Animated.View style={{ position: 'absolute', right: 0, top: 0, width: 56, height: 56, opacity: fade, transform: [{ scaleY: -1 }] }}>
-          <DogEar u={u} onPress={() => close()} label="Close" under="transparent" />{/* just the white fold and its shadow; the corner behind it is open */}
+          <DogEar u={u} onPress={() => close()} label={t('Close')} under="transparent" />{/* just the white fold and its shadow; the corner behind it is open */}
         </Animated.View>
       </View>
       {/* the cover, already in place in the card's top-left corner (it fades with the box) */}

@@ -6,6 +6,7 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { bookFont, colors, fonts } from '../theme';
 import { Felt } from '../look';
 import { tokenize } from '../story';
+import { useT } from '../i18n';
 import ZoomArt from './ZoomArt';
 import { AgainIcon, HeartIcon, LibraryIcon } from './Chrome';
 
@@ -62,6 +63,7 @@ export const PageView = forwardRef(function PageView(
   { page, width, height, bottomInset = 0, textScale = 1, fontKey = 'serif', highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary, onShare, zoomable },
   ref,
 ) {
+  const t = useT();
   const words = useMemo(() => (page && page.text ? tokenize(page.text) : []), [page]);
   // bottomInset: room kept clear at the bottom for the reader's see-through control bar
   const L = useMemo(() => { const l = pageLayout(width, height); return { ...l, textH: l.textH - bottomInset }; }, [width, height, bottomInset]);
@@ -92,8 +94,8 @@ export const PageView = forwardRef(function PageView(
       <View style={[styles.art, { width: artW, height: artH }, page?.whiteArt && { backgroundColor: colors.white }]}>
         {end ? (
           // "The End" in the book's font on a plain medium-dark grey square
-          <View style={[styles.fill, styles.endArt]} accessibilityLabel="The End">
-            <Text style={[styles.endTitle, { fontFamily: font.family, fontSize: Math.round(artW * 0.1) }]}>The End</Text>
+          <View style={[styles.fill, styles.endArt]} accessibilityLabel={t('The End')}>
+            <Text style={[styles.endTitle, { fontFamily: font.family, fontSize: Math.round(artW * 0.1) }]}>{t('The End')}</Text>
           </View>
         ) : (
           page?.image ? (zoomable ? <ZoomArt source={page.image} width={artW} height={artH} /> : <Image source={page.image} style={styles.fill} resizeMode="cover" />) : null
@@ -122,13 +124,13 @@ export const PageView = forwardRef(function PageView(
         <View pointerEvents="none" style={L.wide ? styles.spineV : styles.spine} />
         {end ? (
           <View style={{ alignItems: 'center' }}>
-            <Text style={storyStyle}>Thank you for reading.</Text>
+            <Text style={storyStyle}>{t('Thank you for reading.')}</Text>
             {/* stacked: a square icon and black text beside it, like the start page */}
             <View style={{ gap: 12, marginTop: 20, alignSelf: 'center' }}>
               {[[<AgainIcon />, 'Read Again', onReadAgain], [<LibraryIcon />, 'My Library', onLibrary], [<HeartIcon />, 'Share Book', onShare]].filter(([, , fn]) => !!fn).map(([g, label, fn]) => (
                 <Pressable key={label} onPress={fn} style={styles.endBtn} accessibilityRole="button">
                   <View style={styles.endIc}>{g}</View>
-                  <Text style={styles.endBtnText}>{label}</Text>
+                  <Text style={styles.endBtnText}>{t(label)}</Text>
                 </Pressable>
               ))}
             </View>

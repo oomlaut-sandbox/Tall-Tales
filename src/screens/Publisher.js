@@ -24,7 +24,7 @@ import { loadJSON, saveJSON } from '../storage';
 
 const MAX_PX = 1600;
 const MAX_PAGES = 40; // a soft limit, so books stay quick to open, print and share
-const FULL = `Books can have up to ${MAX_PAGES} pages. That’s a long story!`;
+const FULL = 'Books can have up to {n} pages. That’s a long story!'; // shown with tr(FULL, { n: MAX_PAGES })
 
 const blank = () => ({ pid: newPageId(), text: '', uri: null, w: 1, h: 1 });
 
@@ -287,7 +287,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const next = () => {
     if (i === draft.pages.length - 1) {
       if (!page.text.trim() && !page.uri && !page.uri2) return toast(tr('Add a picture or some words before the next page.'));
-      if (draft.pages.length >= MAX_PAGES) return toast(FULL);
+      if (draft.pages.length >= MAX_PAGES) return toast(tr(FULL, { n: MAX_PAGES }));
       setDraft((d) => ({ ...d, pages: [...d.pages, blank()] }));
     }
     setI(i + 1);
@@ -296,7 +296,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   // After the words editor: carry on with a new page, or finish the book.
   const addPage = () => {
     setPageDone(false);
-    if (draft.pages.length >= MAX_PAGES) return toast(FULL);
+    if (draft.pages.length >= MAX_PAGES) return toast(tr(FULL, { n: MAX_PAGES }));
     setDraft((d) => ({ ...d, pages: [...d.pages.slice(0, i + 1), blank(), ...d.pages.slice(i + 1)] }));
     setI(i + 1);
   };
@@ -479,7 +479,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <View style={{ flexDirection: 'row', gap: 14 }}>
               {[['stacked', tr('Portrait')], ['landscape', tr('Landscape')]].map(([lay, label]) => (
                 <Pressable key={lay} onPress={() => { setGateFor({ mode: pdfChoice, layout: lay }); setPdfChoice(null); setPagesOpen(false); }}
-                  accessibilityRole="button" accessibilityLabel={`${label} pages`} style={styles.layBtn}>
+                  accessibilityRole="button" accessibilityLabel={tr(lay === 'stacked' ? 'Portrait pages' : 'Landscape pages')} style={styles.layBtn}>
                   <View style={styles.layIc}><PageShape wide={lay === 'landscape'} /></View>
                   <Text style={styles.layLabel}>{label}</Text>
                 </Pressable>

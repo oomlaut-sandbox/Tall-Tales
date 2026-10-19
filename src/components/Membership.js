@@ -20,7 +20,7 @@ export default function Membership({ visible, onClose, toast }) {
     try {
       const r = await joinMembership(plan);
       if (r === 'done') { toast && toast(t('Welcome! Every book in the Book Store is yours to read.')); onClose(); }
-    } catch (e) { toast && toast(e.message); }
+    } catch (e) { toast && toast(t(e.message)); }
     setBusy(null);
   };
   const restore = async () => {
@@ -29,7 +29,7 @@ export default function Membership({ visible, onClose, toast }) {
       const r = await restorePurchases();
       toast && toast(r === 'restored' ? t('Your purchases are back.') : t('No earlier purchases were found for this Apple ID.'));
       if (r === 'restored') onClose();
-    } catch (e) { toast && toast(e.message); }
+    } catch (e) { toast && toast(t(e.message)); }
     setBusy(null);
   };
   const Plan = ({ id, title, price, per, note }) => (

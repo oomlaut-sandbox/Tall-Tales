@@ -287,7 +287,7 @@ function Root() {
               let mine = null;
               for (const s of list.filter((x) => x.mine)) mine = await deleteUserStory(s.id);
               if (mine) setUserStories(mine);
-              toast(list.length === 1 ? 'Book deleted.' : `${list.length} books deleted.`);
+              toast(list.length === 1 ? t('Book deleted.') : t('{n} books deleted.', { n: list.length }));
             }} />
           </Animated.View>
         )}
@@ -350,7 +350,7 @@ function Root() {
         })() : null}
         <ParentGate visible={settingsGate} reason={t('Changing settings is for grown-ups.')} onPass={() => { setSettingsGate(false); go('settings'); }} onCancel={() => setSettingsGate(false)} />
         <Membership visible={memberOpen} onClose={() => setMemberOpen(false)} toast={toast} />
-        <ParentGate visible={profileGate} reason="Your profile is for grown-ups." onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
+        <ParentGate visible={profileGate} reason={t('Your profile is for grown-ups.')} onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
         <Toast message={message} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         {/* the Audio Player for music and nature sounds: in the middle of the screen over a dark layer until it's closed */}
         <TapePlayer onMenu={() => { setAmbientPlayer(false); go('music'); }} />
