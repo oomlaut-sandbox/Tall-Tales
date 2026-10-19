@@ -136,7 +136,7 @@ export default function Profiles({ u, openMenu, setControls }) {
                   style={styles.input} maxLength={20} autoCapitalize="words" autoCorrect={false} returnKeyType="done" accessibilityLabel={t('Name')} />
               </View>
               <Text style={styles.section}>{t('Character')}</Text>
-              <View style={[styles.choices, { marginTop: 14 }]}>
+              <View style={[styles.choices, { marginTop: 14, flexWrap: 'nowrap', justifyContent: 'space-between' }]}>{/* all five on one line */}
                 {PROFILE_COLORS.map(([c, img]) => (
                   <Pressable key={c} onPress={() => setForm({ ...form, color: c })} accessibilityRole="radio" accessibilityLabel={c} accessibilityState={{ selected: form.color === c }}
                     style={styles.swatch}>
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   choice: { paddingHorizontal: 14, height: 36, borderRadius: 18, backgroundColor: '#2a2a2a', alignItems: 'center', justifyContent: 'center' },
   choiceOn: { backgroundColor: colors.green },
   choiceText: { fontFamily: fonts.ui, fontSize: 15, color: '#dcdcdc', fontWeight: '600' },
-  swatch: { width: 56, height: 56, alignItems: 'center', justifyContent: 'center' },
+  swatch: { width: 52, height: 56, alignItems: 'center', justifyContent: 'center' },
   buttonShadow: { shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.55, shadowRadius: 6, elevation: 6 },
   swatchOn: { borderWidth: 3, borderColor: colors.white },
 });
