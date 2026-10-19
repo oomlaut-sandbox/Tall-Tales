@@ -3,7 +3,7 @@
 //   Parental controls — shape the app down to exactly the experience a parent wants: what shows (Book Store,
 //   My Notebook, Create a Story, Help), whether the child may change playback (or it always plays one way),
 //   recording, sharing and printing, and changing the language. "Lock everything" leaves only My Library.
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
@@ -14,6 +14,7 @@ import { Bar, Burger, WithBar } from '../components/Chrome';
 import { LANGS, useT } from '../i18n';
 import { lockedControls, quickSafeControls, DEFAULT_CONTROLS } from '../controls';
 import { usePurchases } from '../purchases';
+import { hapticsOn, onHaptics, setHapticsOn, tap } from '../haptics';
 
 const MODES = [['self', 'Read Yourself'], ['learn', 'Learn to Read'], ['auto', 'Auto Play'], ['page', 'Page by Page Play'], ['listen', 'Listen Only']];
 
@@ -30,7 +31,7 @@ function Toggle({ label, value, onChange }) {
   return (
     <View style={styles.row}>
       <Text style={styles.rowText}>{label}</Text>
-      <Switch value={value} onValueChange={onChange} trackColor={{ true: colors.green, false: '#555' }} thumbColor={colors.white} ios_backgroundColor="#555" />
+      <Switch value={value} onValueChange={(v) => { tap(); onChange(v); }} trackColor={{ true: colors.green, false: '#555' }} thumbColor={colors.white} ios_backgroundColor="#555" />
     </View>
   );
 }
@@ -38,6 +39,8 @@ function Toggle({ label, value, onChange }) {
 export default function Settings({ u, openMenu, lang, setLang, bookLang, setBookLang, controls, setControls, mode, onDone, onJoin }) {
   const t = useT();
   const insets = useSafeAreaInsets();
+  const [hap, setHap] = useState(hapticsOn());
+  useEffect(() => onHaptics(setHap), []);
   const ps = usePurchases();
   const set = (patch) => setControls({ ...controls, ...patch });
   // (the child's age is its own setting: Lock and Unlock everything keep it)
@@ -116,6 +119,11 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
             <Text style={styles.small}>{t('In Listen Only, the screen becomes a soft nightlight. It can also show the time and wake your child gently.')}</Text>
             <Toggle label={t('Show a clock')} value={!!controls.clock} onChange={(v) => set({ clock: v })} />
             <Text style={styles.small}>{t('The alarm lives on the nightlight’s bar, beside the lock. It works while the nightlight is on: keep the app open in Listen Only, with the phone plugged in.')}</Text>
+          </View>
+          {/* haptic feedback: small clicks you feel on the dials, knobs, sliders and buttons (for the whole phone) */}
+          <Text style={styles.section}>{t('Haptic feedback')}</Text>
+          <View style={styles.card}>
+            <Toggle label={t('Feel a soft click on dials, knobs and buttons')} value={hap} onChange={setHapticsOn} />
           </View>
           <View style={styles.card}>
             <Pressable onPress={() => setControls({ ...lockedControls(controls.playMode || mode, controls.childAge), ...night })} style={[styles.pill, { backgroundColor: colors.deepRed }]} accessibilityRole="button">

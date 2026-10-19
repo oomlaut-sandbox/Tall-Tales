@@ -63,6 +63,7 @@ import { markFinished, markFirst, markReadToday } from '../badges';
 import { AUDIO, TIMINGS } from '../narration';
 import { SAMPLES, SAMPLE_LANGS, THE_END } from '../narration/samples';
 import Nightlight from '../components/Nightlight';
+import { thunk, withTap } from '../haptics';
 
 export const MODES = [
   [<GlassesIcon />, 'self', 'Read Yourself', 'Page by page with no audio'],
@@ -734,21 +735,21 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
                 </Pressable>
               ) : null}
               {/* music and sounds: the little floating Audio Player */}
-              <Pressable onPress={() => setAmbientPlayer(!getAmbient().showPlayer)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.small, { marginTop: isRestricted(controls) && onSettings ? u * 4 : u * 7 }]}>{/* closer when it sits beside the lock */}
+              <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.small, { marginTop: isRestricted(controls) && onSettings ? u * 4 : u * 7 }]}>{/* closer when it sits beside the lock */}
                 <MusicIcon size={u * 5.6} color="#8e8e8e" />
               </Pressable>
               {/* the nightlight: a small light grey moon (Listen Only with the sunset sun) */}
               {canMoon ? (
-                <Pressable onPress={toggleNight} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Nightlight')} style={[styles.small, { marginTop: u * 4 }]}>
+                <Pressable onPress={withTap(toggleNight)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Nightlight')} style={[styles.small, { marginTop: u * 4 }]}>
                   <MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />
                 </Pressable>
               ) : null}
               {listen ? (
                 <>
-                <Pressable ref={nlLockRef} onPress={lockNight} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.small, { marginTop: u * 4 }]}>
+                <Pressable ref={nlLockRef} onPress={withTap(lockNight, thunk)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.small, { marginTop: u * 4 }]}>
                   <LockIcon size={u * 4.6} color="#9a9a9a" />
                 </Pressable>
-                <Pressable onPress={() => setAlarmOpen(true)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.small, { marginTop: u * 4 }]}>
+                <Pressable onPress={withTap(() => setAlarmOpen(true))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.small, { marginTop: u * 4 }]}>
                     <AlarmClockIcon size={u * 4.8} color={prefs.alarmOn ? '#e0e0e0' : '#9a9a9a'} weight={Math.max(1.5, u * 0.42)} />
                   </Pressable>
                 </>
@@ -783,20 +784,20 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           </Pressable>
         ) : null}
         {/* music and sounds: opens (or hides) the little floating Audio Player; a little apart from the menu (or the lock) */}
-        <Pressable onPress={() => setAmbientPlayer(!getAmbient().showPlayer)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.small, { marginLeft: isRestricted(controls) && onSettings ? u * 4 : u * 7 }]}>{/* closer when it sits beside the lock */}
+        <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.small, { marginLeft: isRestricted(controls) && onSettings ? u * 4 : u * 7 }]}>{/* closer when it sits beside the lock */}
           <MusicIcon size={u * 5.6} color="#8e8e8e" />
         </Pressable>
         {canMoon ? (
-          <Pressable onPress={toggleNight} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Nightlight')} style={[styles.small, { marginLeft: u * 4 }]}>
+          <Pressable onPress={withTap(toggleNight)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Nightlight')} style={[styles.small, { marginLeft: u * 4 }]}>
             <MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />
           </Pressable>
         ) : null}
         {listen ? (
           <>
-          <Pressable ref={nlLockRef} onPress={lockNight} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.small, { marginLeft: u * 4 }]}>
+          <Pressable ref={nlLockRef} onPress={withTap(lockNight, thunk)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.small, { marginLeft: u * 4 }]}>
             <LockIcon size={u * 4.6} color="#9a9a9a" />
           </Pressable>
-          <Pressable onPress={() => setAlarmOpen(true)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.small, { marginLeft: u * 4 }]}>
+          <Pressable onPress={withTap(() => setAlarmOpen(true))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.small, { marginLeft: u * 4 }]}>
               <AlarmClockIcon size={u * 4.8} color={prefs.alarmOn ? '#e0e0e0' : '#9a9a9a'} weight={Math.max(1.5, u * 0.42)} />
             </Pressable>
           </>

@@ -5,11 +5,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DeskFelt, Felt, Stitch, useLook } from '../look';
 import { useT } from '../i18n';
+import { tap, thunk, tick, withTap } from '../haptics';
 
 export function Burger({ onPress, u }) {
   const w = u * 7, t = Math.max(3, u * 1), gap = u * 1.7;
   return (
-    <Pressable onPress={onPress} hitSlop={14} accessibilityRole="button" accessibilityLabel="Menu" style={{ width: w, justifyContent: 'center' }}>
+    <Pressable onPress={withTap(onPress)} hitSlop={14} accessibilityRole="button" accessibilityLabel="Menu" style={{ width: w, justifyContent: 'center' }}>
       <View style={{ height: t, backgroundColor: colors.white }} />
       <View style={{ height: t, backgroundColor: colors.white, marginTop: gap }} />
       <View style={{ height: t, backgroundColor: colors.white, marginTop: gap }} />
@@ -81,7 +82,7 @@ export function RecordButton({ onPress, active }) {
     return () => loop.stop();
   }, [active]);
   return (
-    <Pressable onPress={onPress} hitSlop={8} style={styles.ctl} accessibilityLabel={tr('Recording options')}>
+    <Pressable onPress={withTap(onPress, thunk)} hitSlop={8} style={styles.ctl} accessibilityLabel={tr('Recording options')}>
       <Animated.View style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: colors.highlight, transform: [{ scale: pulse }] }} />
     </Pressable>
   );
@@ -89,7 +90,7 @@ export function RecordButton({ onPress, active }) {
 
 export function PauseButton({ onPress, disabled }) {
   return (
-    <Pressable onPress={onPress} disabled={disabled} hitSlop={8} style={[styles.ctl, disabled && { opacity: 0.35 }]} accessibilityLabel="Pause">
+    <Pressable onPress={withTap(onPress)} disabled={disabled} hitSlop={8} style={[styles.ctl, disabled && { opacity: 0.35 }]} accessibilityLabel="Pause">
       <View style={{ flexDirection: 'row', gap: 8 }}>
         <View style={{ width: 9, height: 30, backgroundColor: colors.white }} />
         <View style={{ width: 9, height: 30, backgroundColor: colors.white }} />
@@ -101,7 +102,7 @@ export function PauseButton({ onPress, disabled }) {
 export function PlayButton({ onPress, active, disabled }) {
   const c = colors.white; // always white, playing or not
   return (
-    <Pressable onPress={onPress} disabled={disabled} hitSlop={8} style={[styles.ctl, disabled && { opacity: 0.35 }]} accessibilityLabel="Play">
+    <Pressable onPress={withTap(onPress)} disabled={disabled} hitSlop={8} style={[styles.ctl, disabled && { opacity: 0.35 }]} accessibilityLabel="Play">
       <View style={{ width: 0, height: 0, marginLeft: 6, borderLeftWidth: 26, borderTopWidth: 16, borderBottomWidth: 16, borderLeftColor: c, borderTopColor: 'transparent', borderBottomColor: 'transparent' }} />
     </Pressable>
   );
@@ -196,7 +197,7 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children, portr
             <Text style={[styles.panelTitle, { flex: 1 }, wide && { fontSize: 20 }]}>{title}</Text>
             {/* Close: a small chevron pointing back at the menu bar it goes into (down when upright,
                 right when sideways). Tapping outside the menu still closes it too. */}
-            <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Close menu')} style={styles.closeBtn}>
+            <Pressable onPress={withTap(onClose)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Close menu')} style={styles.closeBtn}>
               {/* one bordered corner turned 45°: both strokes meet in a single clean point (no overlapping bars) */}
               <View style={[styles.chev, wide && { transform: [{ rotate: '-90deg' }] }]}>
                 <View style={styles.chevCorner} />
@@ -438,7 +439,7 @@ export function GearIcon({ size = 18, color = colors.white, hole = colors.tile }
 export function Option({ glyph, title, sub, onPress, selected, disabled }) {
   const felt = useLook() === 'felt';
   return (
-    <Pressable onPress={onPress} disabled={disabled} style={[styles.opt, disabled && { opacity: 0.45 }]} accessibilityRole="button">
+    <Pressable onPress={withTap(onPress)} disabled={disabled} style={[styles.opt, disabled && { opacity: 0.45 }]} accessibilityRole="button">
       <View style={[styles.optIc, selected && { backgroundColor: colors.green }, felt && { borderRadius: 12, overflow: 'hidden' }]}>
         <Felt />
         <Stitch inset={4} radius={12} />
@@ -468,8 +469,8 @@ export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLab
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: () => true,
     onPanResponderTerminationRequest: () => false,
-    onPanResponderGrant: (e) => { geo.current.x0 = e.nativeEvent.locationX; last.current = toValue(geo.current.x0); cb.current.onChange(last.current); },
-    onPanResponderMove: (_, g) => { last.current = toValue(geo.current.x0 + g.dx); cb.current.onChange(last.current); },
+    onPanResponderGrant: (e) => { geo.current.x0 = e.nativeEvent.locationX; const v = toValue(geo.current.x0); if (v !== last.current) tick(); last.current = v; cb.current.onChange(v); },
+    onPanResponderMove: (_, g) => { const v = toValue(geo.current.x0 + g.dx); if (v !== last.current) tick(); last.current = v; cb.current.onChange(v); }, // a little click for every step
     onPanResponderRelease: () => cb.current.onDone && cb.current.onDone(last.current),
     onPanResponderTerminate: () => cb.current.onDone && cb.current.onDone(last.current),
   })).current;
@@ -548,7 +549,7 @@ const styles = StyleSheet.create({
 
 // an alarm clock, kept simple: a ring with two hands and two short strokes on top for the bells
 export function AlarmClockIcon({ size = 20, color = colors.white, weight = 1.8 }) {
-  const d = size * 0.8;
+  const d = size * 0.8, c = (d - 2 * weight) / 2;
   const ear = (left) => (
     <View style={{ position: 'absolute', top: size * 0.06, left: left ? size * 0.02 : undefined, right: left ? undefined : size * 0.02, width: size * 0.26, height: weight, borderRadius: weight / 2, backgroundColor: color, transform: [{ rotate: left ? '-45deg' : '45deg' }] }} />
   );
@@ -556,8 +557,9 @@ export function AlarmClockIcon({ size = 20, color = colors.white, weight = 1.8 }
     <View style={{ width: size, height: size }}>
       {ear(true)}{ear(false)}
       <View style={{ position: 'absolute', bottom: 0, left: (size - d) / 2, width: d, height: d, borderRadius: d / 2, borderWidth: weight, borderColor: color }}>
-        <View style={{ position: 'absolute', left: d / 2 - weight * 1.5, top: d * 0.22, width: weight, height: d * 0.3, borderRadius: weight / 2, backgroundColor: color }} />
-        <View style={{ position: 'absolute', left: d / 2 - weight * 1.5, top: d / 2 - weight * 1.5, width: d * 0.22, height: weight, borderRadius: weight / 2, backgroundColor: color }} />
+        {/* the hands start from the very middle (inside the ring's stroke) */}
+        <View style={{ position: 'absolute', left: c - weight / 2, top: c - d * 0.28, width: weight, height: d * 0.28 + weight / 2, borderRadius: weight / 2, backgroundColor: color }} />
+        <View style={{ position: 'absolute', left: c - weight / 2, top: c - weight / 2, width: d * 0.2 + weight / 2, height: weight, borderRadius: weight / 2, backgroundColor: color }} />
       </View>
     </View>
   );

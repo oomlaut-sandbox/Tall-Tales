@@ -22,6 +22,7 @@ import { useControls } from '../controls';
 import { fmtTime } from '../clock';
 import { TRACKS, setAmbientNight, chooseAmbient, fadeOutAmbient, setAmbientVolume, getAmbient, playAmbient } from '../ambient';
 import { useKeepAwake } from 'expo-keep-awake';
+import { thunk, tick, withTap } from '../haptics';
 
 const SUN = require('../../assets/nightlight-sun.png');
 const CORONA = require('../../assets/nightlight-corona.png');
@@ -39,11 +40,13 @@ function FineSlider({ value, onChange, width, label }) {
   const onChangeRef = useRef(onChange); onChangeRef.current = onChange;
   const x0 = useRef(0);
   const at = (x) => Math.max(0, Math.min(1, x / w.current));
+  const q = useRef(null); // a soft click every 5%
+  const send = (v) => { const k = Math.round(v * 20); if (q.current !== null && k !== q.current) tick(); q.current = k; onChangeRef.current(v); };
   const pan = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onPanResponderTerminationRequest: () => false,
-    onPanResponderGrant: (e) => { x0.current = e.nativeEvent.locationX; onChangeRef.current(at(x0.current)); },
-    onPanResponderMove: (_, g) => onChangeRef.current(at(x0.current + g.dx)),
+    onPanResponderGrant: (e) => { x0.current = e.nativeEvent.locationX; q.current = null; send(at(x0.current)); },
+    onPanResponderMove: (_, g) => send(at(x0.current + g.dx)),
   })).current;
   const k = 14;
   return (
@@ -132,7 +135,7 @@ function FingerWheel({ size, value, onChange, label }) {
       last.current = a;
       acc.current += d * 4; // 360 degrees = 1440 minutes
       const v = toHm(acc.current);
-      if (v !== valueRef.current) cb.current(v);
+      if (v !== valueRef.current) { if (v.endsWith(':00')) thunk(); else tick(); valueRef.current = v; cb.current(v); }
     },
   })).current;
   const deg = toMin(value) / 4;
@@ -189,7 +192,7 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
       <View style={[styles.popup, wide && { maxWidth: 640 }]} onStartShouldSetResponder={() => true}>
         <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch' }}>
           <Text style={[styles.small, { flex: 1, textAlign: 'left' }]}>{t('Wake-up alarm')}</Text>
-          <Pressable onPress={() => onOn(!on)} hitSlop={10} accessibilityRole="switch" accessibilityState={{ checked: on }} accessibilityLabel={t('Wake-up alarm')} style={[styles.switch, on && styles.switchOn]}>
+          <Pressable onPress={withTap(() => onOn(!on))} hitSlop={10} accessibilityRole="switch" accessibilityState={{ checked: on }} accessibilityLabel={t('Wake-up alarm')} style={[styles.switch, on && styles.switchOn]}>
             <View style={[styles.knob, on && { backgroundColor: '#1b1b1d', transform: [{ translateX: 20 }] }]} />
           </Pressable>
         </View>
@@ -200,7 +203,7 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
             {[WAKE_GROUPS[0], [...WAKE_GROUPS[1], ...TRACKS.filter((x) => x.mine).map((x) => x.id)]].map((ids, gi) => (
               <View key={gi} style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 9, marginBottom: 9 }}>
                 {ids.map((id) => (
-                  <Pressable key={id} onPress={() => onSound(id)} hitSlop={4} accessibilityRole="button" accessibilityState={{ selected: sound === id }} style={[styles.chip, sound === id && styles.chipOn]}>
+                  <Pressable key={id} onPress={withTap(() => onSound(id))} hitSlop={4} accessibilityRole="button" accessibilityState={{ selected: sound === id }} style={[styles.chip, sound === id && styles.chipOn]}>
                     <Text style={[styles.chipText, sound === id && { color: '#1b1b1d' }]}>{name(id)}</Text>
                   </Pressable>
                 ))}
@@ -208,7 +211,7 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
             ))}
           </View>
         </View>
-        <Pressable onPress={() => { onTime(draft); if (!on) onOn(true); onClose(); }} hitSlop={10} style={styles.donePill} accessibilityRole="button">
+        <Pressable onPress={withTap(() => { onTime(draft); if (!on) onOn(true); onClose(); })} hitSlop={10} style={styles.donePill} accessibilityRole="button">
           <Text style={styles.donePillText}>{on ? t('Done') : t('Set alarm')}</Text>
         </Pressable>
       </View>
@@ -363,7 +366,7 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
       {title ? <Text numberOfLines={2} style={styles.title}>{title}</Text> : null}
       {/* the countdown: how long until the sleep timer ends the story */}
       {sleepAt ? <Text style={styles.countdown} accessibilityLabel={t('Sleep timer: {n} min', { n: left })}>{countdown}</Text> : null}
-      <Pressable onPress={cycleSleep} disabled={locked} hitSlop={12} style={{ marginTop: 52, flexDirection: 'row', alignItems: 'center', gap: 8, opacity: sleepAt ? 0.9 : 0.5 }} accessibilityRole="button">
+      <Pressable onPress={withTap(cycleSleep)} disabled={locked} hitSlop={12} style={{ marginTop: 52, flexDirection: 'row', alignItems: 'center', gap: 8, opacity: sleepAt ? 0.9 : 0.5 }} accessibilityRole="button">
         <Text style={styles.small}>{sleepAt ? t('Sleep timer: {n} min', { n: left }) : t('Sleep timer: off')}</Text>
       </Pressable>
     </View>
@@ -388,10 +391,10 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
         {waking ? (
           <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'flex-end', paddingBottom: wide ? 40 : 56 }]}>
             <Animated.View style={{ alignItems: 'center', opacity: pop, transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1] }) }] }}>
-              <Pressable onPress={snooze} hitSlop={12} style={styles.snooze} accessibilityRole="button" accessibilityLabel={t('Snooze')}>
+              <Pressable onPress={withTap(snooze, thunk)} hitSlop={12} style={styles.snooze} accessibilityRole="button" accessibilityLabel={t('Snooze')}>
                 <Text style={styles.snoozeText}>{t('Snooze')}</Text>
               </Pressable>
-              <Pressable onPress={goodMorning} hitSlop={12} style={{ marginTop: 16 }} accessibilityRole="button">
+              <Pressable onPress={withTap(goodMorning)} hitSlop={12} style={{ marginTop: 16 }} accessibilityRole="button">
                 <Text style={styles.wakeText}>{t('Good morning!')}</Text>
               </Pressable>
             </Animated.View>
@@ -405,7 +408,7 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
             </Text>
           ) : null}
           {controls.clock ? (
-            <Pressable onPress={() => setShowFace((x) => !x)} hitSlop={14} style={{ marginTop: 18, opacity: showFace ? 0.95 : 0.55 }} accessibilityRole="button" accessibilityLabel={t('Show a clock')}>
+            <Pressable onPress={withTap(() => setShowFace((x) => !x))} hitSlop={14} style={{ marginTop: 18, opacity: showFace ? 0.95 : 0.55 }} accessibilityRole="button" accessibilityLabel={t('Show a clock')}>
               <ClockIcon />
             </Pressable>
           ) : null}
@@ -413,7 +416,7 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
       </Animated.View>
       {/* locked: the lock on the bar stays tappable, above the blocker (it asks the grown-ups' question) */}
       {locked && lockRect ? (
-        <Pressable onPress={() => setGate(true)} hitSlop={16} style={{ position: 'absolute', left: lockRect.x, top: lockRect.y, width: lockRect.width, height: lockRect.height, zIndex: 79, alignItems: 'center', justifyContent: 'center' }}
+        <Pressable onPress={withTap(() => setGate(true))} hitSlop={16} style={{ position: 'absolute', left: lockRect.x, top: lockRect.y, width: lockRect.width, height: lockRect.height, zIndex: 79, alignItems: 'center', justifyContent: 'center' }}
           accessibilityRole="button" accessibilityLabel={t('Unlock the screen')}>
           <LockIcon size={Math.min(lockRect.width, lockRect.height)} color={CREAM} />
         </Pressable>

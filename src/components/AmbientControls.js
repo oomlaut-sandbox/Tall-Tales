@@ -9,12 +9,13 @@ import { useT } from '../i18n';
 import ParentGate from './ParentGate';
 import { removeMusic } from '../myMusic';
 import MyMusicSheet from './MyMusicSheet';
+import { thunk, tap, withTap } from '../haptics';
 
 const GUITAR = require('../../assets/music-guitar.png'); // the grey felt character with his cardboard guitar (at the bottom of the page)
 const PLAYER = require('../../assets/music-player-thumb.png'); // a small Audio Player (with its shadow drawn in); tap it to open the real one
 
 const Chip = ({ label, on, onPress, onLongPress, style }) => (
-  <Pressable onPress={onPress} onLongPress={onLongPress} style={[styles.chip, on && styles.chipOn, style]} accessibilityRole="button" accessibilityState={{ selected: on }}>
+  <Pressable onPress={withTap(onPress)} onLongPress={onLongPress ? withTap(onLongPress, thunk) : undefined} style={[styles.chip, on && styles.chipOn, style]} accessibilityRole="button" accessibilityState={{ selected: on }}>
     <Text style={[styles.chipText, on && { color: colors.white }]}>{label}</Text>
   </Pressable>
 );
@@ -41,7 +42,7 @@ export default function AmbientControls() {
         <View style={{ flex: 1, minWidth: 0, gap: 10 }}>
           <Text style={styles.small}>{t('Relaxing sounds and gentle music that keep playing while you use the app. Lovely at bedtime.')}</Text>
           {/* opens the Audio Player over the page */}
-          <Pressable onPress={() => setAmbientPlayer(true)} style={styles.openBtn} accessibilityRole="button">
+          <Pressable onPress={withTap(() => setAmbientPlayer(true))} style={styles.openBtn} accessibilityRole="button">
             <Text style={styles.openText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{t('Open Audio Player')}</Text>
           </Pressable>
           <View style={styles.chips}>
@@ -59,7 +60,7 @@ export default function AmbientControls() {
           onLongPress={x.mine ? () => setGate({ reason: t('Remove “{name}”', { name: x.name }), run: () => removeMusic(x.id) }) : undefined} />)}
       </View>
       {/* the family's own music: upload a file or record one (behind the grown-ups' question), then name it */}
-      <Pressable onPress={() => setGate({ reason: t('Upload or record music'), run: () => setSheet(true) })} style={styles.uploadBtn} accessibilityRole="button">
+      <Pressable onPress={() => tap() || setGate({ reason: t('Upload or record music'), run: () => setSheet(true) })} style={styles.uploadBtn} accessibilityRole="button">
         <Text style={styles.openText}>{t('Upload or record music')}</Text>
       </Pressable>
       {MUSIC.some((x) => x.mine) ? <Text style={styles.hint}>{t('Press and hold your own music to remove it.')}</Text> : null}

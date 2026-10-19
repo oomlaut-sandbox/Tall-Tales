@@ -449,6 +449,8 @@ const T = {
   'Tap to start singing': { de: 'Tippe und fang an zu singen', fr: 'Touchez pour commencer à chanter', es: 'Toca para empezar a cantar', ja: 'タップして うたいはじめよう' },
   'That music couldn’t be added. Try another file.': { de: 'Diese Musik konnte nicht hinzugefügt werden. Versuche eine andere Datei.', fr: 'Cette musique n’a pas pu être ajoutée. Essayez un autre fichier.', es: 'No se pudo añadir esa música. Prueba con otro archivo.', ja: 'その おんがくは ついか できませんでした。べつの ファイルを ためしてください。' },
   'Press and hold your own music to remove it.': { de: 'Halte deine eigene Musik gedrückt, um sie zu entfernen.', fr: 'Appuyez longuement sur votre musique pour la retirer.', es: 'Mantén pulsada tu música para quitarla.', ja: 'じぶんの おんがくを ながおしすると けせます。' },
+  'Haptic feedback': { de: 'Haptisches Feedback', fr: 'Retour haptique', es: 'Respuesta háptica', ja: 'しんどうフィードバック' },
+  'Feel a soft click on dials, knobs and buttons': { de: 'Ein sanftes Klicken an Drehrädern, Knöpfen und Tasten spüren', fr: 'Sentir un léger clic sur les molettes, les boutons et les touches', es: 'Sentir un clic suave en ruedas, perillas y botones', ja: 'ダイヤルや ボタンで やさしい クリックを かんじる' },
   'Good morning!': { de: 'Guten Morgen!', fr: 'Bonjour !', es: '¡Buenos días!', ja: 'おはよう！' },
   'Now playing': { de: 'Jetzt läuft', fr: 'En cours', es: 'Ahora suena', ja: 'いま よんでいる本' },
   'Wake up with': { de: 'Wecken mit', fr: 'Se réveiller avec', es: 'Despertar con', ja: 'めざめの おと' },

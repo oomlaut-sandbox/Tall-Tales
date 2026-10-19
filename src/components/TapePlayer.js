@@ -13,6 +13,7 @@ import { Animated, Image, PanResponder, Pressable, StyleSheet, Text, View, useWi
 import { fonts } from '../theme';
 import { MUSIC, SOUNDS, TRACKS, getAmbient, onAmbient, pauseAmbient, playAmbient, setAmbientPlayer, setAmbientVolume, stepAmbient } from '../ambient';
 import { useT } from '../i18n';
+import { thunk, tick, withTap } from '../haptics';
 
 const BODY = require('../../assets/audio-player2.jpg'); // the whole player, in grey
 const PLAY_ON = require('../../assets/audio-play-on.png'); // the green Play button, laid over while playing
@@ -40,6 +41,9 @@ export default function TapePlayer({ onMenu }) {
   useEffect(() => onAmbient(setS), []);
   // it fades in with its dark layer
   const fade = useRef(new Animated.Value(0)).current;
+  // the volume knob clicks softly every 5%
+  const volQ = useRef(null);
+  const setVolTick = (v) => { const q = Math.round(v * 20); if (volQ.current !== null && q !== volQ.current) tick(); volQ.current = q; setAmbientVolume(v); };
   useEffect(() => { if (s.showPlayer) { fade.setValue(0); Animated.timing(fade, { toValue: 1, duration: 200, useNativeDriver: true }).start(); } }, [s.showPlayer]);
   // the knobs' lines turn a notch for every click (all the way round over the choices and "off")
   const notch = (list, id) => (list.findIndex((x) => x.id === id) + 1) * (300 / list.length);
@@ -58,8 +62,8 @@ export default function TapePlayer({ onMenu }) {
   const volSlide = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onPanResponderTerminationRequest: () => false,
-    onPanResponderGrant: (e) => { vx0.current = e.nativeEvent.locationX; setAmbientVolume(volAt(vx0.current)); },
-    onPanResponderMove: (_, g) => setAmbientVolume(volAt(vx0.current + g.dx)),
+    onPanResponderGrant: (e) => { vx0.current = e.nativeEvent.locationX; setVolTick(volAt(vx0.current)); },
+    onPanResponderMove: (_, g) => setVolTick(volAt(vx0.current + g.dx)),
   })).current;
   const vol = Math.max(VMIN, Math.min(1, s.volume));
   const thumbX = X0 + (X1 - X0) * (vol - VMIN) / (1 - VMIN);
@@ -92,14 +96,14 @@ export default function TapePlayer({ onMenu }) {
         {/* at night (the nightlight is on) the felt is turned down to a dark grey */}
         {s.night ? <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.58)' }]} /> : null}
         {/* the felt line at the top right closes the player */}
-        <Pressable onPress={() => setAmbientPlayer(false)} hitSlop={10} style={at(1400, 100, 300, 220)} accessibilityRole="button" accessibilityLabel={t('Close Audio Player')} />
-        <Pressable onPress={playAmbient} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} accessibilityRole="button" accessibilityLabel={t('Play')} />
-        <Pressable onPress={pauseAmbient} style={at(1360, 562, 230, 250)} accessibilityRole="button" accessibilityLabel={t('Pause')} />
+        <Pressable onPress={withTap(() => setAmbientPlayer(false))} hitSlop={10} style={at(1400, 100, 300, 220)} accessibilityRole="button" accessibilityLabel={t('Close Audio Player')} />
+        <Pressable onPress={withTap(playAmbient)} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} accessibilityRole="button" accessibilityLabel={t('Play')} />
+        <Pressable onPress={withTap(pauseAmbient)} style={at(1360, 562, 230, 250)} accessibilityRole="button" accessibilityLabel={t('Pause')} />
         {windowText([268, 1067, 1082, 150], name(s.sound) || t('Select sound'), !s.sound)}
         {windowText([268, 1437, 1076, 150], name(s.music) || t('Select music'), !s.music)}
         {/* the knobs stay put; tap one to click to the next choice */}
-        <Pressable onPress={() => stepAmbient('sound')} style={at(1386, 1010, 250, 260)} accessibilityRole="button" accessibilityLabel={name(s.sound) || t('Select sound')} />
-        <Pressable onPress={() => stepAmbient('music')} style={at(1386, 1380, 250, 260)} accessibilityRole="button" accessibilityLabel={name(s.music) || t('Select music')} />
+        <Pressable onPress={withTap(() => stepAmbient('sound'), thunk)} style={at(1386, 1010, 250, 260)} accessibilityRole="button" accessibilityLabel={name(s.sound) || t('Select sound')} />
+        <Pressable onPress={withTap(() => stepAmbient('music'), thunk)} style={at(1386, 1380, 250, 260)} accessibilityRole="button" accessibilityLabel={name(s.music) || t('Select music')} />
         {mark(1506, 1127, k1)}
         {mark(1506, 1500, k2)}
         {/* the volume: the felt knob slides left (quieter) and right (louder) in the stitched slot */}
