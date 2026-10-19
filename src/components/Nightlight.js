@@ -230,7 +230,7 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
   const [gate, setGate] = useState(false);
   const [showFace, setShowFace] = useState(false);
   useKeepAwake(); // the screen stays on while the nightlight is showing
-  useEffect(() => { setAmbientNight(true); return () => { setAmbientNight(false); if (onAlarmClose) onAlarmClose(); }; }, []);
+  useEffect(() => { setAmbientNight(true); if (onEclipse) onEclipse(0); /* it always opens with the whole sun showing */ return () => { setAmbientNight(false); if (onAlarmClose) onAlarmClose(); }; }, []);
   // when the nightlight starts, the screen fades slowly to black and the sun fades in with it
   const appear = useRef(new Animated.Value(0)).current;
   useEffect(() => { Animated.timing(appear, { toValue: 1, duration: 3500, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(); }, []);
