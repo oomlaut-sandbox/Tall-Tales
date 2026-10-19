@@ -27,6 +27,7 @@ import Settings from './src/screens/Settings';
 import MusicSounds from './src/screens/MusicSounds';
 import Membership from './src/components/Membership';
 import TapePlayer from './src/components/TapePlayer';
+import './src/myMusic'; // the family's own music joins the list at start
 import { LangContext, deviceLang, translate } from './src/i18n';
 import { ControlsContext, DEFAULT_CONTROLS } from './src/controls';
 import Notebook, { NOTEBOOK_COVER, R_EDGE, R_SPINE } from './src/screens/Notebook';

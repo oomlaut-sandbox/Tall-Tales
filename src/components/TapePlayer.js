@@ -65,7 +65,7 @@ export default function TapePlayer({ onMenu }) {
   const thumbX = X0 + (X1 - X0) * (vol - VMIN) / (1 - VMIN);
   const turn = (v) => ({ transform: [{ rotate: v.interpolate({ inputRange: [0, 360], outputRange: ['0deg', '360deg'] }) }] });
   if (!s.showPlayer) return null;
-  const name = (id) => { const x = TRACKS.find((tr) => tr.id === id); return x ? t(x.name) : null; };
+  const name = (id) => { const x = TRACKS.find((tr) => tr.id === id); return x ? (x.mine ? x.name : t(x.name)) : null; };
   const playing = s.playing && !!(s.sound || s.music);
   // the line on a knob's face: it turns around the face's middle (cx, cy)
   const mark = (cx, cy, v) => (
@@ -89,6 +89,8 @@ export default function TapePlayer({ onMenu }) {
         <Image source={BODY} style={{ width: PW, height: PH }} resizeMode="stretch" />
         {/* Play turns green while something plays */}
         {playing ? <Image pointerEvents="none" source={PLAY_ON} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} resizeMode="stretch" /> : null}
+        {/* at night (the nightlight is on) the felt is turned down to a dark grey */}
+        {s.night ? <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.58)' }]} /> : null}
         {/* the felt line at the top right closes the player */}
         <Pressable onPress={() => setAmbientPlayer(false)} hitSlop={10} style={at(1400, 100, 300, 220)} accessibilityRole="button" accessibilityLabel={t('Close Audio Player')} />
         <Pressable onPress={playAmbient} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} accessibilityRole="button" accessibilityLabel={t('Play')} />
@@ -105,7 +107,7 @@ export default function TapePlayer({ onMenu }) {
           accessibilityValue={{ min: 0, max: 100, now: Math.round(vol * 100) }}
           accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
           onAccessibilityAction={(e) => setAmbientVolume(vol + (e.nativeEvent.actionName === 'increment' ? 0.1 : -0.1))}>
-          <Image pointerEvents="none" source={THUMB} style={at(thumbX - SLOT.x - THUMB_D / 2, Y - SLOT.y - THUMB_D / 2 + 4, THUMB_D, THUMB_D)} />
+          <Image pointerEvents="none" source={THUMB} style={[at(thumbX - SLOT.x - THUMB_D / 2, Y - SLOT.y - THUMB_D / 2 + 4, THUMB_D, THUMB_D), s.night && { opacity: 0.45 }]} />
         </View>
       </View>
     </View>

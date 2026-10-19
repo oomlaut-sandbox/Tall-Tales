@@ -15,9 +15,9 @@ export const TRACKS = [
   { id: 'campfire', kind: 'sound', name: 'Campfire', src: require('../assets/ambient/campfire.mp3') }, // a real branch fire (LaSonotheque #0988, CC0)
   { id: 'night-forest', kind: 'sound', name: 'Quiet forest', src: require('../assets/ambient/night-forest.mp3') }, // a real forest (BigSoundBank #2749, CC0)
   { id: 'wind-chimes', kind: 'sound', name: 'Wind chimes', src: require('../assets/ambient/wind-chimes.mp3') }, // a real bamboo wind chime in a garden (Freesound #739142 by GoatsheadCastle, CC0)
+  { id: 'gentle-guitar', kind: 'music', name: 'Gentle guitar', src: require('../assets/ambient/gentle-guitar.mp3') },
   { id: 'music-box', kind: 'music', name: 'Music box lullaby', src: require('../assets/ambient/music-box.mp3') },
   { id: 'soft-piano', kind: 'music', name: 'Soft piano', src: require('../assets/ambient/soft-piano.mp3') },
-  { id: 'gentle-guitar', kind: 'music', name: 'Gentle guitar', src: require('../assets/ambient/gentle-guitar.mp3') },
   { id: 'dreamy-harp', kind: 'music', name: 'Dreamy harp', src: require('../assets/ambient/dreamy-harp.mp3') },
 ];
 export const SOUNDS = TRACKS.filter((x) => x.kind === 'sound');
@@ -42,7 +42,7 @@ loadJSON('ambient2', null).then((s) => {
   if (s) state = { ...state, ...s, playing: false };
   // a choice that's no longer offered is forgotten
   if (state.sound && !TRACKS.some((x) => x.id === state.sound)) state.sound = null;
-  if (state.music && !TRACKS.some((x) => x.id === state.music)) state.music = null;
+  if (state.music && !String(state.music).startsWith('my-') && !TRACKS.some((x) => x.id === state.music)) state.music = null; // (the family's own music loads a moment later)
   listeners.forEach((fn) => fn(state)); }).catch(() => {});
 
 // one player per channel
@@ -139,6 +139,18 @@ export function setAmbientVolume(v) {
   set({ volume: vol });
   for (const c of Object.values(ch)) try { if (c.player && !c.fade) c.player.volume = vol; } catch (e) {}
 }
+// the family's own music (added on the Music and Sounds page): it joins the list like any other piece
+export function addTrack(tr) {
+  if (TRACKS.some((x) => x.id === tr.id)) return;
+  TRACKS.push(tr); (tr.kind === 'sound' ? SOUNDS : MUSIC).push(tr);
+  set({});
+}
+export function removeTrack(id) {
+  for (const list of [TRACKS, SOUNDS, MUSIC]) { const i = list.findIndex((x) => x.id === id); if (i >= 0) list.splice(i, 1); }
+  if (state.music === id) chooseAmbient('music', null); else if (state.sound === id) chooseAmbient('sound', null); else set({});
+}
+// the nightlight is showing (the Audio Player turns to dark grey felt)
+export function setAmbientNight(on) { if (!!state.night !== !!on) set({ night: !!on }); }
 export function setAmbientPlayer(show) { set({ showPlayer: !!show }); }
 export function setPlayerPos(pos) { set({ pos }); }
 

@@ -20,7 +20,7 @@ import ParentGate from './ParentGate';
 import { useT } from '../i18n';
 import { useControls } from '../controls';
 import { fmtTime } from '../clock';
-import { TRACKS, chooseAmbient, fadeOutAmbient, setAmbientVolume, getAmbient, playAmbient } from '../ambient';
+import { TRACKS, setAmbientNight, chooseAmbient, fadeOutAmbient, setAmbientVolume, getAmbient, playAmbient } from '../ambient';
 import { useKeepAwake } from 'expo-keep-awake';
 
 const SUN = require('../../assets/nightlight-sun.png');
@@ -172,7 +172,7 @@ function FingerWheel({ size, value, onChange, label }) {
 }
 
 // the alarm popup (from the alarm clock on the bar): on/off, the finger wheel, then how to wake up
-const WAKE_GROUPS = [['forest-birds', 'wind-chimes', 'brook', 'waves'], ['music-box', 'soft-piano', 'gentle-guitar', 'dreamy-harp']];
+const WAKE_GROUPS = [['forest-birds', 'wind-chimes', 'brook', 'waves'], ['gentle-guitar', 'music-box', 'soft-piano', 'dreamy-harp']];
 function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, wide, area }) {
   const t = useT();
   const [draft, setDraft] = useState(time);
@@ -185,7 +185,7 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
   }, [visible]);
   if (!visible) return null;
   const size = Math.max(150, Math.min(200, wide ? area.height * 0.42 : area.width * 0.5));
-  const name = (id) => { const tr = TRACKS.find((x) => x.id === id); return tr ? t(tr.name) : id; };
+  const name = (id) => { const tr = TRACKS.find((x) => x.id === id); return tr ? (tr.mine ? tr.name : t(tr.name)) : id; };
   const close = () => { onTime(draft); onClose(); };
   return (
     <Animated.View style={[StyleSheet.absoluteFill, styles.scrim, { opacity: fade }]} onStartShouldSetResponder={() => true} onResponderRelease={close}>
@@ -200,7 +200,7 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
           <FingerWheel size={size} value={draft} onChange={setDraft} label={t('Alarm time')} />
           <View style={{ width: wide ? 300 : '100%' }}>
             <Text style={[styles.small, { marginBottom: 12 }]}>{t('Wake up with')}</Text>
-            {WAKE_GROUPS.map((ids, gi) => (
+            {[WAKE_GROUPS[0], [...WAKE_GROUPS[1], ...TRACKS.filter((x) => x.mine).map((x) => x.id)]].map((ids, gi) => (
               <View key={gi} style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 9, marginBottom: 9 }}>
                 {ids.map((id) => (
                   <Pressable key={id} onPress={() => onSound(id)} hitSlop={4} accessibilityRole="button" accessibilityState={{ selected: sound === id }} style={[styles.chip, sound === id && styles.chipOn]}>
@@ -229,7 +229,7 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
   const [gate, setGate] = useState(false);
   const [showFace, setShowFace] = useState(false);
   useKeepAwake(); // the screen stays on while the nightlight is showing
-  useEffect(() => () => { if (onAlarmClose) onAlarmClose(); }, []);
+  useEffect(() => { setAmbientNight(true); return () => { setAmbientNight(false); if (onAlarmClose) onAlarmClose(); }; }, []);
   // when the nightlight starts, the screen fades slowly to black and the sun fades in with it
   const appear = useRef(new Animated.Value(0)).current;
   useEffect(() => { Animated.timing(appear, { toValue: 1, duration: 3500, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(); }, []);
@@ -331,6 +331,11 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
     return () => clearTimeout(tm);
   }, [sleepAt]);
   const left = sleepAt ? Math.max(1, Math.ceil((sleepAt - now.getTime()) / 60000)) : 0;
+  // the countdown under the title ticks every second while the sleep timer runs
+  const [tick, setTick] = useState(Date.now());
+  useEffect(() => { if (!sleepAt) return undefined; const iv = setInterval(() => setTick(Date.now()), 1000); return () => clearInterval(iv); }, [sleepAt]);
+  const secs = sleepAt ? Math.max(0, Math.round((sleepAt - tick) / 1000)) : 0;
+  const countdown = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
 
   // sizes: most of the upper part of the screen (upright), or the left side (sideways)
   const S = wide ? Math.min(area.width * 0.55, area.height * 0.78) : Math.min(area.width * 1.05, area.height * 0.58);
@@ -360,6 +365,8 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
       <View style={{ marginTop: 4 }}><SunIcon /></View>
       <Text style={[styles.small, { marginTop: 64 }]}>{t('Now playing')}</Text>
       {title ? <Text numberOfLines={2} style={styles.title}>{title}</Text> : null}
+      {/* the countdown: how long until the sleep timer ends the story */}
+      {sleepAt ? <Text style={styles.countdown} accessibilityLabel={t('Sleep timer: {n} min', { n: left })}>{countdown}</Text> : null}
       <Pressable onPress={cycleSleep} disabled={locked} hitSlop={12} style={{ marginTop: 52, flexDirection: 'row', alignItems: 'center', gap: 8, opacity: sleepAt ? 0.9 : 0.5 }} accessibilityRole="button">
         <Text style={styles.small}>{sleepAt ? t('Sleep timer: {n} min', { n: left }) : t('Sleep timer: off')}</Text>
       </Pressable>
@@ -428,6 +435,7 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
 const styles = StyleSheet.create({
   abs: { position: 'absolute' },
   title: { color: 'rgba(255,255,255,0.82)', fontFamily: fonts.ui, fontSize: 17, fontWeight: '300', letterSpacing: 0.3, textAlign: 'center', marginTop: 6, maxWidth: 280 },
+  countdown: { color: 'rgba(244,226,207,0.7)', fontFamily: fonts.ui, fontSize: 22, fontWeight: '200', letterSpacing: 2, marginTop: 10, fontVariant: ['tabular-nums'] },
   // the time above the sun: thin, quiet, large
   now: { color: 'rgba(244,226,207,0.78)', fontFamily: fonts.ui, fontSize: 30, fontWeight: '200', letterSpacing: 1.5, textAlign: 'center' },
   small: { color: 'rgba(255,255,255,0.45)', fontFamily: fonts.ui, fontSize: 12, letterSpacing: 0.8, textTransform: 'uppercase', textAlign: 'center' },
