@@ -7,7 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, IS_TABLET, DESK_BG } from '../look';
 import { Bar, Burger, WithBar } from '../components/Chrome';
-import { useT } from '../i18n';
+import { useLang, useT } from '../i18n';
 import { IDEA_COUNT } from '../ideas';
 
 const IDEA_PICTURE = require('../../assets/idea-room.jpg');
@@ -102,6 +102,7 @@ export const HELP = [
 
 export default function Help({ u, openMenu, onAbout, onIdeas }) {
   const t = useT();
+  const lang = useLang();
   const insets = useSafeAreaInsets();
   const { width: winW } = useWindowDimensions();
   // the felt strip: the column's width (its picture has a little room around it for the shadow)
@@ -111,11 +112,13 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
   const found = useMemo(() => {
     const words = q.toLowerCase().split(/\s+/).filter(Boolean);
     if (!words.length) return HELP;
+    // match the chosen language's words, with the English as a fallback
     return HELP.filter((h) => {
-      const all = `${h.section} ${h.title} ${h.text.join(' ')}`.toLowerCase();
+      const en = [h.section, h.title, ...h.text];
+      const all = `${en.join(' ')} ${en.map((s) => t(s)).join(' ')}`.toLowerCase();
       return words.every((w) => all.includes(w));
     });
-  }, [q]);
+  }, [q, lang]);
   const searching = !!q.trim();
   let lastSection = null;
   return (
@@ -140,27 +143,27 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
             <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.22)', 'rgba(0,0,0,0.06)', 'rgba(0,0,0,0)']} locations={[0, 0.35, 1]} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 14 }} />
             <LinearGradient pointerEvents="none" start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['rgba(0,0,0,0.08)', 'rgba(0,0,0,0)']} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 16 }} />
             <TextInput value={q} onChangeText={setQ} placeholder={t('Search help')} placeholderTextColor="#666"
-              style={styles.search} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel="Search help" />
+              style={styles.search} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel={t('Search help')} />
           </View>
           {/* About lives here now (it left the main menu) */}
           <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>{t('About Oomlaut Reader')}</Text></Pressable>
           <View style={{ height: 18 }} />
-          {!found.length ? <Text style={[styles.p, { color: colors.white }]}>Nothing found for “{q.trim()}”. Try another word.</Text> : null}
+          {!found.length ? <Text style={[styles.p, { color: colors.white }]}>{t('Nothing found for “{q}”. Try another word.', { q: q.trim() })}</Text> : null}
           {found.map((h) => {
             const head = h.section !== lastSection ? h.section : null;
             lastSection = h.section;
             const shown = searching || open === h.title;
             return (
               <View key={h.title}>
-                {head ? <Text style={styles.section}>{head}</Text> : null}
+                {head ? <Text style={styles.section}>{t(head)}</Text> : null}
                 <View style={styles.card}>
                   <Pressable onPress={() => setOpen((o) => (o === h.title ? null : h.title))} accessibilityRole="button" accessibilityState={{ expanded: shown }} style={styles.cardHead}>
-                    <Text style={styles.cardTitle}>{h.title}</Text>
+                    <Text style={styles.cardTitle}>{t(h.title)}</Text>
                     <Text style={styles.chev}>{shown ? '−' : '+'}</Text>
                   </Pressable>
                   {shown ? (
                     <View style={{ gap: 10, paddingTop: 14 }}>{/* a clear gap under the topic's title */}
-                      {h.text.map((t, k) => <Text key={k} style={styles.p}>{t}</Text>)}
+                      {h.text.map((p, k) => <Text key={k} style={styles.p}>{t(p)}</Text>)}
                     </View>
                   ) : null}
                 </View>
