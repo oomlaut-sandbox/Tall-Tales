@@ -45,7 +45,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
   const set = (patch) => setControls({ ...controls, ...patch });
   // (the child's age is its own setting: Lock and Unlock everything keep it)
   // the nightlight's clock and alarm are kept whatever preset is chosen (and don't count when comparing)
-  const NIGHT = ['clock', 'alarm'];
+  const NIGHT = ['nightlight', 'clock', 'alarm'];
   const night = Object.fromEntries(NIGHT.map((k) => [k, controls[k] ?? DEFAULT_CONTROLS[k]]));
   const same = (a, b) => Object.keys(DEFAULT_CONTROLS).every((k) => k === 'childAge' || NIGHT.includes(k) || a[k] === b[k]);
   const allOn = same(controls, DEFAULT_CONTROLS);
@@ -129,7 +129,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
           <Text style={styles.section}>{t('Nightlight')}</Text>
           <View style={styles.card}>
             <Text style={styles.small}>{t('In Listen Only, the screen becomes a soft nightlight. It can also show the time and wake your child gently.')}</Text>
-            <Toggle label={t('Show a clock')} value={!!controls.clock} onChange={(v) => set({ clock: v })} />
+            <Toggle label={t('Nightlight mode')} value={controls.nightlight !== false} onChange={(v) => set({ nightlight: v })} />
             <Text style={styles.small}>{t('The alarm lives on the nightlight’s bar, beside the lock. It works while the nightlight is on: keep the app open in Listen Only, with the phone plugged in.')}</Text>
           </View>
           {/* haptic feedback: small clicks you feel on the dials, knobs, sliders and buttons (for the whole phone) */}

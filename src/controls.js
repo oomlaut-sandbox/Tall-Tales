@@ -15,11 +15,12 @@ export const DEFAULT_CONTROLS = {
   language: true,   // the child may change the language (the list on the start page)
   childAge: null,   // the child's age: books rated for older children are hidden (null: show every book)
   profiles: true,   // the child may switch to another child's profile (Start page → Profiles)
-  clock: false,     // the nightlight (Listen Only) shows the time
+  nightlight: true, // Listen Only can become the nightlight (the moon on the reading bar)
+  clock: false,     // (no longer offered)
   alarm: false,     // the nightlight shows the alarm time (set there) and wakes the child: the sun rises, a gentle sound plays
 };
 // settings that add something rather than limit the child (not counted as restricted)
-const EXTRAS = ['clock', 'alarm'];
+const EXTRAS = ['nightlight', 'clock', 'alarm'];
 
 // everything off: only My Library and its books, played the way they're set now
 export const lockedControls = (mode, childAge = null) => ({ store: false, notebook: false, create: false, help: false, playback: false, playMode: mode || 'page', recording: false, sharing: false, language: false, profiles: false, childAge });

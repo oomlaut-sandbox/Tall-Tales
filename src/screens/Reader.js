@@ -220,7 +220,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (id === 'auto' || id === 'page' || id === 'listen') setTimeout(() => readPage(st.current.idx), 300);
   };
   // the moon on the bar: into the nightlight (Listen Only), and back to how it was before
-  const canMoon = controls.playback !== false && !controls.playMode;
+  const canMoon = controls.playback !== false && !controls.playMode && controls.nightlight !== false;
+  const nightOn = listen && controls.nightlight !== false; // Settings → Nightlight mode can switch the nightlight off
   // the nightlight's lock lives on the bar beside the moon; where it sits, so it stays tappable over the blocker
   const [nlLocked, setNlLocked] = useState(false);
   const [lockRect, setLockRect] = useState(null);
@@ -745,7 +746,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
                   <MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />
                 </Pressable>
               ) : null}
-              {listen ? (
+              {nightOn ? (
                 <>
                 <Pressable ref={nlLockRef} onPress={withTap(lockNight, thunk)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.small, { marginTop: u * 4 }]}>
                   <LockIcon size={u * 4.6} color="#9a9a9a" />
@@ -795,7 +796,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             <MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />
           </Pressable>
         ) : null}
-        {listen ? (
+        {nightOn ? (
           <>
           <Pressable ref={nlLockRef} onPress={withTap(lockNight, thunk)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.small, { marginLeft: u * 4 }]}>
             <LockIcon size={u * 4.6} color="#9a9a9a" />
@@ -839,7 +840,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         </View>
       ) : null}
       {/* Listen Only: the nightlight (the book almost hidden, a soft breathing sun, brightness, a lock) */}
-      {listen ? (
+      {nightOn ? (
         <Nightlight title={story.title} locked={nlLocked} lockRect={lockRect} onUnlock={() => setNlLocked(false)} onSleep={() => { stopReading(); clearTimeout(autoTimer.current); }} eclipse={prefs.eclipse ?? 0} onEclipse={(v) => setPrefs((p) => ({ ...p, eclipse: Math.round(v * 100) / 100 }))}
           alarmTime={prefs.alarmTime || '07:00'} alarmSound={prefs.alarmSound || 'forest-birds'} alarmOn={!!prefs.alarmOn} alarmOpen={alarmOpen} onAlarmClose={() => setAlarmOpen(false)} onAlarm={(patch) => setPrefs((p) => ({ ...p, ...patch }))}
           wide={wide} end={!!(pages[idx] && pages[idx].end)}

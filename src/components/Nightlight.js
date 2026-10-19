@@ -228,7 +228,7 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
   const t = useT();
   const controls = useControls();
   const [gate, setGate] = useState(false);
-  const [showFace, setShowFace] = useState(true) // the clock face shows over the sun when "Show a clock" is on in Settings;
+  const showFace = false; // (the analog clock face isn't offered for now)
   useKeepAwake(); // the screen stays on while the nightlight is showing
   useEffect(() => { setAmbientNight(true); if (onEclipse) onEclipse(0); /* it always opens with the whole sun showing */ return () => { setAmbientNight(false); if (onAlarmClose) onAlarmClose(); }; }, []);
   // when the nightlight starts, the screen fades slowly to black and the sun fades in with it
