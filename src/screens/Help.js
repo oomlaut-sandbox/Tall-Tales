@@ -20,6 +20,9 @@ export const HELP = [
     'Inside are two choices: My Library (your books) and Book Store (new books). Tap one to go there.',
     'The menu button (three lines) in the bottom bar takes you anywhere in the app.',
   ] },
+  { section: 'Getting started', title: 'Profiles for each child', text: [
+    'Each child can have their own profile, with their own notebook, badges, playlists and settings. Choose Profiles from the menu (or tap the name at the top of the start page) to add a child or switch to another.',
+  ] },
   { section: 'Reading', title: 'Reading a book', text: [
     'Open My Library and tap a book. Its cover opens and the first page appears.',
     'Each spread has a picture and its words. Turn the page by tapping the folded corner, tapping the right edge, or swiping up (or to the left when the phone is sideways). You can drag the page and it follows your finger.',
@@ -36,6 +39,34 @@ export const HELP = [
   ] },
   { section: 'Reading', title: 'Text size, font and sound effects', text: [
     'Playback Settings also has the size of the words, the book font, and sound effects (page turns and the cover) with a volume slider.',
+  ] },
+  { section: 'Music and sounds', title: 'The Audio Player', text: [
+    'Tap the music note on the black bar to open the Audio Player. It’s there while you read, in My Library and in the Book Store.',
+    'Turn the top knob to choose a nature sound and the bottom knob to choose music. Press Play, and slide the felt knob to set the volume. Tap the little line at the top right, or anywhere outside the player, to close it.',
+    'The sounds keep playing while you browse and read.',
+  ] },
+  { section: 'Music and sounds', title: 'The Music and Sounds page', text: [
+    'Choose Music and Sounds from the menu. Tap a sound or a piece of music to hear it, and tap it again to turn it off. A sound and a piece of music can play together.',
+    'You can also set the volume, the playback speed, and a sleep timer that slowly fades the sound away.',
+  ] },
+  { section: 'Music and sounds', title: 'Your own music', text: [
+    'Grown-ups can tap Upload or record music (it asks the grown-up question first). Upload a song saved on the phone, or record one right there, like a parent or grandparent singing a lullaby. Give it a name and it joins the music list.',
+    'Press and hold your own music to remove it.',
+  ] },
+  { section: 'Music and sounds', title: 'Playlists', text: [
+    'Open Playback Settings and choose Playlists to line up several books that play one after another. Turn on Loop to start again from the beginning, and share a playlist with family.',
+  ] },
+  { section: 'Bedtime', title: 'Listen Only and the nightlight', text: [
+    'Tap the moon on the black bar while a book is open. The book reads by itself and the screen slowly fades to a soft, glowing sunset sun.',
+    'Slide the fine line under the sun to dim it: the moon moves across until only a warm glow is left.',
+    'Tap the sleep timer to stop the story after 15, 30 or 60 minutes. The music fades out and the moon covers the sun.',
+    'Tap the lock beside the moon so little hands can’t change anything. To unlock, tap the lock again and answer the grown-up question.',
+    'The screen stays on while the nightlight shows, so keep the phone plugged in at night. Grown-ups can switch the nightlight off in Settings.',
+  ] },
+  { section: 'Bedtime', title: 'The wake-up alarm', text: [
+    'Tap the alarm clock beside the lock. Turn the wheel with a finger in its little dimple to set the time (one turn is the whole day), then choose what to wake up to: a nature sound or music.',
+    'At that time the sun rises slowly and the sound fades in very gently. Tap Snooze for nine more minutes, or Good morning! to end it.',
+    'The alarm works while the nightlight is showing and the app stays open.',
   ] },
   { section: 'Your voice', title: 'Recording yourself reading', text: [
     'A grown-up can record their own voice reading each page, so the book plays in a familiar voice.',
@@ -90,6 +121,7 @@ export const HELP = [
     'Quick and Safe Kid is the recommended setup for a child reading alone: only My Library and My Notebook, every book read aloud a page at a time, and nothing to buy, share, print, record or change.',
     'Your child’s age: every book has an age rating, and books rated for older children are hidden.',
     'Lock everything leaves only My Library and its books, read the way you chose. Unlock everything brings it all back.',
+    'Nightlight mode: switch the bedtime nightlight on or off. Haptic feedback: feel soft clicks on dials, knobs and buttons, or switch them off.',
   ] },
   { section: 'Grown-ups', title: 'The grown-up check', text: [
     'Some things, like taking photos, printing, sharing and deleting, first ask a quick question only a grown-up can answer.',

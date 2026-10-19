@@ -131,6 +131,8 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
   const [tip, setTip] = useState(false);
   const [noMore, setNoMore] = useState(false);
   useEffect(() => { loadJSON('tipAudioPlayer', null).then((v) => { if (!v) setTip(true); }); }, []);
+  const { width: tipW, height: tipH } = useWindowDimensions();
+  const tipWide = tipW > tipH; // sideways: the bar runs down the right side
   const closeTip = () => { setTip(false); if (noMore) saveJSON('tipAudioPlayer', { hide: true }); };
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => (selecting ? (
@@ -207,7 +209,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
         <View style={styles.tipWrap} pointerEvents="box-none">
           <View style={styles.tipBubble}>
             <Text style={styles.tipTitle}>{t('The Audio Player')}</Text>
-            <Text style={styles.tipText}>{t('While you read, tap the music note on the black bar. Turn the knobs to choose a nature sound and some music, press Play, and slide to set the volume. Close it with the little line at the top right.')}</Text>
+            <Text style={styles.tipText}>{t('Tap the music note on the black bar to open it, here, in the Book Store or while you read. Turn the knobs to choose a nature sound and some music, press Play, and slide to set the volume. Close it with the little line at the top right.')}</Text>
             <Pressable onPress={() => setNoMore((x) => !x)} style={styles.tipCheckRow} accessibilityRole="checkbox" accessibilityState={{ checked: noMore }} hitSlop={6}>
               <View style={[styles.tipBox, noMore && styles.tipBoxOn]}>{noMore ? <Text style={styles.tipTick}>✓</Text> : null}</View>
               <Text style={styles.tipCheck}>{t('Don’t show this message again')}</Text>
@@ -218,7 +220,8 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
               <Image source={TIP_CHAR} style={styles.tipChar} resizeMode="contain" accessibilityIgnoresInvertColors />
             </View>
           </View>
-          <View style={styles.tipTail} />
+          {/* the tail points down at the music note on the bar (upright; sideways the bar is on the right, so no tail) */}
+          {!tipWide ? <View style={[styles.tipTail, { marginLeft: Math.max(12, u * 22.2 - 16 - 12) }]} /> : null}
         </View>
       ) : null}
     </WithBar>
