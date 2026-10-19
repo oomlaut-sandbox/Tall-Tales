@@ -237,7 +237,7 @@ export default function Nightlight({ title, onSleep, eclipse = 0, onEclipse, ala
   return (
     <>
       {/* the book, almost hidden: nothing under it can be touched (The End's buttons still work) */}
-      <View pointerEvents={end && !locked ? 'none' : 'auto'} style={[styles.abs, area, { backgroundColor: '#000', opacity: 0.93, zIndex: 40 }]} />
+      <View pointerEvents={end && !locked ? 'none' : 'auto'} style={[styles.abs, area, { backgroundColor: '#000', opacity: 0.965, zIndex: 40 }]} />
       {/* locked: the whole screen, bars too, takes every touch */}
       {locked ? <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.55)', zIndex: 78 }]} onStartShouldSetResponder={() => true} /> : null}
       <View pointerEvents="box-none" style={[styles.abs, area, { zIndex: locked ? 79 : 40 }]}>
