@@ -209,6 +209,6 @@ const styles = StyleSheet.create({
   choiceOn: { backgroundColor: colors.green },
   choiceText: { fontFamily: fonts.ui, fontSize: 15, color: '#dcdcdc', fontWeight: '600' },
   swatchOn: { borderWidth: 1, borderColor: 'rgba(255,255,255,0.9)', backgroundColor: 'rgba(0,0,0,0.35)' },
-  swatch: { width: 54, height: 66, borderRadius: 12, borderWidth: 1, borderColor: 'transparent', alignItems: 'center', justifyContent: 'center' },
+  swatch: { width: 60, height: 76, borderRadius: 13, borderWidth: 1, borderColor: 'transparent', alignItems: 'center', justifyContent: 'center' },
   buttonShadow: { shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.55, shadowRadius: 6, elevation: 6 },
 });
