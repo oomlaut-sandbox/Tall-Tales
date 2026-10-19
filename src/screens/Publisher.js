@@ -17,6 +17,7 @@ import { playKey } from '../sound';
 import { deleteUserStory, dropPicture, keepPicture, newPageId, saveUserStory } from '../userStories';
 import StoryGuide from '../components/StoryGuide';
 import ParentGate from '../components/ParentGate';
+import { useT } from '../i18n';
 import { printStory, shareStoryPdf } from '../pdf';
 import { publishToStore } from '../storeAdmin';
 import { loadJSON, saveJSON } from '../storage';
@@ -28,7 +29,7 @@ const FULL = `Books can have up to ${MAX_PAGES} pages. That’s a long story!`;
 const blank = () => ({ pid: newPageId(), text: '', uri: null, w: 1, h: 1 });
 
 export function draftFrom(story) {
-  if (!story) return { id: `s${Date.now()}`, title: '', writer: '', artist: '', pages: [blank()] }; // no title yet: the bar invites 'Tap to add title'
+  if (!story) return { id: `s${Date.now()}`, title: '', writer: '', artist: '', pages: [blank()] }; // no title yet: the bar invites tr('Tap to add title')
   return {
     id: story.id,
     title: story.title,
@@ -43,17 +44,19 @@ export function draftFrom(story) {
 // blue square (measured from the picture: the blue square's middle is 49.7% across and 46.4% down).
 const POLAROID = require('../../assets/polaroid.jpg');
 function EmptyPicture({ side }) {
+  const tr = useT();
   // "Add Image" in white, in the exact middle of the blue square (no plus)
   const cx = side * 0.497, cy = side * 0.464, fs = Math.max(14, Math.round(side * 0.048));
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       <Image source={POLAROID} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
-      <Text style={{ position: 'absolute', left: cx - side * 0.25, width: side * 0.5, top: cy - fs * 0.62, textAlign: 'center', color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: fs, lineHeight: fs * 1.24 }}>Add Image</Text>
+      <Text style={{ position: 'absolute', left: cx - side * 0.25, width: side * 0.5, top: cy - fs * 0.62, textAlign: 'center', color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: fs, lineHeight: fs * 1.24 }}>{tr('Add Image')}</Text>
     </View>
   );
 }
 
 export default function Publisher({ u, initial, fontKey, openMenu, toast, onChange, onDone, storeAdmin, onIdeas }) {
+  const tr = useT(); // everything a child or parent reads here, in the app's language (the store owner's Publish stays English)
   const insets = useSafeAreaInsets();
   const [draft, setDraft] = useState(initial);
   const [i, setI] = useState(0);
@@ -103,15 +106,15 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     setGateFor(null);
     const d = latest.current;
     const pages = d.pages.filter((p) => p.text.trim() || p.uri || p.uri2);
-    if (!pages.length) return toast('Add a page with a picture or words first.');
+    if (!pages.length) return toast(tr('Add a page with a picture or words first.'));
     setMaking(true);
-    toast(mode === 'print' ? 'Getting your story ready to print…' : 'Making your PDF…');
+    toast(mode === 'print' ? tr('Getting your story ready to print…') : tr('Making your PDF…'));
     try {
-      const st = { title: d.title.trim() || 'My story', pages: pages.map((p) => ({ text: p.text.trim(), image: p.uri ? { uri: p.uri } : null, image2: p.uri2 && !p.text.trim() ? { uri: p.uri2 } : null })) };
+      const st = { title: d.title.trim() || tr('My Story'), pages: pages.map((p) => ({ text: p.text.trim(), image: p.uri ? { uri: p.uri } : null, image2: p.uri2 && !p.text.trim() ? { uri: p.uri2 } : null })) };
       if (mode === 'print') await printStory(st, layout, fontKey);
       else await shareStoryPdf(st, layout, fontKey);
     } catch (e) {
-      toast(mode === 'print' ? 'Couldn’t print the book. Please try again.' : 'Couldn’t make the PDF. Please try again.'); // plain words, never the phone's technical message
+      toast(mode === 'print' ? tr('Couldn’t print the book. Please try again.') : tr('Couldn’t make the PDF. Please try again.')); // plain words, never the phone's technical message
     }
     setMaking(false);
   };
@@ -147,7 +150,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     let r;
     if (source === 'camera') {
       const perm = await ImagePicker.requestCameraPermissionsAsync();
-      if (!perm.granted) { toast('Oomlaut Reader isn’t allowed to use the camera. You can turn it on in Settings.'); return null; }
+      if (!perm.granted) { toast(tr('Oomlaut Reader isn’t allowed to use the camera. You can turn it on in Settings.')); return null; }
       r = await ImagePicker.launchCameraAsync(opts);
     } else {
       r = await ImagePicker.launchImageLibraryAsync(opts);
@@ -203,7 +206,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       setCover({ ...ph, title: cover ? cover.title || null : null });
       if (!(cover && cover.title)) setCoverAsk(true);
     } catch (e) {
-      toast('Couldn’t open your photos. Check that Oomlaut Reader is allowed to use Photos in Settings.');
+      toast(tr('Couldn’t open your photos. Check that Oomlaut Reader is allowed to use Photos in Settings.'));
     }
   };
   const finishCover = () => {
@@ -214,7 +217,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const coverNo = () => { setCover({ ...cover, title: null }); finishCover(); };
   const coverYes = () => {
     setCoverAsk(false); setCoverTitling(true);
-    setCover({ ...cover, title: { text: draft.title.trim() || 'My Story', x: 0.5, y: 0.2, size: 0.11, color: TITLE_YELLOW } }); // yellow to start with
+    setCover({ ...cover, title: { text: draft.title.trim() || tr('My Story'), x: 0.5, y: 0.2, size: 0.11, color: TITLE_YELLOW } }); // yellow to start with
   };
   const setCoverTitle = (patch) => setDraft((d) => ({ ...d, cover: { ...d.cover, title: { ...d.cover.title, ...patch } } }));
   // dragging the title around the square
@@ -267,7 +270,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       if (page.uri) dropPicture(page.uri);
       update(ph);
     } catch (e) {
-      toast(source === 'camera' ? 'Couldn’t open the camera.' : 'Couldn’t open your photos. Check that Oomlaut Reader is allowed to use Photos in Settings.');
+      toast(source === 'camera' ? tr('Couldn’t open the camera.') : tr('Couldn’t open your photos. Check that Oomlaut Reader is allowed to use Photos in Settings.'));
     }
   };
 
@@ -283,7 +286,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
 
   const next = () => {
     if (i === draft.pages.length - 1) {
-      if (!page.text.trim() && !page.uri && !page.uri2) return toast('Add a picture or some words before the next page.');
+      if (!page.text.trim() && !page.uri && !page.uri2) return toast(tr('Add a picture or some words before the next page.'));
       if (draft.pages.length >= MAX_PAGES) return toast(FULL);
       setDraft((d) => ({ ...d, pages: [...d.pages, blank()] }));
     }
@@ -319,7 +322,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     });
     const newLen = Math.max(1, draft.pages.length - 1);
     setI((x) => (x > k ? x - 1 : Math.min(x, newLen - 1)));
-    toast(`Page ${k + 1} deleted.`);
+    toast(tr('Page {n} deleted.', { n: k + 1 }));
   };
 
   const finish = async () => {
@@ -327,10 +330,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     try {
       const list = await saveUserStory(latest.current);
       const hasPages = latest.current.pages.some((p) => p.text.trim() || p.uri || p.uri2);
-      toast(hasPages ? 'Saved to My Library.' : 'Nothing to save yet, so no story was added.');
+      toast(hasPages ? tr('Saved to My Library.') : tr('Nothing to save yet, so no story was added.'));
       onDone(list);
     } catch (e) {
-      toast('Couldn’t save the story. Try again.');
+      toast(tr('Couldn’t save the story. Try again.'));
     }
   };
 
@@ -338,7 +341,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     clearTimeout(timer.current);
     draft.pages.forEach((p) => { if (p.uri) dropPicture(p.uri); if (p.uri2) dropPicture(p.uri2); });
     const list = await deleteUserStory(draft.id);
-    toast(`“${draft.title.trim() || 'Untitled story'}” deleted.`);
+    toast(tr('“{title}” deleted.', { title: draft.title.trim() || tr('Untitled story') }));
     onDone(list);
   };
 
@@ -362,13 +365,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <DeskFelt spot="publisher1" />
       <View style={[styles.bookShadow, wide ? { width: side * 2, height: side } : { width: side, height: side * 2 }]}>
       <View style={[styles.page, wide && { flexDirection: 'row' }]}>
-        <Pressable onPress={pickImage} style={[styles.art, { width: side, height: side }]} accessibilityRole="button" accessibilityLabel={page.uri ? 'Change image' : 'Add image'}>
+        <Pressable onPress={pickImage} style={[styles.art, { width: side, height: side }]} accessibilityRole="button" accessibilityLabel={page.uri ? tr('Change image') : tr('Add image')}>
           {page.uri ? (
             <>
               <Image source={{ uri: page.uri }} style={styles.fill} resizeMode="cover" />
               <View style={styles.artBtns}>
-                <Text style={styles.chip}>Change image</Text>
-                <Pressable onPress={removeImage} hitSlop={6} accessibilityLabel="Remove image"><Text style={styles.chip}>Remove</Text></Pressable>
+                <Text style={styles.chip}>{tr('Change image')}</Text>
+                <Pressable onPress={removeImage} hitSlop={6} accessibilityLabel={tr('Remove image')}><Text style={styles.chip}>{tr('Remove')}</Text></Pressable>
               </View>
             </>
           ) : (
@@ -376,38 +379,38 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           )}
           {!wide ? <Fade edge="bottom" size={Math.round(side * 0.1)} max={0.22} /> : null}
         </Pressable>
-        <Pressable onPress={page.uri2 ? () => setImgAsk('page2') : openWords} accessibilityRole="button" accessibilityLabel={page.uri2 ? 'Change the second image' : `Words for page ${i + 1}`} ref={wordsRef} collapsable={false} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>{/* the whole words square opens the editor */}
+        <Pressable onPress={page.uri2 ? () => setImgAsk('page2') : openWords} accessibilityRole="button" accessibilityLabel={page.uri2 ? tr('Change the second image') : tr('Words for page {n}', { n: i + 1 })} ref={wordsRef} collapsable={false} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>{/* the whole words square opens the editor */}
           {/* a second picture instead of words: a page of two pictures */}
           {page.uri2 ? <Image source={{ uri: page.uri2 }} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" /> : null}
           {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
           <Spine wide={wide} />
           {page.uri2 ? (
             <View style={[styles.artBtns, { bottom: 12 }]}>
-              <Text style={styles.chip}>Change image</Text>
-              <Pressable onPress={removeImage2} hitSlop={6} accessibilityLabel="Remove the second image"><Text style={styles.chip}>Remove</Text></Pressable>
+              <Text style={styles.chip}>{tr('Change image')}</Text>
+              <Pressable onPress={removeImage2} hitSlop={6} accessibilityLabel={tr('Remove the second image')}><Text style={styles.chip}>{tr('Remove')}</Text></Pressable>
             </View>
           ) : (
             <>
               {/* Tapping the words opens a big editor (just the words page, above the keyboard). */}
               <View style={{ flex: 1, justifyContent: 'center', minHeight: 0 }}>
                 <Text style={[styles.input, { fontFamily: 'SpecialElite_400Regular' }, !page.text && { color: '#666' }]} numberOfLines={7}>
-                  {page.text || 'To add text, tap here. Two or three sentences reads best.'}
+                  {page.text || tr('To add text, tap here. Two or three sentences reads best.')}
                 </Text>
               </View>
               {/* no words yet: a small grey plus in the bottom corner offers a second picture instead */}
               {!page.text.trim() ? (
-                <Pressable onPress={() => setImgAsk('page2')} hitSlop={6} accessibilityRole="button" accessibilityLabel="Add another image page"
+                <Pressable onPress={() => setImgAsk('page2')} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Add another image page')}
                   style={{ position: 'absolute', left: side * 0.07, bottom: side * 0.07, flexDirection: 'row', alignItems: 'center', gap: side * 0.02 }}>
                   {/* a small grey plus, then the words */}
                   <Text style={{ fontFamily: fonts.ui, fontWeight: '300', fontSize: Math.max(18, Math.round(side * 0.07)), lineHeight: Math.max(18, Math.round(side * 0.07)) * 1.05, color: '#777' }}>+</Text>
-                  <Text numberOfLines={1} style={{ fontFamily: fonts.ui, fontSize: Math.max(12, Math.round(side * 0.04)), color: '#555', maxWidth: side * 0.56 }}>Add another image page</Text>
+                  <Text numberOfLines={1} style={{ fontFamily: fonts.ui, fontSize: Math.max(12, Math.round(side * 0.04)), color: '#555', maxWidth: side * 0.56 }}>{tr('Add another image page')}</Text>
                 </Pressable>
               ) : null}
             </>
           )}
         </Pressable>
-        <DogEar u={u} under={colors.earUnder} onPress={next} label="Next page" />
-        <Pressable onPress={() => setGuide(true)} style={[styles.help, { top: 10, right: 10 }]} hitSlop={8} accessibilityLabel="How to make a story">
+        <DogEar u={u} under={colors.earUnder} onPress={next} label={tr('Next page')} />
+        <Pressable onPress={() => setGuide(true)} style={[styles.help, { top: 10, right: 10 }]} hitSlop={8} accessibilityLabel={tr('How to make a story')}>
           <Text style={styles.helpText}>?</Text>
         </Pressable>
       </View>
@@ -424,8 +427,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               {/* the page count sits above Pages, with plenty of room between them */}
               <Animated.Text style={[styles.sub, { textAlign: 'center', marginBottom: 22, opacity: coverFade }]}>{i + 1}/{draft.pages.length}</Animated.Text>
               <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ alignItems: 'center', gap: 18, opacity: barFade, marginBottom: 26 }}>
-              <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
-              <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><View style={styles.finish}><Text style={styles.btn}>Finish</Text></View></Pressable>
+              <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>{tr('Pages')}</Text></Pressable>
+              <Pressable onPress={finish} hitSlop={8} accessibilityLabel={tr('Finish and save the book')}><View style={styles.finish}><Text style={styles.btn}>{tr('Finish')}</Text></View></Pressable>
               </Animated.View>
             </View>
           </Bar>
@@ -435,35 +438,35 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       <Bar u={u}>
         <Animated.View pointerEvents={coverOpen ? 'none' : 'auto'} style={{ opacity: coverFade }}><Burger u={u} onPress={openMenu} /></Animated.View>
         <Animated.View pointerEvents={coverOpen ? 'none' : 'auto'} style={{ flex: 1, minWidth: 0, paddingLeft: 12, opacity: coverFade }}>
-          <Pressable onPress={() => setTitleBox(true)} accessibilityRole="button" accessibilityLabel="Book title">
-            <Text numberOfLines={1} style={[styles.title, !draft.title.trim() && { color: 'rgba(255,255,255,0.75)' }]}>{draft.title.trim() || 'Tap to add title'}</Text>
+          <Pressable onPress={() => setTitleBox(true)} accessibilityRole="button" accessibilityLabel={tr('Book title')}>
+            <Text numberOfLines={1} style={[styles.title, !draft.title.trim() && { color: 'rgba(255,255,255,0.75)' }]}>{draft.title.trim() || tr('Tap to add title')}</Text>
           </Pressable>
-          <Text style={styles.sub}>Page {i + 1} of {draft.pages.length} · {saved ? 'Saved' : 'Saving…'}</Text>
+          <Text style={styles.sub}>{tr('Page {a} of {b}', { a: i + 1, b: draft.pages.length })} · {saved ? tr('Saved') : tr('Saving…')}</Text>
         </Animated.View>
         <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ flexDirection: 'row', alignItems: 'center', gap: 14, opacity: barFade }}>
-        <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>Pages</Text></Pressable>
-        <Pressable onPress={finish} hitSlop={8} accessibilityLabel="Finish and save the book"><View style={styles.finish}><Text style={styles.btn}>Finish</Text></View></Pressable>
+        <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>{tr('Pages')}</Text></Pressable>
+        <Pressable onPress={finish} hitSlop={8} accessibilityLabel={tr('Finish and save the book')}><View style={styles.finish}><Text style={styles.btn}>{tr('Finish')}</Text></View></Pressable>
         </Animated.View>
       </Bar>
       </View>
       )}
 
-      <Panel open={pagesOpen} side="right" title="Pages" portraitWidth="94%" bottom={wide ? 0 : barH} inset={wide ? BL.rightW : 0} onClose={() => setPagesOpen(false)}>
+      <Panel open={pagesOpen} side="right" title={tr('Pages')} portraitWidth="94%" bottom={wide ? 0 : barH} inset={wide ? BL.rightW : 0} onClose={() => setPagesOpen(false)}>
         <ScrollView style={{ maxHeight: Math.max(380, winH * 0.55) }} contentContainerStyle={{ gap: 14, paddingBottom: 6 }}>
           {draft.pages.map((p, k) => (
             <View key={p.pid} style={[styles.prow, k === i && { borderColor: colors.green }]}>
-              <Pressable onPress={() => { setI(k); setPagesOpen(false); }} style={styles.thumb} accessibilityLabel={`Go to page ${k + 1}`}>
+              <Pressable onPress={() => { setI(k); setPagesOpen(false); }} style={styles.thumb} accessibilityLabel={tr('Go to page {n}', { n: k + 1 })}>
                 {p.uri ? <Image source={{ uri: p.uri }} style={styles.fill} resizeMode="cover" /> : <Text style={styles.thumbNum}>{k + 1}</Text>}
               </Pressable>
               {/* beside the picture: the page's name on top (level with the picture's top), its buttons at the bottom */}
               <View style={{ flex: 1, minWidth: 0, height: 64, justifyContent: 'space-between' }}>
               <Pressable onPress={() => { setI(k); setPagesOpen(false); }}>
-                <Text numberOfLines={1} style={styles.prowTitle}>Page {k + 1}<Text style={styles.prowSub}>{'  ·  '}{p.text.trim() || (p.uri && p.uri2 ? 'Two pictures' : p.uri || p.uri2 ? 'Picture only' : 'Empty')}</Text></Text>
+                <Text numberOfLines={1} style={styles.prowTitle}>{tr('Page {n}', { n: k + 1 })}<Text style={styles.prowSub}>{'  ·  '}{p.text.trim() || (p.uri && p.uri2 ? tr('Two pictures') : p.uri || p.uri2 ? tr('Picture only') : tr('Empty'))}</Text></Text>
               </Pressable>
               <View style={{ flexDirection: 'row', gap: 8 }}>
-              <Pressable onPress={() => move(k, -1)} disabled={k === 0} hitSlop={6} style={[styles.pbtn, k === 0 && { opacity: 0.3 }]} accessibilityLabel={`Move page ${k + 1} up`}><Text style={styles.pbtnText}>↑</Text></Pressable>
-              <Pressable onPress={() => move(k, 1)} disabled={k === draft.pages.length - 1} hitSlop={6} style={[styles.pbtn, k === draft.pages.length - 1 && { opacity: 0.3 }]} accessibilityLabel={`Move page ${k + 1} down`}><Text style={styles.pbtnText}>↓</Text></Pressable>
-              <Pressable onPress={() => removePage(k)} hitSlop={6} style={styles.pbtn} accessibilityLabel={`Delete page ${k + 1}`}><Text style={styles.pbtnText}>✕</Text></Pressable>
+              <Pressable onPress={() => move(k, -1)} disabled={k === 0} hitSlop={6} style={[styles.pbtn, k === 0 && { opacity: 0.3 }]} accessibilityLabel={tr('Move page {n} up', { n: k + 1 })}><Text style={styles.pbtnText}>↑</Text></Pressable>
+              <Pressable onPress={() => move(k, 1)} disabled={k === draft.pages.length - 1} hitSlop={6} style={[styles.pbtn, k === draft.pages.length - 1 && { opacity: 0.3 }]} accessibilityLabel={tr('Move page {n} down', { n: k + 1 })}><Text style={styles.pbtnText}>↓</Text></Pressable>
+              <Pressable onPress={() => removePage(k)} hitSlop={6} style={styles.pbtn} accessibilityLabel={tr('Delete page {n}', { n: k + 1 })}><Text style={styles.pbtnText}>✕</Text></Pressable>
               </View>
               </View>
             </View>
@@ -471,10 +474,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         </ScrollView>
         {pdfChoice ? (
           <View style={{ gap: 10, marginTop: 30 }}>
-            <Text style={styles.warn}>{pdfChoice === 'print' ? 'Choose a layout to print:' : 'Choose a layout for your PDF:'}</Text>
+            <Text style={styles.warn}>{pdfChoice === 'print' ? tr('Choose a layout to print:') : tr('Choose a layout for your PDF:')}</Text>
             {/* the same two choices, with the same little pictures, as Print in the Playback menu */}
             <View style={{ flexDirection: 'row', gap: 14 }}>
-              {[['stacked', 'Portrait'], ['landscape', 'Landscape']].map(([lay, label]) => (
+              {[['stacked', tr('Portrait')], ['landscape', tr('Landscape')]].map(([lay, label]) => (
                 <Pressable key={lay} onPress={() => { setGateFor({ mode: pdfChoice, layout: lay }); setPdfChoice(null); setPagesOpen(false); }}
                   accessibilityRole="button" accessibilityLabel={`${label} pages`} style={styles.layBtn}>
                   <View style={styles.layIc}><PageShape wide={lay === 'landscape'} /></View>
@@ -485,20 +488,20 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           </View>
         ) : confirmDelete ? (
           <View style={{ gap: 10, marginTop: 44 }}>
-            <Text style={styles.warn}>Delete “{draft.title.trim() || 'Untitled story'}”, its pictures and any voice recordings? This can’t be undone.</Text>
+            <Text style={styles.warn}>{tr('Delete “{title}”, its pictures and any voice recordings? This can’t be undone.', { title: draft.title.trim() || tr('Untitled story') })}</Text>
             <View style={{ flexDirection: 'row', gap: 10 }}>
-              <Pressable onPress={deleteStory} style={[styles.wide, { backgroundColor: colors.deepRed }]}><Text style={styles.wideText}>Delete book</Text></Pressable>
-              <Pressable onPress={() => setConfirmDelete(false)} style={styles.wide}><Text style={styles.wideText}>Keep it</Text></Pressable>
+              <Pressable onPress={deleteStory} style={[styles.wide, { backgroundColor: colors.deepRed }]}><Text style={styles.wideText}>{tr('Delete book')}</Text></Pressable>
+              <Pressable onPress={() => setConfirmDelete(false)} style={styles.wide}><Text style={styles.wideText}>{tr('Keep it')}</Text></Pressable>
             </View>
           </View>
         ) : (
           // the pills stacked on the right, well clear of the pages list: Share as PDF, Print, (the owner's Publish), Delete Book
           <View style={{ alignItems: 'flex-end', gap: 12, marginTop: 30, marginBottom: 10 }}>
             <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('share'); }} disabled={making} style={[styles.stackPill, { backgroundColor: '#6b6b6b' }]} accessibilityRole="button">
-              <Text style={styles.wideText}>{making ? 'Working…' : 'Share as PDF'}</Text>
+              <Text style={styles.wideText}>{making ? tr('Working…') : tr('Share as PDF')}</Text>
             </Pressable>
             <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('print'); }} disabled={making} style={[styles.stackPill, { backgroundColor: '#6b6b6b' }]} accessibilityRole="button">
-              <Text style={styles.wideText}>Print</Text>
+              <Text style={styles.wideText}>{tr('Print')}</Text>
             </Pressable>
             {admin ? (
               <Pressable onPress={publish} disabled={publishing} style={[styles.stackPill, { backgroundColor: colors.blue }]} accessibilityRole="button">
@@ -506,7 +509,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               </Pressable>
             ) : null}
             <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} style={[styles.stackPill, { backgroundColor: colors.deepRed }]} accessibilityRole="button">
-              <Text style={styles.wideText}>Delete Book</Text>
+              <Text style={styles.wideText}>{tr('Delete Book')}</Text>
             </Pressable>
           </View>
         )}
@@ -521,7 +524,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <View style={[styles.editor, { flex: 1, paddingTop: insets.top + 34 }]}>
           <Animated.View style={[styles.editorHead, { opacity: zoom }]}>
             {/* the words are the second page of each pair (the picture is the first): page 2, 4, 6 … */}
-            <Text style={styles.editorTitle}>Page {i * 2 + 2}</Text>
+            <Text style={styles.editorTitle}>{tr('Page {n}', { n: i * 2 + 2 })}</Text>
           </Animated.View>
           {(() => {
             const W = winW - 2 * GAP;
@@ -549,12 +552,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 <TextInput
                   value={page.text}
                   onChangeText={(text) => { if (text.length > (page.text || '').length) playKey(); update({ text }); }}
-                  placeholder="Type the words for this page. Two or three sentences reads best."
+                  placeholder={tr('Type the words for this page. Two or three sentences reads best.')}
                   placeholderTextColor="#666"
                   multiline
                   autoFocus
                   style={[styles.editorInput, { fontFamily: bookFont(writeFont).family, outlineWidth: 0 }]}
-                  accessibilityLabel={`Words for page ${i + 1}`}
+                  accessibilityLabel={tr('Words for page {n}', { n: i + 1 })}
                 />
               </Animated.View>
             );
@@ -562,7 +565,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           {/* under the page: the three fonts to write in (left), and a green Done pill (right) */}
           <Animated.View style={{ width: winW - 2 * GAP, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: zoom }}>
             <View />
-            <Pressable onPress={closeWords} hitSlop={8} accessibilityRole="button" style={styles.donePill}><Text style={styles.donePillText}>Done</Text></Pressable>
+            <Pressable onPress={closeWords} hitSlop={8} accessibilityRole="button" style={styles.donePill}><Text style={styles.donePillText}>{tr('Done')}</Text></Pressable>
           </Animated.View>
           </View>
         </KeyboardAvoidingView>      ) : null}
@@ -570,13 +573,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         // the book's title, then (optional) who wrote it and who drew the pictures, for the title page
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
-            <Text style={styles.choiceTitle}>Book title</Text>
-            <TextInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder="Type the title" placeholderTextColor="#8a8a8a" autoFocus style={styles.field} accessibilityLabel="Book title" />
-            <Text style={[styles.choiceTitle, { fontSize: 16, marginTop: 6, marginBottom: 0 }]}>Add an author or illustrator?</Text>
-            <Text style={styles.fieldHint}>Optional. They appear on the title page.</Text>
-            <TextInput value={draft.writer || ''} onChangeText={(writer) => setDraft((d) => ({ ...d, writer }))} placeholder="Written by" placeholderTextColor="#8a8a8a" style={styles.field} accessibilityLabel="Written by" />
-            <TextInput value={draft.artist || ''} onChangeText={(artist) => setDraft((d) => ({ ...d, artist }))} placeholder="Illustrated by" placeholderTextColor="#8a8a8a" style={styles.field} accessibilityLabel="Illustrated by" />
-            <Pressable onPress={() => setTitleBox(false)} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 10 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Done</Text></Pressable>
+            <Text style={styles.choiceTitle}>{tr('Book title')}</Text>
+            <TextInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder={tr('Type the title')} placeholderTextColor="#8a8a8a" autoFocus style={styles.field} accessibilityLabel={tr('Book title')} />
+            <Text style={[styles.choiceTitle, { fontSize: 16, marginTop: 6, marginBottom: 0 }]}>{tr('Add an author or illustrator?')}</Text>
+            <Text style={styles.fieldHint}>{tr('Optional. They appear on the title page.')}</Text>
+            <TextInput value={draft.writer || ''} onChangeText={(writer) => setDraft((d) => ({ ...d, writer }))} placeholder={tr('Written by')} placeholderTextColor="#8a8a8a" style={styles.field} accessibilityLabel={tr('Written by')} />
+            <TextInput value={draft.artist || ''} onChangeText={(artist) => setDraft((d) => ({ ...d, artist }))} placeholder={tr('Illustrated by')} placeholderTextColor="#8a8a8a" style={styles.field} accessibilityLabel={tr('Illustrated by')} />
+            <Pressable onPress={() => setTitleBox(false)} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 10 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Done')}</Text></Pressable>
           </View>
         </KeyboardAvoidingView>
       ) : null}
@@ -585,7 +588,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk, overflow: 'hidden' }, wide ? { right: BL.rightW } : { bottom: BL.barH }]}>
           <DeskFelt spot="publisher3" overlay />
           <View style={[styles.editor, { flex: 1, paddingTop: kbUp ? insets.top + 8 : insets.top + (winW > winH ? 12 : 34), paddingLeft: insets.left, paddingRight: insets.right }]}>
-            {!kbUp ? <View style={styles.editorHead}><Text style={styles.editorTitle}>Cover</Text></View> : null}
+            {!kbUp ? <View style={styles.editorHead}><Text style={styles.editorTitle}>{tr('Cover')}</Text></View> : null}
             <View style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: kbUp ? 'center' : 'flex-start' }}
               onLayout={(e) => setCoverArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
             {(() => {
@@ -599,7 +602,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               return (
                 <View style={[styles.coverSquare, { width: W, height: W }]}>
                   {cover && cover.uri ? (
-                    <Pressable onPress={() => setImgAsk('cover')} style={StyleSheet.absoluteFill} accessibilityLabel="Change the cover picture">
+                    <Pressable onPress={() => setImgAsk('cover')} style={StyleSheet.absoluteFill} accessibilityLabel={tr('Change the cover picture')}>
                       <Image source={{ uri: cover.uri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
                     </Pressable>
                   ) : (
@@ -615,9 +618,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                         <TextInput value={t.text} onChangeText={(text) => setCoverTitle({ text })} multiline autoFocus onBlur={() => setTitleEditing(false)}
                           blurOnSubmit returnKeyType="done" onSubmitEditing={() => { Keyboard.dismiss(); setTitleEditing(false); }}
                           style={[titleStyle, coverTitleLook(t), { fontSize: t.size * W, lineHeight: t.size * W * 1.2, paddingHorizontal: W * 0.04, width: W, textAlign: 'center', outlineWidth: 0 }]}
-                          accessibilityLabel="Cover title" />
+                          accessibilityLabel={tr('Cover title')} />
                       ) : (
-                        <Text style={[titleStyle, coverTitleLook(t), { fontSize: t.size * W, lineHeight: t.size * W * 1.2, paddingHorizontal: W * 0.04 }]} accessibilityLabel="Cover title">{t.text}</Text>
+                        <Text style={[titleStyle, coverTitleLook(t), { fontSize: t.size * W, lineHeight: t.size * W * 1.2, paddingHorizontal: W * 0.04 }]} accessibilityLabel={tr('Cover title')}>{t.text}</Text>
                       )}
                       {t.byline ? <Text style={[titleStyle, bylineStyle, coverTitleLook(t, true), { fontSize: t.size * W * 0.42, lineHeight: t.size * W * 0.6, paddingHorizontal: W * 0.12 }]}>{t.byline}</Text> : null}
                     </View>
@@ -630,7 +633,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             {kbUp ? (
               <View style={{ width: coverSize.current, alignItems: 'flex-end', marginTop: 10 }}>
                 <Pressable onPress={() => { Keyboard.dismiss(); setTitleEditing(false); }} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { marginBottom: 0 }]}>
-                  <Text style={styles.donePillText}>Done</Text>
+                  <Text style={styles.donePillText}>{tr('Done')}</Text>
                 </Pressable>
               </View>
             ) : null}
@@ -638,14 +641,14 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               <View style={{ width: coverSize.current }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <Pressable onPress={() => setCoverTitle({ size: Math.max(0.05, cover.title.size - 0.015) })} style={styles.sizeBtn} accessibilityLabel="Smaller title"><Text style={[styles.donePillText, { fontSize: 14 }]}>A</Text></Pressable>
-                  <Pressable onPress={() => setCoverTitle({ size: Math.min(0.24, cover.title.size + 0.015) })} style={styles.sizeBtn} accessibilityLabel="Bigger title"><Text style={[styles.donePillText, { fontSize: 22 }]}>A</Text></Pressable>
+                  <Pressable onPress={() => setCoverTitle({ size: Math.max(0.05, cover.title.size - 0.015) })} style={styles.sizeBtn} accessibilityLabel={tr('Smaller title')}><Text style={[styles.donePillText, { fontSize: 14 }]}>A</Text></Pressable>
+                  <Pressable onPress={() => setCoverTitle({ size: Math.min(0.24, cover.title.size + 0.015) })} style={styles.sizeBtn} accessibilityLabel={tr('Bigger title')}><Text style={[styles.donePillText, { fontSize: 22 }]}>A</Text></Pressable>
                   {/* colour: a solid circle in the title's colour (yellow to start with) */}
-                  <Pressable onPress={() => { setCoverTool((x) => (x === 'color' ? null : 'color')); }} style={[styles.sizeBtn, coverTool === 'color' && styles.toolOn]} accessibilityLabel="Title colour">
+                  <Pressable onPress={() => { setCoverTool((x) => (x === 'color' ? null : 'color')); }} style={[styles.sizeBtn, coverTool === 'color' && styles.toolOn]} accessibilityLabel={tr('Title colour')}>
                     <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: cover.title.color || '#ffffff', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.85)' }} />
                   </Pressable>
                   {/* font */}
-                  <Pressable onPress={() => { setCoverTool((x) => (x === 'font' ? null : 'font')); }} style={[styles.sizeBtn, coverTool === 'font' && styles.toolOn]} accessibilityLabel="Title font">
+                  <Pressable onPress={() => { setCoverTool((x) => (x === 'font' ? null : 'font')); }} style={[styles.sizeBtn, coverTool === 'font' && styles.toolOn]} accessibilityLabel={tr('Title font')}>
                     <Text style={[styles.donePillText, { fontSize: 16, fontFamily: bookFont(cover.title.font || 'serif').bold || bookFont(cover.title.font || 'serif').family }]}>Aa</Text>
                   </Pressable>
                 </View>
@@ -653,7 +656,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   {creditsLine(draft.writer, draft.artist) ? (
                     <Pressable onPress={() => setCoverTitle({ byline: cover.title.byline ? '' : creditsLine(draft.writer, draft.artist).replace(/\.$/, '') })}
                       style={[styles.authorBtn, cover.title.byline ? { backgroundColor: colors.green } : null]} accessibilityRole="button" accessibilityState={{ selected: !!cover.title.byline }}>
-                      <Text style={[styles.donePillText, { fontSize: 14 }]}>Author</Text>
+                      <Text style={[styles.donePillText, { fontSize: 14 }]}>{tr('Author')}</Text>
                     </Pressable>
                   ) : null}
                 </View>
@@ -669,7 +672,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   <View style={[styles.swatches, { gap: 6 }]}>
                     {Object.entries(BOOK_FONTS).map(([k, f]) => (
                       <Pressable key={k} onPress={() => setCoverTitle({ font: k })} style={[styles.fontChip, (cover.title.font || 'serif') === k && { backgroundColor: colors.green }]}>
-                        <Text style={[styles.donePillText, { fontFamily: f.bold || f.family, fontWeight: f.bold ? undefined : '700', fontSize: 15 }]}>{f.label}</Text>
+                        <Text style={[styles.donePillText, { fontFamily: f.bold || f.family, fontWeight: f.bold ? undefined : '700', fontSize: 15 }]}>{tr(f.label)}</Text>
                       </Pressable>
                     ))}
                   </View>
@@ -679,15 +682,15 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             </View>
           </View>
           {/* the hint is a speech bubble near the bottom that goes away after a while (tap it to close it sooner) */}
-          {coverTitling && coverTip && !kbUp ? <Toast message="Tap the title to type. Drag it anywhere on the cover." area={{ left: GAP - 6, right: GAP - 6, bottom: 74 }} onDismiss={() => setCoverTip(false)} /> : null}
+          {coverTitling && coverTip && !kbUp ? <Toast message={tr('Tap the title to type. Drag it anywhere on the cover.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 74 }} onDismiss={() => setCoverTip(false)} /> : null}
           {/* Done: bottom right, lined up with the cover's right edge */}
-          {!kbUp ? <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { position: 'absolute', right: GAP + (wide ? 0 : insets.right), bottom: 18, marginBottom: 0 }]}><Text style={styles.donePillText}>Done</Text></Pressable> : null}
+          {!kbUp ? <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { position: 'absolute', right: GAP + (wide ? 0 : insets.right), bottom: 18, marginBottom: 0 }]}><Text style={styles.donePillText}>{tr('Done')}</Text></Pressable> : null}
           {coverAsk ? (
             <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
               <View style={styles.choice}>
-                <Text style={styles.choiceTitle}>Add the title as text?</Text>
-                <Pressable onPress={coverYes} style={[styles.choiceBtn, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Yes please</Text></Pressable>
-                <Pressable onPress={coverNo} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>No thanks</Text></Pressable>
+                <Text style={styles.choiceTitle}>{tr('Add the title as text?')}</Text>
+                <Pressable onPress={coverYes} style={[styles.choiceBtn, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Yes please')}</Text></Pressable>
+                <Pressable onPress={coverNo} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('No thanks')}</Text></Pressable>
               </View>
             </View>
           ) : null}
@@ -696,31 +699,31 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       {pageDone ? (
         <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
-            <Text style={styles.choiceTitle}>What’s next?</Text>
-            <Pressable onPress={addPage} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Add another page</Text></Pressable>
-            <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Keep working on this page</Text></Pressable>
-            <Pressable onPress={openCover} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{cover && cover.uri ? 'Edit the cover' : 'Design a cover'}</Text></Pressable>
+            <Text style={styles.choiceTitle}>{tr('What’s next?')}</Text>
+            <Pressable onPress={addPage} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Add another page')}</Text></Pressable>
+            <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Keep working on this page')}</Text></Pressable>
+            <Pressable onPress={openCover} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{cover && cover.uri ? tr('Edit the cover') : tr('Design a cover')}</Text></Pressable>
             {/* leave the book maker for now; what's been made so far stays saved */}
-            <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await saveUserStory(latest.current)); } catch (e) { toast('Couldn’t save the story. Try again.'); } }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Cancel book editor</Text></Pressable>
+            <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await saveUserStory(latest.current)); } catch (e) { toast(tr('Couldn’t save the story. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Cancel book editor')}</Text></Pressable>
             {/* Finish last, in green, with extra room around it */}
-            <Pressable onPress={() => { setPageDone(false); finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 18, marginBottom: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Finish and save book</Text></Pressable>
+            <Pressable onPress={() => { setPageDone(false); finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 18, marginBottom: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Finish and save book')}</Text></Pressable>
           </View>
         </View>
       ) : null}
       {imgAsk ? (
         <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
-            <Text style={styles.choiceTitle}>Add a picture</Text>
-            <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); placeImage(t, 'library'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Choose a picture</Text></Pressable>
+            <Text style={styles.choiceTitle}>{tr('Add a picture')}</Text>
+            <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); placeImage(t, 'library'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Choose a picture')}</Text></Pressable>
             {/* a photo of a drawing, say; the camera only opens after the grown-up check */}
-            <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setCamGate(t); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>Take a photo</Text></Pressable>
-            <Pressable onPress={() => setImgAsk(null)} style={[styles.choiceBtn, { marginTop: 14 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>Cancel</Text></Pressable>
+            <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setCamGate(t); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Take a photo')}</Text></Pressable>
+            <Pressable onPress={() => setImgAsk(null)} style={[styles.choiceBtn, { marginTop: 14 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Cancel')}</Text></Pressable>
           </View>
         </View>
       ) : null}
       <ParentGate visible={!!camGate} reason="Taking a photo opens the camera." onPass={() => { const t = camGate; setCamGate(null); setTimeout(() => placeImage(t, 'camera'), 250); }} onCancel={() => setCamGate(null)} />
       <StoryGuide visible={guide} onClose={closeGuide} onIdeas={onIdeas ? () => { closeGuide(); onIdeas(); } : null} area={wide ? { left: BL.leftW, right: BL.rightW } : { top: BL.topH, bottom: BL.barH }} />
-      <ParentGate visible={!!gateFor} reason={gateFor?.mode === 'print' ? 'Printing opens your phone’s print options.' : 'Sharing sends this story outside the app.'} onPass={() => makePdf(gateFor)} onCancel={() => setGateFor(null)} />
+      <ParentGate visible={!!gateFor} reason={gateFor?.mode === 'print' ? tr('Printing opens your phone’s print options.') : tr('Sharing sends this story outside the app.')} onPass={() => makePdf(gateFor)} onCancel={() => setGateFor(null)} />
     </KeyboardAvoidingView>
   );
 }

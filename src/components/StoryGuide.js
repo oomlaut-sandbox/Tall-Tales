@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { colors, fonts } from '../theme';
+import { useT } from '../i18n';
 
 export const GUIDE_STEPS = [
   { title: 'Add a picture', body: 'Tap the grey area to choose a picture from your photos. Square pictures work best: they fill the page and show in full. For a sharp result, use at least 1500 × 1500 pixels. You can crop a photo to a square right after picking it.' },
@@ -15,6 +16,7 @@ export const GUIDE_STEPS = [
 
 // area: the space between the bars, so the card sits right in the middle of the book
 export default function StoryGuide({ visible, onClose, area, onIdeas }) {
+  const tr = useT();
   const [step, setStep] = useState(0);
   const [w, setW] = useState(0); // the width of the text area
   useEffect(() => { if (visible) setStep(0); }, [visible]);
@@ -27,19 +29,19 @@ export default function StoryGuide({ visible, onClose, area, onIdeas }) {
       <View style={{ width: '100%', maxWidth: 440 }}>
       <View style={styles.card} accessibilityRole="summary">
         <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#141414' }]} />
-        <Text style={styles.kicker}>Guide: How to make a story · {step + 1} of {GUIDE_STEPS.length}</Text>
+        <Text style={styles.kicker}>{tr('Guide: How to make a story · {a} of {b}', { a: step + 1, b: GUIDE_STEPS.length })}</Text>
         {/* every step in one row of equal-width slots: the row is as tall as the wordiest step, so the box
             keeps the same size for all six steps; only the current step is shown */}
         <View onLayout={(e) => setW(e.nativeEvent.layout.width)} style={{ overflow: 'hidden' }}>
           <View style={{ flexDirection: 'row', width: w * GUIDE_STEPS.length, opacity: w ? 1 : 0, transform: [{ translateX: -step * w }] }}>
             {GUIDE_STEPS.map((g, k) => (
               <View key={k} style={{ width: w, gap: 12 }} accessibilityElementsHidden={k !== step} importantForAccessibility={k === step ? 'auto' : 'no-hide-descendants'}>
-                <Text style={styles.title}>{g.title}</Text>
-                <Text style={styles.body}>{g.body}</Text>
+                <Text style={styles.title}>{tr(g.title)}</Text>
+                <Text style={styles.body}>{tr(g.body)}</Text>
                 {/* the last step points to the Idea Room for inspiration */}
                 {g.ideas ? (
-                  <Text style={styles.body}>Need ideas or inspiration?{' '}
-                    {onIdeas ? <Text onPress={onIdeas} accessibilityRole="link" style={styles.link}>Visit the Idea Room in Help</Text> : 'Visit the Idea Room in Help.'}
+                  <Text style={styles.body}>{tr('Need ideas or inspiration?')}{' '}
+                    {onIdeas ? <Text onPress={onIdeas} accessibilityRole="link" style={styles.link}>{tr('Visit the Idea Room in Help')}</Text> : tr('Visit the Idea Room in Help.')}
                   </Text>
                 ) : null}
               </View>
@@ -50,11 +52,11 @@ export default function StoryGuide({ visible, onClose, area, onIdeas }) {
           {GUIDE_STEPS.map((_, k) => <View key={k} style={[styles.dot, k === step && styles.dotOn]} />)}
         </View>
         <View style={styles.row}>
-          <Pressable onPress={onClose} hitSlop={8}><Text style={styles.skip}>{last ? '' : 'Skip'}</Text></Pressable>
+          <Pressable onPress={onClose} hitSlop={8}><Text style={styles.skip}>{last ? '' : tr('Skip')}</Text></Pressable>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            {step > 0 ? <Pressable onPress={() => setStep(step - 1)} style={styles.btn}><Text style={styles.btnText}>Back</Text></Pressable> : null}
+            {step > 0 ? <Pressable onPress={() => setStep(step - 1)} style={styles.btn}><Text style={styles.btnText}>{tr('Back')}</Text></Pressable> : null}
             <Pressable onPress={() => (last ? onClose() : setStep(step + 1))} style={[styles.btn, styles.btnMain]}>
-              <Text style={styles.btnText}>{last ? 'Start making' : 'Next'}</Text>
+              <Text style={styles.btnText}>{last ? tr('Start making') : tr('Next')}</Text>
             </Pressable>
           </View>
         </View>
