@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme';
 import { Slider } from './Chrome';
-import { MUSIC, SLEEP_TIMES, SOUNDS, chooseAmbient, getAmbient, onAmbient, pauseAmbient, playAmbient, setAmbientPlayer, setAmbientVolume, setSleepTimer, stopAmbient } from '../ambient';
+import { MUSIC, SLEEP_TIMES, SOUNDS, chooseAmbient, getAmbient, onAmbient, pauseAmbient, playAmbient, setAmbientPlayer, setAmbientRate, setAmbientVolume, setSleepTimer, stopAmbient } from '../ambient';
 import { useT } from '../i18n';
 
 const Chip = ({ label, on, onPress }) => (
@@ -17,6 +17,7 @@ export default function AmbientControls() {
   const t = useT();
   const [s, setS] = useState(getAmbient());
   const [vol, setVol] = useState(null);
+  const [rate, setRate] = useState(null);
   useEffect(() => onAmbient(setS), []);
   // tap one to choose it (it starts playing); tap it again to switch that one off. A sound and a piece of music can play together.
   // (tapping the one already chosen while it's paused plays it, instead of switching it off)
@@ -42,6 +43,9 @@ export default function AmbientControls() {
       <Text style={styles.group}>{t('Volume')}</Text>
       <Slider value={vol ?? s.volume} min={0.05} max={1} step={0.05} leftLabel={t('Quieter')} rightLabel={t('Louder')} showValue={false}
         onChange={(v) => { setVol(v); setAmbientVolume(v); }} onDone={(v) => { setVol(null); setAmbientVolume(v); }} />
+      <Text style={styles.group}>{t('Playback speed')}</Text>
+      <Slider value={rate ?? (s.rate || 1)} min={0.5} max={1} step={0.05} leftLabel={t('Slower')} rightLabel={t('As made')} showValue={false}
+        onChange={(v) => { setRate(v); setAmbientRate(v); }} onDone={(v) => { setRate(null); setAmbientRate(v); }} />
       <Text style={styles.group}>{t('Sleep timer')}</Text>
       <View style={styles.chips}>
         {SLEEP_TIMES.map((m) => <Chip key={m} label={m ? t('{n} min', { n: m }) : t('Off')} on={s.sleep === m} onPress={() => setSleepTimer(m)} />)}

@@ -27,12 +27,12 @@ export const SLEEP_TIMES = [0, 15, 30, 60]; // minutes (0: keep playing)
 // sound / music: the chosen one on each channel (null: off); playing: sounding now; volume 0..1;
 // showPlayer: the floating tape player; sleep: minutes until it fades out; pos: where the player was left;
 // recording: a voice is being recorded (the player's little red light)
-let state = { sound: null, music: null, playing: false, volume: 0.4, showPlayer: false, sleep: 0, sleepAt: null, pos: null, recording: false };
+let state = { sound: null, music: null, playing: false, volume: 0.4, rate: 1, showPlayer: false, sleep: 0, sleepAt: null, pos: null, recording: false };
 const listeners = new Set();
 const set = (patch) => {
   state = { ...state, ...patch };
   listeners.forEach((fn) => { try { fn(state); } catch (e) {} });
-  saveJSON('ambient2', { sound: state.sound, music: state.music, volume: state.volume, showPlayer: state.showPlayer, pos: state.pos }).catch(() => {});
+  saveJSON('ambient2', { sound: state.sound, music: state.music, volume: state.volume, rate: state.rate, showPlayer: state.showPlayer, pos: state.pos }).catch(() => {});
 };
 export const getAmbient = () => state;
 export function onAmbient(fn) { listeners.add(fn); return () => listeners.delete(fn); }
@@ -76,6 +76,7 @@ async function sync(kind) {
     c.id = want;
     p.loop = true;
     p.volume = 0;
+    applyRate(p);
     p.play();
     ramp(c, 0, state.volume, 1200); // fades in
     // a freshly made player may not be ready yet, and then the first play() does nothing (it used to take a
@@ -121,6 +122,12 @@ export function stepAmbient(kind) {
   const list = kind === 'sound' ? SOUNDS : MUSIC;
   const i = list.findIndex((x) => x.id === state[kind]);
   chooseAmbient(kind, i + 1 < list.length ? list[i + 1].id : null);
+}
+// how fast the sounds and music play (1: as made; slower is calmer and a little deeper)
+const applyRate = (p) => { try { if (p) p.setPlaybackRate(state.rate || 1, 'high'); } catch (e) {} };
+export function setAmbientRate(r) {
+  set({ rate: Math.max(0.5, Math.min(1, Math.round(r * 100) / 100)) });
+  for (const c of Object.values(ch)) applyRate(c.player);
 }
 export function setAmbientVolume(v) {
   const vol = Math.max(0, Math.min(1, v));

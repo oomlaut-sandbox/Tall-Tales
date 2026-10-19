@@ -86,4 +86,5 @@ export default {
   'The purchase didn’t go through. Please try again.': { de: 'Der Kauf hat nicht geklappt. Bitte versuch es noch einmal.', fr: 'L’achat n’a pas abouti. Veuillez réessayer.', es: 'La compra no se completó. Inténtalo de nuevo.', ja: 'おかいものが できませんでした。もういちど ためしてください。' },
   'This book can’t be bought just yet.': { de: 'Dieses Buch kann man noch nicht kaufen.', fr: 'Ce livre ne peut pas encore être acheté.', es: 'Este libro aún no se puede comprar.', ja: 'この ほんは まだ かえません。' },
   'This book could not be downloaded. Check the internet connection and try again.': { de: 'Dieses Buch konnte nicht geladen werden. Prüfe die Internetverbindung und versuch es noch einmal.', fr: 'Ce livre n’a pas pu être téléchargé. Vérifie la connexion Internet et réessaie.', es: 'No se pudo descargar este libro. Revisa la conexión a internet e inténtalo de nuevo.', ja: 'この ほんを ダウンロードできませんでした。インターネットの せつぞくを たしかめて、もういちど ためしてね。' },
+  'As made': { de: 'Normal', fr: 'Normal', es: 'Normal', ja: 'ふつう' },
 };
