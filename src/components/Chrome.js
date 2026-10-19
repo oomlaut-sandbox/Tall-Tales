@@ -568,8 +568,8 @@ export function AlarmClockIcon({ size = 20, color = colors.white, weight }) {
     <View style={{ width: size, height: size }}>
       {bell(true)}{bell(false)}
       <View style={{ position: 'absolute', top, left: (size - d) / 2, width: d, height: d, borderRadius: d / 2, borderWidth: w, borderColor: color }}>
-        {hand(d * 0.27, 0)}
-        {hand(d * 0.2, 128)}
+        {hand(d * 0.34, 0)}
+        {hand(d * 0.26, 128)}
       </View>
     </View>
   );
