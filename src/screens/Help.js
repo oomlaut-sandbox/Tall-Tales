@@ -10,7 +10,6 @@ import { Bar, Burger, WithBar } from '../components/Chrome';
 import { useLang, useT } from '../i18n';
 import { IDEA_COUNT } from '../ideas';
 
-const IDEA_PICTURE = require('../../assets/idea-room.jpg');
 const BAND_FELT = require('../../assets/band-profile.jpg'); // the yellow-orange felt banner
 const SEARCH_FELT = require('../../assets/search-felt.png'); // Jörg's grey stitched felt strip, cut out with a shadow
 
