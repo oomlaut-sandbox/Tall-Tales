@@ -12,7 +12,7 @@ import { useControls } from '../controls';
 
 const BAND_FELT = require('../../assets/band-ideas.jpg'); // Jörg's pink felt banner
 const SKIPPY = require('../../assets/ideas-skippy.png'); // Skippy, daydreaming against his book (at the end of the ideas)
-const PEBBLES = require('../../assets/ideas-pebbles.jpg'); // an open book: felt pebbles and 'Sticks and stones :)' (under the words at the top)
+const SPREAD = require('../../assets/ideas-spread.jpg'); // an open book: Skippy writing, and 'Make a book for yourself…' (under the words at the top)
 
 export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
   const t = useT();
@@ -32,7 +32,10 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
           {/* the title and words across the full width, then the book spread underneath with lots of room */}
           <Text style={styles.heading}>{t('Let’s create!')}</Text>
           <Text style={styles.lead}>{t('Here are some examples of books you can make together… {n} to be exact ;) Your photos and drawings, your words, your voice.', { n: IDEA_COUNT })}</Text>
-          <View style={[styles.spread, { width: spreadW, height: Math.round(spreadW * 586 / 1200) }]}><Image source={PEBBLES} style={{ width: '100%', height: '100%' }} resizeMode="cover" accessibilityIgnoresInvertColors /></View>
+          {/* the shadow sits on an outer box (iOS clips a shadow on a box that clips its picture) */}
+          <View style={[styles.spreadShadow, { width: spreadW, height: Math.round(spreadW * 600 / 1200) }]}>
+            <View style={styles.spread}><Image source={SPREAD} style={{ width: '100%', height: '100%' }} resizeMode="cover" accessibilityIgnoresInvertColors /></View>
+          </View>
           {IDEA_SECTIONS.map((sec) => (
             <View key={sec.title} style={{ gap: 10 }}>
               <Text style={styles.section}>{t(sec.title)}</Text>
@@ -69,7 +72,8 @@ const styles = StyleSheet.create({
   body: { padding: 24, paddingTop: 28, paddingBottom: 40, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 14 },
   heading: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 26, color: colors.white },
-  spread: { alignSelf: 'center', marginTop: 22, marginBottom: 28, borderRadius: 6, overflow: 'hidden', backgroundColor: '#c9c9c9' },
+  spreadShadow: { alignSelf: 'center', marginTop: 22, marginBottom: 32, backgroundColor: '#c9c9c9', shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.5, shadowRadius: 12, elevation: 10 },
+  spread: { flex: 1, borderWidth: 1, borderColor: '#7a7a7a', overflow: 'hidden' }, // square corners, a thin medium-grey line
   lead: { fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, color: colors.white },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 18 },
   intro: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#cfcfcf' },
