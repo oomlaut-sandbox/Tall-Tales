@@ -219,6 +219,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   };
   // the moon on the bar: into the nightlight (Listen Only), and back to how it was before
   const canMoon = controls.playback !== false && !controls.playMode;
+  // the nightlight's lock lives on the bar beside the moon; where it sits, so it stays tappable over the blocker
+  const [nlLocked, setNlLocked] = useState(false);
+  const [lockRect, setLockRect] = useState(null);
+  const nlLockRef = useRef(null);
+  const lockNight = () => { const n = nlLockRef.current; if (n && n.measureInWindow) n.measureInWindow((x, y, width, height) => { setLockRect({ x, y, width, height }); setNlLocked(true); }); else setNlLocked(true); };
+  useEffect(() => { if (prefs.mode !== 'listen') setNlLocked(false); }, [prefs.mode]);
   const toggleNight = () => chooseMode(prefs.mode === 'listen' ? (prefs.prevMode && prefs.prevMode !== 'listen' ? prefs.prevMode : 'auto') : 'listen');
 
   const wordAt = (ch) => {
@@ -736,6 +742,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
                   <MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />
                 </Pressable>
               ) : null}
+              {listen ? (
+                <Pressable ref={nlLockRef} onPress={lockNight} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.small, { marginTop: u * 4 }]}>
+                  <LockIcon size={u * 4.6} color="#9a9a9a" />
+                </Pressable>
+              ) : null}
             </View>
             <View style={{ alignItems: 'center' }}>
             {showControls ? (
@@ -774,6 +785,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             <MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />
           </Pressable>
         ) : null}
+        {listen ? (
+          <Pressable ref={nlLockRef} onPress={lockNight} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.small, { marginLeft: u * 4 }]}>
+            <LockIcon size={u * 4.6} color="#9a9a9a" />
+          </Pressable>
+        ) : null}
         {/* no page numbers in the reader (the store shows how long a book is) */}
         <View style={{ flex: 1 }} />
         {showControls ? (
@@ -807,7 +823,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       ) : null}
       {/* Listen Only: the nightlight (the book almost hidden, a soft breathing sun, brightness, a lock) */}
       {listen ? (
-        <Nightlight title={story.title} onSleep={() => { stopReading(); clearTimeout(autoTimer.current); }} eclipse={prefs.eclipse ?? 0} onEclipse={(v) => setPrefs((p) => ({ ...p, eclipse: Math.round(v * 100) / 100 }))}
+        <Nightlight title={story.title} locked={nlLocked} lockRect={lockRect} onUnlock={() => setNlLocked(false)} onSleep={() => { stopReading(); clearTimeout(autoTimer.current); }} eclipse={prefs.eclipse ?? 0} onEclipse={(v) => setPrefs((p) => ({ ...p, eclipse: Math.round(v * 100) / 100 }))}
           alarmTime={prefs.alarmTime || '07:00'} alarmSound={prefs.alarmSound || 'forest-birds'} onAlarm={(patch) => setPrefs((p) => ({ ...p, ...patch }))}
           wide={wide} end={!!(pages[idx] && pages[idx].end)}
           area={wide ? { left: 0, top: 0, width: winW - BL.rightW, height: winH } : { left: 0, top: 0, width: winW, height: winH - barH }} />

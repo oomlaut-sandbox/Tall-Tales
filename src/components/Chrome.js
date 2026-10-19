@@ -318,13 +318,10 @@ export function PersonIcon({ size = MENU_ICON, color = colors.white }) {
     </View>
   );
 }
+// a crescent moon (☽): two smooth curves, drawn once as a picture and tinted
+const MOON_ART = require('../../assets/icon-moon.png');
 export function MoonIcon({ size = MENU_ICON, color = colors.white }) {
-  return (
-    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{ width: size * 0.9, height: size * 0.9, borderRadius: size, borderLeftWidth: size * 0.26, borderBottomWidth: size * 0.08, borderTopWidth: size * 0.02,
-        borderColor: 'transparent', borderLeftColor: color, borderBottomColor: color, borderTopColor: color, transform: [{ rotate: '-25deg' }] }} />
-    </View>
-  );
+  return <Image source={MOON_ART} style={{ width: size, height: size, tintColor: color }} resizeMode="contain" />;
 }
 export function GlassesIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
   // smaller than it was, so it sits in its tile like the other icons

@@ -3,7 +3,7 @@
 //   the fine slider under it: a solar eclipse. Slide right and the moon moves across the sun until it covers it
 //     completely and only the corona glows (a small sun icon under the slider shows what it does)
 //   then: "Now playing" and the book's name
-//   bottom right: the lock (locked, nothing can be touched; a grown-up's question unlocks it)
+//   the lock lives on the reading bar beside the moon (locked, nothing can be touched; a grown-up's question unlocks it)
 //   bottom left: the clock icon (when the clock is switched on in Settings): a delicate analog clock face over the
 //     sun. Above it, the alarm time (when the alarm is on): tap it to set the alarm and how to wake up.
 //   under the title: the sleep timer (tap to choose off, 15, 30 or 60 minutes). When it runs out the reading
@@ -131,14 +131,16 @@ function AlarmSheet({ visible, time, sound, onTime, onSound, onClose }) {
 // layers: the dark layer and the sun sit just over a turning page (40, after it) and under the menus (41);
 // locked, a blocker covers everything (78) with the nightlight above it (79), and the question above that (80)
 // area: where the book is (covered)
-export default function Nightlight({ title, onSleep, eclipse = 0, onEclipse, alarmTime = '07:00', alarmSound = 'forest-birds', onAlarm, wide, area, end }) {
+export default function Nightlight({ title, onSleep, locked = false, lockRect, onUnlock, eclipse = 0, onEclipse, alarmTime = '07:00', alarmSound = 'forest-birds', onAlarm, wide, area, end }) {
   const t = useT();
   const controls = useControls();
-  const [locked, setLocked] = useState(false);
   const [gate, setGate] = useState(false);
   const [showFace, setShowFace] = useState(false);
   const [sheet, setSheet] = useState(false);
   useKeepAwake(); // the screen stays on while the nightlight is showing
+  // when the nightlight starts, the screen fades slowly to black and the sun fades in with it
+  const appear = useRef(new Animated.Value(0)).current;
+  useEffect(() => { Animated.timing(appear, { toValue: 1, duration: 3500, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(); }, []);
   const [now, setNow] = useState(new Date());
   useEffect(() => { const iv = setInterval(() => setNow(new Date()), 5000); return () => clearInterval(iv); }, []);
   const hm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -222,9 +224,9 @@ export default function Nightlight({ title, onSleep, eclipse = 0, onEclipse, ala
     <View pointerEvents="box-none" style={{ alignItems: 'center' }}>
       <FineSlider value={e} onChange={onEclipse} width={sliderW} label={t('Nightlight brightness')} />
       <View style={{ marginTop: 4 }}><SunIcon /></View>
-      <Text style={[styles.small, { marginTop: 30 }]}>{t('Now playing')}</Text>
+      <Text style={[styles.small, { marginTop: 64 }]}>{t('Now playing')}</Text>
       {title ? <Text numberOfLines={2} style={styles.title}>{title}</Text> : null}
-      <Pressable onPress={cycleSleep} disabled={locked} hitSlop={12} style={{ marginTop: 22, flexDirection: 'row', alignItems: 'center', gap: 8, opacity: sleepAt ? 0.9 : 0.5 }} accessibilityRole="button">
+      <Pressable onPress={cycleSleep} disabled={locked} hitSlop={12} style={{ marginTop: 52, flexDirection: 'row', alignItems: 'center', gap: 8, opacity: sleepAt ? 0.9 : 0.5 }} accessibilityRole="button">
         <Text style={styles.small}>{sleepAt ? t('Sleep timer: {n} min', { n: left }) : t('Sleep timer: off')}</Text>
       </Pressable>
       {waking ? (
@@ -237,10 +239,10 @@ export default function Nightlight({ title, onSleep, eclipse = 0, onEclipse, ala
   return (
     <>
       {/* the book, almost hidden: nothing under it can be touched (The End's buttons still work) */}
-      <View pointerEvents={end && !locked ? 'none' : 'auto'} style={[styles.abs, area, { backgroundColor: '#000', opacity: 0.965, zIndex: 40 }]} />
+      <Animated.View pointerEvents={end && !locked ? 'none' : 'auto'} style={[styles.abs, area, { backgroundColor: '#000', opacity: appear, zIndex: 40 }]} />
       {/* locked: the whole screen, bars too, takes every touch */}
       {locked ? <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.55)', zIndex: 78 }]} onStartShouldSetResponder={() => true} /> : null}
-      <View pointerEvents="box-none" style={[styles.abs, area, { zIndex: locked ? 79 : 40 }]}>
+      <Animated.View pointerEvents="box-none" style={[styles.abs, area, { zIndex: locked ? 79 : 40, opacity: appear }]}>
         <View pointerEvents="box-none" style={{ flex: 1, flexDirection: wide ? 'row' : 'column', alignItems: 'center', justifyContent: 'center', gap: wide ? 8 : 0 }}>
           <View pointerEvents="none" style={{ marginTop: wide ? 0 : -area.height * 0.08, alignItems: 'center' }}>
             {/* the time, in fine letters above the sun */}
@@ -262,18 +264,18 @@ export default function Nightlight({ title, onSleep, eclipse = 0, onEclipse, ala
             </Pressable>
           ) : null}
         </View>
-        {/* bottom right: the lock */}
-        <View pointerEvents="box-none" style={styles.cornerR}>
-          <Pressable onPress={() => (locked ? setGate(true) : setLocked(true))} hitSlop={16} style={{ opacity: locked ? 0.95 : 0.55 }}
-            accessibilityRole="button" accessibilityLabel={locked ? t('Unlock the screen') : t('Lock the screen')}>
-            <LockIcon size={22} color={CREAM} />
-          </Pressable>
-        </View>
-      </View>
+      </Animated.View>
+      {/* locked: the lock on the bar stays tappable, above the blocker (it asks the grown-ups' question) */}
+      {locked && lockRect ? (
+        <Pressable onPress={() => setGate(true)} hitSlop={16} style={{ position: 'absolute', left: lockRect.x, top: lockRect.y, width: lockRect.width, height: lockRect.height, zIndex: 79, alignItems: 'center', justifyContent: 'center' }}
+          accessibilityRole="button" accessibilityLabel={t('Unlock the screen')}>
+          <LockIcon size={Math.min(lockRect.width, lockRect.height)} color={CREAM} />
+        </Pressable>
+      ) : null}
       <View pointerEvents="box-none" style={[styles.abs, area, { zIndex: 79 }]}>
         <AlarmSheet visible={sheet} time={alarmTime} sound={alarmSound} onTime={(v) => onAlarm({ alarmTime: v })} onSound={(v) => onAlarm({ alarmSound: v })} onClose={() => setSheet(false)} />
       </View>
-      <ParentGate visible={gate} reason={t('Unlock the screen')} onPass={() => { setGate(false); setLocked(false); }} onCancel={() => setGate(false)} />
+      <ParentGate visible={gate} reason={t('Unlock the screen')} onPass={() => { setGate(false); if (onUnlock) onUnlock(); }} onCancel={() => setGate(false)} />
     </>
   );
 }
@@ -288,7 +290,6 @@ const styles = StyleSheet.create({
   note: { color: 'rgba(255,255,255,0.5)', fontFamily: fonts.ui, fontSize: 13, textAlign: 'center' },
   alarm: { color: 'rgba(244,226,207,0.8)', fontFamily: fonts.ui, fontSize: 15, fontWeight: '300', letterSpacing: 0.5 },
   cornerL: { position: 'absolute', left: 22, bottom: 22, alignItems: 'center' },
-  cornerR: { position: 'absolute', right: 22, bottom: 22 },
   wakeBtn: { marginTop: 14, paddingHorizontal: 22, height: 40, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,214,170,0.7)', alignItems: 'center', justifyContent: 'center' },
   wakeText: { color: CREAM, fontFamily: fonts.ui, fontSize: 16, fontWeight: '400' },
   sheetScrim: { backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: 20 },
