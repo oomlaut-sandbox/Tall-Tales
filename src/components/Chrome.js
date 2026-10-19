@@ -6,6 +6,7 @@ import { colors, fonts } from '../theme';
 import { DeskFelt, Felt, Stitch, useLook } from '../look';
 import { useT } from '../i18n';
 import { tap, thunk, tick, withTap } from '../haptics';
+import { getAmbient, setAmbientPlayer } from '../ambient';
 
 export function Burger({ onPress, u }) {
   const w = u * 7, t = Math.max(3, u * 1), gap = u * 1.7;
@@ -235,6 +236,18 @@ export function MusicIcon({ size = 20, color }) {
   return <Image source={MUSIC_NOTE} style={{ width: size, height: size, tintColor: color }} resizeMode="contain" />;
 }
 // the restricted kid mode lock: a rounded body with a shackle on top
+// the music note on a bar (My Library, Book Store): opens (or hides) the Audio Player, to listen while browsing;
+// a little apart from the menu, like in the reader
+export function BarMusic({ u, vertical }) {
+  const tr = useT();
+  return (
+    <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')}
+      style={vertical ? { marginTop: u * 7 } : { marginLeft: u * 7 }}>
+      <MusicIcon size={u * 5.6} color="#8e8e8e" />
+    </Pressable>
+  );
+}
+
 export function LockIcon({ size = 20, color = colors.white, weight = 2 }) {
   const bw = size * 0.72, bh = size * 0.5, sw = size * 0.46;
   return (
