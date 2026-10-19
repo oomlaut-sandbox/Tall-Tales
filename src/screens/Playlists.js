@@ -10,7 +10,6 @@ import { Bar, Burger, WithBar } from '../components/Chrome';
 import { useT } from '../i18n';
 import { loadPlaylists, newPlaylist, savePlaylists } from '../playlists';
 
-const BAND = require('../../assets/band-library.jpg');
 export const coverOf = (s) => (s && s.cover && s.cover.uri ? { uri: s.cover.uri } : s && s.pages && s.pages[0] ? s.pages[0].image : null);
 
 function Thumb({ s, size }) {
@@ -46,7 +45,6 @@ export default function Playlists({ u, openMenu, shelf, onPlay }) {
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
-        {!IS_TABLET ? <Image source={BAND} resizeMode="stretch" style={[StyleSheet.absoluteFill, { top: insets.top }]} /> : null}
         <Text style={styles.title}>{pl ? nameOf(pl) : t('Playlists')}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
@@ -143,8 +141,8 @@ export default function Playlists({ u, openMenu, shelf, onPlay }) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: DESK_BG },
-  band: { backgroundColor: '#525c25', paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3, transform: [{ translateY: -3 }] },
+  band: { paddingBottom: 6, paddingHorizontal: 24 }, // just the title, on the felt (no banner)
+  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 24, paddingBottom: 140, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 14 },
   p: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#e6e6e6' },
