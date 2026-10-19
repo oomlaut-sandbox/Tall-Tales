@@ -35,7 +35,7 @@ export default function AmbientControls() {
           <Text style={styles.small}>{t('Relaxing sounds and gentle music that keep playing while you use the app. Lovely at bedtime.')}</Text>
           {/* opens the Audio Player over the page */}
           <Pressable onPress={() => setAmbientPlayer(true)} style={styles.openBtn} accessibilityRole="button">
-            <Text style={styles.openText}>{t('Open Audio Player')}</Text>
+            <Text style={styles.openText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{t('Open Audio Player')}</Text>
           </Pressable>
           <View style={styles.chips}>
             <Chip label={s.playing ? t('Pause') : t('Play')} on={s.playing} onPress={s.playing ? pauseAmbient : playAmbient} />
@@ -76,8 +76,8 @@ const styles = StyleSheet.create({
   small: { color: '#a9a9a9', fontFamily: fonts.ui, fontSize: 13, lineHeight: 18 },
   group: { color: '#bdbdbd', fontFamily: fonts.ui, fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 18 }, // room between the sections, above each heading
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  openBtn: { alignSelf: 'flex-start', backgroundColor: colors.blue, height: 40, borderRadius: 20, paddingHorizontal: 18, alignItems: 'center', justifyContent: 'center', marginTop: 4 },
-  openText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
+  openBtn: { alignSelf: 'flex-start', backgroundColor: colors.blue, height: 38, borderRadius: 19, paddingHorizontal: 14, maxWidth: '100%', alignItems: 'center', justifyContent: 'center', marginTop: 4 },
+  openText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
   chip: { paddingHorizontal: 12, height: 34, borderRadius: 17, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
   chipOn: { backgroundColor: colors.green },
   chipText: { fontFamily: fonts.ui, fontSize: 14, color: '#dcdcdc', fontWeight: '600' },
