@@ -35,18 +35,18 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
           </View>
           {IDEA_SECTIONS.map((sec) => (
             <View key={sec.title} style={{ gap: 10 }}>
-              <Text style={styles.section}>{sec.title}</Text>
-              <Text style={styles.intro}>{sec.intro}</Text>
+              <Text style={styles.section}>{t(sec.title)}</Text>
+              <Text style={styles.intro}>{t(sec.intro)}</Text>
               {sec.ideas.map((idea) => {
                 const key = `${sec.title}/${idea.title}`, shown = open === key;
                 return (
                   <Pressable key={key} onPress={() => setOpen(shown ? null : key)} style={styles.card} accessibilityRole="button" accessibilityState={{ expanded: shown }}>
                     <View style={styles.cardHead}>
-                      <Text style={styles.cardTitle}>{idea.title}</Text>
+                      <Text style={styles.cardTitle}>{t(idea.title)}</Text>
                       <Text style={styles.chev}>{shown ? '−' : '+'}</Text>
                     </View>
-                    <Text style={styles.p}>{idea.text}</Text>
-                    {shown ? <Text style={styles.how}>{idea.how}</Text> : null}
+                    <Text style={styles.p}>{t(idea.text)}</Text>
+                    {shown ? <Text style={styles.how}>{t(idea.how)}</Text> : null}
                   </Pressable>
                 );
               })}
