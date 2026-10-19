@@ -332,7 +332,7 @@ export function syllablesFor(story, word) {
 
 // The books shown in My Library and the Book Store for now (Jörg will add two more later).
 // The others stay in the app, just hidden: add their ids back here to show them again.
-export const SHOWN_BOOKS = ['different', 'rough-lives', 'two-snakes', 'tips'];
+export const SHOWN_BOOKS = ['different', 'rough-lives', 'tips']; // (two-snakes hidden 19 Oct 2026)
 
 // A book in another language: its translated title, description and page words (books without that
 // language stay as they are). The reader then reads it in that language.
