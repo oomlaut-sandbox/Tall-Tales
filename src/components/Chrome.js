@@ -228,18 +228,10 @@ export function AgainIcon({ size = 14, color = colors.white, weight = 3.5, bg = 
 }
 // My Library: books standing on a shelf (an outlined square with upright lines).
 // A musical note, in the same plain white strokes as the other icons: an oval head, a stem and one flag.
-export function MusicIcon({ size = 20, color = colors.white, weight = 2 }) {
-  // three curved sound lines, growing outwards from a point on the left (like sound spreading out)
-  const cx = size * 0.06, cy = size / 2;
-  const radii = [size * 0.3, size * 0.62, size * 0.94];
-  return (
-    <View style={{ width: size, height: size }}>
-      {radii.map((r) => (
-        <View key={r} style={{ position: 'absolute', left: cx - r, top: cy - r, width: r * 2, height: r * 2, borderRadius: r,
-          borderWidth: weight, borderColor: 'transparent', borderRightColor: color }} />
-      ))}
-    </View>
-  );
+const MUSIC_NOTE = require('../../assets/icon-music.png');
+// Music and Sounds: two beamed notes in white
+export function MusicIcon({ size = 20 }) {
+  return <Image source={MUSIC_NOTE} style={{ width: size, height: size }} resizeMode="contain" />;
 }
 // the restricted kid mode lock: a rounded body with a shackle on top
 export function LockIcon({ size = 20, color = colors.white, weight = 2 }) {
