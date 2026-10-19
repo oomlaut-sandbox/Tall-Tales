@@ -192,12 +192,14 @@ const styles = StyleSheet.create({
   videoPlay: { color: 'rgba(255,255,255,0.85)', fontSize: 34 },
   videoText: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 14 },
   searchWrap: { height: 44, borderRadius: 22, overflow: 'hidden', backgroundColor: '#d6d6d6' }, // light grey
-  search: { flex: 1, backgroundColor: 'transparent', paddingHorizontal: 18, fontFamily: fonts.ui, fontSize: 16, color: colors.ink, outlineWidth: 0 },
+  search: { flex: 1, backgroundColor: 'transparent', paddingHorizontal: 18, paddingTop: 0, paddingBottom: 4, // sits in the middle top to bottom
+    fontFamily: fonts.ui, fontSize: 16, color: colors.ink, outlineWidth: 0 },
   ideas: { borderRadius: 26, shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, elevation: 5 },
   ideasTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.white },
   ideasText: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: colors.white, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 },
   ideasGo: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, color: colors.white, marginTop: 4 },
-  aboutPill: { alignSelf: 'flex-start', backgroundColor: colors.green, height: 44, borderRadius: 22, paddingHorizontal: 26, alignItems: 'center', justifyContent: 'center', marginTop: 10 },
+  aboutPill: { alignSelf: 'flex-start', backgroundColor: '#4b5330', // a dark, muted moss green, like the felt
+    height: 44, borderRadius: 22, paddingHorizontal: 26, alignItems: 'center', justifyContent: 'center', marginTop: 10 },
   aboutText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14, marginBottom: 8 },
   card: { backgroundColor: '#3a3a3a', // dark grey, with white writing
