@@ -158,9 +158,6 @@ function FingerWheel({ size, value, onChange, label }) {
         accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
         onAccessibilityAction={(e) => onChange(toHm(toMin(value) + (e.nativeEvent.actionName === 'increment' ? 15 : -15)))}
         style={[styles.wheel, { width: size, height: size, borderRadius: size / 2 }]}>
-        {/* a faint groove the dimple travels in */}
-        <View pointerEvents="none" style={[styles.groove, { position: 'absolute', width: r * 2 + dim * 1.25, height: r * 2 + dim * 1.25, borderRadius: r + dim * 0.625 }]} />
-        <View pointerEvents="none" style={[styles.wheel, { position: 'absolute', width: r * 2 - dim * 1.25, height: r * 2 - dim * 1.25, borderRadius: r - dim * 0.625, boxShadow: '-4px -4px 9px rgba(255,255,255,0.05), 5px 5px 11px rgba(0,0,0,0.55)' }]} />
         {/* the dial turns: its one dimple points at the alarm time */}
         <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: size, height: size, alignItems: 'center', transform: [{ rotate: `${deg}deg` }] }}>
           <View style={[styles.dimple, { marginTop: size / 2 - r - dim / 2, width: dim, height: dim, borderRadius: dim / 2 }]} />
@@ -197,7 +194,7 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
           </Pressable>
         </View>
         <View style={{ flexDirection: wide ? 'row' : 'column', alignItems: 'center', gap: wide ? 24 : 6, marginTop: 8, opacity: on ? 1 : 0.5 }}>
-          <FingerWheel size={size} value={draft} onChange={setDraft} label={t('Alarm time')} />
+          <View style={{ marginBottom: wide ? 0 : 22 }}><FingerWheel size={size} value={draft} onChange={setDraft} label={t('Alarm time')} /></View>
           <View style={{ width: wide ? 300 : '100%' }}>
             <Text style={[styles.small, { marginBottom: 12 }]}>{t('Wake up with')}</Text>
             {[WAKE_GROUPS[0], [...WAKE_GROUPS[1], ...TRACKS.filter((x) => x.mine).map((x) => x.id)]].map((ids, gi) => (
@@ -209,7 +206,6 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
                 ))}
               </View>
             ))}
-            <Text style={[styles.note, { marginTop: 4 }]}>{t('The sun rises slowly and the sound fades in very gently.')}</Text>
           </View>
         </View>
         <Pressable onPress={() => { onTime(draft); if (!on) onOn(true); onClose(); }} hitSlop={10} style={styles.donePill} accessibilityRole="button">
@@ -449,8 +445,8 @@ const styles = StyleSheet.create({
   // the alarm popup: dark grey, soft (neumorphic) shapes lit from the top left
   scrim: { backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 16 },
   popup: { width: '100%', maxWidth: 380, backgroundColor: BASE, borderRadius: 28, paddingHorizontal: 20, paddingTop: 16, paddingBottom: 18, alignItems: 'center', boxShadow: '0 24px 60px rgba(0,0,0,0.75)' },
-  wheel: { backgroundColor: BASE, alignItems: 'center', justifyContent: 'center', boxShadow: '-9px -9px 20px rgba(255,255,255,0.06), 12px 12px 26px rgba(0,0,0,0.7)' },
-  groove: { backgroundColor: '#29292c', boxShadow: 'inset 3px 3px 7px rgba(0,0,0,0.55), inset -3px -3px 6px rgba(255,255,255,0.04)' },
+  // the dial: one flat face, its edge just slightly rounded (a soft light rim at the top left, a soft dark one at the bottom right)
+  wheel: { backgroundColor: BASE, alignItems: 'center', justifyContent: 'center', boxShadow: '-9px -9px 20px rgba(255,255,255,0.06), 12px 12px 26px rgba(0,0,0,0.7), inset 2px 2px 3px rgba(255,255,255,0.07), inset -3px -3px 5px rgba(0,0,0,0.35)' },
   dimple: { backgroundColor: '#272729', boxShadow: 'inset 5px 5px 8px rgba(0,0,0,0.75), inset -3px -3px 6px rgba(255,255,255,0.08)' },
   wheelTime: { color: CREAM, fontFamily: fonts.ui, fontSize: 24, fontWeight: '200', letterSpacing: 1 },
   wheelNum: { position: 'absolute', width: 30, textAlign: 'center', color: 'rgba(244,226,207,0.5)', fontFamily: fonts.ui, fontSize: 10, fontWeight: '300' },
