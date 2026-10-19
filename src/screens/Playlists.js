@@ -21,6 +21,8 @@ function Thumb({ s, size }) {
   );
 }
 
+const TAPE = require('../../assets/playlist-tape.png');
+
 export default function Playlists({ u, openMenu, shelf, onPlay }) {
   const t = useT();
   const insets = useSafeAreaInsets();
@@ -51,6 +53,8 @@ export default function Playlists({ u, openMenu, shelf, onPlay }) {
         <View style={styles.col}>
           {!pl ? (
             <>
+              {/* Jörg's felt cassette, centred, about half the column wide (its soft shadow is part of the picture) */}
+              <Image source={TAPE} style={{ width: '57.5%', aspectRatio: 920 / 675, alignSelf: 'center', marginBottom: 6 }} resizeMode="contain" accessibilityIgnoresInvertColors />
               <Text style={styles.p}>{t('Line up books to be read one after another, in order or shuffled.')}</Text>
               {lists.map((p) => {
                 const bs = books(p);
