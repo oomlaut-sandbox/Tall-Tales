@@ -222,7 +222,7 @@ export default function Nightlight({ title, onSleep, eclipse = 0, onEclipse, ala
     <View pointerEvents="box-none" style={{ alignItems: 'center' }}>
       <FineSlider value={e} onChange={onEclipse} width={sliderW} label={t('Nightlight brightness')} />
       <View style={{ marginTop: 4 }}><SunIcon /></View>
-      <Text style={[styles.small, { marginTop: 30 }]}>{t('Now playing')}</Text>
+      <Text style={[styles.label, { marginTop: 30 }]}>{t('Now playing')}</Text>
       {title ? <Text numberOfLines={2} style={styles.title}>{title}</Text> : null}
       <Pressable onPress={cycleSleep} disabled={locked} hitSlop={12} style={{ marginTop: 22, flexDirection: 'row', alignItems: 'center', gap: 8, opacity: sleepAt ? 0.9 : 0.5 }} accessibilityRole="button">
         <Text style={styles.small}>{sleepAt ? t('Sleep timer: {n} min', { n: left }) : t('Sleep timer: off')}</Text>
@@ -242,7 +242,11 @@ export default function Nightlight({ title, onSleep, eclipse = 0, onEclipse, ala
       {locked ? <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.55)', zIndex: 78 }]} onStartShouldSetResponder={() => true} /> : null}
       <View pointerEvents="box-none" style={[styles.abs, area, { zIndex: locked ? 79 : 40 }]}>
         <View pointerEvents="box-none" style={{ flex: 1, flexDirection: wide ? 'row' : 'column', alignItems: 'center', justifyContent: 'center', gap: wide ? 8 : 0 }}>
-          <View pointerEvents="none" style={{ marginTop: wide ? 0 : -area.height * 0.08 }}>{sunBlock}</View>
+          <View pointerEvents="none" style={{ marginTop: wide ? 0 : -area.height * 0.08, alignItems: 'center' }}>
+            {/* the time, in fine letters above the sun */}
+            <Text style={[styles.now, { marginBottom: -S * 0.08, zIndex: 1 }]}>{fmtTime(hm)}</Text>
+            {sunBlock}
+          </View>
           <View pointerEvents="box-none" style={{ marginTop: wide ? 0 : -S * 0.04, width: wide ? area.width * 0.38 : undefined, alignItems: 'center' }}>{info}</View>
         </View>
         {/* bottom left: the alarm time (when the alarm is on) above the clock icon (when the clock is on) */}
@@ -253,7 +257,7 @@ export default function Nightlight({ title, onSleep, eclipse = 0, onEclipse, ala
             </Pressable>
           ) : null}
           {controls.clock ? (
-            <Pressable onPress={() => setShowFace((x) => !x)} hitSlop={14} style={{ marginTop: 8, opacity: showFace ? 0.95 : 0.55 }} accessibilityRole="button" accessibilityLabel={t('Show a clock')}>
+            <Pressable onPress={() => setShowFace((x) => !x)} hitSlop={14} style={{ marginTop: 18, opacity: showFace ? 0.95 : 0.55 }} accessibilityRole="button" accessibilityLabel={t('Show a clock')}>
               <ClockIcon />
             </Pressable>
           ) : null}
@@ -277,6 +281,9 @@ export default function Nightlight({ title, onSleep, eclipse = 0, onEclipse, ala
 const styles = StyleSheet.create({
   abs: { position: 'absolute' },
   title: { color: 'rgba(255,255,255,0.82)', fontFamily: fonts.ui, fontSize: 17, fontWeight: '300', letterSpacing: 0.3, textAlign: 'center', marginTop: 6, maxWidth: 280 },
+  label: { color: 'rgba(255,255,255,0.5)', fontFamily: fonts.ui, fontSize: 13, fontWeight: '300', letterSpacing: 0.3, textAlign: 'center' },
+  // the time above the sun: thin, quiet, large
+  now: { color: 'rgba(244,226,207,0.78)', fontFamily: fonts.ui, fontSize: 30, fontWeight: '200', letterSpacing: 1.5, textAlign: 'center' },
   small: { color: 'rgba(255,255,255,0.45)', fontFamily: fonts.ui, fontSize: 12, letterSpacing: 0.8, textTransform: 'uppercase', textAlign: 'center' },
   note: { color: 'rgba(255,255,255,0.5)', fontFamily: fonts.ui, fontSize: 13, textAlign: 'center' },
   alarm: { color: 'rgba(244,226,207,0.8)', fontFamily: fonts.ui, fontSize: 15, fontWeight: '300', letterSpacing: 0.5 },
