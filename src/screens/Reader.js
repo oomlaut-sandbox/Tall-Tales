@@ -62,6 +62,7 @@ import { getRecording, listRecordings, pageKey, removeRecording, saveRecording }
 import { markFinished, markFirst, markReadToday } from '../badges';
 import { AUDIO, TIMINGS } from '../narration';
 import { SAMPLES, SAMPLE_LANGS, THE_END } from '../narration/samples';
+import Nightlight from '../components/Nightlight';
 
 export const MODES = [
   [<GlassesIcon />, 'self', 'Read Yourself', 'Page by page with no audio'],
@@ -699,8 +700,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       </View>
       </View>
       {/* Listen Only: the soft night level (nothing under it can be touched) */}
-      {/* (while a page peels, the same dark layer is drawn over the peeling page instead, further down) */}
-      {listen ? <View pointerEvents={pages[idx] && pages[idx].end ? 'none' : 'auto'} style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: peeling ? 0 : 0.35, zIndex: 25 }]} /> : null}{/* (The End's buttons still work) */}
+
       </View>
       {wide ? (
         // sideways: the menu bar runs down the right side; same icons, page tag shortened to "2/16"
@@ -781,9 +781,13 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             <PeelGuard><PeelLayer start={prog.current} width={W} height={H} artH={flipT.artH} corner={peel.corner} front={peel.front} back={peel.back}
               ox={(winW - W) / 2} oy={topH + (winH - topH - barH - H) / 2} canvasW={winW} canvasH={winH} /></PeelGuard>
           )}
-          {/* Listen Only: the night level stays over the turning page too (just over the book area, between the bars) */}
-          {listen ? <View style={[{ position: 'absolute', backgroundColor: '#000', opacity: 0.35 }, wide ? { left: BL.leftW, right: BL.rightW, top: 0, bottom: 0 } : { left: 0, right: 0, top: topH, bottom: barH }]} /> : null}
         </View>
+      ) : null}
+      {/* Listen Only: the nightlight (the book almost hidden, a soft breathing sun, brightness, a lock) */}
+      {listen ? (
+        <Nightlight title={story.title} brightness={prefs.nightlight ?? 0.7} onBrightness={(v) => setPrefs((p) => ({ ...p, nightlight: Math.round(v * 100) / 100 }))}
+          wide={wide} end={!!(pages[idx] && pages[idx].end)}
+          area={wide ? { left: 0, top: 0, width: winW - BL.rightW, height: winH } : { left: 0, top: 0, width: winW, height: winH - barH }} />
       ) : null}
       <Panel open={panel === 'play'} side="right" title={playView === 'voices' ? tr('Voices') : tr('Playback Options')} {...panelPos} onClose={() => { setPanel(null); setPlayView('main'); }}>
         {playView === 'voices' ? (
