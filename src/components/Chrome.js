@@ -234,12 +234,16 @@ export function MusicIcon({ size = 20, color }) {
   return <Image source={MUSIC_NOTE} style={{ width: size, height: size, tintColor: color }} resizeMode="contain" />;
 }
 // the restricted kid mode lock: a rounded body with a shackle on top
-export function LockIcon({ size = 20, color = colors.white, weight = 2 }) {
-  const bw = size * 0.72, bh = size * 0.5, sw = size * 0.46;
+export function LockIcon({ size = 20, color = colors.white, weight }) {
+  // a slim padlock: a thin shackle over a body drawn as an outline (like the other bar icons)
+  const w = weight ?? Math.max(1.4, size * 0.085);
+  const bw = size * 0.66, bh = size * 0.46, sw = size * 0.42;
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'flex-end' }}>
-      <View style={{ position: 'absolute', top: size * 0.04, width: sw, height: size * 0.58, borderWidth: weight, borderColor: color, borderTopLeftRadius: sw / 2, borderTopRightRadius: sw / 2, borderBottomWidth: 0 }} />
-      <View style={{ width: bw, height: bh, borderRadius: size * 0.1, backgroundColor: color }} />
+      <View style={{ position: 'absolute', top: size * 0.06, width: sw, height: size * 0.56, borderWidth: w, borderColor: color, borderTopLeftRadius: sw / 2, borderTopRightRadius: sw / 2, borderBottomWidth: 0 }} />
+      <View style={{ width: bw, height: bh, borderRadius: size * 0.08, borderWidth: w, borderColor: color, backgroundColor: 'transparent', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: w, height: bh * 0.32, borderRadius: w / 2, backgroundColor: color }} />
+      </View>
     </View>
   );
 }
