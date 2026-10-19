@@ -100,6 +100,8 @@ export const HELP = [
   ] },
 ];
 
+const IDEAS_FELT = require('../../assets/ideas-felt.png');
+
 export default function Help({ u, openMenu, onAbout, onIdeas }) {
   const t = useT();
   const lang = useLang();
@@ -131,8 +133,10 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
         <View style={styles.col}>
           {/* (a short video tour will go here later) */}
           {/* the Idea Room, at the very top: ideas for every kind of book a family can make */}
-          <Pressable onPress={onIdeas} accessibilityRole="button" style={[styles.ideas, { flexDirection: 'row', gap: 14, alignItems: 'center' }]}>
-            <View style={{ flex: 1, gap: 6 }}>
+          {/* in Jörg's green felt patch, the words inside its stitching */}
+          <Pressable onPress={onIdeas} accessibilityRole="button" style={styles.ideas}>
+            <Image source={IDEAS_FELT} style={StyleSheet.absoluteFill} resizeMode="stretch" />
+            <View style={{ flex: 1, gap: 6, justifyContent: 'center', paddingHorizontal: '9%', paddingVertical: '8%' }}>
               <Text style={styles.ideasTitle}>{t('Ideas Room')}</Text>
               <Text style={styles.ideasText}>{t('Many ideas for books you can make together: your photos and drawings, your words, your voice.')}</Text>
               <Text style={styles.ideasGo}>{t('Visit the Ideas Room')} ›</Text>
@@ -187,9 +191,9 @@ const styles = StyleSheet.create({
   videoText: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 14 },
   searchWrap: { height: 44, borderRadius: 22, overflow: 'hidden', backgroundColor: '#d6d6d6' }, // light grey
   search: { flex: 1, backgroundColor: 'transparent', paddingHorizontal: 18, fontFamily: fonts.ui, fontSize: 16, color: colors.ink, outlineWidth: 0 },
-  ideas: { backgroundColor: colors.green, borderRadius: 14, padding: 18, gap: 6, shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 3 },
+  ideas: { width: '100%', aspectRatio: 1100 / 805, borderRadius: 26, shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, elevation: 5 },
   ideasTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.white },
-  ideasText: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: colors.white },
+  ideasText: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: colors.white, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 },
   ideasGo: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, color: colors.white, marginTop: 4 },
   aboutPill: { alignSelf: 'flex-start', backgroundColor: colors.green, height: 44, borderRadius: 22, paddingHorizontal: 26, alignItems: 'center', justifyContent: 'center', marginTop: 10 },
   aboutText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
