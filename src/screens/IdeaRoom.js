@@ -1,7 +1,7 @@
 // The Idea Room: ideas for every kind of book a family can make (Help → Idea Room, and the story guide's
 // last step). Sections of idea cards; tap a card to see how to make it. A button to start making one.
 import React, { useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, IS_TABLET, DESK_BG } from '../look';
@@ -12,13 +12,15 @@ import { useControls } from '../controls';
 
 const BAND_FELT = require('../../assets/band-ideas.jpg'); // Jörg's pink felt banner
 const SKIPPY = require('../../assets/ideas-skippy.png'); // Skippy, daydreaming against his book (at the end of the ideas)
-const WRITER = require('../../assets/ideas-writer.png'); // writing in his notebook, under the words at the top
+const PEBBLES = require('../../assets/ideas-pebbles.jpg'); // an open book: felt pebbles and 'Sticks and stones :)' (under the words at the top)
 
 export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const controls = useControls();
   const [open, setOpen] = useState(null);
+  const { width: winW } = useWindowDimensions();
+  const spreadW = Math.min(520, winW - 48); // the full width of the column
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
@@ -27,10 +29,10 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
       </View>
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.col}>
-          {/* the title and words across the full width, then the writer sitting centred underneath with lots of room */}
+          {/* the title and words across the full width, then the book spread underneath with lots of room */}
           <Text style={styles.heading}>{t('Let’s create!')}</Text>
           <Text style={styles.lead}>{t('Here are some examples of books you can make together… {n} to be exact ;) Your photos and drawings, your words, your voice.', { n: IDEA_COUNT })}</Text>
-          <Image source={WRITER} style={{ width: 150, height: 150, alignSelf: 'center', marginTop: 26, marginBottom: 30 }} resizeMode="contain" accessibilityIgnoresInvertColors />
+          <View style={[styles.spread, { width: spreadW, height: Math.round(spreadW * 586 / 1200) }]}><Image source={PEBBLES} style={{ width: '100%', height: '100%' }} resizeMode="cover" accessibilityIgnoresInvertColors /></View>
           {IDEA_SECTIONS.map((sec) => (
             <View key={sec.title} style={{ gap: 10 }}>
               <Text style={styles.section}>{t(sec.title)}</Text>
@@ -67,6 +69,7 @@ const styles = StyleSheet.create({
   body: { padding: 24, paddingTop: 28, paddingBottom: 40, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 14 },
   heading: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 26, color: colors.white },
+  spread: { alignSelf: 'center', marginTop: 22, marginBottom: 28, borderRadius: 6, overflow: 'hidden', backgroundColor: '#c9c9c9' },
   lead: { fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, color: colors.white },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 18 },
   intro: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#cfcfcf' },
