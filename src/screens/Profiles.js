@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   cell: { alignItems: 'center', gap: 6 },
   activeRing: { borderWidth: 3, borderColor: colors.white },
   initial: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
-  name: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, color: colors.white, maxWidth: '100%' },
+  name: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, color: colors.white, maxWidth: '100%', marginTop: 22 }, // well clear of the character (it grows when chosen)
   age: { fontFamily: fonts.ui, fontSize: 13, color: '#bdbdbd' },
   addTile: { borderWidth: 2, borderColor: '#777', borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' },
   plus: { color: '#aaa', fontFamily: fonts.ui, fontWeight: '300' },
