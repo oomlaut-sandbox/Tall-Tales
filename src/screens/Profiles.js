@@ -96,8 +96,9 @@ export default function Profiles({ u, openMenu, setControls }) {
               const on = p.id === s.active;
               return (
                 <Pressable key={p.id} disabled={!editing && (!canSwitch || on)} onPress={() => (editing ? openForm(p) : switchProfile(p.id))}
-                  accessibilityRole="button" accessibilityLabel={p.name} accessibilityState={{ selected: on }} style={[styles.cell, { width: side }]}>
-                  <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}><ProfileTile p={p} size={Math.round(side * 0.68)} active={on} /></View>
+                  accessibilityRole="button" accessibilityLabel={p.name} accessibilityState={{ selected: on }} style={[styles.cell, { width: side }, on && styles.cellOn]}>
+                  {/* the child reading now gets a box around them instead of growing */}
+                  <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}><ProfileTile p={p} size={Math.round(side * 0.68)} active={on} grow={1} /></View>
                   <Text numberOfLines={1} style={styles.name}>{p.name}</Text>
                   <Text style={styles.age}>{on ? t('Reading now') : ages[p.id] != null ? t('Age {n}', { n: ages[p.id] }) : ' '}</Text>
                 </Pressable>
@@ -189,10 +190,11 @@ const styles = StyleSheet.create({
   small: { fontFamily: fonts.ui, fontSize: 13, lineHeight: 18, color: '#bdbdbd' },
   link: { fontFamily: fonts.ui, fontSize: 14, color: '#ff9a8a', textDecorationLine: 'underline', marginTop: 4 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 16, rowGap: 22 },
-  cell: { alignItems: 'center', gap: 6 },
+  cell: { alignItems: 'center', gap: 6, paddingBottom: 14, borderRadius: 16, borderWidth: 1, borderColor: 'transparent' },
+  cellOn: { backgroundColor: 'rgba(255,255,255,0.12)', borderColor: 'rgba(255,255,255,0.9)' }, // a large light box with a thin white line
   activeRing: { borderWidth: 3, borderColor: colors.white },
   initial: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
-  name: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, color: colors.white, maxWidth: '100%', marginTop: 22 }, // well clear of the character (it grows when chosen)
+  name: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, color: colors.white, maxWidth: '100%', marginTop: 22 }, // well clear of the character
   age: { fontFamily: fonts.ui, fontSize: 13, color: '#bdbdbd' },
   addTile: { borderWidth: 2, borderColor: '#777', borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' },
   plus: { color: '#aaa', fontFamily: fonts.ui, fontWeight: '300' },
