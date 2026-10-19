@@ -4,5 +4,21 @@
  },
  "gregory": {
   "fp": "8b8166ba6961"
+ },
+ "theEnd": {
+  "lily": {
+   "en": "e2ccc4ac7ca7",
+   "de": "b5ef17ef6740",
+   "fr": "e2fd9232e1e6",
+   "es": "e2fd9232e1e6",
+   "ja": "8a24c263f098"
+  },
+  "gregory": {
+   "en": "3dbd04e3b3fb",
+   "de": "9cf2d8e12f99",
+   "fr": "0918c0b7bb24",
+   "es": "0918c0b7bb24",
+   "ja": "865eadba41f2"
+  }
  }
 }

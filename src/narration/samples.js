@@ -5,5 +5,20 @@ export const SAMPLES = {
   gregory: require("../../assets/narration/gregory/sample.mp3"),
 };
 
-// "The End", said gently by each narrator on the last page (by language). Filled in by ci/narrate.js.
-export const THE_END = {};
+// "The End", said gently by each narrator on the last page (by language).
+export const THE_END = {
+  lily: {
+    en: require("../../assets/narration/lily/the-end/en.mp3"),
+    de: require("../../assets/narration/lily/the-end/de.mp3"),
+    fr: require("../../assets/narration/lily/the-end/fr.mp3"),
+    es: require("../../assets/narration/lily/the-end/es.mp3"),
+    ja: require("../../assets/narration/lily/the-end/ja.mp3"),
+  },
+  gregory: {
+    en: require("../../assets/narration/gregory/the-end/en.mp3"),
+    de: require("../../assets/narration/gregory/the-end/de.mp3"),
+    fr: require("../../assets/narration/gregory/the-end/fr.mp3"),
+    es: require("../../assets/narration/gregory/the-end/es.mp3"),
+    ja: require("../../assets/narration/gregory/the-end/ja.mp3"),
+  },
+};
