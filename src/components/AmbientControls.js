@@ -38,7 +38,7 @@ export default function AmbientControls() {
             <Chip label={t('Off')} on={!s.sound && !s.music} onPress={stopAmbient} />
           </View>
         </View>
-        <Image source={GUITAR} style={{ width: 112, height: 125, marginTop: 2 }} resizeMode="contain" accessibilityIgnoresInvertColors />
+        <Image source={GUITAR} style={{ width: 112, height: 125, marginTop: 2, marginRight: 14 }} resizeMode="contain" accessibilityIgnoresInvertColors />
       </View>
       <Text style={styles.group}>{t('Music')}</Text>
       <View style={styles.chips}>
