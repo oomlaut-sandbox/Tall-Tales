@@ -11,14 +11,13 @@ import { useT } from '../i18n';
 import { useControls } from '../controls';
 
 const BAND_FELT = require('../../assets/band-ideas.jpg'); // Jörg's pink felt banner
-const PICTURE = require('../../assets/idea-room.jpg'); // Jörg's happy blue felt creature under the rainbow
+const SKIPPY = require('../../assets/ideas-skippy.png'); // Skippy, daydreaming against his book
 
 export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const controls = useControls();
   const [open, setOpen] = useState(null);
-  const [heroW, setHeroW] = useState(0);
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
@@ -27,10 +26,19 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
       </View>
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.col}>
-          <View style={styles.hero} onLayout={(e) => setHeroW(e.nativeEvent.layout.width)}>{heroW ? <Image source={PICTURE} style={{ width: heroW, height: heroW * 3 / 4 }} resizeMode="cover" /> : null}</View>
-          <Text style={styles.heading}>{t('Let’s create!')}</Text>
-          {/* plenty of room under the words before the first idea */}
-          <Text style={[styles.lead, { marginBottom: 22 }]}>{t('Here are some examples of books you can make together… {n} to be exact ;) Your photos and drawings, your words, your voice.', { n: IDEA_COUNT })}</Text>
+          {/* the title and words on the left; Skippy daydreaming on the right, a little thought bubble over him */}
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 22 }}>
+            <View style={{ flex: 1, minWidth: 0, gap: 8 }}>
+              <Text style={styles.heading}>{t('Let’s create!')}</Text>
+              <Text style={styles.lead}>{t('Here are some examples of books you can make together… {n} to be exact ;) Your photos and drawings, your words, your voice.', { n: IDEA_COUNT })}</Text>
+            </View>
+            <View style={{ width: 128, alignItems: 'center', paddingTop: 4 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+              <View style={styles.thought}><Text style={styles.thoughtText}>…</Text></View>
+              <View style={[styles.puff, { width: 12, height: 12, marginLeft: -26, marginTop: 5 }]} />
+              <View style={[styles.puff, { width: 7, height: 7, marginLeft: -44, marginTop: 3 }]} />
+              <Image source={SKIPPY} style={{ width: 128, height: 82, marginTop: 2 }} resizeMode="contain" accessibilityIgnoresInvertColors />
+            </View>
+          </View>
           {IDEA_SECTIONS.map((sec) => (
             <View key={sec.title} style={{ gap: 10 }}>
               <Text style={styles.section}>{t(sec.title)}</Text>
@@ -62,8 +70,11 @@ const styles = StyleSheet.create({
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 28, paddingBottom: 40, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 14 },
-  hero: { width: '100%', aspectRatio: 4 / 3, borderRadius: 16, overflow: 'hidden', backgroundColor: '#3a3a3a' },
-  heading: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 26, color: colors.white, marginTop: 8, marginBottom: -4 },
+  heading: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 26, color: colors.white },
+  // the thought bubble: the same cream and soft shadow as the speech bubbles
+  thought: { backgroundColor: '#f4f1ea', borderRadius: 20, paddingHorizontal: 16, height: 38, justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.35, shadowRadius: 6, elevation: 4 },
+  thoughtText: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 20, lineHeight: 24, color: '#5a5a5a', marginTop: -6 },
+  puff: { borderRadius: 10, backgroundColor: '#f4f1ea', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, elevation: 3 },
   lead: { fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, color: colors.white },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 18 },
   intro: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#cfcfcf' },
