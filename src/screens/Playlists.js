@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
   pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   chip: { paddingHorizontal: 16, height: 44, borderRadius: 22, backgroundColor: '#2a2a2a', alignItems: 'center', justifyContent: 'center' },
-  chipOn: { backgroundColor: '#6b5b95' },
+  chipOn: { backgroundColor: colors.blue },
   chipText: { fontFamily: fonts.ui, fontSize: 15, color: '#dcdcdc', fontWeight: '600' },
   input: { height: 48, borderRadius: 10, backgroundColor: '#d6d6d6', paddingHorizontal: 14, fontFamily: fonts.ui, fontSize: 20, color: '#222' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 14 },
