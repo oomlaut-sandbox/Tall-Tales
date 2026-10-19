@@ -547,29 +547,16 @@ const styles = StyleSheet.create({
 });
 
 
-// an alarm clock, simple: a ring (the same stroke as the menu's circle icons), two round-ended hands (four o'clock, same stroke),
-// and two small rectangular bells attached to the ring at the top left and top right
+// the alarm clock: a ring (the same stroke as the menu's circle icons) with an L for the hands, its corner on the
+// very middle, every line the same stroke
 export function AlarmClockIcon({ size = 20, color = colors.white, weight }) {
   const w = weight || Math.max(1.5, size * 0.1);
-  const d = size * 0.78, top = size - d, c = (d - 2 * w) / 2;
-  const bw = size * 0.3, bh = size * 0.13; // a bell
-  const bell = (left) => {
-    // its middle sits on the ring at 45 degrees from the top
-    const r = d / 2, cx = size / 2 + (left ? -1 : 1) * r * 0.7, cy = top + r - r * 0.7;
-    return <View style={{ position: 'absolute', left: cx - bw / 2, top: cy - bh / 2 + w * 0.2, width: bw, height: bh, borderRadius: bh * 0.25, backgroundColor: color, transform: [{ rotate: left ? '-45deg' : '45deg' }] }} />;
-  };
-  // a hand: a round-ended line from the middle, turned around the middle (0: straight up)
-  const hand = (len, deg) => (
-    <View style={{ position: 'absolute', left: 0, top: 0, width: 2 * c, height: 2 * c, alignItems: 'center', transform: [{ rotate: `${deg}deg` }] }}>
-      <View style={{ marginTop: c - len, width: w, height: len + w / 2, borderRadius: w / 2, backgroundColor: color }} />
-    </View>
-  );
+  const d = size * 0.92, c = (d - 2 * w) / 2; // c: the middle, inside the ring's stroke
   return (
-    <View style={{ width: size, height: size }}>
-      {bell(true)}{bell(false)}
-      <View style={{ position: 'absolute', top, left: (size - d) / 2, width: d, height: d, borderRadius: d / 2, borderWidth: w, borderColor: color }}>
-        {hand(d * 0.34, 0)}
-        {hand(d * 0.26, 128)}
+    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: d, height: d, borderRadius: d / 2, borderWidth: w, borderColor: color }}>
+        <View style={{ position: 'absolute', left: c - w / 2, top: c - d * 0.3, width: w, height: d * 0.3 + w / 2, backgroundColor: color }} />
+        <View style={{ position: 'absolute', left: c - w / 2, top: c - w / 2, width: d * 0.24 + w / 2, height: w, backgroundColor: color }} />
       </View>
     </View>
   );
