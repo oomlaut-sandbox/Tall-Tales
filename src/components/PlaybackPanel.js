@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { BOOK_FONTS, colors, fonts } from '../theme';
-import { BubbleIcon, Option, Panel, Slider } from './Chrome';
+import { BubbleIcon, Option, Panel, PlaylistIcon, Slider } from './Chrome';
 import { TEXT_SIZES } from './PageView';
 import { MODES, NARRATORS, Seg, narratorOf, speedOf } from '../screens/Reader';
 import { SAMPLES } from '../narration/samples';
@@ -11,7 +11,7 @@ import { playVoice } from '../voice';
 import { playSound, setEffects, setEffectsVolume } from '../sound';
 import { useT } from '../i18n';
 
-export default function PlaybackPanel({ open, onClose, prefs, setPrefs, toast, bottom, inset }) {
+export default function PlaybackPanel({ open, onClose, prefs, setPrefs, toast, bottom, inset, onPlaylists }) {
   const tr = useT();
   const [view, setView] = useState('main'); // 'main' | 'voices'
   const [speed, setSpeed] = useState(null);
@@ -35,6 +35,7 @@ export default function PlaybackPanel({ open, onClose, prefs, setPrefs, toast, b
               onPress={() => { setPrefs((p) => ({ ...p, mode: id })); toast(tr('Books will play: {mode}.', { mode: tr(t) })); }} />
           ))}
           <Option glyph={<BubbleIcon />} title={tr('Voices')} sub={tr('Narrator: {name}', { name: (NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1] })} onPress={() => setView('voices')} />
+          {onPlaylists ? <Option glyph={<PlaylistIcon />} title={tr('Playlists')} sub={tr('Books read one after another')} onPress={() => { close(); onPlaylists(); }} /> : null}
           <View style={styles.setting}>
             <Text style={styles.help}>{tr('Playback speed')}</Text>
             <Slider value={speed ?? speedOf(prefs)} min={0.5} max={1.5} step={0.05} leftLabel={tr('Slower')} rightLabel={tr('Faster')}

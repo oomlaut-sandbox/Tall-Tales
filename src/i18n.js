@@ -261,6 +261,7 @@ const T = {
   'Remove this profile': { de: 'Dieses Profil entfernen', fr: 'Retirer ce profil', es: 'Quitar este perfil', ja: 'このプロフィールをけす' },
   'Changing profiles is for grown-ups.': { de: 'Profile ändern ist für Erwachsene.', fr: 'Modifier les profils, c’est pour les adultes.', es: 'Cambiar perfiles es cosa de adultos.', ja: 'プロフィールをかえるのは、おとなのしごとです。' },
   'Let my child switch profiles': { de: 'Mein Kind darf das Profil wechseln', fr: 'Mon enfant peut changer de profil', es: 'Mi hijo puede cambiar de perfil', ja: 'こどもがプロフィールをきりかえてもよい' },
+  'Books read one after another': { de: 'Bücher nacheinander lesen', fr: 'Des livres lus l’un après l’autre', es: 'Libros uno tras otro', ja: 'ほんを つぎつぎに よむ' },
   'Playlists': { de: 'Playlists', fr: 'Listes de lecture', es: 'Listas', ja: 'プレイリスト' },
   'Books read one after another': { de: 'Bücher nacheinander vorlesen', fr: 'Des livres lus l’un après l’autre', es: 'Libros leídos uno tras otro', ja: 'ほんをつぎつぎによむ' },
   'Line up books to be read one after another, in order or shuffled.': { de: 'Reihe Bücher auf, die nacheinander vorgelesen werden, der Reihe nach oder gemischt.', fr: 'Alignez des livres à lire l’un après l’autre, dans l’ordre ou au hasard.', es: 'Pon libros en fila para leerlos uno tras otro, en orden o al azar.', ja: 'ほんをならべて、じゅんばんに、またはシャッフルでよみます。' },

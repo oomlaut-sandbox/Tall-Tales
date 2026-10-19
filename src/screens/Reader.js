@@ -1,6 +1,6 @@
 // The reader: page curl, read-aloud with highlighting, learn-to-read, interactive pictures.
 import { getAmbient, onRecordRequest, setAmbientPlayer } from '../ambient';
-import { LockIcon, MusicIcon } from '../components/Chrome';
+import { LockIcon, MusicIcon, PlaylistIcon } from '../components/Chrome';
 import { isRestricted, useControls } from '../controls';
 import { useT } from '../i18n';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -84,7 +84,7 @@ export function Seg({ value, options, onChange, stacked }) {
   );
 }
 
-export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary, toast, menuRequest, landscape, setToastSpot, autoStart, onFinished, onSettings }) {
+export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary, toast, menuRequest, landscape, setToastSpot, autoStart, onFinished, onSettings, onPlaylists }) {
   const tr = useT(); // the reader's own panel, in the app's language
   const controls = useControls(); // parental controls: recording, sharing and printing may be switched off
   const insets = useSafeAreaInsets();
@@ -796,6 +796,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           </React.Fragment>
         ))}
         <Option glyph={<BubbleIcon />} title={tr('Voices')} sub={tr('Narrator: {name}', { name: (NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1] })} onPress={() => setPlayView('voices')} />
+        {onPlaylists ? <Option glyph={<PlaylistIcon />} title={tr('Playlists')} sub={tr('Books read one after another')} onPress={() => { setPanel(null); setPlayView('main'); onPlaylists(); }} /> : null}
         <View style={styles.setting}>
           <Text style={styles.help}>{tr('Playback speed')}</Text>
           <Slider value={speedDraft ?? speedOf(prefs)} min={0.5} max={1.5} step={0.05} leftLabel={tr('Slower')} rightLabel={tr('Faster')}

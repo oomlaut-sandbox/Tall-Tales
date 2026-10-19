@@ -316,7 +316,7 @@ function Root() {
         {screen === 'profile' && <Profile u={u} openMenu={openMenu} toast={toast} />}
         {screen === 'reader' && story && (
           <Reader key={queue ? `${queue.key}:${queue.i}` : 'one'} u={u} story={story} setToastSpot={setToastSpot} prefs={queue ? { ...prefs, mode: queue.listen ? 'listen' : 'auto' } : controls.playMode ? { ...prefs, mode: controls.playMode } : prefs}
-            autoStart={!!queue} onFinished={onBookFinished} onSettings={() => setSettingsGate(true)} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
+            autoStart={!!queue} onFinished={onBookFinished} onSettings={() => setSettingsGate(true)} onPlaylists={() => go('playlists')} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
         )}
         {opening ? (
           <BookOpen u={u} story={opening.story} cover={opening.cover} rect={opening.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}
@@ -358,7 +358,7 @@ function Root() {
         {/* the Audio Player for music and nature sounds: in the middle of the screen over a dark layer until it's closed */}
         <TapePlayer onMenu={() => { setAmbientPlayer(false); go('music'); }} />
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 175 }]}>
-          <PlaybackPanel open={playOpen && screen !== 'reader'} onClose={() => setPlayOpen(false)} prefs={prefs} setPrefs={setPrefs} toast={toast} bottom={drawerBottom} inset={drawerRight} />
+          <PlaybackPanel open={playOpen && screen !== 'reader'} onClose={() => setPlayOpen(false)} onPlaylists={() => go('playlists')} prefs={prefs} setPrefs={setPrefs} toast={toast} bottom={drawerBottom} inset={drawerRight} />
         </View>
         {/* the main menu always slides in over everything else on screen (pop-ups, pages boxes, speech bubbles) */}
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
