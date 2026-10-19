@@ -27,7 +27,7 @@ export const SLEEP_TIMES = [0, 15, 30, 60]; // minutes (0: keep playing)
 // sound / music: the chosen one on each channel (null: off); playing: sounding now; volume 0..1;
 // showPlayer: the floating tape player; sleep: minutes until it fades out; pos: where the player was left;
 // recording: a voice is being recorded (the player's little red light)
-let state = { sound: null, music: null, playing: false, volume: 0.4, rate: 1, showPlayer: false, sleep: 0, sleepAt: null, pos: null, recording: false };
+let state = { sound: 'campfire', music: 'gentle-guitar', playing: false, volume: 0.4, rate: 1, showPlayer: false, sleep: 0, sleepAt: null, pos: null, recording: false };
 const listeners = new Set();
 const set = (patch) => {
   state = { ...state, ...patch };
@@ -96,7 +96,7 @@ const syncAll = () => { sync('sound'); sync('music'); };
 
 // Play: whatever is chosen (the first sound if nothing is chosen yet)
 export function playAmbient() {
-  if (!state.sound && !state.music) set({ sound: SOUNDS[0].id });
+  if (!state.sound && !state.music) set({ sound: 'campfire', music: 'gentle-guitar' }); // the starting combination
   set({ playing: true });
   syncAll();
   armSleep(state.sleep);

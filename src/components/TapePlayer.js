@@ -91,7 +91,7 @@ export default function TapePlayer({ onMenu }) {
         <Pressable onPress={onMenu} hitSlop={4} style={at(1420, 120, 260, 180)} accessibilityRole="button" accessibilityLabel={t('Music and Sounds')} />
         <Pressable onPress={playAmbient} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} accessibilityRole="button" accessibilityLabel={t('Play')} />
         <Pressable onPress={pauseAmbient} style={at(1360, 562, 230, 250)} accessibilityRole="button" accessibilityLabel={t('Pause')} />
-        {windowText([275, 1056, 1075, 150], name(s.sound) || t('Select sound'), !s.sound)}
+        {windowText([275, 1067, 1075, 150], name(s.sound) || t('Select sound'), !s.sound)}
         {windowText([262, 1437, 1082, 150], name(s.music) || t('Select music'), !s.music)}
         {/* the knobs stay put; tap one to click to the next choice */}
         <Pressable onPress={() => stepAmbient('sound')} style={at(1386, 1010, 250, 260)} accessibilityRole="button" accessibilityLabel={name(s.sound) || t('Select sound')} />
