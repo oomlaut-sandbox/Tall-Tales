@@ -210,6 +210,17 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     setReading(false); setPaused(false); setHl(-1);
   }, []);
 
+  // switch how the book plays (and start reading when the new mode reads aloud)
+  const chooseMode = (id) => {
+    stopReading();
+    setPrefs((p) => ({ ...p, mode: id, ...(id === 'listen' && p.mode !== 'listen' ? { prevMode: p.mode } : {}) }));
+    st.current.mode = id === 'listen' ? 'auto' : id;
+    if (id === 'auto' || id === 'page' || id === 'listen') setTimeout(() => readPage(st.current.idx), 300);
+  };
+  // the moon on the bar: into the nightlight (Listen Only), and back to how it was before
+  const canMoon = controls.playback !== false && !controls.playMode;
+  const toggleNight = () => chooseMode(prefs.mode === 'listen' ? (prefs.prevMode && prefs.prevMode !== 'listen' ? prefs.prevMode : 'auto') : 'listen');
+
   const wordAt = (ch) => {
     for (let i = 0; i < tokens.length; i++) if (tokens[i].start <= ch && ch < tokens[i].end + 1) return i;
     return -1;
@@ -719,6 +730,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
               <Pressable onPress={() => setAmbientPlayer(!getAmbient().showPlayer)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.small, { marginTop: isRestricted(controls) && onSettings ? u * 4 : u * 7 }]}>{/* closer when it sits beside the lock */}
                 <MusicIcon size={u * 5.6} color="#8e8e8e" />
               </Pressable>
+              {/* the nightlight: a small light grey moon (Listen Only with the sunset sun) */}
+              {canMoon ? (
+                <Pressable onPress={toggleNight} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Nightlight')} style={[styles.small, { marginTop: u * 4 }]}>
+                  <MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />
+                </Pressable>
+              ) : null}
             </View>
             <View style={{ alignItems: 'center' }}>
             {showControls ? (
@@ -752,6 +769,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         <Pressable onPress={() => setAmbientPlayer(!getAmbient().showPlayer)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.small, { marginLeft: isRestricted(controls) && onSettings ? u * 4 : u * 7 }]}>{/* closer when it sits beside the lock */}
           <MusicIcon size={u * 5.6} color="#8e8e8e" />
         </Pressable>
+        {canMoon ? (
+          <Pressable onPress={toggleNight} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Nightlight')} style={[styles.small, { marginLeft: u * 4 }]}>
+            <MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />
+          </Pressable>
+        ) : null}
         {/* no page numbers in the reader (the store shows how long a book is) */}
         <View style={{ flex: 1 }} />
         {showControls ? (
@@ -785,7 +807,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       ) : null}
       {/* Listen Only: the nightlight (the book almost hidden, a soft breathing sun, brightness, a lock) */}
       {listen ? (
-        <Nightlight title={story.title} eclipse={prefs.eclipse ?? 0} onEclipse={(v) => setPrefs((p) => ({ ...p, eclipse: Math.round(v * 100) / 100 }))}
+        <Nightlight title={story.title} onSleep={() => { stopReading(); clearTimeout(autoTimer.current); }} eclipse={prefs.eclipse ?? 0} onEclipse={(v) => setPrefs((p) => ({ ...p, eclipse: Math.round(v * 100) / 100 }))}
           alarmTime={prefs.alarmTime || '07:00'} alarmSound={prefs.alarmSound || 'forest-birds'} onAlarm={(patch) => setPrefs((p) => ({ ...p, ...patch }))}
           wide={wide} end={!!(pages[idx] && pages[idx].end)}
           area={wide ? { left: 0, top: 0, width: winW - BL.rightW, height: winH } : { left: 0, top: 0, width: winW, height: winH - barH }} />
@@ -806,11 +828,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         {MODES.map(([g, id, t, s]) => (
           <React.Fragment key={id}>
           <Option glyph={g} title={tr(t)} sub={tr(s)} selected={prefs.mode === id} onPress={() => {
-            stopReading();
-            setPrefs((p) => ({ ...p, mode: id }));
-            st.current.mode = id === 'listen' ? 'auto' : id;
+            chooseMode(id);
             setPanel(null);
-            if (id === 'auto' || id === 'page' || id === 'listen') setTimeout(() => readPage(st.current.idx), 300);
+            if (id === 'auto' || id === 'page' || id === 'listen') { /* reading starts in chooseMode */ }
             else if (id === 'learn') toast(tr('Tap any word to hear it.'));
             else if (id === 'self') toast(tr('Reading on your own. Turn the page when you’re ready.'));
             else toast(tr('Tap the glowing circles in the picture.'));

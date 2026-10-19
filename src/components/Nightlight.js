@@ -6,6 +6,8 @@
 //   bottom right: the lock (locked, nothing can be touched; a grown-up's question unlocks it)
 //   bottom left: the clock icon (when the clock is switched on in Settings): a delicate analog clock face over the
 //     sun. Above it, the alarm time (when the alarm is on): tap it to set the alarm and how to wake up.
+//   under the title: the sleep timer (tap to choose off, 15, 30 or 60 minutes). When it runs out the reading
+//     stops, the music fades away and the moon covers the sun.
 //   at the alarm time the moon moves away (sunrise) and the chosen wake-up sound fades in.
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -15,7 +17,7 @@ import ParentGate from './ParentGate';
 import { useT } from '../i18n';
 import { useControls } from '../controls';
 import { addMin, fmtTime } from '../clock';
-import { chooseAmbient, setAmbientVolume, getAmbient, playAmbient } from '../ambient';
+import { chooseAmbient, fadeOutAmbient, setAmbientVolume, getAmbient, playAmbient } from '../ambient';
 import { useKeepAwake } from 'expo-keep-awake';
 
 const SUN = require('../../assets/nightlight-sun.png');
@@ -129,7 +131,7 @@ function AlarmSheet({ visible, time, sound, onTime, onSound, onClose }) {
 // layers: the dark layer and the sun sit just over a turning page (40, after it) and under the menus (41);
 // locked, a blocker covers everything (78) with the nightlight above it (79), and the question above that (80)
 // area: where the book is (covered)
-export default function Nightlight({ title, eclipse = 0, onEclipse, alarmTime = '07:00', alarmSound = 'forest-birds', onAlarm, wide, area, end }) {
+export default function Nightlight({ title, onSleep, eclipse = 0, onEclipse, alarmTime = '07:00', alarmSound = 'forest-birds', onAlarm, wide, area, end }) {
   const t = useT();
   const controls = useControls();
   const [locked, setLocked] = useState(false);
@@ -175,6 +177,25 @@ export default function Nightlight({ title, eclipse = 0, onEclipse, alarmTime = 
     }
   }, [hm, controls.alarm, alarmTime]);
   useEffect(() => () => clearInterval(riseTimer.current), []);
+  // the sleep timer: off, 15, 30 or 60 minutes
+  const [sleepAt, setSleepAt] = useState(null); // when it ends (ms), or null
+  const [sleepMin, setSleepMin] = useState(0);
+  const cycleSleep = () => {
+    const next = { 0: 15, 15: 30, 30: 60, 60: 0 }[sleepMin] ?? 0;
+    setSleepMin(next); setSleepAt(next ? Date.now() + next * 60000 : null);
+  };
+  useEffect(() => {
+    if (!sleepAt) return undefined;
+    const tm = setTimeout(() => {
+      setSleepAt(null); setSleepMin(0);
+      if (onSleep) onSleep();
+      fadeOutAmbient(30000);
+      let k = 0; const from = eRef.current;
+      const iv = setInterval(() => { k += 1; onEclipse(from + (1 - from) * Math.min(1, k / 15)); if (k >= 15) clearInterval(iv); }, 2000);
+    }, Math.max(0, sleepAt - Date.now()));
+    return () => clearTimeout(tm);
+  }, [sleepAt]);
+  const left = sleepAt ? Math.max(1, Math.ceil((sleepAt - now.getTime()) / 60000)) : 0;
 
   // sizes: most of the upper part of the screen (upright), or the left side (sideways)
   const S = wide ? Math.min(area.width * 0.6, area.height * 1.0) : Math.min(area.width * 1.05, area.height * 0.58);
@@ -203,6 +224,9 @@ export default function Nightlight({ title, eclipse = 0, onEclipse, alarmTime = 
       <View style={{ marginTop: 4 }}><SunIcon /></View>
       <Text style={[styles.small, { marginTop: 30 }]}>{t('Now playing')}</Text>
       {title ? <Text numberOfLines={2} style={styles.title}>{title}</Text> : null}
+      <Pressable onPress={cycleSleep} disabled={locked} hitSlop={12} style={{ marginTop: 22, flexDirection: 'row', alignItems: 'center', gap: 8, opacity: sleepAt ? 0.9 : 0.5 }} accessibilityRole="button">
+        <Text style={styles.small}>{sleepAt ? t('Sleep timer: {n} min', { n: left }) : t('Sleep timer: off')}</Text>
+      </Pressable>
       {waking ? (
         <Pressable onPress={() => { setWaking(false); clearInterval(riseTimer.current); }} hitSlop={12} style={styles.wakeBtn} accessibilityRole="button">
           <Text style={styles.wakeText}>{t('Good morning!')}</Text>
