@@ -22,4 +22,19 @@ export const THE_END = {
     ja: require("../../assets/narration/gregory/the-end/ja.mp3"),
   },
 };
-export const SAMPLE_LANGS = {};
+
+// The sample in the other app languages (English is SAMPLES).
+export const SAMPLE_LANGS = {
+  lily: {
+    de: require("../../assets/narration/lily/sample/de.mp3"),
+    fr: require("../../assets/narration/lily/sample/fr.mp3"),
+    es: require("../../assets/narration/lily/sample/es.mp3"),
+    ja: require("../../assets/narration/lily/sample/ja.mp3"),
+  },
+  gregory: {
+    de: require("../../assets/narration/gregory/sample/de.mp3"),
+    fr: require("../../assets/narration/gregory/sample/fr.mp3"),
+    es: require("../../assets/narration/gregory/sample/es.mp3"),
+    ja: require("../../assets/narration/gregory/sample/ja.mp3"),
+  },
+};
