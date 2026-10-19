@@ -64,6 +64,7 @@ import { AUDIO, TIMINGS } from '../narration';
 import { SAMPLES, SAMPLE_LANGS, THE_END } from '../narration/samples';
 import Nightlight from '../components/Nightlight';
 import { thunk, withTap } from '../haptics';
+import { fmtTime } from '../clock';
 
 export const MODES = [
   [<GlassesIcon />, 'self', 'Read Yourself', 'Page by page with no audio'],
@@ -749,8 +750,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
                 <Pressable ref={nlLockRef} onPress={withTap(lockNight, thunk)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.small, { marginTop: u * 4 }]}>
                   <LockIcon size={u * 4.6} color="#9a9a9a" />
                 </Pressable>
-                <Pressable onPress={withTap(() => setAlarmOpen(true))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.small, { marginTop: u * 4 }]}>
+                <Pressable onPress={withTap(() => setAlarmOpen(true))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.small, { marginTop: u * 4, alignItems: 'center' }]}>
                     <AlarmClockIcon size={u * 4.8} color={prefs.alarmOn ? '#e0e0e0' : '#9a9a9a'} />
+                    {/* the alarm time, under the clock (sideways) */}
+                    {prefs.alarmOn ? <Text style={[styles.alarmTime, { marginTop: u * 1.6 }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text> : null}
                   </Pressable>
                 </>
               ) : null}
@@ -797,8 +800,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <Pressable ref={nlLockRef} onPress={withTap(lockNight, thunk)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.small, { marginLeft: u * 4 }]}>
             <LockIcon size={u * 4.6} color="#9a9a9a" />
           </Pressable>
-          <Pressable onPress={withTap(() => setAlarmOpen(true))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.small, { marginLeft: u * 4 }]}>
+          <Pressable onPress={withTap(() => setAlarmOpen(true))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.small, { marginLeft: u * 4, flexDirection: 'row', alignItems: 'center' }]}>
               <AlarmClockIcon size={u * 4.8} color={prefs.alarmOn ? '#e0e0e0' : '#9a9a9a'} />
+              {/* the alarm time, right of the clock */}
+              {prefs.alarmOn ? <Text style={[styles.alarmTime, { marginLeft: u * 2.4 }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text> : null}
             </Pressable>
           </>
         ) : null}
@@ -972,6 +977,7 @@ function RecTimer({ start, style }) {
 }
 
 const styles = StyleSheet.create({
+  alarmTime: { color: '#b0b0b0', fontFamily: fonts.ui, fontSize: 14, fontWeight: '400', letterSpacing: 0.3 },
   screen: { flex: 1, backgroundColor: DESK_BG },
   desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: DESK_BG },
   bookShadow: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },

@@ -228,7 +228,7 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
   const t = useT();
   const controls = useControls();
   const [gate, setGate] = useState(false);
-  const [showFace, setShowFace] = useState(false);
+  const [showFace, setShowFace] = useState(true) // the clock face shows over the sun when "Show a clock" is on in Settings;
   useKeepAwake(); // the screen stays on while the nightlight is showing
   useEffect(() => { setAmbientNight(true); if (onEclipse) onEclipse(0); /* it always opens with the whole sun showing */ return () => { setAmbientNight(false); if (onAlarmClose) onAlarmClose(); }; }, []);
   // when the nightlight starts, the screen fades slowly to black and the sun fades in with it
@@ -366,10 +366,10 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
       <View style={{ marginTop: 4 }}><SunIcon /></View>
       <Text style={[styles.small, { marginTop: 64 }]}>{t('Now playing')}</Text>
       {title ? <Text numberOfLines={2} style={styles.title}>{title}</Text> : null}
-      {/* the countdown: how long until the sleep timer ends the story */}
-      {sleepAt ? <Text style={styles.countdown} accessibilityLabel={t('Sleep timer: {n} min', { n: left })}>{countdown}</Text> : null}
       <Pressable onPress={withTap(cycleSleep)} disabled={locked} hitSlop={12} style={{ marginTop: 52, flexDirection: 'row', alignItems: 'center', gap: 8, opacity: sleepAt ? 0.9 : 0.5 }} accessibilityRole="button">
         <Text style={styles.small}>{sleepAt ? t('Sleep timer: {n} min', { n: left }) : t('Sleep timer: off')}</Text>
+        {/* the countdown, right after it, the same size */}
+        {sleepAt ? <Text style={[styles.small, { fontVariant: ['tabular-nums'] }]}>{countdown}</Text> : null}
       </Pressable>
     </View>
   );
@@ -402,19 +402,6 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
             </Animated.View>
           </View>
         ) : null}
-        {/* bottom left: the alarm time (when the alarm is on) above the clock icon (when the clock is on) */}
-        <View pointerEvents="box-none" style={styles.cornerL}>
-          {alarmOn ? (
-            <Text style={styles.alarm} accessibilityLabel={t('Alarm {time}', { time: fmtTime(snoozeHm || alarmTime) })}>
-              {snoozeHm ? `${t('Snooze')} ${fmtTime(snoozeHm)}` : fmtTime(alarmTime)}
-            </Text>
-          ) : null}
-          {controls.clock ? (
-            <Pressable onPress={withTap(() => setShowFace((x) => !x))} hitSlop={14} style={{ marginTop: 18, opacity: showFace ? 0.95 : 0.55 }} accessibilityRole="button" accessibilityLabel={t('Show a clock')}>
-              <ClockIcon />
-            </Pressable>
-          ) : null}
-        </View>
       </Animated.View>
       {/* locked: the lock on the bar stays tappable, above the blocker (it asks the grown-ups' question) */}
       {locked && lockRect ? (
