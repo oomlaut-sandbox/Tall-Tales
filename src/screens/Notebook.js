@@ -832,7 +832,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
     </View>
   );
   const swatches = (w, perRow) => (
-    <View style={{ width: w, flexDirection: 'row', flexWrap: 'wrap', justifyContent: perRow ? 'flex-start' : 'space-between', rowGap: 14 }}>
+    <View style={{ width: w, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', columnGap: perRow ? 0 : 7, rowGap: 14 }}>{/* the colours close together */}
       {PENS.map(([hex, name]) => (
         <View key={hex} style={{ width: perRow ? w / perRow : undefined, alignItems: perRow ? 'center' : undefined }}>
           <Pressable onPress={() => { setPen(hex); setErase(false); }} accessibilityLabel={t('{name} pen', { name: t(name) })}
@@ -851,9 +851,9 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
       <Pressable onPress={() => { setErase((x) => !x); setBucket(false); }} style={[styles.toolWide, erase && styles.toolOn]} accessibilityLabel={t('Eraser')}>
         <Text style={styles.toolText}>{t('Eraser')}</Text>
       </Pressable>
-      {/* the paint bucket: tap inside a shape to fill it with the colour */}
-      <Pressable onPress={() => { setBucket((x) => !x); setErase(false); }} style={[styles.tool, bucket && styles.toolOn]} accessibilityLabel={t('Fill (paint roller)')}>
-        <BucketIcon />
+      {/* Fill: tap inside a shape to fill it with the colour */}
+      <Pressable onPress={() => { setBucket((x) => !x); setErase(false); }} style={[styles.toolWide, bucket && styles.toolOn]} accessibilityLabel={t('Fill')}>
+        <Text style={styles.toolText}>{t('Fill')}</Text>
       </Pressable>
     </View>
   );

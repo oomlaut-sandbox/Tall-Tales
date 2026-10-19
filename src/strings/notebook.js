@@ -68,4 +68,5 @@ export default {
   'Use a different email': { de: 'Andere E-Mail verwenden', fr: 'Utiliser une autre adresse e-mail', es: 'Usar otro correo', ja: 'べつの メールを つかう' },
   'Profile': { de: 'Profil', fr: 'Profil', es: 'Perfil', ja: 'プロフィール' },
   'Parents, sign into your Oomlaut account.': { de: 'Eltern: Meldet euch bei eurem Oomlaut-Konto an.', fr: 'Parents, connectez-vous à votre compte Oomlaut.', es: 'Padres: inicien sesión en su cuenta de Oomlaut.', ja: 'おうちの かたへ: Oomlaut の アカウントに サインインしてください。' },
+  'Fill': { de: 'Füllen', fr: 'Remplir', es: 'Rellenar', ja: 'ぬる' },
 };
