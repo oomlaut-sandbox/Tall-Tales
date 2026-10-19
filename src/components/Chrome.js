@@ -197,9 +197,9 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children, portr
             {/* Close: a small chevron pointing back at the menu bar it goes into (down when upright,
                 right when sideways). Tapping outside the menu still closes it too. */}
             <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Close menu')} style={styles.closeBtn}>
+              {/* one bordered corner turned 45°: both strokes meet in a single clean point (no overlapping bars) */}
               <View style={[styles.chev, wide && { transform: [{ rotate: '-90deg' }] }]}>
-                <View style={[styles.chevBar, { left: 0, transform: [{ rotate: '40deg' }] }]} />
-                <View style={[styles.chevBar, { right: 0, transform: [{ rotate: '-40deg' }] }]} />
+                <View style={styles.chevCorner} />
               </View>
             </Pressable>
           </View>
@@ -531,8 +531,8 @@ const styles = StyleSheet.create({
   panelClip: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, overflow: 'hidden', zIndex: 41 },
   panelHead: { backgroundColor: '#141414', paddingLeft: 24, paddingRight: 12, paddingTop: 24, paddingBottom: 20, flexDirection: 'row', alignItems: 'center' },
   closeBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-  chev: { width: 22, height: 12 },
-  chevBar: { position: 'absolute', top: 4, width: 14, height: 3, borderRadius: 1.5, backgroundColor: colors.white },
+  chev: { width: 22, height: 22, alignItems: 'center', justifyContent: 'center' },
+  chevCorner: { width: 13, height: 13, borderRightWidth: 3, borderBottomWidth: 3, borderColor: colors.white, transform: [{ translateY: -3 }, { rotate: '45deg' }] }, // points down
   panelTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 24, transform: [{ translateY: -3 }] }, // a nudge up, so it sits in the middle of the heading
   panelCols: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 22, rowGap: 16, paddingTop: 16, paddingBottom: 30 },
   panelList: { backgroundColor: colors.panel, paddingHorizontal: 22, paddingTop: 20, paddingBottom: 22, gap: 16 },
