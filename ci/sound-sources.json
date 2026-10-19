@@ -1,19 +1,15 @@
 {
-  "note": "CC0 field recordings from BigSoundBank (bigsoundbank.com, public domain, commercial use allowed, no attribution needed). Downloaded by .github/workflows/fetch-sounds.yml to the sounds-output branch.",
-  "sounds": {
-    "crickets-1880": 1880,
-    "insects-1470": 1470,
-    "brook-2713": 2713,
-    "brook-2714": 2714,
-    "brook-2716": 2716,
-    "birds-1906": 1906,
-    "birds-0999": 999,
-    "birds-1859": 1859,
-    "waves-1446": 1446,
-    "waves-1445": 1445,
-    "waves-0698": 698,
-    "rain-1293": 1293,
-    "forest-2749": 2749
-  },
-  "searches": ["pluie", "rain", "feu", "fire", "cheminee", "carillon", "chime", "grillon", "cricket", "orage", "nuit", "night", "ruisseau", "riviere", "vent"]
+  "note": "CC0 field recordings from BigSoundBank (bigsoundbank.com, public domain, commercial use allowed, no attribution needed). Downloaded by .github/workflows/fetch-sounds.yml to the sounds-output branch. 'urls' adds CC0 / CC-BY files from Freesound and LaSonotheque (BigSoundBank's French twin).",
+  "sounds": {},
+  "searches": [],
+  "urls": {
+    "campfire-fs248303": "https://cdn.freesound.org/previews/248/248303_1001802-hq.mp3",
+    "campfire-fs454745": "https://cdn.freesound.org/previews/454/454745_3328914-hq.mp3",
+    "campfire-fs637523": "https://cdn.freesound.org/previews/637/637523_612689-hq.mp3",
+    "fire-ls0989": "https://lasonotheque.org/UPLOAD/mp3/0989.mp3",
+    "fire-ls2855": "https://lasonotheque.org/UPLOAD/mp3/2855.mp3",
+    "fire-ls0988": "https://lasonotheque.org/UPLOAD/mp3/0988.mp3",
+    "chimes-fs739142": "https://cdn.freesound.org/previews/739/739142_14605753-hq.mp3",
+    "chimes-fs17090": "https://cdn.freesound.org/previews/17/17090_56518-hq.mp3"
+  }
 }
