@@ -117,7 +117,7 @@ export default function TapePlayer({ onMenu }) {
 }
 
 const styles = StyleSheet.create({
-  scrim: { zIndex: 170, backgroundColor: 'rgba(0,0,0,0.65)', alignItems: 'center', justifyContent: 'center' },
+  scrim: { zIndex: 170, backgroundColor: 'rgba(0,0,0,0.78)', alignItems: 'center', justifyContent: 'center' },
   // a good soft drop shadow, deeper below
   body: { shadowColor: '#000', shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.6, shadowRadius: 20, elevation: 18 },
   inner: { overflow: 'hidden' },

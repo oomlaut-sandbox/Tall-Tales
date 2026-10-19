@@ -22,6 +22,10 @@ const SOUNDS = [
   ['calm-campfire', 'A small, quiet campfire with a soft steady low crackle and only a rare gentle pop, warm and calm, very simple, no voices, no music, seamless loop.'],
   ['calm-night', 'A still, quiet night outdoors: a very soft breeze and a faint, slow hush of leaves, almost silent and very calm, no animals, no music, seamless loop.'],
   ['calm-chimes', 'A single set of soft, low wooden wind chimes moving very slowly in a faint breeze, a gentle note only every few seconds, very calm and simple, no music, seamless loop.'],
+  // wooden wind chimes only (hollow wood and bamboo, no metal)
+  ['wood-chimes-a', 'Hollow wooden wind chimes knocking softly in a gentle breeze: warm, low, round wooden clonks, slow and sparse, no metal, no bells, very calm, no music, seamless loop.'],
+  ['wood-chimes-b', 'Bamboo wind chimes clacking gently and slowly on a quiet porch, soft hollow wooden tones, a few at a time with pauses, no metal chimes, peaceful, no music, seamless loop.'],
+  ['wood-chimes-c', 'A large set of deep wooden tube chimes moving very slowly in a light wind, soft resonant hollow knocks, calm and meditative, no metal, no bells, no music, seamless loop.'],
   ['brook', 'A babbling brook: clear water trickling softly over smooth stones in a quiet forest, steady and soothing, no birds, no music, seamless loop.'],
   ['forest-birds', 'Birds singing softly in a peaceful forest in the early morning: gentle distant birdsong, leaves rustling lightly in a breeze, calm and relaxing, no music, seamless loop.'],
   ['rain', 'Soft steady rain falling on a roof and leaves, cosy and calm, no thunder, no wind gusts, no music, seamless loop.'],
