@@ -579,6 +579,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       showHotspots={showHot} onHotspot={onHotspot} bubble={bubble} />
   );
   const abs = (el, k, style) => (el ? <Animated.View key={k} style={[StyleSheet.absoluteFill, style]}>{el}</Animated.View> : null);
+  const peeling = !!(flipPair && size && flipT && peel);
   if (flipPair && size && flipT && peel) {
     // phone: the words half peels up like paper (drawn from pictures of both pages)
     const { a, b } = flipPair;
@@ -681,7 +682,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       </View>
       </View>
       {/* Listen Only: the soft night level (nothing under it can be touched) */}
-      {listen ? <View pointerEvents={pages[idx] && pages[idx].end ? 'none' : 'auto'} style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: 0.35, zIndex: 25 }]} /> : null}{/* (The End's buttons still work) */}
+      {/* (while a page peels, the same dark layer is drawn over the peeling page instead, further down) */}
+      {listen ? <View pointerEvents={pages[idx] && pages[idx].end ? 'none' : 'auto'} style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: peeling ? 0 : 0.35, zIndex: 25 }]} /> : null}{/* (The End's buttons still work) */}
       </View>
       {wide ? (
         // sideways: the menu bar runs down the right side; same icons, page tag shortened to "2/16"
@@ -762,6 +764,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             <PeelGuard><PeelLayer start={prog.current} width={W} height={H} artH={flipT.artH} corner={peel.corner} front={peel.front} back={peel.back}
               ox={(winW - W) / 2} oy={topH + (winH - topH - barH - H) / 2} canvasW={winW} canvasH={winH} /></PeelGuard>
           )}
+          {/* Listen Only: the night level stays over the turning page too (just over the book area, between the bars) */}
+          {listen ? <View style={[{ position: 'absolute', backgroundColor: '#000', opacity: 0.35 }, wide ? { left: BL.leftW, right: BL.rightW, top: 0, bottom: 0 } : { left: 0, right: 0, top: topH, bottom: barH }]} /> : null}
         </View>
       ) : null}
       <Panel open={panel === 'play'} side="right" title={playView === 'voices' ? tr('Voices') : tr('Playback Options')} {...panelPos} onClose={() => { setPanel(null); setPlayView('main'); }}>
