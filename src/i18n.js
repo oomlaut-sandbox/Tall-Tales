@@ -417,6 +417,7 @@ const T = {
   'Select sound': { de: 'Geräusch wählen', fr: 'Choisir un son', es: 'Elegir sonido', ja: 'おとを えらぶ' },
   'Select music': { de: 'Musik wählen', fr: 'Choisir une musique', es: 'Elegir música', ja: 'おんがくを えらぶ' },
   'Profiles': { de: 'Profile', fr: 'Profils', es: 'Perfiles', ja: 'プロフィール' },
+  'Open Audio Player': { de: 'Audio-Player öffnen', fr: 'Ouvrir le lecteur audio', es: 'Abrir el reproductor', ja: 'オーディオプレーヤーを ひらく' },
   'Close Audio Player': { de: 'Audio-Player schließen', fr: 'Fermer le lecteur audio', es: 'Cerrar el reproductor de audio', ja: 'オーディオプレーヤーをとじる' },
   'Close the player': { de: 'Spieler schließen', fr: 'Fermer le lecteur', es: 'Cerrar el reproductor', ja: 'プレーヤーをとじる' },
   'Previous': { de: 'Zurück', fr: 'Précédent', es: 'Anterior', ja: 'まえ' },
