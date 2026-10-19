@@ -12,9 +12,9 @@ export const TRACKS = [
   { id: 'forest-birds', kind: 'sound', name: 'Birds in the forest', src: require('../assets/ambient/forest-birds.mp3') }, // a real spring dawn chorus (BigSoundBank #1906, CC0)
   { id: 'rain', kind: 'sound', name: 'Rain', src: require('../assets/ambient/rain.mp3') }, // real rain on a car roof (BigSoundBank #1293, CC0)
   { id: 'waves', kind: 'sound', name: 'Ocean waves', src: require('../assets/ambient/waves.mp3') }, // real small waves on a beach (BigSoundBank #1446, CC0)
-  { id: 'campfire', kind: 'sound', name: 'Campfire', src: require('../assets/ambient/campfire.mp3') },
+  { id: 'campfire', kind: 'sound', name: 'Campfire', src: require('../assets/ambient/campfire.mp3') }, // a real branch fire (LaSonotheque #0988, CC0)
   { id: 'night-forest', kind: 'sound', name: 'Quiet forest', src: require('../assets/ambient/night-forest.mp3') }, // a real forest (BigSoundBank #2749, CC0)
-  { id: 'wind-chimes', kind: 'sound', name: 'Wind chimes', src: require('../assets/ambient/wind-chimes.mp3') },
+  { id: 'wind-chimes', kind: 'sound', name: 'Wind chimes', src: require('../assets/ambient/wind-chimes.mp3') }, // a real bamboo wind chime in a garden (Freesound #739142 by GoatsheadCastle, CC0)
   { id: 'music-box', kind: 'music', name: 'Music box lullaby', src: require('../assets/ambient/music-box.mp3') },
   { id: 'soft-piano', kind: 'music', name: 'Soft piano', src: require('../assets/ambient/soft-piano.mp3') },
   { id: 'gentle-guitar', kind: 'music', name: 'Gentle guitar', src: require('../assets/ambient/gentle-guitar.mp3') },
