@@ -1,6 +1,6 @@
 // The felt Audio Player (Jörg's upright picture) for the music and nature sounds. It opens in the middle of
 // the screen over a dark see-through layer that keeps everything underneath from being touched, and stays
-// until the felt line at its top right is tapped. Opened with the sound icon in the reading bar.
+// until the felt line at its top right, or anywhere outside it, is tapped. Opened with the sound icon in the reading bar.
 //   Play / Pause: the felt buttons (Play is grey, and turns green while something is playing)
 //   the two windows: the sound (top) and the music (bottom); tap a knob to click through the choices, which
 //     show in white in the window ("Select sound" / "Select music" until one is chosen). The knobs stay still;
@@ -81,9 +81,10 @@ export default function TapePlayer({ onMenu }) {
   );
   return (
     // the dark see-through layer takes every touch, so nothing underneath can be used until the player is closed
-    <Animated.View style={[StyleSheet.absoluteFill, styles.scrim, { opacity: fade }]} onStartShouldSetResponder={() => true} accessibilityViewIsModal>
+    // tapping anywhere on it (outside the player) closes the player too
+    <Animated.View style={[StyleSheet.absoluteFill, styles.scrim, { opacity: fade }]} onStartShouldSetResponder={() => true} onResponderRelease={() => setAmbientPlayer(false)} accessibilityViewIsModal>
     <View style={{ alignItems: 'flex-end' }}>
-    <View style={[styles.body, { width: PW, height: PH, borderRadius: R * f }]} accessibilityLabel={t('Audio Player')}>
+    <View style={[styles.body, { width: PW, height: PH, borderRadius: R * f }]} accessibilityLabel={t('Audio Player')} onStartShouldSetResponder={() => true}>{/* taps on the player itself don't close it */}
       <View style={[styles.inner, { width: PW, height: PH, borderRadius: R * f }]}>
         <Image source={BODY} style={{ width: PW, height: PH }} resizeMode="stretch" />
         {/* Play turns green while something plays */}
