@@ -8,12 +8,12 @@ import { loadJSON, saveJSON } from './storage';
 
 export const TRACKS = [
   { id: 'crickets', kind: 'sound', name: 'Crickets', src: require('../assets/ambient/crickets.mp3') }, // a real night meadow (BigSoundBank #1880, CC0), 5 minutes, looped seamlessly
-  { id: 'brook', kind: 'sound', name: 'Babbling brook', src: require('../assets/ambient/brook.mp3') },
-  { id: 'forest-birds', kind: 'sound', name: 'Birds in the forest', src: require('../assets/ambient/forest-birds.mp3') },
-  { id: 'rain', kind: 'sound', name: 'Soft rain', src: require('../assets/ambient/rain.mp3') },
-  { id: 'waves', kind: 'sound', name: 'Ocean waves', src: require('../assets/ambient/waves.mp3') },
+  { id: 'brook', kind: 'sound', name: 'Babbling brook', src: require('../assets/ambient/brook.mp3') }, // a real forest brook (BigSoundBank #2713, CC0)
+  { id: 'forest-birds', kind: 'sound', name: 'Birds in the forest', src: require('../assets/ambient/forest-birds.mp3') }, // a real spring dawn chorus (BigSoundBank #1906, CC0)
+  { id: 'rain', kind: 'sound', name: 'Rain', src: require('../assets/ambient/rain.mp3') }, // real rain on a car roof (BigSoundBank #1293, CC0)
+  { id: 'waves', kind: 'sound', name: 'Ocean waves', src: require('../assets/ambient/waves.mp3') }, // real small waves on a beach (BigSoundBank #1446, CC0)
   { id: 'campfire', kind: 'sound', name: 'Campfire', src: require('../assets/ambient/campfire.mp3') },
-  { id: 'night-forest', kind: 'sound', name: 'Night forest', src: require('../assets/ambient/night-forest.mp3') },
+  { id: 'night-forest', kind: 'sound', name: 'Quiet forest', src: require('../assets/ambient/night-forest.mp3') }, // a real forest (BigSoundBank #2749, CC0)
   { id: 'wind-chimes', kind: 'sound', name: 'Wind chimes', src: require('../assets/ambient/wind-chimes.mp3') },
   { id: 'music-box', kind: 'music', name: 'Music box lullaby', src: require('../assets/ambient/music-box.mp3') },
   { id: 'soft-piano', kind: 'music', name: 'Soft piano', src: require('../assets/ambient/soft-piano.mp3') },
