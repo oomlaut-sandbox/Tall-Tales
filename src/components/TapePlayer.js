@@ -18,7 +18,7 @@ const BODY = require('../../assets/audio-player2.jpg'); // the whole player, in 
 const PLAY_ON = require('../../assets/audio-play-on.png'); // the green Play button, laid over while playing
 const THUMB = require('../../assets/audio-thumb2.png'); // the slider's felt knob (with its shadow drawn in)
 const IW = 1792, IH = 2400; // the picture's own units (Jörg's photo, in pixels)
-const R = 85; // its corners: the felt's own rounded corners
+const R = 112; // its corners: the felt's own rounded corners (the photo's background there is filled with felt, then clipped)
 const PLAY = { x: 1052, y: 552, w: 260, h: 270 };
 // the size: about as wide as a phone allows, and never taller than the screen has room for
 const sizeFor = (winW, winH) => {
