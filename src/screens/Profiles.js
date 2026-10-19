@@ -135,12 +135,12 @@ export default function Profiles({ u, openMenu, setControls }) {
                 <TextInput value={form.name} onChangeText={(name) => setForm({ ...form, name })} placeholder={t('Name')} placeholderTextColor="#8a8a8a"
                   style={styles.input} maxLength={20} autoCapitalize="words" autoCorrect={false} returnKeyType="done" accessibilityLabel={t('Name')} />
               </View>
-              <Text style={styles.section}>{t('Character')}</Text>
-              <View style={[styles.choices, { marginTop: 14, flexWrap: 'nowrap', justifyContent: 'space-between' }]}>{/* all five on one line */}
+              <Text style={[styles.section, { marginTop: 26 }]}>{t('Character')}</Text>
+              <View style={[styles.choices, { marginTop: 22, marginBottom: 8, flexWrap: 'nowrap', justifyContent: 'space-between' }]}>{/* all five on one line */}
                 {PROFILE_COLORS.map(([c, img]) => (
                   <Pressable key={c} onPress={() => setForm({ ...form, color: c })} accessibilityRole="radio" accessibilityLabel={c} accessibilityState={{ selected: form.color === c }}
-                    style={styles.swatch}>
-                    <ProfileTile p={{ color: c }} size={40} active={form.color === c} grow={1.3} />
+                    style={[styles.swatch, form.color === c && styles.swatchOn]}>{/* the chosen one: boxed (like the reading child), not bigger */}
+                    <ProfileTile p={{ color: c }} size={40} active={form.color === c} grow={1} />
                   </Pressable>
                 ))}
               </View>
@@ -201,14 +201,14 @@ const styles = StyleSheet.create({
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 24, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
   pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 50 },
-  card: { backgroundColor: '#3a3a3a', borderRadius: 16, padding: 20, gap: 16, width: '100%', maxWidth: 480, alignSelf: 'center' },
+  card: { backgroundColor: '#3a3a3a', borderRadius: 16, padding: 20, paddingBottom: 32, gap: 16, width: '100%', maxWidth: 480, alignSelf: 'center' },
   input: { flex: 1, minWidth: 0, height: 48, borderRadius: 10, backgroundColor: '#d6d6d6', paddingHorizontal: 14, paddingTop: 0, paddingBottom: 5, fontFamily: fonts.ui, fontSize: 20, color: '#222' },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14 },
   choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   choice: { paddingHorizontal: 14, height: 36, borderRadius: 18, backgroundColor: '#2a2a2a', alignItems: 'center', justifyContent: 'center' },
   choiceOn: { backgroundColor: colors.green },
   choiceText: { fontFamily: fonts.ui, fontSize: 15, color: '#dcdcdc', fontWeight: '600' },
-  swatch: { width: 52, height: 56, alignItems: 'center', justifyContent: 'center' },
+  swatchOn: { borderWidth: 1, borderColor: 'rgba(255,255,255,0.9)', backgroundColor: 'rgba(0,0,0,0.35)' },
+  swatch: { width: 54, height: 66, borderRadius: 12, borderWidth: 1, borderColor: 'transparent', alignItems: 'center', justifyContent: 'center' },
   buttonShadow: { shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.55, shadowRadius: 6, elevation: 6 },
-  swatchOn: { borderWidth: 3, borderColor: colors.white },
 });
