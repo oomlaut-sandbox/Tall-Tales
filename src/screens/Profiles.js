@@ -108,7 +108,9 @@ export default function Profiles({ u, openMenu, setControls }) {
               <Pressable onPress={() => setGate('add')} style={[styles.cell, { width: side }]} accessibilityRole="button" accessibilityLabel={t('Add a child')}>
                 <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}>
                   <View style={[styles.addTile, { width: Math.round(side * 0.68), height: Math.round(side * 0.68), borderRadius: side }]}>{/* round, like the buttons */}
-                    <Text style={[styles.plus, { fontSize: side * 0.3 }]}>+</Text>
+                    {/* a drawn plus (two thin bars), so it sits exactly in the middle of the circle */}
+                    <View style={{ position: 'absolute', width: side * 0.2, height: 2, backgroundColor: '#aaa' }} />
+                    <View style={{ position: 'absolute', width: 2, height: side * 0.2, backgroundColor: '#aaa' }} />
                   </View>
                 </View>
                 <Text numberOfLines={1} style={styles.name}>{t('Add a child')}</Text>
