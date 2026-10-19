@@ -245,13 +245,16 @@ export function LockIcon({ size = 20, color = colors.white, weight = 2 }) {
 }
 // Playlists: three lines of a list, the last one shorter, with a small play triangle beside it
 export function PlaylistIcon({ size = 20, color = colors.white, weight = 2.4 }) {
-  const tri = size * 0.3;
+  const tri = size * 0.34;
+  // three lines: the top one full width, the middle and bottom ones halved, with the play arrow beside those two
+  const gap = size * 0.17, top = (size - (3 * weight + 2 * gap)) / 2;
+  const mid = top + 2 * weight + 1.5 * gap; // halfway between the middle and bottom lines
   return (
-    <View style={{ width: size, height: size, justifyContent: 'center', gap: size * 0.17 }}>
-      <View style={{ width: size, height: weight, backgroundColor: color }} />
+    <View style={{ width: size, height: size, justifyContent: 'center', gap }}>
       <View style={{ width: size, height: weight, backgroundColor: color }} />
       <View style={{ width: size * 0.5, height: weight, backgroundColor: color }} />
-      <View style={{ position: 'absolute', right: 0, bottom: size * 0.04, width: 0, height: 0, borderTopWidth: tri / 2, borderBottomWidth: tri / 2, borderLeftWidth: tri * 0.9, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: color }} />
+      <View style={{ width: size * 0.5, height: weight, backgroundColor: color }} />
+      <View style={{ position: 'absolute', right: 0, top: mid - tri / 2, width: 0, height: 0, borderTopWidth: tri / 2, borderBottomWidth: tri / 2, borderLeftWidth: tri * 0.9, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: color }} />
     </View>
   );
 }
