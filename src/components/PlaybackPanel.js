@@ -6,13 +6,14 @@ import { BOOK_FONTS, colors, fonts } from '../theme';
 import { BubbleIcon, Option, Panel, PlaylistIcon, Slider } from './Chrome';
 import { TEXT_SIZES } from './PageView';
 import { MODES, NARRATORS, Seg, narratorOf, speedOf } from '../screens/Reader';
-import { SAMPLES } from '../narration/samples';
+import { SAMPLES, SAMPLE_LANGS } from '../narration/samples';
 import { playVoice } from '../voice';
 import { playSound, setEffects, setEffectsVolume } from '../sound';
-import { useT } from '../i18n';
+import { useLang, useT } from '../i18n';
 
 export default function PlaybackPanel({ open, onClose, prefs, setPrefs, toast, bottom, inset, onPlaylists }) {
   const tr = useT();
+  const appLang = useLang(); // the voice sample plays in the app's language
   const [view, setView] = useState('main'); // 'main' | 'voices'
   const [speed, setSpeed] = useState(null);
   const [vol, setVol] = useState(null);
@@ -23,7 +24,7 @@ export default function PlaybackPanel({ open, onClose, prefs, setPrefs, toast, b
         <>
           {NARRATORS.map(([k, label]) => (
             <Option key={k} glyph={<BubbleIcon />} title={label} sub={tr(k === 'lily' ? 'Warm and gentle' : 'Pleasant older man')} selected={narratorOf(prefs) === k}
-              onPress={() => { setPrefs((p) => ({ ...p, narrator: k })); if (SAMPLES[k]) playVoice(SAMPLES[k]); toast(tr('{name} will read the stories.', { name: label })); }} />
+              onPress={() => { setPrefs((p) => ({ ...p, narrator: k })); { const smp = SAMPLE_LANGS?.[k]?.[appLang] || SAMPLES[k]; if (smp) playVoice(smp); } toast(tr('{name} will read the stories.', { name: label })); }} />
           ))}
           <Text style={styles.help}>{tr('The voice reads the stories aloud and sounds out words in Learn to Read. Pages you recorded in your own voice still play in yours.')}</Text>
           <Pressable onPress={() => setView('main')} hitSlop={8}><Text style={styles.backlink}>{tr('‹ Back to Playback Options')}</Text></Pressable>

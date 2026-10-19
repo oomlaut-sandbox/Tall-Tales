@@ -2,7 +2,7 @@
 import { getAmbient, onRecordRequest, setAmbientPlayer } from '../ambient';
 import { LockIcon, MusicIcon, PlaylistIcon } from '../components/Chrome';
 import { isRestricted, useControls } from '../controls';
-import { useT } from '../i18n';
+import { useLang, useT } from '../i18n';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Platform, Pressable, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
@@ -61,7 +61,7 @@ import { WORDS } from '../narration/words';
 import { getRecording, listRecordings, pageKey, removeRecording, saveRecording } from '../recordings';
 import { markFinished, markFirst, markReadToday } from '../badges';
 import { AUDIO, TIMINGS } from '../narration';
-import { SAMPLES, THE_END } from '../narration/samples';
+import { SAMPLES, SAMPLE_LANGS, THE_END } from '../narration/samples';
 
 export const MODES = [
   [<GlassesIcon />, 'self', 'Read Yourself', 'Page by page with no audio'],
@@ -86,6 +86,7 @@ export function Seg({ value, options, onChange, stacked }) {
 
 export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary, toast, menuRequest, landscape, setToastSpot, autoStart, onFinished, onSettings, onPlaylists }) {
   const tr = useT(); // the reader's own panel, in the app's language
+  const appLang = useLang();
   const controls = useControls(); // parental controls: recording, sharing and printing may be switched off
   const insets = useSafeAreaInsets();
   const pages = useMemo(() => [...story.pages, { end: true }], [story]);
@@ -790,7 +791,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             {NARRATORS.map(([k, label]) => (
               // tapping a voice chooses it and plays a short sample of it
               <Option key={k} glyph={<BubbleIcon />} title={label} sub={tr(k === 'lily' ? 'Warm and gentle' : 'Pleasant older man')} selected={narratorOf(prefs) === k}
-                onPress={() => { stopReading(); setPrefs((p) => ({ ...p, narrator: k })); if (SAMPLES[k]) playVoice(SAMPLES[k]); toast(tr('{name} will read the stories.', { name: label })); }} />
+                onPress={() => { stopReading(); setPrefs((p) => ({ ...p, narrator: k })); { const smp = SAMPLE_LANGS?.[k]?.[appLang] || SAMPLES[k]; if (smp) playVoice(smp); } toast(tr('{name} will read the stories.', { name: label })); }} />
             ))}
             <Text style={styles.help}>{tr('The voice reads the stories aloud and sounds out words in Learn to Read. Pages you recorded in your own voice still play in yours.')}</Text>
             <Pressable onPress={() => setPlayView('main')} hitSlop={8}><Text style={styles.backlink}>{tr('‹ Back to Playback Options')}</Text></Pressable>

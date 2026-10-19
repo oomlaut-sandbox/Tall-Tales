@@ -22,3 +22,4 @@ export const THE_END = {
     ja: require("../../assets/narration/gregory/the-end/ja.mp3"),
   },
 };
+export const SAMPLE_LANGS = {};
