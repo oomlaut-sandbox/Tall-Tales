@@ -206,7 +206,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
         <View style={styles.tipWrap} pointerEvents="box-none">
           <View style={styles.tipBubble}>
             <Text style={styles.tipTitle}>{t('The Audio Player')}</Text>
-            <Text style={styles.tipText}>{t('While you read, tap the music note on the black bar. Turn the knobs to choose a nature sound and some music, press Play, and slide to set the volume. Close it with “Close Audio Player”.')}</Text>
+            <Text style={styles.tipText}>{t('While you read, tap the music note on the black bar. Turn the knobs to choose a nature sound and some music, press Play, and slide to set the volume. Close it with the little line at the top right.')}</Text>
             <Pressable onPress={() => setNoMore((x) => !x)} style={styles.tipCheckRow} accessibilityRole="checkbox" accessibilityState={{ checked: noMore }} hitSlop={6}>
               <View style={[styles.tipBox, noMore && styles.tipBoxOn]}>{noMore ? <Text style={styles.tipTick}>✓</Text> : null}</View>
               <Text style={styles.tipCheck}>{t('Don’t show this message again')}</Text>

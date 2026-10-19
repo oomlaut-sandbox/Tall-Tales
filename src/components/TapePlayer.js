@@ -1,12 +1,12 @@
 // The felt Audio Player (Jörg's upright picture) for the music and nature sounds. It opens in the middle of
 // the screen over a dark see-through layer that keeps everything underneath from being touched, and stays
-// until 'Close Audio Player' (under it, on the right) is tapped. Opened with the sound icon in the reading bar.
+// until the felt line at its top right is tapped. Opened with the sound icon in the reading bar.
 //   Play / Pause: the felt buttons (Play is grey, and turns green while something is playing)
 //   the two windows: the sound (top) and the music (bottom); tap a knob to click through the choices, which
 //     show in white in the window ("Select sound" / "Select music" until one is chosen). The knobs stay still;
 //     only the line on each face turns a notch per click.
 //   the slider at the bottom: the volume (drag its felt knob, or tap the slot)
-//   the three lines at the top: the Music and Sounds page
+//   the felt line at the top right: closes the player (its only way out)
 // (recording your voice is on the reading bar's red button)
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
@@ -88,7 +88,8 @@ export default function TapePlayer({ onMenu }) {
         <Image source={BODY} style={{ width: PW, height: PH }} resizeMode="stretch" />
         {/* Play turns green while something plays */}
         {playing ? <Image pointerEvents="none" source={PLAY_ON} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} resizeMode="stretch" /> : null}
-        <Pressable onPress={onMenu} hitSlop={4} style={at(1420, 120, 260, 180)} accessibilityRole="button" accessibilityLabel={t('Music and Sounds')} />
+        {/* the felt line at the top right closes the player */}
+        <Pressable onPress={() => setAmbientPlayer(false)} hitSlop={10} style={at(1400, 100, 300, 220)} accessibilityRole="button" accessibilityLabel={t('Close Audio Player')} />
         <Pressable onPress={playAmbient} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} accessibilityRole="button" accessibilityLabel={t('Play')} />
         <Pressable onPress={pauseAmbient} style={at(1360, 562, 230, 250)} accessibilityRole="button" accessibilityLabel={t('Pause')} />
         {windowText([268, 1067, 1082, 150], name(s.sound) || t('Select sound'), !s.sound)}
@@ -107,10 +108,6 @@ export default function TapePlayer({ onMenu }) {
         </View>
       </View>
     </View>
-    {/* the way out: small, under the player on the right */}
-    <Pressable onPress={() => setAmbientPlayer(false)} hitSlop={16} style={{ marginTop: 12, marginRight: 5 }} accessibilityRole="button">
-      <Text style={styles.close}>{t('Close Audio Player')}</Text>
-    </Pressable>
     </View>
     </Animated.View>
   );
