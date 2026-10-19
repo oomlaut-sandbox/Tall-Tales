@@ -61,7 +61,7 @@ import { WORDS } from '../narration/words';
 import { getRecording, listRecordings, pageKey, removeRecording, saveRecording } from '../recordings';
 import { markFinished, markFirst, markReadToday } from '../badges';
 import { AUDIO, TIMINGS } from '../narration';
-import { SAMPLES } from '../narration/samples';
+import { SAMPLES, THE_END } from '../narration/samples';
 
 export const MODES = [
   [<GlassesIcon />, 'self', 'Read Yourself', 'Page by page with no audio'],
@@ -215,7 +215,23 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 
   const readPage = useCallback((pageIndex) => {
     const p = st.current.pages[pageIndex];
-    if (!p || p.end) { setReading(false); return; }
+    if (!p) { setReading(false); return; }
+    // the last page: the narrator says "The End", softly and slowly (the same clip for every book),
+    // a moment after the page has landed. No clip yet: the phone's voice says it, slowly.
+    if (p.end) {
+      const lang = story.lang || 'en';
+      const vk = narratorOf(prefs);
+      const clip = THE_END?.[vk]?.[lang] || THE_END?.lily?.[lang];
+      setReading(true); setPaused(false);
+      const done = () => { usingVoice.current = false; setReading(false); };
+      clearTimeout(autoTimer.current);
+      autoTimer.current = setTimeout(() => {
+        if (st.current.idx !== pageIndex) return done();
+        if (clip && playVoice(clip, { onDone: done, onFail: done })) { usingVoice.current = true; return; }
+        speakTracked(tr('The End'), { lang, rate: NARRATOR * 0.8 * speedOf(prefs), onDone: done });
+      }, 900);
+      return;
+    }
     const toks = tokenize(p.text);
     setReading(true); setPaused(false);
     const hlChar = (ch) => {

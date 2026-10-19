@@ -4,3 +4,6 @@ export const SAMPLES = {
   lily: require("../../assets/narration/lily/sample.mp3"),
   gregory: require("../../assets/narration/gregory/sample.mp3"),
 };
+
+// "The End", said gently by each narrator on the last page (by language). Filled in by ci/narrate.js.
+export const THE_END = {};
