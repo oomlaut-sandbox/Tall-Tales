@@ -7,7 +7,7 @@ import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import { loadJSON, saveJSON } from './storage';
 
 export const TRACKS = [
-  // (crickets: taken out for now; its file stays in assets/ambient)
+  { id: 'crickets', kind: 'sound', name: 'Crickets', src: require('../assets/ambient/crickets.mp3') }, // a real night meadow (BigSoundBank #1880, CC0), 5 minutes, looped seamlessly
   { id: 'brook', kind: 'sound', name: 'Babbling brook', src: require('../assets/ambient/brook.mp3') },
   { id: 'forest-birds', kind: 'sound', name: 'Birds in the forest', src: require('../assets/ambient/forest-birds.mp3') },
   { id: 'rain', kind: 'sound', name: 'Soft rain', src: require('../assets/ambient/rain.mp3') },
@@ -40,7 +40,7 @@ export function onAmbient(fn) { listeners.add(fn); return () => listeners.delete
 // the choices and volume come back next time, but nothing starts playing by itself
 loadJSON('ambient2', null).then((s) => {
   if (s) state = { ...state, ...s, playing: false };
-  // a choice that's no longer offered (like the crickets) is forgotten
+  // a choice that's no longer offered is forgotten
   if (state.sound && !TRACKS.some((x) => x.id === state.sound)) state.sound = null;
   if (state.music && !TRACKS.some((x) => x.id === state.music)) state.music = null;
   listeners.forEach((fn) => fn(state)); }).catch(() => {});
