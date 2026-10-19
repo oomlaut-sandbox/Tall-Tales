@@ -315,7 +315,7 @@ const T = {
   'Helvetica': { de: 'Helvetica', fr: 'Helvetica', es: 'Helvetica', ja: 'ヘルベチカ' },
   'Serif': { de: 'Serif', fr: 'Serif', es: 'Serif', ja: 'セリフ' },
   'Typewriter': { de: 'Schreibmaschine', fr: 'Machine à écrire', es: 'Máquina de escribir', ja: 'タイプライター' },
-  'Tap to add title': { de: 'Tippe für einen Titel', fr: 'Touche pour ajouter un titre', es: 'Toca para poner título', ja: 'タップして だいめいを つける' },
+  'Tap to add title': { de: 'Titel eingeben', fr: 'Ajouter un titre', es: 'Añadir título', ja: 'だいめいを つける' },
   'Add Image': { de: 'Bild hinzufügen', fr: 'Ajouter une image', es: 'Añadir imagen', ja: 'えを いれる' },
   'Add a page with a picture or words first.': { de: 'Füge zuerst eine Seite mit Bild oder Wörtern hinzu.', fr: 'Ajoute d’abord une page avec une image ou des mots.', es: 'Primero añade una página con una imagen o palabras.', ja: 'まず えか ことばの ある ページを つくってね。' },
   'Getting your story ready to print…': { de: 'Deine Geschichte wird zum Drucken vorbereitet…', fr: 'Préparation de ton histoire pour l’impression…', es: 'Preparando tu cuento para imprimir…', ja: 'おはなしを いんさつの じゅんび ちゅう…' },

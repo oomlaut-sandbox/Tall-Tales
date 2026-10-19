@@ -392,6 +392,10 @@ function Root() {
 // While the app gets ready (fonts, and the home picture so it appears in one go), show plain dark grey
 // to match the launch screen and the logo animation, instead of a flash of colour.
 const HOME_PICTURE = require('./assets/leather.jpg');
+// The start screen's pictures, drawn once (invisibly) while the app gets ready, so the closed notebook cover
+// is already in memory when the start screen first shows: no see-through frame before its strips appear.
+const WARM = [require('./assets/leather-cover-round.png'), require('./assets/leather-cover-wide-round.png'),
+  require('./assets/tile-library.png'), require('./assets/tile-store.png'), require('./assets/logo-felt.png')];
 // Phones and tablets both turn: sideways, the book goes side by side with the menu bar on the right.
 if (Platform.OS !== 'web') ScreenOrientation.unlockAsync().catch(() => {});
 
@@ -405,15 +409,25 @@ export default function App() {
     loadProfiles().then((s) => setWho(s.active), () => setWho('main'));
     return onProfiles((s) => setWho(s.active));
   }, []);
+  const assetsIn = useRef(false);
+  const shown = useRef(0); // how many of the warm-up pictures have been drawn
+  const check = () => { if (assetsIn.current && shown.current >= WARM.length) finishRef.current(); };
+  const finishRef = useRef(() => {});
   useEffect(() => {
     let done = false;
     const finish = () => { if (!done) { done = true; setPictureReady(true); } };
+    finishRef.current = finish;
     // the leather and the charcoal felt are ready before the first screen, so the book's slide-in isn't lost to a slow first frame
-    Asset.loadAsync([HOME_PICTURE, ...(DESK_FELT ? [DESK_FELT] : [])]).then(finish, finish);
-    const t = setTimeout(finish, 1500); // never wait longer than this
+    Asset.loadAsync([HOME_PICTURE, ...WARM, ...(DESK_FELT ? [DESK_FELT] : [])]).then(() => { assetsIn.current = true; check(); }, finish);
+    const t = setTimeout(finish, 1800); // never wait longer than this
     return () => clearTimeout(t);
   }, []);
-  if (!loaded || !pictureReady || !who) return <View style={{ flex: 1, backgroundColor: colors.desk }} />;
+  if (!loaded || !pictureReady || !who) return (
+    <View style={{ flex: 1, backgroundColor: colors.desk }}>
+      {/* drawn tiny and invisible, only so they're decoded before the start screen shows */}
+      {WARM.map((src, k) => <Image key={k} source={src} onLoadEnd={() => { shown.current += 1; check(); }} style={{ position: 'absolute', left: 0, top: 0, width: 4, height: 4, opacity: 0.01 }} />)}
+    </View>
+  );
   return (
     <SafeAreaProvider>
       <View style={{ flex: 1 }} onLayout={hideSplash}>
