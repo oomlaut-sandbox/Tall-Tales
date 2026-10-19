@@ -115,8 +115,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
           <View style={styles.card}>
             <Text style={styles.small}>{t('In Listen Only, the screen becomes a soft nightlight. It can also show the time and wake your child gently.')}</Text>
             <Toggle label={t('Show a clock')} value={!!controls.clock} onChange={(v) => set({ clock: v })} />
-            <Toggle label={t('Wake-up alarm')} value={!!controls.alarm} onChange={(v) => set({ alarm: v })} />
-            {controls.alarm ? <Text style={styles.small}>{t('Set the time and how to wake up from the nightlight: tap the time in its bottom corner. The alarm works while the nightlight is on: keep the app open in Listen Only, with the phone plugged in.')}</Text> : null}
+            <Text style={styles.small}>{t('The alarm lives on the nightlight’s bar, beside the lock. It works while the nightlight is on: keep the app open in Listen Only, with the phone plugged in.')}</Text>
           </View>
           <View style={styles.card}>
             <Pressable onPress={() => setControls({ ...lockedControls(controls.playMode || mode, controls.childAge), ...night })} style={[styles.pill, { backgroundColor: colors.deepRed }]} accessibilityRole="button">
