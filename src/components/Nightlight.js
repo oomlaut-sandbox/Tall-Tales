@@ -222,7 +222,7 @@ export default function Nightlight({ title, onSleep, eclipse = 0, onEclipse, ala
     <View pointerEvents="box-none" style={{ alignItems: 'center' }}>
       <FineSlider value={e} onChange={onEclipse} width={sliderW} label={t('Nightlight brightness')} />
       <View style={{ marginTop: 4 }}><SunIcon /></View>
-      <Text style={[styles.label, { marginTop: 30 }]}>{t('Now playing')}</Text>
+      <Text style={[styles.small, { marginTop: 30 }]}>{t('Now playing')}</Text>
       {title ? <Text numberOfLines={2} style={styles.title}>{title}</Text> : null}
       <Pressable onPress={cycleSleep} disabled={locked} hitSlop={12} style={{ marginTop: 22, flexDirection: 'row', alignItems: 'center', gap: 8, opacity: sleepAt ? 0.9 : 0.5 }} accessibilityRole="button">
         <Text style={styles.small}>{sleepAt ? t('Sleep timer: {n} min', { n: left }) : t('Sleep timer: off')}</Text>
