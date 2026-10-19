@@ -7,7 +7,8 @@ import { Slider } from './Chrome';
 import { MUSIC, SLEEP_TIMES, SOUNDS, chooseAmbient, getAmbient, onAmbient, pauseAmbient, playAmbient, setAmbientPlayer, setAmbientRate, setAmbientVolume, setSleepTimer, stopAmbient } from '../ambient';
 import { useT } from '../i18n';
 
-const GUITAR = require('../../assets/music-guitar.png'); // the grey felt character with his cardboard guitar
+const GUITAR = require('../../assets/music-guitar.png'); // the grey felt character with his cardboard guitar (at the bottom of the page)
+const PLAYER = require('../../assets/music-player-thumb.png'); // a small Audio Player (with its shadow drawn in); tap it to open the real one
 
 const Chip = ({ label, on, onPress }) => (
   <Pressable onPress={onPress} style={[styles.chip, on && styles.chipOn]} accessibilityRole="button" accessibilityState={{ selected: on }}>
@@ -42,7 +43,9 @@ export default function AmbientControls() {
             <Chip label={t('Off')} on={!s.sound && !s.music} onPress={stopAmbient} />
           </View>
         </View>
-        <Image source={GUITAR} style={{ width: 112, height: 125, marginTop: 2, marginRight: 14 }} resizeMode="contain" accessibilityIgnoresInvertColors />
+        <Pressable onPress={() => setAmbientPlayer(true)} accessibilityRole="button" accessibilityLabel={t('Open Audio Player')} style={{ marginRight: 4, marginTop: -6 }}>
+          <Image source={PLAYER} style={{ width: 118, height: Math.round(118 * 562 / 440) }} resizeMode="contain" accessibilityIgnoresInvertColors />
+        </Pressable>
       </View>
       <Text style={styles.group}>{t('Music')}</Text>
       <View style={styles.chips}>
@@ -67,6 +70,8 @@ export default function AmbientControls() {
         <Chip label={t('Show')} on={s.showPlayer} onPress={() => setAmbientPlayer(true)} />
         <Chip label={t('Hide')} on={!s.showPlayer} onPress={() => setAmbientPlayer(false)} />
       </View>
+      {/* Skippy with his guitar, at the very bottom, in the middle, with plenty of room around him */}
+      <Image source={GUITAR} style={{ width: 112, height: 125, alignSelf: 'center', marginTop: 48, marginBottom: 16 }} resizeMode="contain" accessibilityIgnoresInvertColors />
     </View>
   );
 }
