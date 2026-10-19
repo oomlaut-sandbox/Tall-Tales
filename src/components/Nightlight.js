@@ -200,7 +200,7 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
   const left = sleepAt ? Math.max(1, Math.ceil((sleepAt - now.getTime()) / 60000)) : 0;
 
   // sizes: most of the upper part of the screen (upright), or the left side (sideways)
-  const S = wide ? Math.min(area.width * 0.6, area.height * 1.0) : Math.min(area.width * 1.05, area.height * 0.58);
+  const S = wide ? Math.min(area.width * 0.55, area.height * 0.78) : Math.min(area.width * 1.05, area.height * 0.58);
   const sliderW = Math.min(220, (wide ? area.width * 0.34 : area.width * 0.6));
   // the eclipse: the moon slides in from the right; the sun dims; at the very end only the corona glows
   const e = Math.max(0, Math.min(1, eclipse));
