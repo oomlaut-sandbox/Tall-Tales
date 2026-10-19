@@ -1,0 +1,19 @@
+{
+  "note": "CC0 field recordings from BigSoundBank (bigsoundbank.com, public domain, commercial use allowed, no attribution needed). Downloaded by .github/workflows/fetch-sounds.yml to the sounds-output branch.",
+  "sounds": {
+    "crickets-1880": 1880,
+    "insects-1470": 1470,
+    "brook-2713": 2713,
+    "brook-2714": 2714,
+    "brook-2716": 2716,
+    "birds-1906": 1906,
+    "birds-0999": 999,
+    "birds-1859": 1859,
+    "waves-1446": 1446,
+    "waves-1445": 1445,
+    "waves-0698": 698,
+    "rain-1293": 1293,
+    "forest-2749": 2749
+  },
+  "searches": ["pluie", "rain", "feu", "fire", "cheminee", "carillon", "chime", "grillon", "cricket", "orage", "nuit", "night", "ruisseau", "riviere", "vent"]
+}

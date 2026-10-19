@@ -1,0 +1,31 @@
+# Downloads public-domain (CC0) nature recordings from BigSoundBank (ci/sound-sources.json) to the sounds-output
+# branch, to be listened to and chosen by hand. Runs by hand or when ci/sound-sources.json changes.
+name: Fetch sounds
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['ci/sound-sources.json', 'ci/fetch-sounds.sh']
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: bash ci/fetch-sounds.sh 2>&1 | tee /tmp/report.txt
+      - name: Save
+        if: always()
+        run: |
+          mkdir -p sounds-out; mv sounds-out /tmp/sounds-out
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          git checkout -q --orphan sounds-output
+          git rm -rfq --cached . > /dev/null
+          rm -rf ./* .gitignore 2>/dev/null || true
+          cp -r /tmp/sounds-out ./sounds-out; cp /tmp/report.txt report.txt
+          git add -f sounds-out report.txt
+          git commit -qm "Sound candidates"
+          git push -qf origin sounds-output
