@@ -187,6 +187,15 @@ function Root() {
     const q = { ids, i: 0, key: Date.now(), listen: !!pl.listen, loop: !!pl.loop, pl };
     setQueue(q); openQueued(q);
   };
+  // what the reader plays with: a playlist reads by itself (Auto Play), or Listen Only when it was set up that way;
+  // the moon on the bar switches a playing playlist into (and out of) the nightlight, for this book and the next ones
+  const readerPrefs = queue ? { ...prefs, mode: queue.listen ? 'listen' : 'auto' } : controls.playMode ? { ...prefs, mode: controls.playMode } : prefs;
+  const setReaderPrefs = (fn) => {
+    if (!queue) { setPrefs(fn); return; }
+    const next = typeof fn === 'function' ? fn(readerPrefs) : fn;
+    if (next.mode !== readerPrefs.mode) setQueue((q) => (q ? { ...q, listen: next.mode === 'listen' } : q));
+    setPrefs((p) => ({ ...next, mode: p.mode, prevMode: p.prevMode })); // the reader's own choice of mode stays as it was
+  };
   const queueNext = useRef(null);
   const onBookFinished = () => {
     const q = queueRef.current;
@@ -316,8 +325,8 @@ function Root() {
         {screen === 'storeManager' && <StoreManager u={u} openMenu={openMenu} toast={toast} demo={storeDemo} />}
         {screen === 'profile' && <Profile u={u} openMenu={openMenu} toast={toast} />}
         {screen === 'reader' && story && (
-          <Reader key={queue ? `${queue.key}:${queue.i}` : 'one'} u={u} story={story} setToastSpot={setToastSpot} prefs={queue ? { ...prefs, mode: queue.listen ? 'listen' : 'auto' } : controls.playMode ? { ...prefs, mode: controls.playMode } : prefs}
-            autoStart={!!queue} onFinished={onBookFinished} onSettings={() => setSettingsGate(true)} onPlaylists={() => go('playlists')} setPrefs={setPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
+          <Reader key={queue ? `${queue.key}:${queue.i}` : 'one'} u={u} story={story} setToastSpot={setToastSpot} prefs={readerPrefs}
+            autoStart={!!queue} onFinished={onBookFinished} onSettings={() => setSettingsGate(true)} onPlaylists={() => go('playlists')} setPrefs={setReaderPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} toast={toast} menuRequest={playMenu} landscape={landscape} />
         )}
         {opening ? (
           <BookOpen u={u} story={opening.story} cover={opening.cover} rect={opening.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}
