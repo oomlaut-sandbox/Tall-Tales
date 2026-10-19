@@ -23,15 +23,15 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
-        <Text style={styles.title}>{t('Idea Room')}</Text>
+        <Text style={styles.title}>{t('Ideas Room')}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.col}>
           <View style={styles.hero} onLayout={(e) => setHeroW(e.nativeEvent.layout.width)}>{heroW ? <Image source={PICTURE} style={{ width: heroW, height: heroW * 3 / 4 }} resizeMode="cover" /> : null}</View>
-          <Text style={styles.lead}>{t('{n} ideas for books you can make together: your photos and drawings, your words, your voice.', { n: IDEA_COUNT })}</Text>
+          <Text style={styles.lead}>{t('Many ideas for books you can make together: your photos and drawings, your words, your voice.')}</Text>
           <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
             {controls.create ? <Pressable onPress={onMake} style={[styles.pill, { backgroundColor: colors.blue }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Make a story')}</Text></Pressable> : null}
-            <Pressable onPress={onHelp} style={[styles.pill, { backgroundColor: '#5f5f5f' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Help')}</Text></Pressable>
+            <Pressable onPress={onHelp} style={[styles.pill, { backgroundColor: '#5f5f5f' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Ideas and Support')}</Text></Pressable>
           </View>
           {IDEA_SECTIONS.map((sec) => (
             <View key={sec.title} style={{ gap: 10 }}>

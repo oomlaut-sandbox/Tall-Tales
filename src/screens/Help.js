@@ -87,7 +87,7 @@ export const HELP = [
   { section: 'Grown-ups', title: 'Settings and parental controls', text: [
     'Settings is the last item in the menu. It always asks the grown-up question first.',
     'Language: choose English, Deutsch, Français, Español or 日本語 for the app. Members can also read books in a different language from the app’s. The languages are also listed at the top of the start page: tap one to switch.',
-    'Parental controls: choose exactly what your child can see and do. Hide the Book Store, My Notebook, Create a Story or Help; switch off recording, sharing and printing; keep the language fixed; and make every book play one way (for example, always Page by Page).',
+    'Parental controls: choose exactly what your child can see and do. Hide the Book Store, My Notebook, Create a Story or Ideas and Support; switch off recording, sharing and printing; keep the language fixed; and make every book play one way (for example, always Page by Page).',
     'Quick and Safe Kid is the recommended setup for a child reading alone: only My Library and My Notebook, every book read aloud a page at a time, and nothing to buy, share, print, record or change.',
     'Your child’s age: every book has an age rating, and books rated for older children are hidden.',
     'Lock everything leaves only My Library and its books, read the way you chose. Unlock everything brings it all back.',
@@ -125,7 +125,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
-        <Text style={styles.title}>{t('Help')}</Text>
+        <Text style={styles.title}>{t('Ideas and Support')}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
         <View style={styles.col}>
@@ -133,17 +133,17 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
           {/* the Idea Room, at the very top: ideas for every kind of book a family can make */}
           <Pressable onPress={onIdeas} accessibilityRole="button" style={[styles.ideas, { flexDirection: 'row', gap: 14, alignItems: 'center' }]}>
             <View style={{ flex: 1, gap: 6 }}>
-              <Text style={styles.ideasTitle}>{t('Idea Room')}</Text>
-              <Text style={styles.ideasText}>{t('{n} ideas for books you can make together: your photos and drawings, your words, your voice.', { n: IDEA_COUNT })}</Text>
-              <Text style={styles.ideasGo}>{t('Visit the Idea Room')} ›</Text>
+              <Text style={styles.ideasTitle}>{t('Ideas Room')}</Text>
+              <Text style={styles.ideasText}>{t('Many ideas for books you can make together: your photos and drawings, your words, your voice.')}</Text>
+              <Text style={styles.ideasGo}>{t('Visit the Ideas Room')} ›</Text>
             </View>
           </Pressable>
           {/* the search window: a white pill the width of the topics, with a soft inner shadow along its top edge */}
           <View style={[styles.searchWrap, { marginTop: 14 }]}>
             <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.22)', 'rgba(0,0,0,0.06)', 'rgba(0,0,0,0)']} locations={[0, 0.35, 1]} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 14 }} />
             <LinearGradient pointerEvents="none" start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['rgba(0,0,0,0.08)', 'rgba(0,0,0,0)']} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 16 }} />
-            <TextInput value={q} onChangeText={setQ} placeholder={t('Search help')} placeholderTextColor="#666"
-              style={styles.search} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel={t('Search help')} />
+            <TextInput value={q} onChangeText={setQ} placeholder={t('Search ideas and support')} placeholderTextColor="#666"
+              style={styles.search} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel={t('Search ideas and support')} />
           </View>
           {/* About lives here now (it left the main menu) */}
           <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>{t('About Oomlaut Reader')}</Text></Pressable>

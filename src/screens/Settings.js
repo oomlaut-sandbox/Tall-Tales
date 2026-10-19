@@ -92,7 +92,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
             <Toggle label={t('Show the Book Store')} value={controls.store} onChange={(v) => set({ store: v })} />
             <Toggle label={t('Show My Notebook')} value={controls.notebook} onChange={(v) => set({ notebook: v })} />
             <Toggle label={t('Show Create a Story')} value={controls.create} onChange={(v) => set({ create: v })} />
-            <Toggle label={t('Help and About')} value={controls.help} onChange={(v) => set({ help: v })} />
+            <Toggle label={t('Ideas, Support and About')} value={controls.help} onChange={(v) => set({ help: v })} />
             <Toggle label={t('Recording own voice')} value={controls.recording} onChange={(v) => set({ recording: v })} />
             <Toggle label={t('Sharing and printing')} value={controls.sharing} onChange={(v) => set({ sharing: v })} />
             <Toggle label={t('Let my child change the language')} value={controls.language} onChange={(v) => set({ language: v })} />
