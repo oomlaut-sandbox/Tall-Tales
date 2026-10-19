@@ -71,4 +71,5 @@ export default {
   'Fill': { de: 'Füllen', fr: 'Remplir', es: 'Rellenar', ja: 'ぬる' },
   'Character': { de: 'Figur', fr: 'Personnage', es: 'Personaje', ja: 'キャラクター' },
   'Tap a child to change their name, character or age.': { de: 'Tippe auf ein Kind, um Name, Figur oder Alter zu ändern.', fr: 'Touchez un enfant pour changer son prénom, son personnage ou son âge.', es: 'Toca a un niño para cambiar su nombre, personaje o edad.', ja: 'こどもを タップして、なまえ・キャラクター・ねんれいを かえます。' },
+  'Who is reading?': { de: 'Wer liest?', fr: 'Qui lit ?', es: '¿Quién lee?', ja: 'だれが よむ？' },
 };

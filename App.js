@@ -37,7 +37,7 @@ import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
-import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
+import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
 import { DESK_FELT, DeskFelt, Felt, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
 import Profiles from './src/screens/Profiles';
@@ -362,7 +362,7 @@ function Root() {
           <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
             <Option glyph={<LibraryIcon size={MENU_ICON} />} title={t('My Library')} sub={t('View purchased stories')} onPress={() => go('library')} />
             {controls.store ? <Option glyph={<StoreIcon />} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => go('store')} /> : null}
-            {controls.playback && !controls.playMode ? <Option glyph={<PlayGlyph />} title={t('Playback Settings')} sub={t('Reader controls')} onPress={() => {
+            {controls.playback && !controls.playMode ? <Option glyph={<PlayGlyph />} title={t('Playback Options')} sub={t('Reader controls')} onPress={() => {
               setDrawer(false);
               // in a book: the reader's own panel; anywhere else: the same choices in their own panel
               if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else setTimeout(() => setPlayOpen(true), 300);
@@ -371,6 +371,8 @@ function Root() {
             {controls.create ? <Option glyph={<PlusIcon />} title={t('Create a Story')} sub={t('Make your own book')} onPress={() => openPublisher(null)} /> : null}
             {/* Help takes Profile's place (Profile is suspended for families; the store owner signs in from About: hold Skippy) */}
             {controls.help ? <Option glyph={<CircleIcon />} title={t('Ideas and Support')} sub={t('How everything works')} onPress={() => go('help')} /> : null}
+            {/* Profiles: who is reading (switch child, or a grown-up adds and changes them) */}
+            <Option glyph={<PersonIcon />} title={t('Profiles')} sub={t('Who is reading?')} onPress={() => go('profiles')} />
             {/* Settings: always last, always behind the grown-up question */}
             <Option glyph={<GearIcon size={MENU_ICON} />} title={t('Settings')} sub={t('Language and parental controls')} onPress={() => { setDrawer(false); setSettingsGate(true); }} />
             {/* (About is reached from Help) */}

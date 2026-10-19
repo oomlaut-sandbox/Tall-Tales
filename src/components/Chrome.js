@@ -303,6 +303,26 @@ export function PageShape({ wide }) {
 }
 // Simple round glasses: two perfect circles side by side, joined by an arched bridge over the nose.
 // Listen Only: a crescent moon (a ring drawn thick on one side only)
+// Listen Only: headphones (a band over the top, a cup on each side)
+export function HeadphonesIcon({ size = MENU_ICON, color = colors.white, weight = 2.4 }) {
+  const cupW = size * 0.24, cupH = size * 0.42;
+  return (
+    <View style={{ width: size, height: size }}>
+      <View style={{ position: 'absolute', left: size * 0.08, top: size * 0.08, width: size * 0.84, height: size * 0.84, borderRadius: size, borderWidth: weight, borderColor: color, borderBottomColor: 'transparent', borderLeftColor: color, borderRightColor: color, transform: [{ rotate: '0deg' }] }} />
+      <View style={{ position: 'absolute', left: size * 0.04, top: size * 0.5, width: cupW, height: cupH, borderRadius: cupW * 0.45, backgroundColor: color }} />
+      <View style={{ position: 'absolute', right: size * 0.04, top: size * 0.5, width: cupW, height: cupH, borderRadius: cupW * 0.45, backgroundColor: color }} />
+    </View>
+  );
+}
+// a person (head and shoulders): Profiles
+export function PersonIcon({ size = MENU_ICON, color = colors.white }) {
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center' }}>
+      <View style={{ marginTop: size * 0.06, width: size * 0.42, height: size * 0.42, borderRadius: size, backgroundColor: color }} />
+      <View style={{ position: 'absolute', bottom: size * 0.04, width: size * 0.84, height: size * 0.38, borderTopLeftRadius: size * 0.42, borderTopRightRadius: size * 0.42, backgroundColor: color }} />
+    </View>
+  );
+}
 export function MoonIcon({ size = MENU_ICON, color = colors.white }) {
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
