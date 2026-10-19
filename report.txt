@@ -1,0 +1,11 @@
+total 19624
+drwxr-xr-x  2 runner runner    4096 Oct 19 17:11 .
+drwxr-xr-x 12 runner runner    4096 Oct 19 17:09 ..
+-rw-r--r--  1 runner runner 3745488 Oct 19 17:10 campfire-fs248303.mp3
+-rw-r--r--  1 runner runner  490848 Oct 19 17:10 campfire-fs454745.mp3
+-rw-r--r--  1 runner runner  952032 Oct 19 17:10 campfire-fs637523.mp3
+-rw-r--r--  1 runner runner 1518144 Oct 19 17:11 chimes-fs17090.mp3
+-rw-r--r--  1 runner runner  835809 Oct 19 17:11 chimes-fs739142.mp3
+-rw-r--r--  1 runner runner 3046208 Oct 19 17:10 fire-ls0988.mp3
+-rw-r--r--  1 runner runner 5123648 Oct 19 17:10 fire-ls0989.mp3
+-rw-r--r--  1 runner runner 4360544 Oct 19 17:10 fire-ls2855.mp3
