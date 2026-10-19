@@ -138,7 +138,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
           {/* in Jörg's green felt patch, the words inside its stitching */}
           <Pressable onPress={onIdeas} accessibilityRole="button" style={[styles.ideas, { width: feltW, height: Math.round(feltW * 805 / 1100) }]}>
             <Image source={IDEAS_FELT} style={{ position: 'absolute', left: 0, top: 0, width: feltW, height: Math.round(feltW * 805 / 1100) }} resizeMode="stretch" />
-            <View style={{ flex: 1, gap: 6, justifyContent: 'center', paddingHorizontal: '9%', paddingVertical: '8%' }}>
+            <View style={{ flex: 1, gap: 6, justifyContent: 'center', paddingLeft: '12%', paddingRight: '8%', paddingVertical: '8%' }}>
               <Text style={styles.ideasTitle}>{t('Ideas Room')}</Text>
               <Text style={styles.ideasText}>{t('Many ideas for books you can make together: your photos and drawings, your words, your voice.')}</Text>
               <Text style={styles.ideasGo}>{t('Visit the Ideas Room')} ›</Text>
