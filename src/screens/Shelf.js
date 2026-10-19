@@ -472,7 +472,7 @@ const styles = StyleSheet.create({
   tipBubble: { width: '100%', maxWidth: 420, alignSelf: 'center', backgroundColor: '#f4f1ea', borderRadius: 22, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 24, gap: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 12, elevation: 10 },
   tipTail: { marginLeft: 46, width: 0, height: 0, borderLeftWidth: 12, borderRightWidth: 12, borderTopWidth: 14, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: '#f4f1ea' },
   tipFoot: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: 14 },
-  tipChar: { width: 92, height: 121, marginTop: 24, marginRight: 34, marginBottom: 30 },
+  tipChar: { width: 116, height: 152, marginTop: 20, marginRight: 26, marginBottom: 24 }, // a bit bigger
   tipTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 19, color: '#2b2b2b' },
   tipText: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#2b2b2b' },
   tipCheckRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 2 },
