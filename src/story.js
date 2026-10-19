@@ -245,6 +245,7 @@ export const TIPS = {
       'Noch mehr Ideen. Ein Buch „Alles über mich“ zu jedem Geburtstag. Die Abenteuer eines Lieblingskuscheltiers im Haus. Der Traum von letzter Nacht. Opa erzählt, wie es war, als er klein war.',
       'Ein paar Tipps. Ein oder zwei Sätze pro Seite reichen völlig. Fotografiere bei Tageslicht. Die Seiten sind quadratisch, lass also Platz an den Rändern. Nimm eine Zeichnung deines Kindes als Titelbild.',
       'Veröffentlichen. Autorinnen und Autoren, ob jung oder alt, können ihre Bücher an den Oomlaut-Buchladen schicken. Wenn dein Buch fertig ist, erfährst du auf oomlaut.com, wie es geht.',
+      'Noch mehr Ideen gefällig? Besuche das Ideenzimmer unter Ideen und Hilfe. Dort findest du viele weitere Bücher zum gemeinsamen Gestalten, von großen Momenten und Alltagsabläufen bis zu Gefühlen und Familiengeschichten.',
     ] },
     fr: { title: 'Conseils pour les auteurs', texts: [
       'Conseils pour les auteurs. Des idées pour créer vos propres livres, pour les grands comme pour les jeunes auteurs.',
@@ -258,6 +259,7 @@ export const TIPS = {
       'D’autres idées. Un livre « Tout sur moi » à chaque anniversaire. Les aventures d’un jouet préféré dans la maison. Le rêve de la nuit dernière. Papi qui raconte quand il était petit.',
       'Quelques conseils. Une ou deux phrases par page, c’est bien assez. Prenez les photos à la lumière du jour. Les pages sont carrées : laissez de la place sur les bords. Utilisez un dessin de votre enfant pour la couverture.',
       'Être publié. Les auteurs, petits et grands, peuvent envoyer leurs livres à la librairie Oomlaut. Quand votre livre est prêt, rendez-vous sur oomlaut.com pour savoir comment faire.',
+      'Besoin de plus d’idées ? Visitez la Salle des idées dans Idées et aide. Vous y trouverez bien d’autres livres à faire ensemble, des grands moments et routines du quotidien aux émotions et histoires de famille.',
     ] },
     es: { title: 'Consejos para autores', texts: [
       'Consejos para autores. Ideas para hacer tus propios libros, para adultos y jóvenes autores.',
@@ -271,6 +273,7 @@ export const TIPS = {
       'Más ideas. Un libro «Todo sobre mí» en cada cumpleaños. Las aventuras de un juguete favorito por la casa. El sueño de anoche. El abuelo recordando cuando era pequeño.',
       'Algunos consejos. Una o dos frases por página son suficientes. Haz las fotos con luz de día. Las páginas son cuadradas, así que deja espacio en los bordes. Usa un dibujo de tu hijo para la portada.',
       'Publica tu libro. Autores pequeños y grandes pueden enviar sus libros a la librería de Oomlaut. Cuando tu libro esté listo, visita oomlaut.com para saber cómo.',
+      '¿Necesitas más ideas? Visita la Sala de ideas en Ideas y ayuda. Encontrarás muchos más libros para hacer juntos, desde grandes momentos y rutinas diarias hasta sentimientos e historias de familia.',
     ] },
     ja: { title: '作家のためのヒント', texts: [
       '作家のためのヒント。おとなにも、わかい作家にも。じぶんの本をつくるためのアイデア集です。',
@@ -284,6 +287,7 @@ export const TIPS = {
       'もっとアイデア。たんじょうびごとの「わたしのこと」の本。おうちのなかで、だいすきなおもちゃがぼうけんするお話。ゆうべ見たゆめ。おじいちゃんが小さかったころの思い出。',
       'ちょっとしたコツ。1ページに1〜2文で十分です。写真は明るい昼間に。ページは正方形なので、まわりにすこしよゆうを。表紙にはお子さんがかいた絵をどうぞ。',
       '本を出そう。子どもも大人も、作家ならだれでも、Oomlautの本やさんに本をおくれます。本ができたら、oomlaut.com でやりかたを見てください。',
+      'もっとアイデアがほしいときは、「アイデアと サポート」の アイデアのへやへ。大きなできごとや まいにちの しゅうかん、きもちや かぞくの おはなしまで、いっしょに つくれる本が たくさん あります。',
     ] },
   },
   syllables: {
@@ -294,16 +298,17 @@ export const TIPS = {
   },
   pages: [
     { pid: 'tp01', titlePage: true, image: require('../assets/books/tips/cover.jpg'), w: 1600, h: 1600, text: 'Tips for Authors. Ideas for making your own books, for grown-ups and young authors alike.' },
-    { pid: 'tp02', image: require('../assets/books/two-snakes/horse.jpg'), w: 1600, h: 1600, text: 'Every family has stories worth keeping. All you need is a camera, a few words and a little time. Here are some ideas to get you started.' },
-    { pid: 'tp03', image: require('../assets/books/rough-lives/fox.jpg'), w: 1600, h: 1600, text: 'Our Big Adventure Today. A walk in the woods, a visit to Grandma, a first lost tooth. Take one photo for each page and let your child tell what happened. First we… then we… the best part was…' },
-    { pid: 'tp04', image: require('../assets/books/small-wonders/snail.jpg'), w: 1600, h: 1600, text: 'Collecting. Rocks, bugs, leaves and flowers. Photograph or draw each find, then give it a name and one fact, real or made up. Now you have your very own field guide.' },
-    { pid: 'tp05', image: require('../assets/books/two-snakes/rabbit.jpg'), w: 1600, h: 1600, text: 'Drawings. Take a photo of a drawing and it becomes a page. Let your child tell the story, and type their words exactly as they say them.' },
-    { pid: 'tp06', image: require('../assets/books/two-snakes/elephant.jpg'), w: 1600, h: 1600, text: 'Lessons. A story can make big things gentler: a new baby, a new school, brushing teeth, saying goodbye. Use your own photos, so the story is about them.' },
-    { pid: 'tp07', image: require('../assets/books/two-snakes/dogs.jpg'), w: 1600, h: 1600, text: 'Group Fun. A whole class can make a book together. Each child makes one page: a class trip, a favourite animal, or what they want to be.' },
-    { pid: 'tp08', image: require('../assets/books/two-snakes/wolf.jpg'), w: 1600, h: 1600, text: 'Read It Aloud. Record your own voice reading the book. Years from now, that voice will be the treasure.' },
-    { pid: 'tp09', image: require('../assets/books/two-snakes/hamster.jpg'), w: 1600, h: 1600, text: 'More Ideas. An All About Me book on every birthday. A favourite toy’s adventures around the house. Last night’s dream. Grandpa remembering when he was little.' },
-    { pid: 'tp10', image: require('../assets/books/two-snakes/bee.jpg'), w: 1600, h: 1600, text: 'A Few Tips. One or two sentences a page is plenty. Take photos in daylight. Pages are square, so leave room around the edges. Use your child’s own drawing for the cover.' },
-    { pid: 'tp11', image: require('../assets/books/two-snakes/robot.jpg'), w: 1600, h: 1600, text: 'Get Published. Authors young and old can send their books to the Oomlaut Book Store. When your book is ready, visit oomlaut.com to find out how.' },
+    { pid: 'tp02', blankArt: true, w: 1600, h: 1600, text: 'Every family has stories worth keeping. All you need is a camera, a few words and a little time. Here are some ideas to get you started.' },
+    { pid: 'tp03', blankArt: true, w: 1600, h: 1600, text: 'Our Big Adventure Today. A walk in the woods, a visit to Grandma, a first lost tooth. Take one photo for each page and let your child tell what happened. First we… then we… the best part was…' },
+    { pid: 'tp04', blankArt: true, w: 1600, h: 1600, text: 'Collecting. Rocks, bugs, leaves and flowers. Photograph or draw each find, then give it a name and one fact, real or made up. Now you have your very own field guide.' },
+    { pid: 'tp05', blankArt: true, w: 1600, h: 1600, text: 'Drawings. Take a photo of a drawing and it becomes a page. Let your child tell the story, and type their words exactly as they say them.' },
+    { pid: 'tp06', blankArt: true, w: 1600, h: 1600, text: 'Lessons. A story can make big things gentler: a new baby, a new school, brushing teeth, saying goodbye. Use your own photos, so the story is about them.' },
+    { pid: 'tp07', blankArt: true, w: 1600, h: 1600, text: 'Group Fun. A whole class can make a book together. Each child makes one page: a class trip, a favourite animal, or what they want to be.' },
+    { pid: 'tp08', blankArt: true, w: 1600, h: 1600, text: 'Read It Aloud. Record your own voice reading the book. Years from now, that voice will be the treasure.' },
+    { pid: 'tp09', blankArt: true, w: 1600, h: 1600, text: 'More Ideas. An All About Me book on every birthday. A favourite toy’s adventures around the house. Last night’s dream. Grandpa remembering when he was little.' },
+    { pid: 'tp10', blankArt: true, w: 1600, h: 1600, text: 'A Few Tips. One or two sentences a page is plenty. Take photos in daylight. Pages are square, so leave room around the edges. Use your child’s own drawing for the cover.' },
+    { pid: 'tp11', blankArt: true, w: 1600, h: 1600, text: 'Get Published. Authors young and old can send their books to the Oomlaut Book Store. When your book is ready, visit oomlaut.com to find out how.' },
+    { pid: 'tp12', blankArt: true, w: 1600, h: 1600, text: 'Need more ideas? Visit the Ideas Room in Ideas and Support. You’ll find many more books to make together, from big moments and everyday routines to feelings and family stories.' },
   ],
 };
 

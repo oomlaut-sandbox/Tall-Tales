@@ -91,11 +91,11 @@ export const PageView = forwardRef(function PageView(
     <View ref={ref} collapsable={false} style={[styles.page, { width, height }, L.wide && styles.row]}>
       {/* The picture square, with a very soft shadow falling below it. */}
       <View style={[L.wide ? { width: artW, height, justifyContent: 'center' } : styles.artShadow, { zIndex: 1 }]}>
-      <View style={[styles.art, { width: artW, height: artH }, page?.whiteArt && { backgroundColor: colors.white }]}>
+      <View style={[styles.art, { width: artW, height: artH }, page?.whiteArt && { backgroundColor: colors.white }, page?.blankArt && { backgroundColor: '#d9d9d9' }]}>{/* blankArt: a light grey placeholder until a picture is added */}
         {end ? (
-          // "The End" in the book's font on a plain medium-dark grey square
+          // "The End" on a plain white page, in the book's own font and size, like a page of words
           <View style={[styles.fill, styles.endArt]} accessibilityLabel={t('The End')}>
-            <Text style={[styles.endTitle, { fontFamily: font.family, fontSize: Math.round(artW * 0.1) }]}>{t('The End')}</Text>
+            <Text style={[storyStyle, styles.endTitle]}>{t('The End')}</Text>
           </View>
         ) : (
           page?.image ? (zoomable ? <ZoomArt source={page.image} width={artW} height={artH} /> : <Image source={page.image} style={styles.fill} resizeMode="cover" />) : null
@@ -185,8 +185,8 @@ const styles = StyleSheet.create({
   hot: { position: 'absolute', width: 46, height: 46, borderRadius: 23, borderWidth: 3, borderColor: 'rgba(255,255,255,0.9)', backgroundColor: 'rgba(255,255,255,0.12)' },
   bubble: { position: 'absolute', width: 220, alignItems: 'center' },
   bubbleText: { backgroundColor: colors.white, color: colors.ink, fontFamily: fonts.story, fontSize: 22, paddingHorizontal: 14, paddingVertical: 6, overflow: 'hidden' },
-  endArt: { backgroundColor: '#5a5a5a', alignItems: 'center', justifyContent: 'center' },
-  endTitle: { color: '#f2f2f2', textAlign: 'center' },
+  endArt: { backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' },
+  endTitle: { textAlign: 'center' },
   endBtn: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   endIc: { width: 36, height: 36, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
   endGlyph: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
