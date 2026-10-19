@@ -141,8 +141,10 @@ function FingerWheel({ size, value, onChange, label }) {
   const deg = toMin(value) / 4;
   const dim = size * 0.18, r = size * 0.35;
   const outer = size * 1.3;
+  // the hour marks around the dial; at 0, 6, 12 and 18 the numbers stand in for the marks
   const marks = Array.from({ length: 24 }, (_, h) => {
     const big = h % 6 === 0;
+    if (big) return null;
     return (
       <View key={h} pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: outer, height: outer, alignItems: 'center', transform: [{ rotate: `${h * 15}deg` }] }}>
         <View style={{ marginTop: 2, width: big ? 2 : 1.2, height: big ? size * 0.05 : size * 0.028, borderRadius: 1, backgroundColor: big ? 'rgba(244,226,207,0.6)' : 'rgba(255,255,255,0.22)' }} />
@@ -150,7 +152,7 @@ function FingerWheel({ size, value, onChange, label }) {
     );
   });
   const num = (h) => {
-    const a = (h * 15 * Math.PI) / 180, rr = outer / 2 - size * 0.105;
+    const a = (h * 15 * Math.PI) / 180, rr = outer / 2 - 2 - size * 0.02; // where the marks are
     return <Text key={'n' + h} style={[styles.wheelNum, { left: outer / 2 + rr * Math.sin(a) - 15, top: outer / 2 - rr * Math.cos(a) - 7 }]}>{h}</Text>;
   };
   return (
@@ -453,7 +455,7 @@ const styles = StyleSheet.create({
   dimple: { backgroundColor: '#272729', boxShadow: 'inset 5px 5px 8px rgba(0,0,0,0.75), inset -3px -3px 6px rgba(255,255,255,0.08)' },
   wheelTime: { color: CREAM, fontFamily: fonts.ui, fontSize: 17, fontWeight: '300', letterSpacing: 0.8 }, // small, so it keeps clear of the finger hole
   popTitle: { flex: 1, color: CREAM, fontFamily: fonts.ui, fontWeight: '700', fontSize: 24 }, // like the other page titles
-  wheelNum: { position: 'absolute', width: 30, textAlign: 'center', color: 'rgba(244,226,207,0.5)', fontFamily: fonts.ui, fontSize: 10, fontWeight: '300' },
+  wheelNum: { position: 'absolute', width: 30, textAlign: 'center', color: 'rgba(244,226,207,0.62)', fontFamily: fonts.ui, fontSize: 12, fontWeight: '400' },
   chip: { paddingHorizontal: 13, height: 34, borderRadius: 17, backgroundColor: BASE, alignItems: 'center', justifyContent: 'center', boxShadow: '-3px -3px 6px rgba(255,255,255,0.05), 3px 3px 7px rgba(0,0,0,0.6)' },
   chipOn: { backgroundColor: '#8f8578' }, // the chosen one: a dim warm grey, easy on the eyes at night
   chipText: { color: 'rgba(244,226,207,0.85)', fontFamily: fonts.ui, fontSize: 13 },
