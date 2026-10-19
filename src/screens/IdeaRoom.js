@@ -11,7 +11,8 @@ import { useT } from '../i18n';
 import { useControls } from '../controls';
 
 const BAND_FELT = require('../../assets/band-ideas.jpg'); // Jörg's pink felt banner
-const SKIPPY = require('../../assets/ideas-skippy.png'); // Skippy, daydreaming against his book
+const SKIPPY = require('../../assets/ideas-skippy.png'); // Skippy, daydreaming against his book (at the end of the ideas)
+const WRITER = require('../../assets/ideas-writer.png'); // writing in his notebook, beside the words at the top
 
 export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
   const t = useT();
@@ -26,18 +27,13 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
       </View>
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.col}>
-          {/* the title and words on the left; Skippy daydreaming on the right, a little thought bubble over him */}
+          {/* the title and words on the left; the writer on the right */}
           <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 22 }}>
             <View style={{ flex: 1, minWidth: 0, gap: 8 }}>
               <Text style={styles.heading}>{t('Let’s create!')}</Text>
               <Text style={styles.lead}>{t('Here are some examples of books you can make together… {n} to be exact ;) Your photos and drawings, your words, your voice.', { n: IDEA_COUNT })}</Text>
             </View>
-            <View style={{ width: 128, alignItems: 'center', paddingTop: 4 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-              <View style={styles.thought}><Text style={styles.thoughtText}>…</Text></View>
-              <View style={[styles.puff, { width: 12, height: 12, marginLeft: -26, marginTop: 5 }]} />
-              <View style={[styles.puff, { width: 7, height: 7, marginLeft: -44, marginTop: 3 }]} />
-              <Image source={SKIPPY} style={{ width: 128, height: 82, marginTop: 2 }} resizeMode="contain" accessibilityIgnoresInvertColors />
-            </View>
+            <Image source={WRITER} style={{ width: 118, height: 118, marginTop: 4 }} resizeMode="contain" accessibilityIgnoresInvertColors />
           </View>
           {IDEA_SECTIONS.map((sec) => (
             <View key={sec.title} style={{ gap: 10 }}>
@@ -58,6 +54,13 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
               })}
             </View>
           ))}
+          {/* the end of the ideas: Skippy daydreaming under a little thought bubble */}
+          <View style={{ alignItems: 'center', marginTop: 30 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+            <View style={[styles.thought, { marginLeft: 70 }]}><Text style={styles.thoughtText}>…</Text></View>
+            <View style={[styles.puff, { width: 12, height: 12, marginLeft: 6, marginTop: 5 }]} />
+            <View style={[styles.puff, { width: 7, height: 7, marginLeft: -22, marginTop: 3 }]} />
+            <Image source={SKIPPY} style={{ width: 150, height: 97, marginTop: 2 }} resizeMode="contain" accessibilityIgnoresInvertColors />
+          </View>
         </View>
       </ScrollView>
     </WithBar>
