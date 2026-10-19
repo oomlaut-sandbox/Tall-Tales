@@ -560,6 +560,12 @@ export const WORDS = {
     "oomlautcom": require("../../assets/narration/lily/words/oomlautcom.mp3"),
     "jörg": require("../../assets/narration/lily/words/j_f6rg.mp3"),
     "1800s": require("../../assets/narration/lily/words/1800s.mp3"),
+    "support": require("../../assets/narration/lily/words/support.mp3"),
+    "many": require("../../assets/narration/lily/words/many.mp3"),
+    "moments": require("../../assets/narration/lily/words/moments.mp3"),
+    "everyday": require("../../assets/narration/lily/words/everyday.mp3"),
+    "routines": require("../../assets/narration/lily/words/routines.mp3"),
+    "feelings": require("../../assets/narration/lily/words/feelings.mp3"),
   },
   gregory: {
     "different": require("../../assets/narration/gregory/words/different.mp3"),
@@ -1120,6 +1126,12 @@ export const WORDS = {
     "oomlautcom": require("../../assets/narration/gregory/words/oomlautcom.mp3"),
     "jörg": require("../../assets/narration/gregory/words/j_f6rg.mp3"),
     "1800s": require("../../assets/narration/gregory/words/1800s.mp3"),
+    "support": require("../../assets/narration/gregory/words/support.mp3"),
+    "many": require("../../assets/narration/gregory/words/many.mp3"),
+    "moments": require("../../assets/narration/gregory/words/moments.mp3"),
+    "everyday": require("../../assets/narration/gregory/words/everyday.mp3"),
+    "routines": require("../../assets/narration/gregory/words/routines.mp3"),
+    "feelings": require("../../assets/narration/gregory/words/feelings.mp3"),
   },
 };
 

@@ -89,6 +89,7 @@ export const AUDIO = {
       "tp09": require("../../assets/narration/lily/tips/tp09.mp3"),
       "tp10": require("../../assets/narration/lily/tips/tp10.mp3"),
       "tp11": require("../../assets/narration/lily/tips/tp11.mp3"),
+      "tp12": require("../../assets/narration/lily/tips/tp12.mp3"),
     },
     "different@de": {
       "d01": require("../../assets/narration/lily/different@de/d01.mp3"),
@@ -250,6 +251,7 @@ export const AUDIO = {
       "tp09": require("../../assets/narration/gregory/tips/tp09.mp3"),
       "tp10": require("../../assets/narration/gregory/tips/tp10.mp3"),
       "tp11": require("../../assets/narration/gregory/tips/tp11.mp3"),
+      "tp12": require("../../assets/narration/gregory/tips/tp12.mp3"),
     },
     "different@de": {
       "d01": require("../../assets/narration/gregory/different@de/d01.mp3"),
