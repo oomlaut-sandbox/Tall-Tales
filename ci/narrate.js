@@ -19,6 +19,8 @@ const MODEL = 'eleven_multilingual_v2';
 // Lily speaks at this pace (ElevenLabs allows 0.7–1.2). The app's default speed (0.75) plays it
 // as-is, so the audio is never slowed down on the phone at the default setting.
 const PACE = 0.75;
+// books whose translations get ElevenLabs narration too (the rest use the phone's voice in other languages)
+const TRANSLATED = ['different'];
 // The voices Jörg picked. `find` is what we look for by name. (Michael Caine was considered; Lily only for now.)
 const VOICES = [
   // id: ElevenLabs' standard voice ID, used if the key isn't allowed to look voices up.
@@ -206,6 +208,43 @@ async function makeWords(v, voiceId) {
         data[v.key][story.id][page.pid] = { fp, words: starts, dur: Math.round(dur * 1000) / 1000 };
         made++; chars += page.text.length;
         say(`made ${v.key}/${story.id}/${page.pid} (${page.text.length} chars, ${dur.toFixed(1)}s)`);
+      }
+    }
+    // The translated books (Different for now): the same voice reading each language's text, kept as
+    // <story>@<lang> (e.g. different@de), with word timings like the English pages.
+    for (const story of stories.filter((st) => TRANSLATED.includes(st.id) && st.langs)) {
+      for (const [lang, L] of Object.entries(story.langs)) {
+        const sk = `${story.id}@${lang}`;
+        data[v.key][sk] = data[v.key][sk] || {};
+        for (let i = 0; i < story.pages.length; i++) {
+          const page = story.pages[i];
+          const text = L.texts && L.texts[i] != null ? L.texts[i] : null;
+          if (!text || !text.trim()) continue;
+          const fp = crypto.createHash('sha1').update(`${MODEL}|${voiceId}|${v.pace || PACE}|${lang}|${text}`).digest('hex').slice(0, 12);
+          const file = path.join('assets/narration', v.key, sk, `${page.pid}.mp3`);
+          const have = data[v.key][sk][page.pid];
+          if (have && have.fp === fp && fs.existsSync(file)) { kept++; continue; }
+          const r = await api('POST', `/v1/text-to-speech/${voiceId}/with-timestamps?output_format=mp3_44100_128`, {
+            text, model_id: MODEL, language_code: lang,
+            voice_settings: { stability: 0.55, similarity_boost: 0.8, style: 0.15, use_speaker_boost: true, speed: v.pace || PACE },
+          });
+          if (r.status !== 200 || !r.json || !r.json.audio_base64) {
+            failed++; say(`FAILED ${v.key}/${sk}/${page.pid}: HTTP ${r.status} ${r.text.slice(0, 300)}`);
+            if (r.status === 401 || r.status === 402 || r.status === 403) break;
+            continue;
+          }
+          fs.mkdirSync(path.dirname(file), { recursive: true });
+          fs.writeFileSync(file, Buffer.from(r.json.audio_base64, 'base64'));
+          const al = r.json.alignment || r.json.normalized_alignment;
+          const starts = al ? tokenize(text).map((t) => {
+            const s0 = al.character_start_times_seconds[Math.min(t.start, al.character_start_times_seconds.length - 1)];
+            return Math.round((s0 || 0) * 1000) / 1000;
+          }) : [];
+          const dur = al ? al.character_end_times_seconds[al.character_end_times_seconds.length - 1] : 0;
+          data[v.key][sk][page.pid] = { fp, words: starts, dur: Math.round(dur * 1000) / 1000 };
+          made++; chars += text.length;
+          say(`made ${v.key}/${sk}/${page.pid} (${text.length} chars, ${dur.toFixed(1)}s)`);
+        }
       }
     }
     await makeWords(v, voiceId);

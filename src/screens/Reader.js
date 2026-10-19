@@ -234,10 +234,14 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       const voiceKey = narratorOf(prefs);
       // books from the store bring their own narration (downloaded); the app's own books have it built in
       // a book shown in another language has no narration in that language yet: the phone reads it in that language
-      if (story.lang && story.lang !== 'en') { speakTracked(p.text, { lang: story.lang, rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage }); return; }
-      const own = story.narration ? (story.narration[voiceKey]?.[p.pid] || story.narration.lily?.[p.pid]) : null;
-      const audio = own ? { uri: own.uri } : AUDIO[voiceKey]?.[story.id]?.[p.pid] || AUDIO.lily?.[story.id]?.[p.pid];
-      const times = own ? own.words : (TIMINGS[AUDIO[voiceKey]?.[story.id]?.[p.pid] ? voiceKey : 'lily']?.[story.id]?.[p.pid] || {}).words;
+      // a translated book: its ElevenLabs narration in that language (kept as e.g. different@de), or, if there
+      // is none yet, the phone reads it in that language
+      const other = story.lang && story.lang !== 'en';
+      const sk = other ? `${story.id}@${story.lang}` : story.id;
+      if (other && !AUDIO[voiceKey]?.[sk]?.[p.pid] && !AUDIO.lily?.[sk]?.[p.pid]) { speakTracked(p.text, { lang: story.lang, rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage }); return; }
+      const own = !other && story.narration ? (story.narration[voiceKey]?.[p.pid] || story.narration.lily?.[p.pid]) : null;
+      const audio = own ? { uri: own.uri } : AUDIO[voiceKey]?.[sk]?.[p.pid] || AUDIO.lily?.[sk]?.[p.pid];
+      const times = own ? own.words : (TIMINGS[AUDIO[voiceKey]?.[sk]?.[p.pid] ? voiceKey : 'lily']?.[sk]?.[p.pid] || {}).words;
       if (audio && times && times.length === toks.length && playVoice(audio, {
         rate: speedOf(prefs) / DEFAULT_SPEED, // narration is already made at the default pace
         onTime: (t) => {
