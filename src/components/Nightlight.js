@@ -191,7 +191,7 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
     <Animated.View style={[StyleSheet.absoluteFill, styles.scrim, { opacity: fade }]} onStartShouldSetResponder={() => true} onResponderRelease={close}>
       <View style={[styles.popup, wide && { maxWidth: 640 }]} onStartShouldSetResponder={() => true}>
         <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch' }}>
-          <Text style={[styles.small, { flex: 1, textAlign: 'left' }]}>{t('Wake-up alarm')}</Text>
+          <Text style={styles.popTitle}>{t('Alarm')}</Text>
           <Pressable onPress={withTap(() => onOn(!on))} hitSlop={10} accessibilityRole="switch" accessibilityState={{ checked: on }} accessibilityLabel={t('Wake-up alarm')} style={[styles.switch, on && styles.switchOn]}>
             <View style={[styles.knob, on && { backgroundColor: '#1b1b1d', transform: [{ translateX: 20 }] }]} />
           </Pressable>
@@ -204,7 +204,7 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
               <View key={gi} style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 9, marginBottom: 9 }}>
                 {ids.map((id) => (
                   <Pressable key={id} onPress={withTap(() => onSound(id))} hitSlop={4} accessibilityRole="button" accessibilityState={{ selected: sound === id }} style={[styles.chip, sound === id && styles.chipOn]}>
-                    <Text style={[styles.chipText, sound === id && { color: '#1b1b1d' }]}>{name(id)}</Text>
+                    <Text style={[styles.chipText, sound === id && { color: '#151516' }]}>{name(id)}</Text>
                   </Pressable>
                 ))}
               </View>
@@ -451,13 +451,14 @@ const styles = StyleSheet.create({
   // the dial: one flat face, its edge just slightly rounded (a soft light rim at the top left, a soft dark one at the bottom right)
   wheel: { backgroundColor: BASE, alignItems: 'center', justifyContent: 'center', boxShadow: '-9px -9px 20px rgba(255,255,255,0.06), 12px 12px 26px rgba(0,0,0,0.7), inset 2px 2px 3px rgba(255,255,255,0.07), inset -3px -3px 5px rgba(0,0,0,0.35)' },
   dimple: { backgroundColor: '#272729', boxShadow: 'inset 5px 5px 8px rgba(0,0,0,0.75), inset -3px -3px 6px rgba(255,255,255,0.08)' },
-  wheelTime: { color: CREAM, fontFamily: fonts.ui, fontSize: 24, fontWeight: '200', letterSpacing: 1 },
+  wheelTime: { color: CREAM, fontFamily: fonts.ui, fontSize: 17, fontWeight: '300', letterSpacing: 0.8 }, // small, so it keeps clear of the finger hole
+  popTitle: { flex: 1, color: CREAM, fontFamily: fonts.ui, fontWeight: '700', fontSize: 24 }, // like the other page titles
   wheelNum: { position: 'absolute', width: 30, textAlign: 'center', color: 'rgba(244,226,207,0.5)', fontFamily: fonts.ui, fontSize: 10, fontWeight: '300' },
   chip: { paddingHorizontal: 13, height: 34, borderRadius: 17, backgroundColor: BASE, alignItems: 'center', justifyContent: 'center', boxShadow: '-3px -3px 6px rgba(255,255,255,0.05), 3px 3px 7px rgba(0,0,0,0.6)' },
-  chipOn: { backgroundColor: CREAM, boxShadow: '0 0 12px rgba(255,190,120,0.3)' },
+  chipOn: { backgroundColor: '#8f8578' }, // the chosen one: a dim warm grey, easy on the eyes at night
   chipText: { color: 'rgba(244,226,207,0.85)', fontFamily: fonts.ui, fontSize: 13 },
   switch: { width: 48, height: 28, borderRadius: 14, padding: 3, backgroundColor: '#242427', boxShadow: 'inset 2px 2px 5px rgba(0,0,0,0.6), inset -2px -2px 4px rgba(255,255,255,0.05)' },
-  switchOn: { backgroundColor: 'rgba(244,226,207,0.9)' },
+  switchOn: { backgroundColor: '#8f8578' },
   knob: { width: 22, height: 22, borderRadius: 11, backgroundColor: '#8a8a8e' },
   donePill: { marginTop: 14, paddingHorizontal: 32, height: 42, borderRadius: 21, borderWidth: 1, borderColor: 'rgba(244,226,207,0.5)', alignItems: 'center', justifyContent: 'center' },
   donePillText: { color: CREAM, fontFamily: fonts.ui, fontSize: 15, fontWeight: '500', letterSpacing: 0.5 },

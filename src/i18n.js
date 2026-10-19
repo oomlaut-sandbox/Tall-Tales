@@ -451,6 +451,7 @@ const T = {
   'Press and hold your own music to remove it.': { de: 'Halte deine eigene Musik gedrückt, um sie zu entfernen.', fr: 'Appuyez longuement sur votre musique pour la retirer.', es: 'Mantén pulsada tu música para quitarla.', ja: 'じぶんの おんがくを ながおしすると けせます。' },
   'Haptic feedback': { de: 'Haptisches Feedback', fr: 'Retour haptique', es: 'Respuesta háptica', ja: 'しんどうフィードバック' },
   'Feel a soft click on dials, knobs and buttons': { de: 'Ein sanftes Klicken an Drehrädern, Knöpfen und Tasten spüren', fr: 'Sentir un léger clic sur les molettes, les boutons et les touches', es: 'Sentir un clic suave en ruedas, perillas y botones', ja: 'ダイヤルや ボタンで やさしい クリックを かんじる' },
+  'Alarm': { de: 'Wecker', fr: 'Réveil', es: 'Alarma', ja: 'めざまし' },
   'Good morning!': { de: 'Guten Morgen!', fr: 'Bonjour !', es: '¡Buenos días!', ja: 'おはよう！' },
   'Now playing': { de: 'Jetzt läuft', fr: 'En cours', es: 'Ahora suena', ja: 'いま よんでいる本' },
   'Wake up with': { de: 'Wecken mit', fr: 'Se réveiller avec', es: 'Despertar con', ja: 'めざめの おと' },
