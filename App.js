@@ -183,7 +183,7 @@ function Root() {
   const playPlaylist = (pl) => {
     const ids = playOrder(pl, childShelf);
     if (!ids.length) return;
-    const q = { ids, i: 0, key: Date.now(), listen: !!pl.listen };
+    const q = { ids, i: 0, key: Date.now(), listen: !!pl.listen, loop: !!pl.loop, pl };
     setQueue(q); openQueued(q);
   };
   const queueNext = useRef(null);
@@ -191,13 +191,16 @@ function Root() {
     const q = queueRef.current;
     // Listen Only, after the last book: the music fades away slowly
     const listening = q ? q.listen : (controls.playMode || prefs.mode) === 'listen';
-    if (listening && (!q || q.i + 1 >= q.ids.length)) fadeOutAmbient(30000);
+    if (listening && (!q || (q.i + 1 >= q.ids.length && !q.loop))) fadeOutAmbient(30000);
     if (!q) return;
     clearTimeout(queueNext.current);
-    if (q.i + 1 >= q.ids.length) return; // the last one stays on The End (the playlist ends when the reader is left)
+    // the last one stays on The End (the playlist ends when the reader is left), unless it loops back to the first
+    if (q.i + 1 >= q.ids.length && !q.loop) return;
     queueNext.current = setTimeout(() => {
       if (queueRef.current !== q) return; // stopped meanwhile
-      const n = { ...q, i: q.i + 1 };
+      const again = q.i + 1 >= q.ids.length; // looping: start over (shuffled again if it shuffles)
+      const n = again ? { ...q, ids: playOrder(q.pl, childShelf), i: 0, key: Date.now() } : { ...q, i: q.i + 1 };
+      if (!n.ids.length) return;
       setQueue(n); openQueued(n);
       const nx = childShelf.find((x) => x.id === n.ids[n.i]);
       if (nx) toast(t('Next: {title} ({a} of {b})', { title: nx.title, a: n.i + 1, b: n.ids.length }));

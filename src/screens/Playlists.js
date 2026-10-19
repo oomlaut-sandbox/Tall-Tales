@@ -2,7 +2,7 @@
 // them all by themselves (Auto Play), one book after the next. Each child has their own playlists;
 // "Bedtime" is there from the start.
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, DESK_BG, IS_TABLET } from '../look';
@@ -24,6 +24,8 @@ function Thumb({ s, size }) {
 const TAPE = require('../../assets/playlist-tape.png');
 
 export default function Playlists({ u, openMenu, shelf, onPlay }) {
+  const { width: winW } = useWindowDimensions();
+  const tapeW = Math.round(Math.min(520, winW - 48) * 0.575); // the cassette itself is about half the column (the rest is its shadow)
   const t = useT();
   const insets = useSafeAreaInsets();
   const [lists, setLists] = useState(null);
@@ -54,7 +56,7 @@ export default function Playlists({ u, openMenu, shelf, onPlay }) {
           {!pl ? (
             <>
               {/* Jörg's felt cassette, centred, about half the column wide (its soft shadow is part of the picture) */}
-              <Image source={TAPE} style={{ width: '57.5%', aspectRatio: 920 / 675, alignSelf: 'center', marginBottom: 6 }} resizeMode="contain" accessibilityIgnoresInvertColors />
+              <Image source={TAPE} style={{ width: tapeW, height: tapeW * 675 / 920, alignSelf: 'center', marginBottom: 6 }} resizeMode="contain" accessibilityIgnoresInvertColors />
               <Text style={styles.p}>{t('Line up books to be read one after another, in order or shuffled.')}</Text>
               {lists.map((p) => {
                 const bs = books(p);
@@ -63,7 +65,7 @@ export default function Playlists({ u, openMenu, shelf, onPlay }) {
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
                       <View style={{ flex: 1, minWidth: 0 }}>
                         <Text numberOfLines={1} style={styles.cardTitle}>{nameOf(p)}</Text>
-                        <Text style={styles.small}>{bs.length === 1 ? t('1 book') : t('{n} books', { n: bs.length })}{p.shuffle ? ` · ${t('Shuffle')}` : ''}{p.listen ? ` · ${t('Listen only')}` : ''}</Text>
+                        <Text style={styles.small}>{bs.length === 1 ? t('1 book') : t('{n} books', { n: bs.length })}{p.shuffle ? ` · ${t('Shuffle')}` : ''}{p.listen ? ` · ${t('Listen only')}` : ''}{p.loop ? ` · ${t('Loop')}` : ''}</Text>
                       </View>
                       <Pressable onPress={() => { setEdit(p.id); setAdding(false); }} hitSlop={8} accessibilityRole="button"><Text style={styles.link}>{t('Change')}</Text></Pressable>
                     </View>
@@ -75,13 +77,17 @@ export default function Playlists({ u, openMenu, shelf, onPlay }) {
                     ) : null}
                     <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
                       <Pressable disabled={!bs.length} onPress={() => onPlay(p)} style={[styles.pill, { backgroundColor: colors.green }, !bs.length && { opacity: 0.4 }]} accessibilityRole="button">
-                        <Text style={styles.pillText}>▶  {t('Play')}</Text>
+                        <Text style={styles.pillText}>{t('Play')}</Text>
                       </Pressable>
                       <Pressable onPress={() => set(p.id, { listen: !p.listen })} style={[styles.chip, p.listen && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.listen }}>
                         <Text style={[styles.chipText, p.listen && { color: colors.white }]}>{t('Listen only')}</Text>
                       </Pressable>
                       <Pressable onPress={() => set(p.id, { shuffle: !p.shuffle })} style={[styles.chip, p.shuffle && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.shuffle }}>
                         <Text style={[styles.chipText, p.shuffle && { color: colors.white }]}>{p.shuffle ? t('Shuffle') : t('In order')}</Text>
+                      </Pressable>
+                      {/* Loop: after the last book it starts again from the first */}
+                      <Pressable onPress={() => set(p.id, { loop: !p.loop })} style={[styles.chip, p.loop && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.loop }}>
+                        <Text style={[styles.chipText, p.loop && { color: colors.white }]}>{t('Loop')}</Text>
                       </Pressable>
                     </View>
                   </View>

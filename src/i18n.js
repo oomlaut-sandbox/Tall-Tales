@@ -267,6 +267,7 @@ const T = {
   'Bedtime': { de: 'Schlafenszeit', fr: 'Au lit', es: 'Hora de dormir', ja: 'おやすみ' },
   '1 book': { de: '1 Buch', fr: '1 livre', es: '1 libro', ja: '1さつ' },
   '{n} books': { de: '{n} Bücher', fr: '{n} livres', es: '{n} libros', ja: '{n}さつ' },
+  'Loop': { de: 'Wiederholen', fr: 'En boucle', es: 'Repetir', ja: 'くりかえし' },
   'Shuffle': { de: 'Gemischt', fr: 'Au hasard', es: 'Al azar', ja: 'シャッフル' },
   'In order': { de: 'Der Reihe nach', fr: 'Dans l’ordre', es: 'En orden', ja: 'じゅんばん' },
   'Change': { de: 'Ändern', fr: 'Modifier', es: 'Cambiar', ja: 'かえる' },
