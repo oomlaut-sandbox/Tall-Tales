@@ -16,9 +16,7 @@ export const DEFAULT_CONTROLS = {
   childAge: null,   // the child's age: books rated for older children are hidden (null: show every book)
   profiles: true,   // the child may switch to another child's profile (Start page → Profiles)
   clock: false,     // the nightlight (Listen Only) shows the time
-  alarm: false,     // the nightlight wakes the child: at alarmTime the sun rises and a gentle sound plays
-  alarmTime: '07:00',
-  alarmSound: 'forest-birds',
+  alarm: false,     // the nightlight shows the alarm time (set there) and wakes the child: the sun rises, a gentle sound plays
 };
 // settings that add something rather than limit the child (not counted as restricted)
 const EXTRAS = ['clock', 'alarm'];

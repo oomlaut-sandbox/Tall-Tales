@@ -785,7 +785,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       ) : null}
       {/* Listen Only: the nightlight (the book almost hidden, a soft breathing sun, brightness, a lock) */}
       {listen ? (
-        <Nightlight title={story.title} brightness={prefs.nightlight ?? 0.7} onBrightness={(v) => setPrefs((p) => ({ ...p, nightlight: Math.round(v * 100) / 100 }))}
+        <Nightlight title={story.title} eclipse={prefs.eclipse ?? 0} onEclipse={(v) => setPrefs((p) => ({ ...p, eclipse: Math.round(v * 100) / 100 }))}
+          alarmTime={prefs.alarmTime || '07:00'} alarmSound={prefs.alarmSound || 'forest-birds'} onAlarm={(patch) => setPrefs((p) => ({ ...p, ...patch }))}
           wide={wide} end={!!(pages[idx] && pages[idx].end)}
           area={wide ? { left: 0, top: 0, width: winW - BL.rightW, height: winH } : { left: 0, top: 0, width: winW, height: winH - barH }} />
       ) : null}

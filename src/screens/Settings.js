@@ -12,7 +12,6 @@ import { DESK_FELT, DESK_BG, IS_TABLET } from '../look';
 const BAND_FELT = require('../../assets/band-settings.jpg'); // Jörg's grey stitched felt banner
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import { LANGS, useT } from '../i18n';
-import { addMin, fmtTime } from '../clock';
 import { lockedControls, quickSafeControls, DEFAULT_CONTROLS } from '../controls';
 import { usePurchases } from '../purchases';
 
@@ -43,7 +42,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
   const set = (patch) => setControls({ ...controls, ...patch });
   // (the child's age is its own setting: Lock and Unlock everything keep it)
   // the nightlight's clock and alarm are kept whatever preset is chosen (and don't count when comparing)
-  const NIGHT = ['clock', 'alarm', 'alarmTime', 'alarmSound'];
+  const NIGHT = ['clock', 'alarm'];
   const night = Object.fromEntries(NIGHT.map((k) => [k, controls[k] ?? DEFAULT_CONTROLS[k]]));
   const same = (a, b) => Object.keys(DEFAULT_CONTROLS).every((k) => k === 'childAge' || NIGHT.includes(k) || a[k] === b[k]);
   const allOn = same(controls, DEFAULT_CONTROLS);
@@ -117,25 +116,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
             <Text style={styles.small}>{t('In Listen Only, the screen becomes a soft nightlight. It can also show the time and wake your child gently.')}</Text>
             <Toggle label={t('Show a clock')} value={!!controls.clock} onChange={(v) => set({ clock: v })} />
             <Toggle label={t('Wake-up alarm')} value={!!controls.alarm} onChange={(v) => set({ alarm: v })} />
-            {controls.alarm ? (
-              <>
-                {/* the wake-up time: tap the arrows (hours, and minutes in fives) */}
-                <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
-                  <Choice label={'−1 h'} on={false} onPress={() => set({ alarmTime: addMin(controls.alarmTime, -60) })} />
-                  <Choice label={'−5'} on={false} onPress={() => set({ alarmTime: addMin(controls.alarmTime, -5) })} />
-                  <Text style={styles.alarmTime}>{fmtTime(controls.alarmTime || '07:00')}</Text>
-                  <Choice label={'+5'} on={false} onPress={() => set({ alarmTime: addMin(controls.alarmTime, 5) })} />
-                  <Choice label={'+1 h'} on={false} onPress={() => set({ alarmTime: addMin(controls.alarmTime, 60) })} />
-                </View>
-                <Text style={[styles.cardTitle, { marginTop: 8 }]}>{t('Wake-up sound')}</Text>
-                <View style={styles.choices}>
-                  {[['forest-birds', 'Birds in the forest'], ['wind-chimes', 'Wind chimes'], ['music-box', 'Music box lullaby'], ['gentle-guitar', 'Gentle guitar']].map(([id, label]) => (
-                    <Choice key={id} label={t(label)} on={(controls.alarmSound || 'forest-birds') === id} onPress={() => set({ alarmSound: id })} />
-                  ))}
-                </View>
-                <Text style={styles.small}>{t('The alarm works while the nightlight is on: keep the app open in Listen Only, with the phone plugged in.')}</Text>
-              </>
-            ) : null}
+            {controls.alarm ? <Text style={styles.small}>{t('Set the time and how to wake up from the nightlight: tap the time in its bottom corner. The alarm works while the nightlight is on: keep the app open in Listen Only, with the phone plugged in.')}</Text> : null}
           </View>
           <View style={styles.card}>
             <Pressable onPress={() => setControls({ ...lockedControls(controls.playMode || mode, controls.childAge), ...night })} style={[styles.pill, { backgroundColor: colors.deepRed }]} accessibilityRole="button">
@@ -163,7 +144,6 @@ const styles = StyleSheet.create({
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 24, paddingBottom: 40, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 12 },
-  alarmTime: { fontFamily: fonts.ui, fontSize: 22, fontWeight: '300', color: colors.white, minWidth: 92, textAlign: 'center' },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14 },
   card: { backgroundColor: '#3a3a3a', borderRadius: 14, padding: 16, gap: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 3 },
   cardTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, color: colors.white },
