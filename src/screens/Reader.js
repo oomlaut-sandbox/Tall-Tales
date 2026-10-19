@@ -750,7 +750,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
                   <LockIcon size={u * 4.6} color="#9a9a9a" />
                 </Pressable>
                 <Pressable onPress={withTap(() => setAlarmOpen(true))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.small, { marginTop: u * 4 }]}>
-                    <AlarmClockIcon size={u * 4.8} color={prefs.alarmOn ? '#e0e0e0' : '#9a9a9a'} weight={Math.max(1.5, u * 0.42)} />
+                    <AlarmClockIcon size={u * 4.8} color={prefs.alarmOn ? '#e0e0e0' : '#9a9a9a'} />
                   </Pressable>
                 </>
               ) : null}
@@ -798,7 +798,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             <LockIcon size={u * 4.6} color="#9a9a9a" />
           </Pressable>
           <Pressable onPress={withTap(() => setAlarmOpen(true))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.small, { marginLeft: u * 4 }]}>
-              <AlarmClockIcon size={u * 4.8} color={prefs.alarmOn ? '#e0e0e0' : '#9a9a9a'} weight={Math.max(1.5, u * 0.42)} />
+              <AlarmClockIcon size={u * 4.8} color={prefs.alarmOn ? '#e0e0e0' : '#9a9a9a'} />
             </Pressable>
           </>
         ) : null}
