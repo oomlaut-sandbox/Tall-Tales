@@ -28,11 +28,9 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.col}>
           <View style={styles.hero} onLayout={(e) => setHeroW(e.nativeEvent.layout.width)}>{heroW ? <Image source={PICTURE} style={{ width: heroW, height: heroW * 3 / 4 }} resizeMode="cover" /> : null}</View>
-          <Text style={styles.lead}>{t('Many ideas for books you can make together: your photos and drawings, your words, your voice.')}</Text>
-          <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
-            {controls.create ? <Pressable onPress={onMake} style={[styles.pill, { backgroundColor: '#9fd0f0' }]} accessibilityRole="button"><Text style={[styles.pillText, { color: '#16324a' }]}>{t('Make a story')}</Text></Pressable> : null}
-            <Pressable onPress={onHelp} style={[styles.pill, { backgroundColor: '#5f5f5f' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Ideas and Support')}</Text></Pressable>
-          </View>
+          <Text style={styles.heading}>{t('Let’s create!')}</Text>
+          {/* plenty of room under the words before the first idea */}
+          <Text style={[styles.lead, { marginBottom: 22 }]}>{t('Here are some examples of books you can make together… {n} to be exact ;) Your photos and drawings, your words, your voice.', { n: IDEA_COUNT })}</Text>
           {IDEA_SECTIONS.map((sec) => (
             <View key={sec.title} style={{ gap: 10 }}>
               <Text style={styles.section}>{t(sec.title)}</Text>
@@ -65,6 +63,7 @@ const styles = StyleSheet.create({
   body: { padding: 24, paddingTop: 28, paddingBottom: 40, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 14 },
   hero: { width: '100%', aspectRatio: 4 / 3, borderRadius: 16, overflow: 'hidden', backgroundColor: '#3a3a3a' },
+  heading: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 26, color: colors.white, marginTop: 8, marginBottom: -4 },
   lead: { fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, color: colors.white },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 18 },
   intro: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#cfcfcf' },

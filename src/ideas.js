@@ -3,11 +3,11 @@
 // with the app (photos, drawings, your voice, the notebook).
 export const IDEA_SECTIONS = [
   { title: 'Big moments and changes', intro: 'A book makes a big change feel familiar before it happens, and something to come back to afterwards.', ideas: [
-    { title: 'A new baby is coming', text: 'Who the baby is, what babies do (sleep, cry, eat), and the special job of being a big sister or brother.', how: 'Photos of your child as a baby, the crib, the car seat. Record it in your voice so it can be read again and again.' },
     { title: 'We’re moving house', text: 'The old house, the new house, the boxes, the moving day, where the toys will go, the new bedroom.', how: 'Take photos of both houses and the new route. End with “Our home is wherever we are together.”' },
     { title: 'First day at school or daycare', text: 'The door, the cubby, the teacher’s name, what happens at lunch, and who picks them up at the end.', how: 'Ask the school for a few photos. Read it every evening the week before.' },
     { title: 'Going to the doctor or dentist', text: 'The waiting room, the chair that goes up and down, the light, the toothbrush prize.', how: 'Keep it calm and step by step: first, then, after that.' },
     { title: 'A stay in hospital', text: 'What will happen, who will be there, what the room looks like, and that you’ll be close by.', how: 'Ask the nurses which steps to show. Your recorded voice can be played when you can’t be there.' },
+    { title: 'A new baby is coming', text: 'Who the baby is, what babies do (sleep, cry, eat), and the special job of being a big sister or brother.', how: 'Photos of your child as a baby, the crib, the car seat. Record it in your voice so it can be read again and again.' },
     { title: 'Two homes', text: 'Mum’s house and Dad’s house, the calendar, the special things that travel between them.', how: 'Both parents can record pages, so the book has both voices.' },
     { title: 'Someone is away for a while', text: 'A parent travelling, working away or deployed: where they are, when they’ll be back, how you’ll talk.', how: 'Record it before they leave: their voice reads it every night.' },
     { title: 'Saying goodbye to a pet', text: 'The happy days, the favourite tricks, what happened, and how we remember them.', how: 'Their photos, a drawing by your child, gentle words.' },

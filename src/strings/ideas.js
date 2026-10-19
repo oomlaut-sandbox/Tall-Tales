@@ -783,4 +783,6 @@ export default {
     fr: 'Demandez à l’équipe soignante quelles étapes montrer.',
     es: 'Pregunta al equipo médico qué pasos mostrar.',
     ja: 'どの場面を見せるとよいか、いりょうチームに聞いてみましょう。' },
+  'Let’s create!': { de: 'Los geht’s!', fr: 'À vous de créer !', es: '¡A crear!', ja: 'つくってみよう！' },
+  'Here are some examples of books you can make together… {n} to be exact ;) Your photos and drawings, your words, your voice.': { de: 'Hier sind ein paar Beispiele für Bücher, die ihr zusammen machen könnt … genau gesagt {n} ;) Eure Fotos und Zeichnungen, eure Worte, eure Stimme.', fr: 'Voici quelques exemples de livres à faire ensemble… {n} pour être précis ;) Vos photos et dessins, vos mots, votre voix.', es: 'Aquí tienes algunos ejemplos de libros que podéis hacer juntos… {n}, para ser exactos ;) Vuestras fotos y dibujos, vuestras palabras, vuestra voz.', ja: 'いっしょに つくれる 本の アイデアを しょうかいします… ぜんぶで {n}こ ;) あなたの しゃしんや え、ことば、こえで。' },
 };
