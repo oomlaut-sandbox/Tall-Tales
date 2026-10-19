@@ -409,7 +409,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   style={{ position: 'absolute', left: side * 0.07, bottom: side * 0.07, flexDirection: 'row', alignItems: 'center', gap: side * 0.02 }}>
                   {/* a small grey plus, then the words */}
                   <Text style={{ fontFamily: fonts.ui, fontWeight: '300', fontSize: Math.max(18, Math.round(side * 0.07)), lineHeight: Math.max(18, Math.round(side * 0.07)) * 1.05, color: '#777' }}>+</Text>
-                  <Text numberOfLines={1} style={{ fontFamily: fonts.ui, fontSize: Math.max(12, Math.round(side * 0.04)), color: '#555', maxWidth: side * 0.56 }}>{tr('Add another image page')}</Text>
+                  <Text numberOfLines={2} style={{ fontFamily: fonts.ui, fontSize: Math.max(12, Math.round(side * 0.04)), lineHeight: Math.max(12, Math.round(side * 0.04)) * 1.25, color: '#555', maxWidth: side * 0.56, flexShrink: 1 }}>{tr('Add another image page')}{/* two lines when the words are long (never cut short with …) */}</Text>
                 </Pressable>
               ) : null}
             </>
