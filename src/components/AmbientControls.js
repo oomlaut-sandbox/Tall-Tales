@@ -7,7 +7,8 @@ import { Slider } from './Chrome';
 import { MUSIC, SLEEP_TIMES, SOUNDS, chooseAmbient, getAmbient, onAmbient, pauseAmbient, playAmbient, setAmbientPlayer, setAmbientRate, setAmbientVolume, setSleepTimer, stopAmbient } from '../ambient';
 import { useT } from '../i18n';
 import ParentGate from './ParentGate';
-import { pickMusic, removeMusic } from '../myMusic';
+import { removeMusic } from '../myMusic';
+import MyMusicSheet from './MyMusicSheet';
 
 const GUITAR = require('../../assets/music-guitar.png'); // the grey felt character with his cardboard guitar (at the bottom of the page)
 const PLAYER = require('../../assets/music-player-thumb.png'); // a small Audio Player (with its shadow drawn in); tap it to open the real one
@@ -25,6 +26,7 @@ export default function AmbientControls() {
   const [rate, setRate] = useState(null);
   // a grown-up adds the family's own music (behind the grown-ups' question); a long press on one takes it away again
   const [gate, setGate] = useState(null); // { reason, run }
+  const [sheet, setSheet] = useState(false);
   useEffect(() => onAmbient(setS), []);
   // tap one to choose it (it starts playing); tap it again to switch that one off. A sound and a piece of music can play together.
   // (tapping the one already chosen while it's paused plays it, instead of switching it off)
@@ -55,10 +57,13 @@ export default function AmbientControls() {
       <View style={styles.chips}>
         {MUSIC.map((x) => <Chip key={x.id} label={x.mine ? x.name : t(x.name)} on={s.music === x.id} onPress={() => pick('music', x.id)}
           onLongPress={x.mine ? () => setGate({ reason: t('Remove “{name}”', { name: x.name }), run: () => removeMusic(x.id) }) : undefined} />)}
-        <Chip label={'+ ' + t('Add your own music')} style={styles.addChip}
-          onPress={() => setGate({ reason: t('Add your own music'), run: async () => { const id = await pickMusic(); if (id) chooseAmbient('music', id); } })} />
       </View>
-      <Text style={styles.hint}>{t('Grown-ups can add music saved on the phone (in Files). Press and hold your own piece to remove it.')}</Text>
+      {/* the family's own music: upload a file or record one (behind the grown-ups' question), then name it */}
+      <Pressable onPress={() => setGate({ reason: t('Upload or record music'), run: () => setSheet(true) })} style={styles.uploadBtn} accessibilityRole="button">
+        <Text style={styles.openText}>{t('Upload or record music')}</Text>
+      </Pressable>
+      {MUSIC.some((x) => x.mine) ? <Text style={styles.hint}>{t('Press and hold your own music to remove it.')}</Text> : null}
+      <MyMusicSheet visible={sheet} onClose={() => setSheet(false)} />
       <ParentGate visible={!!gate} reason={gate ? gate.reason : ''} onPass={() => { const g = gate; setGate(null); if (g) setTimeout(g.run, 350); }} onCancel={() => setGate(null)} />
       <Text style={styles.group}>{t('Nature sounds')}</Text>
       <View style={styles.chips}>
@@ -86,7 +91,7 @@ export default function AmbientControls() {
 }
 
 const styles = StyleSheet.create({
-  addChip: { backgroundColor: 'transparent', borderWidth: 1, borderColor: '#8a8a8a', borderStyle: 'dashed' },
+  uploadBtn: { alignSelf: 'flex-start', backgroundColor: colors.green, height: 38, borderRadius: 19, paddingHorizontal: 16, alignItems: 'center', justifyContent: 'center', marginTop: 2 },
   hint: { color: '#8a8a8a', fontFamily: fonts.ui, fontSize: 12, marginTop: -2 },
   help: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22 },
   small: { color: '#a9a9a9', fontFamily: fonts.ui, fontSize: 13, lineHeight: 18 },

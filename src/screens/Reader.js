@@ -744,14 +744,14 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
                 </Pressable>
               ) : null}
               {listen ? (
+                <>
                 <Pressable ref={nlLockRef} onPress={lockNight} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.small, { marginTop: u * 4 }]}>
                   <LockIcon size={u * 4.6} color="#9a9a9a" />
                 </Pressable>
-                {listen ? (
-                  <Pressable onPress={() => setAlarmOpen(true)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.small, { marginTop: u * 4 }]}>
+                <Pressable onPress={() => setAlarmOpen(true)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.small, { marginTop: u * 4 }]}>
                     <AlarmClockIcon size={u * 4.8} color={prefs.alarmOn ? '#e0e0e0' : '#9a9a9a'} weight={Math.max(1.5, u * 0.42)} />
                   </Pressable>
-                ) : null}
+                </>
               ) : null}
             </View>
             <View style={{ alignItems: 'center' }}>
@@ -792,14 +792,14 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           </Pressable>
         ) : null}
         {listen ? (
+          <>
           <Pressable ref={nlLockRef} onPress={lockNight} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.small, { marginLeft: u * 4 }]}>
             <LockIcon size={u * 4.6} color="#9a9a9a" />
           </Pressable>
-          {listen ? (
-            <Pressable onPress={() => setAlarmOpen(true)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.small, { marginLeft: u * 4 }]}>
+          <Pressable onPress={() => setAlarmOpen(true)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.small, { marginLeft: u * 4 }]}>
               <AlarmClockIcon size={u * 4.8} color={prefs.alarmOn ? '#e0e0e0' : '#9a9a9a'} weight={Math.max(1.5, u * 0.42)} />
             </Pressable>
-          ) : null}
+          </>
         ) : null}
         {/* no page numbers in the reader (the store shows how long a book is) */}
         <View style={{ flex: 1 }} />

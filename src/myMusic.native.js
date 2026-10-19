@@ -1,6 +1,7 @@
-// The family's own music: a grown-up picks an audio file on the phone (from Files: an mp3, m4a, wav…), it is copied
-// into the app's own folder and joins the Music list (Music and Sounds, the Audio Player, the nightlight alarm).
-// Songs bought in Apple Music can't be used (they're protected); files saved in Files can.
+// The family's own music: a grown-up uploads an audio file from the phone (from Files: mp3, m4a, wav…) or records
+// one (a parent or grandparent singing a lullaby), names it, and it joins the Music list (Music and Sounds, the
+// Audio Player, the nightlight alarm). It is copied into the app's own folder. (Songs bought in Apple Music are
+// protected and can't be used; files saved in Files can.)
 import { Directory, File, Paths } from 'expo-file-system';
 import { loadJSON, saveJSON } from './storage';
 import { addTrack, removeTrack } from './ambient';
@@ -11,8 +12,10 @@ const track = (m) => ({ id: m.id, kind: 'music', name: m.name, mine: true, src: 
 let list = [];
 loadJSON('myMusic', []).then((l) => { list = Array.isArray(l) ? l : []; list.forEach((m) => addTrack(track(m))); }).catch(() => {});
 
-// pick a file and add it; resolves to its id (or null when nothing was picked)
-export async function pickMusic() {
+export const cleanName = (fname) => String(fname || '').replace(/\.[A-Za-z0-9]+$/, '').replace(/[_-]+/g, ' ').trim();
+
+// choose an audio file on the phone: { uri, name } (or null)
+export async function pickFile() {
   let r = null;
   try { r = await File.pickFileAsync(undefined, 'audio/*'); } catch (e) {
     try { r = await File.pickFileAsync(); } catch (e2) { return null; }
@@ -21,12 +24,17 @@ export async function pickMusic() {
   if (r && r.canceled) return null;
   if (r && r.result) r = Array.isArray(r.result) ? r.result[0] : r.result;
   if (!r) return null;
-  const src = r instanceof File ? r : new File(r.uri || r);
-  const fname = src.name || decodeURIComponent(String(src.uri).split('/').pop() || 'music.m4a');
-  const ext = (fname.match(/\.[A-Za-z0-9]+$/) || ['.m4a'])[0];
+  const f = r instanceof File ? r : new File(r.uri || r);
+  const name = f.name || decodeURIComponent(String(f.uri).split('/').pop() || '');
+  return { uri: f.uri, name };
+}
+
+// keep a file (picked or recorded) as a new piece of music with this name; resolves to its id
+export async function addMusic(uri, name, fname) {
+  const ext = (String(fname || uri).match(/\.[A-Za-z0-9]+$/) || ['.m4a'])[0];
   const id = `my-${Date.now()}`;
-  const m = { id, name: fname.replace(/\.[A-Za-z0-9]+$/, '').replace(/[_-]+/g, ' ').trim() || 'My music', file: id + ext };
-  try { src.copy(new File(folder(), m.file)); } catch (e) { return null; }
+  const m = { id, name: String(name || '').trim() || 'My music', file: id + ext };
+  try { new File(uri).copy(new File(folder(), m.file)); } catch (e) { return null; }
   list = [...list, m];
   saveJSON('myMusic', list);
   addTrack(track(m));
