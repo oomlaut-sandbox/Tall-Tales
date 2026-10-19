@@ -1,11 +1,13 @@
 // Playback Options → Music and sounds: pick a nature sound or a piece of gentle music to play the whole time
 // the app is open, how loud, a sleep timer, and whether the little tape player shows.
 import React, { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme';
 import { Slider } from './Chrome';
 import { MUSIC, SLEEP_TIMES, SOUNDS, chooseAmbient, getAmbient, onAmbient, pauseAmbient, playAmbient, setAmbientPlayer, setAmbientRate, setAmbientVolume, setSleepTimer, stopAmbient } from '../ambient';
 import { useT } from '../i18n';
+
+const GUITAR = require('../../assets/music-guitar.png'); // the grey felt character with his cardboard guitar
 
 const Chip = ({ label, on, onPress }) => (
   <Pressable onPress={onPress} style={[styles.chip, on && styles.chipOn]} accessibilityRole="button" accessibilityState={{ selected: on }}>
@@ -27,10 +29,16 @@ export default function AmbientControls() {
   };
   return (
     <View style={{ gap: 10 }}>
-      <Text style={styles.small}>{t('Relaxing sounds and gentle music that keep playing while you use the app. Lovely at bedtime.')}</Text>
-      <View style={styles.chips}>
-        <Chip label={s.playing ? t('Pause') : t('Play')} on={s.playing} onPress={s.playing ? pauseAmbient : playAmbient} />
-        <Chip label={t('Off')} on={!s.sound && !s.music} onPress={stopAmbient} />
+      {/* the words and Play / Off in a narrower column on the left, the guitar player beside them on the right */}
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
+        <View style={{ flex: 1, minWidth: 0, gap: 10 }}>
+          <Text style={styles.small}>{t('Relaxing sounds and gentle music that keep playing while you use the app. Lovely at bedtime.')}</Text>
+          <View style={styles.chips}>
+            <Chip label={s.playing ? t('Pause') : t('Play')} on={s.playing} onPress={s.playing ? pauseAmbient : playAmbient} />
+            <Chip label={t('Off')} on={!s.sound && !s.music} onPress={stopAmbient} />
+          </View>
+        </View>
+        <Image source={GUITAR} style={{ width: 112, height: 125, marginTop: 2 }} resizeMode="contain" accessibilityIgnoresInvertColors />
       </View>
       <Text style={styles.group}>{t('Music')}</Text>
       <View style={styles.chips}>

@@ -7,7 +7,7 @@ import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import { loadJSON, saveJSON } from './storage';
 
 export const TRACKS = [
-  { id: 'crickets', kind: 'sound', name: 'Crickets', src: require('../assets/ambient/crickets.mp3') },
+  // (crickets: taken out for now; its file stays in assets/ambient)
   { id: 'brook', kind: 'sound', name: 'Babbling brook', src: require('../assets/ambient/brook.mp3') },
   { id: 'forest-birds', kind: 'sound', name: 'Birds in the forest', src: require('../assets/ambient/forest-birds.mp3') },
   { id: 'rain', kind: 'sound', name: 'Soft rain', src: require('../assets/ambient/rain.mp3') },
@@ -38,7 +38,12 @@ export const getAmbient = () => state;
 export function onAmbient(fn) { listeners.add(fn); return () => listeners.delete(fn); }
 
 // the choices and volume come back next time, but nothing starts playing by itself
-loadJSON('ambient2', null).then((s) => { if (s) state = { ...state, ...s, playing: false }; listeners.forEach((fn) => fn(state)); }).catch(() => {});
+loadJSON('ambient2', null).then((s) => {
+  if (s) state = { ...state, ...s, playing: false };
+  // a choice that's no longer offered (like the crickets) is forgotten
+  if (state.sound && !TRACKS.some((x) => x.id === state.sound)) state.sound = null;
+  if (state.music && !TRACKS.some((x) => x.id === state.music)) state.music = null;
+  listeners.forEach((fn) => fn(state)); }).catch(() => {});
 
 // one player per channel
 const ch = { sound: { player: null, id: null, fade: null }, music: { player: null, id: null, fade: null } };
