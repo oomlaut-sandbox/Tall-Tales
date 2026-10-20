@@ -162,7 +162,7 @@ export function inkD(st, w) {
   const pts = smoothPts(st, w);
   if (!pts.length) return '';
   const n = pts.length;
-  if (n < 3 || Math.hypot(pts[n - 1][0] - pts[0][0], pts[n - 1][1] - pts[0][1]) < base * 0.6) return circleD(pts[0][0], pts[0][1], base * 1.05); // a dot
+  if (n < 3 || (!st.z && Math.hypot(pts[n - 1][0] - pts[0][0], pts[n - 1][1] - pts[0][1]) < base * 0.6)) return circleD(pts[0][0], pts[0][1], base * 1.05); // a dot
   // width at each point: slower is fuller (the distance between points stands for speed), and the ends taper
   const ws = [];
   let v = 0;
