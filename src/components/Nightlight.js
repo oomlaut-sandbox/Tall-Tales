@@ -13,7 +13,7 @@
 //   at the alarm time the moon moves away very slowly (sunrise), the chosen sound or music fades in very slowly, and a
 //   pill-shaped Snooze pops up.
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Image, ImageBackground, PanResponder, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, Image, PanResponder, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { fonts } from '../theme';
 import { LockIcon } from './Chrome';
 import ParentGate from './ParentGate';
@@ -181,6 +181,8 @@ const WAKE_GROUPS = [['forest-birds', 'wind-chimes', 'brook', 'waves'], ['gentle
 function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, wide, area }) {
   const t = useT();
   const [draft, setDraft] = useState(time);
+  const [popW, setPopW] = useState(0);
+  const [popH, setPopH] = useState(0);
   const fade = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (!visible) return;
@@ -199,7 +201,7 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
   const knobDeg = -150 + (at / Math.max(1, choices.length - 1)) * 300; // the knob's line turns a notch per choice
   return (
     <Animated.View style={[StyleSheet.absoluteFill, styles.scrim, { opacity: fade }]} onStartShouldSetResponder={() => true} onResponderRelease={close}>
-      <View style={[styles.popup, wide && { maxWidth: 640 }]} onStartShouldSetResponder={() => true}>
+      <View style={[styles.popup, wide && { maxWidth: 640 }]} onStartShouldSetResponder={() => true} onLayout={(e) => { setPopW(e.nativeEvent.layout.width); setPopH(e.nativeEvent.layout.height); }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch' }}>
           <Text style={styles.popTitle}>{t('Alarm')}</Text>
           <Pressable onPress={withTap(() => onOn(!on))} hitSlop={10} accessibilityRole="switch" accessibilityState={{ checked: on }} accessibilityLabel={t('Wake-up alarm')} style={[styles.switch, on && styles.switchOn]}>
@@ -227,7 +229,9 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
           <Text style={styles.donePillText}>{on ? t('Done') : t('Set alarm')}</Text>
         </Pressable>
         {/* a fine grain over everything, for a tactile, made-of-something feel */}
-        <ImageBackground pointerEvents="none" source={GRAIN} resizeMode="repeat" style={[StyleSheet.absoluteFill, { borderRadius: 28, overflow: 'hidden' }]} imageStyle={{ opacity: 0.9 }} />
+        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 28, overflow: 'hidden', flexDirection: 'row', flexWrap: 'wrap', opacity: 0.5 }]}>
+          {Array.from({ length: Math.ceil((popW || 380) / 128) * Math.ceil((popH || 700) / 128) }, (_, k) => <Image key={k} source={GRAIN} style={{ width: 128, height: 128 }} />)}
+        </View>
       </View>
     </Animated.View>
   );
@@ -362,7 +366,7 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
   // the corona glows
   const e = Math.max(0, Math.min(1, eclipse));
   const moonD = S * 0.31;
-  const moonX = -(1 - e) * S * 0.42;
+  const moonX = -(1 - e) * (area.width / 2 + moonD); // starts off screen on the left, the same way the slider goes
   const sunOpacity = 1 - 0.9 * Math.pow(e, 1.4);
   const coronaOpacity = Math.max(0, Math.min(1, (e - 0.82) / 0.18));
   const faceColor = e > 0.6 ? 'rgba(244,226,207,0.7)' : 'rgba(0,0,0,0.62)';
@@ -373,7 +377,7 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
         <Image source={SUN} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
       </Animated.View>
       {coronaOpacity > 0 ? <Image source={CORONA} style={{ position: 'absolute', width: S, height: S, opacity: coronaOpacity }} resizeMode="contain" /> : null}
-      <View style={{ position: 'absolute', width: moonD, height: moonD, borderRadius: moonD / 2, backgroundColor: '#050506', opacity: Math.min(1, e * 4), transform: [{ translateX: moonX }] }} />
+      <View style={{ position: 'absolute', width: moonD, height: moonD, borderRadius: moonD / 2, backgroundColor: '#050506', transform: [{ translateX: moonX }] }} />
       {showFace && controls.clock ? <View style={{ position: 'absolute' }}><ClockFace size={S * 0.5} now={now} color={faceColor} /></View> : null}
     </Animated.View>
   );
@@ -462,9 +466,9 @@ const styles = StyleSheet.create({
   wheelNum: { position: 'absolute', width: 30, textAlign: 'center', color: 'rgba(244,226,207,0.62)', fontFamily: fonts.ui, fontSize: 12, fontWeight: '400' },
   chip: { paddingHorizontal: 13, height: 34, borderRadius: 17, backgroundColor: BASE, alignItems: 'center', justifyContent: 'center', boxShadow: '-3px -3px 6px rgba(255,255,255,0.05), 3px 3px 7px rgba(0,0,0,0.6)' },
   // the amber display: an old backlit LCD, its letters dark with an amber tint; and the small knob beside it
-  lcd: { width: 210, height: 58, borderRadius: 8, backgroundColor: AMBER, paddingHorizontal: 14, justifyContent: 'center', boxShadow: 'inset 2px 3px 6px rgba(0,0,0,0.45), inset -1px -1px 2px rgba(255,220,160,0.35), 0 0 14px rgba(200,134,42,0.18)' },
+  lcd: { width: 232, height: 58, borderRadius: 8, backgroundColor: AMBER, paddingHorizontal: 14, justifyContent: 'center', boxShadow: 'inset 2px 3px 6px rgba(0,0,0,0.45), inset -1px -1px 2px rgba(255,220,160,0.35), 0 0 14px rgba(200,134,42,0.18)' },
   lcdLabel: { color: 'rgba(44,26,5,0.6)', fontFamily: fonts.ui, fontSize: 9.5, fontWeight: '700', letterSpacing: 1.2, textTransform: 'uppercase' },
-  lcdText: { color: AMBER_INK, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', fontSize: 17, fontWeight: '600', marginTop: 2, letterSpacing: 0.3 },
+  lcdText: { color: AMBER_INK, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', fontSize: 15, fontWeight: '600', marginTop: 2, letterSpacing: 0 },
   smallKnob: { width: 46, height: 46, borderRadius: 23, backgroundColor: BASE, boxShadow: '-4px -4px 9px rgba(255,255,255,0.045), 5px 5px 11px rgba(0,0,0,0.8), inset 1px 1px 2px rgba(255,255,255,0.05), inset -2px -2px 3px rgba(0,0,0,0.4)' },
   chipOn: { backgroundColor: '#8f8578' }, // the chosen one: a dim warm grey, easy on the eyes at night
   chipText: { color: 'rgba(244,226,207,0.85)', fontFamily: fonts.ui, fontSize: 13 },
