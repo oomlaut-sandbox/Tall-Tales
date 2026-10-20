@@ -174,6 +174,7 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children, portr
   const insets = useSafeAreaInsets();
   // Sideways (wider than tall) the menu is wide and short: its items sit in two columns.
   const wide = winW > winH * 1.1;
+  const compact = !wide && winH < 760; // a small phone upright: a little tighter, so the whole menu fits without scrolling
   const rightW = inset || Math.round((Math.min(winW, 460) / 100) * 17 * 1.15);
   const wideTop = Math.round(sideMenuMiddle(winW) - HEAD_ARROW_WIDE); // the close arrow level with the icon's middle stripe
   const maxHeight = wide ? winH - wideTop - 34 : Math.max(240, winH - (bottom || 0) - Math.max(insets.top, 44) - 10) /* tall enough for the whole menu, just under the camera bar */;
@@ -194,7 +195,7 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children, portr
             { maxHeight, transform: [wide ? { translateX: shift } : { translateY: shift }] }]}
         >
           <Felt />
-          <View style={[styles.panelHead, wide && { paddingTop: 14, paddingBottom: 12 }]}>
+          <View style={[styles.panelHead, wide && { paddingTop: 14, paddingBottom: 12 }, compact && { paddingTop: 16, paddingBottom: 12 }]}>
             <Text style={[styles.panelTitle, { flex: 1 }, wide && { fontSize: 20 }]}>{title}</Text>
             {/* Close: a small chevron pointing back at the menu bar it goes into (down when upright,
                 right when sideways). Tapping outside the menu still closes it too. */}
@@ -206,7 +207,7 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children, portr
             </Pressable>
           </View>
           {/* Only scrolls when it can't fit (e.g. sideways on a phone). */}
-          <ScrollView style={{ flexGrow: 0, flexShrink: 1, backgroundColor: colors.panel }} contentContainerStyle={[styles.panelList, wide && styles.panelCols]} bounces={false}>
+          <ScrollView style={{ flexGrow: 0, flexShrink: 1, backgroundColor: colors.panel }} contentContainerStyle={[styles.panelList, wide && styles.panelCols, compact && { gap: 10, paddingTop: 14, paddingBottom: 14 }]} bounces={false}>
             {wide ? flat(children).map((c, i) => <View key={i} style={{ width: colW }}>{c}</View>) : children}
           </ScrollView>
           <Stitch inset={6} />
