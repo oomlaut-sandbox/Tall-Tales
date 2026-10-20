@@ -22,6 +22,7 @@ import { useControls } from '../controls';
 import { fmtTime } from '../clock';
 import { TRACKS, setAmbientNight, chooseAmbient, fadeOutAmbient, setAmbientVolume, getAmbient, playAmbient } from '../ambient';
 import { useKeepAwake } from 'expo-keep-awake';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { thunk, tick, withTap } from '../haptics';
 
 const SUN = require('../../assets/nightlight-sun.png');
@@ -339,7 +340,11 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
   const left = sleepAt ? Math.max(1, Math.ceil(secs / 60)) : 0; // whole minutes left (agrees with the countdown)
 
   // sizes: most of the upper part of the screen (upright), or the left side (sideways)
-  const S = wide ? Math.min(area.width * 0.55, area.height * 0.78) : Math.min(area.width * 1.05, area.height * 0.58);
+  // upright, the black camera bar covers the top of the screen: everything starts below it
+  const insets = useSafeAreaInsets();
+  const topPad = wide ? 0 : Math.max(insets.top, 44) + 8;
+  const availH = area.height - topPad;
+  const S = wide ? Math.min(area.width * 0.55, area.height * 0.78) : Math.min(area.width * 1.05, availH * 0.58);
   const sliderW = Math.min(220, (wide ? area.width * 0.34 : area.width * 0.6));
   // the eclipse: the moon slides in from the left (the same way the slider goes); the sun dims; at the very end only
   // the corona glows
@@ -381,8 +386,8 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
       {/* locked: the whole screen, bars too, takes every touch */}
       {locked ? <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.55)', zIndex: 78 }]} onStartShouldSetResponder={() => true} /> : null}
       <Animated.View pointerEvents="box-none" style={[styles.abs, area, { zIndex: locked ? 79 : 40, opacity: appear }]}>
-        <View pointerEvents="box-none" style={{ flex: 1, flexDirection: wide ? 'row' : 'column', alignItems: 'center', justifyContent: 'center', gap: wide ? 8 : 0 }}>
-          <View pointerEvents="none" style={{ marginTop: wide ? 0 : -area.height * 0.08, alignItems: 'center' }}>
+        <View pointerEvents="box-none" style={{ flex: 1, paddingTop: topPad, flexDirection: wide ? 'row' : 'column', alignItems: 'center', justifyContent: 'center', gap: wide ? 8 : 0 }}>
+          <View pointerEvents="none" style={{ marginTop: wide ? 0 : -availH * 0.05, alignItems: 'center' }}>
             {/* the time, in fine letters above the sun */}
             <Text style={[styles.now, { marginBottom: -S * 0.08, zIndex: 1 }]}>{fmtTime(hm)}</Text>
             {sunBlock}
