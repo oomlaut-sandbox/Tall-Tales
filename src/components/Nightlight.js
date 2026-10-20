@@ -229,8 +229,10 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
           <Text style={styles.donePillText}>{on ? t('Done') : t('Set alarm')}</Text>
         </Pressable>
         {/* a fine grain over everything, for a tactile, made-of-something feel */}
-        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 28, overflow: 'hidden', flexDirection: 'row', flexWrap: 'wrap', opacity: 0.5 }]}>
-          {Array.from({ length: Math.ceil((popW || 380) / 128) * Math.ceil((popH || 700) / 128) }, (_, k) => <Image key={k} source={GRAIN} style={{ width: 128, height: 128 }} />)}
+        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 28, overflow: 'hidden', opacity: 0.42 }]}>
+          <View style={{ width: Math.ceil((popW || 380) / 128) * 128, flexDirection: 'row', flexWrap: 'wrap' }}>
+            {Array.from({ length: Math.ceil((popW || 380) / 128) * Math.ceil((popH || 700) / 128) }, (_, k) => <Image key={k} source={GRAIN} style={{ width: 128, height: 128 }} />)}
+          </View>
         </View>
       </View>
     </Animated.View>
