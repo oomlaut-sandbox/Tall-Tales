@@ -21,7 +21,7 @@ export const HELP = [
     'The menu button (three lines) in the bottom bar takes you anywhere in the app.',
   ] },
   { section: 'Getting started', title: 'Profiles for each child', text: [
-    'Each child can have their own profile, with their own notebook, badges, playlists and settings. Choose Profiles from the menu (or tap the name at the top of the start page) to add a child or switch to another.',
+    'Each child can have their own profile, with their own notebook, badges, playlists and settings. Grown-ups add and change them at the bottom of Settings and Profiles. A child can switch by tapping the name at the top of the start page.',
   ] },
   { section: 'Reading', title: 'Reading a book', text: [
     'Open My Library and tap a book. Its cover opens and the first page appears.',
@@ -115,7 +115,7 @@ export const HELP = [
     'Buying is for grown-ups: the app asks a grown-up question first, and payment goes through your Apple ID. Cancel the membership any time in your App Store account settings. On a new phone, use Restore Purchases on the membership screen.',
   ] },
   { section: 'Grown-ups', title: 'Settings and parental controls', text: [
-    'Settings is the last item in the menu. It always asks the grown-up question first.',
+    'Settings and Profiles is the last item in the menu. It always asks the grown-up question first.',
     'Language: choose English, Deutsch, Français, Español or 日本語 for the app. Members can also read books in a different language from the app’s. The languages are also listed at the top of the start page: tap one to switch.',
     'Parental controls: choose exactly what your child can see and do. Hide the Book Store, My Notebook, Create a Story or Ideas and Support; switch off recording, sharing and printing; keep the language fixed; and make every book play one way (for example, always Page by Page).',
     'Quick and Safe Kid is the recommended setup for a child reading alone: only My Library and My Notebook, every book read aloud a page at a time, and nothing to buy, share, print, record or change.',

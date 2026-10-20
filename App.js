@@ -315,7 +315,7 @@ function Root() {
         {screen === 'profiles' && <Profiles u={u} openMenu={openMenu} setControls={setControls} />}
         {screen === 'playlists' && <Playlists u={u} openMenu={openMenu} shelf={childShelf} onPlay={playPlaylist} />}
         {screen === 'settings' && <Settings u={u} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
-          controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} />}
+          controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} onProfiles={() => go('profiles')} />}
         {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} />}
         {screen === 'ideas' && <IdeaRoom u={u} openMenu={openMenu} onMake={() => openPublisher(null)} onHelp={() => go('help')} />}
         {screen === 'covertest' && <CoverTest u={u} openMenu={openMenu} />}
@@ -386,10 +386,9 @@ function Root() {
             {controls.create ? <Option glyph={<PlusIcon />} title={t('Create a Story')} sub={t('Make your own book')} onPress={() => openPublisher(null)} /> : null}
             {/* Help takes Profile's place (Profile is suspended for families; the store owner signs in from About: hold Skippy) */}
             {controls.help ? <Option glyph={<CircleIcon />} title={t('Ideas and Support')} sub={t('How everything works')} onPress={() => go('help')} /> : null}
-            {/* Profiles: who is reading (switch child, or a grown-up adds and changes them) */}
-            <Option glyph={<PersonIcon />} title={t('Profiles')} sub={t('Who is reading?')} onPress={() => go('profiles')} />
+            {/* (Profiles now live at the bottom of Settings and Profiles; children still switch from the start page) */}
             {/* Settings: always last, always behind the grown-up question */}
-            <Option glyph={<GearIcon size={MENU_ICON} />} title={t('Settings')} sub={t('Language and parental controls')} onPress={() => { setDrawer(false); setSettingsGate(true); }} />
+            <Option glyph={<GearIcon size={MENU_ICON} />} title={t('Settings and Profiles')} sub={t('Language, parental controls and profiles')} onPress={() => { setDrawer(false); setSettingsGate(true); }} />
             {/* (About is reached from Help) */}
             <View style={{ height: 14 }} />
           </Panel>

@@ -36,7 +36,7 @@ function Toggle({ label, value, onChange }) {
   );
 }
 
-export default function Settings({ u, openMenu, lang, setLang, bookLang, setBookLang, controls, setControls, mode, onDone, onJoin }) {
+export default function Settings({ u, openMenu, lang, setLang, bookLang, setBookLang, controls, setControls, mode, onDone, onJoin, onProfiles }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const [hap, setHap] = useState(hapticsOn());
@@ -54,7 +54,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
-        <Text style={styles.title}>{t('Settings')}</Text>
+        <Text style={styles.title}>{t('Settings and Profiles')}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.col}>
@@ -136,6 +136,14 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
           <Text style={styles.section}>{t('Haptic feedback')}</Text>
           <View style={styles.card}>
             <Toggle label={t('Feel a soft click on dials, knobs and buttons')} value={hap} onChange={setHapticsOn} />
+          </View>
+          {/* Profiles: one for each child (their own notebook, badges, playlists and settings) */}
+          <Text style={styles.section}>{t('Profiles')}</Text>
+          <View style={styles.card}>
+            <Text style={styles.small}>{t('Each child can have their own profile, with their own notebook, badges, playlists and settings.')}</Text>
+            <Pressable onPress={onProfiles} style={[styles.pill, { backgroundColor: '#5f5f5f' }]} accessibilityRole="button">
+              <Text style={styles.pillText}>{t('Manage profiles')}</Text>
+            </Pressable>
           </View>
           <Pressable onPress={onDone} style={[styles.pill, { alignSelf: 'flex-end', backgroundColor: colors.green, marginTop: 8 }]} accessibilityRole="button">
             <Text style={styles.pillText}>{t('Done')}</Text>
