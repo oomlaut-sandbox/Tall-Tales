@@ -25,7 +25,7 @@ const TILE = { 2: 47, 3: 31, 4: 22.5 };
 const tileWidth = (w) => `${TILE[COLS(w)]}%`;
 const gridGap = (w) => { const n = COLS(w); return `${(100 - n * TILE[n]) / (n - 1)}%`; };
 
-function Tile({ u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
+function Tile({ u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, option, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
   const t = useT();
   const { width: winW } = useWindowDimensions();
   const ear = u * 3;
@@ -55,7 +55,7 @@ function Tile({ u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyp
         ) : null}
       </View>
       </View>
-      {title ? <Text style={[styles.tileTitle, (plus || glyph) && styles.tileOption]}>{title}</Text> : null}{/* 'Create a story' is an app option, so it's in Helvetica */}
+      {title ? <Text style={[styles.tileTitle, (plus || glyph || option) && styles.tileOption]}>{title}</Text> : null}{/* 'Create a story' is an app option, so it's in Helvetica */}
       {sub ? <Text style={styles.tileSub}>{sub}</Text> : null}
     </Pressable>
   );
@@ -180,7 +180,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
         {!selecting ? <View style={{ width: '100%' }} /> : null}
         {!selecting && controls.create ? <Tile u={u} plus cover={CREATE_TILE} title={t('Create a story')} onPress={onCreate} /> : null}
         {/* Playlists (a picture of its own comes later) */}
-        {!selecting && onPlaylists ? <Tile u={u} cover={PLAYLISTS_TILE} glyph={<PlaylistIcon size={44} weight={4} />} title={t('Playlists')} onPress={onPlaylists} /> : null}
+        {!selecting && onPlaylists ? <Tile u={u} cover={PLAYLISTS_TILE} option title={t('Playlists')} onPress={onPlaylists} /> : null}
         {!selecting && removedCount ? (
           <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
             <Text style={styles.restore}>{t('Show removed books ({n})', { n: removedCount })}</Text>
