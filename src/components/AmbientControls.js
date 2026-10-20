@@ -102,7 +102,7 @@ export default function AmbientControls({ prefs, setPrefs }) {
       {/* sound effects: the page turn in books */}
       {prefs && setPrefs ? (
         <>
-          <Text style={styles.group}>{t('Sound effects')}</Text>
+          <Text style={styles.group}>{t('Sound effects')} ({t('page turns')})</Text>
           <View style={styles.chips}>
             <Chip label={t('On')} on={!!prefs.sound} onPress={() => { setPrefs((p) => ({ ...p, sound: true })); setEffects(true); playSound('swish'); }} />
             <Chip label={t('Off')} on={!prefs.sound} onPress={() => { setPrefs((p) => ({ ...p, sound: false })); setEffects(false); }} />

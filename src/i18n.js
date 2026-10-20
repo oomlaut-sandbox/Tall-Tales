@@ -306,6 +306,7 @@ const T = {
   'Large': { de: 'Groß', fr: 'Grand', es: 'Grande', ja: 'おおきい' },
   'Book font': { de: 'Schrift', fr: 'Police du livre', es: 'Letra del libro', ja: 'ほんの もじ' },
   'Sound effects': { de: 'Geräusche', fr: 'Effets sonores', es: 'Efectos de sonido', ja: 'こうかおん' },
+  'page turns': { de: 'Umblättern', fr: 'pages tournées', es: 'pasar página', ja: 'ページをめくる音' },
   'On': { de: 'An', fr: 'Activé', es: 'Sí', ja: 'オン' },
   'Print this book': { de: 'Dieses Buch drucken', fr: 'Imprimer ce livre', es: 'Imprimir este libro', ja: 'この ほんを いんさつ' },
   'Getting ready to print…': { de: 'Druck wird vorbereitet…', fr: 'Préparation de l’impression…', es: 'Preparando la impresión…', ja: 'いんさつの じゅんび…' },
