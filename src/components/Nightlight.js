@@ -193,23 +193,24 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
   if (!visible) return null;
   const size = Math.max(150, Math.min(200, wide ? area.height * 0.42 : area.width * 0.5));
   const name = (id) => { const tr = TRACKS.find((x) => x.id === id); return tr ? (tr.mine ? tr.name : t(tr.name)) : id; };
-  const close = () => { onTime(draft); onClose(); };
+  const close = () => onClose();
   // every way to wake up, in one ring: the nature sounds, the music, then the family's own
   const choices = [...WAKE_GROUPS[0], ...WAKE_GROUPS[1], ...TRACKS.filter((x) => x.mine).map((x) => x.id)];
   const at = Math.max(0, choices.indexOf(sound));
-  const step = (d) => onSound(choices[(at + d + choices.length) % choices.length]);
+  const step = (d) => { onSound(choices[(at + d + choices.length) % choices.length]); if (!on) onOn(true); }; // choosing a sound turns the alarm on too
   const knobDeg = -150 + (at / Math.max(1, choices.length - 1)) * 300; // the knob's line turns a notch per choice
   return (
     <Animated.View style={[StyleSheet.absoluteFill, styles.scrim, { opacity: fade }]} onStartShouldSetResponder={() => true} onResponderRelease={close}>
       <View style={[styles.popup, wide && { maxWidth: 640 }]} onStartShouldSetResponder={() => true} onLayout={(e) => { setPopW(e.nativeEvent.layout.width); setPopH(e.nativeEvent.layout.height); }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch' }}>
           <Text style={styles.popTitle}>{t('Alarm')}</Text>
+          <Text style={[styles.lcdLabel, { color: on ? '#bdb5aa' : '#6f6c68', marginRight: 10, fontSize: 11 }]}>{on ? t('On') : t('Off')}</Text>
           <Pressable onPress={withTap(() => onOn(!on))} hitSlop={10} accessibilityRole="switch" accessibilityState={{ checked: on }} accessibilityLabel={t('Wake-up alarm')} style={[styles.switch, on && styles.switchOn]}>
             <View style={[styles.knob, on && { backgroundColor: '#1b1b1d', transform: [{ translateX: 20 }] }]} />
           </Pressable>
         </View>
         <View style={{ flexDirection: wide ? 'row' : 'column', alignItems: 'center', gap: wide ? 28 : 0, marginTop: 8, opacity: on ? 1 : 0.5 }}>
-          <FingerWheel size={size} value={draft} onChange={setDraft} label={t('Alarm time')} />
+          <FingerWheel size={size} value={draft} onChange={(v) => { setDraft(v); onTime(v); if (!on) onOn(true); }} label={t('Alarm time')} />
           {/* how to wake up: one amber display and a small knob beside it (turn it, or tap the display, for the next) */}
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginVertical: wide ? 0 : 26 }}>
             <Pressable onPress={withTap(() => step(1), thunk)} style={styles.lcd} accessibilityRole="adjustable" accessibilityLabel={t('Wake up with')} accessibilityValue={{ text: name(sound) }}
@@ -225,9 +226,8 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
             </Pressable>
           </View>
         </View>
-        <Pressable onPress={withTap(() => { onTime(draft); if (!on) onOn(true); onClose(); })} hitSlop={10} style={styles.donePill} accessibilityRole="button">
-          <Text style={styles.donePillText}>{on ? t('Done') : t('Set alarm')}</Text>
-        </Pressable>
+        {/* no Done: everything is kept as you change it; tap outside (or the bar's alarm clock) to close */}
+        <Text style={[styles.note, { marginTop: wide ? 14 : 0, marginBottom: 2, opacity: 0.7 }]}>{on ? t('Alarm on · {time}', { time: fmtTime(draft) }) : t('Alarm off')}</Text>
         {/* a fine grain over everything, for a tactile, made-of-something feel */}
         <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 28, overflow: 'hidden', opacity: 0.42 }]}>
           <View style={{ width: Math.ceil((popW || 380) / 128) * 128, flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -360,7 +360,7 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
   // upright, the black camera bar covers the top of the screen: everything starts just below it (top down, so the
   // time can never be pushed up under the bar on a shorter phone)
   const insets = useSafeAreaInsets();
-  const topPad = wide ? 0 : Math.max(insets.top, 44) + 8;
+  const topPad = wide ? 0 : Math.max(insets.top, 44) + 8 + area.height * 0.06; // a little lower on the screen
   const availH = area.height - topPad;
   const S = wide ? Math.min(area.width * 0.55, area.height * 0.78) : Math.min(area.width * 1.05, availH * 0.54);
   const sliderW = Math.min(220, (wide ? area.width * 0.34 : area.width * 0.6));
@@ -407,7 +407,7 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
         <View pointerEvents="box-none" style={{ flex: 1, paddingTop: topPad, flexDirection: wide ? 'row' : 'column', alignItems: 'center', justifyContent: wide ? 'center' : 'flex-start', gap: wide ? 8 : 0 }}>
           <View pointerEvents="none" style={{ alignItems: 'center' }}>
             {/* the time, in fine letters above the sun */}
-            <Text style={[styles.now, { marginBottom: -S * 0.08, zIndex: 1 }]}>{fmtTime(hm)}</Text>
+            <Text style={[styles.now, { marginBottom: wide ? -S * 0.02 : S * 0.02, marginTop: wide ? 0 : -area.height * 0.05, zIndex: 1 }]}>{fmtTime(hm)}</Text>
             {sunBlock}
           </View>
           <View pointerEvents="box-none" style={{ marginTop: wide ? 0 : -S * 0.04, width: wide ? area.width * 0.38 : undefined, alignItems: 'center' }}>{info}</View>

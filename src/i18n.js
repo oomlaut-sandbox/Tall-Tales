@@ -487,6 +487,8 @@ const T = {
   'Light grey': { de: 'Lichtgrau', fr: 'Gris clair', es: 'Gris claro', ja: 'あかるい はいいろ' },
   'Grey': { de: 'Grau', fr: 'Gris', es: 'Gris', ja: 'はいいろ' },
   'Dark grey': { de: 'Dunkelgrau', fr: 'Gris foncé', es: 'Gris oscuro', ja: 'こい はいいろ' },
+  'Alarm on · {time}': { de: 'Wecker an · {time}', fr: 'Réveil activé · {time}', es: 'Alarma activada · {time}', ja: 'めざまし オン · {time}' },
+  'Alarm off': { de: 'Wecker aus', fr: 'Réveil désactivé', es: 'Alarma desactivada', ja: 'めざまし オフ' },
   'Good morning!': { de: 'Guten Morgen!', fr: 'Bonjour !', es: '¡Buenos días!', ja: 'おはよう！' },
   'Now playing': { de: 'Jetzt läuft', fr: 'En cours', es: 'Ahora suena', ja: 'いま よんでいる本' },
   'Wake up with': { de: 'Wecken mit', fr: 'Se réveiller avec', es: 'Despertar con', ja: 'めざめの おと' },
