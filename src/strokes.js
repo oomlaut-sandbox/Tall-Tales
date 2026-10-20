@@ -143,7 +143,7 @@ function smoothPts(st, w) {
   const p = st.p || [];
   let pts = [];
   for (let i = 0; i + 1 < p.length; i += 2) pts.push([p[i] * w, p[i + 1] * w]);
-  for (let k = 0; k < 2 && pts.length > 2; k++) {
+  for (let k = 0; k < (st.z ? 1 : 2) && pts.length > 2; k++) {
     const out = [pts[0]];
     for (let i = 0; i < pts.length - 1; i++) {
       const [ax, ay] = pts[i], [bx, by] = pts[i + 1];
@@ -170,9 +170,9 @@ export function inkD(st, w) {
   for (let i = 0; i < n; i++) {
     v = i < 2 ? step(1) : v * 0.82 + step(i) * 0.18;
     const f = clamp(1.28 - v / (base * 2.6 + 4), 0.45, 1.25);
-    const a = Math.min(1, 0.3 + 0.7 * (i / Math.min(6, n - 1)));
-    const b = Math.min(1, 0.18 + 0.82 * ((n - 1 - i) / Math.min(10, n - 1)));
-    ws.push(base * f * Math.min(a, b));
+    const a = st.z ? 1 : Math.min(1, 0.3 + 0.7 * (i / Math.min(6, n - 1)));
+    const b = st.z ? 1 : Math.min(1, 0.18 + 0.82 * ((n - 1 - i) / Math.min(10, n - 1)));
+    ws.push(base * (st.z ? 1 : f) * Math.min(a, b)); // (a shape: an even line all the way round)
   }
   const L = [], R = [];
   for (let i = 0; i < n; i++) {
@@ -218,4 +218,39 @@ export function layersFor(st, w) {
   }
   if (b === 'pencil') return [{ d: strokeD(st, w), width: Math.max(1, lw * 0.5), alpha: 0.82, grain: true }];
   return [{ d: inkD(st, w), fill: true, alpha: 1, blur: 0.3 }];
+}
+
+// ---- Shapes: drag on the page to draw one; it's kept as an ordinary closed stroke (so the brushes, the eraser
+// and the fill all work on it). z: 1 marks it closed (no tapered ends). ----
+export const SHAPES = [['circle', '○', 'Circle'], ['square', '□', 'Square'], ['triangle', '△', 'Triangle'], ['star', '☆', 'Star'], ['heart', '♡', 'Heart']];
+// the outline of a shape in the box from (x0, y0) to (x1, y1), as stroke points (dense, so corners stay crisp)
+export function shapePts(kind, x0, y0, x1, y1) {
+  const l = Math.min(x0, x1), r = Math.max(x0, x1), t = Math.min(y0, y1), b = Math.max(y0, y1);
+  const cx = (l + r) / 2, cy = (t + b) / 2, rx = (r - l) / 2, ry = (b - t) / 2;
+  const out = [];
+  const push = (x, y) => out.push(+x.toFixed(4), +y.toFixed(4));
+  const poly = (pts) => { // straight sides, with points along each side
+    for (let i = 0; i < pts.length; i++) {
+      const [ax, ay] = pts[i], [bx, by] = pts[(i + 1) % pts.length];
+      const n = Math.max(2, Math.ceil(Math.hypot(bx - ax, by - ay) / 0.006));
+      for (let k = 0; k < n; k++) push(ax + (bx - ax) * k / n, ay + (by - ay) * k / n);
+    }
+    push(pts[0][0], pts[0][1]);
+  };
+  if (kind === 'square') poly([[l, t], [r, t], [r, b], [l, b]]);
+  else if (kind === 'triangle') poly([[cx, t], [r, b], [l, b]]);
+  else if (kind === 'star') {
+    const pts = [];
+    for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, k = i % 2 ? 0.42 : 1; pts.push([cx + Math.cos(a) * rx * k, cy + Math.sin(a) * ry * k]); }
+    poly(pts);
+  } else if (kind === 'heart') {
+    for (let i = 0; i <= 96; i++) {
+      const a = (i / 96) * Math.PI * 2;
+      const hx = 16 * Math.sin(a) ** 3, hy = 13 * Math.cos(a) - 5 * Math.cos(2 * a) - 2 * Math.cos(3 * a) - Math.cos(4 * a);
+      push(cx + (hx / 17) * rx, cy - ((hy + 2.5) / 15) * ry);
+    }
+  } else { // circle (an ellipse in the box)
+    for (let i = 0; i <= 72; i++) { const a = (i / 72) * Math.PI * 2; push(cx + Math.cos(a) * rx, cy + Math.sin(a) * ry); }
+  }
+  return out;
 }

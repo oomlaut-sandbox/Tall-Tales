@@ -22,7 +22,7 @@ import ParentGate from '../components/ParentGate';
 import { StrokesView } from '../components/Strokes';
 import { EarArt } from '../components/Ear';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
-import { BRUSHES, PENS, SIZES, makeFill, near } from '../strokes';
+import { BRUSHES, PENS, SHAPES, SIZES, makeFill, near, shapePts } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
 import { STORIES } from '../story';
@@ -778,13 +778,15 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const [live, setLive] = useState(null);
   const [pen, setPen] = useState(PENS[0][0]);
   const [brush, setBrush] = useState('ink');
+  const [shape, setShape] = useState(null); // Shapes: drag on the page to draw a circle, square, triangle, star or heart
+  const [shapesOpen, setShapesOpen] = useState(false);
   const [size, setSize] = useState(SIZES[1][1]);
   const [erase, setErase] = useState(false);
   const [bucket, setBucket] = useState(false); // the paint bucket: a tap fills the shape with the colour
   const [area, setArea] = useState(null);
   const S = useRef({});
-  S.current = { strokes, pen, size, erase, bucket, tall, brush };
-  const toolsH = 250; // (the brushes take a row)
+  S.current = { strokes, pen, size, erase, bucket, tall, brush, shape };
+  const toolsH = 300; // (the brushes and the shapes take a row each)
   const W = !area ? 0 : wideScreen ? Math.max(120, Math.floor(Math.min(area.h, area.w - TOOLS_W - 28)))
     : Math.max(120, Math.floor(Math.min(winW - 2 * GAP, tall ? (area.h - toolsH) / 2 : area.h - toolsH)));
   const Wref = useRef(W);
@@ -807,6 +809,11 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
         if (f) setStrokes((s) => [...s, f]);
         return;
       }
+      if (S.current.shape) {
+        cur.current = { c: S.current.pen, s: S.current.size, b: S.current.brush, z: 1, k: S.current.shape, o: [x, y], p: shapePts(S.current.shape, x, y, x, y) };
+        setLive({ ...cur.current });
+        return;
+      }
       cur.current = { c: S.current.pen, s: S.current.size, b: S.current.brush, p: [+x.toFixed(4), +y.toFixed(4)] };
       setLive({ ...cur.current });
     },
@@ -816,6 +823,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       if (S.current.bucket) return;
       const c = cur.current;
       if (!c) return;
+      if (c.z) { c.p = shapePts(c.k, c.o[0], c.o[1], x, y); setLive({ ...c }); return; } // a shape grows with the drag
       const n = c.p.length;
       if ((c.p[n - 2] - x) ** 2 + (c.p[n - 1] - y) ** 2 < 0.004 ** 2) return;
       c.p.push(+x.toFixed(4), +y.toFixed(4));
@@ -824,6 +832,13 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     onPanResponderRelease: () => {
       const c = cur.current;
       cur.current = null; setLive(null);
+      if (c && c.z) { // a shape: kept only if it was dragged out to a size (the start point isn't needed any more)
+        const { o, k, ...keep } = c;
+        const p = keep.p; let w = 0;
+        for (let i = 2; i < p.length; i += 2) w = Math.max(w, Math.abs(p[i] - p[0]), Math.abs(p[i + 1] - p[1]));
+        if (w > 0.02) setStrokes((s) => [...s, keep]);
+        return;
+      }
       if (c) setStrokes((s) => [...s, c]);
     },
   })).current;
@@ -850,13 +865,26 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
           <View style={{ width: 5 + s * 280, height: 5 + s * 280, borderRadius: 20, backgroundColor: colors.white }} />
         </Pressable>
       ))}
-      <Pressable onPress={() => { setErase((x) => !x); setBucket(false); }} style={[styles.toolWide, erase && styles.toolOn]} accessibilityLabel={t('Eraser')}>
+      <Pressable onPress={() => { setErase((x) => !x); setBucket(false); setShape(null); }} style={[styles.toolWide, erase && styles.toolOn]} accessibilityLabel={t('Eraser')}>
         <Text style={styles.toolText}>{t('Eraser')}</Text>
       </Pressable>
       {/* Fill: tap inside a shape to fill it with the colour */}
-      <Pressable onPress={() => { setBucket((x) => !x); setErase(false); }} style={[styles.toolWide, bucket && styles.toolOn]} accessibilityLabel={t('Fill')}>
+      <Pressable onPress={() => { setBucket((x) => !x); setErase(false); setShape(null); }} style={[styles.toolWide, bucket && styles.toolOn]} accessibilityLabel={t('Fill')}>
         <Text style={styles.toolText}>{t('Fill')}</Text>
       </Pressable>
+    </View>
+  );
+  // Shapes: the button opens the five shapes beside it; pick one, then drag on the page (tap it again to draw freely)
+  const shapesEl = (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+      <Pressable onPress={() => { setShapesOpen((x) => !x); if (shapesOpen) setShape(null); }} style={[styles.toolWide, (shapesOpen || shape) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Shapes')}>
+        <Text style={styles.toolText}>{t('Shapes')}</Text>
+      </Pressable>
+      {shapesOpen ? SHAPES.map(([k, glyph, name]) => (
+        <Pressable key={k} onPress={() => { setShape((x) => (x === k ? null : k)); setErase(false); setBucket(false); }} style={[styles.tool, shape === k && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t(name)}>
+          <Text style={[styles.toolText, { fontSize: 20, lineHeight: 24 }]}>{glyph}</Text>
+        </Pressable>
+      )) : null}
     </View>
   );
   // the brushes: a brush pen (ink), soft watercolour, a fine pencil
@@ -900,6 +928,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
               </View>
               {brushesEl}
               {sizesEl}
+              {shapesEl}
             </View>
             {/* Undo and Clear, down at the bottom away from the drawing tools, with Done */}
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>{undoEl}{doneEl}</View>
@@ -921,6 +950,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
                 {swatches(W, PENS.length)}
                 {brushesEl}
                 {sizesEl}
+                {shapesEl}
               </View>
             </>
           ) : null}
