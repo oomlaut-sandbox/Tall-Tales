@@ -388,7 +388,7 @@ function Root() {
             {controls.help ? <Option glyph={<CircleIcon />} title={t('Ideas and Support')} sub={t('How everything works')} onPress={() => go('help')} /> : null}
             {/* (Profiles now live at the bottom of Settings and Profiles; children still switch from the start page) */}
             {/* Settings: always last, always behind the grown-up question */}
-            <Option glyph={<PersonIcon />} title={t('Settings')} sub={t('Language, parental controls and profiles')} onPress={() => { setDrawer(false); setSettingsGate(true); }} />
+            <Option glyph={<PersonIcon />} title={t('Settings')} sub={t('Language, parental and profiles')} onPress={() => { setDrawer(false); setSettingsGate(true); }} />
             {/* (About is reached from Help) */}
             <View style={{ height: 14 }} />
           </Panel>

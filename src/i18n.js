@@ -496,6 +496,7 @@ const T = {
   'Open playlists': { de: 'Playlists öffnen', fr: 'Ouvrir les listes de lecture', es: 'Abrir listas', ja: 'プレイリストを ひらく' },
   'Relaxing and gentle': { de: 'Entspannend und sanft', fr: 'Apaisant et doux', es: 'Relajante y suave', ja: 'ゆったり やさしく' },
   'Find and read your favorite books': { de: 'Finde und lies deine Lieblingsbücher', fr: 'Trouve et lis tes livres préférés', es: 'Encuentra y lee tus libros favoritos', ja: 'すきな本を さがしてよもう' },
+  'Language, parental and profiles': { de: 'Sprache, Eltern und Profile', fr: 'Langue, parents et profils', es: 'Idioma, padres y perfiles', ja: 'ことば、ほごしゃ、プロフィール' },
   'Good morning!': { de: 'Guten Morgen!', fr: 'Bonjour !', es: '¡Buenos días!', ja: 'おはよう！' },
   'Now playing': { de: 'Jetzt läuft', fr: 'En cours', es: 'Ahora suena', ja: 'いま よんでいる本' },
   'Wake up with': { de: 'Wecken mit', fr: 'Se réveiller avec', es: 'Despertar con', ja: 'めざめの おと' },
