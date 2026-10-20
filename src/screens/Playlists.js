@@ -144,8 +144,9 @@ export default function Playlists({ u, openMenu, shelf, onPlay }) {
                     <Pressable onPress={() => setAdding(true)} style={[styles.pill, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text style={styles.pillText}>+  {t('Add books')}</Text></Pressable>
                     <Pressable onPress={() => setEdit(null)} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Done')}</Text></Pressable>
                   </View>
-                  <Pressable onPress={() => { setLists((l) => l.filter((p) => p.id !== pl.id)); setEdit(null); }} accessibilityRole="button">
-                    <Text style={[styles.link, { color: '#ff9a8a' }]}>{t('Delete this playlist')}</Text>
+                  <Pressable onPress={() => { setLists((l) => l.filter((p) => p.id !== pl.id)); setEdit(null); }} accessibilityRole="button"
+                    style={{ alignSelf: 'flex-start', backgroundColor: colors.deepRed, height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', marginTop: 6 }}>
+                    <Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 }}>{t('Delete this playlist')}</Text>
                   </Pressable>
                 </>
               )}

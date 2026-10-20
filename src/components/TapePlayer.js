@@ -79,7 +79,7 @@ export default function TapePlayer({ onMenu }) {
   // the line on a knob's face: it turns around the face's middle (cx, cy)
   const mark = (cx, cy, v) => (
     <Animated.View pointerEvents="none" style={[at(cx - 70, cy - 70, 140, 140), turn(v)]}>
-      <View style={[styles.mark, { left: 64 * f, top: 4 * f, width: 12 * f, height: 40 * f }]} />
+      <View style={[styles.mark, { left: 64 * f, top: 4 * f, width: 12 * f, height: 40 * f }, s.night && { backgroundColor: '#e8dccb' }]} />
     </Animated.View>
   );
   // a window: the choice (or "Select …") in white, left-aligned and in the middle of the dark felt from top to bottom
@@ -108,13 +108,14 @@ export default function TapePlayer({ onMenu }) {
         <Pressable onPress={withTap(playAmbient)} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} accessibilityRole="button" accessibilityLabel={t('Play')} />
         <Pressable onPress={withTap(pauseAmbient)} style={at(1360, 562, 230, 250)} accessibilityRole="button" accessibilityLabel={t('Pause')} />
         {/* (the night felt's windows sit a little lower; its names start a little further in) */}
-        {windowText(s.night ? [308, 1092, 1042, 150] : [268, 1067, 1082, 150], name(s.sound) || t('Select sound'), !s.sound)}
-        {windowText(s.night ? [308, 1463, 1036, 150] : [268, 1437, 1076, 150], name(s.music) || t('Select music'), !s.music)}
+        {windowText(s.night ? [282, 1056, 1082, 172] : [268, 1067, 1082, 150], name(s.sound) || t('Select sound'), !s.sound)}
+        {windowText(s.night ? [276, 1427, 1082, 174] : [268, 1437, 1076, 150], name(s.music) || t('Select music'), !s.music)}
         {/* the knobs stay put; tap one to click to the next choice */}
         <Pressable onPress={withTap(() => stepAmbient('sound'), thunk)} style={at(1386, 1010, 250, 260)} accessibilityRole="button" accessibilityLabel={name(s.sound) || t('Select sound')} />
         <Pressable onPress={withTap(() => stepAmbient('music'), thunk)} style={at(1386, 1380, 250, 260)} accessibilityRole="button" accessibilityLabel={name(s.music) || t('Select music')} />
-        {mark(1506, 1127, k1)}
-        {mark(1506, 1500, k2)}
+        {/* the knobs' lines turn with each click (at night: on the brown felt's knobs, in cream) */}
+        {s.night ? mark(1512, 1145, k1) : mark(1506, 1127, k1)}
+        {s.night ? mark(1512, 1507, k2) : mark(1506, 1500, k2)}
         {/* the volume: the felt knob slides left (quieter) and right (louder) in the stitched slot */}
         <View {...volSlide.panHandlers} style={at(SLOT.x, SLOT.y, SLOT.w, SLOT.h)} accessibilityRole="adjustable" accessibilityLabel={t('Volume')}
           accessibilityValue={{ min: 0, max: 100, now: Math.round(vol * 100) }}
