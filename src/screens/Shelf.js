@@ -130,7 +130,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
   // the Audio Player tip: shown when My Library opens, until "Don't show this message again" is ticked
   const [tip, setTip] = useState(false);
   const [noMore, setNoMore] = useState(false);
-  useEffect(() => { loadJSON('tipAudioPlayer', null).then((v) => { if (!v) setTip(true); }); }, []);
+  // (the Audio Player tip is retired: the music note on the bar speaks for itself)
   const { width: tipW, height: tipH } = useWindowDimensions();
   const tipWide = tipW > tipH; // sideways: the bar runs down the right side
   const closeTip = () => { setTip(false); if (noMore) saveJSON('tipAudioPlayer', { hide: true }); };
