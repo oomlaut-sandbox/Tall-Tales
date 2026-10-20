@@ -12,9 +12,9 @@ export function pickFile() {
     } catch (e) { resolve(null); }
   });
 }
-export async function addMusic(uri, name) {
+export async function addMusic(uri, name, fname, kind = 'music') {
   const id = `my-${Date.now()}`;
-  addTrack({ id, kind: 'music', name: String(name || '').trim() || 'My music', mine: true, src: { uri } });
+  addTrack({ id, kind, name: String(name || '').trim() || (kind === 'sound' ? 'My sound' : 'My music'), mine: true, src: { uri } });
   return id;
 }
 export function removeMusic(id) { removeTrack(id); }

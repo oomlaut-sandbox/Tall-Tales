@@ -8,7 +8,7 @@ import { addTrack, removeTrack } from './ambient';
 
 const folder = () => { const d = new Directory(Paths.document, 'my-music'); try { d.create({ idempotent: true, intermediates: true }); } catch (e) {} return d; };
 // the file is found again by its name (the app's folder can move when the app is updated)
-const track = (m) => ({ id: m.id, kind: 'music', name: m.name, mine: true, src: { uri: new File(folder(), m.file).uri } });
+const track = (m) => ({ id: m.id, kind: m.kind || 'music', name: m.name, mine: true, src: { uri: new File(folder(), m.file).uri } });
 let list = [];
 loadJSON('myMusic', []).then((l) => { list = Array.isArray(l) ? l : []; list.forEach((m) => addTrack(track(m))); }).catch(() => {});
 
@@ -30,10 +30,10 @@ export async function pickFile() {
 }
 
 // keep a file (picked or recorded) as a new piece of music with this name; resolves to its id
-export async function addMusic(uri, name, fname) {
+export async function addMusic(uri, name, fname, kind = 'music') {
   const ext = (String(fname || uri).match(/\.[A-Za-z0-9]+$/) || ['.m4a'])[0];
   const id = `my-${Date.now()}`;
-  const m = { id, name: String(name || '').trim() || 'My music', file: id + ext };
+  const m = { id, kind, name: String(name || '').trim() || (kind === 'sound' ? 'My sound' : 'My music'), file: id + ext };
   try { new File(uri).copy(new File(folder(), m.file)); } catch (e) { return null; }
   list = [...list, m];
   saveJSON('myMusic', list);

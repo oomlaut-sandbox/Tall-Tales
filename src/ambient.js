@@ -41,7 +41,7 @@ export function onAmbient(fn) { listeners.add(fn); return () => listeners.delete
 loadJSON('ambient2', null).then((s) => {
   if (s) state = { ...state, ...s, playing: false };
   // a choice that's no longer offered is forgotten
-  if (state.sound && !TRACKS.some((x) => x.id === state.sound)) state.sound = null;
+  if (state.sound && !String(state.sound).startsWith('my-') && !TRACKS.some((x) => x.id === state.sound)) state.sound = null; // (the family's own sounds load a moment later)
   if (state.music && !String(state.music).startsWith('my-') && !TRACKS.some((x) => x.id === state.music)) state.music = null; // (the family's own music loads a moment later)
   listeners.forEach((fn) => fn(state)); }).catch(() => {});
 

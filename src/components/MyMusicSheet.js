@@ -12,7 +12,8 @@ import { chooseAmbient, holdAmbient } from '../ambient';
 const REC = { ...RecordingPresets.HIGH_QUALITY, numberOfChannels: 1 };
 const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
-export default function MyMusicSheet({ visible, onClose }) {
+export default function MyMusicSheet({ visible, onClose, kind = 'music' }) {
+  const isSound = kind === 'sound';
   const t = useT();
   const recorder = useAudioRecorder(REC);
   const [step, setStep] = useState('choose'); // choose → record → name
@@ -62,9 +63,9 @@ export default function MyMusicSheet({ visible, onClose }) {
   };
   const save = async () => {
     stopPreview();
-    const id = await addMusic(file.uri, name, file.name);
+    const id = await addMusic(file.uri, name, file.name, kind);
     if (!id) { setMsg(t('That music couldn’t be added. Try another file.')); return; }
-    chooseAmbient('music', id);
+    chooseAmbient(isSound ? 'sound' : 'music', id);
     onClose();
   };
   const close = async () => { stopPreview(); if (recording) await stopRec(); onClose(); };
@@ -78,10 +79,10 @@ export default function MyMusicSheet({ visible, onClose }) {
     <Modal visible={visible} transparent animationType="fade" onRequestClose={close}>
       <Pressable style={styles.scrim} onPress={close}>
         <Pressable style={styles.card} onPress={() => {}}>
-          <Text style={styles.title}>{t('Upload or record music')}</Text>
+          <Text style={styles.title}>{isSound ? t('Upload or record a sound') : t('Upload or record music')}</Text>
           {step === 'choose' ? (
             <>
-              <Text style={styles.small}>{t('Add a song from your phone, or record one yourself: a parent or grandparent singing a lullaby.')}</Text>
+              <Text style={styles.small}>{isSound ? t('Add a sound from your phone, or record one yourself: rain on your window, the sea, your cat purring.') : t('Add a song from your phone, or record one yourself: a parent or grandparent singing a lullaby.')}</Text>
               <View style={{ gap: 12, marginTop: 18 }}>
                 <Pill label={t('Upload')} onPress={upload} />
                 <Pill label={t('Record')} color={colors.deepRed} onPress={() => setStep('record')} />
@@ -94,11 +95,11 @@ export default function MyMusicSheet({ visible, onClose }) {
               <Pressable onPress={recording ? stopRec : startRec} style={styles.recBtn} accessibilityRole="button" accessibilityLabel={recording ? t('Stop') : t('Record')}>
                 <View style={recording ? styles.recStop : styles.recDot} />
               </Pressable>
-              <Text style={[styles.small, { marginTop: 10 }]}>{recording ? t('Recording… tap to stop') : file ? t('Listen, record again, or keep it') : t('Tap to start singing')}</Text>
+              <Text style={[styles.small, { marginTop: 10 }]}>{recording ? t('Recording… tap to stop') : file ? t('Listen, record again, or keep it') : isSound ? t('Tap to start recording') : t('Tap to start singing')}</Text>
               {file && !recording ? (
                 <View style={{ flexDirection: 'row', gap: 10, marginTop: 16 }}>
                   <Pill label={t('Listen')} color="#555" onPress={listen} />
-                  <Pill label={t('Keep it')} onPress={() => { stopPreview(); setName(t('Lullaby')); setStep('name'); }} />
+                  <Pill label={t('Keep it')} onPress={() => { stopPreview(); setName(isSound ? t('Our sound') : t('Lullaby')); setStep('name'); }} />
                 </View>
               ) : null}
             </View>
@@ -106,8 +107,8 @@ export default function MyMusicSheet({ visible, onClose }) {
           {step === 'name' ? (
             <View style={{ marginTop: 12 }}>
               <Text style={styles.label}>{t('Name')}</Text>
-              <TextInput value={name} onChangeText={setName} placeholder={t('Grandma’s lullaby')} placeholderTextColor="#777" style={styles.input} autoFocus maxLength={40} returnKeyType="done" onSubmitEditing={save} />
-              <View style={{ marginTop: 16 }}><Pill label={t('Add to Music')} onPress={save} disabled={!name.trim()} /></View>
+              <TextInput value={name} onChangeText={setName} placeholder={isSound ? t('Rain on our window') : t('Grandma’s lullaby')} placeholderTextColor="#777" style={styles.input} autoFocus maxLength={40} returnKeyType="done" onSubmitEditing={save} />
+              <View style={{ marginTop: 16 }}><Pill label={isSound ? t('Add to Sounds') : t('Add to Music')} onPress={save} disabled={!name.trim()} /></View>
             </View>
           ) : null}
           {msg ? <Text style={[styles.small, { color: '#e88', marginTop: 12 }]}>{msg}</Text> : null}
