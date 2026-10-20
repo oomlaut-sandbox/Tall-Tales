@@ -17,7 +17,7 @@ import { thunk, tick, withTap } from '../haptics';
 
 const BODY = require('../../assets/audio-player2.jpg'); // the whole player, in grey
 const PLAY_ON = require('../../assets/audio-play-on.png'); // the green Play button, laid over while playing
-const PLAY_ON_NIGHT = require('../../assets/audio-play-on-night.png'); // the same, cut cleanly out of its light grey surround for the dark felt
+const PLAY_ON_NIGHT = require('../../assets/audio-play-on-night.png'); // the green button from Jörg's night photo, cut out
 const THUMB = require('../../assets/audio-thumb2.png'); // the slider's felt knob (with its shadow drawn in)
 // at night (the nightlight is on): Jörg's dark brown felt version, with its loose threads around the edges (the black around them see-through),
 // and its own slider knob. The day player stays as it is.
@@ -27,6 +27,7 @@ const NIGHT_MX = 0.063, NIGHT_MY = 0.0428; // how far the night picture reaches 
 const IW = 1792, IH = 2400; // the picture's own units (Jörg's photo, in pixels)
 const R = 112; // its corners: the felt's own rounded corners (the photo's background there is filled with felt, then clipped)
 const PLAY = { x: 1052, y: 552, w: 260, h: 270 };
+const PLAY_NIGHT = { x: 1044, y: 544, w: 290, h: 302 }; // where the green button cut from Jörg's night photo sits on the brown felt
 // the size: about as wide as a phone allows, and never taller than the screen has room for
 const sizeFor = (winW, winH) => {
   const PW = Math.round(Math.min(340, winW - 48, (winH - 96) * IW / IH));
@@ -101,7 +102,7 @@ export default function TapePlayer({ onMenu }) {
         {s.night ? null : <Image source={BODY} style={{ width: PW, height: PH }} resizeMode="stretch" />}
         {/* Play turns green while something plays */}
         {/* the green felt Play button while playing, day and night alike */}
-        {playing ? <Image pointerEvents="none" source={s.night ? PLAY_ON_NIGHT : PLAY_ON} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} resizeMode="stretch" /> : null}
+        {playing ? <Image pointerEvents="none" source={s.night ? PLAY_ON_NIGHT : PLAY_ON} style={s.night ? at(PLAY_NIGHT.x, PLAY_NIGHT.y, PLAY_NIGHT.w, PLAY_NIGHT.h) : at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} resizeMode="stretch" /> : null}
         {/* at night (the nightlight is on) the felt is turned down to a dark grey */}
 
         {/* the felt line at the top right closes the player */}
@@ -109,14 +110,14 @@ export default function TapePlayer({ onMenu }) {
         <Pressable onPress={withTap(playAmbient)} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} accessibilityRole="button" accessibilityLabel={t('Play')} />
         <Pressable onPress={withTap(pauseAmbient)} style={at(1360, 562, 230, 250)} accessibilityRole="button" accessibilityLabel={t('Pause')} />
         {/* (the night felt's windows sit a little lower; its names start a little further in) */}
-        {windowText(s.night ? [282, 1070, 1082, 172] : [268, 1067, 1082, 150], name(s.sound) || t('Select sound'), !s.sound)}
-        {windowText(s.night ? [276, 1441, 1082, 174] : [268, 1437, 1076, 150], name(s.music) || t('Select music'), !s.music)}
+        {windowText(s.night ? [297, 1096, 1056, 149] : [268, 1067, 1082, 150], name(s.sound) || t('Select sound'), !s.sound)}
+        {windowText(s.night ? [293, 1465, 1048, 142] : [268, 1437, 1076, 150], name(s.music) || t('Select music'), !s.music)}
         {/* the knobs stay put; tap one to click to the next choice */}
         <Pressable onPress={withTap(() => stepAmbient('sound'), thunk)} style={at(1386, 1010, 250, 260)} accessibilityRole="button" accessibilityLabel={name(s.sound) || t('Select sound')} />
         <Pressable onPress={withTap(() => stepAmbient('music'), thunk)} style={at(1386, 1380, 250, 260)} accessibilityRole="button" accessibilityLabel={name(s.music) || t('Select music')} />
         {/* the knobs' lines turn with each click (at night: on the brown felt's knobs, in cream) */}
-        {s.night ? mark(1512, 1145, k1) : mark(1506, 1127, k1)}
-        {s.night ? mark(1512, 1507, k2) : mark(1506, 1500, k2)}
+        {s.night ? mark(1500, 1151, k1) : mark(1506, 1127, k1)}
+        {s.night ? mark(1500, 1510, k2) : mark(1506, 1500, k2)}
         {/* the volume: the felt knob slides left (quieter) and right (louder) in the stitched slot */}
         <View {...volSlide.panHandlers} style={at(SLOT.x, SLOT.y, SLOT.w, SLOT.h)} accessibilityRole="adjustable" accessibilityLabel={t('Volume')}
           accessibilityValue={{ min: 0, max: 100, now: Math.round(vol * 100) }}

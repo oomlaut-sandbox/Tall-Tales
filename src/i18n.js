@@ -298,6 +298,7 @@ const T = {
   'The voice reads the stories aloud and sounds out words in Learn to Read. Pages you recorded in your own voice still play in yours.': { de: 'Die Stimme liest die Geschichten vor und spricht beim Lesenlernen die Wörter. Seiten, die du selbst aufgenommen hast, hörst du weiter mit deiner Stimme.', fr: 'La voix lit les histoires et prononce les mots dans Apprendre à lire. Les pages que tu as enregistrées restent avec ta voix.', es: 'La voz lee los cuentos y pronuncia las palabras en Aprender a leer. Las páginas que grabaste siguen sonando con tu voz.', ja: 'こえが おはなしを よみ、「よみかたを まなぶ」で ことばを よみます。じぶんで ろくおんした ページは じぶんの こえの ままです。' },
   '‹ Back to Playback Options': { de: '‹ Zurück zu den Vorlese-Einstellungen', fr: '‹ Retour aux réglages de lecture', es: '‹ Volver a los ajustes de lectura', ja: '‹ よみあげのせっていに もどる' },
   'Playback speed': { de: 'Vorlesetempo', fr: 'Vitesse de lecture', es: 'Velocidad de lectura', ja: 'よむ はやさ' },
+  'Music playback speed': { en: 'Playback speed', de: 'Tempo', fr: 'Vitesse de lecture', es: 'Velocidad de lectura', ja: 'はやさ' }, // on Music and Sounds
   'Slower': { de: 'Langsamer', fr: 'Plus lent', es: 'Más lento', ja: 'ゆっくり' },
   'Faster': { de: 'Schneller', fr: 'Plus rapide', es: 'Más rápido', ja: 'はやく' },
   'Text size': { de: 'Textgröße', fr: 'Taille du texte', es: 'Tamaño del texto', ja: 'もじの おおきさ' },
@@ -566,7 +567,7 @@ Object.assign(T, READER_T, NOTEBOOK_T, HELP_T, IDEAS_T);
 
 export function translate(lang, s, vars) {
   const row = T[s];
-  let out = (row && lang !== 'en' && row[lang]) || s;
+  let out = (row && (lang !== 'en' ? row[lang] : row.en)) || s; // (a row may also give its own English words)
   if (vars) for (const k of Object.keys(vars)) out = out.split(`{${k}}`).join(String(vars[k]));
   return out;
 }

@@ -87,7 +87,7 @@ export default function AmbientControls({ prefs, setPrefs }) {
       <Text style={styles.group}>{t('Volume')}</Text>
       <Slider value={vol ?? s.volume} min={0.05} max={1} step={0.05} leftLabel={t('Quieter')} rightLabel={t('Louder')} showValue={false}
         onChange={(v) => { setVol(v); setAmbientVolume(v); }} onDone={(v) => { setVol(null); setAmbientVolume(v); }} />
-      <Text style={styles.group}>{t('Playback speed')}</Text>
+      <Text style={styles.group}>{t('Music playback speed')}</Text>
       <Slider value={rate ?? (s.rate || 1)} min={0.5} max={1} step={0.05} leftLabel={t('Slower')} rightLabel={t('As made')} showValue={false}
         onChange={(v) => { setRate(v); setAmbientRate(v); }} onDone={(v) => { setRate(null); setAmbientRate(v); }} />
       <Text style={styles.group}>{t('Sleep timer')}</Text>
