@@ -36,7 +36,7 @@ function Toggle({ label, value, onChange }) {
   );
 }
 
-export default function Settings({ u, openMenu, lang, setLang, bookLang, setBookLang, controls, setControls, mode, onDone, onJoin, onProfiles }) {
+export default function Settings({ u, openMenu, lang, setLang, bookLang, setBookLang, controls, setControls, mode, onDone, onJoin, onProfiles, onPlaylists }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const [hap, setHap] = useState(hapticsOn());
@@ -136,6 +136,14 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
           <Text style={styles.section}>{t('Haptic feedback')}</Text>
           <View style={styles.card}>
             <Toggle label={t('Feel a soft click on dials, knobs and buttons')} value={hap} onChange={setHapticsOn} />
+          </View>
+          {/* Playlists: books that play one after another (bedtime, a car ride…) */}
+          <Text style={styles.section}>{t('Playlists')}</Text>
+          <View style={styles.card}>
+            <Text style={styles.small}>{t('Books read one after another')}</Text>
+            <Pressable onPress={onPlaylists} style={[styles.pill, { backgroundColor: '#5f5f5f' }]} accessibilityRole="button">
+              <Text style={styles.pillText}>{t('Open playlists')}</Text>
+            </Pressable>
           </View>
           {/* Profiles: one for each child (their own notebook, badges, playlists and settings) */}
           <Text style={styles.section}>{t('Profiles')}</Text>

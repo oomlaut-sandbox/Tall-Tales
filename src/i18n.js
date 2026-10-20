@@ -493,6 +493,7 @@ const T = {
   'Language, parental controls and profiles': { de: 'Sprache, Kindersicherung und Profile', fr: 'Langue, contrôle parental et profils', es: 'Idioma, control parental y perfiles', ja: 'ことば、ほごしゃ せってい、プロフィール' },
   'Each child can have their own profile, with their own notebook, badges, playlists and settings.': { de: 'Jedes Kind kann ein eigenes Profil haben, mit eigenem Notizbuch, eigenen Abzeichen, Playlists und Einstellungen.', fr: 'Chaque enfant peut avoir son propre profil, avec son carnet, ses badges, ses listes de lecture et ses réglages.', es: 'Cada niño puede tener su propio perfil, con su cuaderno, sus insignias, sus listas y sus ajustes.', ja: 'こどもごとに プロフィールを つくれます。ノート、バッジ、プレイリスト、せっていも それぞれです。' },
   'Manage profiles': { de: 'Profile verwalten', fr: 'Gérer les profils', es: 'Gestionar perfiles', ja: 'プロフィールを かんり' },
+  'Open playlists': { de: 'Playlists öffnen', fr: 'Ouvrir les listes de lecture', es: 'Abrir listas', ja: 'プレイリストを ひらく' },
   'Good morning!': { de: 'Guten Morgen!', fr: 'Bonjour !', es: '¡Buenos días!', ja: 'おはよう！' },
   'Now playing': { de: 'Jetzt läuft', fr: 'En cours', es: 'Ahora suena', ja: 'いま よんでいる本' },
   'Wake up with': { de: 'Wecken mit', fr: 'Se réveiller avec', es: 'Despertar con', ja: 'めざめの おと' },
