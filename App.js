@@ -375,7 +375,7 @@ function Root() {
         {/* the main menu always slides in over everything else on screen (pop-ups, pages boxes, speech bubbles) */}
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
           <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
-            <Option glyph={<LibraryIcon size={MENU_ICON} />} title={t('My Library')} sub={t('View purchased stories')} onPress={() => go('library')} />
+            <Option glyph={<LibraryIcon size={MENU_ICON} />} title={t('My Library')} sub={t('Find and read your favorite books')} onPress={() => go('library')} />
             {controls.store ? <Option glyph={<StoreIcon />} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => go('store')} /> : null}
             {controls.playback && !controls.playMode ? <Option glyph={<PlayGlyph />} title={t('Playback Options')} sub={t('Reader controls')} onPress={() => {
               setDrawer(false);
