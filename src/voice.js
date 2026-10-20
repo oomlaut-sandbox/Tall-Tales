@@ -17,6 +17,18 @@ export function stopVoice() {
   player = null;
 }
 
+// fade the voice out quickly (about a third of a second), then stop it (pressing record)
+export function fadeStopVoice(ms = 350) {
+  const p = player, my = session;
+  if (!p) { stopVoice(); return; }
+  let k = 0; const steps = Math.max(1, Math.round(ms / 35));
+  const iv = setInterval(() => {
+    k += 1;
+    try { if (player === p && session === my) p.volume = Math.max(0, 1 - k / steps); } catch (e) {}
+    if (k >= steps) { clearInterval(iv); if (session === my) stopVoice(); }
+  }, 35);
+}
+
 export function pauseVoice() { try { player && player.pause(); } catch (e) {} }
 export function resumeVoice() { try { player && player.play(); } catch (e) {} }
 

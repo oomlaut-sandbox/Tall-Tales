@@ -56,7 +56,7 @@ const VOICE_RECORDING = {
 import { playSound, setEffects, setEffectsVolume, suspendSounds } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { shareInvite } from '../invite';
-import { audioModeChanged, pauseVoice, playClips, playVoice, resumeVoice, stopVoice } from '../voice';
+import { audioModeChanged, fadeStopVoice, pauseVoice, playClips, playVoice, resumeVoice, stopVoice } from '../voice';
 import * as WORDCLIPS from '../narration/words';
 const WORDS = WORDCLIPS.WORDS || {};
 const WORDS_LANG = WORDCLIPS.WORDS_LANG || {}; // (made by the next narration run)
@@ -206,6 +206,14 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   useEffect(() => { if (menuRequest && menuRequest !== lastMenuRequest.current) setPanel('play'); lastMenuRequest.current = menuRequest; }, [menuRequest]);
 
   /* ---------- reading ---------- */
+  // pressing record: the reading fades away quickly, and nothing starts reading until recording is over
+  const recordingSoon = useRef(false);
+  const hushForRecording = () => {
+    recordingSoon.current = true;
+    fadeStopVoice(350); stopSpeech();
+    usingVoice.current = false; clearTimeout(autoTimer.current); pendingRead.current = false;
+    setReading(false); setPaused(false); setHl(-1);
+  };
   const stopReading = useCallback(() => {
     stopSpeech();
     stopVoice();
@@ -239,6 +247,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   };
 
   const readPage = useCallback((pageIndex) => {
+    if (st.current.recording || recordingSoon.current) return; // never read aloud over a recording
     const p = st.current.pages[pageIndex];
     if (!p) { setReading(false); return; }
     // the last page: the narrator says "The End", softly and slowly (the same clip for every book),
@@ -326,11 +335,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   /* ---------- recording ---------- */
   const startRec = async () => {
     if (st.current.idx >= story.pages.length) return;
-    stopReading();
+    hushForRecording();
     setPanel(null);
     try {
       const perm = await AudioModule.requestRecordingPermissionsAsync();
-      if (!perm.granted) return toast(tr('Oomlaut Reader needs the microphone to record. You can allow it in Settings.'));
+      if (!perm.granted) { recordingSoon.current = false; return toast(tr('Oomlaut Reader needs the microphone to record. You can allow it in Settings.')); }
       await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
       audioModeChanged();
       await recorder.prepareToRecordAsync();
@@ -341,6 +350,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       if (!recAuto.current) toast(tr('Recording page {n}. Turn the page to keep going, or tap ● to stop.', { n: st.current.idx + 1 }));
       recAuto.current = false;
     } catch (e) {
+      recordingSoon.current = false;
       toast(tr('Recording couldn’t start. Try again.'));
     }
   };
@@ -374,6 +384,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       toast(tr('That recording couldn’t be saved.'));
     }
     suspendSounds(false);
+    recordingSoon.current = false;
   };
 
   const openRecList = async () => {
@@ -773,7 +784,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 {controls.recording ? (
                 <View>
                   {recording ? <RecTimer start={recStart.current} style={{ position: 'absolute', left: -20, right: -20, bottom: '100%', marginBottom: 16, alignItems: 'center' }} /> : null}
-                  <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
+                  <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} />
                 </View>
                 ) : null}
                 <PauseButton onPress={onPause} disabled={recording} />
@@ -823,7 +834,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 {controls.recording ? (
             <View>
               {recording ? <RecTimer start={recStart.current} style={{ position: 'absolute', right: '100%', marginRight: 14, top: 0, bottom: 0, justifyContent: 'center' }} /> : null}
-              <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (setRecView('main'), setPanel('rec')))} />
+              <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} />
             </View>
             ) : null}
             <PauseButton onPress={onPause} disabled={recording} />
@@ -928,7 +939,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         }} />
       <ParentGate visible={!!printGate} reason={tr('Printing opens your phone’s print options.')} onPass={() => doPrint(printGate)} onCancel={() => setPrintGate(null)} />
 
-      <Panel open={panel === 'rec'} side="right" title={tr('Recording Options')} {...panelPos} onClose={() => setPanel(null)}>
+      <Panel open={panel === 'rec'} side="right" title={tr('Recording Options')} {...panelPos} onClose={() => { setPanel(null); recordingSoon.current = false; }}>
         {recView === 'main' ? (
           <>
             <Option glyph={<DotIcon />} title={tr('Start Recording')} sub={tr('Read this story in your own voice, starting on page {n}', { n: Math.min(idx + 1, n) })} disabled={idx >= n} onPress={startRec} />
