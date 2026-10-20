@@ -85,7 +85,7 @@ export default function TapePlayer({ onMenu }) {
   // a window: the choice (or "Select …") in white, left-aligned and in the middle of the dark felt from top to bottom
   const windowText = (box, text, empty) => (
     <View pointerEvents="none" style={[at(...box), styles.window, { paddingHorizontal: 44 * f }]}>
-      <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.choice, { fontSize: 64 * f, lineHeight: 76 * f }, s.night && { color: '#0d0a08' }, empty && { opacity: 0.85 }]}>{text}</Text>
+      <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.choice, { fontSize: 64 * f, lineHeight: 76 * f }, s.night && { color: '#c9c3bb' }, empty && { opacity: 0.85 }]}>{text}</Text>
     </View>
   );
   return (

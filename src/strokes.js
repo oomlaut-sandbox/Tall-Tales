@@ -205,7 +205,7 @@ export function inkD(st, w) {
 //   where it crosses other colour; grain: a slightly rough, pencil-like edge; inner: the blur only inside the
 //   edge (a darker rim, like dried watercolour; drawn on the phone only)
 export function layersFor(st, w) {
-  if (st.f) return [{ d: fillD(st, w), fill: true, alpha: 0.94, blur: 0.5 }];
+  if (st.f) return [{ d: fillD(st, w), fill: true, alpha: 0.94 }];
   const lw = Math.max(1, (st.s || 0.01) * w);
   const b = st.b || 'ink';
   const light = /^#f{3,6}$/i.test(st.c || '') || /^#f1e8d8$/i.test(st.c || ''); // white or cream: lighter than the paper's shadows, so no multiply
@@ -220,7 +220,7 @@ export function layersFor(st, w) {
     ];
   }
   if (b === 'pencil') return [{ d: strokeD(st, w), width: Math.max(1, lw * 0.5), alpha: 0.82, grain: true }];
-  return [{ d: inkD(st, w), fill: true, alpha: 1, blur: 0.3 }];
+  return [{ d: inkD(st, w), fill: true, alpha: 1 }]; // (no blur: lighter to draw, so pages snapshot and turn smoothly)
 }
 
 // ---- Shapes: drag on the page to draw one; it's kept as an ordinary closed stroke (so the brushes, the eraser
