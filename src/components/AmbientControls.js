@@ -11,7 +11,6 @@ import { removeMusic } from '../myMusic';
 import MyMusicSheet from './MyMusicSheet';
 import { thunk, tap, withTap } from '../haptics';
 
-const GUITAR = require('../../assets/music-guitar.png'); // the grey felt character with his cardboard guitar (at the bottom of the page)
 const PLAYER = require('../../assets/music-player-thumb.png'); // a small Audio Player (with its shadow drawn in); tap it to open the real one
 
 const Chip = ({ label, on, onPress, onLongPress, style }) => (
@@ -99,8 +98,6 @@ export default function AmbientControls() {
         <Chip label={t('Show')} on={s.showPlayer} onPress={() => setAmbientPlayer(true)} />
         <Chip label={t('Hide')} on={!s.showPlayer} onPress={() => setAmbientPlayer(false)} />
       </View>
-      {/* Skippy with his guitar, at the very bottom, in the middle, with plenty of room around him */}
-      <Image source={GUITAR} style={{ width: 112, height: 125, alignSelf: 'center', marginTop: 48, marginBottom: 16 }} resizeMode="contain" accessibilityIgnoresInvertColors />
     </View>
   );
 }
