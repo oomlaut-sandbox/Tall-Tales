@@ -18,10 +18,10 @@ export function strokeD(st, w) {
   return d;
 }
 
-// crayon colours for the pens
+// the colours: an earthy palette (charcoal, deep teal, slate, sage, taupe, sand, ochre, rust, umber, cream)
 export const PENS = [
-  ['#1b1b1b', 'Black'], ['#c0392b', 'Red'], ['#e67e22', 'Orange'], ['#e5b81c', 'Yellow'],
-  ['#4f8a3a', 'Green'], ['#2e6fb5', 'Blue'], ['#8a4f9e', 'Purple'], ['#8b5a3c', 'Brown'], ['#ffffff', 'White'],
+  ['#1e2324', 'Charcoal'], ['#2f4a4c', 'Deep teal'], ['#5f7672', 'Slate'], ['#93a08f', 'Sage'], ['#8a7660', 'Taupe'],
+  ['#d2ab86', 'Sand'], ['#b98a3e', 'Ochre'], ['#9a4f36', 'Rust'], ['#4e3125', 'Umber'], ['#f1e8d8', 'Cream'],
 ];
 export const SIZES = [['thin', 0.007], ['medium', 0.015], ['thick', 0.032]]; // a sharp pencil, a crayon, a chunky crayon
 
@@ -205,7 +205,7 @@ export function layersFor(st, w) {
   if (st.f) return [{ d: fillD(st, w), fill: true, alpha: 0.94, blur: 0.5 }];
   const lw = Math.max(1, (st.s || 0.01) * w);
   const b = st.b || 'ink';
-  const light = /^#f{3,6}$/i.test(st.c || '');
+  const light = /^#f{3,6}$/i.test(st.c || '') || /^#f1e8d8$/i.test(st.c || ''); // white or cream: lighter than the paper's shadows, so no multiply
   if (b === 'water') {
     // a wash with a defined edge: the see-through body, the pigment gathering at its rim as it dries (an inner
     // glow on the phone), and a faint bloom where the water spread. Crossing strokes deepen (multiply).

@@ -891,18 +891,18 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
           <View style={{ width: TOOLS_W, justifyContent: 'space-between' }}>
             <Text style={styles.editorTitle}>{title}</Text>
             <View style={{ gap: 22 }}>
-              {/* all nine colours on one line, starting at the same left edge as the buttons below */}
-              <View style={{ flexDirection: 'row', gap: 4 }}>
+              {/* all the colours on one line, starting at the same left edge as the buttons below */}
+              <View style={{ flexDirection: 'row', gap: 3 }}>
                 {PENS.map(([hex, name]) => (
                   <Pressable key={hex} onPress={() => { setPen(hex); setErase(false); }} accessibilityLabel={t('{name} pen', { name: t(name) })} hitSlop={3}
-                    style={[styles.swatch, { width: 25, height: 25, borderRadius: 12.5, backgroundColor: hex }, !erase && pen === hex && styles.swatchOn]} />
+                    style={[styles.swatch, { width: 23, height: 23, borderRadius: 11.5, backgroundColor: hex }, !erase && pen === hex && styles.swatchOn]} />
                 ))}
               </View>
               {brushesEl}
               {sizesEl}
-              {undoEl}
             </View>
-            <View style={{ alignItems: 'flex-end' }}>{doneEl}</View>
+            {/* Undo and Clear, down at the bottom away from the drawing tools, with Done */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>{undoEl}{doneEl}</View>
           </View>
         </View>
       </View>
@@ -918,17 +918,16 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
             <>
               {paper}
               <View style={{ width: W, marginTop: 30, gap: 24 }}>{/* the tools line up with the page's left and right edges */}
-                {swatches(W)}
+                {swatches(W, PENS.length)}
                 {brushesEl}
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', rowGap: 12 }}>
-                  {sizesEl}
-                  {undoEl}
-                </View>
+                {sizesEl}
               </View>
             </>
           ) : null}
         </View>
-        <View style={{ width: winW - 2 * GAP, alignItems: 'flex-end' }}>
+        {/* Undo and Clear, down at the bottom away from the drawing tools, with Done */}
+        <View style={{ width: W || winW - 2 * GAP, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          {undoEl}
           {doneEl}
         </View>
       </View>
