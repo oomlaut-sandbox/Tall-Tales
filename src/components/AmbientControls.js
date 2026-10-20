@@ -14,7 +14,7 @@ import { thunk, tap, withTap } from '../haptics';
 const PLAYER = require('../../assets/music-player-thumb.png'); // a small Audio Player (with its shadow drawn in); tap it to open the real one
 
 const Chip = ({ label, on, onPress, onLongPress, style }) => (
-  <Pressable onPress={withTap(onPress)} onLongPress={onLongPress ? withTap(onLongPress, thunk) : undefined} style={[styles.chip, on && styles.chipOn, style]} accessibilityRole="button" accessibilityState={{ selected: on }}>
+  <Pressable onPress={withTap(onPress)} onLongPress={onLongPress ? withTap(onLongPress, thunk) : undefined} style={[styles.chip, style, on && styles.chipOn]} accessibilityRole="button" accessibilityState={{ selected: on }}>
     <Text style={[styles.chipText, on && { color: colors.white }]}>{label}</Text>
   </Pressable>
 );
