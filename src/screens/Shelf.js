@@ -89,6 +89,7 @@ function Band({ color, felt, dark, title, sub, action, onAction }) {
 // Your own stories are deleted for good; the built-in books are only removed from the shelf
 // and can be brought back with "Show removed books".
 // My Notebook's cover: the brown leather of the notebook on the start page
+const CREATE_TILE = require('../../assets/tile-create.jpg'); // Jörg's blue felt book on linen, behind the + of Create a story
 const TIP_CHAR = require('../../assets/tip-headphones.png'); // the grey felt character with headphones, in the Audio Player tip
 const NOTEBOOK_COVER = require('../../assets/leather-cover.jpg');
 
@@ -176,7 +177,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
         ))}
         {/* Create a story always starts its own row, below the books */}
         {!selecting ? <View style={{ width: '100%' }} /> : null}
-        {!selecting && controls.create ? <Tile u={u} plus title={t('Create a story')} onPress={onCreate} /> : null}
+        {!selecting && controls.create ? <Tile u={u} plus cover={CREATE_TILE} title={t('Create a story')} onPress={onCreate} /> : null}
         {/* Playlists (a picture of its own comes later) */}
         {!selecting && onPlaylists ? <Tile u={u} glyph={<PlaylistIcon size={44} weight={4} />} title={t('Playlists')} onPress={onPlaylists} /> : null}
         {!selecting && removedCount ? (
