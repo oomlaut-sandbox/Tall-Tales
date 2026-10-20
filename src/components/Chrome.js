@@ -1,5 +1,5 @@
 // Shared pieces of Jörg's design: black control bar, hamburger, dog-ear corner, slide-in panels.
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, ScrollView, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
@@ -507,17 +507,54 @@ export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLab
   );
 }
 
-// The speech bubble: a white rounded box in the middle of the screen (between the bars). Tap it to close.
+// The speech bubble: a white rounded box just above the bottom bar. Tap it to close.
+// Wherever a screen puts a <Toast>, the bubble itself is drawn by the one <BubbleHost> at the very top of the app,
+// so it is always on top of everything (menus, panels, the audio player), and it goes away by itself after 3 seconds.
+const BUBBLE_MS = 3000;
+let bubbleNow = null, bubbleSeq = 0;
+const bubbleSubs = new Set();
+const tellBubble = () => bubbleSubs.forEach((f) => f(bubbleNow));
+
 export function Toast({ message, area, onDismiss, center }) {
+  const dismiss = useRef(onDismiss);
+  dismiss.current = onDismiss;
+  const mine = useRef(null);
+  const areaKey = area ? JSON.stringify(area) : '';
+  useEffect(() => {
+    if (!message) return undefined;
+    const id = ++bubbleSeq;
+    mine.current = id;
+    bubbleNow = { id, message, area, center, onDismiss: () => dismiss.current && dismiss.current() };
+    tellBubble();
+    return () => { if (bubbleNow && bubbleNow.id === id) { bubbleNow = null; tellBubble(); } };
+  }, [message, areaKey, center]);
+  return null;
+}
+
+export function BubbleHost() {
   const tr = useT();
-  if (!message) return null;
+  const [b, setB] = useState(bubbleNow);
+  useEffect(() => { bubbleSubs.add(setB); setB(bubbleNow); return () => { bubbleSubs.delete(setB); }; }, []);
+  const close = () => {
+    const cur = bubbleNow;
+    if (!cur) return;
+    bubbleNow = null; tellBubble();
+    cur.onDismiss && cur.onDismiss();
+  };
+  // 3 seconds after each new bubble, it closes by itself (a tap closes it sooner)
+  useEffect(() => {
+    if (!b) return undefined;
+    const t = setTimeout(() => { if (bubbleNow && bubbleNow.id === b.id) close(); }, BUBBLE_MS);
+    return () => clearTimeout(t);
+  }, [b && b.id]);
+  if (!b || !b.message) return null;
+  const { message, area, center } = b;
   return (
-    <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, zIndex: 60, alignItems: 'center', justifyContent: center ? 'center' : 'flex-end', paddingBottom: center ? 0 : 14 }, area]}>
+    <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, zIndex: 260, elevation: 60, alignItems: 'center', justifyContent: center ? 'center' : 'flex-end', paddingBottom: center ? 0 : 14 }, area]}>
       {/* Every speech bubble pops up in the same place: just above the bottom bar, most of the screen wide,
           shaped like Jörg's bubble (rounded box, a small straight point at the bottom left), with a soft shadow.
-          (center: in the middle of the given area instead, e.g. the picture page while recording.)
-          Tap it to close it sooner. */}
-      <Pressable onPress={onDismiss} accessibilityRole="button" accessibilityHint={tr('Closes the message')} style={styles.bubbleWrap}>
+          (center: in the middle of the given area instead, e.g. the picture page while recording.) */}
+      <Pressable onPress={close} accessibilityRole="button" accessibilityHint={tr('Closes the message')} style={styles.bubbleWrap}>
         <View style={styles.bubble}>
           {/* a ● in the message is drawn in the record button's red */}
           <Text style={styles.toast}>{String(message).split('●').map((part, i) => (i ? [<Text key={i} style={{ color: colors.highlight }}>●</Text>, part] : part))}</Text>

@@ -38,7 +38,7 @@ import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
-import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast } from './src/components/Chrome';
+import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast, BubbleHost } from './src/components/Chrome';
 import { DESK_FELT, DeskFelt, Felt, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
 import Profiles from './src/screens/Profiles';
@@ -125,7 +125,7 @@ function Root() {
   const toast = useCallback((m) => {
     setMessage(m);
     clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setMessage(''), 5500); // a little longer; tap the bubble to close it sooner
+    toastTimer.current = setTimeout(() => setMessage(''), 3500); // the bubble itself closes after 3 seconds (or sooner with a tap)
   }, []);
   // a new reading badge: a little speech bubble (the badges are on the first page of My Notebook)
   useEffect(() => onNewBadge((fresh) => {
@@ -372,7 +372,7 @@ function Root() {
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 175 }]}>
           <PlaybackPanel open={playOpen && screen !== 'reader'} onClose={() => setPlayOpen(false)} onPlaylists={() => go('playlists')} prefs={prefs} setPrefs={setPrefs} toast={toast} bottom={drawerBottom} inset={drawerRight} />
         </View>
-        {/* the main menu always slides in over everything else on screen (pop-ups, pages boxes, speech bubbles) */}
+        {/* the main menu slides in over everything else on screen (pop-ups, pages boxes), except speech bubbles */}
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
           <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
             <Option glyph={<LibraryIcon size={MENU_ICON} />} title={t('My Library')} sub={t('Find and read your favorite books')} onPress={() => go('library')} />
@@ -396,6 +396,8 @@ function Root() {
         <View pointerEvents="none" style={sideways
           ? { position: 'absolute', left: 0, top: 0, bottom: 0, width: camBar, backgroundColor: colors.bar, zIndex: 200 }
           : { position: 'absolute', left: 0, right: 0, top: 0, height: camBar, backgroundColor: colors.bar, zIndex: 200 }}><Felt /></View>
+        {/* every speech bubble in the app is drawn here, on top of everything */}
+        <BubbleHost />
       </View>
       </ControlsContext.Provider>
       </LangContext.Provider>
