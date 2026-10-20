@@ -31,14 +31,14 @@ export const HELP = [
   ] },
   { section: 'Reading', title: 'Hearing the story read aloud', text: [
     'Tap the play button in the bottom bar and the narrator reads the page. Each word lights up as it’s spoken.',
-    'Open Playback Settings from the menu to choose how the book plays: Page by Page, the whole book, Learn to Read or Read Yourself.',
+    'Open Reading Options from the menu to choose how the book plays: Page by Page, the whole book, Learn to Read or Read Yourself.',
     'Under Voices you can choose Fatima or Henry. Tap a voice to hear a short sample.',
   ] },
   { section: 'Reading', title: 'Learn to Read', text: [
     'In Learn to Read mode, tap any word to hear it, sounded out one part at a time.',
   ] },
   { section: 'Reading', title: 'Text size, font and sound effects', text: [
-    'Playback Settings also has the size of the words, the book font, and sound effects (page turns and the cover) with a volume slider.',
+    'Reading Options also has the size of the words, the book font, and the page-turn sound with a volume slider.',
   ] },
   { section: 'Music and sounds', title: 'The Audio Player', text: [
     'Tap the music note on the black bar to open the Audio Player. It’s there while you read, in My Library and in the Book Store.',
@@ -54,7 +54,7 @@ export const HELP = [
     'Press and hold your own music to remove it.',
   ] },
   { section: 'Music and sounds', title: 'Playlists', text: [
-    'Open Playback Settings and choose Playlists to line up several books that play one after another. Turn on Loop to start again from the beginning, and share a playlist with family.',
+    'Open Reading Options and choose Playlists to line up several books that play one after another. Turn on Loop to start again from the beginning, and share a playlist with family.',
   ] },
   { section: 'Bedtime', title: 'Listen Only and the nightlight', text: [
     'Tap the moon on the black bar while a book is open. The book reads by itself and the screen slowly fades to a soft, glowing sunset sun.',

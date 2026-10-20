@@ -19,7 +19,7 @@ export default function PlaybackPanel({ open, onClose, prefs, setPrefs, toast, b
   const [vol, setVol] = useState(null);
   const close = () => { setView('main'); onClose(); };
   return (
-    <Panel open={open} side="right" title={view === 'voices' ? tr('Voices') : tr('Playback Options')} bottom={bottom} inset={inset} onClose={close}>
+    <Panel open={open} side="right" title={view === 'voices' ? tr('Voices') : tr('Reading Options')} bottom={bottom} inset={inset} onClose={close}>
       {view === 'voices' ? (
         <>
           {NARRATORS.map(([k, label]) => (
@@ -27,7 +27,7 @@ export default function PlaybackPanel({ open, onClose, prefs, setPrefs, toast, b
               onPress={() => { setPrefs((p) => ({ ...p, narrator: k })); { const smp = SAMPLE_LANGS?.[k]?.[appLang] || SAMPLES[k]; if (smp) playVoice(smp); } toast(tr('{name} will read the stories.', { name: label })); }} />
           ))}
           <Text style={styles.help}>{tr('The voice reads the stories aloud and sounds out words in Learn to Read. Pages you recorded in your own voice still play in yours.')}</Text>
-          <Pressable onPress={() => setView('main')} hitSlop={8}><Text style={styles.backlink}>{tr('‹ Back to Playback Options')}</Text></Pressable>
+          <Pressable onPress={() => setView('main')} hitSlop={8}><Text style={styles.backlink}>{tr('‹ Back to Reading Options')}</Text></Pressable>
         </>
       ) : (
         <>

@@ -377,7 +377,7 @@ function Root() {
           <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
             <Option glyph={<LibraryIcon size={MENU_ICON} />} title={t('My Library')} sub={t('Find and read your favorite books')} onPress={() => go('library')} />
             {controls.store ? <Option glyph={<StoreIcon />} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => go('store')} /> : null}
-            {controls.playback && !controls.playMode ? <Option glyph={<PlayGlyph />} title={t('Playback Options')} sub={t('Modes, voices, fonts and sounds')} onPress={() => {
+            {controls.playback && !controls.playMode ? <Option glyph={<PlayGlyph />} title={t('Reading Options')} sub={t('Modes, voices, fonts and sounds')} onPress={() => {
               setDrawer(false);
               // in a book: the reader's own panel; anywhere else: the same choices in their own panel
               if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else setTimeout(() => setPlayOpen(true), 300);
