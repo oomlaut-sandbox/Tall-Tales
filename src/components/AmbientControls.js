@@ -77,7 +77,8 @@ export default function AmbientControls() {
         </Pressable>
         {SOUNDS.some((x) => x.mine) ? <Text style={styles.hint}>{t('Press and hold your own sound to remove it.')}</Text> : null}
       </View>
-      <MyMusicSheet visible={!!sheet} kind={sheet || 'music'} onClose={() => setSheet(null)} />
+      {/* only there while it's open: its recorder mustn't hold the phone's audio while you're just listening */}
+      {sheet ? <MyMusicSheet visible kind={sheet} onClose={() => setSheet(null)} /> : null}
       {/* the question keeps its words while it fades away (they used to vanish first and the box jumped) */}
       {/* (in its own full-screen layer: inside the page it sat in the middle of the long list and jumped about) */}
       <Modal visible={!!gate} transparent animationType="fade" onRequestClose={() => setGate(null)}>

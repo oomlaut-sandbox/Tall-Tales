@@ -65,6 +65,7 @@ const release = (c) => { try { if (c.player) { c.player.pause(); c.player.remove
 // make a channel sound its chosen track (or go quiet)
 async function sync(kind) {
   const c = ch[kind];
+  const my = (c.seq = (c.seq || 0) + 1); // quick taps: only the latest call counts (no doubled or stuttering sound)
   const want = state.playing && !held ? state[kind] : null;
   if (!want) {
     if (c.player) { const p = c.player; ramp(c, state.volume, 0, 500, () => { try { p.pause(); } catch (e) {} if (c.player === p && !(state.playing && state[kind])) release(c); }); }
@@ -75,6 +76,7 @@ async function sync(kind) {
   if (!t) return;
   try {
     await setAudioModeAsync({ playsInSilentMode: true });
+    if (my !== c.seq) return;
     release(c);
     const p = createAudioPlayer(t.src);
     c.player = p;
