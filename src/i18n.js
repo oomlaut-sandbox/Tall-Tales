@@ -291,7 +291,7 @@ const T = {
   'Says a word when you touch it': { de: 'Sagt ein Wort, wenn du es berührst', fr: 'Dit un mot quand tu le touches', es: 'Dice una palabra cuando la tocas', ja: 'ことばに さわると よみます' },
   'Reads the full story with audio': { de: 'Liest die ganze Geschichte vor', fr: 'Lit toute l’histoire à voix haute', es: 'Lee todo el cuento en voz alta', ja: 'おはなしを さいごまで よみます' },
   'Reads a page at a time with audio': { de: 'Liest eine Seite nach der anderen vor', fr: 'Lit une page à la fois', es: 'Lee una página cada vez', ja: '1ページずつ よみます' },
-  'Reads by itself, nothing to tap': { de: 'Liest von selbst, nichts zu tippen', fr: 'Lit tout seul, rien à toucher', es: 'Lee solo, nada que tocar', ja: 'ひとりでに よみます。タップは いりません' },
+  'Audio only, plays with Nightlight': { de: 'Nur Ton, spielt mit Nachtlicht', fr: 'Audio seulement, avec la veilleuse', es: 'Solo audio, con la luz nocturna', ja: 'おとだけ。ナイトライトと いっしょに' },
   'Narrator: {name}': { de: 'Stimme: {name}', fr: 'Voix : {name}', es: 'Voz: {name}', ja: 'よみて：{name}' },
   'Warm and gentle': { de: 'Warm und sanft', fr: 'Chaleureuse et douce', es: 'Cálida y suave', ja: 'あたたかく やさしい' },
   'Pleasant older man': { de: 'Freundlicher älterer Herr', fr: 'Monsieur âgé et agréable', es: 'Señor mayor y amable', ja: 'やさしい おじいさん' },

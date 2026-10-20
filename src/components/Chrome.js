@@ -531,7 +531,7 @@ export function Toast({ message, area, onDismiss, center }) {
   return null;
 }
 
-export function BubbleHost() {
+export function BubbleHost({ defaultArea }) {
   const tr = useT();
   const [b, setB] = useState(bubbleNow);
   useEffect(() => { bubbleSubs.add(setB); setB(bubbleNow); return () => { bubbleSubs.delete(setB); }; }, []);
@@ -548,7 +548,9 @@ export function BubbleHost() {
     return () => clearTimeout(t);
   }, [b && b.id]);
   if (!b || !b.message) return null;
-  const { message, area, center } = b;
+  const { message, center } = b;
+  // where it sits: just above the black bar (unless the screen asked for a spot, e.g. the picture page while recording)
+  const area = b.area || defaultArea;
   return (
     <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, zIndex: 260, elevation: 60, alignItems: 'center', justifyContent: center ? 'center' : 'flex-end', paddingBottom: center ? 0 : 14 }, area]}>
       {/* Every speech bubble pops up in the same place: just above the bottom bar, most of the screen wide,

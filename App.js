@@ -397,7 +397,7 @@ function Root() {
           ? { position: 'absolute', left: 0, top: 0, bottom: 0, width: camBar, backgroundColor: colors.bar, zIndex: 200 }
           : { position: 'absolute', left: 0, right: 0, top: 0, height: camBar, backgroundColor: colors.bar, zIndex: 200 }}><Felt /></View>
         {/* every speech bubble in the app is drawn here, on top of everything */}
-        <BubbleHost />
+        <BubbleHost defaultArea={toastArea} />
       </View>
       </ControlsContext.Provider>
       </LangContext.Provider>

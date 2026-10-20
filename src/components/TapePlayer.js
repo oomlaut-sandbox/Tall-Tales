@@ -17,6 +17,7 @@ import { thunk, tick, withTap } from '../haptics';
 
 const BODY = require('../../assets/audio-player2.jpg'); // the whole player, in grey
 const PLAY_ON = require('../../assets/audio-play-on.png'); // the green Play button, laid over while playing
+const PLAY_ON_NIGHT = require('../../assets/audio-play-on-night.png'); // the same, cut cleanly out of its light grey surround for the dark felt
 const THUMB = require('../../assets/audio-thumb2.png'); // the slider's felt knob (with its shadow drawn in)
 // at night (the nightlight is on): Jörg's dark brown felt version, with its loose threads around the edges (the black around them see-through),
 // and its own slider knob. The day player stays as it is.
@@ -100,7 +101,7 @@ export default function TapePlayer({ onMenu }) {
         {s.night ? null : <Image source={BODY} style={{ width: PW, height: PH }} resizeMode="stretch" />}
         {/* Play turns green while something plays */}
         {/* the green felt Play button while playing, day and night alike */}
-        {playing ? <Image pointerEvents="none" source={PLAY_ON} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} resizeMode="stretch" /> : null}
+        {playing ? <Image pointerEvents="none" source={s.night ? PLAY_ON_NIGHT : PLAY_ON} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} resizeMode="stretch" /> : null}
         {/* at night (the nightlight is on) the felt is turned down to a dark grey */}
 
         {/* the felt line at the top right closes the player */}

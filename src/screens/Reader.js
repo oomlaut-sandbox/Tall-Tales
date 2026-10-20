@@ -73,7 +73,7 @@ export const MODES = [
   [<TextIcon text="Aa" />, 'learn', 'Learn to Read', 'Says a word when you touch it'],
   [<PlayGlyph count={2} />, 'auto', 'Auto Play', 'Reads the full story with audio'],
   [<PlayGlyph />, 'page', 'Page by Page Play', 'Reads a page at a time with audio'],
-  [<HeadphonesIcon />, 'listen', 'Listen Only', 'Reads by itself, nothing to tap'],
+  [<HeadphonesIcon />, 'listen', 'Listen Only', 'Audio only, plays with Nightlight'],
   // ['✦', 'interactive', 'Interactive', 'Image interaction with touch'],  (hidden for now; hotspot code kept)
 ];
 
