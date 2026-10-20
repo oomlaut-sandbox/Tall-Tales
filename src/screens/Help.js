@@ -1,7 +1,7 @@
 // Help: a searchable walk-through of the app, in plain words. In the main menu above About.
 // (A short explainer video will live at the top of this page later.)
 import React, { useMemo, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../theme';
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
   videoPlay: { color: 'rgba(255,255,255,0.85)', fontSize: 34 },
   videoText: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 14 },
   searchWrap: { height: 44, borderRadius: 22, overflow: 'hidden', backgroundColor: '#d6d6d6' }, // light grey
-  search: { flex: 1, backgroundColor: 'transparent', paddingHorizontal: 18, paddingTop: 0, paddingBottom: 4, // sits in the middle top to bottom
+  search: { flex: 1, backgroundColor: 'transparent', paddingHorizontal: 18, paddingTop: 0, paddingBottom: Platform.OS === 'ios' ? 9 : 4, // sits in the middle top to bottom (iOS sets the letters a little low)
     fontFamily: fonts.ui, fontSize: 16, color: colors.ink, outlineWidth: 0 },
   ideas: { borderRadius: 26, shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, elevation: 5 },
   ideasTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.white },
