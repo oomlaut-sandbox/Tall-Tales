@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   col: { width: '100%', maxWidth: 520, gap: 14 },
   heading: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 26, color: colors.white },
   spreadShadow: { alignSelf: 'center', marginTop: 22, marginBottom: 32, backgroundColor: '#c9c9c9', shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.5, shadowRadius: 12, elevation: 10 },
-  spread: { flex: 1, borderWidth: 1, borderColor: '#7a7a7a', overflow: 'hidden' }, // square corners, a thin medium-grey line
+  spread: { flex: 1, borderWidth: 1, borderColor: '#3c3c3c', overflow: 'hidden' }, // square corners, a thin dark grey line
   lead: { fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, color: colors.white },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 18 },
   intro: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#cfcfcf' },
