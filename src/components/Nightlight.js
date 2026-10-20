@@ -369,7 +369,7 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
   const e = Math.max(0, Math.min(1, eclipse));
   const moonD = S * 0.31;
   const moonX = -(1 - e) * (area.width / 2 + moonD); // starts off screen on the left, the same way the slider goes
-  const sunOpacity = 1 - 0.9 * Math.pow(e, 1.4);
+  const sunOpacity = 1; // the sun itself never dims: the moon passing in front of it is the dimmer
   const coronaOpacity = Math.max(0, Math.min(1, (e - 0.82) / 0.18));
   const faceColor = e > 0.6 ? 'rgba(244,226,207,0.7)' : 'rgba(0,0,0,0.62)';
 
