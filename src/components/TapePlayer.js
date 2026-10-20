@@ -18,6 +18,11 @@ import { thunk, tick, withTap } from '../haptics';
 const BODY = require('../../assets/audio-player2.jpg'); // the whole player, in grey
 const PLAY_ON = require('../../assets/audio-play-on.png'); // the green Play button, laid over while playing
 const THUMB = require('../../assets/audio-thumb2.png'); // the slider's felt knob (with its shadow drawn in)
+// at night (the nightlight is on): Jörg's dark brown felt version, with its loose threads around the edges (the black around them see-through),
+// and its own slider knob. The day player stays as it is.
+const BODY_NIGHT = require('../../assets/audio-player-night.png');
+const THUMB_NIGHT = require('../../assets/audio-thumb-night.png');
+const NIGHT_MX = 0.063, NIGHT_MY = 0.0428; // how far the night picture reaches past the felt (for the threads), as parts of its width / height
 const IW = 1792, IH = 2400; // the picture's own units (Jörg's photo, in pixels)
 const R = 112; // its corners: the felt's own rounded corners (the photo's background there is filled with felt, then clipped)
 const PLAY = { x: 1052, y: 552, w: 260, h: 270 };
@@ -80,7 +85,7 @@ export default function TapePlayer({ onMenu }) {
   // a window: the choice (or "Select …") in white, left-aligned and in the middle of the dark felt from top to bottom
   const windowText = (box, text, empty) => (
     <View pointerEvents="none" style={[at(...box), styles.window, { paddingHorizontal: 44 * f }]}>
-      <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.choice, { fontSize: 64 * f, lineHeight: 76 * f }, empty && { opacity: 0.85 }]}>{text}</Text>
+      <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.choice, { fontSize: 64 * f, lineHeight: 76 * f }, s.night && { color: '#0d0a08' }, empty && { opacity: 0.85 }]}>{text}</Text>
     </View>
   );
   return (
@@ -89,12 +94,15 @@ export default function TapePlayer({ onMenu }) {
     <Animated.View style={[StyleSheet.absoluteFill, styles.scrim, { opacity: fade }]} onStartShouldSetResponder={() => true} onResponderRelease={() => setAmbientPlayer(false)} accessibilityViewIsModal>
     <View style={{ alignItems: 'flex-end' }}>
     <View style={[styles.body, { width: PW, height: PH, borderRadius: R * f }]} accessibilityLabel={t('Audio Player')} onStartShouldSetResponder={() => true}>{/* taps on the player itself don't close it */}
+      {s.night ? <Image pointerEvents="none" source={BODY_NIGHT} resizeMode="stretch"
+        style={{ position: 'absolute', left: -NIGHT_MX * PW, top: -NIGHT_MY * PH, width: PW * (1 + 2 * NIGHT_MX), height: PH * (1 + 2 * NIGHT_MY) }} /> : null}
       <View style={[styles.inner, { width: PW, height: PH, borderRadius: R * f }]}>
-        <Image source={BODY} style={{ width: PW, height: PH }} resizeMode="stretch" />
+        {s.night ? null : <Image source={BODY} style={{ width: PW, height: PH }} resizeMode="stretch" />}
         {/* Play turns green while something plays */}
-        {playing ? <Image pointerEvents="none" source={PLAY_ON} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} resizeMode="stretch" /> : null}
+        {playing && !s.night ? <Image pointerEvents="none" source={PLAY_ON} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} resizeMode="stretch" /> : null}
+        {playing && s.night ? <View pointerEvents="none" style={[at(PLAY.x + 20, PLAY.y + 20, PLAY.w - 40, PLAY.h - 40), { borderRadius: 60 * f, backgroundColor: 'rgba(214,150,70,0.28)' }]} /> : null}
         {/* at night (the nightlight is on) the felt is turned down to a dark grey */}
-        {s.night ? <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.58)' }]} /> : null}
+
         {/* the felt line at the top right closes the player */}
         <Pressable onPress={withTap(() => setAmbientPlayer(false))} hitSlop={10} style={at(1400, 100, 300, 220)} accessibilityRole="button" accessibilityLabel={t('Close Audio Player')} />
         <Pressable onPress={withTap(playAmbient)} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} accessibilityRole="button" accessibilityLabel={t('Play')} />
@@ -111,7 +119,7 @@ export default function TapePlayer({ onMenu }) {
           accessibilityValue={{ min: 0, max: 100, now: Math.round(vol * 100) }}
           accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
           onAccessibilityAction={(e) => setAmbientVolume(vol + (e.nativeEvent.actionName === 'increment' ? 0.1 : -0.1))}>
-          <Image pointerEvents="none" source={THUMB} style={[at(thumbX - SLOT.x - THUMB_D / 2, Y - SLOT.y - THUMB_D / 2 + 4, THUMB_D, THUMB_D), s.night && { opacity: 0.45 }]} />
+          <Image pointerEvents="none" source={s.night ? THUMB_NIGHT : THUMB} style={at(thumbX - SLOT.x - THUMB_D / 2, Y - SLOT.y - THUMB_D / 2 + 4, THUMB_D, THUMB_D)} />
         </View>
       </View>
     </View>
