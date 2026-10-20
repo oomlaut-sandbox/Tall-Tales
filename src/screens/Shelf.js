@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
   actBtn: { flex: 1, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
   actText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   barBtn: { paddingVertical: 10, paddingHorizontal: 6 },
-  barSmall: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 }, // Select / Cancel: small, tucked in the corner
+  barSmall: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 }, // Select / Cancel: the same size as Share, Edit and Delete, on the same line
   barBtnOff: { opacity: 0.35 },
   barBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
   barHint: { flex: 1, textAlign: 'right', color: colors.muted, fontFamily: fonts.ui, fontSize: 12 },
