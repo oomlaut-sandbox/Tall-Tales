@@ -10,7 +10,7 @@ import { IDEA_SECTIONS, IDEA_COUNT } from '../ideas';
 import { useT } from '../i18n';
 import { useControls } from '../controls';
 
-const BAND_FELT = require('../../assets/band-ideas.jpg'); // Jörg's pink felt banner
+const BAND_FELT = require('../../assets/band-ideas.jpg'); // Jörg's moss green felt banner
 const SKIPPY = require('../../assets/ideas-skippy.png'); // Skippy, daydreaming against his book (at the end of the ideas)
 const SPREAD = require('../../assets/ideas-spread.jpg'); // an open book: Skippy writing, and 'Make a book for yourself…' (under the words at the top)
 
@@ -67,7 +67,7 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: DESK_BG },
-  band: { backgroundColor: colors.green, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
+  band: { backgroundColor: '#3e4a2c' /* the moss felt's colour */, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.62)', textShadowOffset: { width: 1.5, height: 2.5 }, textShadowRadius: 3.5 /* felt letters, a little raised off the felt */, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 28, paddingBottom: 40, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 14 },
