@@ -20,7 +20,7 @@ const MODEL = 'eleven_multilingual_v2';
 // as-is, so the audio is never slowed down on the phone at the default setting.
 const PACE = 0.75;
 // books whose translations get ElevenLabs narration too (the rest use the phone's voice in other languages)
-const TRANSLATED = ['different'];
+const TRANSLATED = ['different', 'tips'];
 // The voices Jörg picked. `find` is what we look for by name. (Michael Caine was considered; Lily only for now.)
 const VOICES = [
   // id: ElevenLabs' standard voice ID, used if the key isn't allowed to look voices up.
@@ -108,9 +108,9 @@ async function findVoice(v) {
 const wordsPath = 'src/narration/words.json';
 const words = fs.existsSync(wordsPath) ? JSON.parse(fs.readFileSync(wordsPath, 'utf8')) : {};
 const slug = (w) => w.toLowerCase().replace(/[^a-z0-9]/g, (c) => `_${c.charCodeAt(0).toString(16)}`);
-async function speakClip(voiceId, text, speed, settings) {
+async function speakClip(voiceId, text, speed, settings, lang) {
   const r = await api('POST', `/v1/text-to-speech/${voiceId}/with-timestamps?output_format=mp3_44100_128`, {
-    text, model_id: MODEL,
+    text, model_id: MODEL, ...(lang ? { language_code: lang } : {}),
     voice_settings: { stability: 0.6, similarity_boost: 0.8, style: 0.1, use_speaker_boost: true, speed, ...(settings || {}) },
   });
   return r.status === 200 && r.json && r.json.audio_base64 ? Buffer.from(r.json.audio_base64, 'base64') : null;
@@ -204,6 +204,34 @@ async function makeWords(v, voiceId) {
     }
   }
   say(`${v.label}: ${n} word and part clips made, ${kept} unchanged (${want.words.size} words, ${want.parts.size} parts)`);
+  // Learn to Read in the translated books: every word in each language, said by the same voice in that language
+  // (kept in words-<lang>/, named by a short hash so any script works as a file name)
+  words[v.key].langs = words[v.key].langs || {};
+  for (const story of stories.filter((st) => TRANSLATED.includes(st.id) && st.langs)) {
+    for (const [lang, L] of Object.entries(story.langs)) {
+      const mine = (words[v.key].langs[lang] = words[v.key].langs[lang] || {});
+      let ln = 0, lk = 0;
+      for (const t of (L.texts || [])) {
+        for (const raw of String(t || '').split(/\s+/)) {
+          const w = helpers.cleanWord(raw);
+          if (!w || w.length > 24) continue; // (a long unspaced Japanese phrase isn't a word to tap)
+          const key = w.toLocaleLowerCase(lang);
+          const speed = v.pace || PACE;
+          const fp = crypto.createHash('sha1').update(`${MODEL}|${voiceId}|${speed}|${lang}|${w}`).digest('hex').slice(0, 12);
+          const fname = `${crypto.createHash('sha1').update(key).digest('hex').slice(0, 10)}.mp3`;
+          const file = path.join('assets/narration', v.key, `words-${lang}`, fname);
+          if (mine[key] && mine[key].fp === fp && fs.existsSync(file)) { lk++; continue; }
+          const audio = await speakClip(voiceId, `${w}.`, speed, null, lang);
+          if (!audio) { say(`FAILED word (${lang}) "${w}"`); continue; }
+          fs.mkdirSync(path.dirname(file), { recursive: true });
+          fs.writeFileSync(file, audio);
+          mine[key] = { fp, file: fname };
+          ln++;
+        }
+      }
+      say(`${v.label}: ${story.id} ${lang}: ${ln} word clips made, ${lk} unchanged`);
+    }
+  }
 }
 
 (async () => {
@@ -339,7 +367,19 @@ async function makeWords(v, voiceId) {
     wl.push('  },'); pl.push('  },');
   }
   wl.push('};', ''); pl.push('};', '');
-  fs.writeFileSync('src/narration/words.js', wl.concat(pl).join('\n'));
+  // Learn to Read words in the other languages: WORDS_LANG[voice][lang][word]
+  const ll = ['// Learn to Read words in the translated books, by voice and language.', 'export const WORDS_LANG = {'];
+  for (const vk of Object.keys(words)) {
+    ll.push(`  ${vk}: {`);
+    for (const [lang, m] of Object.entries(words[vk].langs || {})) {
+      ll.push(`    ${lang}: {`);
+      for (const [key, info] of Object.entries(m)) if (fs.existsSync(path.join('assets/narration', vk, `words-${lang}`, info.file))) ll.push(`      ${JSON.stringify(key)}: require(${JSON.stringify(`../../assets/narration/${vk}/words-${lang}/${info.file}`)}),`);
+      ll.push('    },');
+    }
+    ll.push('  },');
+  }
+  ll.push('};', '');
+  fs.writeFileSync('src/narration/words.js', wl.concat(pl).concat(ll).join('\n'));
   say(`Done: ${made} new, ${kept} unchanged, ${failed} failed, ${chars} characters used this run`);
   finish();
 })();

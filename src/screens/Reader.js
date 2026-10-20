@@ -57,7 +57,9 @@ import { playSound, setEffects, setEffectsVolume, suspendSounds } from '../sound
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { shareInvite } from '../invite';
 import { audioModeChanged, pauseVoice, playClips, playVoice, resumeVoice, stopVoice } from '../voice';
-import { WORDS } from '../narration/words';
+import * as WORDCLIPS from '../narration/words';
+const WORDS = WORDCLIPS.WORDS || {};
+const WORDS_LANG = WORDCLIPS.WORDS_LANG || {}; // (made by the next narration run)
 import { getRecording, listRecordings, pageKey, removeRecording, saveRecording } from '../recordings';
 import { markFinished, markFirst, markReadToday } from '../badges';
 import { AUDIO, TIMINGS } from '../narration';
@@ -419,8 +421,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     const done = () => setTimeout(() => setHl(-1), 400);
     if (mode === 'learn') {
       // Say the whole word once, clearly, in the chosen narrator's voice (the phone's voice if needed).
-      const foreign = story.lang && story.lang !== 'en'; // a translated book: the phone says the word in that language
-      const wordClip = foreign ? null : WORDS[narratorOf(prefsRef.current)]?.[w.toLowerCase()];
+      // a translated book: the narrator says the word in that language (the phone's voice only if there's no clip)
+      const foreign = story.lang && story.lang !== 'en';
+      const nk = narratorOf(prefsRef.current);
+      const wordClip = foreign
+        ? (WORDS_LANG[nk]?.[story.lang]?.[w.toLocaleLowerCase(story.lang)] || WORDS_LANG.lily?.[story.lang]?.[w.toLocaleLowerCase(story.lang)])
+        : WORDS[nk]?.[w.toLowerCase()];
       if (wordClip) { playClips([wordClip], { onDone: done }); return; }
       speakQueue([{ text: w, rate: 0.7, lang: story.lang }], done);
     }
