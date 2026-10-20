@@ -10,6 +10,7 @@ import ParentGate from './ParentGate';
 import { removeMusic } from '../myMusic';
 import MyMusicSheet from './MyMusicSheet';
 import { thunk, tap, withTap } from '../haptics';
+import { playSound, setEffects } from '../sound';
 
 const PLAYER = require('../../assets/music-player-thumb.png'); // a small Audio Player (with its shadow drawn in); tap it to open the real one
 
@@ -19,7 +20,7 @@ const Chip = ({ label, on, onPress, onLongPress, style }) => (
   </Pressable>
 );
 
-export default function AmbientControls() {
+export default function AmbientControls({ prefs, setPrefs }) {
   const t = useT();
   const [s, setS] = useState(getAmbient());
   const [vol, setVol] = useState(null);
@@ -98,6 +99,16 @@ export default function AmbientControls() {
         <Chip label={t('Show')} on={s.showPlayer} onPress={() => setAmbientPlayer(true)} />
         <Chip label={t('Hide')} on={!s.showPlayer} onPress={() => setAmbientPlayer(false)} />
       </View>
+      {/* sound effects: the page turn in books */}
+      {prefs && setPrefs ? (
+        <>
+          <Text style={styles.group}>{t('Sound effects')}</Text>
+          <View style={styles.chips}>
+            <Chip label={t('On')} on={!!prefs.sound} onPress={() => { setPrefs((p) => ({ ...p, sound: true })); setEffects(true); playSound('swish'); }} />
+            <Chip label={t('Off')} on={!prefs.sound} onPress={() => { setPrefs((p) => ({ ...p, sound: false })); setEffects(false); }} />
+          </View>
+        </>
+      ) : null}
     </View>
   );
 }

@@ -11,7 +11,7 @@ import { useT } from '../i18n';
 
 const BAND_FELT = require('../../assets/band-music.jpg'); // Jörg's dark brown felt, stitched along the bottom
 
-export default function MusicSounds({ u, openMenu }) {
+export default function MusicSounds({ u, openMenu, prefs, setPrefs }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   return (
@@ -22,7 +22,7 @@ export default function MusicSounds({ u, openMenu }) {
       </View>
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.col}>
-          <View style={styles.card}><AmbientControls /></View>
+          <View style={styles.card}><AmbientControls prefs={prefs} setPrefs={setPrefs} /></View>
         </View>
       </ScrollView>
     </WithBar>
