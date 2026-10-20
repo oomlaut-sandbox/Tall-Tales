@@ -368,7 +368,10 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
   // the corona glows
   const e = Math.max(0, Math.min(1, eclipse));
   const moonD = S * 0.31;
-  const moonX = -(1 - e) * (area.width / 2 + moonD); // starts off screen on the left, the same way the slider goes
+  // the moon: off screen on the left at the start; the first touch of the slider brings it to the sun's edge, and
+  // the rest of the slider carries it across, so it moves into the light as soon as you slide
+  const edgeX = -(S * 0.36 + moonD / 2), offX = -(area.width / 2 + moonD);
+  const moonX = e <= 0 ? offX : e < 0.04 ? offX + (edgeX - offX) * (e / 0.04) : edgeX * (1 - (e - 0.04) / 0.96);
   const sunOpacity = 1; // the sun itself never dims: the moon passing in front of it is the dimmer
   const coronaOpacity = Math.max(0, Math.min(1, (e - 0.82) / 0.18));
   const faceColor = e > 0.6 ? 'rgba(244,226,207,0.7)' : 'rgba(0,0,0,0.62)';
