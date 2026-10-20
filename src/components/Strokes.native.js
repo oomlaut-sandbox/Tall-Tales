@@ -12,14 +12,14 @@ function Layer({ L, color }) {
   return (
     <Path path={path} color={color} opacity={L.alpha} style={L.fill ? 'fill' : 'stroke'} strokeWidth={L.width || 0} strokeCap="round" strokeJoin="round"
       blendMode={L.multiply ? 'multiply' : 'srcOver'}>
-      {L.blur ? <BlurMask blur={L.blur} style="normal" /> : null}
+      {L.blur ? <BlurMask blur={L.blur} style={L.inner ? 'inner' : 'normal'} /> : null}
       {L.grain ? <DiscretePathEffect length={2.5} deviation={0.7} /> : null}
     </Path>
   );
 }
 function One({ st, width }) {
   const layers = useMemo(() => layersFor(st, width), [st, width]);
-  return <>{layers.map((L, i) => <Layer key={i} L={L} color={st.c} />)}</>;
+  return <>{layers.filter((L) => L.alpha).map((L, i) => <Layer key={i} L={L} color={st.c} />)}</>;
 }
 
 export function StrokesView({ strokes, width, height, live }) {
@@ -43,6 +43,7 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff') {
   const list = [...(strokes || []).filter((s) => s.f), ...(strokes || []).filter((s) => !s.f)];
   for (const st of list) {
     for (const L of layersFor(st, px)) {
+      if (!L.alpha) continue;
       const path = Skia.Path.MakeFromSVGString(L.d);
       if (!path) continue;
       const paint = Skia.Paint();
@@ -51,7 +52,7 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff') {
       paint.setAlphaf(L.alpha);
       paint.setStyle(L.fill ? PaintStyle.Fill : PaintStyle.Stroke);
       if (!L.fill) { paint.setStrokeWidth(L.width); paint.setStrokeCap(StrokeCap.Round); paint.setStrokeJoin(StrokeJoin.Round); }
-      if (L.blur) paint.setMaskFilter(Skia.MaskFilter.MakeBlur(BlurStyle.Normal, L.blur, true));
+      if (L.blur) paint.setMaskFilter(Skia.MaskFilter.MakeBlur(L.inner ? BlurStyle.Inner : BlurStyle.Normal, L.blur, true));
       if (L.multiply) paint.setBlendMode(BlendMode.Multiply);
       if (L.grain) paint.setPathEffect(Skia.PathEffect.MakeDiscrete(2.5 * px / 400, 0.7 * px / 400, 0));
       canvas.drawPath(path, paint);

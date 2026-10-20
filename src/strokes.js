@@ -199,17 +199,21 @@ export function inkD(st, w) {
 
 // What to paint for one stroke, as layers any canvas can draw (Skia on phones, SVG / canvas in the preview):
 //   { d, fill: true } a filled shape, or { d, width } a line; alpha 0..1; blur in pixels; multiply: deepens
-//   where it crosses other colour; grain: a slightly rough, pencil-like edge
+//   where it crosses other colour; grain: a slightly rough, pencil-like edge; inner: the blur only inside the
+//   edge (a darker rim, like dried watercolour; drawn on the phone only)
 export function layersFor(st, w) {
   if (st.f) return [{ d: fillD(st, w), fill: true, alpha: 0.94, blur: 0.5 }];
   const lw = Math.max(1, (st.s || 0.01) * w);
   const b = st.b || 'ink';
   const light = /^#f{3,6}$/i.test(st.c || '');
   if (b === 'water') {
+    // a wash with a defined edge: the see-through body, the pigment gathering at its rim as it dries (an inner
+    // glow on the phone), and a faint bloom where the water spread. Crossing strokes deepen (multiply).
     const d = strokeD(st, w);
     return [
-      { d, width: lw * 1.9, alpha: light ? 0.5 : 0.2, blur: lw * 0.55, multiply: !light }, // the wet bloom
-      { d, width: lw * 1.3, alpha: light ? 0.45 : 0.24, blur: lw * 0.14, multiply: !light }, // the body of the stroke
+      { d, width: lw * 1.75, alpha: light ? 0.3 : 0.07, blur: lw * 0.3, multiply: !light }, // the bloom
+      { d, width: lw * 1.4, alpha: light ? 0.55 : 0.26, blur: Math.max(0.6, lw * 0.05), multiply: !light }, // the body
+      { d, width: lw * 1.4, alpha: light ? 0 : 0.42, blur: Math.max(1, lw * 0.14), multiply: !light, inner: true }, // the rim
     ];
   }
   if (b === 'pencil') return [{ d: strokeD(st, w), width: Math.max(1, lw * 0.5), alpha: 0.82, grain: true }];

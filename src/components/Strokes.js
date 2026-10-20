@@ -11,7 +11,7 @@ export function StrokesView({ strokes, width, height, live }) {
   const h = React.createElement;
   const id = React.useMemo(() => `s${++uid}`, []);
   const defs = [], paths = [];
-  all.forEach((st, i) => layersFor(st, width).forEach((L, j) => {
+  all.forEach((st, i) => layersFor(st, width).filter((L) => L.alpha && !L.inner).forEach((L, j) => { // (the inner rim is drawn on the phone only)
     const fid = L.blur ? `${id}-${i}-${j}` : null;
     if (fid) defs.push(h('filter', { key: fid, id: fid, x: '-50%', y: '-50%', width: '200%', height: '200%' }, h('feGaussianBlur', { stdDeviation: L.blur })));
     paths.push(h('path', {
@@ -35,7 +35,7 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff') {
   g.fillStyle = bg; g.fillRect(0, 0, px, px);
   const list = [...(strokes || []).filter((s) => s.f), ...(strokes || []).filter((s) => !s.f)];
   for (const st of list) {
-    for (const L of layersFor(st, px)) {
+    for (const L of layersFor(st, px).filter((L2) => L2.alpha && !L2.inner)) {
       g.save();
       g.globalAlpha = L.alpha;
       g.globalCompositeOperation = L.multiply ? 'multiply' : 'source-over';
