@@ -164,6 +164,22 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   // Turning a page has three parts: get the peel ready (pictures of the pages), move it (by itself, or
   // following a finger), and finish (keep the new page, or let it fall back).
   const ease3 = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  // ready-made pictures of this spread and the ones either side, keyed by spread number (and the notebook's
+  // contents: any change makes them stale)
+  const snaps = useRef({});
+  const nbVer = useRef(0);
+  useEffect(() => { nbVer.current += 1; snaps.current = {}; }, [nb, side, wide]);
+  useEffect(() => {
+    if (!usePeel || !peelWorks.ok || intro || flipPair) return undefined;
+    const ver = nbVer.current, at = i;
+    const tm = setTimeout(async () => {
+      const take = async (k, ref) => { if (snaps.current.ver === ver && snaps.current[k]) return; const im = await snapshot(ref); if (im && nbVer.current === ver && st.current.i === at && !busy.current) { if (snaps.current.ver !== ver) snaps.current = { ver }; snaps.current[k] = im; } };
+      await take(at, refs.cur);
+      await take(at + 1, refs.next);
+      await take(at - 1, refs.prev);
+    }, 450);
+    return () => clearTimeout(tm);
+  }, [i, nb, intro, flipPair, side]);
   const prepare = async (dir) => {
     const { i: at, total: n } = st.current;
     const to = at + dir;
@@ -171,15 +187,18 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     busy.current = true;
     if (!usePeel || !peelWorks.ok || !bookAt) return { dir, to, plain: true };
     const a = dir > 0 ? at : at - 1;
-    const fa = await snapshot(dir > 0 ? refs.cur : refs.prev);
-    const fb = await snapshot(dir > 0 ? refs.next : refs.cur);
+    // pictures of the pages, taken ahead of time while the notebook sits still (so the turn starts at once);
+    // taken now only if they aren't ready yet
+    const shot = async (k, ref) => snaps.current.ver === nbVer.current && snaps.current[k] ? snaps.current[k] : snapshot(ref);
+    const fa = await shot(dir > 0 ? at : at - 1, dir > 0 ? refs.cur : refs.prev);
+    const fb = await shot(dir > 0 ? at + 1 : at, dir > 0 ? refs.next : refs.cur);
     if (!fa || !fb) return { dir, to, plain: true };
     setPeel({ front: fa, back: fb });
     setProgress(dir > 0 ? 0 : 1);
     setPeelLive(false);
     setFlipPair({ a, b: a + 1, dir });
-    // the page as it is stays on top for a few frames, until the paper peel has drawn itself (no flash)
-    await new Promise((r) => setTimeout(r, 90));
+    // the page as it is stays on top for a couple of frames, until the paper peel has drawn itself (no flash)
+    await new Promise((r) => setTimeout(r, 34));
     setPeelLive(true);
     await new Promise((r) => requestAnimationFrame(() => r()));
     return { dir, to, plain: false };
