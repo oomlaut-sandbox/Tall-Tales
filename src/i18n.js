@@ -38,6 +38,7 @@ const T = {
   'Ideas and Support': { de: 'Ideen und Hilfe', fr: 'Idées et aide', es: 'Ideas y ayuda', ja: 'アイデアと サポート' },
   'Help': { de: 'Hilfe', fr: 'Aide', es: 'Ayuda', ja: 'ヘルプ' },
   'How everything works': { de: 'So funktioniert alles', fr: 'Comment tout fonctionne', es: 'Cómo funciona todo', ja: 'つかいかた' },
+  'Find inspiration and help': { de: 'Ideen und Hilfe finden', fr: 'Trouver de l’inspiration et de l’aide', es: 'Encuentra inspiración y ayuda', ja: 'アイデアと ヘルプ' },
   'Settings': { de: 'Einstellungen', fr: 'Réglages', es: 'Ajustes', ja: 'せってい' },
   'Language and parental controls': { de: 'Sprache und Kindersicherung', fr: 'Langue et contrôle parental', es: 'Idioma y control parental', ja: 'ことばと保護者のせってい' },
   'Open a story first, then choose how it plays.': { de: 'Öffne zuerst eine Geschichte und wähle dann, wie sie gelesen wird.', fr: 'Ouvre d’abord une histoire, puis choisis comment elle est lue.', es: 'Primero abre un cuento y luego elige cómo se lee.', ja: 'まずお話をひらいてから、よみかたをえらんでね。' },

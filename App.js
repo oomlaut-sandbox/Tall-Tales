@@ -385,7 +385,7 @@ function Root() {
             <Option glyph={<MusicIcon size={24} weight={3.4} /* the same shape as the reading bar's note */ />} title={t('Music and Sounds')} sub={t('Relaxing and gentle')} onPress={() => go('music')} />
             {controls.create ? <Option glyph={<PlusIcon />} title={t('Create a Story')} sub={t('Make your own book')} onPress={() => openPublisher(null)} /> : null}
             {/* Help takes Profile's place (Profile is suspended for families; the store owner signs in from About: hold Skippy) */}
-            {controls.help ? <Option glyph={<CircleIcon />} title={t('Ideas and Support')} sub={t('How everything works')} onPress={() => go('help')} /> : null}
+            {controls.help ? <Option glyph={<CircleIcon />} title={t('Ideas and Support')} sub={t('Find inspiration and help')} onPress={() => go('help')} /> : null}
             {/* (Profiles now live at the bottom of Settings and Profiles; children still switch from the start page) */}
             {/* Settings: always last, always behind the grown-up question */}
             <Option glyph={<PersonIcon />} title={t('Settings')} sub={t('Language, parental and profiles')} onPress={() => { setDrawer(false); setSettingsGate(true); }} />
