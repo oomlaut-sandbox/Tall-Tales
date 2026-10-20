@@ -90,6 +90,7 @@ function Band({ color, felt, dark, title, sub, action, onAction }) {
 // and can be brought back with "Show removed books".
 // My Notebook's cover: the brown leather of the notebook on the start page
 const CREATE_TILE = require('../../assets/tile-create.jpg'); // Jörg's blue felt book on linen, behind the + of Create a story
+const PLAYLISTS_TILE = require('../../assets/tile-playlists.jpg'); // Jörg's stack of felt books, behind the Playlists sign
 const TIP_CHAR = require('../../assets/tip-headphones.png'); // the grey felt character with headphones, in the Audio Player tip
 const NOTEBOOK_COVER = require('../../assets/leather-cover.jpg');
 
@@ -179,7 +180,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
         {!selecting ? <View style={{ width: '100%' }} /> : null}
         {!selecting && controls.create ? <Tile u={u} plus cover={CREATE_TILE} title={t('Create a story')} onPress={onCreate} /> : null}
         {/* Playlists (a picture of its own comes later) */}
-        {!selecting && onPlaylists ? <Tile u={u} glyph={<PlaylistIcon size={44} weight={4} />} title={t('Playlists')} onPress={onPlaylists} /> : null}
+        {!selecting && onPlaylists ? <Tile u={u} cover={PLAYLISTS_TILE} glyph={<PlaylistIcon size={44} weight={4} />} title={t('Playlists')} onPress={onPlaylists} /> : null}
         {!selecting && removedCount ? (
           <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
             <Text style={styles.restore}>{t('Show removed books ({n})', { n: removedCount })}</Text>
