@@ -579,9 +579,9 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
             <Text style={styles.choiceTitle}>{page.uri || page.strokes.length ? t('Change the picture') : t('Add a picture')}</Text>
-            <Pressable onPress={() => { setPicAsk(false); setDrawing('top'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{page.uri ? t('Draw on the photo') : page.strokes.length ? t('Keep drawing') : t('Make a drawing')}</Text></Pressable>
             <Pressable onPress={() => { setPicAsk(false); choosePhoto('library'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Choose a photo')}</Text></Pressable>
             <Pressable onPress={() => { setPicAsk(false); setCamGate(true); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Take a photo')}</Text></Pressable>
+            <Pressable onPress={() => { setPicAsk(false); setDrawing('top'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{page.uri ? t('Draw on the photo') : page.strokes.length ? t('Keep drawing') : t('Make a drawing')}</Text></Pressable>
             {page.uri ? <Pressable onPress={() => { setPicAsk(false); dropNotebookPicture(page.uri); update({ uri: null, w: 1, h: 1 }); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Remove the photo')}</Text></Pressable> : null}
             <Pressable onPress={() => setPicAsk(false)} style={[styles.choiceBtn, { marginTop: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Cancel')}</Text></Pressable>
           </View>
@@ -655,6 +655,14 @@ function Badge({ b, d, toast }) {
   // its name and how it's earned, written under the badges (no speech bubble)
   const say = () => toast(b.earned ? `${title}! ${how}` : `${title}: ${how}`);
   const label = `${title}${b.earned ? t(', earned') : t(', not earned yet')}`;
+  if (art && !b.earned) {
+    // not earned yet: just a fine dotted circle where it will go (tap it to see how to earn it)
+    return (
+      <Pressable onPress={say} accessibilityRole="button" accessibilityLabel={label} style={{ width: d, height: d, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: d * 0.92, height: d * 0.92, borderRadius: d, borderWidth: 1.2, borderStyle: 'dotted', borderColor: 'rgba(60,60,60,0.45)' }} />
+      </Pressable>
+    );
+  }
   if (art) {
     // the felt badge has its name stitched on (and its shadow drawn in)
     return (
