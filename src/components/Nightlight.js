@@ -30,7 +30,7 @@ const CORONA = require('../../assets/nightlight-corona.png');
 const CREAM = '#f4e2cf';
 const BASE = '#1e1e20'; // the popup's dark grey (a deep, quiet grey at night)
 const GRAIN = require('../../assets/noise.png'); // a fine grain over the alarm popup, so it feels like a real object
-const AMBER = '#c8862a', AMBER_INK = '#2c1a05'; // the old amber display and its dark, amber-tinted letters
+const AMBER = '#a96f22', AMBER_INK = '#241504'; // the old amber display and its dark, amber-tinted letters
 const SNOOZE_MIN = 9;
 
 const toMin = (hm) => { const [h, m] = String(hm || '07:00').split(':').map(Number); return h * 60 + m; };
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
   wheel: { backgroundColor: BASE, alignItems: 'center', justifyContent: 'center', boxShadow: '-8px -8px 18px rgba(255,255,255,0.04), 12px 12px 26px rgba(0,0,0,0.8), inset 2px 2px 3px rgba(255,255,255,0.05), inset -3px -3px 5px rgba(0,0,0,0.45)' },
   dimple: { backgroundColor: '#19191b', boxShadow: 'inset 5px 5px 8px rgba(0,0,0,0.85), inset -3px -3px 6px rgba(255,255,255,0.06)' },
   wheelTime: { color: CREAM, fontFamily: fonts.ui, fontSize: 17, fontWeight: '300', letterSpacing: 0.8 }, // small, so it keeps clear of the finger hole
-  popTitle: { flex: 1, color: '#bdb9b3', fontFamily: fonts.ui, fontWeight: '700', fontSize: 24 }, // like the other page titles, a light grey
+  popTitle: { flex: 1, color: '#a39f99', fontFamily: fonts.ui, fontWeight: '700', fontSize: 24 }, // like the other page titles, a light grey
   wheelNum: { position: 'absolute', width: 30, textAlign: 'center', color: 'rgba(244,226,207,0.62)', fontFamily: fonts.ui, fontSize: 12, fontWeight: '400' },
   chip: { paddingHorizontal: 13, height: 34, borderRadius: 17, backgroundColor: BASE, alignItems: 'center', justifyContent: 'center', boxShadow: '-3px -3px 6px rgba(255,255,255,0.05), 3px 3px 7px rgba(0,0,0,0.6)' },
   // the amber display: an old backlit LCD, its letters dark with an amber tint; and the small knob beside it
