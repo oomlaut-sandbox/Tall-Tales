@@ -60,8 +60,10 @@ let keyTurn = 0;
 export function playKey() { keyTurn = (keyTurn % 3) + 1; playSound(`key${keyTurn}`); }
 
 const turn = {};
+// the only sound effect kept: the page turn in books (covers, taps, card lifts and typewriter keys are retired)
+const KEEP = new Set(['swish']);
 export function playSound(kind, volume = 1) {
-  if (!enabled || suspended) return;
+  if (!enabled || suspended || !KEEP.has(kind)) return;
   const pair = players[kind];
   if (!pair) return;
   turn[kind] = ((turn[kind] || 0) + 1) % pair.length;

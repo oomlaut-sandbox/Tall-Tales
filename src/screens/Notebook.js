@@ -222,7 +222,6 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const turn = async (dir) => {
     const t = await prepare(dir);
     if (!t) return;
-    playSound('swish');
     finish(t, true);
   };
   const turnRef = useRef(turn);
@@ -325,7 +324,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     const v = d.vert ? g.vy : g.vx;
     const moved = d.t.plain ? Math.abs(d.vert ? g.dy : g.dx) > 40 : null;
     const commit = d.t.plain ? moved : d.dir > 0 ? d.p > 0.4 || v < -0.35 : d.p < 0.6 || v > 0.35;
-    if (commit) playSound('swish');
+    
     finish(d.t, commit);
   };
   // the swipe handler is made once, so it always calls the latest versions of these
