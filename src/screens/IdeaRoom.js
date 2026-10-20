@@ -68,7 +68,7 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: DESK_BG },
   band: { backgroundColor: colors.green, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3, transform: [{ translateY: -3 }] },
+  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.62)', textShadowOffset: { width: 1.5, height: 2.5 }, textShadowRadius: 3.5 /* felt letters, a little raised off the felt */, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 28, paddingBottom: 40, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 14 },
   heading: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 26, color: colors.white },

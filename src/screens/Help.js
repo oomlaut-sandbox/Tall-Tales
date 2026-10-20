@@ -216,7 +216,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: DESK_BG }, // the dark felt, as everywhere else
   band: { backgroundColor: colors.orange, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3, transform: [{ translateY: -3 }] },
+  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.62)', textShadowOffset: { width: 1.5, height: 2.5 }, textShadowRadius: 3.5 /* felt letters, a little raised off the felt */, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 34, paddingBottom: 40, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 12 },
   video: { aspectRatio: 16 / 9, backgroundColor: '#2b2b2b', borderRadius: 14, alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 8 },

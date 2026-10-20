@@ -214,7 +214,7 @@ export default function StoreManager({ u, openMenu, toast, demo }) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   band: { backgroundColor: '#3b3b3b', paddingBottom: 30, paddingHorizontal: 24 },
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32 },
+  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.62)', textShadowOffset: { width: 1.5, height: 2.5 }, textShadowRadius: 3.5 /* felt letters, a little raised off the felt */ },
   body: { padding: 20, paddingBottom: 60, gap: 26 },
   intro: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#333' },
   err: { fontFamily: fonts.ui, fontSize: 15, color: '#b00000' },

@@ -45,7 +45,7 @@ import Profiles from './src/screens/Profiles';
 import PlaybackPanel from './src/components/PlaybackPanel';
 import Playlists from './src/screens/Playlists';
 import { playOrder } from './src/playlists';
-import { fadeOutAmbient, setAmbientPlayer } from './src/ambient';
+import { fadeOutAmbient, getAmbient, onAmbient, setAmbientPlayer } from './src/ambient';
 import { ageAllowed, ageOf } from './src/catalog';
 import { loadProfiles, onProfiles } from './src/profiles';
 import { playSound, setEffects, setEffectsVolume } from './src/sound';
@@ -70,6 +70,8 @@ function Root() {
   const u = Math.min(width, MAX_WIDTH) / 100;
   const [story, setStory] = useState(null);
   const [drawer, setDrawer] = useState(false);
+  // the Audio Player opening (the music note on a bar) always comes out in front: the menus step aside
+  useEffect(() => { let was = getAmbient().showPlayer; return onAmbient((st) => { if (st.showPlayer && !was) { setDrawer(false); setPlayOpen(false); } was = st.showPlayer; }); }, []);
   const [profileGate, setProfileGate] = useState(false); // the profile is for grown-ups
   const [prefs, setPrefs] = useState({ mode: 'page', sound: false, speed: 'normal', voice: 'narrator' }) // Page by Page narration by default;
   const [userStories, setUserStories] = useState([]);
