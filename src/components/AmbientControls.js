@@ -41,7 +41,7 @@ export default function AmbientControls() {
       {/* the words and Play / Off in a narrower column on the left, the guitar player beside them on the right */}
       <View style={{ flexDirection: 'row', alignItems: 'stretch', gap: 12 }}>
         <View style={{ flex: 1, minWidth: 0, justifyContent: 'space-between', gap: 10 }}>
-          <Text style={styles.small}>{t('Relaxing sounds and gentle music that keep playing while you use the app. Lovely at bedtime.')}</Text>
+          <Text style={[styles.small, { marginTop: 5 }]}>{t('Relaxing sounds and gentle music that keep playing while you use the app. Lovely at bedtime.')}</Text>{/* its top lines up with the top of the player picture */}
           {/* opens the Audio Player over the page; its bottom lines up with the bottom of the player picture */}
           <Pressable onPress={withTap(() => setAmbientPlayer(true))} style={[styles.openBtn, { marginTop: 0, marginBottom: 10 }]} accessibilityRole="button">
             <Text style={styles.openText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{t('Open Audio Player')}</Text>
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   section: { backgroundColor: '#383838', borderRadius: 12, padding: 14, paddingBottom: 16, gap: 8, marginTop: 8 }, // a slightly lighter box for each list
   chipIn: { backgroundColor: '#4a4a4a' },
-  openBtn: { alignSelf: 'flex-start', backgroundColor: colors.blue, height: 38, borderRadius: 19, paddingHorizontal: 14, maxWidth: '100%', alignItems: 'center', justifyContent: 'center', marginTop: 4 },
+  openBtn: { alignSelf: 'flex-start', backgroundColor: '#555555', height: 38, borderRadius: 19, paddingHorizontal: 14, maxWidth: '100%', alignItems: 'center', justifyContent: 'center', marginTop: 4 },
   openText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
   chip: { paddingHorizontal: 12, height: 34, borderRadius: 17, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
   chipOn: { backgroundColor: colors.green },
