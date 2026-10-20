@@ -242,7 +242,7 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
 // layers: the dark layer and the sun sit just over a turning page (40, after it) and under the menus (41);
 // locked, a blocker covers everything (78) with the nightlight above it (79), and the question above that (80)
 // area: where the book is (covered)
-export default function Nightlight({ title, onSleep, locked = false, lockRect, onUnlock, eclipse = 0, onEclipse, alarmTime = '07:00', alarmSound = 'forest-birds', alarmOn = false, alarmOpen = false, onAlarmClose, onAlarm, wide, area, end }) {
+export default function Nightlight({ title, playing, onPlay, onPause, onSleep, locked = false, lockRect, onUnlock, eclipse = 0, onEclipse, alarmTime = '07:00', alarmSound = 'forest-birds', alarmOn = false, alarmOpen = false, onAlarmClose, onAlarm, wide, area, end }) {
   const t = useT();
   const controls = useControls();
   const [gate, setGate] = useState(false);
@@ -391,7 +391,23 @@ export default function Nightlight({ title, onSleep, locked = false, lockRect, o
       <FineSlider value={e} onChange={onEclipse} width={sliderW} label={t('Nightlight brightness')} />
       <View style={{ marginTop: 4 }}><SunIcon /></View>
       <Text style={[styles.small, { marginTop: 64 }]}>{t('Now playing')}</Text>
-      {title ? <Text numberOfLines={2} style={styles.title}>{title}</Text> : null}
+      {title ? (
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 14, marginTop: 6, maxWidth: 320 }}>
+          <Text numberOfLines={2} style={[styles.title, { marginTop: 0, flexShrink: 1 }]}>{title}</Text>
+          {/* a delicate play / pause beside the title */}
+          <Pressable onPress={withTap(() => (playing ? onPause && onPause() : onPlay && onPlay()))} disabled={locked} hitSlop={14} accessibilityRole="button" accessibilityLabel={playing ? t('Pause') : t('Play')}
+            style={{ width: 30, height: 30, borderRadius: 15, borderWidth: 1, borderColor: 'rgba(255,255,255,0.55)', alignItems: 'center', justifyContent: 'center' }}>
+            {playing ? (
+              <View style={{ flexDirection: 'row', gap: 4 }}>
+                <View style={{ width: 2, height: 11, borderRadius: 1, backgroundColor: 'rgba(255,255,255,0.85)' }} />
+                <View style={{ width: 2, height: 11, borderRadius: 1, backgroundColor: 'rgba(255,255,255,0.85)' }} />
+              </View>
+            ) : (
+              <View style={{ marginLeft: 3, width: 0, height: 0, borderTopWidth: 6, borderBottomWidth: 6, borderLeftWidth: 10, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: 'rgba(255,255,255,0.85)' }} />
+            )}
+          </Pressable>
+        </View>
+      ) : null}
       <Pressable onPress={withTap(cycleSleep)} disabled={locked} hitSlop={12} style={{ marginTop: 52, flexDirection: 'row', alignItems: 'center', gap: 8, opacity: sleepAt ? 0.9 : 0.5 }} accessibilityRole="button">
         <Text style={styles.small}>{sleepAt ? t('Sleep timer: {n} min', { n: left }) : t('Sleep timer: off')}</Text>
         {/* the countdown, right after it, the same size */}

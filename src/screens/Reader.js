@@ -858,7 +858,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       ) : null}
       {/* Listen Only: the nightlight (the book almost hidden, a soft breathing sun, brightness, a lock) */}
       {nightOn ? (
-        <Nightlight title={story.title} locked={nlLocked} lockRect={lockRect} onUnlock={() => setNlLocked(false)} onSleep={() => { stopReading(); clearTimeout(autoTimer.current); }} eclipse={prefs.eclipse ?? 0} onEclipse={(v) => setPrefs((p) => ({ ...p, eclipse: Math.round(v * 100) / 100 }))}
+        <Nightlight title={story.title} playing={reading && !paused} onPlay={onPlay} onPause={onPause} locked={nlLocked} lockRect={lockRect} onUnlock={() => setNlLocked(false)} onSleep={() => { stopReading(); clearTimeout(autoTimer.current); }} eclipse={prefs.eclipse ?? 0} onEclipse={(v) => setPrefs((p) => ({ ...p, eclipse: Math.round(v * 100) / 100 }))}
           alarmTime={prefs.alarmTime || '07:00'} alarmSound={prefs.alarmSound || 'forest-birds'} alarmOn={!!prefs.alarmOn} alarmOpen={alarmOpen} onAlarmClose={() => setAlarmOpen(false)} onAlarm={(patch) => setPrefs((p) => ({ ...p, ...patch }))}
           wide={wide} end={!!(pages[idx] && pages[idx].end)}
           area={wide ? { left: 0, top: 0, width: winW - BL.rightW, height: winH } : { left: 0, top: 0, width: winW, height: winH - barH }} />
