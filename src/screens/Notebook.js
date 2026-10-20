@@ -599,7 +599,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
             <View style={[styles.editorPage, { width: winW - 2 * GAP, maxHeight: winW - 2 * GAP }]}>
               <TextInput value={page.text} onChangeText={(text) => { if (text.length > (page.text || '').length) playKey(); update({ text }); }}
                 placeholder={t('Write anything: what you read, what you saw today, a story idea…')} placeholderTextColor="#666"
-                multiline autoFocus style={[styles.editorInput, { outlineWidth: 0 }]} accessibilityLabel={t('Notes')} />
+                multiline autoFocus style={[styles.editorInput, { outlineWidth: 0, textAlign: 'center' }]} accessibilityLabel={t('Notes')} />
             </View>
             <View style={{ width: winW - 2 * GAP, alignItems: 'flex-end' }}>
               <Pressable onPress={() => setWriting(false)} hitSlop={8} accessibilityRole="button" style={styles.donePill}><Text style={styles.pillText}>{t('Done')}</Text></Pressable>
@@ -1004,7 +1004,7 @@ const styles = StyleSheet.create({
   addSub: { color: '#6b6b6b', fontSize: 15, fontFamily: fonts.ui, marginTop: 8 },
   hint: { position: 'absolute', color: '#7a7a7a', fontFamily: TYPE, fontSize: 20 },
   textBox: { justifyContent: 'center' },
-  notes: { fontFamily: TYPE, fontSize: 17, lineHeight: 27, color: colors.ink },
+  notes: { fontFamily: TYPE, fontSize: 17, lineHeight: 27, color: colors.ink, textAlign: 'center' }, // centred on the page
   back: { position: 'absolute', left: 6, bottom: 6, width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.12)', alignItems: 'center', justifyContent: 'center', zIndex: 6 },
   backText: { color: '#3a3a3a', fontSize: 28, lineHeight: 30, fontWeight: '300', marginTop: -3 },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 17 },
