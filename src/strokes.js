@@ -18,10 +18,13 @@ export function strokeD(st, w) {
   return d;
 }
 
-// the colours: an earthy palette (charcoal, deep teal, slate, sage, taupe, sand, ochre, rust, umber, cream)
+// the colours: white, greys and black, then an earthy palette (charcoal, cream, deep teal, slate, sage, taupe, sand,
+// ochre, rust, umber); two rows of eight
 export const PENS = [
-  ['#1e2324', 'Charcoal'], ['#2f4a4c', 'Deep teal'], ['#5f7672', 'Slate'], ['#93a08f', 'Sage'], ['#8a7660', 'Taupe'],
-  ['#d2ab86', 'Sand'], ['#b98a3e', 'Ochre'], ['#9a4f36', 'Rust'], ['#4e3125', 'Umber'], ['#f1e8d8', 'Cream'],
+  ['#ffffff', 'White'], ['#dcdcdc', 'Pale grey'], ['#b4b4b4', 'Light grey'], ['#7d7d7d', 'Grey'], ['#4a4a4a', 'Dark grey'], ['#111111', 'Black'],
+  ['#1e2324', 'Charcoal'], ['#f1e8d8', 'Cream'],
+  ['#2f4a4c', 'Deep teal'], ['#5f7672', 'Slate'], ['#93a08f', 'Sage'], ['#8a7660', 'Taupe'],
+  ['#d2ab86', 'Sand'], ['#b98a3e', 'Ochre'], ['#9a4f36', 'Rust'], ['#4e3125', 'Umber'],
 ];
 export const SIZES = [['thin', 0.007], ['medium', 0.015], ['thick', 0.032]]; // a sharp pencil, a crayon, a chunky crayon
 

@@ -776,7 +776,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const TOOLS_W = 270;
   const [strokes, setStrokes] = useState(start || []);
   const [live, setLive] = useState(null);
-  const [pen, setPen] = useState(PENS[0][0]);
+  const [pen, setPen] = useState('#1e2324'); // charcoal to start
   const [brush, setBrush] = useState('ink');
   const [shape, setShape] = useState(null); // Shapes: drag on the page to draw a circle, square, triangle, star or heart
   const [shapesOpen, setShapesOpen] = useState(false);
@@ -786,7 +786,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const [area, setArea] = useState(null);
   const S = useRef({});
   S.current = { strokes, pen, size, erase, bucket, tall, brush, shape };
-  const toolsH = 300; // (the brushes and the shapes take a row each)
+  const toolsH = 340; // (two rows of colours; the brushes and the shapes take a row each)
   const W = !area ? 0 : wideScreen ? Math.max(120, Math.floor(Math.min(area.h, area.w - TOOLS_W - 28)))
     : Math.max(120, Math.floor(Math.min(winW - 2 * GAP, tall ? (area.h - toolsH) / 2 : area.h - toolsH)));
   const Wref = useRef(W);
@@ -919,8 +919,8 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
           <View style={{ width: TOOLS_W, justifyContent: 'space-between' }}>
             <Text style={styles.editorTitle}>{title}</Text>
             <View style={{ gap: 22 }}>
-              {/* all the colours on one line, starting at the same left edge as the buttons below */}
-              <View style={{ flexDirection: 'row', gap: 3 }}>
+              {/* the colours in two rows of eight, starting at the same left edge as the buttons below */}
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 3, rowGap: 8, width: 8 * 26 }}>
                 {PENS.map(([hex, name]) => (
                   <Pressable key={hex} onPress={() => { setPen(hex); setErase(false); }} accessibilityLabel={t('{name} pen', { name: t(name) })} hitSlop={3}
                     style={[styles.swatch, { width: 23, height: 23, borderRadius: 11.5, backgroundColor: hex }, !erase && pen === hex && styles.swatchOn]} />
@@ -947,7 +947,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
             <>
               {paper}
               <View style={{ width: W, marginTop: 30, gap: 24 }}>{/* the tools line up with the page's left and right edges */}
-                {swatches(W, PENS.length)}
+                {swatches(W, 8)}
                 {brushesEl}
                 {sizesEl}
                 {shapesEl}
