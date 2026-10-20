@@ -13,7 +13,7 @@
 //   at the alarm time the moon moves away very slowly (sunrise), the chosen sound or music fades in very slowly, and a
 //   pill-shaped Snooze pops up.
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, Image, ImageBackground, PanResponder, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { fonts } from '../theme';
 import { LockIcon } from './Chrome';
 import ParentGate from './ParentGate';
@@ -28,7 +28,9 @@ import { thunk, tick, withTap } from '../haptics';
 const SUN = require('../../assets/nightlight-sun.png');
 const CORONA = require('../../assets/nightlight-corona.png');
 const CREAM = '#f4e2cf';
-const BASE = '#2c2c2f'; // the popup's dark grey
+const BASE = '#1e1e20'; // the popup's dark grey (a deep, quiet grey at night)
+const GRAIN = require('../../assets/noise.png'); // a fine grain over the alarm popup, so it feels like a real object
+const AMBER = '#c8862a', AMBER_INK = '#2c1a05'; // the old amber display and its dark, amber-tinted letters
 const SNOOZE_MIN = 9;
 
 const toMin = (hm) => { const [h, m] = String(hm || '07:00').split(':').map(Number); return h * 60 + m; };
@@ -190,6 +192,11 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
   const size = Math.max(150, Math.min(200, wide ? area.height * 0.42 : area.width * 0.5));
   const name = (id) => { const tr = TRACKS.find((x) => x.id === id); return tr ? (tr.mine ? tr.name : t(tr.name)) : id; };
   const close = () => { onTime(draft); onClose(); };
+  // every way to wake up, in one ring: the nature sounds, the music, then the family's own
+  const choices = [...WAKE_GROUPS[0], ...WAKE_GROUPS[1], ...TRACKS.filter((x) => x.mine).map((x) => x.id)];
+  const at = Math.max(0, choices.indexOf(sound));
+  const step = (d) => onSound(choices[(at + d + choices.length) % choices.length]);
+  const knobDeg = -150 + (at / Math.max(1, choices.length - 1)) * 300; // the knob's line turns a notch per choice
   return (
     <Animated.View style={[StyleSheet.absoluteFill, styles.scrim, { opacity: fade }]} onStartShouldSetResponder={() => true} onResponderRelease={close}>
       <View style={[styles.popup, wide && { maxWidth: 640 }]} onStartShouldSetResponder={() => true}>
@@ -199,24 +206,28 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
             <View style={[styles.knob, on && { backgroundColor: '#1b1b1d', transform: [{ translateX: 20 }] }]} />
           </Pressable>
         </View>
-        <View style={{ flexDirection: wide ? 'row' : 'column', alignItems: 'center', gap: wide ? 24 : 6, marginTop: 8, opacity: on ? 1 : 0.5 }}>
-          <View style={{ marginBottom: wide ? 0 : 22 }}><FingerWheel size={size} value={draft} onChange={setDraft} label={t('Alarm time')} /></View>
-          <View style={{ width: wide ? 300 : '100%' }}>
-            <Text style={[styles.small, { marginBottom: 12 }]}>{t('Wake up with')}</Text>
-            {[WAKE_GROUPS[0], [...WAKE_GROUPS[1], ...TRACKS.filter((x) => x.mine).map((x) => x.id)]].map((ids, gi) => (
-              <View key={gi} style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 9, marginBottom: 9 }}>
-                {ids.map((id) => (
-                  <Pressable key={id} onPress={withTap(() => onSound(id))} hitSlop={4} accessibilityRole="button" accessibilityState={{ selected: sound === id }} style={[styles.chip, sound === id && styles.chipOn]}>
-                    <Text style={[styles.chipText, sound === id && { color: '#151516' }]}>{name(id)}</Text>
-                  </Pressable>
-                ))}
+        <View style={{ flexDirection: wide ? 'row' : 'column', alignItems: 'center', gap: wide ? 28 : 0, marginTop: 8, opacity: on ? 1 : 0.5 }}>
+          <FingerWheel size={size} value={draft} onChange={setDraft} label={t('Alarm time')} />
+          {/* how to wake up: one amber display and a small knob beside it (turn it, or tap the display, for the next) */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginVertical: wide ? 0 : 26 }}>
+            <Pressable onPress={withTap(() => step(1), thunk)} style={styles.lcd} accessibilityRole="adjustable" accessibilityLabel={t('Wake up with')} accessibilityValue={{ text: name(sound) }}
+              accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]} onAccessibilityAction={(e) => step(e.nativeEvent.actionName === 'increment' ? 1 : -1)}>
+              <Text style={styles.lcdLabel}>{t('Wake up with')}</Text>
+              <Text style={styles.lcdText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{name(sound)}</Text>
+            </Pressable>
+            <Pressable onPress={withTap(() => step(1), thunk)} onLongPress={withTap(() => step(-1), thunk)} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Next')}
+              style={styles.smallKnob}>
+              <View style={{ position: 'absolute', left: 0, top: 0, width: 46, height: 46, alignItems: 'center', transform: [{ rotate: `${knobDeg}deg` }] }}>
+                <View style={{ marginTop: 6, width: 2.5, height: 11, borderRadius: 1.5, backgroundColor: AMBER }} />
               </View>
-            ))}
+            </Pressable>
           </View>
         </View>
         <Pressable onPress={withTap(() => { onTime(draft); if (!on) onOn(true); onClose(); })} hitSlop={10} style={styles.donePill} accessibilityRole="button">
           <Text style={styles.donePillText}>{on ? t('Done') : t('Set alarm')}</Text>
         </Pressable>
+        {/* a fine grain over everything, for a tactile, made-of-something feel */}
+        <ImageBackground pointerEvents="none" source={GRAIN} resizeMode="repeat" style={[StyleSheet.absoluteFill, { borderRadius: 28, overflow: 'hidden' }]} imageStyle={{ opacity: 0.9 }} />
       </View>
     </Animated.View>
   );
@@ -442,19 +453,24 @@ const styles = StyleSheet.create({
   snoozeText: { color: '#1b1b1d', fontFamily: fonts.ui, fontSize: 19, fontWeight: '500', letterSpacing: 1.2 },
   // the alarm popup: dark grey, soft (neumorphic) shapes lit from the top left
   scrim: { backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 16 },
-  popup: { width: '100%', maxWidth: 380, backgroundColor: BASE, borderRadius: 28, paddingHorizontal: 20, paddingTop: 16, paddingBottom: 18, alignItems: 'center', boxShadow: '0 24px 60px rgba(0,0,0,0.75)' },
+  popup: { width: '100%', maxWidth: 380, backgroundColor: BASE, borderRadius: 28, paddingHorizontal: 20, paddingTop: 16, paddingBottom: 18, alignItems: 'center', boxShadow: '0 24px 60px rgba(0,0,0,0.8)' },
   // the dial: one flat face, its edge just slightly rounded (a soft light rim at the top left, a soft dark one at the bottom right)
-  wheel: { backgroundColor: BASE, alignItems: 'center', justifyContent: 'center', boxShadow: '-9px -9px 20px rgba(255,255,255,0.06), 12px 12px 26px rgba(0,0,0,0.7), inset 2px 2px 3px rgba(255,255,255,0.07), inset -3px -3px 5px rgba(0,0,0,0.35)' },
-  dimple: { backgroundColor: '#272729', boxShadow: 'inset 5px 5px 8px rgba(0,0,0,0.75), inset -3px -3px 6px rgba(255,255,255,0.08)' },
+  wheel: { backgroundColor: BASE, alignItems: 'center', justifyContent: 'center', boxShadow: '-8px -8px 18px rgba(255,255,255,0.04), 12px 12px 26px rgba(0,0,0,0.8), inset 2px 2px 3px rgba(255,255,255,0.05), inset -3px -3px 5px rgba(0,0,0,0.45)' },
+  dimple: { backgroundColor: '#19191b', boxShadow: 'inset 5px 5px 8px rgba(0,0,0,0.85), inset -3px -3px 6px rgba(255,255,255,0.06)' },
   wheelTime: { color: CREAM, fontFamily: fonts.ui, fontSize: 17, fontWeight: '300', letterSpacing: 0.8 }, // small, so it keeps clear of the finger hole
-  popTitle: { flex: 1, color: CREAM, fontFamily: fonts.ui, fontWeight: '700', fontSize: 24 }, // like the other page titles
+  popTitle: { flex: 1, color: '#bdb9b3', fontFamily: fonts.ui, fontWeight: '700', fontSize: 24 }, // like the other page titles, a light grey
   wheelNum: { position: 'absolute', width: 30, textAlign: 'center', color: 'rgba(244,226,207,0.62)', fontFamily: fonts.ui, fontSize: 12, fontWeight: '400' },
   chip: { paddingHorizontal: 13, height: 34, borderRadius: 17, backgroundColor: BASE, alignItems: 'center', justifyContent: 'center', boxShadow: '-3px -3px 6px rgba(255,255,255,0.05), 3px 3px 7px rgba(0,0,0,0.6)' },
+  // the amber display: an old backlit LCD, its letters dark with an amber tint; and the small knob beside it
+  lcd: { width: 210, height: 58, borderRadius: 8, backgroundColor: AMBER, paddingHorizontal: 14, justifyContent: 'center', boxShadow: 'inset 2px 3px 6px rgba(0,0,0,0.45), inset -1px -1px 2px rgba(255,220,160,0.35), 0 0 14px rgba(200,134,42,0.18)' },
+  lcdLabel: { color: 'rgba(44,26,5,0.6)', fontFamily: fonts.ui, fontSize: 9.5, fontWeight: '700', letterSpacing: 1.2, textTransform: 'uppercase' },
+  lcdText: { color: AMBER_INK, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', fontSize: 17, fontWeight: '600', marginTop: 2, letterSpacing: 0.3 },
+  smallKnob: { width: 46, height: 46, borderRadius: 23, backgroundColor: BASE, boxShadow: '-4px -4px 9px rgba(255,255,255,0.045), 5px 5px 11px rgba(0,0,0,0.8), inset 1px 1px 2px rgba(255,255,255,0.05), inset -2px -2px 3px rgba(0,0,0,0.4)' },
   chipOn: { backgroundColor: '#8f8578' }, // the chosen one: a dim warm grey, easy on the eyes at night
   chipText: { color: 'rgba(244,226,207,0.85)', fontFamily: fonts.ui, fontSize: 13 },
-  switch: { width: 48, height: 28, borderRadius: 14, padding: 3, backgroundColor: '#242427', boxShadow: 'inset 2px 2px 5px rgba(0,0,0,0.6), inset -2px -2px 4px rgba(255,255,255,0.05)' },
+  switch: { width: 48, height: 28, borderRadius: 14, padding: 3, backgroundColor: '#161618', boxShadow: 'inset 2px 2px 5px rgba(0,0,0,0.7), inset -2px -2px 4px rgba(255,255,255,0.04)' },
   switchOn: { backgroundColor: '#8f8578' },
   knob: { width: 22, height: 22, borderRadius: 11, backgroundColor: '#8a8a8e' },
-  donePill: { marginTop: 14, paddingHorizontal: 32, height: 42, borderRadius: 21, borderWidth: 1, borderColor: 'rgba(244,226,207,0.5)', alignItems: 'center', justifyContent: 'center' },
+  donePill: { marginTop: 4, paddingHorizontal: 32, height: 42, borderRadius: 21, borderWidth: 1, borderColor: 'rgba(244,226,207,0.5)', alignItems: 'center', justifyContent: 'center' },
   donePillText: { color: CREAM, fontFamily: fonts.ui, fontSize: 15, fontWeight: '500', letterSpacing: 0.5 },
 });
