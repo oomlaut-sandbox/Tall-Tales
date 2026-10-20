@@ -20,7 +20,9 @@ import ParentGate from '../components/ParentGate';
 import { useT } from '../i18n';
 import { printStory, shareStoryPdf } from '../pdf';
 import { publishToStore } from '../storeAdmin';
-import { loadJSON, saveJSON } from '../storage';
+import { keepFile, loadJSON, saveJSON } from '../storage';
+import { DrawEditor } from './Notebook';
+import { strokesToImage } from '../components/Strokes';
 
 const MAX_PX = 1600;
 const MAX_PAGES = 40; // a soft limit, so books stay quick to open, print and share
@@ -204,9 +206,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const cover = draft.cover || null;
   const setCover = (c) => setDraft((d) => ({ ...d, cover: c }));
   const openCover = () => { setPageDone(false); setCoverAsk(false); setCoverTitling(!!(cover && cover.title)); setCoverOpen(true); };
-  const pickCover = async (source) => {
+  const pickCover = async (source, given) => {
     try {
-      const ph = await choosePhoto(source);
+      const ph = given || await choosePhoto(source);
       if (!ph) return;
       if (cover && cover.uri) dropPicture(cover.uri);
       setCover({ ...ph, title: cover ? cover.title || null : null });
@@ -263,10 +265,21 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   // ('page2': a second picture in the words square, for a page of two pictures and no words)
   const [camGate, setCamGate] = useState(null); // 'page' | 'cover' waiting for the grown-up check
   const pickImage = () => setImgAsk('page');
-  const placeImage = async (target, source) => {
-    if (target === 'cover') return pickCover(source);
+  // Make a drawing: the notebook's drawing tool, full screen; Done turns the drawing into the square's picture
+  const [drawFor, setDrawFor] = useState(null); // 'page' | 'page2' | 'cover'
+  const placeDrawing = async (target, strokes) => {
+    if (!strokes || !strokes.length) return;
     try {
-      const ph = await choosePhoto(source);
+      const tmp = await strokesToImage(strokes, 1600);
+      const uri = await keepFile(tmp, `stories/${draft.id}`, `draw-${Date.now()}.png`);
+      await placeImage(target, null, { uri, w: 1600, h: 1600 });
+    } catch (e) { toast(tr('That drawing couldn’t be saved. Try again.')); }
+  };
+  // given: a picture already made (a drawing), instead of choosing one
+  const placeImage = async (target, source, given) => {
+    if (target === 'cover') return pickCover(source, given);
+    try {
+      const ph = given || await choosePhoto(source);
       if (!ph) return;
       if (target === 'page2') {
         if (page.uri2) dropPicture(page.uri2);
@@ -723,9 +736,14 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); placeImage(t, 'library'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Choose a picture')}</Text></Pressable>
             {/* a photo of a drawing, say; the camera only opens after the grown-up check */}
             <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setCamGate(t); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Take a photo')}</Text></Pressable>
+            <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setDrawFor(t); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Make a drawing')}</Text></Pressable>
             <Pressable onPress={() => setImgAsk(null)} style={[styles.choiceBtn, { marginTop: 14 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Cancel')}</Text></Pressable>
           </View>
         </View>
+      ) : null}
+      {drawFor ? (
+        <DrawEditor insets={insets} title={drawFor === 'cover' ? tr('Drawing · Cover') : tr('Drawing · Page {n}', { n: i + 1 })}
+          onDone={(strokes) => { const t = drawFor; setDrawFor(null); placeDrawing(t, strokes); }} />
       ) : null}
       <ParentGate visible={!!camGate} reason="Taking a photo opens the camera." onPass={() => { const t = camGate; setCamGate(null); setTimeout(() => placeImage(t, 'camera'), 250); }} onCancel={() => setCamGate(null)} />
       <StoryGuide visible={guide} onClose={closeGuide} onIdeas={onIdeas ? () => { closeGuide(); onIdeas(); } : null} area={wide ? { left: BL.leftW, right: BL.rightW } : { top: BL.topH, bottom: BL.barH }} />

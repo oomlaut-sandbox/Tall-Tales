@@ -22,7 +22,7 @@ import ParentGate from '../components/ParentGate';
 import { StrokesView } from '../components/Strokes';
 import { EarArt } from '../components/Ear';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
-import { PENS, SIZES, makeFill, near } from '../strokes';
+import { BRUSHES, PENS, SIZES, makeFill, near } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
 import { STORIES } from '../story';
@@ -767,8 +767,9 @@ function UndoIcon() {
   );
 }
 
-// ---- The drawing editor: a page to draw on with your finger, with pens, an eraser, undo and clear ----
-function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
+// ---- The drawing editor: a page to draw on with your finger, with brushes (ink, watercolour, pencil), colours,
+// sizes, a fill, an eraser, undo and clear. (The book maker uses it too, for Make a drawing.) ----
+export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
   const t = useT();
   const { width: winW, height: winH } = useWindowDimensions();
   const wideScreen = winW > winH * 1.1; // sideways: the page on the left, the tools on the right
@@ -776,13 +777,14 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
   const [strokes, setStrokes] = useState(start || []);
   const [live, setLive] = useState(null);
   const [pen, setPen] = useState(PENS[0][0]);
+  const [brush, setBrush] = useState('ink');
   const [size, setSize] = useState(SIZES[1][1]);
   const [erase, setErase] = useState(false);
   const [bucket, setBucket] = useState(false); // the paint bucket: a tap fills the shape with the colour
   const [area, setArea] = useState(null);
   const S = useRef({});
-  S.current = { strokes, pen, size, erase, bucket, tall };
-  const toolsH = 200;
+  S.current = { strokes, pen, size, erase, bucket, tall, brush };
+  const toolsH = 250; // (the brushes take a row)
   const W = !area ? 0 : wideScreen ? Math.max(120, Math.floor(Math.min(area.h, area.w - TOOLS_W - 28)))
     : Math.max(120, Math.floor(Math.min(winW - 2 * GAP, tall ? (area.h - toolsH) / 2 : area.h - toolsH)));
   const Wref = useRef(W);
@@ -805,7 +807,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
         if (f) setStrokes((s) => [...s, f]);
         return;
       }
-      cur.current = { c: S.current.pen, s: S.current.size, p: [+x.toFixed(4), +y.toFixed(4)] };
+      cur.current = { c: S.current.pen, s: S.current.size, b: S.current.brush, p: [+x.toFixed(4), +y.toFixed(4)] };
       setLive({ ...cur.current });
     },
     onPanResponderMove: (e) => {
@@ -857,6 +859,16 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
       </Pressable>
     </View>
   );
+  // the brushes: a brush pen (ink), soft watercolour, a fine pencil
+  const brushesEl = (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+      {BRUSHES.map(([k, name]) => (
+        <Pressable key={k} onPress={() => { setBrush(k); setErase(false); setBucket(false); }} style={[styles.toolWide, !erase && !bucket && brush === k && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t(name)}>
+          <Text style={styles.toolText}>{t(name)}</Text>
+        </Pressable>
+      ))}
+    </View>
+  );
   const undoEl = (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
       <Pressable onPress={() => setStrokes((s) => s.slice(0, -1))} disabled={!strokes.length} style={[styles.tool, !strokes.length && { opacity: 0.35 }]} accessibilityLabel={t('Undo')}>
@@ -886,6 +898,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
                     style={[styles.swatch, { width: 25, height: 25, borderRadius: 12.5, backgroundColor: hex }, !erase && pen === hex && styles.swatchOn]} />
                 ))}
               </View>
+              {brushesEl}
               {sizesEl}
               {undoEl}
             </View>
@@ -906,6 +919,7 @@ function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
               {paper}
               <View style={{ width: W, marginTop: 30, gap: 24 }}>{/* the tools line up with the page's left and right edges */}
                 {swatches(W)}
+                {brushesEl}
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', rowGap: 12 }}>
                   {sizesEl}
                   {undoEl}

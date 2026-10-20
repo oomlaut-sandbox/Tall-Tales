@@ -129,3 +129,89 @@ export function inFill(st, x, y) {
   for (let i = 0; i < f.length; i += 3) if (f[i] === cy && cx >= f[i + 1] && cx < f[i + 2]) return true;
   return false;
 }
+
+// ---- Brushes: how a stroke looks (kept on the stroke as `b`; older strokes, without one, draw as ink) ----
+//   ink:   a smooth line that swells where you slow down and thins where you move fast, with tapered ends,
+//          like a brush pen
+//   water: watercolour: soft, see-through, a little bleeding at the edges; where strokes cross they deepen
+//   pencil: a fine, slightly grainy line
+export const BRUSHES = [['ink', 'Ink'], ['water', 'Watercolour'], ['pencil', 'Pencil']];
+
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+// the stroke's points in pixels, softened (corner cutting) so quick scribbles still come out as curves
+function smoothPts(st, w) {
+  const p = st.p || [];
+  let pts = [];
+  for (let i = 0; i + 1 < p.length; i += 2) pts.push([p[i] * w, p[i + 1] * w]);
+  for (let k = 0; k < 2 && pts.length > 2; k++) {
+    const out = [pts[0]];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const [ax, ay] = pts[i], [bx, by] = pts[i + 1];
+      out.push([ax * 0.75 + bx * 0.25, ay * 0.75 + by * 0.25], [ax * 0.25 + bx * 0.75, ay * 0.25 + by * 0.75]);
+    }
+    out.push(pts[pts.length - 1]);
+    pts = out;
+  }
+  return pts;
+}
+const circleD = (x, y, r) => `M${(x - r).toFixed(1)} ${y.toFixed(1)}a${r.toFixed(1)} ${r.toFixed(1)} 0 1 0 ${(2 * r).toFixed(1)} 0a${r.toFixed(1)} ${r.toFixed(1)} 0 1 0 ${(-2 * r).toFixed(1)} 0Z`;
+
+// the brush-pen outline: a filled shape whose width follows the speed of the finger
+export function inkD(st, w) {
+  const base = Math.max(1, (st.s || 0.01) * w) / 2;
+  const pts = smoothPts(st, w);
+  if (!pts.length) return '';
+  const n = pts.length;
+  if (n < 3 || Math.hypot(pts[n - 1][0] - pts[0][0], pts[n - 1][1] - pts[0][1]) < base * 0.6) return circleD(pts[0][0], pts[0][1], base * 1.05); // a dot
+  // width at each point: slower is fuller (the distance between points stands for speed), and the ends taper
+  const ws = [];
+  let v = 0;
+  const step = (i) => (i ? Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]) : 0);
+  for (let i = 0; i < n; i++) {
+    v = i < 2 ? step(1) : v * 0.82 + step(i) * 0.18;
+    const f = clamp(1.28 - v / (base * 2.6 + 4), 0.45, 1.25);
+    const a = Math.min(1, 0.3 + 0.7 * (i / Math.min(6, n - 1)));
+    const b = Math.min(1, 0.18 + 0.82 * ((n - 1 - i) / Math.min(10, n - 1)));
+    ws.push(base * f * Math.min(a, b));
+  }
+  const L = [], R = [];
+  for (let i = 0; i < n; i++) {
+    const [ax, ay] = pts[Math.max(0, i - 1)], [bx, by] = pts[Math.min(n - 1, i + 1)];
+    let tx = bx - ax, ty = by - ay; const len = Math.hypot(tx, ty) || 1; tx /= len; ty /= len;
+    L.push([pts[i][0] - ty * ws[i], pts[i][1] + tx * ws[i]]);
+    R.push([pts[i][0] + ty * ws[i], pts[i][1] - tx * ws[i]]);
+  }
+  const f1 = (q) => `${q[0].toFixed(1)} ${q[1].toFixed(1)}`;
+  const through = (arr) => { // smooth curves through the midpoints
+    let d = '';
+    for (let i = 1; i < arr.length - 1; i++) d += ` Q${f1(arr[i])} ${f1([(arr[i][0] + arr[i + 1][0]) / 2, (arr[i][1] + arr[i + 1][1]) / 2])}`;
+    return d + ` L${f1(arr[arr.length - 1])}`;
+  };
+  // round ends: a curve out past the last point and back
+  const cap = (i, dir) => {
+    const [ax, ay] = pts[Math.max(0, i - dir)], [bx, by] = pts[i];
+    let tx = bx - ax, ty = by - ay; const len = Math.hypot(tx, ty) || 1;
+    return [bx + (tx / len) * ws[i] * 1.3, by + (ty / len) * ws[i] * 1.3];
+  };
+  const Rr = R.slice().reverse();
+  return `M${f1(L[0])}${through(L)} Q${f1(cap(n - 1, 1))} ${f1(Rr[0])}${through(Rr)} Q${f1(cap(0, -1))} ${f1(L[0])}Z`;
+}
+
+// What to paint for one stroke, as layers any canvas can draw (Skia on phones, SVG / canvas in the preview):
+//   { d, fill: true } a filled shape, or { d, width } a line; alpha 0..1; blur in pixels; multiply: deepens
+//   where it crosses other colour; grain: a slightly rough, pencil-like edge
+export function layersFor(st, w) {
+  if (st.f) return [{ d: fillD(st, w), fill: true, alpha: 0.94, blur: 0.5 }];
+  const lw = Math.max(1, (st.s || 0.01) * w);
+  const b = st.b || 'ink';
+  const light = /^#f{3,6}$/i.test(st.c || '');
+  if (b === 'water') {
+    const d = strokeD(st, w);
+    return [
+      { d, width: lw * 1.9, alpha: light ? 0.5 : 0.2, blur: lw * 0.55, multiply: !light }, // the wet bloom
+      { d, width: lw * 1.3, alpha: light ? 0.45 : 0.24, blur: lw * 0.14, multiply: !light }, // the body of the stroke
+    ];
+  }
+  if (b === 'pencil') return [{ d: strokeD(st, w), width: Math.max(1, lw * 0.5), alpha: 0.82, grain: true }];
+  return [{ d: inkD(st, w), fill: true, alpha: 1, blur: 0.3 }];
+}
