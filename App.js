@@ -73,7 +73,7 @@ function Root() {
   // the Audio Player opening (the music note on a bar) always comes out in front: the menus step aside
   useEffect(() => { let was = getAmbient().showPlayer; return onAmbient((st) => { if (st.showPlayer && !was) { setDrawer(false); setPlayOpen(false); } was = st.showPlayer; }); }, []);
   const [profileGate, setProfileGate] = useState(false); // the profile is for grown-ups
-  const [prefs, setPrefs] = useState({ mode: 'page', sound: false, speed: 'normal', voice: 'narrator' }) // Page by Page narration by default;
+  const [prefs, setPrefs] = useState({ mode: 'page', sound: true, speed: 'normal', voice: 'narrator' }) // Page by Page narration by default;
   const [userStories, setUserStories] = useState([]);
   const [removed, setRemoved] = useState([]); // built-in books taken off the shelf (can be restored)
   useEffect(() => { loadJSON('removedBooks', []).then((r) => Array.isArray(r) && setRemoved(r)); }, []);
@@ -104,14 +104,15 @@ function Root() {
   useEffect(() => {
     loadUserStories().then(setUserStories).catch(() => {});
     loadJSON('prefs', null).then((p) => {
-      // Sound effects start off every time the app opens (they can be switched on in the Playback menu).
-      if (p) p = { ...p, sound: false, soundOffDefault: true };
+      // Sound effects (page turns) are on by default; switched off in the Playback menu, they stay off.
+      // (They used to start off every time: switched on once for everyone, then the choice is kept.)
+      if (p && !p.soundOnDefault) p = { ...p, sound: true, soundOnDefault: true };
       // Every time the app opens, playback starts as Page by Page (it can be changed in Playback Options).
       if (p) p = { ...p, mode: 'page' };
       // Huge text was removed: Large is the biggest now.
       if (p && p.textScale > 1.25) p = { ...p, textScale: 1.25 };
       if (p) setPrefs((x) => ({ ...x, ...p }));
-      else setPrefs((x) => ({ ...x, soundOffDefault: true }));
+      else setPrefs((x) => ({ ...x, sound: true, soundOnDefault: true }));
       prefsLoaded.current = true;
     });
   }, []);
