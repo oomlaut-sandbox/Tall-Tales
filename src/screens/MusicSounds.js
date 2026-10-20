@@ -9,7 +9,7 @@ import { Bar, Burger, WithBar } from '../components/Chrome';
 import AmbientControls from '../components/AmbientControls';
 import { useT } from '../i18n';
 
-const BAND_FELT = require('../../assets/band-about.jpg');
+const BAND_FELT = require('../../assets/band-music.jpg'); // Jörg's dark brown felt, stitched along the bottom
 
 export default function MusicSounds({ u, openMenu }) {
   const t = useT();
@@ -31,7 +31,7 @@ export default function MusicSounds({ u, openMenu }) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: DESK_BG },
-  band: { backgroundColor: colors.red || '#b5432f', paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
+  band: { backgroundColor: '#3a2a20' /* the brown felt's colour */, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 28, paddingBottom: 140, alignItems: 'center' }, // room at the bottom for the tape player
   col: { width: '100%', maxWidth: 520, gap: 14 },
