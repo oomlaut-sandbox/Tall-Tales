@@ -161,7 +161,7 @@ export default function Playlists({ u, openMenu, shelf, onPlay }) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: DESK_BG },
   band: { paddingBottom: 6, paddingHorizontal: 24 }, // just the title, on the felt (no banner)
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.62)', textShadowOffset: { width: 1.5, height: 2.5 }, textShadowRadius: 3.5 /* felt letters, a little raised off the felt */, transform: [{ translateY: -3 }] },
+  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 24, paddingBottom: 140, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 14 },
   p: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#e6e6e6' },

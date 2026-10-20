@@ -165,7 +165,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: DESK_BG },
   band: { backgroundColor: '#4a4a4a', paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, textShadowColor: 'rgba(0,0,0,0.62)', textShadowOffset: { width: 1.5, height: 2.5 }, textShadowRadius: 3.5 /* felt letters, a little raised off the felt */, transform: [{ translateY: -3 }] },
+  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 24, paddingBottom: 40, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 12 },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14 },
