@@ -1,12 +1,12 @@
 // Haptic feedback: small clicks you feel under the finger on the dials, knobs, sliders and buttons.
-// On by default; Settings → Haptic feedback turns it off (for the whole phone, every profile).
+// Off by default; Settings → Haptic feedback turns it on (for the whole phone, every profile).
 import * as Haptics from 'expo-haptics';
 import { loadJSON, saveJSON } from './storage';
 
 
-let on = true;
+let on = false; // off by default: Settings → Haptic feedback switches it on
 const listeners = new Set();
-loadJSON('haptics', true).then((v) => { on = v !== false; listeners.forEach((fn) => fn(on)); }).catch(() => {});
+loadJSON('haptics', false).then((v) => { on = v === true; listeners.forEach((fn) => fn(on)); }).catch(() => {});
 export const hapticsOn = () => on;
 export function setHapticsOn(v) { on = !!v; saveJSON('haptics', on).catch(() => {}); listeners.forEach((fn) => fn(on)); if (on) tap(); }
 export function onHaptics(fn) { listeners.add(fn); return () => listeners.delete(fn); }
