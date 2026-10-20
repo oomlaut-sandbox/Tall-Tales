@@ -167,7 +167,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
           {/* (a short video tour will go here later) */}
           {/* the Idea Room, at the very top: ideas for every kind of book a family can make */}
           {/* in Jörg's green felt patch, the words inside its stitching */}
-          <Pressable onPress={onIdeas} accessibilityRole="button" style={[styles.ideas, { width: feltW, height: Math.round(feltW * 805 / 1100) }]}>
+          <Pressable onPress={onIdeas} accessibilityRole="button" style={[styles.ideas, { width: feltW, height: Math.round(feltW * 805 / 1100), borderRadius: feltW * 98 / 1100 /* the felt's own corners, so the shadow matches */ }]}>
             <Image source={IDEAS_FELT} style={{ position: 'absolute', left: 0, top: 0, width: feltW, height: Math.round(feltW * 805 / 1100) }} resizeMode="stretch" />
             <View style={{ flex: 1, gap: 6, justifyContent: 'center', paddingLeft: '12%', paddingRight: '8%', paddingVertical: '8%' }}>
               <Text style={styles.ideasTitle}>{t('Ideas Room')}</Text>
