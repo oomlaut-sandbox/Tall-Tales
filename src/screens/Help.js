@@ -223,7 +223,8 @@ const styles = StyleSheet.create({
   videoPlay: { color: 'rgba(255,255,255,0.85)', fontSize: 34 },
   videoText: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 14 },
   searchWrap: { height: 44, borderRadius: 22, overflow: 'hidden', backgroundColor: '#d6d6d6' }, // light grey
-  search: { flex: 1, backgroundColor: 'transparent', paddingHorizontal: 18, paddingTop: 0, paddingBottom: Platform.OS === 'ios' ? 14 : 4, // sits in the middle top to bottom (iOS sets the letters a little low)
+  // a single-line field the full height of the pill, no padding top or bottom: iOS then sets the letters in the middle by itself
+  search: { height: 44, backgroundColor: 'transparent', paddingHorizontal: 18, paddingVertical: 0, textAlignVertical: 'center', includeFontPadding: false,
     fontFamily: fonts.ui, fontSize: 16, color: colors.ink, outlineWidth: 0 },
   ideas: { borderRadius: 26, shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, elevation: 5 },
   ideasTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.white },

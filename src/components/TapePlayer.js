@@ -99,8 +99,8 @@ export default function TapePlayer({ onMenu }) {
       <View style={[styles.inner, { width: PW, height: PH, borderRadius: R * f }]}>
         {s.night ? null : <Image source={BODY} style={{ width: PW, height: PH }} resizeMode="stretch" />}
         {/* Play turns green while something plays */}
-        {playing && !s.night ? <Image pointerEvents="none" source={PLAY_ON} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} resizeMode="stretch" /> : null}
-        {playing && s.night ? <View pointerEvents="none" style={[at(PLAY.x + 20, PLAY.y + 20, PLAY.w - 40, PLAY.h - 40), { borderRadius: 60 * f, backgroundColor: 'rgba(214,150,70,0.28)' }]} /> : null}
+        {/* the green felt Play button while playing, day and night alike */}
+        {playing ? <Image pointerEvents="none" source={PLAY_ON} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} resizeMode="stretch" /> : null}
         {/* at night (the nightlight is on) the felt is turned down to a dark grey */}
 
         {/* the felt line at the top right closes the player */}
