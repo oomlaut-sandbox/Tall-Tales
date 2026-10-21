@@ -54,6 +54,7 @@ const VOICE_RECORDING = {
   android: { ...RecordingPresets.HIGH_QUALITY.android, sampleRate: 48000 },
 };
 import { checkVolume } from '../volume';
+import { loadJSON, saveJSON } from '../storage';
 import { playSound, playSwitch, setEffects, setEffectsVolume, suspendSounds } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { shareInvite } from '../invite';
@@ -552,6 +553,23 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     runFlip(dir > 0 ? 1 : 0, 900, () => endFlip(dir, true));
     return true;
   };
+
+  // The first time a book opens: after a short pause the bottom right corner of the page lifts halfway and
+  // settles back, to show that pages turn like paper (only ever once; not in Listen Only)
+  const hinted = useRef(false);
+  useEffect(() => {
+    if (!size || hinted.current || listen) return undefined;
+    hinted.current = true;
+    const tm = setTimeout(async () => {
+      if (await loadJSON('hintPeelBook', false)) return;
+      if (busy.current || st.current.turning || !canTurn(1) || !supportsCurl) return;
+      saveJSON('hintPeelBook', true);
+      busy.current = true;
+      await startFlip(1, 'right');
+      runFlip(0.3, 520, () => setTimeout(() => runFlip(0, 360, () => endFlip(1, false)), 120));
+    }, 1400);
+    return () => clearTimeout(tm);
+  }, [size]);
 
   // Swipes: left or up turns forward, right or down turns back. The page follows the finger.
   const drag = useRef({});

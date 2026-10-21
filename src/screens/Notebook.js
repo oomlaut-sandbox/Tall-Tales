@@ -24,6 +24,7 @@ import { EarArt } from '../components/Ear';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
 import { BRUSHES, PENS, SHAPES, SIZES, makeFill, near, shapePts } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
+import { loadJSON, saveJSON } from '../storage';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
 import { STORIES } from '../story';
 import { playKey, playSound } from '../sound';
@@ -226,6 +227,22 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   };
   const turnRef = useRef(turn);
   turnRef.current = turn;
+  // The first time the notebook opens: after a short pause the bottom right corner lifts halfway and settles back,
+  // so it's clear the pages turn like paper (only ever once)
+  useEffect(() => {
+    if (intro || total < 2) return undefined;
+    let live = true;
+    const tm = setTimeout(async () => {
+      if (!live || (await loadJSON('hintPeelNotebook', false))) return;
+      const t0 = await prepare(1);
+      if (!t0) return;
+      saveJSON('hintPeelNotebook', true);
+      if (t0.plain) { busy.current = false; return; }
+      const lift = (to, ms, then) => { const from = prog.current, s0 = Date.now(); const step = () => { const x = Math.min(1, (Date.now() - s0) / ms); setProgress(from + (to - from) * ease3(x)); if (x < 1) requestAnimationFrame(step); else then(); }; requestAnimationFrame(step); };
+      lift(0.3, 520, () => setTimeout(() => finish(t0, false), 120));
+    }, 1300);
+    return () => { live = false; clearTimeout(tm); };
+  }, [intro]);
   const next = () => { if (i >= total - 1) setNewAsk(true); else turn(1); };
 
   const addPage = (kind) => {
