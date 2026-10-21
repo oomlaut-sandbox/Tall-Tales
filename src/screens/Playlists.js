@@ -24,6 +24,8 @@ function Thumb({ s, size }) {
 }
 
 const TAPE = require('../../assets/playlist-tape.png');
+const BAND_FELT = require('../../assets/band-playlists.png'); // Jörg's brown felt banner
+const BAND_COLOR = '#7a5534'; // its colour (iPad, and the status bar strip)
 const ENVELOPE = require('../../assets/icon-envelope.png'); // share
 
 export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
@@ -61,12 +63,15 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
         </Pressable>
       </Bar>
     )}>
-      <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
-        <Text style={styles.title}>{pl ? nameOf(pl) : t('Playlists')}</Text>
+      <View style={[styles.band, { paddingTop: insets.top + 30 }, !IS_TABLET && { backgroundColor: 'transparent' }]}>
+        {/* Jörg's brown felt banner (phone); its soft bottom edge shows the desk, so the colour only fills the status bar strip */}
+        {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: insets.top + 2, backgroundColor: BAND_COLOR }} /> : null}
+        {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
+        <Text style={styles.title}>{t('Playlists')}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
         <View style={styles.col}>
-          {!pl ? (
+          {(
             <>
               {/* Jörg's felt cassette, centred, about half the column wide (its soft shadow is part of the picture) */}
               <Image source={TAPE} style={{ width: tapeW, height: tapeW * 675 / 920, alignSelf: 'center', marginBottom: 6 }} resizeMode="contain" accessibilityIgnoresInvertColors />
@@ -118,7 +123,16 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
                 <Text style={styles.pillText}>+  {t('New playlist')}</Text>
               </Pressable>
             </>
-          ) : (
+          )}
+        </View>
+      </ScrollView>
+      {/* changing a playlist: a large grey box pops up over the page (the bar stays below it) */}
+      {pl ? (
+        <View style={StyleSheet.absoluteFill}>
+          <Pressable style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.6)' }]} onPress={() => (adding ? setAdding(false) : setEdit(null))} accessible={false} />
+          <View pointerEvents="box-none" style={{ flex: 1, paddingTop: insets.top + 24, paddingBottom: 24, paddingHorizontal: 16, alignItems: 'center' }}>
+            <View style={styles.sheet}>
+              <ScrollView contentContainerStyle={{ padding: 20, gap: 14 }} keyboardShouldPersistTaps="handled">
             <>
               <TextInput value={pl.name} onChangeText={(name) => set(pl.id, { name })} style={styles.input} maxLength={30} accessibilityLabel={t('Playlist name')} placeholder={t('Playlist name')} placeholderTextColor="#888" />
               {adding ? (
@@ -164,16 +178,19 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
                 </>
               )}
             </>
-          )}
+              </ScrollView>
+            </View>
+          </View>
         </View>
-      </ScrollView>
+      ) : null}
     </WithBar>
   );
 }
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: DESK_BG },
-  band: { paddingBottom: 6, paddingHorizontal: 24 }, // just the title, on the felt (no banner)
+  band: { backgroundColor: BAND_COLOR, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
+  sheet: { width: '100%', maxWidth: 560, maxHeight: '100%', backgroundColor: '#2b2b2d', borderRadius: 24, overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.6)' }, // the edit box
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 24, paddingBottom: 140, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 14 },
