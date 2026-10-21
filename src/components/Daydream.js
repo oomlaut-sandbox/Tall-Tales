@@ -1,14 +1,30 @@
 // Daydream: the daytime sister of the nightlight (Listen Only). A calm video loops full screen, softly dimmed,
 // like a zen screensaver for the listener. Swipe left or right for the next video.
-// Each video is silent (the story and the music are what you hear) and loops seamlessly.
+// Each one is silent (the story and the music are what you hear): a seamlessly looping video, or a still picture.
 import React, { useEffect, useRef } from 'react';
-import { Animated, PanResponder, StyleSheet, View } from 'react-native';
+import { Animated, Easing, Image, PanResponder, StyleSheet, View } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 
 // the videos, in order (more to come: add them here)
 export const DAY_VIDEOS = [
   { id: 'trees', src: require('../../assets/daydream/trees.mp4') }, // sunlight through the leaves of a summer tree
+  { id: 'pebbles', image: require('../../assets/daydream/pebbles.jpg') }, // Jörg's felt pebbles (a still picture, drifting very slowly)
 ];
+
+// a still picture: it drifts very slowly closer and back, so it feels alive
+function Still({ src }) {
+  const z = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const loop = Animated.loop(Animated.sequence([
+      Animated.timing(z, { toValue: 1, duration: 30000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      Animated.timing(z, { toValue: 0, duration: 30000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+    ]));
+    loop.start();
+    return () => loop.stop();
+  }, []);
+  const scale = z.interpolate({ inputRange: [0, 1], outputRange: [1.02, 1.1] });
+  return <Animated.Image source={src} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%', transform: [{ scale }] }]} />;
+}
 
 function Clip({ src }) {
   const player = useVideoPlayer(src, (p) => {
@@ -41,7 +57,7 @@ export default function DaydreamVideo({ index = 0, onIndex, dim }) {
   return (
     <View style={StyleSheet.absoluteFill} {...pan.panHandlers}>
       <Animated.View style={[StyleSheet.absoluteFill, { opacity: fade, backgroundColor: '#000' }]}>
-        <Clip key={DAY_VIDEOS[i].id} src={DAY_VIDEOS[i].src} />
+        {DAY_VIDEOS[i].image ? <Still key={DAY_VIDEOS[i].id} src={DAY_VIDEOS[i].image} /> : <Clip key={DAY_VIDEOS[i].id} src={DAY_VIDEOS[i].src} />}
       </Animated.View>
       {/* the screen dims a little, like the nightlight (and fully, when the sleep timer runs out) */}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: dim }]} />

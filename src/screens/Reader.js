@@ -771,8 +771,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
               </Pressable>
               {/* the nightlight: a small light grey moon (Listen Only with the sunset sun) */}
               {canMoon ? (
-                <Pressable onPress={withTap(toggleNight)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Nightlight')} style={[styles.small, { marginTop: u * 4 }]}>
-                  <MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />
+                <Pressable onPress={withTap(toggleNight)} hitSlop={12} accessibilityRole="button" accessibilityLabel={dayOn ? tr('Close Daydream') : tr('Nightlight')} style={[styles.small, { marginTop: u * 4 }]}>
+                  {dayOn ? <SolidSun size={u * 4.6} color="#e0e0e0" /> : <MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />}
                 </Pressable>
               ) : null}
               {nightOn ? (
@@ -821,8 +821,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <MusicIcon size={u * 5.6} color="#8e8e8e" />
         </Pressable>
         {canMoon ? (
-          <Pressable onPress={withTap(toggleNight)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Nightlight')} style={[styles.small, { marginLeft: u * 4 }]}>
-            <MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />
+          <Pressable onPress={withTap(toggleNight)} hitSlop={12} accessibilityRole="button" accessibilityLabel={dayOn ? tr('Close Daydream') : tr('Nightlight')} style={[styles.small, { marginLeft: u * 4 }]}>
+            {dayOn ? <SolidSun size={u * 4.6} color="#e0e0e0" /> : <MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />}
           </Pressable>
         ) : null}
         {nightOn ? (
@@ -1070,5 +1070,18 @@ function ListenChoice({ area, onDay, onNight, tr }) {
         </Animated.View>
       </View>
     </>
+  );
+}
+
+// Daydream's mark on the bar (in place of the moon): a small solid sun; tap it to close Daydream
+function SolidSun({ size, color }) {
+  const r = size * 0.24;
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+      {Array.from({ length: 8 }, (_, i) => (
+        <View key={i} style={{ position: 'absolute', width: Math.max(1.6, size * 0.09), height: size * 0.2, borderRadius: size * 0.05, backgroundColor: color, transform: [{ rotate: `${i * 45}deg` }, { translateY: -size * 0.39 }] }} />
+      ))}
+      <View style={{ width: r * 2, height: r * 2, borderRadius: r, backgroundColor: color }} />
+    </View>
   );
 }

@@ -421,6 +421,7 @@ const T = {
   'Select music': { de: 'Musik wählen', fr: 'Choisir une musique', es: 'Elegir música', ja: 'おんがくを えらぶ' },
   'Profiles': { de: 'Profile', fr: 'Profils', es: 'Perfiles', ja: 'プロフィール' },
   'Nightlight': { de: 'Nachtlicht', fr: 'Veilleuse', es: 'Luz nocturna', ja: 'ナイトライト' },
+  'Close Daydream': { de: 'Tagtraum beenden', fr: 'Fermer la rêverie', es: 'Cerrar ensueño', ja: 'ひるの ゆめを とじる' },
   'Daydream': { de: 'Tagtraum', fr: 'Rêverie', es: 'Ensueño', ja: 'ひるの ゆめ' },
   'Nightlight brightness': { de: 'Helligkeit des Nachtlichts', fr: 'Luminosité de la veilleuse', es: 'Brillo de la luz nocturna', ja: 'ナイトライトの あかるさ' },
   'Lock the screen': { de: 'Bildschirm sperren', fr: 'Verrouiller l’écran', es: 'Bloquear la pantalla', ja: 'がめんを ロックする' },
