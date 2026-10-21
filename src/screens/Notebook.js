@@ -63,6 +63,17 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const [i, setI] = useState(COVER_SPREAD);
   const [log, setLog] = useState(null);
   const [saved, setSaved] = useState(true);
+  const savedFade = useRef(new Animated.Value(0)).current; // 'Saved' fades in after each save, then away
+  const savedSeen = useRef(false);
+  useEffect(() => {
+    if (!saved) { savedSeen.current = true; return; }
+    if (!savedSeen.current) return;
+    Animated.sequence([
+      Animated.timing(savedFade, { toValue: 1, duration: 300, useNativeDriver: true }),
+      Animated.delay(1200),
+      Animated.timing(savedFade, { toValue: 0, duration: 700, useNativeDriver: true }),
+    ]).start();
+  }, [saved]);
   const [pagesOpen, setPagesOpen] = useState(false);
   const [newAsk, setNewAsk] = useState(false); // 'What kind of page?'
   const [picAsk, setPicAsk] = useState(false); // the picture square's choices
@@ -415,9 +426,13 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
 
   const header = i === COVER_SPREAD ? t('My Notes') : i === BADGES ? t('Badges') : page && page.kind === 'sketch' ? t('Sketch') : t('Notes');
   const barTitle = (
+    // short, so it fits beside the house and the note: the kind of page, then where you are ('Saved' briefly takes its place)
     <View style={{ flex: 1, minWidth: 0, paddingLeft: 12 }}>
-      <Text numberOfLines={1} style={styles.title}>{t('My Notebook')}</Text>
-      <Text numberOfLines={1} style={styles.sub}>{header} · {t('{a} of {b}', { a: i + 1, b: total })} · {saved ? t('Saved') : t('Saving…')}</Text>
+      <Text numberOfLines={1} style={styles.title}>{header}</Text>
+      <View>
+        <Animated.Text numberOfLines={1} style={[styles.sub, { opacity: savedFade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>{t('{a} of {b}', { a: i + 1, b: total })}</Animated.Text>
+        <Animated.Text numberOfLines={1} style={[styles.sub, { position: 'absolute', opacity: savedFade }]}>{t('Saved')}</Animated.Text>
+      </View>
     </View>
   );
   const barBtns = (vertical) => (

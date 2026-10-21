@@ -127,6 +127,10 @@ export default function TapePlayer({ onMenu }) {
         </View>
       </View>
     </View>
+    {/* a small Close under the player's bottom right corner (day and night), floating: the player stays centred */}
+    <Pressable onPress={withTap(() => setAmbientPlayer(false))} hitSlop={14} style={{ position: 'absolute', top: '100%', right: 6, marginTop: 12 }} accessibilityRole="button" accessibilityLabel={t('Close Audio Player')}>
+      <Text style={styles.close}>{t('Close')}</Text>
+    </Pressable>
     </View>
     </Animated.View>
   );
@@ -138,7 +142,7 @@ const styles = StyleSheet.create({
   body: { shadowColor: '#000', shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.6, shadowRadius: 20, elevation: 18 },
   inner: { overflow: 'hidden' },
   mark: { position: 'absolute', borderRadius: 3, backgroundColor: '#2a2a2d' },
-  close: { fontFamily: fonts.ui, fontSize: 11.5, color: 'rgba(255,255,255,0.85)' },
+  close: { fontFamily: fonts.ui, fontSize: 12.5, letterSpacing: 0.4, color: 'rgba(255,255,255,0.6)' }, // like Cancel under the Listening Only box
   window: { justifyContent: 'center' },
   choice: { fontFamily: fonts.ui, fontWeight: '600', color: '#ffffff', textAlign: 'left' },
 });
