@@ -38,7 +38,7 @@ import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
-import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast, BubbleHost, setGoHome } from './src/components/Chrome';
+import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast, BubbleHost, setGoHome, HomeIcon } from './src/components/Chrome';
 import { setVolumeBubble } from './src/volume';
 import { DESK_FELT, DeskFelt, Felt, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
@@ -388,8 +388,8 @@ function Root() {
         {/* the main menu slides in over everything else on screen (pop-ups, pages boxes), except speech bubbles */}
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
           <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
-            <Option glyph={<LibraryIcon size={MENU_ICON} />} title={t('My Library')} sub={t('Find and read your favorite books')} onPress={() => go('library')} />
-            {controls.store ? <Option glyph={<StoreIcon />} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => go('store')} /> : null}
+            <Option glyph={<HomeIcon size={MENU_ICON + 2} color={colors.white} />} title={t('My Library')} sub={t('Find and read your favorite books')} onPress={() => go('library')} />
+            {controls.store ? <Option glyph={<LibraryIcon size={MENU_ICON} />} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => go('store')} /> : null}
             {controls.playback && !controls.playMode ? <Option glyph={<PlayGlyph />} title={t('Reading Options')} sub={t('Modes, voices, fonts and sounds')} onPress={() => {
               setDrawer(false);
               // in a book: the reader's own panel; anywhere else: the same choices in their own panel
