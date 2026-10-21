@@ -850,13 +850,16 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
             ) : null}
           </>
         );
-        // Record / Pause / Play: Play's far edge is as far from the screen's edge as the menu is from its own
-        // (the triangle sits 6k in from its button's edge, hence the negative margin)
+        // Record / Pause / Play: drawn at the size of the other icons and in slots of the same step, so they're part
+        // of the one row; Play's far edge is as far from the screen's edge as the menu is from its own
+        // (the triangle's far point is 16k from its slot's middle)
+        const ck = 0.65;
+        const cs = { ...slotStyle(u, v) };
         const ctlEls = showControls ? (
-          <View style={v ? { alignItems: 'center', gap: 12 * G.k, marginBottom: SIDE_MENU_TOP - 6 * G.k } : { flexDirection: 'row', alignItems: 'center', gap: 8 * G.k, marginRight: -6 * G.k - 1.5 }}>
-            {controls.recording ? <RecordButton k={G.k} active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} /> : null}
-            <PauseButton k={G.k} onPress={onPause} disabled={recording} active={(reading && !paused) || between} />
-            <PlayButton k={G.k} onPress={onPlay} active={(reading && !paused) || between} disabled={recording} />
+          <View style={v ? { alignItems: 'center', marginBottom: SIDE_MENU_TOP + 16 * ck - G.step / 2 } : { flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch', marginRight: -(G.step / 2 - 16 * ck) }}>
+            {controls.recording ? <View style={cs}><RecordButton k={ck} active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} /></View> : null}
+            <View style={cs}><PauseButton k={ck} onPress={onPause} disabled={recording} active={(reading && !paused) || between} /></View>
+            <View style={cs}><PlayButton k={ck} onPress={onPlay} active={(reading && !paused) || between} disabled={recording} /></View>
           </View>
         ) : null;
         return v ? (
