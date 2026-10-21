@@ -95,7 +95,7 @@ function Band({ color, felt, dark, title, sub, action, onAction }) {
 // Your own stories are deleted for good; the built-in books are only removed from the shelf
 // and can be brought back with "Show removed books".
 // My Notebook's cover: the brown leather of the notebook on the start page
-const CREATE_TILE = require('../../assets/tile-create.jpg'); // Jörg's blue felt book on linen (a small + sits in the corner)
+const CREATE_TILE = require('../../assets/tile-create.jpg'); // Jörg's blue felt book on grey paper (a small + sits in the corner)
 const PLAYLISTS_TILE = require('../../assets/tile-playlists.jpg'); // Jörg's stack of felt books, behind the Playlists sign
 const TIP_CHAR = require('../../assets/tip-headphones.png'); // the grey felt character with headphones, in the Audio Player tip
 const NOTEBOOK_COVER = require('../../assets/leather-cover.jpg');
