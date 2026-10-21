@@ -54,7 +54,6 @@ const VOICE_RECORDING = {
   android: { ...RecordingPresets.HIGH_QUALITY.android, sampleRate: 48000 },
 };
 import { checkVolume } from '../volume';
-import { loadJSON, saveJSON } from '../storage';
 import { playSound, playSwitch, setEffects, setEffectsVolume, suspendSounds } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { shareInvite } from '../invite';
@@ -562,9 +561,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (!size || hinted.current || listen) return undefined;
     hinted.current = true;
     const tm = setTimeout(async () => {
-      if (await loadJSON('hintPeelBook', false)) return;
       if (busy.current || st.current.turning || !canTurn(1) || !supportsCurl) return;
-      saveJSON('hintPeelBook', true);
       busy.current = true;
       await startFlip(1, 'right');
       runFlip(0.3, 520, () => setTimeout(() => runFlip(0, 360, () => endFlip(1, false)), 120));
