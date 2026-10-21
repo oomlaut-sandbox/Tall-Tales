@@ -92,7 +92,7 @@ export function Seg({ value, options, onChange, stacked }) {
   );
 }
 
-export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary, toast, menuRequest, landscape, setToastSpot, autoStart, onFinished, onSettings, onPlaylists }) {
+export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary, onCover, toast, menuRequest, landscape, setToastSpot, autoStart, onFinished, onSettings, onPlaylists }) {
   const tr = useT(); // the reader's own panel, in the app's language
   const appLang = useLang();
   const controls = useControls(); // parental controls: recording, sharing and printing may be switched off
@@ -176,6 +176,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   // Listen Only (bedtime and quiet time): reads like Auto Play, but the words, page turns and play buttons
   // rest, and the screen dims to a soft night level
   const listen = prefs.mode === 'listen';
+  const listenRef = useRef(listen); listenRef.current = listen;
   st.current = { idx, size, reading, paused, mode: listen ? 'auto' : prefs.mode, turning: !!flipPair, pages, recording };
   if (idx > pages.length - 1) setIdx(pages.length - 1);
   const pendingRead = useRef(false);
@@ -571,6 +572,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     return () => clearTimeout(tm);
   }, [size]);
 
+  // Back from the first spread: the cover swings shut (App shows it; swipe up there to go back to the library)
+  const coverRef = useRef(null);
+  coverRef.current = () => { if (onCover && !st.current.recording) { stopReading(); onCover(); } };
+  const atCover = () => !!onCover && st.current.idx === 0 && !st.current.recording && st.current.mode !== undefined && !listenRef.current;
   // Swipes: left or up turns forward, right or down turns back. The page follows the finger.
   const drag = useRef({});
   const swipeDir = (g) => {
@@ -601,19 +606,23 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       if (busy.current || st.current.turning) return false;
       if (artGesture.active || g.numberActiveTouches > 1) return false; // zooming or magnifying the picture
       const sd = swipeDir(g);
+      if (sd && sd.dir < 0 && atCover()) return true; // back from the first spread: the cover closes
       return !!sd && canTurn(sd.dir);
     },
     onPanResponderGrant: (_, g) => {
       drag.current = {};
       const sd = swipeDir(g);
+      if (sd && sd.dir < 0 && atCover()) { drag.current = { closed: true }; coverRef.current && coverRef.current(); return; }
       if (sd && canTurn(sd.dir)) beginDrag(sd, g.x0 - (pageX0.current || 0), g.y0 - (pageY0.current || 0));
     },
     onPanResponderMove: (_, g) => {
       let d = drag.current;
+      if (d.closed) return; // the cover is closing
       if (!d.dir) {
         // decide on the first real movement whether this is a page-turning swipe
         if (busy.current || st.current.turning) return;
         const sd = swipeDir(g);
+        if (sd && sd.dir < 0 && atCover()) { drag.current = { dir: 0, closed: true }; coverRef.current && coverRef.current(); return; }
         if (!sd || !canTurn(sd.dir)) return;
         beginDrag(sd, g.x0 - (pageX0.current || 0), g.y0 - (pageY0.current || 0));
         d = drag.current;

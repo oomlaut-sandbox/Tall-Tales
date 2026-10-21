@@ -5,7 +5,7 @@
 //    otherwise the first picture) lands in the picture square, uncovering the first words page.
 // Then the reader takes over in exactly the same place, and the pages turn with the peel.
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Image, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, PanResponder, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme';
 import { bookLayout } from './BookFrame';
@@ -13,7 +13,10 @@ import { Fade, PageView } from './PageView';
 import { Felt, DESK_FELT, DeskFelt } from '../look';
 import { playSound } from '../sound';
 
-export default function BookOpen({ u, story, cover, rect, textScale, fontKey, onDone }) {
+// closing: the same, backwards. From the first spread the cover swings shut over the words square and stays there;
+// swipe up and it glides back to its place in My Library (onGone); tap it (or swipe the other way) and it opens again
+// (onDone, back to the reader).
+export default function BookOpen({ u, story, cover, rect, textScale, fontKey, onDone, closing = false, onLeave, onGone }) {
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
   const L = bookLayout(winW, winH, insets, u * 13); // the reader's layout (its bar is u * 13)
@@ -29,9 +32,9 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
   }
   const tx = L.wide ? bx + s : bx, ty = L.wide ? by : by + s; // the words square
 
-  const bg = useRef(new Animated.Value(0)).current;
-  const mv = useRef(new Animated.Value(0)).current;
-  const flip = useRef(new Animated.Value(0)).current;
+  const bg = useRef(new Animated.Value(closing ? 1 : 0)).current;
+  const mv = useRef(new Animated.Value(closing ? 1 : 0)).current;
+  const flip = useRef(new Animated.Value(closing ? 1 : 0)).current;
   const A = useRef({
     plateIn: flip.interpolate({ inputRange: [0.5, 1], outputRange: [0, 1], extrapolate: 'clamp' }),
     plateOut: flip.interpolate({ inputRange: [0, 0.12], outputRange: [1, 0], extrapolate: 'clamp' }),
@@ -42,8 +45,39 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
     backOp: flip.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] }),
     shade: flip.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.25, 0] }),
   }).current;
-  const [phase, setPhase] = useState(0); // 0 fade + move, 1 flipping, 2 landed (flat)
+  const [phase, setPhase] = useState(closing ? 1 : 0); // 0 fade + move, 1 flipping, 2 landed (flat); closing: 3 shut
+  const swingOpen = () => {
+    setPhase(1);
+    playSound('coverOpen');
+    Animated.timing(flip, { toValue: 1, duration: 1000, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => {
+      setPhase(2);
+      requestAnimationFrame(() => requestAnimationFrame(() => onDone && onDone()));
+    });
+  };
+  const leave = () => { // the closed book glides back to its place on the shelf as the library comes back
+    setPhase(4);
+    if (onLeave) onLeave();
+    Animated.parallel([
+      Animated.timing(mv, { toValue: 0, duration: 560, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
+      Animated.timing(bg, { toValue: 0, duration: 420, delay: 200, easing: Easing.in(Easing.quad), useNativeDriver: true }),
+    ]).start(() => onGone && onGone());
+  };
+  const acts = useRef({}); acts.current = { swingOpen, leave, phase };
+  const shutPan = useRef(PanResponder.create({
+    onStartShouldSetPanResponder: () => acts.current.phase === 3,
+    onMoveShouldSetPanResponder: () => acts.current.phase === 3,
+    onPanResponderRelease: (_, g) => {
+      if (acts.current.phase !== 3) return;
+      if (g.dy < -40 && Math.abs(g.dy) > Math.abs(g.dx)) acts.current.leave(); // swipe up: back to the library
+      else acts.current.swingOpen(); // a tap or another swipe: open it again
+    },
+  })).current;
   useEffect(() => {
+    if (closing) { // swing shut over the words square
+      playSound('coverClose');
+      Animated.timing(flip, { toValue: 0, duration: 950, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => setPhase(3));
+      return;
+    }
     playSound('tap');
     Animated.sequence([
       Animated.timing(bg, { toValue: 1, duration: 200, easing: Easing.out(Easing.quad), useNativeDriver: true }), // a quick dissolve to the felt
@@ -80,7 +114,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
   const inside = first && first.whiteArt ? null : first && first.image; // what lands in the picture square
 
   return (
-    <View pointerEvents="auto" style={[StyleSheet.absoluteFill, { zIndex: 80 }]}>
+    <View pointerEvents="auto" style={[StyleSheet.absoluteFill, { zIndex: 80 }]} {...(closing ? shutPan.panHandlers : {})}>
       {/* the dark grey with the reader's black bars fades in over the library */}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: bg, backgroundColor: colors.desk }]}>
         {/* the same charcoal felt as the library and the reader (phones), so it never drops to plain grey */}
@@ -102,13 +136,13 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
           (drawn below the words page, so its shadow never falls across the spine) grows in as the cover lands.
           The turning cover and the landed page cast none of their own: those used to darken the spine while
           it opened, and it went lighter the moment the reader took over. */}
-      {phase >= 1 ? (
+      {phase >= 1 && phase <= 2 ? (
         <Animated.View pointerEvents="none" style={[styles.shadow, { position: 'absolute', left: bx, top: by, width: s, height: s, backgroundColor: DESK_FELT ? '#262626' : colors.desk, opacity: A.plateIn }]}>
           <View style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]}><DeskFelt spot="bookopenPlate" /></View>
         </Animated.View>
       ) : null}
       {/* the first words page, uncovered as the cover swings open */}
-      {phase >= 1 ? (
+      {phase >= 1 && phase <= 2 ? (
         <View pointerEvents="none" style={[styles.shadow, { position: 'absolute', left: tx, top: ty, width: s, height: s }]}>
           <View style={{ width: s, height: s, overflow: 'hidden' }}>
             <View style={{ position: 'absolute', left: L.wide ? -s : 0, top: L.wide ? 0 : -s }}>
