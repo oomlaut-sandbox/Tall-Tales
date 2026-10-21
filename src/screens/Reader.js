@@ -689,12 +689,15 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       showHotspots={showHot} onHotspot={onHotspot} bubble={bubble} />
   );
   const abs = (el, k, style) => (el ? <Animated.View key={k} style={[StyleSheet.absoluteFill, style]}>{el}</Animated.View> : null);
+  // The three pages (before, now, after), each kept under its own page number: when a turn lands, the page that was
+  // waiting underneath simply becomes the current one (it isn't built again, so its picture never blinks)
+  const pageLayers = () => [abs(prevEl, `w${idx - 1}`), abs(nextEl, `w${idx + 1}`), abs(curEl, `w${idx}`)];
   const peeling = !!(flipPair && size && flipT && peel);
   if (flipPair && size && flipT && peel) {
     // phone: the words half peels up like paper (drawn from pictures of both pages)
     const { a, b } = flipPair;
     const view = (i, k) => <PageView key={k} {...pageProps(i)} />;
-    layers.push(abs(prevEl, 'p'), abs(nextEl, 'n'), abs(curEl, 'c'));
+    layers.push(...pageLayers());
     layers.push(
       <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
       wide
@@ -707,7 +710,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     const { a, b } = flipPair;
     const half = W / 2;
     const view = (i, k) => <PageView key={k} {...pageProps(i)} />;
-    layers.push(abs(prevEl, 'p'), abs(nextEl, 'n'), abs(curEl, 'c'));
+    layers.push(...pageLayers());
     const turn = flipP.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '-180deg'] });
     const frontOp = flipP.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [1, 1, 0, 0] });
     const backOp = flipP.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] });
@@ -735,7 +738,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     const shadow = flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 1, 0] });
     // The normal pages stay mounted underneath (the finger's touch belongs to them; removing them
     // would lose the rest of a swipe). The turning layers are drawn on top.
-    layers.push(abs(prevEl, 'p'), abs(nextEl, 'n'), abs(curEl, 'c'));
+    layers.push(...pageLayers());
     layers.push(
       <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
       <View key="fat" pointerEvents="none" style={[styles.half, { top: 0, height: artH }]}>{view(a, `t${a}`)}</View>,
@@ -763,7 +766,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         </Animated.View>,
       );
     });
-  } else layers.push(abs(prevEl, 'p'), abs(nextEl, 'n'), abs(curEl, 'c'));
+  } else layers.push(...pageLayers());
 
   return (
     <View style={[styles.screen, wide && { flexDirection: 'row' }]}>
