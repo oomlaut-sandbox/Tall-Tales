@@ -16,9 +16,10 @@ export function barGeo(u) {
   return { edge: u * 4.8, step: u * 11.6, row: u * 17, mw: u * 6, t: Math.max(2.6, u * 0.86), gap: u * 1.46, k: 0.86 };
 }
 // a slot for one icon: one step wide (upright) or tall (sideways), the icon in its middle
-export function slotStyle(u, vertical) {
+// (sideways, the icons after the house sit 2 points to the left: their shapes lean right, so they look centred)
+export function slotStyle(u, vertical, nudge = true) {
   const G = barGeo(u);
-  return vertical ? { height: G.step, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' } : { width: G.step, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' };
+  return vertical ? { height: G.step, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', transform: nudge ? [{ translateX: -2 }] : [] } : { width: G.step, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' };
 }
 
 // The menu button. On the black bars it brings the house and the music note with it, in their fixed slots.
@@ -88,8 +89,8 @@ export function HomeButton({ u, vertical, onPress }) {
   const tr = useT();
   return (
     <Pressable onPress={withTap(() => (onPress ? onPress() : goHome && goHome()))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('My Library')}
-      style={slotStyle(u, vertical)}>
-      <View style={{ transform: vertical ? [{ translateY: HOME_NUDGE_V * u }] : [{ translateX: HOME_NUDGE * u }, { translateY: -2 }] }}><HomeIcon size={u * 5.2} /></View>
+      style={slotStyle(u, vertical, false)}>
+      <View style={{ transform: vertical ? [{ translateY: HOME_NUDGE_V * u }] : [{ translateX: HOME_NUDGE * u }, { translateY: -1 }] }}><HomeIcon size={u * 5.2} /></View>
     </Pressable>
   );
 }
