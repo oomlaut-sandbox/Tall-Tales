@@ -11,7 +11,7 @@ import ZoomArt from './ZoomArt';
 // the end of a book: fine grey line-art icons
 const END_AGAIN = require('../../assets/icon-again-line.png');
 const END_LIBRARY = require('../../assets/icon-home.png'); // My Library: the same house as on the bars
-const END_HEART = require('../../assets/icon-heart-line.png');
+const END_SHARE = require('../../assets/icon-share-line.png'); // the share symbol (box with an arrow up)
 
 // The picture area is a perfect square (as wide as the screen). Only on unusually short
 // screens is it capped, so the words always keep at least a third of the page.
@@ -130,7 +130,7 @@ export const PageView = forwardRef(function PageView(
             <Text style={storyStyle}>{t('Thank you for reading.')}</Text>
             {/* stacked: a fine grey line-art icon (no box) and the words beside it */}
             <View style={{ gap: 12, marginTop: 20, alignSelf: 'center' }}>
-              {[[END_AGAIN, 'Read Again', onReadAgain], [END_LIBRARY, 'My Library', onLibrary], [END_HEART, 'Share Book', onShare]].filter(([, , fn]) => !!fn).map(([g, label, fn]) => (
+              {[[END_AGAIN, 'Read Again', onReadAgain], [END_LIBRARY, 'My Library', onLibrary], [END_SHARE, 'Share Book', onShare]].filter(([, , fn]) => !!fn).map(([g, label, fn]) => (
                 <Pressable key={label} onPress={fn} style={styles.endBtn} accessibilityRole="button">
                   <Image source={g} style={styles.endIc} resizeMode="contain" />
                   <Text style={styles.endBtnText}>{t(label)}</Text>
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   endArt: { backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' },
   endTitle: { textAlign: 'center' },
   endBtn: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  endIc: { width: 26, height: 26, tintColor: '#5c5c5c' },
+  endIc: { width: 21, height: 21, tintColor: '#5c5c5c' },
   endGlyph: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
   endBtnText: { color: '#2e2e2e', fontFamily: fonts.ui, fontWeight: '500', fontSize: 16 },
 });
