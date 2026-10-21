@@ -130,7 +130,7 @@ export default function Profiles({ u, openMenu, setControls }) {
 
       {form ? (
         <View style={styles.scrim}>
-          <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20, paddingTop: insets.top + 20 }} keyboardShouldPersistTaps="handled">
+          <ScrollView contentContainerStyle={{ padding: 20, paddingTop: insets.top + 16 }} keyboardShouldPersistTaps="handled">{/* high on the screen, clear of the bar */}
             <View style={styles.card}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 28 }}>{/* room for the character (drawn a little wider than its box) */}
                 <ProfileTile p={{ name: form.name || '?', color: form.color }} size={60} />
@@ -154,9 +154,12 @@ export default function Profiles({ u, openMenu, setControls }) {
                 {AGES.map((a) => <Choice key={a} label={String(a)} on={form.age === a} onPress={() => setForm({ ...form, age: a })} />)}
               </View>
               <Text style={styles.small}>{t('Books rated for older children are hidden.')}</Text>
-              <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap', marginTop: 6 }}>
+              {/* Save and (for a profile that exists) a red Delete; Cancel on the same line, on the right */}
+              <View style={{ flexDirection: 'row', gap: 10, marginTop: 6, alignItems: 'center' }}>
                 <Pressable onPress={saveForm} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Save')}</Text></Pressable>
-                <Pressable onPress={() => setForm(null)} style={[styles.pill, { backgroundColor: '#2a2a2a' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Cancel')}</Text></Pressable>
+                {form.id ? <Pressable onPress={() => setSure(true)} style={[styles.pill, { backgroundColor: '#b3261e' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Delete')}</Text></Pressable> : null}
+                <View style={{ flex: 1 }} />
+                <Pressable onPress={() => setForm(null)} style={[styles.pill, { backgroundColor: '#4a4a4a' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Cancel')}</Text></Pressable>
               </View>
               {form.id ? (
                 sure ? (
@@ -167,9 +170,7 @@ export default function Profiles({ u, openMenu, setControls }) {
                       <Pressable onPress={() => setSure(false)} style={[styles.pill, { backgroundColor: '#2a2a2a' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Keep')}</Text></Pressable>
                     </View>
                   </View>
-                ) : (
-                  <Pressable onPress={() => setSure(true)} accessibilityRole="button"><Text style={styles.link}>{t('Remove this profile')}</Text></Pressable>
-                )
+                ) : null
               ) : null}
             </View>
           </ScrollView>
@@ -202,12 +203,12 @@ const styles = StyleSheet.create({
   plus: { color: '#aaa', fontFamily: fonts.ui, fontWeight: '300' },
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 24, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
   pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
-  scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 50 },
-  card: { backgroundColor: '#3a3a3a', borderRadius: 16, padding: 20, paddingBottom: 32, gap: 16, width: '100%', maxWidth: 480, alignSelf: 'center' },
+  scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 50, overflow: 'hidden' }, // within the page: the bar stays uncovered
+  card: { backgroundColor: '#242424', borderRadius: 16, padding: 20, paddingBottom: 32, gap: 16, width: '100%', maxWidth: 480, alignSelf: 'center' },
   input: { flex: 1, minWidth: 0, height: 48, borderRadius: 10, backgroundColor: '#d6d6d6', paddingHorizontal: 14, paddingTop: 0, paddingBottom: 5, fontFamily: fonts.ui, fontSize: 20, color: '#222' },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14 },
   choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  choice: { paddingHorizontal: 14, height: 36, borderRadius: 18, backgroundColor: '#2a2a2a', alignItems: 'center', justifyContent: 'center' },
+  choice: { paddingHorizontal: 14, height: 36, borderRadius: 18, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
   choiceOn: { backgroundColor: colors.green },
   choiceText: { fontFamily: fonts.ui, fontSize: 15, color: '#dcdcdc', fontWeight: '600' },
   swatchOn: { borderWidth: 1, borderColor: 'rgba(255,255,255,0.9)', backgroundColor: 'rgba(0,0,0,0.35)' },
