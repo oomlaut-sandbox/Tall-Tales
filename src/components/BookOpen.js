@@ -54,7 +54,10 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
       requestAnimationFrame(() => requestAnimationFrame(() => onDone && onDone()));
     });
   };
+  const left = useRef(false);
   const leave = () => { // the closed book glides back to its place on the shelf as the library comes back
+    if (left.current) return;
+    left.current = true;
     setPhase(4);
     if (onLeave) onLeave();
     Animated.parallel([
@@ -62,20 +65,22 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
       Animated.timing(bg, { toValue: 0, duration: 420, delay: 200, easing: Easing.in(Easing.quad), useNativeDriver: true }),
     ]).start(() => onGone && onGone());
   };
-  const acts = useRef({}); acts.current = { swingOpen, leave, phase };
+  const acts = useRef({}); acts.current = { ...acts.current, swingOpen, leave, phase };
   const shutPan = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => acts.current.phase === 3,
     onStartShouldSetPanResponderCapture: () => acts.current.phase === 3,
     onMoveShouldSetPanResponderCapture: () => acts.current.phase === 3,
     onPanResponderTerminationRequest: () => false,
-    onPanResponderGrant: () => console.log('DBG grant'),
-    onPanResponderMove: (_, g) => console.log('DBG move', Math.round(g.dy)),
-    onPanResponderTerminate: () => console.log('DBG terminate'),
+    onPanResponderGrant: () => { acts.current.moved = false; },
+    // a clear swipe up: off to the library straight away (no need to wait for the finger to lift)
+    onPanResponderMove: (_, g) => {
+      if (Math.abs(g.dx) > 8 || Math.abs(g.dy) > 8) acts.current.moved = true;
+      if (acts.current.phase === 3 && g.dy < -24 && Math.abs(g.dy) > Math.abs(g.dx)) acts.current.leave();
+    },
     onMoveShouldSetPanResponder: () => acts.current.phase === 3,
     onPanResponderRelease: (_, g) => {
-      console.log('DBG release', acts.current.phase, g.dx, g.dy);
       if (acts.current.phase !== 3) return;
-      if (g.dy < -40 && Math.abs(g.dy) > Math.abs(g.dx)) acts.current.leave(); // swipe up: back to the library
+      if (g.dy < -24 && Math.abs(g.dy) > Math.abs(g.dx)) acts.current.leave(); // swipe up: back to the library
       else acts.current.swingOpen(); // a tap or another swipe: open it again
     },
   })).current;
