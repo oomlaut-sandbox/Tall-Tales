@@ -67,14 +67,16 @@ function Tile({ u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyp
   );
 }
 
-const BAND_FELT = { library: require('../../assets/band-library.jpg'), store: require('../../assets/band-store.jpg') }; // Jörg's stitched felt strips
+const BAND_FELT = { library: require('../../assets/band-library.png'), store: require('../../assets/band-store.png') }; // Jörg's stitched felt strips, cut out along the felt's own bottom edge
 
 function Band({ color, felt, dark, title, sub, action, onAction }) {
   const insets = useSafeAreaInsets();
   const fg = dark ? colors.ink : colors.white;
   return (
-    <View style={{ backgroundColor: color, paddingTop: insets.top + 30, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 }}>{/* the title block centred top to bottom in the coloured band */}
+    <View style={{ backgroundColor: felt && !IS_TABLET ? 'transparent' : color, paddingTop: insets.top + 30, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 }}>{/* the title block centred top to bottom in the coloured band */}
       {/* iPad keeps the classic solid colour banners */}
+      {/* phone: the felt's real bottom edge lets the desk show through, so the colour only fills the status bar strip */}
+      {felt && !IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: insets.top + 2, backgroundColor: color }} /> : null}
       {felt && !IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT[felt]} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : <><Felt /><Stitch inset={7} /></>}
       {/* the title alone (no subtitle), centred in the band, with Select / Cancel on the same line */}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
