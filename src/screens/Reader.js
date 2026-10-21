@@ -241,6 +241,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const choosing = nightEnabled && scene === 'choose';
   const nightOn = nightEnabled && !choosing; // the nightlight or Daydream is showing (the lock and alarm are on the bar)
   const dayOn = nightOn && scene === 'day';
+  // as the screen dims for the choice, a speech bubble says what is happening
+  useEffect(() => { if (choosing) { const tm = setTimeout(() => toast && toast(tr('You are in ‘Listening Only’ Mode. Enjoy your story!')), 500); return () => clearTimeout(tm); } return undefined; }, [choosing]);
   // the nightlight's lock lives on the bar beside the moon; where it sits, so it stays tappable over the blocker
   const [nlLocked, setNlLocked] = useState(false);
   const [lockRect, setLockRect] = useState(null);
@@ -248,10 +250,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const [alarmOpen, setAlarmOpen] = useState(false); // the nightlight's alarm popup (the alarm clock on the bar)
   const lockNight = () => { const n = nlLockRef.current; if (n && n.measureInWindow) n.measureInWindow((x, y, width, height) => { setLockRect({ x, y, width, height }); setNlLocked(true); }); else setNlLocked(true); };
   useEffect(() => { if (prefs.mode !== 'listen') setNlLocked(false); }, [prefs.mode]);
-  // the moon on the bar goes straight into the nightlight (no choice), and back out again
+  // the moon on the bar: into Listen Only (the sun / moon choice), and back out again
   const toggleNight = () => {
     if (prefs.mode === 'listen') { chooseMode(prefs.prevMode && prefs.prevMode !== 'listen' ? prefs.prevMode : 'auto'); return; }
-    chooseMode('listen', 'night');
+    chooseMode('listen'); // the same choice as from the menu: Daydream or the nightlight
   };
 
   const wordAt = (ch) => {

@@ -422,6 +422,7 @@ const T = {
   'Profiles': { de: 'Profile', fr: 'Profils', es: 'Perfiles', ja: 'プロフィール' },
   'Nightlight': { de: 'Nachtlicht', fr: 'Veilleuse', es: 'Luz nocturna', ja: 'ナイトライト' },
   'Close Daydream': { de: 'Tagtraum beenden', fr: 'Fermer la rêverie', es: 'Cerrar ensueño', ja: 'ひるの ゆめを とじる' },
+  'You are in ‘Listening Only’ Mode. Enjoy your story!': { de: 'Du bist im Modus „Nur zuhören“. Viel Freude mit deiner Geschichte!', fr: 'Tu es en mode « Écouter seulement ». Profite bien de ton histoire !', es: 'Estás en el modo «Solo escuchar». ¡Disfruta tu cuento!', ja: 'いまは「きくだけ」モードです。おはなしを たのしんでね！' },
   'Daydream': { de: 'Tagtraum', fr: 'Rêverie', es: 'Ensueño', ja: 'ひるの ゆめ' },
   'Nightlight brightness': { de: 'Helligkeit des Nachtlichts', fr: 'Luminosité de la veilleuse', es: 'Brillo de la luz nocturna', ja: 'ナイトライトの あかるさ' },
   'Lock the screen': { de: 'Bildschirm sperren', fr: 'Verrouiller l’écran', es: 'Bloquear la pantalla', ja: 'がめんを ロックする' },
