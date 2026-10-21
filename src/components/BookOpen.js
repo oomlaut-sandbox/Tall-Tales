@@ -68,8 +68,12 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
     onStartShouldSetPanResponderCapture: () => acts.current.phase === 3,
     onMoveShouldSetPanResponderCapture: () => acts.current.phase === 3,
     onPanResponderTerminationRequest: () => false,
+    onPanResponderGrant: () => console.log('DBG grant'),
+    onPanResponderMove: (_, g) => console.log('DBG move', Math.round(g.dy)),
+    onPanResponderTerminate: () => console.log('DBG terminate'),
     onMoveShouldSetPanResponder: () => acts.current.phase === 3,
     onPanResponderRelease: (_, g) => {
+      console.log('DBG release', acts.current.phase, g.dx, g.dy);
       if (acts.current.phase !== 3) return;
       if (g.dy < -40 && Math.abs(g.dy) > Math.abs(g.dx)) acts.current.leave(); // swipe up: back to the library
       else acts.current.swingOpen(); // a tap or another swipe: open it again
