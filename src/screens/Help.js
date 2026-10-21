@@ -1,6 +1,6 @@
 // Help: a searchable walk-through of the app, in plain words. In the main menu above About.
 // (A short explainer video will live at the top of this page later.)
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -134,6 +134,7 @@ export const HELP = [
 const IDEAS_FELT = require('../../assets/ideas-felt.png');
 
 export default function Help({ u, openMenu, onAbout, onIdeas }) {
+  const searchRef = useRef(null);
   const { width: winWf } = useWindowDimensions();
   const feltW = Math.min(520, winWf - 48); // the felt patch, as wide as the column
   const t = useT();
@@ -176,12 +177,12 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
             </View>
           </Pressable>
           {/* the search window: a white pill the width of the topics, with a soft inner shadow along its top edge */}
-          <View style={[styles.searchWrap, { marginTop: 14 }]}>
+          <Pressable onPress={() => searchRef.current && searchRef.current.focus()} accessible={false} style={[styles.searchWrap, { marginTop: 14 }]}>
             <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.22)', 'rgba(0,0,0,0.06)', 'rgba(0,0,0,0)']} locations={[0, 0.35, 1]} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 14 }} />
             <LinearGradient pointerEvents="none" start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['rgba(0,0,0,0.08)', 'rgba(0,0,0,0)']} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 16 }} />
-            <TextInput value={q} onChangeText={setQ} placeholder={t('Search ideas and support')} placeholderTextColor="#666"
+            <TextInput ref={searchRef} value={q} onChangeText={setQ} placeholder={t('Search ideas and support')} placeholderTextColor="#666"
               style={styles.search} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel={t('Search ideas and support')} />
-          </View>
+          </Pressable>
           {/* About lives here now (it left the main menu) */}
           <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>{t('About Oomlaut Reader')}</Text></Pressable>
           <View style={{ height: 18 }} />
@@ -222,9 +223,10 @@ const styles = StyleSheet.create({
   video: { aspectRatio: 16 / 9, backgroundColor: '#2b2b2b', borderRadius: 14, alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 8 },
   videoPlay: { color: 'rgba(255,255,255,0.85)', fontSize: 34 },
   videoText: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 14 },
-  searchWrap: { height: 44, borderRadius: 22, overflow: 'hidden', backgroundColor: '#d6d6d6' }, // light grey
-  // a single-line field the full height of the pill, no padding top or bottom: iOS then sets the letters in the middle by itself
-  search: { height: 44, backgroundColor: 'transparent', paddingHorizontal: 18, paddingVertical: 0, textAlignVertical: 'center', includeFontPadding: false,
+  searchWrap: { height: 44, borderRadius: 22, overflow: 'hidden', backgroundColor: '#d6d6d6', justifyContent: 'center' }, // light grey
+  // the field is only as tall as its words and the pill centres it, so the words always sit in the middle
+  // (a field the pill's full height left it to iOS, which didn't always centre them)
+  search: { backgroundColor: 'transparent', paddingHorizontal: 18, paddingVertical: 0, includeFontPadding: false,
     fontFamily: fonts.ui, fontSize: 16, color: colors.ink, outlineWidth: 0 },
   ideas: { borderRadius: 26, shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, elevation: 5 },
   ideasTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.white },

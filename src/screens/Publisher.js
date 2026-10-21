@@ -46,6 +46,20 @@ export function draftFrom(story) {
 // square (measured from the picture: the blue runs 28.3%–71.1% across and 24.3%–68.4% down).
 const POLAROID = require('../../assets/polaroid.jpg');
 const BLUE = { l: 0.283, r: 0.711, t: 0.243, b: 0.684 };
+// A text field whose words always sit in the middle, top to bottom: the grey box centres a one-line field
+// that is only as tall as its words (iOS doesn't always centre the words in a taller field by itself).
+// Tapping anywhere on the box types in it.
+export function CenteredField({ value, onChangeText, placeholder, onFocus, onBlur, box, text }) {
+  const ref = useRef(null);
+  return (
+    <Pressable onPress={() => ref.current && ref.current.focus()} style={[{ justifyContent: 'center' }, box]} accessible={false}>
+      <TextInput ref={ref} value={value} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor="#8a8a8a"
+        onFocus={onFocus} onBlur={onBlur} returnKeyType="done" onSubmitEditing={() => Keyboard.dismiss()}
+        style={[{ paddingVertical: 0, paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 }, text]} accessibilityLabel={placeholder} />
+    </Pressable>
+  );
+}
+
 function EmptyPicture({ side }) {
   const tr = useT();
   // the words sit well inside the blue (a good margin all round), wrap onto more lines when they're long
@@ -636,16 +650,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             {!titleEditing ? (
               <View style={{ width: Math.min(winW - insets.left - insets.right - 2 * GAP, 560), gap: 8, marginBottom: 26 }}>{/* a little more room above the picture */}
                 {!kbUp ? <Text style={styles.coverHead}>{tr('Cover')}</Text> : null}
-                <TextInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder={tr('Book title')} placeholderTextColor="#8a8a8a"
-                  onFocus={() => setFieldOn(true)} onBlur={() => setFieldOn(false)} returnKeyType="done" onSubmitEditing={() => Keyboard.dismiss()}
-                  style={[styles.field, { fontWeight: '700' }]} accessibilityLabel={tr('Book title')} />
+                <CenteredField value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder={tr('Book title')}
+                  onFocus={() => setFieldOn(true)} onBlur={() => setFieldOn(false)} box={styles.fieldBox} text={[styles.fieldText, { fontWeight: '700' }]} />
                 <View style={{ flexDirection: 'row', gap: 8 }}>
-                  <TextInput value={draft.writer || ''} onChangeText={(writer) => setDraft((d) => ({ ...d, writer }))} placeholder={tr('Written by')} placeholderTextColor="#8a8a8a"
-                    onFocus={() => setFieldOn(true)} onBlur={() => setFieldOn(false)} returnKeyType="done" onSubmitEditing={() => Keyboard.dismiss()}
-                    style={[styles.field, styles.fieldSmall]} accessibilityLabel={tr('Written by')} />
-                  <TextInput value={draft.artist || ''} onChangeText={(artist) => setDraft((d) => ({ ...d, artist }))} placeholder={tr('Illustrated by')} placeholderTextColor="#8a8a8a"
-                    onFocus={() => setFieldOn(true)} onBlur={() => setFieldOn(false)} returnKeyType="done" onSubmitEditing={() => Keyboard.dismiss()}
-                    style={[styles.field, styles.fieldSmall]} accessibilityLabel={tr('Illustrated by')} />
+                  <CenteredField value={draft.writer || ''} onChangeText={(writer) => setDraft((d) => ({ ...d, writer }))} placeholder={tr('Written by')}
+                    onFocus={() => setFieldOn(true)} onBlur={() => setFieldOn(false)} box={[styles.fieldBox, styles.fieldBoxSmall]} text={[styles.fieldText, { fontSize: 15 }]} />
+                  <CenteredField value={draft.artist || ''} onChangeText={(artist) => setDraft((d) => ({ ...d, artist }))} placeholder={tr('Illustrated by')}
+                    onFocus={() => setFieldOn(true)} onBlur={() => setFieldOn(false)} box={[styles.fieldBox, styles.fieldBoxSmall]} text={[styles.fieldText, { fontSize: 15 }]} />
                 </View>
                 {fieldOn ? (
                   <View style={{ alignItems: 'flex-end', marginTop: 4 }}>
@@ -820,6 +831,9 @@ const styles = StyleSheet.create({
   countBox: { position: 'absolute', zIndex: 6, backgroundColor: '#4a4a4a', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, alignItems: 'center', justifyContent: 'center' },
   countText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 13, fontVariant: ['tabular-nums'] },
   coverHead: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 17, marginBottom: 4 },
+  fieldBox: { backgroundColor: '#2e2e2e', height: 48, borderRadius: 14, paddingHorizontal: 14 },
+  fieldBoxSmall: { flex: 1, minWidth: 0, height: 42 },
+  fieldText: { color: colors.white, fontFamily: fonts.ui, fontSize: 17 },
   fieldSmall: { flex: 1, minWidth: 0, height: 42, fontSize: 15 },
   field: { backgroundColor: '#2e2e2e', color: colors.white, fontFamily: fonts.ui, fontSize: 17, height: 48, borderRadius: 14, paddingHorizontal: 14 },
   fieldHint: { color: '#a8a8a8', fontFamily: fonts.ui, fontSize: 13, marginTop: -8 },
