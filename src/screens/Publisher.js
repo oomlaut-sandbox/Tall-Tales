@@ -468,7 +468,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <View style={{ width: BL.rightW, backgroundColor: colors.bar, flexDirection: 'row', justifyContent: 'flex-end' }}>
           <Bar u={u} vertical>
             <View style={{ alignItems: 'center', gap: 18 }}>
-              <Animated.View pointerEvents={coverOpen ? 'none' : 'auto'} style={{ opacity: coverFade }}><Burger u={u} onPress={openMenu} /></Animated.View>
+              <Burger u={u} onPress={openMenu} />{/* the menu, house and note stay, even on the cover */}
             </View>
             <View style={{ alignItems: 'center', gap: 18 }}>
               {/* the page count sits above Pages, with plenty of room between them */}
@@ -483,7 +483,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       ) : (
       <View style={{ backgroundColor: colors.bar, paddingTop: spare / 2 }}>
       <Bar u={u}>
-        <Animated.View pointerEvents={coverOpen ? 'none' : 'auto'} style={{ opacity: coverFade }}><Burger u={u} onPress={openMenu} /></Animated.View>
+        <Burger u={u} onPress={openMenu} />{/* the menu, house and note stay, even on the cover */}
         <View style={{ flex: 1 }} />
         {/* Cover, Pages, Finish (the page count floats on the page itself) */}
         <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ flexDirection: 'row', alignItems: 'center', gap: 16, opacity: barFade }}>
@@ -629,12 +629,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         // the Cover Editor stops at the black bar, which stays in view (its Pages and Finish fade out meanwhile)
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk, overflow: 'hidden' }, wide ? { right: BL.rightW } : { bottom: BL.barH }]}>
           <DeskFelt spot="publisher3" overlay />
-          <View style={[styles.editor, { flex: 1, paddingTop: kbUp ? insets.top + 8 : insets.top + (winW > winH ? 12 : 34), paddingLeft: insets.left, paddingRight: insets.right }]}>
+          <View style={[styles.editor, { flex: 1, paddingTop: kbUp ? insets.top + 8 : insets.top + (winW > winH ? 16 : 56), paddingLeft: insets.left, paddingRight: insets.right }]}>
             {/* the book's title and (optional) who wrote it and who drew the pictures: all on the cover page */}
             {/* (shown unless the cover's own title is being typed: the keyboard can come up before onFocus, and these
                  must never unmount mid-tap, or the keyboard opens and shuts straight away) */}
             {!titleEditing ? (
-              <View style={{ width: Math.min(winW - insets.left - insets.right - 2 * GAP, 560), gap: 8, marginBottom: 14 }}>
+              <View style={{ width: Math.min(winW - insets.left - insets.right - 2 * GAP, 560), gap: 8, marginBottom: 26 }}>{/* a little more room above the picture */}
                 {!kbUp ? <Text style={styles.coverHead}>{tr('Cover')}</Text> : null}
                 <TextInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder={tr('Book title')} placeholderTextColor="#8a8a8a"
                   onFocus={() => setFieldOn(true)} onBlur={() => setFieldOn(false)} returnKeyType="done" onSubmitEditing={() => Keyboard.dismiss()}
@@ -660,7 +660,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             {(() => {
               // room for the tools under the square (hidden while typing) and, upright, for Done at the bottom
               const toolsH = kbUp ? 60 : coverTitling ? 56 + (coverTool ? 96 : 0) : 0;
-              const doneH = kbUp || winW > winH ? 0 : 76;
+              const doneH = kbUp || winW > winH ? 0 : 98;
               const fitH = coverArea ? coverArea.h - toolsH - doneH - 8 : winW;
               const W = Math.max(120, Math.floor(Math.min(winW - insets.left - insets.right - 2 * GAP, fitH)));
               coverSize.current = W;
@@ -752,7 +752,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           {coverTitling && coverTip && !kbUp ? <Toast message={tr('Tap the title to type. Drag it anywhere on the cover.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 74 }} onDismiss={() => setCoverTip(false)} /> : null}
           {/* Done: bottom right, lined up with the cover's right edge */}
           {/* a new book: 'Start writing' goes on to page 1 (nobody is stuck on the cover) */}
-          {!kbUp ? <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { position: 'absolute', right: GAP + (wide ? 0 : insets.right), bottom: 18, marginBottom: 0 }]}><Text style={styles.donePillText}>{startMode ? tr('Start writing') : tr('Done')}</Text></Pressable> : null}
+          {!kbUp ? <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { position: 'absolute', right: GAP + (wide ? 0 : insets.right), bottom: GAP, marginBottom: 0 }]}>{/* as far from the bar as from the right edge */}<Text style={styles.donePillText}>{startMode ? tr('Start writing') : tr('Done')}</Text></Pressable> : null}
           {coverAsk ? (
             <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
               <View style={styles.choice}>
