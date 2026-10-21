@@ -35,7 +35,7 @@ function PeelLayer({ start, ...props }) {
 }
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { Bar, BarMeta, HomeButton, BubbleIcon, HeadphonesIcon, MoonIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, GearIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon } from '../components/Chrome';
+import { Bar, BarMeta, HomeButton, BubbleIcon, HeadphonesIcon, MoonIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, GearIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon, sideTop } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
@@ -856,14 +856,14 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         const ck = 0.65;
         const cs = { ...slotStyle(u, v) };
         const ctlEls = showControls ? (
-          <View style={v ? { alignItems: 'center', marginBottom: SIDE_MENU_TOP + 16 * ck - G.step / 2 } : { flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch', marginRight: -(G.step / 2 - 16 * ck) }}>
+          <View style={v ? { alignItems: 'center', marginBottom: sideTop(u, winH) + 16 * ck - G.step / 2 } : { flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch', marginRight: -(G.step / 2 - 16 * ck) }}>
             {controls.recording ? <View style={cs}><RecordButton k={ck} active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} /></View> : null}
             <View style={cs}><PauseButton k={ck} onPress={onPause} disabled={recording} active={(reading && !paused) || between} /></View>
             <View style={cs}><PlayButton k={ck} onPress={onPlay} active={(reading && !paused) || between} disabled={recording} /></View>
           </View>
         ) : null;
         return v ? (
-          <View style={[styles.sideBar, { width: BL.rightW, paddingTop: SIDE_MENU_TOP }]}>
+          <View style={[styles.sideBar, { width: BL.rightW, paddingTop: sideTop(u, winH) }]}>
             <Felt />
             <View style={{ width: BL.rightW, alignItems: 'center', flex: 1 }}>
               <Burger u={u} vertical onPress={openMenu} />

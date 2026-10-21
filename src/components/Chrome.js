@@ -58,10 +58,11 @@ export const SIDE_BAR = 1.15;
 const BarDir = createContext(false);
 export function Bar({ u, children, vertical, top }) {
   const insets = useSafeAreaInsets();
+  const { height: winH } = useWindowDimensions();
   if (vertical) {
     return (
       <BarDir.Provider value>
-        <View style={[styles.bar, styles.barV, { width: u * 17 * SIDE_BAR, paddingTop: top != null ? top : SIDE_MENU_TOP, paddingBottom: Math.max(14, insets.bottom) }]}><Felt />{children}</View>
+        <View style={[styles.bar, styles.barV, { width: u * 17 * SIDE_BAR, paddingTop: top != null ? top : sideTop(u, winH), paddingBottom: Math.max(14, insets.bottom) }]}><Felt />{children}</View>
       </BarDir.Provider>
     );
   }
@@ -200,10 +201,18 @@ export function DogEar({ u, onPress, label = 'Next page', under = colors.earUnde
 // right corner, clear of the iPad's status icons (battery etc.).
 export const SIDE_MENU_TOP = 46;
 // Where the middle stripe of the menu icon sits (sideways), so a menu's close arrow can line up with it.
-function sideMenuMiddle(winW) {
+function sideMenuMiddle(winW, winH) {
   const u = Math.min(winW, 460) / 100;
-  const t = Math.max(3, u * 1), gap = u * 1.7;
-  return SIDE_MENU_TOP + (3 * t + 2 * gap) / 2;
+  const G = barGeo(u);
+  return sideTop(u, winH) + (3 * G.t + 2 * G.gap) / 2;
+}
+// Sideways, the menu's distance from the top. The reader's whole column (menu, house, note, moon, Record, Pause,
+// Play) must fit with Play as far from the bottom as the menu is from the top; on a short screen both margins
+// shrink together (never more than SIDE_MENU_TOP). Every sideways bar uses the same top, so the menu never moves.
+export function sideTop(u, winH) {
+  const G = barGeo(u);
+  const chain = (3 * G.t + 2 * G.gap) / 2 + 6 * G.step + u * 0.22 + 16 * 0.65;
+  return Math.max(12, Math.min(SIDE_MENU_TOP, Math.floor((winH - chain) / 2)));
 }
 const HEAD_ARROW_WIDE = 14 + 22; // sideways head: top padding + half the 44-point close button
 
@@ -243,7 +252,7 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children, portr
   const wide = winW > winH * 1.1;
   const compact = !wide && winH < 760; // a small phone upright: a little tighter, so the whole menu fits without scrolling
   const rightW = inset || Math.round((Math.min(winW, 460) / 100) * 17 * 1.15);
-  const wideTop = Math.round(sideMenuMiddle(winW) - HEAD_ARROW_WIDE); // the close arrow level with the icon's middle stripe
+  const wideTop = Math.round(sideMenuMiddle(winW, winH) - HEAD_ARROW_WIDE); // the close arrow level with the icon's middle stripe
   const maxHeight = wide ? winH - wideTop - 34 : Math.max(240, winH - (bottom || 0) - Math.max(insets.top, 44) - 10) /* tall enough for the whole menu, just under the camera bar */;
   const room = winW - insets.left - rightW;
   const panelW = wide ? Math.min(760, room - 24) : null;
