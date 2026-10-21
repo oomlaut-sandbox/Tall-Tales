@@ -1142,7 +1142,7 @@ function ListenChoice({ area, onDay, onNight, onCancel, onGone, tr }) {
           </View>
           {/* Cancel: small, light grey, under the box's bottom right corner (a touch anywhere outside the box cancels too) */}
           <Pressable onPress={withTap(onCancel)} hitSlop={14} style={{ marginTop: 12, marginRight: 6 }} accessibilityRole="button">
-            <Text style={{ color: 'rgba(255,255,255,0.55)', fontFamily: fonts.ui, fontSize: 12.5, letterSpacing: 0.4 }}>{tr('Cancel')}</Text>
+            <Text style={{ color: 'rgba(255,255,255,0.55)', fontFamily: fonts.ui, fontSize: 11.5, letterSpacing: 0.4 }}>{tr('Cancel')}</Text>
           </Pressable>
         </Animated.View>
       </View>

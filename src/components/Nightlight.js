@@ -448,8 +448,14 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
         {day ? (
           // Daydream: the time, the book, play / pause and the sleep timer in a see-through black band at the bottom
           <View pointerEvents="box-none" style={{ flex: 1, justifyContent: 'flex-end' }}>
+            {/* upright, the time floats exactly where it sits in the nightlight (a soft shadow keeps it clear on the picture) */}
+            {!wide ? (
+              <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: topPad - area.height * 0.05, alignItems: 'center' }}>
+                <Text style={[styles.now, { textShadowColor: 'rgba(0,0,0,0.55)', textShadowRadius: 8, textShadowOffset: { width: 0, height: 1 } }]}>{fmtTime(hm)}</Text>
+              </View>
+            ) : null}
             <View style={styles.dayBand}>
-              <Text style={[styles.now, { fontSize: 26 }]}>{fmtTime(hm)}</Text>
+              {wide ? <Text style={[styles.now, { fontSize: 26 }]}>{fmtTime(hm)}</Text> : null}
               {info}
             </View>
           </View>
