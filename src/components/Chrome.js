@@ -58,26 +58,17 @@ export function Bar({ u, children, vertical, top }) {
 // App.js tells it how to get there.
 let goHome = null;
 export function setGoHome(fn) { goHome = fn; }
-export function HomeIcon({ size = 20, color = '#8e8e8e', weight = 2 }) {
-  const roof = size * 0.62; // each slope of the roof
-  return (
-    <View style={{ width: size, height: size, alignItems: 'center' }}>
-      {/* the roof: two strokes meeting at the top */}
-      <View style={{ position: 'absolute', top: size * 0.06, width: size, height: size * 0.5, alignItems: 'center' }}>
-        <View style={{ position: 'absolute', top: roof * 0.32, left: size * 0.5 - roof * 0.82, width: roof, height: weight, borderRadius: weight / 2, backgroundColor: color, transform: [{ rotate: '-40deg' }] }} />
-        <View style={{ position: 'absolute', top: roof * 0.32, left: size * 0.5 + roof * 0.82 - roof, width: roof, height: weight, borderRadius: weight / 2, backgroundColor: color, transform: [{ rotate: '40deg' }] }} />
-      </View>
-      {/* the house: walls and floor in one stroke */}
-      <View style={{ position: 'absolute', bottom: 0, width: size * 0.66, height: size * 0.5, borderLeftWidth: weight, borderRightWidth: weight, borderBottomWidth: weight, borderColor: color }} />
-    </View>
-  );
+// the house: one closed outline (a pentagon: roof and walls in a single even stroke)
+const HOME_ART = require('../../assets/icon-home.png');
+export function HomeIcon({ size = 20, color = '#8e8e8e' }) {
+  return <Image source={HOME_ART} style={{ width: size, height: size, tintColor: color }} resizeMode="contain" />;
 }
 export function HomeButton({ u, vertical }) {
   const tr = useT();
   return (
     <Pressable onPress={withTap(() => goHome && goHome())} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('My Library')}
       style={vertical ? { marginTop: u * 6 } : { marginLeft: u * 5.5 }}>
-      <HomeIcon size={u * 5} weight={Math.max(1.6, u * 0.55)} />
+      <HomeIcon size={u * 5.2} />
     </Pressable>
   );
 }
