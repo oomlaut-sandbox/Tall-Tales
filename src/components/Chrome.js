@@ -60,7 +60,8 @@ let goHome = null;
 export function setGoHome(fn) { goHome = fn; }
 // the house: one closed outline (a pentagon: roof and walls in a single even stroke)
 const HOME_ART = require('../../assets/icon-home.png');
-export function HomeIcon({ size = 20, color = '#8e8e8e' }) {
+const IDLE_GREY = '#3d3d3d'; // the same grey as a greyed-out Play
+export function HomeIcon({ size = 20, color = IDLE_GREY }) {
   return <Image source={HOME_ART} style={{ width: size, height: size, tintColor: color }} resizeMode="contain" />;
 }
 export function HomeButton({ u, vertical }) {
@@ -73,7 +74,7 @@ export function HomeButton({ u, vertical }) {
   );
 }
 // the music note shows on every bar while music or sounds are playing (tap it for the Audio Player)
-function useAmbientPlaying() {
+export function useAmbientPlaying() {
   const [on, setOn] = useState(() => !!getAmbient().playing);
   useEffect(() => onAmbient((st) => setOn(!!(st && st.playing))), []);
   return on;
@@ -134,7 +135,7 @@ export function RecordButton({ onPress, active }) {
 
 // Pause and Play show what is happening: while a book reads aloud, Pause is the white one (Play is greyed and does
 // nothing); when it isn't reading, Play is white and Pause is greyed. (Record stays red.)
-const IDLE = '#3d3d3d'; // greyed out on the black bar: about 24% white, the way iOS greys out a control that can't be used right now
+export const IDLE = '#3d3d3d'; // greyed out on the black bar: about 24% white, the way iOS greys out a control that can't be used right now
 export function PauseButton({ onPress, disabled, active = true }) {
   const c = active ? colors.white : IDLE;
   return (
@@ -291,7 +292,7 @@ export function BarMusic({ u, vertical }) {
   return (
     <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')}
       style={vertical ? { marginTop: u * 6 } : { marginLeft: u * 5.5 }}>
-      <MusicIcon size={u * 5.6} color="#8e8e8e" />
+      <MusicIcon size={u * 5.6} color="#e0e0e0" /* it only shows while music plays: lit */ />
     </Pressable>
   );
 }

@@ -1,6 +1,6 @@
 // The reader: page curl, read-aloud with highlighting, learn-to-read, interactive pictures.
 import { getAmbient, onRecordRequest, setAmbientPlayer } from '../ambient';
-import { AlarmClockIcon, LockIcon, MusicIcon, PlaylistIcon } from '../components/Chrome';
+import { AlarmClockIcon, IDLE, LockIcon, MusicIcon, PlaylistIcon, useAmbientPlaying } from '../components/Chrome';
 import { isRestricted, useControls } from '../controls';
 import { useLang, useT } from '../i18n';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -193,6 +193,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const topH = BL.topH;
   const showControls = (prefs.mode !== 'self' && !listen) || recording;
   const barH = BL.barH;
+  const musicOn = useAmbientPlaying(); // the note lights up while music or sounds play
   const SLOT = u * 11.6; // the step from one bar icon to the next (the same as menu → house)
   // a small 'Your voice' mark when this page will play the parent's recording
   const mineHere = prefs.voice === 'mine' && recPages.includes(idx) && prefs.mode !== 'self' && !recording;
@@ -817,21 +818,21 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
               ) : null}
               {/* music and sounds: the little floating Audio Player */}
               <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.small, { marginTop: isRestricted(controls) && onSettings ? u * 4 : u * 7 }]}>{/* closer when it sits beside the lock */}
-                <MusicIcon size={u * 5.6} color="#8e8e8e" />
+                <MusicIcon size={u * 5.6} color={musicOn ? '#e0e0e0' : IDLE} />
               </Pressable>
               {/* the nightlight: a small light grey moon (Listen Only with the sunset sun) */}
               {canMoon ? (
                 <Pressable onPress={withTap(toggleNight)} hitSlop={12} accessibilityRole="button" accessibilityLabel={dayOn ? tr('Close Daydream') : tr('Nightlight')} style={[styles.small, { marginTop: u * 4 }]}>
-                  {dayOn ? <SolidSun size={u * 4.6} color="#e0e0e0" /> : <MoonIcon size={u * 4.85} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />}
+                  {dayOn ? <SolidSun size={u * 4.6} color="#e0e0e0" /> : <MoonIcon size={u * 4.85} color={prefs.mode === 'listen' ? '#e0e0e0' : IDLE} />}
                 </Pressable>
               ) : null}
               {nightOn ? (
                 <>
                 <Pressable ref={nlLockRef} onPress={withTap(lockNight, thunk)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.small, { marginTop: u * 4 }]}>
-                  <LockIcon size={u * 4.6} color="#9a9a9a" />
+                  <LockIcon size={u * 4.6} color={IDLE} />
                 </Pressable>
                 <Pressable onPress={withTap(() => setAlarmOpen(true))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.small, { marginTop: u * 4, alignItems: 'center' }]}>
-                    <AlarmClockIcon size={u * 4.8} color={prefs.alarmOn ? '#e0e0e0' : '#9a9a9a'} />
+                    <AlarmClockIcon size={u * 4.8} color={prefs.alarmOn ? '#e0e0e0' : IDLE} />
                     {/* the alarm time, under the clock (sideways) */}
                     {prefs.alarmOn ? <Text style={[styles.alarmTime, { marginTop: u * 1.6 }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text> : null}
                   </Pressable>
@@ -871,20 +872,20 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         ) : null}
         {/* music and sounds: opens (or hides) the little floating Audio Player */}
         <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.slot, { width: SLOT }]}>
-          <MusicIcon size={u * 4.9} color="#8e8e8e" />
+          <MusicIcon size={u * 4.9} color={musicOn ? '#e0e0e0' : IDLE} />
         </Pressable>
         {canMoon ? (
           <Pressable onPress={withTap(toggleNight)} hitSlop={12} accessibilityRole="button" accessibilityLabel={dayOn ? tr('Close Daydream') : tr('Nightlight')} style={[styles.slot, { width: SLOT }]}>
-            {dayOn ? <SolidSun size={u * 5.3} color="#e0e0e0" /> : <View style={{ transform: [{ translateX: u * 0.4 }] }}><MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} /></View>}
+            {dayOn ? <SolidSun size={u * 5.3} color="#e0e0e0" /> : <View style={{ transform: [{ translateX: u * 0.4 }] }}><MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : IDLE} /></View>}
           </Pressable>
         ) : null}
         {nightOn ? (
           <>
           <Pressable ref={nlLockRef} onPress={withTap(lockNight, thunk)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.slot, { width: SLOT }]}>
-            <LockIcon size={u * 5} color="#9a9a9a" />
+            <LockIcon size={u * 5} color={IDLE} />
           </Pressable>
           <Pressable onPress={withTap(() => setAlarmOpen(true))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.slot, { width: SLOT }]}>
-              <AlarmClockIcon size={u * 5.1} color={prefs.alarmOn ? '#e0e0e0' : '#9a9a9a'} />
+              <AlarmClockIcon size={u * 5.1} color={prefs.alarmOn ? '#e0e0e0' : IDLE} />
               {/* the alarm time, right of the clock (it takes no room in the slot) */}
               {prefs.alarmOn ? <Text numberOfLines={1} style={[styles.alarmTime, { position: 'absolute', left: SLOT / 2 + u * 3.6 }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text> : null}
             </Pressable>
