@@ -54,6 +54,7 @@ export default function Profiles({ u, openMenu, setControls }) {
   const [gate, setGate] = useState(null); // what waits for the grown-up question: 'add' | 'edit'
   const [editing, setEditing] = useState(false); // tiles open the editor instead of switching
   const [form, setForm] = useState(null); // { id?, name, color, age }
+  const [bandH, setBandH] = useState(0); // the title's height: the edit box's dark layer starts under it
   const [sure, setSure] = useState(false);
   const canSwitch = controls.profiles !== false;
   const { width: winW } = useWindowDimensions();
@@ -83,7 +84,7 @@ export default function Profiles({ u, openMenu, setControls }) {
 
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
-      <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
+      <View style={[styles.band, { paddingTop: insets.top + 30 }]} onLayout={(e) => setBandH(e.nativeEvent.layout.height)}>
         <Text style={styles.title}>{t('Profiles')}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.body}>
@@ -129,8 +130,8 @@ export default function Profiles({ u, openMenu, setControls }) {
       </ScrollView>
 
       {form ? (
-        <View style={styles.scrim}>
-          <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20, paddingTop: insets.top + 16 }} keyboardShouldPersistTaps="handled">{/* in the middle of the screen above the bar (the bar stays uncovered) */}
+        <View style={[styles.scrim, { top: bandH }]}>{/* below the title, which stays in view */}
+          <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20 }} keyboardShouldPersistTaps="handled">{/* in the middle of the screen above the bar (the bar stays uncovered) */}
             <View style={styles.card}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 28 }}>{/* room for the character (drawn a little wider than its box) */}
                 <ProfileTile p={{ name: form.name || '?', color: form.color }} size={60} />
