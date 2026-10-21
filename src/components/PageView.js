@@ -10,7 +10,7 @@ import { useT } from '../i18n';
 import ZoomArt from './ZoomArt';
 // the end of a book: fine grey line-art icons
 const END_AGAIN = require('../../assets/icon-again-line.png');
-const END_LIBRARY = require('../../assets/icon-library-line.png');
+const END_LIBRARY = require('../../assets/icon-home.png'); // My Library: the same house as on the bars
 const END_HEART = require('../../assets/icon-heart-line.png');
 
 // The picture area is a perfect square (as wide as the screen). Only on unusually short
