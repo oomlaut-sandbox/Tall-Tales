@@ -1117,10 +1117,11 @@ function ListenChoice({ area, onDay, onNight, onCancel, onGone, tr }) {
   const word = { color: 'rgba(255,255,255,0.45)', fontFamily: fonts.ui, fontSize: 12, lineHeight: 18, fontWeight: '300', letterSpacing: 1.2 };
   return (
     <>
-      <Animated.View style={{ position: 'absolute', ...area, zIndex: 45, backgroundColor: 'rgba(0,0,0,0.75)', opacity: dim }} onStartShouldSetResponder={() => true} />
+      <Animated.View style={{ position: 'absolute', ...area, zIndex: 45, backgroundColor: 'rgba(0,0,0,0.75)', opacity: dim }} onStartShouldSetResponder={() => true}
+        onResponderRelease={() => { if (!picked) withTap(onCancel)(); }} />{/* a touch anywhere outside the box cancels */}
       <View pointerEvents="box-none" style={{ position: 'absolute', ...area, zIndex: 46, alignItems: 'center', justifyContent: 'center' }}>
         <Animated.View pointerEvents={picked ? 'none' : 'auto'} style={{ alignItems: 'flex-end', opacity: pop, transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1] }) }] }}>
-          <View style={{ width: side, height: side, borderRadius: 30, backgroundColor: '#2b2b2d', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.6)' }}>
+          <View onStartShouldSetResponder={() => true} style={{ width: side, height: side, borderRadius: 30, backgroundColor: '#2b2b2d', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.6)' }}>{/* (a touch on the box itself never cancels) */}
             {/* what this is: Listening Only mode (nothing plays until Daydream or Nightlight is chosen) */}
             <Text style={{ color: 'rgba(255,255,255,0.92)', fontFamily: fonts.ui, fontSize: 15, lineHeight: 18, fontWeight: '500', letterSpacing: 0.3, textAlign: 'center', marginTop: M }}>{tr('Listening Only mode')}</Text>
             {/* the dividing line and the two icons sit exactly in the middle of the box */}
@@ -1139,10 +1140,6 @@ function ListenChoice({ area, onDay, onNight, onCancel, onGone, tr }) {
               </Pressable>
             ))}
           </View>
-          {/* Cancel: small, light grey, under the box's bottom right corner: back out of Listen Only */}
-          <Pressable onPress={withTap(onCancel)} hitSlop={14} style={{ marginTop: 12, marginRight: 6 }} accessibilityRole="button">
-            <Text style={{ color: 'rgba(255,255,255,0.55)', fontFamily: fonts.ui, fontSize: 12.5, letterSpacing: 0.4 }}>{tr('Cancel')}</Text>
-          </Pressable>
         </Animated.View>
       </View>
     </>
