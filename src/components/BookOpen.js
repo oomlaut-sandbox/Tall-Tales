@@ -126,7 +126,8 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
   const inside = first && first.whiteArt ? null : first && first.image; // what lands in the picture square
 
   return (
-    <View pointerEvents="auto" style={[StyleSheet.absoluteFill, { zIndex: 80 }]} {...(closing ? shutPan.panHandlers : {})}>
+    <View pointerEvents="auto" style={[StyleSheet.absoluteFill, { zIndex: 80 }, closing ? (L.wide ? { right: L.rightW } : { bottom: L.barH }) : null]} {...(closing ? shutPan.panHandlers : {})}>
+      {/* (closing: the reader's black bar stays uncovered and usable below, so the menu never goes away) */}
       {/* the dark grey with the reader's black bars fades in over the library */}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: bg, backgroundColor: colors.desk }]}>
         {/* the same charcoal felt as the library and the reader (phones), so it never drops to plain grey */}
