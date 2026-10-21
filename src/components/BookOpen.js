@@ -133,7 +133,11 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
         {/* the same charcoal felt as the library and the reader (phones), so it never drops to plain grey */}
         <DeskFelt spot="bookopen1" overlay />
         <Felt />
-        {L.wide ? (
+        {closing ? (
+          // closing: only the camera-side strip; the reader's own bar shows (uncovered) beside or below
+          L.wide ? <View style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: L.leftW, backgroundColor: colors.bar }} />
+            : <View style={{ position: 'absolute', left: 0, right: 0, top: 0, height: L.topH, backgroundColor: colors.bar }} />
+        ) : L.wide ? (
           <>
             <View style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: L.leftW, backgroundColor: colors.bar }} />
             <View style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: L.rightW, backgroundColor: colors.bar }} />
