@@ -39,6 +39,10 @@ const MUSIC = [
   ['soft-piano', 'Soft, slow solo piano for bedtime: a calm, warm and gentle melody with lots of space, peaceful and dreamy, instrumental, no drums, no voices.'],
   ['gentle-guitar', 'A quiet, gentle fingerpicked acoustic guitar for relaxing and drifting off to sleep: slow, warm and simple, instrumental, no drums, no voices.'],
   ['dreamy-harp', 'Dreamy, slow harp and soft warm pads for a peaceful bedtime: floating, calm and magical, instrumental, no drums, no voices.'],
+  // three more (Oct 2026): Japanese, ambient, shruti box
+  ['japanese-garden', 'Calm traditional Japanese music for bedtime: a slow, gentle koto melody with soft, breathy shakuhachi flute phrases and lots of quiet space, like a peaceful garden at dusk with a little water, tender and simple, instrumental, no drums, no voices.'],
+  ['ambient-drift', 'Slow, warm ambient music for falling asleep: soft evolving synth pads, gentle low drones and faint shimmering textures, drifting and weightless like clouds at night, very calm, no melody jumps, no beat, no drums, no voices.'],
+  ['shruti-box', 'A meditative shruti box drone for a peaceful bedtime: a warm, breathing reed harmonium drone slowly swelling in and out, with a soft, slow sustained melody on top, grounding and calm, instrumental, no drums, no voices.'],
 ];
 const ONLY = (process.env.ONLY || '').split(',').filter(Boolean);
 const want = (id) => !ONLY.length || ONLY.includes(id);
