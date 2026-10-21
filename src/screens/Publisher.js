@@ -97,7 +97,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       const r = await publishToStore(latest.current, (step) => toast(step));
       toast(r.narration || 'Sent to the Book Store. It stays hidden until you show it in the Store Manager; the narration is being made now.');
     } catch (e) {
-      toast(`Couldn’t publish: ${e.message}`);
+      toast(`Couldn’t publish. ${e.message}`);
     }
     setPublishing(false);
   };

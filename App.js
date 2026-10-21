@@ -132,7 +132,7 @@ function Root() {
   useEffect(() => onNewBadge((fresh) => {
     const b = fresh[0];
     const tr = (str, v) => translate(langRef.current, str, v);
-    setTimeout(() => toast(fresh.length > 1 ? tr('New badges! {name} and more. See them in My Notebook.', { name: tr(b.title) }) : tr('New badge: {name}! See it in My Notebook.', { name: tr(b.title) })), 900);
+    setTimeout(() => toast(fresh.length > 1 ? tr('New badges! {name} and more. See them in My Notebook.', { name: tr(b.title) }) : tr('A new badge, {name}! See it in My Notebook.', { name: tr(b.title) })), 900);
   }), [toast]);
 
   // From the start page to My Library: the closed notebook flies onto the shelf as the library fades in.
@@ -224,7 +224,7 @@ function Root() {
       if (!n.ids.length) return;
       setQueue(n); openQueued(n);
       const nx = childShelf.find((x) => x.id === n.ids[n.i]);
-      if (nx) toast(t('Next: {title} ({a} of {b})', { title: nx.title, a: n.i + 1, b: n.ids.length }));
+      if (nx) toast(t('Up next, {title} ({a} of {b})', { title: nx.title, a: n.i + 1, b: n.ids.length }));
     }, 3500);
   };
   useEffect(() => () => clearTimeout(queueNext.current), []);

@@ -683,7 +683,7 @@ function Badge({ b, d, toast }) {
   const art = BADGE_ART[b.id];
   const title = t(b.title), how = t(b.how);
   // its name and how it's earned, written under the badges (no speech bubble)
-  const say = () => toast(b.earned ? `${title}! ${how}` : `${title}: ${how}`);
+  const say = () => toast(b.earned ? `${title}! ${how}` : `${title}. ${how}`);
   const label = `${title}${b.earned ? t(', earned') : t(', not earned yet')}`;
   if (art && !b.earned) {
     // not earned yet: just a fine dotted circle where it will go (tap it to see how to earn it)

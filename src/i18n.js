@@ -198,7 +198,7 @@ const T = {
     ja: 'Oomlautは、いつもあたらしいえほんをさがしています。お話をかいたり、えをかいたりしたら、ぜひおくってください。Oomlautの作家のなかまになりませんか。くわしくはoomlaut.comへ。' },
   'Version {v}': { de: 'Version {v}', fr: 'Version {v}', es: 'Versión {v}', ja: 'バージョン {v}' },
   // ---- badges ----
-  'New badge: {name}! See it in My Notebook.': { de: 'Neues Abzeichen: {name}! Schau es dir in Mein Notizbuch an.', fr: 'Nouveau badge : {name} ! Va le voir dans Mon carnet.', es: '¡Nueva insignia: {name}! Mírala en Mi cuaderno.', ja: 'あたらしいバッジ:{name}!わたしのノートで見てね。' },
+  'A new badge, {name}! See it in My Notebook.': { de: 'Ein neues Abzeichen, {name}! Schau es dir in Mein Notizbuch an.', fr: 'Un nouveau badge, {name} ! Va le voir dans Mon carnet.', es: '¡Una insignia nueva, {name}! Mírala en Mi cuaderno.', ja: 'あたらしいバッジ「{name}」! わたしのノートで見てね。' },
   'New badges! {name} and more. See them in My Notebook.': { de: 'Neue Abzeichen! {name} und mehr. Schau sie dir in Mein Notizbuch an.', fr: 'Nouveaux badges ! {name} et d’autres. Va les voir dans Mon carnet.', es: '¡Nuevas insignias! {name} y más. Míralas en Mi cuaderno.', ja: 'あたらしいバッジ!{name}など。わたしのノートで見てね。' },
   'First Book': { de: 'Erstes Buch', fr: 'Premier livre', es: 'Primer libro', ja: 'はじめての本' },
   'Read a book all the way to The End.': { de: 'Lies ein Buch bis zum Ende.', fr: 'Lis un livre jusqu’à la fin.', es: 'Lee un libro hasta el final.', ja: '本をさいごまでよもう。' },
@@ -283,7 +283,7 @@ const T = {
   'No books yet.': { de: 'Noch keine Bücher.', fr: 'Pas encore de livres.', es: 'Todavía no hay libros.', ja: 'まだほんがありません。' },
   'Add books': { de: 'Bücher hinzufügen', fr: 'Ajouter des livres', es: 'Añadir libros', ja: 'ほんをついか' },
   'Delete this playlist': { de: 'Diese Playlist löschen', fr: 'Supprimer cette liste', es: 'Borrar esta lista', ja: 'このプレイリストをけす' },
-  'Next: {title} ({a} of {b})': { de: 'Als Nächstes: {title} ({a} von {b})', fr: 'Ensuite : {title} ({a} sur {b})', es: 'Ahora: {title} ({a} de {b})', ja: 'つぎ：{title}（{a}/{b}）' },
+  'Up next, {title} ({a} of {b})': { de: 'Als Nächstes {title} ({a} von {b})', fr: 'Ensuite, {title} ({a} sur {b})', es: 'Ahora, {title} ({a} de {b})', ja: 'つぎは {title}（{a}/{b}）' },
   'Listen only': { de: 'Nur zuhören', fr: 'Écouter seulement', es: 'Solo escuchar', ja: 'きくだけ' },
   'Listen Only': { de: 'Nur zuhören', fr: 'Écouter seulement', es: 'Solo escuchar', ja: 'きくだけ' },
   'Playback Options': { de: 'Vorlese-Einstellungen', fr: 'Réglages de lecture', es: 'Ajustes de lectura', ja: 'よみあげのせってい' }, // the same as the menu's name for it
@@ -317,7 +317,7 @@ const T = {
   'Tap any word to hear it.': { de: 'Tippe auf ein Wort, um es zu hören.', fr: 'Touche un mot pour l’entendre.', es: 'Toca una palabra para oírla.', ja: 'ことばを タップすると きこえます。' },
   'Reading on your own. Turn the page when you’re ready.': { de: 'Du liest selbst. Blättere um, wenn du so weit bist.', fr: 'Tu lis tout seul. Tourne la page quand tu es prêt.', es: 'Lees tú solo. Pasa la página cuando quieras.', ja: 'じぶんで よもう。じゅんびが できたら ページを めくってね。' },
   '{name} will read the stories.': { de: '{name} liest die Geschichten vor.', fr: '{name} lira les histoires.', es: '{name} leerá los cuentos.', ja: '{name}が おはなしを よみます。' },
-  'Books will play: {mode}.': { de: 'Bücher spielen so: {mode}.', fr: 'Les livres seront lus : {mode}.', es: 'Los libros se leerán así: {mode}.', ja: 'ほんの よみかた：{mode}' },
+  '{mode} is on.': { de: '{mode} ist an.', fr: '{mode} est activé.', es: '{mode} está activado.', ja: '{mode} に しました。' },
   'Helvetica': { de: 'Helvetica', fr: 'Helvetica', es: 'Helvetica', ja: 'ヘルベチカ' },
   'Serif': { de: 'Serif', fr: 'Serif', es: 'Serif', ja: 'セリフ' },
   'Typewriter': { de: 'Schreibmaschine', fr: 'Machine à écrire', es: 'Máquina de escribir', ja: 'タイプライター' },

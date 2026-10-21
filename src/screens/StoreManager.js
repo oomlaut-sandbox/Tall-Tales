@@ -32,7 +32,7 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
   const [blurb, setBlurb] = useState(book.blurb || '');
   const [confirmRemove, setConfirmRemove] = useState(false);
   const save = async (patch, note) => {
-    try { await updateBook(book.id, patch); if (note) toast(note); onChanged(); } catch (e) { toast(`Couldn’t save: ${e.message}`); }
+    try { await updateBook(book.id, patch); if (note) toast(note); onChanged(); } catch (e) { toast(`Couldn’t save. ${e.message}`); }
   };
   // move it one place earlier or later on its shelf (swaps places with its neighbour)
   const move = async (dir) => {
@@ -40,7 +40,7 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
     if (j < 0 || j >= siblings.length) return;
     const other = siblings[j];
     const a = book.sort === other.sort ? other.sort + dir : other.sort;
-    try { await updateBook(book.id, { sort: a }); await updateBook(other.id, { sort: book.sort }); onChanged(); } catch (e) { toast(`Couldn’t move it: ${e.message}`); }
+    try { await updateBook(book.id, { sort: a }); await updateBook(other.id, { sort: book.sort }); onChanged(); } catch (e) { toast(`Couldn’t move it. ${e.message}`); }
   };
   const art = !book.bundled && book.cover_title ? { uri: storageUrl(book.cover_path), title: book.cover_title } : null;
   const cover = coverFor(book);
@@ -93,7 +93,7 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
             <>
               <Text style={styles.label}>Narration (Fatima and Henry)</Text>
               <Text style={styles.note}>{NARRATION[book.narration_status] || book.narration_status}{book.narration_note ? `: ${book.narration_note}` : ''}</Text>
-              <Pressable onPress={async () => { try { await startNarration(book.id); toast('Making the narration…'); onChanged(); } catch (e) { toast(`Couldn’t start it: ${e.message}`); } }}
+              <Pressable onPress={async () => { try { await startNarration(book.id); toast('Making the narration…'); onChanged(); } catch (e) { toast(`Couldn’t start it. ${e.message}`); } }}
                 style={[styles.pill, { backgroundColor: colors.blue }]} accessibilityRole="button">
                 <Text style={styles.pillText}>{book.narration_status === 'ready' ? 'Make the narration again' : 'Make the narration'}</Text>
               </Pressable>
@@ -101,7 +101,7 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
                 <View style={{ gap: 10, marginTop: 24 }}>
                   <Text style={styles.note}>Take “{book.title}” out of the Book Store for good? The book stays in your own library on this phone.</Text>
                   <View style={{ flexDirection: 'row', gap: 10 }}>
-                    <Pressable onPress={async () => { try { await removeFromStore(book.id); toast('Taken out of the Book Store.'); onChanged(); } catch (e) { toast(`Couldn’t remove it: ${e.message}`); } }}
+                    <Pressable onPress={async () => { try { await removeFromStore(book.id); toast('Taken out of the Book Store.'); onChanged(); } catch (e) { toast(`Couldn’t remove it. ${e.message}`); } }}
                       style={[styles.pill, { flex: 1, backgroundColor: colors.deepRed }]}><Text style={styles.pillText}>Remove</Text></Pressable>
                     <Pressable onPress={() => setConfirmRemove(false)} style={[styles.pill, { flex: 1 }]}><Text style={styles.pillText}>Keep it</Text></Pressable>
                   </View>
@@ -121,12 +121,12 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
 
 function ShelfRow({ shelf, shelves, onChanged, toast }) {
   const [title, setTitle] = useState(shelf.title);
-  const save = async (patch, note) => { try { await updateShelf(shelf.id, patch); if (note) toast(note); onChanged(); } catch (e) { toast(`Couldn’t save: ${e.message}`); } };
+  const save = async (patch, note) => { try { await updateShelf(shelf.id, patch); if (note) toast(note); onChanged(); } catch (e) { toast(`Couldn’t save. ${e.message}`); } };
   const move = async (dir) => {
     const i = shelves.findIndex((x) => x.id === shelf.id), j = i + dir;
     if (j < 0 || j >= shelves.length) return;
     const other = shelves[j];
-    try { await updateShelf(shelf.id, { sort: other.sort === shelf.sort ? other.sort + dir : other.sort }); await updateShelf(other.id, { sort: shelf.sort }); onChanged(); } catch (e) { toast(`Couldn’t move it: ${e.message}`); }
+    try { await updateShelf(shelf.id, { sort: other.sort === shelf.sort ? other.sort + dir : other.sort }); await updateShelf(other.id, { sort: shelf.sort }); onChanged(); } catch (e) { toast(`Couldn’t move it. ${e.message}`); }
   };
   return (
     <View style={[styles.row, { padding: 12, gap: 8 }]}>
@@ -201,7 +201,7 @@ export default function StoreManager({ u, openMenu, toast, demo }) {
             {data.shelves.map((sh) => <ShelfRow key={sh.id} shelf={sh} shelves={data.shelves} onChanged={() => load(false)} toast={toast} />)}
             <View style={[styles.row, { padding: 12, gap: 8 }]}>
               <TextInput value={newShelf} onChangeText={setNewShelf} placeholder="New shelf, e.g. Animals" placeholderTextColor="#888" style={styles.input} />
-              <Pressable disabled={!newShelf.trim()} onPress={async () => { try { await addShelf(newShelf); setNewShelf(''); toast('Shelf added.'); load(false); } catch (e) { toast(`Couldn’t add it: ${e.message}`); } }}
+              <Pressable disabled={!newShelf.trim()} onPress={async () => { try { await addShelf(newShelf); setNewShelf(''); toast('Shelf added.'); load(false); } catch (e) { toast(`Couldn’t add it. ${e.message}`); } }}
                 style={[styles.pill, { backgroundColor: colors.green }, !newShelf.trim() && { opacity: 0.4 }]}><Text style={styles.pillText}>Add shelf</Text></Pressable>
             </View>
           </View>

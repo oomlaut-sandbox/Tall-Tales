@@ -33,7 +33,7 @@ export default function PlaybackPanel({ open, onClose, prefs, setPrefs, toast, b
         <>
           {MODES.map(([g, id, t, s]) => (
             <Option key={id} glyph={g} title={tr(t)} sub={tr(s)} selected={prefs.mode === id}
-              onPress={() => { setPrefs((p) => ({ ...p, mode: id })); toast(tr('Books will play: {mode}.', { mode: tr(t) })); }} />
+              onPress={() => { setPrefs((p) => ({ ...p, mode: id })); toast(tr('{mode} is on.', { mode: tr(t) })); }} />
           ))}
           <Option glyph={<BubbleIcon />} title={tr('Voices')} sub={tr('Narrator: {name}', { name: (NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1] })} onPress={() => setView('voices')} />
           {onPlaylists ? <Option glyph={<PlaylistIcon />} title={tr('Playlists')} sub={tr('Books read one after another')} onPress={() => { close(); onPlaylists(); }} /> : null}
