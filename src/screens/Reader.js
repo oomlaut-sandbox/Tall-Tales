@@ -264,8 +264,21 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const lockNight = () => { const n = nlLockRef.current; if (n && n.measureInWindow) n.measureInWindow((x, y, width, height) => { setLockRect({ x, y, width, height }); setNlLocked(true); }); else setNlLocked(true); };
   useEffect(() => { if (prefs.mode !== 'listen') setNlLocked(false); }, [prefs.mode]);
   // the moon on the bar: into Listen Only (the sun / moon choice), and back out again
+  const nlOut = useRef(new Animated.Value(1)).current;
+  const [leavingNight, setLeavingNight] = useState(false);
   const toggleNight = () => {
-    if (prefs.mode === 'listen') { chooseMode(prefs.prevMode && prefs.prevMode !== 'listen' ? prefs.prevMode : 'auto'); return; }
+    if (prefs.mode === 'listen') {
+      const back = prefs.prevMode && prefs.prevMode !== 'listen' ? prefs.prevMode : 'auto';
+      if (!nightOn) { chooseMode(back); return; }
+      if (leavingNight) return;
+      // a soft dissolve back to the book, then the mode changes
+      setLeavingNight(true);
+      Animated.timing(nlOut, { toValue: 0, duration: 650, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(() => {
+        chooseMode(back);
+        setTimeout(() => { nlOut.setValue(1); setLeavingNight(false); }, 60);
+      });
+      return;
+    }
     chooseMode('listen'); // the same choice as from the menu: Daydream or the nightlight
   };
 
@@ -927,10 +940,13 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       {boxUp && nightEnabled ? <ListenChoice area={wide ? { left: 0, top: 0, width: winW - BL.rightW, height: winH } : { left: 0, top: 0, width: winW, height: winH - barH }}
         onDay={() => pickScene('day')} onNight={() => pickScene('night')} onCancel={cancelListen} onGone={() => setBoxUp(false)} tr={tr} /> : null}
       {nightOn ? (
+        // leaving Listen Only (the sun or moon on the bar): the nightlight or Daydream dissolves away
+        <Animated.View pointerEvents={leavingNight ? 'none' : 'box-none'} style={[StyleSheet.absoluteFill, { zIndex: 40, opacity: nlOut }]}>
         <Nightlight key={scene} quick={fromChoice} day={dayOn} video={prefs.dayVideo || 0} onVideo={(i) => setPrefs((p) => ({ ...p, dayVideo: i }))} title={story.title} playing={reading && !paused} onPlay={onPlay} onPause={onPause} locked={nlLocked} lockRect={lockRect} onUnlock={() => setNlLocked(false)} onSleep={() => { stopReading(); clearTimeout(autoTimer.current); }} eclipse={prefs.eclipse ?? 0} onEclipse={(v) => setPrefs((p) => ({ ...p, eclipse: Math.round(v * 100) / 100 }))}
           alarmTime={prefs.alarmTime || '07:00'} alarmSound={prefs.alarmSound || 'forest-birds'} alarmOn={!!prefs.alarmOn} alarmOpen={alarmOpen} onAlarmClose={() => setAlarmOpen(false)} onAlarm={(patch) => setPrefs((p) => ({ ...p, ...patch }))}
           wide={wide} end={!!(pages[idx] && pages[idx].end)}
           area={wide ? { left: 0, top: 0, width: winW - BL.rightW, height: winH } : { left: 0, top: 0, width: winW, height: winH - barH }} />
+        </Animated.View>
       ) : null}
       <Panel open={panel === 'play'} side="right" title={playView === 'voices' ? tr('Voices') : tr('Reading Options')} {...panelPos} onClose={() => { setPanel(null); setPlayView('main'); }}>
         {playView === 'voices' ? (
@@ -1112,9 +1128,10 @@ function ListenChoice({ area, onDay, onNight, onCancel, onGone, tr }) {
   const pop = useRef(new Animated.Value(0)).current;
   const [picked, setPicked] = useState(null); // 'day' or 'night': its icon turns solid, a soft click, then off we go
   useEffect(() => {
-    Animated.sequence([
-      Animated.timing(dim, { toValue: 1, duration: 550, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-      Animated.spring(pop, { toValue: 1, friction: 7, tension: 60, useNativeDriver: true }),
+    // quick: the dark layer and the box dissolve in together
+    Animated.parallel([
+      Animated.timing(dim, { toValue: 1, duration: 220, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+      Animated.timing(pop, { toValue: 1, duration: 220, easing: Easing.out(Easing.quad), useNativeDriver: true }),
     ]).start();
   }, []);
   // chosen: the box and its dark layer dissolve while the nightlight or Daydream fades in underneath (it starts dark)
