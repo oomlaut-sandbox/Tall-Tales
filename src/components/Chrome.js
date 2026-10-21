@@ -37,7 +37,8 @@ export function Burger({ onPress, u, home = true, music = true, onHome, vertical
   );
   if (!home && !music) return menu;
   // from the menu's middle to the first slot's middle is one step
-  const lead = G.step / 2 - (vertical ? mh : G.mw) / 2;
+  // (plus a touch, so the gap from the menu to the house looks the same as from the house to the note)
+  const lead = G.step / 2 - (vertical ? mh : G.mw) / 2 + (vertical ? u * 0.22 : u * 1.02);
   return (
     <View style={{ flexDirection: vertical ? 'column' : 'row', alignItems: 'center', alignSelf: 'stretch' }}>
       {menu}
@@ -87,7 +88,7 @@ export function HomeButton({ u, vertical, onPress }) {
   return (
     <Pressable onPress={withTap(() => (onPress ? onPress() : goHome && goHome()))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('My Library')}
       style={slotStyle(u, vertical)}>
-      <View style={{ transform: [vertical ? { translateY: HOME_NUDGE_V * u } : { translateX: HOME_NUDGE * u }] }}><HomeIcon size={u * 5.2} /></View>
+      <View style={{ transform: vertical ? [{ translateY: HOME_NUDGE_V * u }] : [{ translateX: HOME_NUDGE * u }, { translateY: -2 }] }}><HomeIcon size={u * 5.2} /></View>
     </Pressable>
   );
 }
