@@ -214,15 +214,15 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
           <FingerWheel light={light} size={size} value={draft} onChange={(v) => { setDraft(v); onTime(v); if (!on) onOn(true); }} label={t('Alarm time')} />
           {/* how to wake up: one amber display and a small knob beside it (turn it, or tap the display, for the next) */}
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginVertical: wide ? 0 : 26 }}>
-            <Pressable onPress={withTap(() => step(1), thunk)} style={styles.lcd} accessibilityRole="adjustable" accessibilityLabel={t('Wake up with')} accessibilityValue={{ text: name(sound) }}
+            <Pressable onPress={withTap(() => step(1), thunk)} style={[styles.lcd, light && L.lcd]} accessibilityRole="adjustable" accessibilityLabel={t('Wake up with')} accessibilityValue={{ text: name(sound) }}
               accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]} onAccessibilityAction={(e) => step(e.nativeEvent.actionName === 'increment' ? 1 : -1)}>
-              <Text style={styles.lcdLabel}>{t('Wake up with')}</Text>
-              <Text style={styles.lcdText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{name(sound)}</Text>
+              <Text style={[styles.lcdLabel, light && L.lcdLabel]}>{t('Wake up with')}</Text>
+              <Text style={[styles.lcdText, light && L.lcdText]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{name(sound)}</Text>
             </Pressable>
             <Pressable onPress={withTap(() => step(1), thunk)} onLongPress={withTap(() => step(-1), thunk)} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Next')}
               style={[styles.smallKnob, light && L.smallKnob]}>
               <View style={{ position: 'absolute', left: 0, top: 0, width: 46, height: 46, alignItems: 'center', transform: [{ rotate: `${knobDeg}deg` }] }}>
-                <View style={{ marginTop: 6, width: 2.5, height: 11, borderRadius: 1.5, backgroundColor: AMBER }} />
+                <View style={{ marginTop: 6, width: 2.5, height: 11, borderRadius: 1.5, backgroundColor: light ? '#6f6a64' : AMBER }} />
               </View>
             </Pressable>
           </View>
@@ -527,7 +527,7 @@ const styles = StyleSheet.create({
 });
 
 // Daydream's alarm popup: the same object in a light, almost white grey (soft shadows lit from the top left);
-// the amber display stays as it is
+// the display is a warm mid grey here (no amber by day)
 const LIGHT = '#e8e6e2';
 const L = StyleSheet.create({
   popup: { backgroundColor: LIGHT, boxShadow: '0 24px 60px rgba(0,0,0,0.45)' },
@@ -540,4 +540,7 @@ const L = StyleSheet.create({
   knob: { backgroundColor: '#ffffff' },
   smallKnob: { backgroundColor: LIGHT, boxShadow: '-4px -4px 9px rgba(255,255,255,0.9), 5px 5px 11px rgba(0,0,0,0.2), inset 1px 1px 2px rgba(255,255,255,0.7), inset -2px -2px 3px rgba(0,0,0,0.08)' },
   note: { color: 'rgba(40,36,32,0.6)' },
+  lcd: { backgroundColor: '#b7b3ad', boxShadow: 'inset 2px 3px 6px rgba(0,0,0,0.22), inset -1px -1px 2px rgba(255,255,255,0.6)' },
+  lcdLabel: { color: 'rgba(40,36,32,0.55)' },
+  lcdText: { color: '#2b2825' },
 });

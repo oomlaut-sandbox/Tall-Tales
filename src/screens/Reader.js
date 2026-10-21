@@ -53,7 +53,7 @@ const VOICE_RECORDING = {
   ios: { ...RecordingPresets.HIGH_QUALITY.ios, audioQuality: 127, sampleRate: 48000 },
   android: { ...RecordingPresets.HIGH_QUALITY.android, sampleRate: 48000 },
 };
-import { playSound, setEffects, setEffectsVolume, suspendSounds } from '../sound';
+import { playSound, playSwitch, setEffects, setEffectsVolume, suspendSounds } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { shareInvite } from '../invite';
 import { audioModeChanged, fadeStopVoice, pauseVoice, playClips, playVoice, resumeVoice, stopVoice } from '../voice';
@@ -66,7 +66,7 @@ import { AUDIO, TIMINGS } from '../narration';
 import { SAMPLES, SAMPLE_LANGS, THE_END } from '../narration/samples';
 import Nightlight, { SunIcon } from '../components/Nightlight';
 const MOON_OUTLINE = require('../../assets/icon-moon-outline.png'); // the moon logo, traced as a fine outline (the same weight as the sun)
-import { thunk, withTap } from '../haptics';
+import { tap, thunk, withTap } from '../haptics';
 import { fmtTime } from '../clock';
 
 export const MODES = [
@@ -1050,25 +1050,35 @@ const styles = StyleSheet.create({
 function ListenChoice({ area, onDay, onNight, tr }) {
   const dim = useRef(new Animated.Value(0)).current;
   const pop = useRef(new Animated.Value(0)).current;
+  const [picked, setPicked] = useState(null); // 'day' or 'night': its icon turns solid, a soft click, then off we go
   useEffect(() => {
     Animated.sequence([
       Animated.timing(dim, { toValue: 1, duration: 900, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
       Animated.spring(pop, { toValue: 1, friction: 7, tension: 60, useNativeDriver: true }),
     ]).start();
   }, []);
+  const pick = (which) => {
+    if (picked) return;
+    setPicked(which);
+    playSwitch(); tap();
+    setTimeout(() => (which === 'day' ? onDay() : onNight()), 420);
+  };
   const side = Math.min(240, area.width * 0.6);
+  const ink = 'rgba(255,255,255,0.88)';
   return (
     <>
       <Animated.View style={{ position: 'absolute', ...area, zIndex: 40, backgroundColor: 'rgba(0,0,0,0.72)', opacity: dim }} onStartShouldSetResponder={() => true} />
       <View pointerEvents="box-none" style={{ position: 'absolute', ...area, zIndex: 41, alignItems: 'center', justifyContent: 'center' }}>
         <Animated.View style={{ width: side, height: side, borderRadius: 30, backgroundColor: '#2b2b2d', flexDirection: 'row', alignItems: 'center', overflow: 'hidden',
           opacity: pop, transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1] }) }], boxShadow: '0 20px 50px rgba(0,0,0,0.6)' }}>
-          <Pressable onPress={withTap(onDay)} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Daydream')}>
-            <SunIcon size={side * 0.16} color="rgba(255,255,255,0.88)" />
+          <Pressable onPress={() => pick('day')} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Daydream')}>
+            {picked === 'day' ? <SolidSun size={side * 0.16} color={ink} /> : <SunIcon size={side * 0.16} color={ink} />}
           </Pressable>
-          <View style={{ width: 1.1, height: side * 0.56, backgroundColor: 'rgba(255,255,255,0.88)' }} />{/* the same fine stroke as the sun and the moon */}
-          <Pressable onPress={withTap(onNight)} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Nightlight')}>
-            <Image source={MOON_OUTLINE} style={{ width: side * 0.16, height: side * 0.16, tintColor: 'rgba(255,255,255,0.88)' }} resizeMode="contain" />
+          <View style={{ width: 1.1, height: side * 0.56, backgroundColor: ink }} />{/* the same fine stroke as the sun and the moon */}
+          <Pressable onPress={() => pick('night')} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Nightlight')}>
+            {picked === 'night'
+              ? <MoonIcon size={side * 0.16 * (226 / 246)} color={ink} />
+              : <Image source={MOON_OUTLINE} style={{ width: side * 0.16, height: side * 0.16, tintColor: ink }} resizeMode="contain" />}
           </Pressable>
         </Animated.View>
       </View>

@@ -13,12 +13,13 @@ const sources = {
   cardLift: require('../assets/sfx/card-lift.mp3'),
   tap: require('../assets/sfx/tap.mp3'),
   swish: require('../assets/sfx/page-swish.mp3'), // the page turn: a soft paper swish
+  lightSwitch: require('../assets/sfx/light-switch.mp3'), // a soft light-switch click (the Listen Only choice)
   key1: require('../assets/sfx/typewriter-1.mp3'), // typewriter keys (three, so fast typing doesn't cut one off)
   key2: require('../assets/sfx/typewriter-2.mp3'),
   key3: require('../assets/sfx/typewriter-3.mp3'),
 };
 // how loud each one plays (they are evened out already; effects stay below the narrator)
-const LEVEL = { coverOpen: 0.7, coverClose: 0.6, peel: 0.9, flick: 0.55, slide: 0.45, setDown: 0.5, cardLift: 0.45, tap: 0.4, swish: 0.6, key1: 0.35, key2: 0.35, key3: 0.35 };
+const LEVEL = { coverOpen: 0.7, coverClose: 0.6, peel: 0.9, flick: 0.55, slide: 0.45, setDown: 0.5, cardLift: 0.45, tap: 0.4, swish: 0.6, lightSwitch: 0.5, key1: 0.35, key2: 0.35, key3: 0.35 };
 
 const players = {};
 let ready = false;
@@ -71,6 +72,19 @@ export function playSound(kind, volume = 1) {
   try {
     p.volume = Math.min(1, (LEVEL[kind] || 0.5) * volume * master);
     // rewind first, then play (playing before the rewind has finished could start at the end and be silent)
+    Promise.resolve(p.seekTo(0)).catch(() => {}).then(() => { try { p.play(); } catch (e) {} });
+  } catch (e) {}
+}
+
+// the light-switch click when choosing Daydream or the nightlight: part of that moment, so it plays even when the
+// page-turn sound effects are off (quietly, never while recording)
+export function playSwitch() {
+  if (suspended) return;
+  const pair = players.lightSwitch;
+  if (!pair) return;
+  const p = pair[0];
+  try {
+    p.volume = 0.35;
     Promise.resolve(p.seekTo(0)).catch(() => {}).then(() => { try { p.play(); } catch (e) {} });
   } catch (e) {}
 }
