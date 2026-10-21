@@ -242,7 +242,7 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
 // layers: the dark layer and the sun sit just over a turning page (40, after it) and under the menus (41);
 // locked, a blocker covers everything (78) with the nightlight above it (79), and the question above that (80)
 // area: where the book is (covered)
-export default function Nightlight({ title, playing, onPlay, onPause, onSleep, locked = false, lockRect, onUnlock, eclipse = 0, onEclipse, alarmTime = '07:00', alarmSound = 'forest-birds', alarmOn = false, alarmOpen = false, onAlarmClose, onAlarm, wide, area, end, day = false, video = 0, onVideo, quick = false }) {
+export default function Nightlight({ title, playing, onPlay, onPause, onSleep, locked = false, lockRect, lockSize, onUnlock, eclipse = 0, onEclipse, alarmTime = '07:00', alarmSound = 'forest-birds', alarmOn = false, alarmOpen = false, onAlarmClose, onAlarm, wide, area, end, day = false, video = 0, onVideo, quick = false }) {
   // quick: coming from the Listen Only choice, where the screen is already dark: it stays dark (never a flash of the
   // page) and the sun or the picture fades in quickly
   // day: Daydream instead of the nightlight: a calm looping video, dimmed a little, with the same information and
@@ -481,7 +481,7 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
       {locked && lockRect ? (
         <Pressable onPress={withTap(() => setGate(true))} hitSlop={16} style={{ position: 'absolute', left: lockRect.x, top: lockRect.y, width: lockRect.width, height: lockRect.height, zIndex: 79, alignItems: 'center', justifyContent: 'center' }}
           accessibilityRole="button" accessibilityLabel={t('Unlock the screen')}>
-          <LockIcon size={Math.min(lockRect.width, lockRect.height)} color={CREAM} />
+          <LockIcon size={lockSize || Math.min(lockRect.width, lockRect.height, 24)} color={CREAM} />{/* the bar's lock, the same size, in cream (the slot around it is much bigger) */}
         </Pressable>
       ) : null}
       <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 81 }]}>
