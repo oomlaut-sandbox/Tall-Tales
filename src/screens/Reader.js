@@ -1065,7 +1065,7 @@ function ListenChoice({ area, onDay, onNight, tr }) {
           </Pressable>
           <View style={{ width: StyleSheet.hairlineWidth * 2, height: side * 0.56, backgroundColor: 'rgba(255,255,255,0.75)' }} />
           <Pressable onPress={withTap(onNight)} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Nightlight')}>
-            <MoonIcon size={side * 0.13} color="rgba(255,255,255,0.88)" />
+            <OutlineMoon size={side * 0.15} color="rgba(255,255,255,0.88)" bg="#2b2b2d" />
           </Pressable>
         </Animated.View>
       </View>
@@ -1082,6 +1082,18 @@ function SolidSun({ size, color }) {
         <View key={i} style={{ position: 'absolute', width: Math.max(1.6, size * 0.09), height: size * 0.2, borderRadius: size * 0.05, backgroundColor: color, transform: [{ rotate: `${i * 45}deg` }, { translateY: -size * 0.39 }] }} />
       ))}
       <View style={{ width: r * 2, height: r * 2, borderRadius: r, backgroundColor: color }} />
+    </View>
+  );
+}
+
+// the moon as a fine outline (the same stroke as the sun beside it), shaped like the app's moon: a crescent whose
+// hollow faces the top left. A ring, with a second ring of the box's colour laid over its top left, clipped to the first.
+function OutlineMoon({ size, color, bg, weight = 1.4 }) {
+  const m = size * 0.86;
+  return (
+    <View style={{ width: size, height: size, borderRadius: size / 2, overflow: 'hidden', transform: [{ rotate: '-8deg' }] }}>
+      <View style={{ position: 'absolute', left: 0, top: 0, width: size, height: size, borderRadius: size / 2, borderWidth: weight, borderColor: color }} />
+      <View style={{ position: 'absolute', left: -size * 0.3, top: -size * 0.22, width: m, height: m, borderRadius: m / 2, backgroundColor: bg, borderWidth: weight, borderColor: color }} />
     </View>
   );
 }
