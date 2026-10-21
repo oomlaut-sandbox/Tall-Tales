@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: DESK_BG },
   band: { paddingBottom: 6, paddingHorizontal: 24 }, // just the title, on the felt (no banner)
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, transform: [{ translateY: -3 }] },
-  body: { padding: 24, paddingTop: 24, paddingBottom: 140, alignItems: 'center' },
+  body: { padding: 24, paddingTop: 44, /* a little room under the title */ paddingBottom: 140, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 26 },
   p: { fontFamily: fonts.ui, fontSize: 16, lineHeight: 22, color: '#e6e6e6' },
   small: { fontFamily: fonts.ui, fontSize: 13, lineHeight: 18, color: '#bdbdbd' },
