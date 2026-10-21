@@ -148,6 +148,16 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     }, 700);
   }, [draft]);
   useEffect(() => () => clearTimeout(timer.current), []);
+  // 'Saved' fades in quietly after each save, then away again
+  const savedFade = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (!saved || first.current) return;
+    Animated.sequence([
+      Animated.timing(savedFade, { toValue: 1, duration: 300, useNativeDriver: true }),
+      Animated.delay(1200),
+      Animated.timing(savedFade, { toValue: 0, duration: 700, useNativeDriver: true }),
+    ]).start();
+  }, [saved]);
 
   const update = (patch) => setDraft((d) => ({ ...d, pages: d.pages.map((p, k) => (k === i ? { ...p, ...patch } : p)) }));
 
@@ -177,8 +187,14 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
 
   // ---- The Cover Editor: a square like the words editor. Add a picture, then (if wanted) the title,
   // which can be typed, sized and dragged into place. ----
-  const [titleBox, setTitleBox] = useState(false); // the title (and author / illustrator) box
-  const [coverOpen, setCoverOpen] = useState(false);
+  const [titleBox, setTitleBox] = useState(false); // Finish with no title yet: 'Give your book a title'
+  // The book maker always starts on the cover (title, names, cover picture) for a brand-new book;
+  // 'Start writing' goes on to page 1. The cover stays one tap away: 'Cover' on the black bar.
+  const isNew = (d) => !d.title.trim() && !d.cover && !d.pages.some((p) => p.text.trim() || p.uri || p.uri2);
+  const [coverOpen, setCoverOpen] = useState(() => isNew(draft));
+  const [startMode, setStartMode] = useState(() => isNew(draft)); // the cover's button reads 'Start writing'
+  const coverFromNext = useRef(false); // opened from 'What's next?': Done goes back there
+  const [fieldOn, setFieldOn] = useState(false); // typing in the title / names fields (the square steps aside)
   const [coverAsk, setCoverAsk] = useState(false); // 'Add the title as text?'
   const [coverTitling, setCoverTitling] = useState(false);
   const [titleEditing, setTitleEditing] = useState(false);
@@ -205,7 +221,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const [coverTool, setCoverTool] = useState(null); // 'color' | 'font' palette open under the tools
   const cover = draft.cover || null;
   const setCover = (c) => setDraft((d) => ({ ...d, cover: c }));
-  const openCover = () => { setPageDone(false); setCoverAsk(false); setCoverTitling(!!(cover && cover.title)); setCoverOpen(true); };
+  const openCover = (fromNext) => { coverFromNext.current = fromNext === true; setPageDone(false); setCoverAsk(false); setCoverTitling(!!(cover && cover.title)); setCoverOpen(true); };
   const pickCover = async (source, given) => {
     try {
       const ph = given || await choosePhoto(source);
@@ -220,9 +236,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const finishCover = () => {
     // a title typed on the cover also names the book, if it has no name yet
     setDraft((d) => (!d.title.trim() && d.cover && d.cover.title && d.cover.title.text.trim() ? { ...d, title: d.cover.title.text.trim() } : d));
-    setCoverOpen(false); setCoverAsk(false); setCoverTitling(false); setPageDone(true);
+    Keyboard.dismiss(); setFieldOn(false);
+    setCoverOpen(false); setCoverAsk(false); setCoverTitling(false);
+    if (startMode) { setStartMode(false); setI(0); } // 'Start writing': straight to page 1
+    else if (coverFromNext.current) setPageDone(true); // back to 'What's next?'
+    coverFromNext.current = false;
   };
-  const coverNo = () => { setCover({ ...cover, title: null }); finishCover(); };
+  const coverNo = () => { setCover({ ...cover, title: null }); setCoverAsk(false); }; // stay on the cover
   const coverYes = () => {
     setCoverAsk(false); setCoverTitling(true);
     setCover({ ...cover, title: { text: draft.title.trim() || tr('My Story'), x: 0.5, y: 0.2, size: 0.11, color: TITLE_YELLOW } }); // yellow to start with
@@ -344,7 +364,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     toast(tr('Page {n} deleted.', { n: k + 1 }));
   };
 
-  const finish = async () => {
+  const finish = async (named) => {
+    const d0 = latest.current;
+    if (named !== true && !d0.title.trim() && d0.pages.some((p) => p.text.trim() || p.uri || p.uri2)) { setTitleBox(true); return; } // a book needs a name
+    setTitleBox(false);
     clearTimeout(timer.current);
     try {
       const list = await saveUserStory(latest.current);
@@ -444,10 +467,14 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             </View>
             <View style={{ alignItems: 'center', gap: 18 }}>
               {/* the page count sits above Pages, with plenty of room between them */}
-              <Animated.Text style={[styles.sub, { textAlign: 'center', marginBottom: 22, opacity: coverFade }]}>{i + 1}/{draft.pages.length}</Animated.Text>
+              <Animated.View style={{ alignItems: 'center', marginBottom: 22, opacity: coverFade }}>
+                <Text style={[styles.sub, { textAlign: 'center' }]}>{i + 1}/{draft.pages.length}</Text>
+                <Animated.Text style={[styles.sub, { textAlign: 'center', opacity: savedFade }]}>{tr('Saved')}</Animated.Text>
+              </Animated.View>
               <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ alignItems: 'center', gap: 18, opacity: barFade, marginBottom: 26 }}>
+              <Pressable onPress={() => openCover()} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><Text style={styles.btn}>{tr('Cover')}</Text></Pressable>
               <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>{tr('Pages')}</Text></Pressable>
-              <Pressable onPress={finish} hitSlop={8} accessibilityLabel={tr('Finish and save the book')}><View style={styles.finish}><Text style={styles.btn}>{tr('Finish')}</Text></View></Pressable>
+              <Pressable onPress={() => finish()} hitSlop={8} accessibilityLabel={tr('Finish and save the book')}><View style={styles.finish}><Text style={styles.btn}>{tr('Finish')}</Text></View></Pressable>
               </Animated.View>
             </View>
           </Bar>
@@ -456,15 +483,19 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       <View style={{ backgroundColor: colors.bar, paddingTop: spare / 2 }}>
       <Bar u={u}>
         <Animated.View pointerEvents={coverOpen ? 'none' : 'auto'} style={{ opacity: coverFade }}><Burger u={u} onPress={openMenu} /></Animated.View>
-        <Animated.View pointerEvents={coverOpen ? 'none' : 'auto'} style={{ flex: 1, minWidth: 0, paddingLeft: 12, opacity: coverFade }}>
-          <Pressable onPress={() => setTitleBox(true)} accessibilityRole="button" accessibilityLabel={tr('Book title')}>
-            <Text numberOfLines={1} style={[styles.title, !draft.title.trim() && { color: 'rgba(255,255,255,0.75)' }]}>{draft.title.trim() || tr('Tap to add title')}</Text>
-          </Pressable>
-          <Text style={styles.sub}>{tr('Page {a} of {b}', { a: i + 1, b: draft.pages.length })} · {saved ? tr('Saved') : tr('Saving…')}</Text>
-        </Animated.View>
-        <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ flexDirection: 'row', alignItems: 'center', gap: 14, opacity: barFade }}>
-        <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>{tr('Pages')}</Text></Pressable>
-        <Pressable onPress={finish} hitSlop={8} accessibilityLabel={tr('Finish and save the book')}><View style={styles.finish}><Text style={styles.btn}>{tr('Finish')}</Text></View></Pressable>
+        <View style={{ flex: 1 }} />
+        {/* Cover, then Pages (with the page count small underneath, and 'Saved' fading in after each change), then Finish */}
+        <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ flexDirection: 'row', alignItems: 'center', gap: 16, opacity: barFade }}>
+        <Pressable onPress={() => openCover()} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><Text style={styles.btn}>{tr('Cover')}</Text></Pressable>
+        <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8} style={{ alignItems: 'center' }}>
+          <Text style={[styles.btn, { marginTop: 16 }]}>{tr('Pages')}</Text>
+          {/* 'Saved' takes the count's place for a moment, then the count comes back */}
+          <View style={{ height: 16, alignItems: 'center', justifyContent: 'center' }}>
+            <Animated.Text numberOfLines={1} style={[styles.sub, { fontSize: 11, marginTop: 0, opacity: savedFade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>{tr('Page {a} of {b}', { a: i + 1, b: draft.pages.length })}</Animated.Text>
+            <Animated.Text numberOfLines={1} style={[styles.sub, { fontSize: 11, marginTop: 0, opacity: savedFade, position: 'absolute' }]}>{tr('Saved')}</Animated.Text>
+          </View>
+        </Pressable>
+        <Pressable onPress={() => finish()} hitSlop={8} accessibilityLabel={tr('Finish and save the book')}><View style={styles.finish}><Text style={styles.btn}>{tr('Finish')}</Text></View></Pressable>
         </Animated.View>
       </Bar>
       </View>
@@ -589,16 +620,14 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           </View>
         </KeyboardAvoidingView>      ) : null}
       {titleBox ? (
-        // the book's title, then (optional) who wrote it and who drew the pictures, for the title page
+        // Finish, but the book has no name yet: ask for one (it can still be left out)
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
-            <Text style={styles.choiceTitle}>{tr('Book title')}</Text>
-            <TextInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder={tr('Type the title')} placeholderTextColor="#8a8a8a" autoFocus style={styles.field} accessibilityLabel={tr('Book title')} />
-            <Text style={[styles.choiceTitle, { fontSize: 16, marginTop: 6, marginBottom: 0 }]}>{tr('Add an author or illustrator?')}</Text>
-            <Text style={styles.fieldHint}>{tr('Optional. They appear on the title page.')}</Text>
-            <TextInput value={draft.writer || ''} onChangeText={(writer) => setDraft((d) => ({ ...d, writer }))} placeholder={tr('Written by')} placeholderTextColor="#8a8a8a" style={styles.field} accessibilityLabel={tr('Written by')} />
-            <TextInput value={draft.artist || ''} onChangeText={(artist) => setDraft((d) => ({ ...d, artist }))} placeholder={tr('Illustrated by')} placeholderTextColor="#8a8a8a" style={styles.field} accessibilityLabel={tr('Illustrated by')} />
-            <Pressable onPress={() => setTitleBox(false)} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 10 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Done')}</Text></Pressable>
+            <Text style={styles.choiceTitle}>{tr('Give your book a title')}</Text>
+            <TextInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder={tr('Type the title')} placeholderTextColor="#8a8a8a" autoFocus style={styles.field} accessibilityLabel={tr('Book title')}
+              returnKeyType="done" onSubmitEditing={() => finish(true)} />
+            <Pressable onPress={() => finish(true)} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 10 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Finish and save book')}</Text></Pressable>
+            <Pressable onPress={() => setTitleBox(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Keep working')}</Text></Pressable>
           </View>
         </KeyboardAvoidingView>
       ) : null}
@@ -607,7 +636,28 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk, overflow: 'hidden' }, wide ? { right: BL.rightW } : { bottom: BL.barH }]}>
           <DeskFelt spot="publisher3" overlay />
           <View style={[styles.editor, { flex: 1, paddingTop: kbUp ? insets.top + 8 : insets.top + (winW > winH ? 12 : 34), paddingLeft: insets.left, paddingRight: insets.right }]}>
-            {!kbUp ? <View style={styles.editorHead}><Text style={styles.editorTitle}>{tr('Cover')}</Text></View> : null}
+            {/* the book's title and (optional) who wrote it and who drew the pictures: all on the cover page */}
+            {!kbUp || fieldOn ? (
+              <View style={{ width: Math.min(winW - insets.left - insets.right - 2 * GAP, 560), gap: 8, marginBottom: 14 }}>
+                <TextInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder={tr('Book title')} placeholderTextColor="#8a8a8a"
+                  onFocus={() => setFieldOn(true)} onBlur={() => setFieldOn(false)} returnKeyType="done" onSubmitEditing={() => Keyboard.dismiss()}
+                  style={[styles.field, { fontWeight: '700' }]} accessibilityLabel={tr('Book title')} />
+                <View style={{ flexDirection: 'row', gap: 8 }}>
+                  <TextInput value={draft.writer || ''} onChangeText={(writer) => setDraft((d) => ({ ...d, writer }))} placeholder={tr('Written by')} placeholderTextColor="#8a8a8a"
+                    onFocus={() => setFieldOn(true)} onBlur={() => setFieldOn(false)} returnKeyType="done" onSubmitEditing={() => Keyboard.dismiss()}
+                    style={[styles.field, styles.fieldSmall]} accessibilityLabel={tr('Written by')} />
+                  <TextInput value={draft.artist || ''} onChangeText={(artist) => setDraft((d) => ({ ...d, artist }))} placeholder={tr('Illustrated by')} placeholderTextColor="#8a8a8a"
+                    onFocus={() => setFieldOn(true)} onBlur={() => setFieldOn(false)} returnKeyType="done" onSubmitEditing={() => Keyboard.dismiss()}
+                    style={[styles.field, styles.fieldSmall]} accessibilityLabel={tr('Illustrated by')} />
+                </View>
+                {fieldOn ? (
+                  <View style={{ alignItems: 'flex-end', marginTop: 4 }}>
+                    <Pressable onPress={() => { Keyboard.dismiss(); setFieldOn(false); }} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { marginBottom: 0 }]}><Text style={styles.donePillText}>{tr('Done')}</Text></Pressable>
+                  </View>
+                ) : null}
+              </View>
+            ) : null}
+            {fieldOn ? null : (
             <View style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: kbUp ? 'center' : 'flex-start' }}
               onLayout={(e) => setCoverArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
             {(() => {
@@ -699,11 +749,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               </View>
             ) : null}
             </View>
+            )}
           </View>
           {/* the hint is a speech bubble near the bottom that goes away after a while (tap it to close it sooner) */}
           {coverTitling && coverTip && !kbUp ? <Toast message={tr('Tap the title to type. Drag it anywhere on the cover.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 74 }} onDismiss={() => setCoverTip(false)} /> : null}
           {/* Done: bottom right, lined up with the cover's right edge */}
-          {!kbUp ? <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { position: 'absolute', right: GAP + (wide ? 0 : insets.right), bottom: 18, marginBottom: 0 }]}><Text style={styles.donePillText}>{tr('Done')}</Text></Pressable> : null}
+          {/* a new book: 'Start writing' goes on to page 1 (nobody is stuck on the cover) */}
+          {!kbUp ? <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { position: 'absolute', right: GAP + (wide ? 0 : insets.right), bottom: 18, marginBottom: 0 }]}><Text style={styles.donePillText}>{startMode ? tr('Start writing') : tr('Done')}</Text></Pressable> : null}
           {coverAsk ? (
             <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
               <View style={styles.choice}>
@@ -721,7 +773,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Text style={styles.choiceTitle}>{tr('What’s next?')}</Text>
             <Pressable onPress={addPage} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Add another page')}</Text></Pressable>
             <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Keep working on this page')}</Text></Pressable>
-            <Pressable onPress={openCover} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{cover && cover.uri ? tr('Edit the cover') : tr('Design a cover')}</Text></Pressable>
+            <Pressable onPress={() => openCover(true)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{cover && cover.uri ? tr('Edit the cover') : tr('Design a cover')}</Text></Pressable>
             {/* leave the book maker for now; what's been made so far stays saved */}
             <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await saveUserStory(latest.current)); } catch (e) { toast(tr('Couldn’t save the story. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Cancel book editor')}</Text></Pressable>
             {/* Finish last, in green, with extra room around it */}
@@ -746,7 +798,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           onDone={(strokes) => { const t = drawFor; setDrawFor(null); placeDrawing(t, strokes); }} />
       ) : null}
       <ParentGate visible={!!camGate} reason="Taking a photo opens the camera." onPass={() => { const t = camGate; setCamGate(null); setTimeout(() => placeImage(t, 'camera'), 250); }} onCancel={() => setCamGate(null)} />
-      <StoryGuide visible={guide} onClose={closeGuide} onIdeas={onIdeas ? () => { closeGuide(); onIdeas(); } : null} area={wide ? { left: BL.leftW, right: BL.rightW } : { top: BL.topH, bottom: BL.barH }} />
+      <StoryGuide visible={guide && !coverOpen} onClose={closeGuide} onIdeas={onIdeas ? () => { closeGuide(); onIdeas(); } : null} area={wide ? { left: BL.leftW, right: BL.rightW } : { top: BL.topH, bottom: BL.barH }} />
       <ParentGate visible={!!gateFor} reason={gateFor?.mode === 'print' ? tr('Printing opens your phone’s print options.') : tr('Sharing sends this story outside the app.')} onPass={() => makePdf(gateFor)} onCancel={() => setGateFor(null)} />
     </KeyboardAvoidingView>
   );
@@ -768,6 +820,7 @@ const styles = StyleSheet.create({
   authorBtn: { height: 40, borderRadius: 20, paddingHorizontal: 16, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   sizeBtn: { width: 44, height: 40, borderRadius: 20, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   coverHint: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 13, marginLeft: 4 },
+  fieldSmall: { flex: 1, minWidth: 0, height: 42, fontSize: 15 },
   field: { backgroundColor: '#2e2e2e', color: colors.white, fontFamily: fonts.ui, fontSize: 17, height: 48, borderRadius: 14, paddingHorizontal: 14 },
   fieldHint: { color: '#a8a8a8', fontFamily: fonts.ui, fontSize: 13, marginTop: -8 },
   fontsBtn: { flexDirection: 'row', alignItems: 'center', height: 40, borderRadius: 20, paddingHorizontal: 18, backgroundColor: '#5f5f5f' },
