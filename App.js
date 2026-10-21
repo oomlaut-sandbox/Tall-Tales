@@ -242,17 +242,17 @@ function Root() {
   const toastArea = useMemo(() => {
     const reader = screen === 'reader';
     if (sideways) {
-      const barW = reader ? bookLayout(width, height, { ...insets, left: camBar }, u * 13).rightW : Math.round(u * 17 * 1.15);
+      const barW = reader ? bookLayout(width, height, { ...insets, left: camBar }, u * 17).rightW : Math.round(u * 17 * 1.15);
       return { left: camBar, right: barW, top: 0, bottom: 0 };
     }
     const ins = { ...insets, top: camBar };
-    const bottom = reader ? bookLayout(width, height, ins, u * 13).barH : u * 17 + insets.bottom;
+    const bottom = reader ? bookLayout(width, height, ins, u * 17).barH : u * 17 + insets.bottom;
     return { left: 0, right: 0, top: camBar, bottom };
   }, [screen, sideways, width, height, insets, camBar, u]);
   // upright the menu comes up out of the bottom bar, whose height depends on the screen
-  const drawerBottom = sideways ? 0 : screen === 'reader' ? bookLayout(width, height, { ...insets, top: camBar }, u * 13).barH
+  const drawerBottom = sideways ? 0 : screen === 'reader' ? bookLayout(width, height, { ...insets, top: camBar }, u * 17).barH
     : screen === 'start' ? bookLayout(width, height, { ...insets, top: camBar }, u * 17, startRoom(width, height)).barH : barH;
-  const drawerRight = sideways ? (screen === 'reader' ? bookLayout(width, height, { ...insets, left: camBar }, u * 13).rightW : Math.round(u * 17 * 1.15)) : 0;
+  const drawerRight = sideways ? (screen === 'reader' ? bookLayout(width, height, { ...insets, left: camBar }, u * 17).rightW : Math.round(u * 17 * 1.15)) : 0;
   const screenInsets = useMemo(() => (sideways ? { ...insets, left: camBar } : { ...insets, top: camBar }), [insets, sideways, camBar]);
   return (
     <View style={styles.outer}>
@@ -381,7 +381,7 @@ function Root() {
         <ParentGate visible={profileGate} reason={t('Your profile is for grown-ups.')} onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
         <Toast message={message} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         {/* the Audio Player for music and nature sounds: in the middle of the screen over a dark layer until it's closed */}
-        <TapePlayer onMenu={() => { setAmbientPlayer(false); go('music'); }} />
+        <TapePlayer area={{ left: 0, top: 0, right: drawerRight, bottom: drawerBottom }} onMenu={() => { setAmbientPlayer(false); go('music'); }} />{/* the black bar stays on top, uncovered */}
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 175 }]}>
           <PlaybackPanel open={playOpen && screen !== 'reader'} onClose={() => setPlayOpen(false)} onPlaylists={() => go('playlists')} prefs={prefs} setPrefs={setPrefs} toast={toast} bottom={drawerBottom} inset={drawerRight} />
         </View>

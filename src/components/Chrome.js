@@ -8,22 +8,40 @@ import { useT } from '../i18n';
 import { tap, thunk, tick, withTap } from '../haptics';
 import { getAmbient, onAmbient, setAmbientPlayer } from '../ambient';
 
-// The menu button. On the black bars it brings the home button and (while something plays) the music note with it.
-// home / music: false to leave them out (a bar that places them itself)
-export function Burger({ onPress, u, home = true, music = true, onHome }) {
-  const vertical = useContext(BarDir);
-  const w = u * 7, t = Math.max(3, u * 1), gap = u * 1.7;
+// The black bar's one layout, the same on every screen, so nothing ever jumps: the menu sits `edge` in from the
+// screen's edge (upright: the left; sideways: the top), and every icon after it sits in a slot one `step` further on
+// (house, note, then the reader's moon or sun, lock and alarm clock), all centred on the menu's middle line.
+// The reader's Record / Pause / Play end the row: Play as far in from the other edge as the menu is from its own.
+export function barGeo(u) {
+  return { edge: u * 4.8, step: u * 11.6, row: u * 17, mw: u * 6, t: Math.max(2.6, u * 0.86), gap: u * 1.46, k: 0.86 };
+}
+// a slot for one icon: one step wide (upright) or tall (sideways), the icon in its middle
+export function slotStyle(u, vertical) {
+  const G = barGeo(u);
+  return vertical ? { height: G.step, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' } : { width: G.step, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' };
+}
+
+// The menu button. On the black bars it brings the house and the music note with it, in their fixed slots.
+// home / music: false to leave them out; vertical: which way the bar runs (else the bar says)
+export function Burger({ onPress, u, home = true, music = true, onHome, vertical: v }) {
+  const ctx = useContext(BarDir);
+  const vertical = v != null ? v : ctx;
+  const G = barGeo(u);
+  const mh = 3 * G.t + 2 * G.gap;
   const menu = (
-    <Pressable onPress={withTap(onPress)} hitSlop={14} accessibilityRole="button" accessibilityLabel="Menu" style={{ width: w, justifyContent: 'center' }}>
-      <View style={{ height: t, backgroundColor: colors.white }} />
-      <View style={{ height: t, backgroundColor: colors.white, marginTop: gap }} />
-      <View style={{ height: t, backgroundColor: colors.white, marginTop: gap }} />
+    <Pressable onPress={withTap(onPress)} hitSlop={14} accessibilityRole="button" accessibilityLabel="Menu" style={{ width: G.mw, justifyContent: 'center' }}>
+      <View style={{ height: G.t, backgroundColor: colors.white }} />
+      <View style={{ height: G.t, backgroundColor: colors.white, marginTop: G.gap }} />
+      <View style={{ height: G.t, backgroundColor: colors.white, marginTop: G.gap }} />
     </Pressable>
   );
   if (!home && !music) return menu;
+  // from the menu's middle to the first slot's middle is one step
+  const lead = G.step / 2 - (vertical ? mh : G.mw) / 2;
   return (
-    <View style={{ flexDirection: vertical ? 'column' : 'row', alignItems: 'center' }}>
+    <View style={{ flexDirection: vertical ? 'column' : 'row', alignItems: 'center', alignSelf: 'stretch' }}>
       {menu}
+      <View style={vertical ? { height: lead } : { width: lead }} />
       {home ? <HomeButton u={u} vertical={vertical} onPress={onHome} /> : null}
       {music ? <BarMusic u={u} vertical={vertical} /> : null}{/* always there, so the Audio Player is one tap away (lit while music plays) */}
     </View>
@@ -48,7 +66,7 @@ export function Bar({ u, children, vertical, top }) {
   }
   return (
     <BarDir.Provider value={false}>
-      <View style={[styles.bar, { minHeight: u * 17 + insets.bottom, paddingBottom: insets.bottom, paddingHorizontal: u * 5.4 }]}><Felt />{children}</View>
+      <View style={[styles.bar, { minHeight: barGeo(u).row + insets.bottom, paddingBottom: insets.bottom, paddingHorizontal: barGeo(u).edge }]}><Felt />{children}</View>
     </BarDir.Provider>
   );
 }
@@ -59,6 +77,7 @@ let goHome = null;
 export function setGoHome(fn) { goHome = fn; }
 // the house: one closed outline (a pentagon: roof and walls in a single even stroke)
 const HOME_ART = require('../../assets/icon-home.png');
+const HOME_NUDGE = 0, HOME_NUDGE_V = 0; // (in u) the house's small optical nudge in its slot
 const IDLE_GREY = '#3d3d3d'; // the same grey as a greyed-out Play
 export function HomeIcon({ size = 20, color = IDLE_GREY }) {
   return <Image source={HOME_ART} style={{ width: size, height: size, tintColor: color }} resizeMode="contain" />;
@@ -67,8 +86,8 @@ export function HomeButton({ u, vertical, onPress }) {
   const tr = useT();
   return (
     <Pressable onPress={withTap(() => (onPress ? onPress() : goHome && goHome()))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('My Library')}
-      style={vertical ? { marginTop: u * 6 } : { marginLeft: u * 5.5 }}>
-      <HomeIcon size={u * 5.2} />
+      style={slotStyle(u, vertical)}>
+      <View style={{ transform: [vertical ? { translateY: HOME_NUDGE_V * u } : { translateX: HOME_NUDGE * u }] }}><HomeIcon size={u * 5.2} /></View>
     </Pressable>
   );
 }
@@ -113,7 +132,7 @@ export function BarMeta({ title, sub, vertical, serif, page }) {
   );
 }
 
-export function RecordButton({ onPress, active }) {
+export function RecordButton({ onPress, active, k = 1 }) {
   const tr = useT();
   const pulse = useRef(new Animated.Value(1)).current;
   useEffect(() => {
@@ -126,8 +145,8 @@ export function RecordButton({ onPress, active }) {
     return () => loop.stop();
   }, [active]);
   return (
-    <Pressable onPress={withTap(onPress, thunk)} hitSlop={8} style={styles.ctl} accessibilityLabel={tr('Recording options')}>
-      <Animated.View style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: colors.highlight, transform: [{ scale: pulse }] }} />
+    <Pressable onPress={withTap(onPress, thunk)} hitSlop={8} style={[styles.ctl, { width: 44 * k, height: 44 * k }]} accessibilityLabel={tr('Recording options')}>
+      <Animated.View style={{ width: 34 * k, height: 34 * k, borderRadius: 17 * k, backgroundColor: colors.highlight, transform: [{ scale: pulse }] }} />
     </Pressable>
   );
 }
@@ -135,23 +154,23 @@ export function RecordButton({ onPress, active }) {
 // Pause and Play show what is happening: while a book reads aloud, Pause is the white one (Play is greyed and does
 // nothing); when it isn't reading, Play is white and Pause is greyed. (Record stays red.)
 export const IDLE = '#3d3d3d'; // greyed out on the black bar: about 24% white, the way iOS greys out a control that can't be used right now
-export function PauseButton({ onPress, disabled, active = true }) {
+export function PauseButton({ onPress, disabled, active = true, k = 1 }) {
   const c = active ? colors.white : IDLE;
   return (
-    <Pressable onPress={withTap(onPress)} disabled={disabled || !active} hitSlop={8} style={[styles.ctl, disabled && { opacity: 0.35 }]} accessibilityLabel="Pause" accessibilityState={{ disabled: disabled || !active }}>
-      <View style={{ flexDirection: 'row', gap: 8 }}>
-        <View style={{ width: 9, height: 30, backgroundColor: c }} />
-        <View style={{ width: 9, height: 30, backgroundColor: c }} />
+    <Pressable onPress={withTap(onPress)} disabled={disabled || !active} hitSlop={8} style={[styles.ctl, { width: 44 * k, height: 44 * k }, disabled && { opacity: 0.35 }]} accessibilityLabel="Pause" accessibilityState={{ disabled: disabled || !active }}>
+      <View style={{ flexDirection: 'row', gap: 8 * k }}>
+        <View style={{ width: 9 * k, height: 30 * k, backgroundColor: c }} />
+        <View style={{ width: 9 * k, height: 30 * k, backgroundColor: c }} />
       </View>
     </Pressable>
   );
 }
 
-export function PlayButton({ onPress, active, disabled }) {
+export function PlayButton({ onPress, active, disabled, k = 1 }) {
   const c = active ? IDLE : colors.white; // playing: greyed (it would do nothing)
   return (
-    <Pressable onPress={withTap(onPress)} disabled={disabled || active} hitSlop={8} style={[styles.ctl, disabled && { opacity: 0.35 }]} accessibilityLabel="Play" accessibilityState={{ disabled: disabled || !!active }}>
-      <View style={{ width: 0, height: 0, marginLeft: 6, borderLeftWidth: 26, borderTopWidth: 16, borderBottomWidth: 16, borderLeftColor: c, borderTopColor: 'transparent', borderBottomColor: 'transparent' }} />
+    <Pressable onPress={withTap(onPress)} disabled={disabled || active} hitSlop={8} style={[styles.ctl, { width: 44 * k, height: 44 * k }, disabled && { opacity: 0.35 }]} accessibilityLabel="Play" accessibilityState={{ disabled: disabled || !!active }}>
+      <View style={{ width: 0, height: 0, marginLeft: 6 * k, borderLeftWidth: 26 * k, borderTopWidth: 16 * k, borderBottomWidth: 16 * k, borderLeftColor: c, borderTopColor: 'transparent', borderBottomColor: 'transparent' }} />
     </Pressable>
   );
 }
@@ -291,8 +310,8 @@ export function BarMusic({ u, vertical }) {
   const playing = useAmbientPlaying();
   return (
     <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')}
-      style={vertical ? { marginTop: u * 6 } : { marginLeft: u * 5.5 }}>
-      <MusicIcon size={u * 5.6} color={playing ? '#e0e0e0' : IDLE} />
+      style={slotStyle(u, vertical)}>
+      <MusicIcon size={u * 4.9} color={playing ? '#e0e0e0' : IDLE} />
     </Pressable>
   );
 }

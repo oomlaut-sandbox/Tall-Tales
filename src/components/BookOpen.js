@@ -19,7 +19,7 @@ import { playSound } from '../sound';
 export default function BookOpen({ u, story, cover, rect, textScale, fontKey, onDone, closing = false, onLeave, onGone }) {
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
-  const L = bookLayout(winW, winH, insets, u * 13); // the reader's layout (its bar is u * 13)
+  const L = bookLayout(winW, winH, insets, u * 17); // the reader's layout (its bar is u * 17, like every bar)
   const s = L.side;
   // where the reader's words square is on screen
   let bx, by; // top-left of the whole book

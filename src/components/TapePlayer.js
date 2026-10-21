@@ -38,7 +38,7 @@ const VMIN = 0.05;
 const X0 = 330, X1 = 1464, Y = 2003, THUMB_D = 194; // (the knob picture is 194 wide with its shadow, the knob itself 134)
 const SLOT = { x: 230, y: 1925, w: 1340, h: 160 }; // where a finger can take the slider
 
-export default function TapePlayer({ onMenu }) {
+export default function TapePlayer({ onMenu, area }) {
   const t = useT();
   const { width: winW, height: winH } = useWindowDimensions();
   const { PW, PH, f } = sizeFor(winW, winH);
@@ -93,7 +93,7 @@ export default function TapePlayer({ onMenu }) {
   return (
     // the dark see-through layer takes every touch, so nothing underneath can be used until the player is closed
     // tapping anywhere on it (outside the player) closes the player too
-    <Animated.View style={[StyleSheet.absoluteFill, styles.scrim, { opacity: fade }]} onStartShouldSetResponder={() => true} onResponderRelease={() => setAmbientPlayer(false)} accessibilityViewIsModal>
+    <Animated.View style={[StyleSheet.absoluteFill, area ? { ...area } : null, styles.scrim, { opacity: fade }]} onStartShouldSetResponder={() => true} onResponderRelease={() => setAmbientPlayer(false)} accessibilityViewIsModal>
     <View style={{ alignItems: 'flex-end' }}>
     <View style={[styles.body, { width: PW, height: PH, borderRadius: R * f }]} accessibilityLabel={t('Audio Player')} onStartShouldSetResponder={() => true}>{/* taps on the player itself don't close it */}
       {s.night ? <Image pointerEvents="none" source={BODY_NIGHT} resizeMode="stretch"

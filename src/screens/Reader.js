@@ -1,6 +1,7 @@
 // The reader: page curl, read-aloud with highlighting, learn-to-read, interactive pictures.
 import { getAmbient, onRecordRequest, setAmbientPlayer } from '../ambient';
-import { AlarmClockIcon, IDLE, LockIcon, MusicIcon, PlaylistIcon, useAmbientPlaying } from '../components/Chrome';
+import { AlarmClockIcon, IDLE, LockIcon, MusicIcon, PlaylistIcon, barGeo, slotStyle, useAmbientPlaying } from '../components/Chrome';
+const MOON_NUDGE = 0.4; // (in u) the crescent's optical nudge in its slot
 import { isRestricted, useControls } from '../controls';
 import { useLang, useT } from '../i18n';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -187,15 +188,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   // The book floats on dark grey (see BookFrame): two equal squares, about 30 points of grey all
   // round; the black bars take what height is left. Stacked upright; side by side on a sideways iPad.
   const { width: winW, height: winH } = useWindowDimensions();
-  const BL = bookLayout(winW, winH, insets, u * 13);
+  const BL = bookLayout(winW, winH, insets, u * 17); // the bar: the same size as on every screen
   const wide = BL.wide;
   st.current.wide = wide;
   const topH = BL.topH;
   const showControls = (prefs.mode !== 'self' && !listen) || recording;
   const barH = BL.barH;
-  const musicOn = useAmbientPlaying(); // the note lights up while music or sounds play
-  const HOME_NUDGE = u * 1.8;
-  const SLOT = u * 11.6; // the step from one bar icon to the next (the same as menu → house)
   // a small 'Your voice' mark when this page will play the parent's recording
   const mineHere = prefs.voice === 'mine' && recPages.includes(idx) && prefs.mode !== 'self' && !recording;
   const panelPos = wide ? { bottom: 0, inset: BL.rightW } : { bottom: barH };
@@ -816,112 +814,74 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       {/* Listen Only: the soft night level (nothing under it can be touched) */}
 
       </View>
-      {wide ? (
-        // sideways: the menu bar runs down the right side; same icons, page tag shortened to "2/16"
-        <View style={[styles.sideBar, { width: BL.rightW, paddingTop: SIDE_MENU_TOP /* fixed a little down from the top corner */, paddingBottom: Math.max(16, insets.bottom) }]}>
-          <Felt />
-          <View style={{ width: BL.rightW, alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
-            <View style={{ alignItems: 'center' }}>
-              <View style={styles.small}><Burger u={u} onPress={openMenu} home={false} music={false} /></View>
-              <HomeButton u={u} vertical />{/* home: back to My Library */}
-              {/* restricted kid mode: a small lock (Settings, behind the grown-up question) */}
-              {isRestricted(controls) && onSettings ? (
-                <Pressable onPress={onSettings} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Settings')} style={[styles.small, { marginTop: u * 7 }]}>
-                  <LockIcon size={u * 6.2} weight={Math.max(2.5, u * 0.8)} />
-                </Pressable>
-              ) : null}
-              {/* music and sounds: the little floating Audio Player */}
-              <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.small, { marginTop: isRestricted(controls) && onSettings ? u * 4 : u * 7 }]}>{/* closer when it sits beside the lock */}
-                <MusicIcon size={u * 5.6} color={musicOn ? '#e0e0e0' : IDLE} />
-              </Pressable>
-              {/* the nightlight: a small light grey moon (Listen Only with the sunset sun) */}
-              {canMoon ? (
-                <Pressable onPress={withTap(toggleNight)} hitSlop={12} accessibilityRole="button" accessibilityLabel={dayOn ? tr('Close Daydream') : tr('Nightlight')} style={[styles.small, { marginTop: u * 4 }]}>
-                  {dayOn ? <SolidSun size={u * 4.6} color="#e0e0e0" /> : <MoonIcon size={u * 4.85} color={prefs.mode === 'listen' ? '#e0e0e0' : IDLE} />}
-                </Pressable>
-              ) : null}
-              {nightOn ? (
-                <>
-                <Pressable ref={nlLockRef} onPress={withTap(lockNight, thunk)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.small, { marginTop: u * 4 }]}>
-                  <LockIcon size={u * 4.6} color={IDLE} />
-                </Pressable>
-                <Pressable onPress={withTap(() => setAlarmOpen(true))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.small, { marginTop: u * 4, alignItems: 'center' }]}>
-                    <AlarmClockIcon size={u * 4.8} color={prefs.alarmOn ? '#e0e0e0' : IDLE} />
-                    {/* the alarm time, under the clock (sideways) */}
-                    {prefs.alarmOn ? <Text style={[styles.alarmTime, { marginTop: u * 1.6 }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text> : null}
-                  </Pressable>
-                </>
-              ) : null}
-            </View>
-            <View style={{ alignItems: 'center' }}>
-            {showControls ? (
-              <View style={[styles.small, { alignItems: 'center', gap: 14 }]}>
-                {/* while recording, the time so far floats in a small grey box just above the pulsing record button
-                    (it takes no room, so the buttons never move) */}
-{controls.recording ? (
-                <View>
-                  <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} />
-                </View>
-                ) : null}
-                <PauseButton onPress={onPause} disabled={recording} active={(reading && !paused) || between} />
-                <PlayButton onPress={onPlay} active={(reading && !paused) || between} disabled={recording} />
-              </View>
-            ) : null}
-            </View>
-          </View>
-        </View>
-      ) : (
-      <View style={[styles.bottomBar, { height: barH, paddingBottom: insets.bottom }]}>
-        <Felt />
-        <View style={styles.small}><Burger u={u} onPress={openMenu} home={false} music={false} /></View>
-        <View style={{ marginLeft: HOME_NUDGE }} /><HomeButton u={u} />{/* home: back to My Library (nudged right, so its gaps to the menu and the note look even) */}
-        {/* after the house, every icon sits in an equal slot, so they're evenly spaced (the same step as menu → house),
-            each drawn at the same visual size as the house and the note */}
-        <View style={{ marginLeft: SLOT / 2 - u * 2.6 - HOME_NUDGE }} />
-        {/* restricted kid mode: a small lock (Settings, behind the grown-up question) */}
-        {isRestricted(controls) && onSettings ? (
-          <Pressable onPress={onSettings} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Settings')} style={[styles.slot, { width: SLOT }]}>
-            <LockIcon size={u * 5.2} weight={Math.max(2.5, u * 0.7)} />
-          </Pressable>
-        ) : null}
-        {/* music and sounds: opens (or hides) the little floating Audio Player */}
-        <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.slot, { width: SLOT }]}>
-          <MusicIcon size={u * 4.9} color={musicOn ? '#e0e0e0' : IDLE} />
-        </Pressable>
-        {canMoon ? (
-          <Pressable onPress={withTap(toggleNight)} hitSlop={12} accessibilityRole="button" accessibilityLabel={dayOn ? tr('Close Daydream') : tr('Nightlight')} style={[styles.slot, { width: SLOT }]}>
-            {dayOn ? <SolidSun size={u * 5.3} color="#e0e0e0" /> : <View style={{ transform: [{ translateX: u * 0.4 }] }}><MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : IDLE} /></View>}
-          </Pressable>
-        ) : null}
-        {nightOn ? (
+      {/* The black bar: the same fixed layout as every other screen's (barGeo): menu, house, note in their slots,
+          then the moon (or sun), and in Listen Only the lock and the alarm clock; Record / Pause / Play at the far end */}
+      {(() => {
+        const G = barGeo(u);
+        const v = wide;
+        const S = slotStyle(u, v);
+        const extras = (
           <>
-          <Pressable ref={nlLockRef} onPress={withTap(lockNight, thunk)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.slot, { width: SLOT }]}>
-            <LockIcon size={u * 5} color={IDLE} />
-          </Pressable>
-          <Pressable onPress={withTap(() => setAlarmOpen(true))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.slot, { width: SLOT }]}>
-              <AlarmClockIcon size={u * 5.1} color={prefs.alarmOn ? '#e0e0e0' : IDLE} />
-              {/* the alarm time, right of the clock (it takes no room in the slot) */}
-              {prefs.alarmOn ? <Text numberOfLines={1} style={[styles.alarmTime, { position: 'absolute', left: SLOT / 2 + u * 3.6, width: u * 22 }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text> : null}
-            </Pressable>
-          </>
-        ) : null}
-        {/* no page numbers in the reader (the store shows how long a book is) */}
-        <View style={{ flex: 1 }} />
-        {showControls ? (
-          <View style={[styles.small, { flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
-            {/* while recording, the time so far floats in a small grey box just left of the pulsing record button
-                (it takes no room, so the buttons never move) */}
-{controls.recording ? (
-            <View>
-              <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} />
-            </View>
+            {/* restricted kid mode: a small lock (Settings, behind the grown-up question) */}
+            {isRestricted(controls) && onSettings ? (
+              <Pressable onPress={onSettings} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Settings')} style={S}>
+                <LockIcon size={u * 5.2} weight={Math.max(2.5, u * 0.7)} />
+              </Pressable>
             ) : null}
-            <PauseButton onPress={onPause} disabled={recording} active={(reading && !paused) || between} />
-            <PlayButton onPress={onPlay} active={(reading && !paused) || between} disabled={recording} />
+            {canMoon ? (
+              <Pressable onPress={withTap(toggleNight)} hitSlop={12} accessibilityRole="button" accessibilityLabel={dayOn ? tr('Close Daydream') : tr('Nightlight')} style={S}>
+                {dayOn ? <SolidSun size={u * 5.3} color="#e0e0e0" /> : <View style={{ transform: [v ? { translateY: 0 } : { translateX: u * MOON_NUDGE }] }}><MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : IDLE} /></View>}
+              </Pressable>
+            ) : null}
+            {nightOn ? (
+              <>
+              <Pressable ref={nlLockRef} onPress={withTap(lockNight, thunk)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={S}>
+                <LockIcon size={u * 5} color={IDLE} />
+              </Pressable>
+              <Pressable onPress={withTap(() => setAlarmOpen(true))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={S}>
+                {/* upright: its bottom lines up with the lock's, a few points to the left */}
+                <View style={{ transform: v ? [] : [{ translateX: -3 }, { translateY: u * 0.154 }] }}><AlarmClockIcon size={u * 5.1} color={prefs.alarmOn ? '#e0e0e0' : IDLE} /></View>
+                {/* the alarm time: right of the clock (upright), under it (sideways); it takes no room in the slot */}
+                {prefs.alarmOn ? (v
+                  ? <Text numberOfLines={1} style={[styles.alarmTime, { position: 'absolute', top: G.step / 2 + u * 3.4, left: 0, right: 0, textAlign: 'center' }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text>
+                  : <Text numberOfLines={1} style={[styles.alarmTime, { position: 'absolute', left: G.step / 2 + u * 3.6 - 3, width: u * 22 }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text>) : null}
+              </Pressable>
+              </>
+            ) : null}
+          </>
+        );
+        // Record / Pause / Play: Play's far edge is as far from the screen's edge as the menu is from its own
+        // (the triangle sits 6k in from its button's edge, hence the negative margin)
+        const ctlEls = showControls ? (
+          <View style={v ? { alignItems: 'center', gap: 12 * G.k, marginBottom: SIDE_MENU_TOP - 6 * G.k } : { flexDirection: 'row', alignItems: 'center', gap: 8 * G.k, marginRight: -6 * G.k }}>
+            {controls.recording ? <RecordButton k={G.k} active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} /> : null}
+            <PauseButton k={G.k} onPress={onPause} disabled={recording} active={(reading && !paused) || between} />
+            <PlayButton k={G.k} onPress={onPlay} active={(reading && !paused) || between} disabled={recording} />
           </View>
-        ) : null}
-      </View>
-      )}
+        ) : null;
+        return v ? (
+          <View style={[styles.sideBar, { width: BL.rightW, paddingTop: SIDE_MENU_TOP }]}>
+            <Felt />
+            <View style={{ width: BL.rightW, alignItems: 'center', flex: 1 }}>
+              <Burger u={u} vertical onPress={openMenu} />
+              {extras}
+              <View style={{ flex: 1 }} />
+              {ctlEls}
+              {!showControls ? <View style={{ height: Math.max(16, insets.bottom) }} /> : null}
+            </View>
+          </View>
+        ) : (
+          <View style={[styles.bottomBar, { height: barH, paddingBottom: insets.bottom }]}>
+            <Felt />
+            <View style={{ height: G.row, flexDirection: 'row', alignItems: 'center', paddingHorizontal: G.edge }}>
+              <Burger u={u} vertical={false} onPress={openMenu} />
+              {extras}
+              <View style={{ flex: 1 }} />
+              {ctlEls}
+            </View>
+          </View>
+        );
+      })()}
 
       {/* The peeling page is drawn over the whole screen, so it can lift past the book's edges. */}
       {flipPair && size && flipT && peel ? (
@@ -1095,7 +1055,7 @@ const styles = StyleSheet.create({
   mineDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.deepRed },
   mineText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 12 },
   sideBar: { backgroundColor: colors.bar, alignItems: 'flex-end', zIndex: 30 },
-  bottomBar: { backgroundColor: colors.bar, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, gap: 10, zIndex: 30 },
+  bottomBar: { backgroundColor: colors.bar, justifyContent: 'flex-end', zIndex: 30 }, // the row of icons sits at the bottom (fixed), any spare height above it
   small: { transform: [{ scale: 0.86 }] },
   slot: { alignItems: 'center', justifyContent: 'center' },
   edge: { position: 'absolute', top: 0, bottom: 0, zIndex: 15 },
