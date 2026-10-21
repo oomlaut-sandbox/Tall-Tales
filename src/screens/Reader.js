@@ -888,7 +888,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <Pressable onPress={withTap(() => setAlarmOpen(true))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.slot, { width: SLOT }]}>
               <AlarmClockIcon size={u * 5.1} color={prefs.alarmOn ? '#e0e0e0' : IDLE} />
               {/* the alarm time, right of the clock (it takes no room in the slot) */}
-              {prefs.alarmOn ? <Text numberOfLines={1} style={[styles.alarmTime, { position: 'absolute', left: SLOT / 2 + u * 3.6 }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text> : null}
+              {prefs.alarmOn ? <Text numberOfLines={1} style={[styles.alarmTime, { position: 'absolute', left: SLOT / 2 + u * 3.6, width: u * 22 }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text> : null}
             </Pressable>
           </>
         ) : null}
