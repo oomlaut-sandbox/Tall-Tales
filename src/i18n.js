@@ -424,6 +424,7 @@ const T = {
   'Close Daydream': { de: 'Tagtraum beenden', fr: 'Fermer la rêverie', es: 'Cerrar ensueño', ja: 'ひるの ゆめを とじる' },
   'You are in ‘Listening Only’ Mode. Enjoy your story!': { de: 'Du bist im Modus „Nur zuhören“. Viel Freude mit deiner Geschichte!', fr: 'Tu es en mode « Écouter seulement ». Profite bien de ton histoire !', es: 'Estás en el modo «Solo escuchar». ¡Disfruta tu cuento!', ja: 'いまは「きくだけ」モードです。おはなしを たのしんでね！' },
   'Listening Only mode': { de: 'Modus „Nur zuhören“', fr: 'Mode « Écouter seulement »', es: 'Modo «Solo escuchar»', ja: '「きくだけ」モード' },
+  'Your volume is turned down.': { de: 'Deine Lautstärke ist ganz leise gestellt.', fr: 'Ton volume est baissé.', es: 'Tu volumen está bajado.', ja: 'おとが ちいさく なっています。' },
   'Sleep': { de: 'Schlafen', fr: 'Dormir', es: 'Dormir', ja: 'ねむる' },
   'Daydream': { de: 'Tagtraum', fr: 'Rêverie', es: 'Ensueño', ja: 'ひるの ゆめ' },
   'Nightlight brightness': { de: 'Helligkeit des Nachtlichts', fr: 'Luminosité de la veilleuse', es: 'Brillo de la luz nocturna', ja: 'ナイトライトの あかるさ' },

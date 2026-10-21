@@ -4,6 +4,7 @@
 // knob on the player, or on the Music and Sounds page.
 // Everything here is wrapped so a sound problem can never break reading.
 import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
+import { checkVolume } from './volume';
 import { loadJSON, saveJSON } from './storage';
 
 export const TRACKS = [
@@ -109,6 +110,7 @@ export function playAmbient() {
   set({ playing: true });
   syncAll();
   armSleep(state.sleep);
+  checkVolume('Your volume is turned down.');
 }
 export function pauseAmbient() { set({ playing: false }); syncAll(); }
 export function toggleAmbient() { if (state.playing) pauseAmbient(); else playAmbient(); }
@@ -124,7 +126,7 @@ export function stopAmbient() { set({ playing: false, sound: null, music: null }
 export function chooseAmbient(kind, id) {
   set({ [kind]: id, playing: id ? true : state.playing && !!(kind === 'sound' ? state.music : state.sound) });
   syncAll();
-  if (id) armSleep(state.sleep);
+  if (id) { armSleep(state.sleep); checkVolume('Your volume is turned down.'); }
 }
 // a knob click: the next choice on that channel, then off, then round again
 export function stepAmbient(kind) {

@@ -53,6 +53,7 @@ const VOICE_RECORDING = {
   ios: { ...RecordingPresets.HIGH_QUALITY.ios, audioQuality: 127, sampleRate: 48000 },
   android: { ...RecordingPresets.HIGH_QUALITY.android, sampleRate: 48000 },
 };
+import { checkVolume } from '../volume';
 import { playSound, playSwitch, setEffects, setEffectsVolume, suspendSounds } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { shareInvite } from '../invite';
@@ -305,6 +306,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     // The book's narrator: ElevenLabs audio when the book has it (exact word timings),
     // otherwise the phone's own voice.
     const narrate = () => {
+      checkVolume(tr('Your volume is turned down.'));
       const voiceKey = narratorOf(prefs);
       // books from the store bring their own narration (downloaded); the app's own books have it built in
       // a book shown in another language has no narration in that language yet: the phone reads it in that language
