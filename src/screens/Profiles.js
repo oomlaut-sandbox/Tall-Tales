@@ -130,7 +130,7 @@ export default function Profiles({ u, openMenu, setControls }) {
 
       {form ? (
         <View style={styles.scrim}>
-          <ScrollView contentContainerStyle={{ padding: 20, paddingTop: insets.top + 16 }} keyboardShouldPersistTaps="handled">{/* high on the screen, clear of the bar */}
+          <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20, paddingTop: insets.top + 16 }} keyboardShouldPersistTaps="handled">{/* in the middle of the screen above the bar (the bar stays uncovered) */}
             <View style={styles.card}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 28 }}>{/* room for the character (drawn a little wider than its box) */}
                 <ProfileTile p={{ name: form.name || '?', color: form.color }} size={60} />
