@@ -1087,8 +1087,8 @@ function ListenChoice({ area, onDay, onNight, onCancel, onGone, tr }) {
               {picked === 'day' ? <SolidSun size={side * 0.16} color={ink} /> : <SunIcon size={side * 0.16} color={ink} />}
             </Pressable>
             <View style={{ width: 1.1, height: side * 0.56, backgroundColor: ink }} />{/* the same fine stroke as the sun and the moon */}
-            <Pressable onPress={() => pick('night')} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Sleep')}>
-              <Text style={word}>{tr('Sleep')}</Text>
+            <Pressable onPress={() => pick('night')} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Nightlight')}>
+              <Text style={word}>{tr('Nightlight')}</Text>
               {picked === 'night'
                 ? <View style={{ width: side * 0.16, height: side * 0.16, alignItems: 'center', justifyContent: 'center' }}><MoonIcon size={side * 0.16 * (226 / 246)} color={ink} /></View>
                 : <Image source={MOON_OUTLINE} style={{ width: side * 0.16, height: side * 0.16, tintColor: ink }} resizeMode="contain" />}
