@@ -538,7 +538,7 @@ const T = {
   'Ocean waves': { de: 'Meeresrauschen', fr: 'Vagues', es: 'Olas del mar', ja: 'なみの音' },
   'Campfire': { de: 'Lagerfeuer', fr: 'Feu de camp', es: 'Fogata', ja: 'たきび' },
   'Quiet forest': { de: 'Stiller Wald', fr: 'Forêt paisible', es: 'Bosque tranquilo', ja: 'しずかな もり' },
-  'Rain': { de: 'Regen', fr: 'Pluie', es: 'Lluvia', ja: 'あめ' },
+  'Rain on rooftop': { de: 'Regen auf dem Dach', fr: 'Pluie sur le toit', es: 'Lluvia en el tejado', ja: 'やねに ふる あめ' },
   'Night forest': { de: 'Wald bei Nacht', fr: 'Forêt la nuit', es: 'Bosque de noche', ja: 'よるの もり' },
   'Wind chimes': { de: 'Windspiel', fr: 'Carillon à vent', es: 'Campanillas de viento', ja: 'ふうりん' },
   'Music box lullaby': { de: 'Spieluhr-Schlaflied', fr: 'Berceuse boîte à musique', es: 'Nana de caja de música', ja: 'オルゴールの こもりうた' },
