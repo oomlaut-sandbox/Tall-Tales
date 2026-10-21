@@ -1064,7 +1064,7 @@ function ListenChoice({ area, onDay, onNight, tr }) {
           <Pressable onPress={withTap(onDay)} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Daydream')}>
             <SunIcon size={side * 0.16} color="rgba(255,255,255,0.88)" />
           </Pressable>
-          <View style={{ width: StyleSheet.hairlineWidth * 2, height: side * 0.56, backgroundColor: 'rgba(255,255,255,0.75)' }} />
+          <View style={{ width: 1.1, height: side * 0.56, backgroundColor: 'rgba(255,255,255,0.88)' }} />{/* the same fine stroke as the sun and the moon */}
           <Pressable onPress={withTap(onNight)} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Nightlight')}>
             <Image source={MOON_OUTLINE} style={{ width: side * 0.16, height: side * 0.16, tintColor: 'rgba(255,255,255,0.88)' }} resizeMode="contain" />
           </Pressable>
