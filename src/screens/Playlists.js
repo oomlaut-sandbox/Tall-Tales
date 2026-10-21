@@ -157,7 +157,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
                       );
                     })}
                   </View>
-                  <Pressable onPress={() => setAdding(false)} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Done')}</Text></Pressable>
+                  <Pressable onPress={() => setAdding(false)} style={[styles.pill, { backgroundColor: colors.green, marginTop: 14 }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Done')}</Text></Pressable>{/* room above it */}
                 </>
               ) : (
                 <>
