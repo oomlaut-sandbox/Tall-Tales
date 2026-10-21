@@ -155,7 +155,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
         </Bar>
       ) : (
         <Bar u={u} vertical={v}>
-          <Burger u={u} onPress={openMenu} />
+          <Burger u={u} onPress={openMenu} music={false} />
           <BarMusic u={u} vertical={v} />
           <View style={{ flex: 1 }} />
           {/* Select: in the bottom right corner of the bar (not when the parental controls turn sharing off) */}
@@ -282,7 +282,7 @@ export function Store({ u, openStory, openMenu, toast }) {
     setFetching(null);
   };
   return (
-    <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /><BarMusic u={u} vertical={v} /><View style={{ flex: 1 }} /></Bar>}>
+    <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} music={false} /><BarMusic u={u} vertical={v} /><View style={{ flex: 1 }} /></Bar>}>
       <Band color={colors.blue} felt="store" title={t('Book Store')} sub={t('Discover and buy new books')} />
       <ScrollView contentContainerStyle={{ paddingTop: 46, paddingBottom: 24, gap: 30 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.white} />}>

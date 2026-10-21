@@ -34,7 +34,7 @@ function PeelLayer({ start, ...props }) {
 }
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { Bar, BarMeta, BubbleIcon, HeadphonesIcon, MoonIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, GearIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon } from '../components/Chrome';
+import { Bar, BarMeta, HomeButton, BubbleIcon, HeadphonesIcon, MoonIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, GearIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
@@ -771,7 +771,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <Felt />
           <View style={{ width: BL.rightW, alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
             <View style={{ alignItems: 'center' }}>
-              <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
+              <View style={styles.small}><Burger u={u} onPress={openMenu} home={false} music={false} /></View>
+              <HomeButton u={u} vertical />{/* home: back to My Library */}
               {/* restricted kid mode: a small lock (Settings, behind the grown-up question) */}
               {isRestricted(controls) && onSettings ? (
                 <Pressable onPress={onSettings} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Settings')} style={[styles.small, { marginTop: u * 7 }]}>
@@ -822,7 +823,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       ) : (
       <View style={[styles.bottomBar, { height: barH, paddingBottom: insets.bottom }]}>
         <Felt />
-        <View style={styles.small}><Burger u={u} onPress={openMenu} /></View>
+        <View style={styles.small}><Burger u={u} onPress={openMenu} home={false} music={false} /></View>
+        <HomeButton u={u} />{/* home: back to My Library */}
         {/* restricted kid mode: a small lock, a little apart from the menu (Settings, behind the grown-up question) */}
         {isRestricted(controls) && onSettings ? (
           <Pressable onPress={onSettings} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Settings')} style={[styles.small, { marginLeft: u * 7 }]}>
@@ -830,7 +832,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           </Pressable>
         ) : null}
         {/* music and sounds: opens (or hides) the little floating Audio Player; a little apart from the menu (or the lock) */}
-        <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.small, { marginLeft: isRestricted(controls) && onSettings ? u * 4 : u * 7 }]}>{/* closer when it sits beside the lock */}
+        <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.small, { marginLeft: isRestricted(controls) && onSettings ? u * 4 : u * 5.5 }]}>{/* closer when it sits beside the lock */}
           <MusicIcon size={u * 5.6} color="#8e8e8e" />
         </Pressable>
         {canMoon ? (

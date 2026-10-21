@@ -38,7 +38,7 @@ import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, saveJSON } from './src/storage';
-import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast, BubbleHost } from './src/components/Chrome';
+import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast, BubbleHost, setGoHome } from './src/components/Chrome';
 import { DESK_FELT, DeskFelt, Felt, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
 import Profiles from './src/screens/Profiles';
@@ -163,6 +163,8 @@ function Root() {
     if ((s === 'store' && !controls.store) || (s === 'notebook' && !controls.notebook) || ((s === 'help' || s === 'about' || s === 'ideas') && !controls.help)) s = 'library';
     stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen(s);
   };
+  // the home button on every black bar: back to My Library
+  useEffect(() => { setGoHome(() => go('library')); });
   // A book with a title page opens onto its title page with a blank white page above it (the
   // inside of the cover); its cover picture is the cover. From My Library, the cover animates open.
   const prepared = (s) => (s.pages[0] && s.pages[0].titlePage ? { ...s, pages: [{ ...s.pages[0], image: null, whiteArt: true }, ...s.pages.slice(1)] } : s);

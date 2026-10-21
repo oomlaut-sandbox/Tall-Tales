@@ -1,21 +1,33 @@
 // Shared pieces of Jörg's design: black control bar, hamburger, dog-ear corner, slide-in panels.
-import React, { useEffect, useRef, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, ScrollView, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DeskFelt, Felt, Stitch, useLook } from '../look';
 import { useT } from '../i18n';
 import { tap, thunk, tick, withTap } from '../haptics';
-import { getAmbient, setAmbientPlayer } from '../ambient';
+import { getAmbient, onAmbient, setAmbientPlayer } from '../ambient';
 
-export function Burger({ onPress, u }) {
+// The menu button. On the black bars it brings the home button and (while something plays) the music note with it.
+// home / music: false to leave them out (a bar that places them itself)
+export function Burger({ onPress, u, home = true, music = true }) {
+  const vertical = useContext(BarDir);
+  const playing = useAmbientPlaying();
   const w = u * 7, t = Math.max(3, u * 1), gap = u * 1.7;
-  return (
+  const menu = (
     <Pressable onPress={withTap(onPress)} hitSlop={14} accessibilityRole="button" accessibilityLabel="Menu" style={{ width: w, justifyContent: 'center' }}>
       <View style={{ height: t, backgroundColor: colors.white }} />
       <View style={{ height: t, backgroundColor: colors.white, marginTop: gap }} />
       <View style={{ height: t, backgroundColor: colors.white, marginTop: gap }} />
     </Pressable>
+  );
+  if (!home && !music) return menu;
+  return (
+    <View style={{ flexDirection: vertical ? 'column' : 'row', alignItems: 'center' }}>
+      {menu}
+      {home ? <HomeButton u={u} vertical={vertical} /> : null}
+      {music && playing ? <BarMusic u={u} vertical={vertical} /> : null}
+    </View>
   );
 }
 
@@ -24,16 +36,56 @@ export function Burger({ onPress, u }) {
 // (The camera housing is in the middle of the edge, where the bar has no buttons.)
 export const SIDE_BAR = 1.15;
 
+// which way the bar runs (the menu button lays out its home and music icons the same way)
+const BarDir = createContext(false);
 export function Bar({ u, children, vertical, top }) {
   const insets = useSafeAreaInsets();
   if (vertical) {
     return (
-      <View style={[styles.bar, styles.barV, { width: u * 17 * SIDE_BAR, paddingTop: top != null ? top : SIDE_MENU_TOP, paddingBottom: Math.max(14, insets.bottom) }]}><Felt />{children}</View>
+      <BarDir.Provider value>
+        <View style={[styles.bar, styles.barV, { width: u * 17 * SIDE_BAR, paddingTop: top != null ? top : SIDE_MENU_TOP, paddingBottom: Math.max(14, insets.bottom) }]}><Felt />{children}</View>
+      </BarDir.Provider>
     );
   }
   return (
-    <View style={[styles.bar, { minHeight: u * 17 + insets.bottom, paddingBottom: insets.bottom, paddingHorizontal: u * 5.4 }]}><Felt />{children}</View>
+    <BarDir.Provider value={false}>
+      <View style={[styles.bar, { minHeight: u * 17 + insets.bottom, paddingBottom: insets.bottom, paddingHorizontal: u * 5.4 }]}><Felt />{children}</View>
+    </BarDir.Provider>
   );
+}
+
+// Home: a small house on every black bar, right of the menu; it always goes back to My Library (the app's home).
+// App.js tells it how to get there.
+let goHome = null;
+export function setGoHome(fn) { goHome = fn; }
+export function HomeIcon({ size = 20, color = '#8e8e8e', weight = 2 }) {
+  const roof = size * 0.62; // each slope of the roof
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center' }}>
+      {/* the roof: two strokes meeting at the top */}
+      <View style={{ position: 'absolute', top: size * 0.06, width: size, height: size * 0.5, alignItems: 'center' }}>
+        <View style={{ position: 'absolute', top: roof * 0.32, left: size * 0.5 - roof * 0.82, width: roof, height: weight, borderRadius: weight / 2, backgroundColor: color, transform: [{ rotate: '-40deg' }] }} />
+        <View style={{ position: 'absolute', top: roof * 0.32, left: size * 0.5 + roof * 0.82 - roof, width: roof, height: weight, borderRadius: weight / 2, backgroundColor: color, transform: [{ rotate: '40deg' }] }} />
+      </View>
+      {/* the house: walls and floor in one stroke */}
+      <View style={{ position: 'absolute', bottom: 0, width: size * 0.66, height: size * 0.5, borderLeftWidth: weight, borderRightWidth: weight, borderBottomWidth: weight, borderColor: color }} />
+    </View>
+  );
+}
+export function HomeButton({ u, vertical }) {
+  const tr = useT();
+  return (
+    <Pressable onPress={withTap(() => goHome && goHome())} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('My Library')}
+      style={vertical ? { marginTop: u * 6 } : { marginLeft: u * 5.5 }}>
+      <HomeIcon size={u * 5} weight={Math.max(1.6, u * 0.55)} />
+    </Pressable>
+  );
+}
+// the music note shows on every bar while music or sounds are playing (tap it for the Audio Player)
+function useAmbientPlaying() {
+  const [on, setOn] = useState(() => !!getAmbient().playing);
+  useEffect(() => onAmbient((st) => setOn(!!(st && st.playing))), []);
+  return on;
 }
 
 // A screen with its menu bar: at the bottom when upright, down the right side when sideways (iPad).
