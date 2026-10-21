@@ -122,7 +122,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
                   </View>
                 );
               })}
-              <Pressable onPress={() => { const n = newPlaylist(t('My playlist')); setLists((l) => [...l, n]); setEdit(n.id); setAdding(true); }} style={[styles.pill, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button">
+              <Pressable onPress={() => { const n = newPlaylist(t('My playlist')); setLists((l) => [...l, n]); setEdit(n.id); setAdding(true); }} style={[styles.pill, { backgroundColor: '#3a3a3a', alignSelf: 'flex-end', marginTop: 14 }]} accessibilityRole="button">{/* on the right, with room above */}
                 <Text style={styles.pillText}>+  {t('New playlist')}</Text>
               </Pressable>
             </>
