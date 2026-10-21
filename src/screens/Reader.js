@@ -215,28 +215,33 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     usingVoice.current = false; clearTimeout(autoTimer.current); pendingRead.current = false;
     setReading(false); setPaused(false); setHl(-1);
   };
+  // between two pages while a book plays on by itself (Pause stays white then too)
+  const [between, setBetween] = useState(false);
   const stopReading = useCallback(() => {
     stopSpeech();
     stopVoice();
     usingVoice.current = false;
     clearTimeout(autoTimer.current);
-    setReading(false); setPaused(false); setHl(-1);
+    setReading(false); setPaused(false); setHl(-1); setBetween(false);
   }, []);
 
   // switch how the book plays (and start reading when the new mode reads aloud)
-  const chooseMode = (id, sc) => {
+  // quiet: switch without starting to read (Cancel in the Listen Only box)
+  const chooseMode = (id, sc, quiet) => {
     stopReading();
     setPrefs((p) => ({ ...p, mode: id, ...(id === 'listen' && p.mode !== 'listen' ? { prevMode: p.mode } : {}) }));
     if (id === 'listen' && prefs.mode !== 'listen') setScene(sc || 'choose'); // Listen Only from the options: sun or moon?
     st.current.mode = id === 'listen' ? 'auto' : id;
-    if (id === 'auto' || id === 'page' || id === 'listen') setTimeout(() => readPage(st.current.idx), 300);
+    // Listen Only waits for the choice (Daydream or Nightlight) before it reads
+    const waits = id === 'listen' && prefs.mode !== 'listen' && (sc || 'choose') === 'choose';
+    if (!quiet && !waits && (id === 'auto' || id === 'page' || id === 'listen')) setTimeout(() => readPage(st.current.idx), 300);
   };
   // the moon on the bar: into the nightlight (Listen Only), and back to how it was before
   const canMoon = controls.playback !== false && !controls.playMode && controls.nightlight !== false;
   // Listen Only shows a choice first (the screen dims, a small box: the sun for Daydream, the moon for the nightlight);
   // a playlist keeps the last choice for every book after the first
   const [scene, setScene] = useState(() => (autoStart && prefs.listenScene ? prefs.listenScene : 'choose'));
-  const pickScene = (sc) => { setScene(sc); setPrefs((p) => ({ ...p, listenScene: sc })); };
+  const pickScene = (sc) => { setScene(sc); setPrefs((p) => ({ ...p, listenScene: sc })); setTimeout(() => readPage(st.current.idx), 900); /* the story starts as the scene fades in */ };
   const nightEnabled = listen && controls.nightlight !== false; // Settings → Nightlight mode can switch the nightlight off
   const choosing = nightEnabled && scene === 'choose';
   const nightOn = nightEnabled && !choosing; // the nightlight or Daydream is showing (the lock and alarm are on the bar)
@@ -245,7 +250,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const [boxUp, setBoxUp] = useState(false);
   const [fromChoice, setFromChoice] = useState(false);
   useEffect(() => { if (choosing) { setBoxUp(true); setFromChoice(true); } }, [choosing]);
-  const cancelListen = () => { setBoxUp(false); chooseMode(prefs.prevMode && prefs.prevMode !== 'listen' ? prefs.prevMode : 'auto'); };
+  const cancelListen = () => { setBoxUp(false); chooseMode(prefs.prevMode && prefs.prevMode !== 'listen' ? prefs.prevMode : 'auto', null, true); };
   // the nightlight's lock lives on the bar beside the moon; where it sits, so it stays tappable over the blocker
   const [nlLocked, setNlLocked] = useState(false);
   const [lockRect, setLockRect] = useState(null);
@@ -274,7 +279,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       const lang = story.lang || 'en';
       const vk = narratorOf(prefs);
       const clip = THE_END?.[vk]?.[lang] || THE_END?.lily?.[lang];
-      setReading(true); setPaused(false);
+      setReading(true); setPaused(false); setBetween(false);
       const done = () => { usingVoice.current = false; setReading(false); };
       clearTimeout(autoTimer.current);
       autoTimer.current = setTimeout(() => {
@@ -285,7 +290,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       return;
     }
     const toks = tokenize(p.text);
-    setReading(true); setPaused(false);
+    setReading(true); setPaused(false); setBetween(false);
     const hlChar = (ch) => {
       for (let i = 0; i < toks.length; i++) if (toks[i].start <= ch && ch < toks[i].end + 1) { setHl(i); break; }
     };
@@ -293,6 +298,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       usingVoice.current = false;
       setHl(-1); setReading(false);
       if (st.current.mode === 'auto' && pageIndex < st.current.pages.length - 1) {
+        setBetween(true); // still playing: on to the next page
         autoTimer.current = setTimeout(() => { pendingRead.current = true; flip(1); }, 800);
       }
     };
@@ -344,7 +350,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     narrate();
   }, [prefs.speed, prefs.rate, prefs.voice, prefs.narrator, story]);
   // a playlist: each book starts reading by itself
-  useEffect(() => { if (!autoStart && !listen) return undefined; const tm = setTimeout(() => readPage(0), 1200); return () => clearTimeout(tm); }, []);
+  useEffect(() => { if (!autoStart && !listen) return undefined; if (listen && scene === 'choose' && controls.nightlight !== false) return undefined; /* Listen Only: reads once Daydream or Nightlight is chosen */ const tm = setTimeout(() => readPage(0), 1200); return () => clearTimeout(tm); }, []);
 
   useEffect(() => {
     if (pendingRec.current) { pendingRec.current = false; recAuto.current = true; setTimeout(startRec, 350); }
@@ -433,6 +439,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     setTimeout(() => readPage(st.current.idx), 60);
   };
   const onPause = () => {
+    if (between) { clearTimeout(autoTimer.current); setBetween(false); return; } // between two pages: stop going on
     if (!reading) return;
     if (usingVoice.current) { pauseVoice(); setPaused(true); return; }
     if (Platform.OS === 'android') return stopReading(); // Android voices can't pause mid-sentence
@@ -805,8 +812,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
                   <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} />
                 </View>
                 ) : null}
-                <PauseButton onPress={onPause} disabled={recording} />
-                <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
+                <PauseButton onPress={onPause} disabled={recording} active={(reading && !paused) || between} />
+                <PlayButton onPress={onPlay} active={(reading && !paused) || between} disabled={recording} />
               </View>
             ) : null}
             </View>
@@ -855,8 +862,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
               <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} />
             </View>
             ) : null}
-            <PauseButton onPress={onPause} disabled={recording} />
-            <PlayButton onPress={onPlay} active={reading && !paused} disabled={recording} />
+            <PauseButton onPress={onPause} disabled={recording} active={(reading && !paused) || between} />
+            <PlayButton onPress={onPlay} active={(reading && !paused) || between} disabled={recording} />
           </View>
         ) : null}
       </View>
@@ -1081,18 +1088,22 @@ function ListenChoice({ area, onDay, onNight, onCancel, onGone, tr }) {
       <Animated.View style={{ position: 'absolute', ...area, zIndex: 45, backgroundColor: 'rgba(0,0,0,0.75)', opacity: dim }} onStartShouldSetResponder={() => true} />
       <View pointerEvents="box-none" style={{ position: 'absolute', ...area, zIndex: 46, alignItems: 'center', justifyContent: 'center' }}>
         <Animated.View pointerEvents={picked ? 'none' : 'auto'} style={{ alignItems: 'flex-end', opacity: pop, transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1] }) }] }}>
-          <View style={{ width: side, height: side, borderRadius: 30, backgroundColor: '#2b2b2d', flexDirection: 'row', alignItems: 'center', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.6)' }}>
+          <View style={{ width: side, height: side, borderRadius: 30, backgroundColor: '#2b2b2d', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.6)' }}>
+            {/* what this is: Listening Only mode (nothing plays until Daydream or Nightlight is chosen) */}
+            <Text style={{ color: 'rgba(255,255,255,0.92)', fontFamily: fonts.ui, fontSize: 15, fontWeight: '500', letterSpacing: 0.3, textAlign: 'center', marginTop: side * 0.1 }}>{tr('Listening Only mode')}</Text>
+            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginTop: -side * 0.02 }}>
             <Pressable onPress={() => pick('day')} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Daydream')}>
               <Text style={word}>{tr('Daydream')}</Text>
               {picked === 'day' ? <SolidSun size={side * 0.16} color={ink} /> : <SunIcon size={side * 0.16} color={ink} />}
             </Pressable>
-            <View style={{ width: 1.1, height: side * 0.56, backgroundColor: ink }} />{/* the same fine stroke as the sun and the moon */}
+            <View style={{ width: 1.1, height: side * 0.5, backgroundColor: ink }} />{/* the same fine stroke as the sun and the moon */}
             <Pressable onPress={() => pick('night')} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Nightlight')}>
               <Text style={word}>{tr('Nightlight')}</Text>
               {picked === 'night'
                 ? <View style={{ width: side * 0.16, height: side * 0.16, alignItems: 'center', justifyContent: 'center' }}><MoonIcon size={side * 0.16 * (226 / 246)} color={ink} /></View>
                 : <Image source={MOON_OUTLINE} style={{ width: side * 0.16, height: side * 0.16, tintColor: ink }} resizeMode="contain" />}
             </Pressable>
+            </View>
           </View>
           {/* Cancel: small, light grey, under the box's bottom right corner: back out of Listen Only */}
           <Pressable onPress={withTap(onCancel)} hitSlop={14} style={{ marginTop: 12, marginRight: 6 }} accessibilityRole="button">

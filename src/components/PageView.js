@@ -8,7 +8,10 @@ import { Felt } from '../look';
 import { tokenize } from '../story';
 import { useT } from '../i18n';
 import ZoomArt from './ZoomArt';
-import { AgainIcon, HeartIcon, LibraryIcon } from './Chrome';
+// the end of a book: fine grey line-art icons
+const END_AGAIN = require('../../assets/icon-again-line.png');
+const END_LIBRARY = require('../../assets/icon-library-line.png');
+const END_HEART = require('../../assets/icon-heart-line.png');
 
 // The picture area is a perfect square (as wide as the screen). Only on unusually short
 // screens is it capped, so the words always keep at least a third of the page.
@@ -125,11 +128,11 @@ export const PageView = forwardRef(function PageView(
         {end ? (
           <View style={{ alignItems: 'center' }}>
             <Text style={storyStyle}>{t('Thank you for reading.')}</Text>
-            {/* stacked: a square icon and black text beside it, like the start page */}
+            {/* stacked: a fine grey line-art icon (no box) and the words beside it */}
             <View style={{ gap: 12, marginTop: 20, alignSelf: 'center' }}>
-              {[[<AgainIcon />, 'Read Again', onReadAgain], [<LibraryIcon />, 'My Library', onLibrary], [<HeartIcon />, 'Share Book', onShare]].filter(([, , fn]) => !!fn).map(([g, label, fn]) => (
+              {[[END_AGAIN, 'Read Again', onReadAgain], [END_LIBRARY, 'My Library', onLibrary], [END_HEART, 'Share Book', onShare]].filter(([, , fn]) => !!fn).map(([g, label, fn]) => (
                 <Pressable key={label} onPress={fn} style={styles.endBtn} accessibilityRole="button">
-                  <View style={styles.endIc}>{g}</View>
+                  <Image source={g} style={styles.endIc} resizeMode="contain" />
                   <Text style={styles.endBtnText}>{t(label)}</Text>
                 </Pressable>
               ))}
@@ -188,7 +191,7 @@ const styles = StyleSheet.create({
   endArt: { backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' },
   endTitle: { textAlign: 'center' },
   endBtn: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  endIc: { width: 36, height: 36, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
+  endIc: { width: 26, height: 26, tintColor: '#5c5c5c' },
   endGlyph: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
-  endBtnText: { color: colors.ink, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  endBtnText: { color: '#2e2e2e', fontFamily: fonts.ui, fontWeight: '500', fontSize: 16 },
 });

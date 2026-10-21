@@ -89,21 +89,25 @@ export function RecordButton({ onPress, active }) {
   );
 }
 
-export function PauseButton({ onPress, disabled }) {
+// Pause and Play show what is happening: while a book reads aloud, Pause is the white one (Play is greyed and does
+// nothing); when it isn't reading, Play is white and Pause is greyed. (Record stays red.)
+const IDLE = '#555555';
+export function PauseButton({ onPress, disabled, active = true }) {
+  const c = active ? colors.white : IDLE;
   return (
-    <Pressable onPress={withTap(onPress)} disabled={disabled} hitSlop={8} style={[styles.ctl, disabled && { opacity: 0.35 }]} accessibilityLabel="Pause">
+    <Pressable onPress={withTap(onPress)} disabled={disabled || !active} hitSlop={8} style={[styles.ctl, disabled && { opacity: 0.35 }]} accessibilityLabel="Pause" accessibilityState={{ disabled: disabled || !active }}>
       <View style={{ flexDirection: 'row', gap: 8 }}>
-        <View style={{ width: 9, height: 30, backgroundColor: colors.white }} />
-        <View style={{ width: 9, height: 30, backgroundColor: colors.white }} />
+        <View style={{ width: 9, height: 30, backgroundColor: c }} />
+        <View style={{ width: 9, height: 30, backgroundColor: c }} />
       </View>
     </Pressable>
   );
 }
 
 export function PlayButton({ onPress, active, disabled }) {
-  const c = colors.white; // always white, playing or not
+  const c = active ? IDLE : colors.white; // playing: greyed (it would do nothing)
   return (
-    <Pressable onPress={withTap(onPress)} disabled={disabled} hitSlop={8} style={[styles.ctl, disabled && { opacity: 0.35 }]} accessibilityLabel="Play">
+    <Pressable onPress={withTap(onPress)} disabled={disabled || active} hitSlop={8} style={[styles.ctl, disabled && { opacity: 0.35 }]} accessibilityLabel="Play" accessibilityState={{ disabled: disabled || !!active }}>
       <View style={{ width: 0, height: 0, marginLeft: 6, borderLeftWidth: 26, borderTopWidth: 16, borderBottomWidth: 16, borderLeftColor: c, borderTopColor: 'transparent', borderBottomColor: 'transparent' }} />
     </Pressable>
   );
