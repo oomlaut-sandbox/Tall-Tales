@@ -58,7 +58,7 @@ function MenuItem({ u, icon, title, sub, onPress }) {
   );
 }
 
-export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onPeek }) {
+export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClosed, onPeek }) {
   const t = useT();
   const { lang, setLang } = useContext(LangContext);
   const controls = useControls(); // parental controls: the Book Store and changing the language may be off
@@ -139,7 +139,7 @@ export default function Start({ u, go, openMenu, closed, onOpened, onClosed, onP
 
   return (
     <View style={{ flex: 1 }}>
-    <BookFrame bare deskImage={DESK_FELT} barMin={u * 17} reserve={startRoom(winW, winH)} bar={(L) => <Bar u={u} vertical={L.wide}><Burger u={u} onPress={openMenu} /></Bar>}>
+    <BookFrame bare deskImage={DESK_FELT} barMin={u * 17} reserve={startRoom(winW, winH)} bar={(L) => <Bar u={u} vertical={L.wide}><Burger u={u} onPress={openMenu} onHome={onHome} /></Bar>}>
       {({ side, wide }) => {
         const k = side / 100; // sizes inside the book scale with the squares
         geo.current = { side, wide };

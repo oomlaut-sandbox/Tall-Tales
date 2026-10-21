@@ -10,7 +10,7 @@ import { getAmbient, onAmbient, setAmbientPlayer } from '../ambient';
 
 // The menu button. On the black bars it brings the home button and (while something plays) the music note with it.
 // home / music: false to leave them out (a bar that places them itself)
-export function Burger({ onPress, u, home = true, music = true }) {
+export function Burger({ onPress, u, home = true, music = true, onHome }) {
   const vertical = useContext(BarDir);
   const w = u * 7, t = Math.max(3, u * 1), gap = u * 1.7;
   const menu = (
@@ -24,7 +24,7 @@ export function Burger({ onPress, u, home = true, music = true }) {
   return (
     <View style={{ flexDirection: vertical ? 'column' : 'row', alignItems: 'center' }}>
       {menu}
-      {home ? <HomeButton u={u} vertical={vertical} /> : null}
+      {home ? <HomeButton u={u} vertical={vertical} onPress={onHome} /> : null}
       {music ? <BarMusic u={u} vertical={vertical} /> : null}{/* always there, so the Audio Player is one tap away (lit while music plays) */}
     </View>
   );
@@ -63,10 +63,10 @@ const IDLE_GREY = '#3d3d3d'; // the same grey as a greyed-out Play
 export function HomeIcon({ size = 20, color = IDLE_GREY }) {
   return <Image source={HOME_ART} style={{ width: size, height: size, tintColor: color }} resizeMode="contain" />;
 }
-export function HomeButton({ u, vertical }) {
+export function HomeButton({ u, vertical, onPress }) {
   const tr = useT();
   return (
-    <Pressable onPress={withTap(() => goHome && goHome())} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('My Library')}
+    <Pressable onPress={withTap(() => (onPress ? onPress() : goHome && goHome()))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('My Library')}
       style={vertical ? { marginTop: u * 6 } : { marginLeft: u * 5.5 }}>
       <HomeIcon size={u * 5.2} />
     </Pressable>

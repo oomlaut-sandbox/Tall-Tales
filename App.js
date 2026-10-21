@@ -274,7 +274,7 @@ function Root() {
               setTimeout(() => go(t), 90);
               return;
             }
-            go(t); }} openMenu={coverOpen ? openMenu : () => toast(t('Start by opening your notebook.'))} closed={!coverOpen} onOpened={() => setCoverOpen(true)} onClosed={() => setCoverOpen(false)} onPeek={(t) => setPeek(t || 'library')} />
+            go(t); }} openMenu={coverOpen ? openMenu : () => toast(t('Start by opening your notebook.'))} onHome={coverOpen ? undefined : () => toast(t('Start by opening your notebook.'))} closed={!coverOpen} onOpened={() => setCoverOpen(true)} onClosed={() => setCoverOpen(false)} onPeek={(t) => setPeek(t || 'library')} />
           </View>
         )}
         {flyer && screen === 'library' ? (
