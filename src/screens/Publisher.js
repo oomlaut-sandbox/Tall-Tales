@@ -452,6 +452,11 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           )}
         </Pressable>
         <DogEar u={u} under={colors.earUnder} onPress={next} label={tr('Next page')} />
+        {/* the page count in a small grey box, top left of the picture page ('Saved' takes its place for a moment after each change) */}
+        <View pointerEvents="none" style={[styles.countBox, { top: 12, left: 12 }]}>
+          <Animated.Text numberOfLines={1} style={[styles.countText, { opacity: savedFade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>{tr('Page {a} of {b}', { a: i + 1, b: draft.pages.length })}</Animated.Text>
+          <Animated.Text numberOfLines={1} style={[styles.countText, { position: 'absolute', opacity: savedFade }]}>{tr('Saved')}</Animated.Text>
+        </View>
         <Pressable onPress={() => setGuide(true)} style={[styles.help, { top: 10, right: 10 }]} hitSlop={8} accessibilityLabel={tr('How to make a story')}>
           <Text style={styles.helpText}>?</Text>
         </Pressable>
@@ -467,10 +472,6 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             </View>
             <View style={{ alignItems: 'center', gap: 18 }}>
               {/* the page count sits above Pages, with plenty of room between them */}
-              <Animated.View style={{ alignItems: 'center', marginBottom: 22, opacity: coverFade }}>
-                <Text style={[styles.sub, { textAlign: 'center' }]}>{i + 1}/{draft.pages.length}</Text>
-                <Animated.Text style={[styles.sub, { textAlign: 'center', opacity: savedFade }]}>{tr('Saved')}</Animated.Text>
-              </Animated.View>
               <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ alignItems: 'center', gap: 18, opacity: barFade, marginBottom: 26 }}>
               <Pressable onPress={() => openCover()} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><Text style={styles.btn}>{tr('Cover')}</Text></Pressable>
               <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>{tr('Pages')}</Text></Pressable>
@@ -484,17 +485,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       <Bar u={u}>
         <Animated.View pointerEvents={coverOpen ? 'none' : 'auto'} style={{ opacity: coverFade }}><Burger u={u} onPress={openMenu} /></Animated.View>
         <View style={{ flex: 1 }} />
-        {/* Cover, then Pages (with the page count small underneath, and 'Saved' fading in after each change), then Finish */}
+        {/* Cover, Pages, Finish (the page count floats on the page itself) */}
         <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ flexDirection: 'row', alignItems: 'center', gap: 16, opacity: barFade }}>
         <Pressable onPress={() => openCover()} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><Text style={styles.btn}>{tr('Cover')}</Text></Pressable>
-        <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8} style={{ alignItems: 'center' }}>
-          <Text style={[styles.btn, { marginTop: 16 }]}>{tr('Pages')}</Text>
-          {/* 'Saved' takes the count's place for a moment, then the count comes back */}
-          <View style={{ height: 16, alignItems: 'center', justifyContent: 'center' }}>
-            <Animated.Text numberOfLines={1} style={[styles.sub, { fontSize: 11, marginTop: 0, opacity: savedFade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>{tr('Page {a} of {b}', { a: i + 1, b: draft.pages.length })}</Animated.Text>
-            <Animated.Text numberOfLines={1} style={[styles.sub, { fontSize: 11, marginTop: 0, opacity: savedFade, position: 'absolute' }]}>{tr('Saved')}</Animated.Text>
-          </View>
-        </Pressable>
+        <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>{tr('Pages')}</Text></Pressable>
         <Pressable onPress={() => finish()} hitSlop={8} accessibilityLabel={tr('Finish and save the book')}><View style={styles.finish}><Text style={styles.btn}>{tr('Finish')}</Text></View></Pressable>
         </Animated.View>
       </Bar>
@@ -823,6 +817,8 @@ const styles = StyleSheet.create({
   authorBtn: { height: 40, borderRadius: 20, paddingHorizontal: 16, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   sizeBtn: { width: 44, height: 40, borderRadius: 20, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   coverHint: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 13, marginLeft: 4 },
+  countBox: { position: 'absolute', zIndex: 6, backgroundColor: '#4a4a4a', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, alignItems: 'center', justifyContent: 'center' },
+  countText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 13, fontVariant: ['tabular-nums'] },
   coverHead: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 17, marginBottom: 4 },
   fieldSmall: { flex: 1, minWidth: 0, height: 42, fontSize: 15 },
   field: { backgroundColor: '#2e2e2e', color: colors.white, fontFamily: fonts.ui, fontSize: 17, height: 48, borderRadius: 14, paddingHorizontal: 14 },
