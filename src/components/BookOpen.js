@@ -64,10 +64,12 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
   };
   const acts = useRef({}); acts.current = { swingOpen, leave, phase };
   const shutPan = useRef(PanResponder.create({
-    onStartShouldSetPanResponder: () => { console.log('DBG start', acts.current.phase); return acts.current.phase === 3; },
+    onStartShouldSetPanResponder: () => acts.current.phase === 3,
+    onStartShouldSetPanResponderCapture: () => acts.current.phase === 3,
+    onMoveShouldSetPanResponderCapture: () => acts.current.phase === 3,
+    onPanResponderTerminationRequest: () => false,
     onMoveShouldSetPanResponder: () => acts.current.phase === 3,
     onPanResponderRelease: (_, g) => {
-      console.log('DBG release', acts.current.phase, g.dx, g.dy);
       if (acts.current.phase !== 3) return;
       if (g.dy < -40 && Math.abs(g.dy) > Math.abs(g.dx)) acts.current.leave(); // swipe up: back to the library
       else acts.current.swingOpen(); // a tap or another swipe: open it again
@@ -76,7 +78,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
   useEffect(() => {
     if (closing) { // swing shut over the words square
       playSound('coverClose');
-      Animated.timing(flip, { toValue: 0, duration: 950, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start((r) => { console.log('DBG shut', r && r.finished); setPhase(3); });
+      Animated.timing(flip, { toValue: 0, duration: 950, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => setPhase(3));
       return;
     }
     playSound('tap');
