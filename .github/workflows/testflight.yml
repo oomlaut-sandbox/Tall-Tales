@@ -48,6 +48,8 @@ jobs:
       - name: Fetch crash reports
         if: contains(github.event.head_commit.message, '[crashlog]')
         run: node ci/crash-logs.js asc-api-key.p8 "$(cat ci/asc-app-id.txt)" || true
+      - name: Check the Ideas and Support search field is centred (stops the build if not)
+        run: node ci/check-search.js | tee -a ios-out/checks.txt
       - name: Install
         run: npm ci --no-audit --no-fund
       - name: Account connection (Supabase URL and public key, if the secrets exist)
