@@ -1116,7 +1116,7 @@ function ListenChoice({ area, onDay, onNight, onCancel, onGone, tr }) {
   };
   const side = Math.min(240, area.width * 0.6);
   const ink = 'rgba(255,255,255,0.88)';
-  const word = { color: 'rgba(255,255,255,0.7)', fontFamily: fonts.ui, fontSize: 12, fontWeight: '300', letterSpacing: 1.2, marginBottom: side * 0.09 };
+  const word = { color: 'rgba(255,255,255,0.7)', fontFamily: fonts.ui, fontSize: 12, fontWeight: '300', letterSpacing: 1.2, marginTop: side * 0.075 };
   return (
     <>
       <Animated.View style={{ position: 'absolute', ...area, zIndex: 45, backgroundColor: 'rgba(0,0,0,0.75)', opacity: dim }} onStartShouldSetResponder={() => true} />
@@ -1125,17 +1125,18 @@ function ListenChoice({ area, onDay, onNight, onCancel, onGone, tr }) {
           <View style={{ width: side, height: side, borderRadius: 30, backgroundColor: '#2b2b2d', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.6)' }}>
             {/* what this is: Listening Only mode (nothing plays until Daydream or Nightlight is chosen) */}
             <Text style={{ color: 'rgba(255,255,255,0.92)', fontFamily: fonts.ui, fontSize: 15, fontWeight: '500', letterSpacing: 0.3, textAlign: 'center', marginTop: side * 0.1 }}>{tr('Listening Only mode')}</Text>
-            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginTop: -side * 0.02 }}>
+            {/* the two choices, a little above the middle of what's left: the icon, its name under it */}
+            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', paddingBottom: side * 0.07 }}>
             <Pressable onPress={() => pick('day')} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Daydream')}>
-              <Text style={word}>{tr('Daydream')}</Text>
               {picked === 'day' ? <SolidSun size={side * 0.16} color={ink} /> : <SunIcon size={side * 0.16} color={ink} />}
+              <Text style={word}>{tr('Daydream')}</Text>
             </Pressable>
-            <View style={{ width: 1.1, height: side * 0.5, backgroundColor: ink }} />{/* the same fine stroke as the sun and the moon */}
+            <View style={{ width: 1.1, height: side * 0.42, backgroundColor: ink }} />{/* the same fine stroke as the sun and the moon */}
             <Pressable onPress={() => pick('night')} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Nightlight')}>
-              <Text style={word}>{tr('Nightlight')}</Text>
               {picked === 'night'
                 ? <View style={{ width: side * 0.16, height: side * 0.16, alignItems: 'center', justifyContent: 'center' }}><MoonIcon size={side * 0.16 * (226 / 246)} color={ink} /></View>
                 : <Image source={MOON_OUTLINE} style={{ width: side * 0.16, height: side * 0.16, tintColor: ink }} resizeMode="contain" />}
+              <Text style={word}>{tr('Nightlight')}</Text>
             </Pressable>
             </View>
           </View>
