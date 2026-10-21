@@ -391,6 +391,8 @@ const T = {
   'What’s next?': { de: 'Wie geht es weiter?', fr: 'Et maintenant ?', es: '¿Y ahora qué?', ja: 'つぎは どうする？' },
   'Add another page': { de: 'Noch eine Seite', fr: 'Ajouter une autre page', es: 'Añadir otra página', ja: 'ページを ふやす' },
   'Keep working on this page': { de: 'An dieser Seite weiterarbeiten', fr: 'Continuer cette page', es: 'Seguir con esta página', ja: 'この ページを つづける' },
+  'Recording': { de: 'Aufnahme', fr: 'Enregistrement', es: 'Grabando', ja: 'ろくおんちゅう' },
+  'Stop recording': { de: 'Aufnahme beenden', fr: 'Arrêter l’enregistrement', es: 'Detener la grabación', ja: 'ろくおんを とめる' },
   'Start writing': { de: 'Los geht’s', fr: 'Commencer à écrire', es: 'Empezar a escribir', ja: 'かきはじめる' },
   'Give your book a title': { de: 'Gib deinem Buch einen Titel', fr: 'Donne un titre à ton livre', es: 'Ponle un título a tu libro', ja: 'ほんに なまえを つけよう' },
   'Keep working': { de: 'Weiterarbeiten', fr: 'Continuer', es: 'Seguir trabajando', ja: 'つづける' },

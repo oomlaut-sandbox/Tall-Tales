@@ -790,6 +790,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         {/* Tap anywhere along the left or right edge to turn back or forward (swipes work anywhere). */}
         {size && idx > 0 && !listen ? <Pressable onPress={() => flip(-1)} accessibilityLabel={tr('Previous page')} style={[styles.edge, { left: 0, width: edgeW }]} /> : null}
         {size && idx < pages.length - 1 && !listen ? <Pressable onPress={() => flip(1)} accessibilityLabel={tr('Next page')} style={[styles.edge, { right: 0, width: edgeW }]} /> : null}
+        {/* while recording: a red dot and a small grey box ('■ Recording 0:04') at the top left of the words page;
+            tapping it stops the recording */}
+        {size && (recording || REC_DEMO) ? (
+          <RecTimer start={recStart.current || DEMO_T0} onStop={() => stopRec(true)}
+            style={size.w > size.h * 1.25 ? { top: size.h * 0.06, left: size.w * 0.54 } : { top: size.h * 0.5 + size.w * 0.07, left: size.w * 0.08 }} />
+        ) : null}
         {/* the dog-ear hides while a page is turning, and comes back once the new page has landed */}
         {idx < pages.length - 1 && !flipPair && !listen ? <View style={{ position: 'absolute', right: 0, bottom: 0, zIndex: 20 }}><DogEar u={u} under={colors.earUnder} onPress={() => flip(1)} /></View> : null}
       </View>
@@ -818,7 +824,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
               {/* the nightlight: a small light grey moon (Listen Only with the sunset sun) */}
               {canMoon ? (
                 <Pressable onPress={withTap(toggleNight)} hitSlop={12} accessibilityRole="button" accessibilityLabel={dayOn ? tr('Close Daydream') : tr('Nightlight')} style={[styles.small, { marginTop: u * 4 }]}>
-                  {dayOn ? <SolidSun size={u * 4.6} color="#e0e0e0" /> : <MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />}
+                  {dayOn ? <SolidSun size={u * 4.6} color="#e0e0e0" /> : <MoonIcon size={u * 4.85} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />}
                 </Pressable>
               ) : null}
               {nightOn ? (
@@ -841,7 +847,6 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
                     (it takes no room, so the buttons never move) */}
 {controls.recording ? (
                 <View>
-                  {recording ? <RecTimer start={recStart.current} style={{ position: 'absolute', left: -20, right: -20, bottom: '100%', marginBottom: 16, alignItems: 'center' }} /> : null}
                   <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} />
                 </View>
                 ) : null}
@@ -864,12 +869,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           </Pressable>
         ) : null}
         {/* music and sounds: opens (or hides) the little floating Audio Player; a little apart from the menu (or the lock) */}
-        <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.small, { marginLeft: isRestricted(controls) && onSettings ? u * 4 : u * 5.5 }]}>{/* closer when it sits beside the lock */}
+        <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.small, { marginLeft: (isRestricted(controls) && onSettings ? u * 4 : u * 5.5) - 2 }]}>{/* closer when it sits beside the lock */}
           <MusicIcon size={u * 5.6} color="#8e8e8e" />
         </Pressable>
         {canMoon ? (
-          <Pressable onPress={withTap(toggleNight)} hitSlop={12} accessibilityRole="button" accessibilityLabel={dayOn ? tr('Close Daydream') : tr('Nightlight')} style={[styles.small, { marginLeft: u * 4 }]}>
-            {dayOn ? <SolidSun size={u * 4.6} color="#e0e0e0" /> : <MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />}
+          <Pressable onPress={withTap(toggleNight)} hitSlop={12} accessibilityRole="button" accessibilityLabel={dayOn ? tr('Close Daydream') : tr('Nightlight')} style={[styles.small, { marginLeft: u * 4 - 2 }]}>
+            {dayOn ? <SolidSun size={u * 4.6} color="#e0e0e0" /> : <MoonIcon size={u * 4.85} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />}
           </Pressable>
         ) : null}
         {nightOn ? (
@@ -892,7 +897,6 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
                 (it takes no room, so the buttons never move) */}
 {controls.recording ? (
             <View>
-              {recording ? <RecTimer start={recStart.current} style={{ position: 'absolute', right: '100%', marginRight: 14, top: 0, bottom: 0, justifyContent: 'center' }} /> : null}
               <RecordButton active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} />
             </View>
             ) : null}
@@ -1040,7 +1044,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 }
 
 // The recording timer: a small grey box with the time recorded so far (0:03), beside the pulsing record button.
-function RecTimer({ start, style }) {
+const DEMO_T0 = Date.now() - 4000; // (web preview #rec-demo only)
+function RecTimer({ start, style, onStop }) {
   const tr = useT();
   const [secs, setSecs] = useState(0);
   useEffect(() => {
@@ -1048,11 +1053,15 @@ function RecTimer({ start, style }) {
     return () => clearInterval(t);
   }, [start]);
   return (
-    <View pointerEvents="none" style={style}>
+    <Pressable onPress={onStop} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Stop recording')}
+      style={[{ position: 'absolute', zIndex: 30, flexDirection: 'row', alignItems: 'center', gap: 8 }, style]}>
+      <View style={styles.recDot} />
       <View style={styles.recBox} accessibilityLabel={tr('Recording, {n} seconds', { n: secs })}>
+        <View style={styles.recStop} />
+        <Text style={styles.recBoxLabel}>{tr('Recording')}</Text>
         <Text style={styles.recBoxTime}>{Math.floor(secs / 60)}:{String(secs % 60).padStart(2, '0')}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -1072,8 +1081,11 @@ const styles = StyleSheet.create({
   edge: { position: 'absolute', top: 0, bottom: 0, zIndex: 15 },
   half: { position: 'absolute', left: 0, right: 0, overflow: 'hidden', backfaceVisibility: 'hidden' },
   strip: { position: 'absolute', left: 0, right: 0, overflow: 'hidden', transformOrigin: 'top' },
-  recBox: { backgroundColor: '#4a4a4a', borderRadius: 8, paddingHorizontal: 9, paddingVertical: 4, alignItems: 'center' },
-  recBoxTime: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14, fontVariant: ['tabular-nums'], minWidth: 34, textAlign: 'center' },
+  recBox: { backgroundColor: '#4a4a4a', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, flexDirection: 'row', alignItems: 'center', gap: 7 },
+  recDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#e0262b' },
+  recStop: { width: 9, height: 9, borderRadius: 1.5, backgroundColor: colors.white },
+  recBoxLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 14 },
+  recBoxTime: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14, fontVariant: ['tabular-nums'], minWidth: 34, textAlign: 'left' },
   back: { color: colors.muted, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
   setting: { gap: 8, paddingTop: 10, paddingBottom: 8 },
   printBtn: { alignItems: 'center', gap: 6 },
