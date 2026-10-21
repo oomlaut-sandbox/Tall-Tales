@@ -819,19 +819,14 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   Wref.current = W;
   const cur = useRef(null);
   const at = (e) => [e.nativeEvent.locationX / Wref.current, e.nativeEvent.locationY / Wref.current];
-  const rub = (x, y) => {
-    const keep = S.current.strokes.filter((st) => !near(st, x, y, 0.035));
-    if (keep.length !== S.current.strokes.length) setStrokes(keep);
-  };
   const pad = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: () => true,
     onPanResponderTerminationRequest: () => false,
     onPanResponderGrant: (e) => {
       const [x, y] = at(e);
-      if (S.current.erase) { rub(x, y); return; }
       if (S.current.bucket) {
-        const f = makeFill(S.current.strokes, x, y, S.current.tall ? 2 : 1, S.current.pen);
+        const f = makeFill(S.current.strokes.filter((st) => !st.e), x, y, S.current.tall ? 2 : 1, S.current.pen);
         if (f) setStrokes((s) => [...s, f]);
         return;
       }
@@ -840,12 +835,14 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
         setLive({ ...cur.current });
         return;
       }
-      cur.current = { c: S.current.pen, s: S.current.size, b: S.current.brush, p: [+x.toFixed(4), +y.toFixed(4)] };
+      // the eraser: a soft round line that rubs out what is under it (a little wider than the pen)
+      cur.current = S.current.erase
+        ? { e: 1, c: '#000000', s: Math.max(0.035, S.current.size * 2.2), p: [+x.toFixed(4), +y.toFixed(4)] }
+        : { c: S.current.pen, s: S.current.size, b: S.current.brush, p: [+x.toFixed(4), +y.toFixed(4)] };
       setLive({ ...cur.current });
     },
     onPanResponderMove: (e) => {
       const [x, y] = at(e);
-      if (S.current.erase) { rub(x, y); return; }
       if (S.current.bucket) return;
       const c = cur.current;
       if (!c) return;

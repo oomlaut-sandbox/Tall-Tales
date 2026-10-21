@@ -205,6 +205,8 @@ export function inkD(st, w) {
 //   where it crosses other colour; grain: a slightly rough, pencil-like edge; inner: the blur only inside the
 //   edge (a darker rim, like dried watercolour; drawn on the phone only)
 export function layersFor(st, w) {
+  // the eraser: a soft round line that rubs out what was drawn before it (down to the paper or the photo)
+  if (st.e) return [{ d: strokeD(st, w), width: Math.max(2, (st.s || 0.05) * w), alpha: 1, erase: true }];
   if (st.f) return [{ d: fillD(st, w), fill: true, alpha: 0.94 }];
   const lw = Math.max(1, (st.s || 0.01) * w);
   const b = st.b || 'ink';
@@ -255,5 +257,16 @@ export function shapePts(kind, x0, y0, x1, y1) {
   } else { // circle (an ellipse in the box)
     for (let i = 0; i <= 72; i++) { const a = (i / 72) * Math.PI * 2; push(cx + Math.cos(a) * rx, cy + Math.sin(a) * ry); }
   }
+  return out;
+}
+
+// The order to draw a drawing in: fills under the lines, but only up to each rub of the eraser (what is drawn after
+// erasing stays on top of it). Returns the strokes in drawing order; erase strokes keep their place.
+export function drawOrder(list) {
+  const out = [];
+  let seg = [];
+  const flush = () => { out.push(...seg.filter((st) => st.f), ...seg.filter((st) => !st.f)); seg = []; };
+  for (const st of list || []) { if (st.e) { flush(); out.push(st); } else seg.push(st); }
+  flush();
   return out;
 }

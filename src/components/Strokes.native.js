@@ -4,14 +4,14 @@ import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { BlendMode, BlurMask, BlurStyle, Canvas, DiscretePathEffect, PaintStyle, Path, Skia, StrokeCap, StrokeJoin } from '@shopify/react-native-skia';
 import { File, Paths } from 'expo-file-system';
-import { layersFor } from '../strokes';
+import { drawOrder, layersFor } from '../strokes';
 
 function Layer({ L, color }) {
   const path = useMemo(() => Skia.Path.MakeFromSVGString(L.d), [L.d]);
   if (!path) return null;
   return (
-    <Path path={path} color={color} opacity={L.alpha} style={L.fill ? 'fill' : 'stroke'} strokeWidth={L.width || 0} strokeCap="round" strokeJoin="round"
-      blendMode={L.multiply ? 'multiply' : 'srcOver'}>
+    <Path path={path} color={L.erase ? '#000000' : color} opacity={L.alpha} style={L.fill ? 'fill' : 'stroke'} strokeWidth={L.width || 0} strokeCap="round" strokeJoin="round"
+      blendMode={L.erase ? 'clear' : L.multiply ? 'multiply' : 'srcOver'}>
       {L.blur ? <BlurMask blur={L.blur} style={L.inner ? 'inner' : 'normal'} /> : null}
       {L.grain ? <DiscretePathEffect length={2.5} deviation={0.7} /> : null}
     </Path>
@@ -26,10 +26,8 @@ export function StrokesView({ strokes, width, height, live }) {
   return (
     <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width, height }}>
       <Canvas style={{ width, height }}>
-        {/* fills first, under every line, then the lines */}
-        {(strokes || []).map((st, i) => (st.f ? <One key={i} st={st} width={width} /> : null))}
-        {(strokes || []).map((st, i) => (st.f ? null : <One key={i} st={st} width={width} />))}
-        {live ? <One st={live} width={width} /> : null}
+        {/* fills under the lines, the eraser rubbing out what came before it (see drawOrder) */}
+        {drawOrder(live ? [...(strokes || []), live] : strokes).map((st, i) => <One key={i} st={st} width={width} />)}
       </Canvas>
     </View>
   );
@@ -40,7 +38,8 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff') {
   const surface = (Skia.Surface.MakeOffscreen && Skia.Surface.MakeOffscreen(px, px)) || Skia.Surface.Make(px, px);
   const canvas = surface.getCanvas();
   canvas.clear(Skia.Color(bg));
-  const list = [...(strokes || []).filter((s) => s.f), ...(strokes || []).filter((s) => !s.f)];
+  canvas.saveLayer(); // the drawing on its own layer, so the eraser rubs down to the paper, not through it
+  const list = drawOrder(strokes);
   for (const st of list) {
     for (const L of layersFor(st, px)) {
       if (!L.alpha) continue;
@@ -54,10 +53,12 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff') {
       if (!L.fill) { paint.setStrokeWidth(L.width); paint.setStrokeCap(StrokeCap.Round); paint.setStrokeJoin(StrokeJoin.Round); }
       if (L.blur) paint.setMaskFilter(Skia.MaskFilter.MakeBlur(L.inner ? BlurStyle.Inner : BlurStyle.Normal, L.blur, true));
       if (L.multiply) paint.setBlendMode(BlendMode.Multiply);
+      if (L.erase) paint.setBlendMode(BlendMode.Clear);
       if (L.grain) paint.setPathEffect(Skia.PathEffect.MakeDiscrete(2.5 * px / 400, 0.7 * px / 400, 0));
       canvas.drawPath(path, paint);
     }
   }
+  canvas.restore();
   surface.flush();
   const bytes = surface.makeImageSnapshot().encodeToBytes();
   const f = new File(Paths.cache, `drawing-${Date.now()}.png`);
