@@ -173,7 +173,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
                   )) : <Text style={styles.small}>{t('No books yet.')}</Text>}
                   <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
                     <Pressable onPress={() => setAdding(true)} style={[styles.pill, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text style={styles.pillText}>+  {t('Add books')}</Text></Pressable>
-                    <Pressable onPress={() => setEdit(null)} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Done')}</Text></Pressable>
+                    <Pressable onPress={() => setEdit(null)} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Save')}</Text></Pressable>
                   </View>
                   <Pressable onPress={() => { setLists((l) => l.filter((p) => p.id !== pl.id)); setEdit(null); }} accessibilityRole="button"
                     style={{ alignSelf: 'flex-start', backgroundColor: colors.deepRed, height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', marginTop: 6 }}>
