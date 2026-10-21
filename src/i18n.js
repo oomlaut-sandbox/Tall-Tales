@@ -524,6 +524,7 @@ const T = {
   'Sleep timer: off': { de: 'Einschlaf-Timer: aus', fr: 'Minuterie : désactivée', es: 'Temporizador: apagado', ja: 'スリープタイマー: オフ' },
   'Edit': { de: 'Bearbeiten', fr: 'Modifier', es: 'Editar', ja: 'へんしゅう' },
   'Listen Only Mode': { de: 'Nur Zuhören', fr: 'Écoute seule', es: 'Solo escuchar', ja: 'きくだけ モード' },
+  'Edit playlist': { de: 'Playlist bearbeiten', fr: 'Modifier la liste', es: 'Editar la lista', ja: 'プレイリストを へんしゅう' },
   'Share playlist': { de: 'Playlist teilen', fr: 'Partager la liste', es: 'Compartir la lista', ja: 'プレイリストを シェア' },
   'Our playlist “{name}” in Oomlaut Reader:': { de: 'Unsere Playlist „{name}“ in Oomlaut Reader:', fr: 'Notre liste « {name} » dans Oomlaut Reader :', es: 'Nuestra lista «{name}» en Oomlaut Reader:', ja: 'Oomlaut Reader の プレイリスト「{name}」:' },
   'Open Audio Player': { de: 'Audio-Player öffnen', fr: 'Ouvrir le lecteur audio', es: 'Abrir el reproductor', ja: 'オーディオプレーヤーを ひらく' },

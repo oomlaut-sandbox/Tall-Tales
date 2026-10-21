@@ -2,7 +2,7 @@
 // them all by themselves (Auto Play), one book after the next. Each child has their own playlists;
 // "Bedtime" is there from the start.
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Image, LayoutAnimation, Platform, Pressable, ScrollView, UIManager, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, DESK_BG, IS_TABLET } from '../look';
@@ -24,6 +24,7 @@ function Thumb({ s, size }) {
 }
 
 const TAPE = require('../../assets/playlist-tape.png');
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) UIManager.setLayoutAnimationEnabledExperimental(true);
 const BAND_FELT = require('../../assets/band-playlists.png'); // Jörg's brown felt banner
 const BAND_COLOR = '#7a5534'; // its colour (iPad, and the status bar strip)
 const ENVELOPE = require('../../assets/icon-envelope.png'); // share
@@ -44,6 +45,8 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
   const move = (pl, k, d) => {
     const b = [...pl.books]; const j = k + d;
     if (j < 0 || j >= b.length) return;
+    // the book slides up or down and the others make room
+    LayoutAnimation.configureNext(LayoutAnimation.create(280, LayoutAnimation.Types.easeInEaseOut, LayoutAnimation.Properties.opacity));
     [b[k], b[j]] = [b[j], b[k]]; set(pl.id, { books: b });
   };
   const controls = useControls();
@@ -133,6 +136,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
           <View pointerEvents="box-none" style={{ flex: 1, paddingTop: insets.top + 24, paddingBottom: 24, paddingHorizontal: 16, alignItems: 'center' }}>
             <View style={styles.sheet}>
               <ScrollView contentContainerStyle={{ padding: 20, gap: 14 }} keyboardShouldPersistTaps="handled">
+                <Text style={styles.sheetTitle}>{t('Edit playlist')}</Text>
             <>
               <TextInput value={pl.name} onChangeText={(name) => set(pl.id, { name })} style={styles.input} maxLength={30} accessibilityLabel={t('Playlist name')} placeholder={t('Playlist name')} placeholderTextColor="#888" />
               {adding ? (
@@ -190,6 +194,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: DESK_BG },
   band: { backgroundColor: BAND_COLOR, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
+  sheetTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20 },
   sheet: { width: '100%', maxWidth: 560, maxHeight: '100%', backgroundColor: '#2b2b2d', borderRadius: 24, overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.6)' }, // the edit box
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 24, paddingBottom: 140, alignItems: 'center' },
