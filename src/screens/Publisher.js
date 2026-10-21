@@ -637,8 +637,11 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <DeskFelt spot="publisher3" overlay />
           <View style={[styles.editor, { flex: 1, paddingTop: kbUp ? insets.top + 8 : insets.top + (winW > winH ? 12 : 34), paddingLeft: insets.left, paddingRight: insets.right }]}>
             {/* the book's title and (optional) who wrote it and who drew the pictures: all on the cover page */}
-            {!kbUp || fieldOn ? (
+            {/* (shown unless the cover's own title is being typed: the keyboard can come up before onFocus, and these
+                 must never unmount mid-tap, or the keyboard opens and shuts straight away) */}
+            {!titleEditing ? (
               <View style={{ width: Math.min(winW - insets.left - insets.right - 2 * GAP, 560), gap: 8, marginBottom: 14 }}>
+                {!kbUp ? <Text style={styles.coverHead}>{tr('Cover')}</Text> : null}
                 <TextInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder={tr('Book title')} placeholderTextColor="#8a8a8a"
                   onFocus={() => setFieldOn(true)} onBlur={() => setFieldOn(false)} returnKeyType="done" onSubmitEditing={() => Keyboard.dismiss()}
                   style={[styles.field, { fontWeight: '700' }]} accessibilityLabel={tr('Book title')} />
@@ -820,6 +823,7 @@ const styles = StyleSheet.create({
   authorBtn: { height: 40, borderRadius: 20, paddingHorizontal: 16, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   sizeBtn: { width: 44, height: 40, borderRadius: 20, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   coverHint: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 13, marginLeft: 4 },
+  coverHead: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 17, marginBottom: 4 },
   fieldSmall: { flex: 1, minWidth: 0, height: 42, fontSize: 15 },
   field: { backgroundColor: '#2e2e2e', color: colors.white, fontFamily: fonts.ui, fontSize: 17, height: 48, borderRadius: 14, paddingHorizontal: 14 },
   fieldHint: { color: '#a8a8a8', fontFamily: fonts.ui, fontSize: 13, marginTop: -8 },
