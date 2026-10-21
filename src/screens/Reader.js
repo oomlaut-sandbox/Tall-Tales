@@ -844,7 +844,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
                 {/* the alarm time: right of the clock (upright), under it (sideways); it takes no room in the slot */}
                 {prefs.alarmOn ? (v
                   ? <Text numberOfLines={1} style={[styles.alarmTime, { position: 'absolute', top: G.step / 2 + u * 3.4, left: 0, right: 0, textAlign: 'center' }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text>
-                  : <Text numberOfLines={1} style={[styles.alarmTime, { position: 'absolute', left: G.step / 2 + u * 3.6 - 3, width: u * 22 }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text>) : null}
+                  : <Text style={[styles.alarmTime, { position: 'absolute', left: G.step / 2 + u * 3.6 - 3, width: u * 24 }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text>) : null}
               </Pressable>
               </>
             ) : null}
@@ -853,7 +853,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         // Record / Pause / Play: Play's far edge is as far from the screen's edge as the menu is from its own
         // (the triangle sits 6k in from its button's edge, hence the negative margin)
         const ctlEls = showControls ? (
-          <View style={v ? { alignItems: 'center', gap: 12 * G.k, marginBottom: SIDE_MENU_TOP - 6 * G.k } : { flexDirection: 'row', alignItems: 'center', gap: 8 * G.k, marginRight: -6 * G.k }}>
+          <View style={v ? { alignItems: 'center', gap: 12 * G.k, marginBottom: SIDE_MENU_TOP - 6 * G.k } : { flexDirection: 'row', alignItems: 'center', gap: 8 * G.k, marginRight: -6 * G.k - 1.5 }}>
             {controls.recording ? <RecordButton k={G.k} active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} /> : null}
             <PauseButton k={G.k} onPress={onPause} disabled={recording} active={(reading && !paused) || between} />
             <PlayButton k={G.k} onPress={onPlay} active={(reading && !paused) || between} disabled={recording} />

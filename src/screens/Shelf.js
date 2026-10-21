@@ -4,7 +4,10 @@ import { Animated, Easing, Image, Platform, Pressable, RefreshControl, ScrollVie
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG } from '../look';
-import { Bar, BarMeta, Burger, DogEar, Panel, PlaylistIcon, WithBar } from '../components/Chrome';
+import { Bar, BarMeta, Burger, DogEar, IDLE, Panel, PlaylistIcon, WithBar, slotStyle } from '../components/Chrome';
+const SHARE_ICON = require('../../assets/icon-envelope.png');
+const EDIT_ICON = require('../../assets/icon-scissors.png');
+const TRASH_ICON = require('../../assets/icon-trash.png');
 import { loadJSON, saveJSON } from '../storage';
 import { ageAllowed, ageOf, ageText, bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
@@ -147,19 +150,23 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => (selecting ? (
         <Bar u={u} vertical={v}>
-          <Pressable onPress={() => setGate('share')} disabled={chosen.length !== 1} style={[styles.barBtn, chosen.length !== 1 && styles.barBtnOff]} accessibilityRole="button">
-            <Text style={styles.barBtnText}>{t('Share')}</Text>
-          </Pressable>
-          {/* Edit: only for a single book you made yourself */}
-          <Pressable onPress={() => { const b = chosen[0]; stop(); onEdit(b); }} disabled={!(chosen.length === 1 && chosen[0].mine)} style={[styles.barBtn, !(chosen.length === 1 && chosen[0].mine) && styles.barBtnOff]} accessibilityRole="button">
-            <Text style={styles.barBtnText}>{t('Edit')}</Text>
-          </Pressable>
-          <Pressable onPress={() => setConfirm(true)} disabled={!chosen.length} style={[styles.barBtn, !chosen.length && styles.barBtnOff]} accessibilityRole="button">
-            <Text style={[styles.barBtnText, { color: '#ff6b6b' }]}>{t('Delete')}</Text>
-          </Pressable>
+          {/* the menu, house and note stay where they always are; then share (envelope), edit (scissors) and delete
+              (trash can) in the next slots, greyed out when they can't be used */}
+          <View style={{ flexDirection: v ? 'column' : 'row', alignItems: 'center', alignSelf: 'stretch' }}>{/* no gap: the slots run on from the menu's */}
+          <Burger u={u} onPress={openMenu} />
+          {[
+            [SHARE_ICON, t('Share'), chosen.length === 1, () => setGate('share'), '#ffffff'],
+            [EDIT_ICON, t('Edit'), chosen.length === 1 && chosen[0].mine, () => { const b = chosen[0]; stop(); onEdit(b); }, '#ffffff'],
+            [TRASH_ICON, t('Delete'), chosen.length > 0, () => setConfirm(true), '#ff6b6b'],
+          ].map(([src, label, on, fn, col]) => (
+            <Pressable key={label} onPress={fn} disabled={!on} hitSlop={8} style={slotStyle(u, v)} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ disabled: !on }}>
+              <Image source={src} style={{ width: u * 5.2, height: u * 5.2, tintColor: on ? col : IDLE }} resizeMode="contain" />
+            </Pressable>
+          ))}
+          </View>
           <View style={{ flex: 1 }} />{/* (Edit and Share simply grey out when they can't be used) */}
           {/* Cancel sits where Select was: the bottom right of the bar */}
-          <Pressable onPress={stop} hitSlop={10} style={styles.barBtn} accessibilityRole="button"><Text style={styles.barSmall}>{t('Cancel')}</Text></Pressable>
+          <Pressable onPress={stop} hitSlop={10} accessibilityRole="button"><View style={styles.cancelPill}><Text style={styles.barSmall}>{t('Cancel')}</Text></View></Pressable>{/* a small red pill */}
         </Bar>
       ) : (
         <Bar u={u} vertical={v}>
@@ -506,10 +513,11 @@ const styles = StyleSheet.create({
   confirmText: { color: colors.white, fontFamily: fonts.ui, fontSize: 16, lineHeight: 22 },
   actBtn: { flex: 1, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
   actText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  cancelPill: { backgroundColor: '#d4312a', paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' },
   barBtn: { paddingVertical: 10, paddingHorizontal: 6 },
-  barSmall: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 }, // Select / Cancel: the same size as Share, Edit and Delete, on the same line
+  barSmall: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 }, // Select / Cancel: the same size as Share, Edit and Delete, on the same line
   barBtnOff: { opacity: 0.35 },
-  barBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
+  barBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
   barHint: { flex: 1, textAlign: 'right', color: colors.muted, fontFamily: fonts.ui, fontSize: 12 },
   coverImg: { position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' },
   feature: { flexDirection: 'row', gap: 16, alignItems: 'center', paddingHorizontal: 20 },
