@@ -64,7 +64,7 @@ import { getRecording, listRecordings, pageKey, removeRecording, saveRecording }
 import { markFinished, markFirst, markReadToday } from '../badges';
 import { AUDIO, TIMINGS } from '../narration';
 import { SAMPLES, SAMPLE_LANGS, THE_END } from '../narration/samples';
-import Nightlight from '../components/Nightlight';
+import Nightlight, { SunIcon } from '../components/Nightlight';
 import { thunk, withTap } from '../haptics';
 import { fmtTime } from '../clock';
 
@@ -223,15 +223,23 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   }, []);
 
   // switch how the book plays (and start reading when the new mode reads aloud)
-  const chooseMode = (id) => {
+  const chooseMode = (id, sc) => {
     stopReading();
     setPrefs((p) => ({ ...p, mode: id, ...(id === 'listen' && p.mode !== 'listen' ? { prevMode: p.mode } : {}) }));
+    if (id === 'listen' && prefs.mode !== 'listen') setScene(sc || 'choose'); // Listen Only from the options: sun or moon?
     st.current.mode = id === 'listen' ? 'auto' : id;
     if (id === 'auto' || id === 'page' || id === 'listen') setTimeout(() => readPage(st.current.idx), 300);
   };
   // the moon on the bar: into the nightlight (Listen Only), and back to how it was before
   const canMoon = controls.playback !== false && !controls.playMode && controls.nightlight !== false;
-  const nightOn = listen && controls.nightlight !== false; // Settings → Nightlight mode can switch the nightlight off
+  // Listen Only shows a choice first (the screen dims, a small box: the sun for Daydream, the moon for the nightlight);
+  // a playlist keeps the last choice for every book after the first
+  const [scene, setScene] = useState(() => (autoStart && prefs.listenScene ? prefs.listenScene : 'choose'));
+  const pickScene = (sc) => { setScene(sc); setPrefs((p) => ({ ...p, listenScene: sc })); };
+  const nightEnabled = listen && controls.nightlight !== false; // Settings → Nightlight mode can switch the nightlight off
+  const choosing = nightEnabled && scene === 'choose';
+  const nightOn = nightEnabled && !choosing; // the nightlight or Daydream is showing (the lock and alarm are on the bar)
+  const dayOn = nightOn && scene === 'day';
   // the nightlight's lock lives on the bar beside the moon; where it sits, so it stays tappable over the blocker
   const [nlLocked, setNlLocked] = useState(false);
   const [lockRect, setLockRect] = useState(null);
@@ -239,7 +247,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const [alarmOpen, setAlarmOpen] = useState(false); // the nightlight's alarm popup (the alarm clock on the bar)
   const lockNight = () => { const n = nlLockRef.current; if (n && n.measureInWindow) n.measureInWindow((x, y, width, height) => { setLockRect({ x, y, width, height }); setNlLocked(true); }); else setNlLocked(true); };
   useEffect(() => { if (prefs.mode !== 'listen') setNlLocked(false); }, [prefs.mode]);
-  const toggleNight = () => chooseMode(prefs.mode === 'listen' ? (prefs.prevMode && prefs.prevMode !== 'listen' ? prefs.prevMode : 'auto') : 'listen');
+  // the moon on the bar goes straight into the nightlight (no choice), and back out again
+  const toggleNight = () => {
+    if (prefs.mode === 'listen') { chooseMode(prefs.prevMode && prefs.prevMode !== 'listen' ? prefs.prevMode : 'auto'); return; }
+    chooseMode('listen', 'night');
+  };
 
   const wordAt = (ch) => {
     for (let i = 0; i < tokens.length; i++) if (tokens[i].start <= ch && ch < tokens[i].end + 1) return i;
@@ -857,8 +869,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         </View>
       ) : null}
       {/* Listen Only: the nightlight (the book almost hidden, a soft breathing sun, brightness, a lock) */}
+      {/* Listen Only, first: the screen dims and a small dark box asks: Daydream (the sun) or the nightlight (the moon) */}
+      {choosing ? <ListenChoice area={wide ? { left: 0, top: 0, width: winW - BL.rightW, height: winH } : { left: 0, top: 0, width: winW, height: winH - barH }}
+        onDay={() => pickScene('day')} onNight={() => pickScene('night')} tr={tr} /> : null}
       {nightOn ? (
-        <Nightlight title={story.title} playing={reading && !paused} onPlay={onPlay} onPause={onPause} locked={nlLocked} lockRect={lockRect} onUnlock={() => setNlLocked(false)} onSleep={() => { stopReading(); clearTimeout(autoTimer.current); }} eclipse={prefs.eclipse ?? 0} onEclipse={(v) => setPrefs((p) => ({ ...p, eclipse: Math.round(v * 100) / 100 }))}
+        <Nightlight key={scene} day={dayOn} video={prefs.dayVideo || 0} onVideo={(i) => setPrefs((p) => ({ ...p, dayVideo: i }))} title={story.title} playing={reading && !paused} onPlay={onPlay} onPause={onPause} locked={nlLocked} lockRect={lockRect} onUnlock={() => setNlLocked(false)} onSleep={() => { stopReading(); clearTimeout(autoTimer.current); }} eclipse={prefs.eclipse ?? 0} onEclipse={(v) => setPrefs((p) => ({ ...p, eclipse: Math.round(v * 100) / 100 }))}
           alarmTime={prefs.alarmTime || '07:00'} alarmSound={prefs.alarmSound || 'forest-birds'} alarmOn={!!prefs.alarmOn} alarmOpen={alarmOpen} onAlarmClose={() => setAlarmOpen(false)} onAlarm={(patch) => setPrefs((p) => ({ ...p, ...patch }))}
           wide={wide} end={!!(pages[idx] && pages[idx].end)}
           area={wide ? { left: 0, top: 0, width: winW - BL.rightW, height: winH } : { left: 0, top: 0, width: winW, height: winH - barH }} />
@@ -1026,3 +1041,34 @@ const styles = StyleSheet.create({
   seg: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#333', paddingHorizontal: 8, paddingVertical: 10, borderRadius: 22 }, // pills
   segText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
 });
+
+// Listen Only's choice: the screen dims, and a dark grey rounded square floats in the middle with the simple sun on
+// the left (Daydream), a thin white line down the middle, and the moon on the right (the nightlight)
+function ListenChoice({ area, onDay, onNight, tr }) {
+  const dim = useRef(new Animated.Value(0)).current;
+  const pop = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.sequence([
+      Animated.timing(dim, { toValue: 1, duration: 900, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+      Animated.spring(pop, { toValue: 1, friction: 7, tension: 60, useNativeDriver: true }),
+    ]).start();
+  }, []);
+  const side = Math.min(240, area.width * 0.6);
+  return (
+    <>
+      <Animated.View style={{ position: 'absolute', ...area, zIndex: 40, backgroundColor: 'rgba(0,0,0,0.72)', opacity: dim }} onStartShouldSetResponder={() => true} />
+      <View pointerEvents="box-none" style={{ position: 'absolute', ...area, zIndex: 41, alignItems: 'center', justifyContent: 'center' }}>
+        <Animated.View style={{ width: side, height: side, borderRadius: 30, backgroundColor: '#2b2b2d', flexDirection: 'row', alignItems: 'center', overflow: 'hidden',
+          opacity: pop, transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1] }) }], boxShadow: '0 20px 50px rgba(0,0,0,0.6)' }}>
+          <Pressable onPress={withTap(onDay)} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Daydream')}>
+            <SunIcon size={side * 0.16} color="rgba(255,255,255,0.88)" />
+          </Pressable>
+          <View style={{ width: StyleSheet.hairlineWidth * 2, height: side * 0.56, backgroundColor: 'rgba(255,255,255,0.75)' }} />
+          <Pressable onPress={withTap(onNight)} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Nightlight')}>
+            <MoonIcon size={side * 0.13} color="rgba(255,255,255,0.88)" />
+          </Pressable>
+        </Animated.View>
+      </View>
+    </>
+  );
+}

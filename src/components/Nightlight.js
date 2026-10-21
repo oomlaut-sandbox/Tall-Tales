@@ -24,6 +24,7 @@ import { TRACKS, setAmbientNight, chooseAmbient, fadeOutAmbient, setAmbientVolum
 import { useKeepAwake } from 'expo-keep-awake';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { thunk, tick, withTap } from '../haptics';
+import DaydreamVideo from './Daydream';
 
 const SUN = require('../../assets/nightlight-sun.png');
 const CORONA = require('../../assets/nightlight-corona.png');
@@ -65,7 +66,7 @@ function FineSlider({ value, onChange, width, label }) {
 }
 
 // a simple sun: a small ring with eight short rays
-function SunIcon({ size = 18, color = 'rgba(244,226,207,0.6)' }) {
+export function SunIcon({ size = 18, color = 'rgba(244,226,207,0.6)' }) {
   const r = size * 0.22;
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
@@ -113,7 +114,7 @@ function ClockFace({ size, now, color }) {
 // the alarm's finger wheel: a soft dark grey dial (neumorphic, lit from the top left) with one round dimple for the
 // index finger. One turn is the whole day: midnight at the top, 6 on the right, noon at the bottom, 18 on the left.
 // It moves in 5 minute steps; the time shows in the still middle.
-function FingerWheel({ size, value, onChange, label }) {
+function FingerWheel({ size, value, onChange, label, light }) {
   const ref = useRef(null);
   const center = useRef({ x: 0, y: 0 });
   const acc = useRef(0); // minutes, unrounded, while turning
@@ -150,13 +151,13 @@ function FingerWheel({ size, value, onChange, label }) {
     if (big) return null;
     return (
       <View key={h} pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: outer, height: outer, alignItems: 'center', transform: [{ rotate: `${h * 15}deg` }] }}>
-        <View style={{ marginTop: 2, width: big ? 2 : 1.2, height: big ? size * 0.05 : size * 0.028, borderRadius: 1, backgroundColor: big ? 'rgba(244,226,207,0.6)' : 'rgba(255,255,255,0.22)' }} />
+        <View style={{ marginTop: 2, width: big ? 2 : 1.2, height: big ? size * 0.05 : size * 0.028, borderRadius: 1, backgroundColor: light ? 'rgba(60,52,44,0.28)' : big ? 'rgba(244,226,207,0.6)' : 'rgba(255,255,255,0.22)' }} />
       </View>
     );
   });
   const num = (h) => {
     const a = (h * 15 * Math.PI) / 180, rr = outer / 2 - 2 - size * 0.02; // where the marks are
-    return <Text key={'n' + h} style={[styles.wheelNum, { left: outer / 2 + rr * Math.sin(a) - 15, top: outer / 2 - rr * Math.cos(a) - 7 }]}>{h}</Text>;
+    return <Text key={'n' + h} style={[styles.wheelNum, light && L.wheelNum, { left: outer / 2 + rr * Math.sin(a) - 15, top: outer / 2 - rr * Math.cos(a) - 7 }]}>{h}</Text>;
   };
   return (
     <View style={{ width: outer, height: outer, alignItems: 'center', justifyContent: 'center' }}>
@@ -165,12 +166,12 @@ function FingerWheel({ size, value, onChange, label }) {
       <View ref={ref} collapsable={false} {...pan.panHandlers} accessibilityRole="adjustable" accessibilityLabel={label} accessibilityValue={{ text: fmtTime(value) }}
         accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
         onAccessibilityAction={(e) => onChange(toHm(toMin(value) + (e.nativeEvent.actionName === 'increment' ? 15 : -15)))}
-        style={[styles.wheel, { width: size, height: size, borderRadius: size / 2 }]}>
+        style={[styles.wheel, light && L.wheel, { width: size, height: size, borderRadius: size / 2 }]}>
         {/* the dial turns: its one dimple points at the alarm time */}
         <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: size, height: size, alignItems: 'center', transform: [{ rotate: `${deg}deg` }] }}>
-          <View style={[styles.dimple, { marginTop: size / 2 - r - dim / 2, width: dim, height: dim, borderRadius: dim / 2, transform: [{ rotate: `${-deg}deg` }] }]} />{/* turned back, so its shadow always falls from the top left like the light on the dial */}
+          <View style={[styles.dimple, light && L.dimple, { marginTop: size / 2 - r - dim / 2, width: dim, height: dim, borderRadius: dim / 2, transform: [{ rotate: `${-deg}deg` }] }]} />{/* turned back, so its shadow always falls from the top left like the light on the dial */}
         </View>
-        <Text pointerEvents="none" style={styles.wheelTime}>{fmtTime(value)}</Text>
+        <Text pointerEvents="none" style={[styles.wheelTime, light && L.wheelTime]}>{fmtTime(value)}</Text>
       </View>
     </View>
   );
@@ -178,7 +179,7 @@ function FingerWheel({ size, value, onChange, label }) {
 
 // the alarm popup (from the alarm clock on the bar): on/off, the finger wheel, then how to wake up
 const WAKE_GROUPS = [['forest-birds', 'wind-chimes', 'brook', 'waves'], ['gentle-guitar', 'music-box', 'soft-piano', 'dreamy-harp']];
-function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, wide, area }) {
+function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, wide, area, light }) {
   const t = useT();
   const [draft, setDraft] = useState(time);
   const [popW, setPopW] = useState(0);
@@ -201,16 +202,16 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
   const knobDeg = -150 + (at / Math.max(1, choices.length - 1)) * 300; // the knob's line turns a notch per choice
   return (
     <Animated.View style={[StyleSheet.absoluteFill, styles.scrim, { opacity: fade }]} onStartShouldSetResponder={() => true} onResponderRelease={close}>
-      <View style={[styles.popup, wide && { maxWidth: 640 }]} onStartShouldSetResponder={() => true} onLayout={(e) => { setPopW(e.nativeEvent.layout.width); setPopH(e.nativeEvent.layout.height); }}>
+      <View style={[styles.popup, light && L.popup, wide && { maxWidth: 640 }]} onStartShouldSetResponder={() => true} onLayout={(e) => { setPopW(e.nativeEvent.layout.width); setPopH(e.nativeEvent.layout.height); }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch' }}>
-          <Text style={styles.popTitle}>{t('Alarm')}</Text>
-          <Text style={[styles.lcdLabel, { color: on ? '#bdb5aa' : '#6f6c68', marginRight: 10, fontSize: 11 }]}>{on ? t('On') : t('Off')}</Text>
-          <Pressable onPress={withTap(() => onOn(!on))} hitSlop={10} accessibilityRole="switch" accessibilityState={{ checked: on }} accessibilityLabel={t('Wake-up alarm')} style={[styles.switch, on && styles.switchOn]}>
-            <View style={[styles.knob, on && { backgroundColor: '#1b1b1d', transform: [{ translateX: 20 }] }]} />
+          <Text style={[styles.popTitle, light && L.popTitle]}>{t('Alarm')}</Text>
+          <Text style={[styles.lcdLabel, { color: light ? (on ? '#5f5850' : '#9a948c') : on ? '#bdb5aa' : '#6f6c68', marginRight: 10, fontSize: 11 }]}>{on ? t('On') : t('Off')}</Text>
+          <Pressable onPress={withTap(() => onOn(!on))} hitSlop={10} accessibilityRole="switch" accessibilityState={{ checked: on }} accessibilityLabel={t('Wake-up alarm')} style={[styles.switch, light && L.switch, on && styles.switchOn]}>
+            <View style={[styles.knob, light && L.knob, on && { backgroundColor: light ? '#ffffff' : '#1b1b1d', transform: [{ translateX: 20 }] }]} />
           </Pressable>
         </View>
         <View style={{ flexDirection: wide ? 'row' : 'column', alignItems: 'center', gap: wide ? 28 : 0, marginTop: 8, opacity: on ? 1 : 0.5 }}>
-          <FingerWheel size={size} value={draft} onChange={(v) => { setDraft(v); onTime(v); if (!on) onOn(true); }} label={t('Alarm time')} />
+          <FingerWheel light={light} size={size} value={draft} onChange={(v) => { setDraft(v); onTime(v); if (!on) onOn(true); }} label={t('Alarm time')} />
           {/* how to wake up: one amber display and a small knob beside it (turn it, or tap the display, for the next) */}
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginVertical: wide ? 0 : 26 }}>
             <Pressable onPress={withTap(() => step(1), thunk)} style={styles.lcd} accessibilityRole="adjustable" accessibilityLabel={t('Wake up with')} accessibilityValue={{ text: name(sound) }}
@@ -219,7 +220,7 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
               <Text style={styles.lcdText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{name(sound)}</Text>
             </Pressable>
             <Pressable onPress={withTap(() => step(1), thunk)} onLongPress={withTap(() => step(-1), thunk)} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Next')}
-              style={styles.smallKnob}>
+              style={[styles.smallKnob, light && L.smallKnob]}>
               <View style={{ position: 'absolute', left: 0, top: 0, width: 46, height: 46, alignItems: 'center', transform: [{ rotate: `${knobDeg}deg` }] }}>
                 <View style={{ marginTop: 6, width: 2.5, height: 11, borderRadius: 1.5, backgroundColor: AMBER }} />
               </View>
@@ -227,9 +228,9 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
           </View>
         </View>
         {/* no Done: everything is kept as you change it; tap outside (or the bar's alarm clock) to close */}
-        <Text style={[styles.note, { marginTop: wide ? 14 : 0, marginBottom: 2, opacity: 0.7 }]}>{on ? t('Alarm on · {time}', { time: fmtTime(draft) }) : t('Alarm off')}</Text>
+        <Text style={[styles.note, light && L.note, { marginTop: wide ? 14 : 0, marginBottom: 2, opacity: 0.7 }]}>{on ? t('Alarm on · {time}', { time: fmtTime(draft) }) : t('Alarm off')}</Text>
         {/* a fine grain over everything, for a tactile, made-of-something feel */}
-        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 28, overflow: 'hidden', opacity: 0.42 }]}>
+        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 28, overflow: 'hidden', opacity: light ? 0.22 : 0.42 }]}>
           <View style={{ width: Math.ceil((popW || 380) / 128) * 128, flexDirection: 'row', flexWrap: 'wrap' }}>
             {Array.from({ length: Math.ceil((popW || 380) / 128) * Math.ceil((popH || 700) / 128) }, (_, k) => <Image key={k} source={GRAIN} style={{ width: 128, height: 128 }} />)}
           </View>
@@ -242,15 +243,20 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
 // layers: the dark layer and the sun sit just over a turning page (40, after it) and under the menus (41);
 // locked, a blocker covers everything (78) with the nightlight above it (79), and the question above that (80)
 // area: where the book is (covered)
-export default function Nightlight({ title, playing, onPlay, onPause, onSleep, locked = false, lockRect, onUnlock, eclipse = 0, onEclipse, alarmTime = '07:00', alarmSound = 'forest-birds', alarmOn = false, alarmOpen = false, onAlarmClose, onAlarm, wide, area, end }) {
+export default function Nightlight({ title, playing, onPlay, onPause, onSleep, locked = false, lockRect, onUnlock, eclipse = 0, onEclipse, alarmTime = '07:00', alarmSound = 'forest-birds', alarmOn = false, alarmOpen = false, onAlarmClose, onAlarm, wide, area, end, day = false, video = 0, onVideo }) {
+  // day: Daydream instead of the nightlight: a calm looping video, dimmed a little, with the same information and
+  // controls in a see-through black band at the bottom (no eclipse slider)
   const t = useT();
   const controls = useControls();
   const [gate, setGate] = useState(false);
   const showFace = false; // (the analog clock face isn't offered for now)
   useKeepAwake(); // the screen stays on while the nightlight is showing
-  useEffect(() => { setAmbientNight(true); if (onEclipse) onEclipse(0); /* it always opens with the whole sun showing */ return () => { setAmbientNight(false); if (onAlarmClose) onAlarmClose(); }; }, []);
+  useEffect(() => { if (!day) setAmbientNight(true); if (onEclipse) onEclipse(0); /* it always opens with the whole sun showing */ return () => { setAmbientNight(false); if (onAlarmClose) onAlarmClose(); }; }, []);
   // when the nightlight starts, the screen fades slowly to black and the sun fades in with it
   const appear = useRef(new Animated.Value(0)).current;
+  // Daydream: how dark the layer over the video is (a little; all the way when the sleep timer runs out)
+  const dayDim = useRef(new Animated.Value(0.22)).current;
+  const dimTo = (v, ms) => Animated.timing(dayDim, { toValue: v, duration: ms, useNativeDriver: true }).start();
   useEffect(() => { Animated.timing(appear, { toValue: 1, duration: 3500, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(); }, []);
   const [now, setNow] = useState(new Date());
   useEffect(() => { const iv = setInterval(() => setNow(new Date()), 5000); return () => clearInterval(iv); }, []);
@@ -296,6 +302,7 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
     pop.setValue(0);
     Animated.sequence([Animated.delay(15000), Animated.spring(pop, { toValue: 1, friction: 5, tension: 70, useNativeDriver: true })]).start();
     rampEclipse(0, 90);
+    if (day) dimTo(0.22, 60000); // Daydream: the video slowly brightens again
     const id = soundRef.current;
     const kind = (TRACKS.find((x) => x.id === id) || {}).kind || 'sound';
     const target = Math.max(0.5, getAmbient().volume || 0.5);
@@ -345,7 +352,7 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
       setSleepAt(null); setSleepMin(0);
       if (onSleep) onSleep();
       fadeOutAmbient(30000);
-      rampEclipse(1, 15);
+      if (day) dimTo(0.94, 30000); else rampEclipse(1, 15);
     }, Math.max(0, sleepAt - Date.now()));
     return () => clearTimeout(tm);
   }, [sleepAt]);
@@ -388,9 +395,9 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
   );
   const info = (
     <View pointerEvents="box-none" style={{ alignItems: 'center' }}>
-      <FineSlider value={e} onChange={onEclipse} width={sliderW} label={t('Nightlight brightness')} />
-      <View style={{ marginTop: 4 }}><SunIcon /></View>
-      <Text style={[styles.small, { marginTop: 64 }]}>{t('Now playing')}</Text>
+      {day ? null : <FineSlider value={e} onChange={onEclipse} width={sliderW} label={t('Nightlight brightness')} />}
+      {day ? null : <View style={{ marginTop: 4 }}><SunIcon /></View>}
+      <Text style={[styles.small, { marginTop: day ? 10 : 64 }]}>{t('Now playing')}</Text>
       {title ? (
         <>
           <Text numberOfLines={2} style={styles.title}>{title}</Text>
@@ -408,7 +415,7 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
           </Pressable>
         </>
       ) : null}
-      <Pressable onPress={withTap(cycleSleep)} disabled={locked} hitSlop={12} style={{ marginTop: 34, flexDirection: 'row', alignItems: 'center', gap: 8, opacity: sleepAt ? 0.9 : 0.5 }} accessibilityRole="button">
+      <Pressable onPress={withTap(cycleSleep)} disabled={locked} hitSlop={12} style={{ marginTop: day ? 22 : 34, flexDirection: 'row', alignItems: 'center', gap: 8, opacity: sleepAt ? 0.9 : 0.5 }} accessibilityRole="button">
         <Text style={styles.small}>{sleepAt ? t('Sleep timer: {n} min', { n: left }) : t('Sleep timer: off')}</Text>
         {/* the countdown, right after it, the same size */}
         {sleepAt ? <Text style={[styles.small, { fontVariant: ['tabular-nums'] }]}>{countdown}</Text> : null}
@@ -419,10 +426,26 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
   return (
     <>
       {/* the book, hidden: nothing under it can be touched (The End's buttons still work) */}
-      <Animated.View pointerEvents={end && !locked ? 'none' : 'auto'} style={[styles.abs, area, { backgroundColor: '#000', opacity: appear, zIndex: 40 }]} />
+      {day ? (
+        // Daydream: the video takes the book's place (swipe for another)
+        <Animated.View pointerEvents={end && !locked ? 'none' : 'auto'} style={[styles.abs, area, { backgroundColor: '#000', opacity: appear, zIndex: 40, overflow: 'hidden' }]}>
+          <DaydreamVideo index={video} onIndex={onVideo} dim={dayDim} />
+        </Animated.View>
+      ) : (
+        <Animated.View pointerEvents={end && !locked ? 'none' : 'auto'} style={[styles.abs, area, { backgroundColor: '#000', opacity: appear, zIndex: 40 }]} />
+      )}
       {/* locked: the whole screen, bars too, takes every touch */}
       {locked ? <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.55)', zIndex: 78 }]} onStartShouldSetResponder={() => true} /> : null}
       <Animated.View pointerEvents="box-none" style={[styles.abs, area, { zIndex: locked ? 79 : 40, opacity: appear }]}>
+        {day ? (
+          // Daydream: the time, the book, play / pause and the sleep timer in a see-through black band at the bottom
+          <View pointerEvents="box-none" style={{ flex: 1, justifyContent: 'flex-end' }}>
+            <View style={styles.dayBand}>
+              <Text style={[styles.now, { fontSize: 26 }]}>{fmtTime(hm)}</Text>
+              {info}
+            </View>
+          </View>
+        ) : (
         <View pointerEvents="box-none" style={{ flex: 1, paddingTop: topPad, flexDirection: wide ? 'row' : 'column', alignItems: 'center', justifyContent: wide ? 'center' : 'flex-start', gap: wide ? 8 : 0 }}>
           <View pointerEvents="none" style={{ alignItems: 'center' }}>
             {/* the time, in fine letters above the sun */}
@@ -431,6 +454,7 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
           </View>
           <View pointerEvents="box-none" style={{ marginTop: wide ? 0 : -S * 0.04, width: wide ? area.width * 0.38 : undefined, alignItems: 'center' }}>{info}</View>
         </View>
+        )}
         {/* waking up: a pill-shaped Snooze pops up (it works even when the screen is locked) */}
         {waking ? (
           <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'flex-end', paddingBottom: wide ? 40 : 56 }]}>
@@ -453,7 +477,7 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
         </Pressable>
       ) : null}
       <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 81 }]}>
-        <AlarmPopup visible={alarmOpen && !locked} on={alarmOn} time={alarmTime} sound={alarmSound} wide={wide} area={area}
+        <AlarmPopup light={day} visible={alarmOpen && !locked} on={alarmOn} time={alarmTime} sound={alarmSound} wide={wide} area={area}
           onTime={(v) => { if (v !== alarmTime) firedOn.current = null; onAlarm({ alarmTime: v }); }}
           onSound={(v) => onAlarm({ alarmSound: v })} onOn={(v) => onAlarm({ alarmOn: v })} onClose={onAlarmClose} />
       </View>
@@ -464,6 +488,8 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
 
 const styles = StyleSheet.create({
   abs: { position: 'absolute' },
+  // Daydream's band at the bottom: black, see-through, over the video
+  dayBand: { backgroundColor: 'rgba(0,0,0,0.55)', paddingTop: 22, paddingBottom: 30, paddingHorizontal: 24, alignItems: 'center' },
   title: { color: 'rgba(255,255,255,0.82)', fontFamily: fonts.ui, fontSize: 17, fontWeight: '300', letterSpacing: 0.3, textAlign: 'center', marginTop: 6, maxWidth: 280 },
   countdown: { color: 'rgba(244,226,207,0.7)', fontFamily: fonts.ui, fontSize: 22, fontWeight: '200', letterSpacing: 2, marginTop: 10, fontVariant: ['tabular-nums'] },
   // the time above the sun: thin, quiet, large
@@ -498,4 +524,20 @@ const styles = StyleSheet.create({
   knob: { width: 22, height: 22, borderRadius: 11, backgroundColor: '#8a8a8e' },
   donePill: { marginTop: 4, paddingHorizontal: 32, height: 42, borderRadius: 21, borderWidth: 1, borderColor: 'rgba(244,226,207,0.5)', alignItems: 'center', justifyContent: 'center' },
   donePillText: { color: CREAM, fontFamily: fonts.ui, fontSize: 15, fontWeight: '500', letterSpacing: 0.5 },
+});
+
+// Daydream's alarm popup: the same object in a light, almost white grey (soft shadows lit from the top left);
+// the amber display stays as it is
+const LIGHT = '#e8e6e2';
+const L = StyleSheet.create({
+  popup: { backgroundColor: LIGHT, boxShadow: '0 24px 60px rgba(0,0,0,0.45)' },
+  popTitle: { color: '#5c5751' },
+  wheel: { backgroundColor: LIGHT, boxShadow: '-8px -8px 18px rgba(255,255,255,0.9), 12px 12px 26px rgba(0,0,0,0.2), inset 2px 2px 3px rgba(255,255,255,0.7), inset -3px -3px 5px rgba(0,0,0,0.08)' },
+  dimple: { backgroundColor: '#dedbd6', boxShadow: 'inset 5px 5px 8px rgba(0,0,0,0.22), inset -3px -3px 6px rgba(255,255,255,0.9)' },
+  wheelTime: { color: '#3c3833' },
+  wheelNum: { color: 'rgba(60,52,44,0.6)' },
+  switch: { backgroundColor: '#d3d0cb', boxShadow: 'inset 2px 2px 5px rgba(0,0,0,0.2), inset -2px -2px 4px rgba(255,255,255,0.8)' },
+  knob: { backgroundColor: '#ffffff' },
+  smallKnob: { backgroundColor: LIGHT, boxShadow: '-4px -4px 9px rgba(255,255,255,0.9), 5px 5px 11px rgba(0,0,0,0.2), inset 1px 1px 2px rgba(255,255,255,0.7), inset -2px -2px 3px rgba(0,0,0,0.08)' },
+  note: { color: 'rgba(40,36,32,0.6)' },
 });
