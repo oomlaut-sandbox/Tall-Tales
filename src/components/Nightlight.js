@@ -31,7 +31,6 @@ const CORONA = require('../../assets/nightlight-corona.png');
 const CREAM = '#f4e2cf';
 const BASE = '#1e1e20'; // the popup's dark grey (a deep, quiet grey at night)
 const GRAIN = require('../../assets/noise.png'); // a fine grain over the alarm popup, so it feels like a real object
-const AMBER = '#a96f22', AMBER_INK = '#241504'; // the old amber display and its dark, amber-tinted letters
 const SNOOZE_MIN = 9;
 
 const toMin = (hm) => { const [h, m] = String(hm || '07:00').split(':').map(Number); return h * 60 + m; };
@@ -222,7 +221,7 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
             <Pressable onPress={withTap(() => step(1), thunk)} onLongPress={withTap(() => step(-1), thunk)} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Next')}
               style={[styles.smallKnob, light && L.smallKnob]}>
               <View style={{ position: 'absolute', left: 0, top: 0, width: 46, height: 46, alignItems: 'center', transform: [{ rotate: `${knobDeg}deg` }] }}>
-                <View style={{ marginTop: 6, width: 2.5, height: 11, borderRadius: 1.5, backgroundColor: light ? '#6f6a64' : AMBER }} />
+                <View style={{ marginTop: 6, width: 2.5, height: 11, borderRadius: 1.5, backgroundColor: '#d4312a' /* a red line */ }} />
               </View>
             </Pressable>
           </View>
@@ -521,10 +520,10 @@ const styles = StyleSheet.create({
   popTitle: { flex: 1, color: '#a39f99', fontFamily: fonts.ui, fontWeight: '700', fontSize: 24 }, // like the other page titles, a light grey
   wheelNum: { position: 'absolute', width: 30, textAlign: 'center', color: 'rgba(244,226,207,0.62)', fontFamily: fonts.ui, fontSize: 12, fontWeight: '400' },
   chip: { paddingHorizontal: 13, height: 34, borderRadius: 17, backgroundColor: BASE, alignItems: 'center', justifyContent: 'center', boxShadow: '-3px -3px 6px rgba(255,255,255,0.05), 3px 3px 7px rgba(0,0,0,0.6)' },
-  // the amber display: an old backlit LCD, its letters dark with an amber tint; and the small knob beside it
-  lcd: { width: 232, height: 58, borderRadius: 8, backgroundColor: AMBER, paddingHorizontal: 14, justifyContent: 'center', boxShadow: 'inset 2px 3px 6px rgba(0,0,0,0.45), inset -1px -1px 2px rgba(255,220,160,0.35), 0 0 14px rgba(200,134,42,0.18)' },
-  lcdLabel: { color: 'rgba(44,26,5,0.6)', fontFamily: fonts.ui, fontSize: 9.5, fontWeight: '700', letterSpacing: 1.2, textTransform: 'uppercase' },
-  lcdText: { color: AMBER_INK, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', fontSize: 15, fontWeight: '600', marginTop: 2, letterSpacing: 0 },
+  // the grey display, an old LCD with black letters; and the small knob beside it (with a red line)
+  lcd: { width: 232, height: 58, borderRadius: 8, backgroundColor: '#a6a6a6' /* a medium-light grey display */, paddingHorizontal: 14, justifyContent: 'center', boxShadow: 'inset 2px 3px 6px rgba(0,0,0,0.45), inset -1px -1px 2px rgba(255,255,255,0.3)' },
+  lcdLabel: { color: 'rgba(0,0,0,0.55)', fontFamily: fonts.ui, fontSize: 9.5, fontWeight: '700', letterSpacing: 1.2, textTransform: 'uppercase' },
+  lcdText: { color: '#000', fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', fontSize: 15, fontWeight: '600', marginTop: 2, letterSpacing: 0 },
   smallKnob: { width: 46, height: 46, borderRadius: 23, backgroundColor: BASE, boxShadow: '-4px -4px 9px rgba(255,255,255,0.045), 5px 5px 11px rgba(0,0,0,0.8), inset 1px 1px 2px rgba(255,255,255,0.05), inset -2px -2px 3px rgba(0,0,0,0.4)' },
   chipOn: { backgroundColor: '#8f8578' }, // the chosen one: a dim warm grey, easy on the eyes at night
   chipText: { color: 'rgba(244,226,207,0.85)', fontFamily: fonts.ui, fontSize: 13 },
