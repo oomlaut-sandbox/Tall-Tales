@@ -134,7 +134,7 @@ export function RecordButton({ onPress, active }) {
 
 // Pause and Play show what is happening: while a book reads aloud, Pause is the white one (Play is greyed and does
 // nothing); when it isn't reading, Play is white and Pause is greyed. (Record stays red.)
-const IDLE = '#555555';
+const IDLE = '#3d3d3d'; // greyed out on the black bar: about 24% white, the way iOS greys out a control that can't be used right now
 export function PauseButton({ onPress, disabled, active = true }) {
   const c = active ? colors.white : IDLE;
   return (
