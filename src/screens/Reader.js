@@ -194,6 +194,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const showControls = (prefs.mode !== 'self' && !listen) || recording;
   const barH = BL.barH;
   const musicOn = useAmbientPlaying(); // the note lights up while music or sounds play
+  const HOME_NUDGE = u * 1.8;
   const SLOT = u * 11.6; // the step from one bar icon to the next (the same as menu → house)
   // a small 'Your voice' mark when this page will play the parent's recording
   const mineHere = prefs.voice === 'mine' && recPages.includes(idx) && prefs.mode !== 'self' && !recording;
@@ -860,10 +861,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       <View style={[styles.bottomBar, { height: barH, paddingBottom: insets.bottom }]}>
         <Felt />
         <View style={styles.small}><Burger u={u} onPress={openMenu} home={false} music={false} /></View>
-        <HomeButton u={u} />{/* home: back to My Library */}
+        <View style={{ marginLeft: HOME_NUDGE }} /><HomeButton u={u} />{/* home: back to My Library (nudged right, so its gaps to the menu and the note look even) */}
         {/* after the house, every icon sits in an equal slot, so they're evenly spaced (the same step as menu → house),
             each drawn at the same visual size as the house and the note */}
-        <View style={{ marginLeft: SLOT / 2 - u * 2.6 }} />
+        <View style={{ marginLeft: SLOT / 2 - u * 2.6 - HOME_NUDGE }} />
         {/* restricted kid mode: a small lock (Settings, behind the grown-up question) */}
         {isRestricted(controls) && onSettings ? (
           <Pressable onPress={onSettings} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Settings')} style={[styles.slot, { width: SLOT }]}>
