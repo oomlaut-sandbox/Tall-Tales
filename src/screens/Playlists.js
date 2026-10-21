@@ -131,9 +131,9 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
       </ScrollView>
       {/* changing a playlist: a large grey box pops up over the page (the bar stays below it) */}
       {pl ? (
-        <View style={StyleSheet.absoluteFill}>
+        <View style={[StyleSheet.absoluteFill, { zIndex: 20 }]}>{/* above the banner */}
           <Pressable style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.6)' }]} onPress={() => (adding ? setAdding(false) : setEdit(null))} accessible={false} />
-          <View pointerEvents="box-none" style={{ flex: 1, paddingTop: insets.top + 24, paddingBottom: 24, paddingHorizontal: 16, alignItems: 'center' }}>
+          <View pointerEvents="box-none" style={{ flex: 1, paddingTop: insets.top + 24, paddingBottom: 24, paddingHorizontal: 16, alignItems: 'center', justifyContent: 'center' }}>
             <View style={styles.sheet}>
               <ScrollView contentContainerStyle={{ padding: 20, gap: 14 }} keyboardShouldPersistTaps="handled">
                 <Text style={styles.sheetTitle}>{t('Edit playlist')}</Text>
