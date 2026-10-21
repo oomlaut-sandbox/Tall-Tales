@@ -193,6 +193,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const topH = BL.topH;
   const showControls = (prefs.mode !== 'self' && !listen) || recording;
   const barH = BL.barH;
+  const SLOT = u * 11.6; // the step from one bar icon to the next (the same as menu → house)
   // a small 'Your voice' mark when this page will play the parent's recording
   const mineHere = prefs.voice === 'mine' && recPages.includes(idx) && prefs.mode !== 'self' && !recording;
   const panelPos = wide ? { bottom: 0, inset: BL.rightW } : { bottom: barH };
@@ -859,30 +860,33 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         <Felt />
         <View style={styles.small}><Burger u={u} onPress={openMenu} home={false} music={false} /></View>
         <HomeButton u={u} />{/* home: back to My Library */}
-        {/* restricted kid mode: a small lock, a little apart from the menu (Settings, behind the grown-up question) */}
+        {/* after the house, every icon sits in an equal slot, so they're evenly spaced (the same step as menu → house),
+            each drawn at the same visual size as the house and the note */}
+        <View style={{ marginLeft: SLOT / 2 - u * 2.6 }} />
+        {/* restricted kid mode: a small lock (Settings, behind the grown-up question) */}
         {isRestricted(controls) && onSettings ? (
-          <Pressable onPress={onSettings} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Settings')} style={[styles.small, { marginLeft: u * 7 }]}>
-            <LockIcon size={u * 6.2} weight={Math.max(2.5, u * 0.8)} />
+          <Pressable onPress={onSettings} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Settings')} style={[styles.slot, { width: SLOT }]}>
+            <LockIcon size={u * 5.2} weight={Math.max(2.5, u * 0.7)} />
           </Pressable>
         ) : null}
-        {/* music and sounds: opens (or hides) the little floating Audio Player; a little apart from the menu (or the lock) */}
-        <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.small, { marginLeft: (isRestricted(controls) && onSettings ? u * 4 : u * 5.5) - 2 }]}>{/* closer when it sits beside the lock */}
-          <MusicIcon size={u * 5.6} color="#8e8e8e" />
+        {/* music and sounds: opens (or hides) the little floating Audio Player */}
+        <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')} style={[styles.slot, { width: SLOT }]}>
+          <MusicIcon size={u * 4.9} color="#8e8e8e" />
         </Pressable>
         {canMoon ? (
-          <Pressable onPress={withTap(toggleNight)} hitSlop={12} accessibilityRole="button" accessibilityLabel={dayOn ? tr('Close Daydream') : tr('Nightlight')} style={[styles.small, { marginLeft: u * 4 - 2 }]}>
-            {dayOn ? <SolidSun size={u * 4.6} color="#e0e0e0" /> : <MoonIcon size={u * 4.85} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} />}
+          <Pressable onPress={withTap(toggleNight)} hitSlop={12} accessibilityRole="button" accessibilityLabel={dayOn ? tr('Close Daydream') : tr('Nightlight')} style={[styles.slot, { width: SLOT }]}>
+            {dayOn ? <SolidSun size={u * 5.3} color="#e0e0e0" /> : <View style={{ transform: [{ translateX: u * 0.4 }] }}><MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : '#9a9a9a'} /></View>}
           </Pressable>
         ) : null}
         {nightOn ? (
           <>
-          <Pressable ref={nlLockRef} onPress={withTap(lockNight, thunk)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.small, { marginLeft: u * 4 }]}>
-            <LockIcon size={u * 4.6} color="#9a9a9a" />
+          <Pressable ref={nlLockRef} onPress={withTap(lockNight, thunk)} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Lock the screen')} style={[styles.slot, { width: SLOT }]}>
+            <LockIcon size={u * 5} color="#9a9a9a" />
           </Pressable>
-          <Pressable onPress={withTap(() => setAlarmOpen(true))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.small, { marginLeft: u * 4, flexDirection: 'row', alignItems: 'center' }]}>
-              <AlarmClockIcon size={u * 4.8} color={prefs.alarmOn ? '#e0e0e0' : '#9a9a9a'} />
-              {/* the alarm time, right of the clock */}
-              {prefs.alarmOn ? <Text style={[styles.alarmTime, { marginLeft: u * 2.4 }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text> : null}
+          <Pressable onPress={withTap(() => setAlarmOpen(true))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Wake-up alarm')} style={[styles.slot, { width: SLOT }]}>
+              <AlarmClockIcon size={u * 5.1} color={prefs.alarmOn ? '#e0e0e0' : '#9a9a9a'} />
+              {/* the alarm time, right of the clock (it takes no room in the slot) */}
+              {prefs.alarmOn ? <Text numberOfLines={1} style={[styles.alarmTime, { position: 'absolute', left: SLOT / 2 + u * 3.6 }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text> : null}
             </Pressable>
           </>
         ) : null}
@@ -1075,6 +1079,7 @@ const styles = StyleSheet.create({
   sideBar: { backgroundColor: colors.bar, alignItems: 'flex-end', zIndex: 30 },
   bottomBar: { backgroundColor: colors.bar, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, gap: 10, zIndex: 30 },
   small: { transform: [{ scale: 0.86 }] },
+  slot: { alignItems: 'center', justifyContent: 'center' },
   edge: { position: 'absolute', top: 0, bottom: 0, zIndex: 15 },
   half: { position: 'absolute', left: 0, right: 0, overflow: 'hidden', backfaceVisibility: 'hidden' },
   strip: { position: 'absolute', left: 0, right: 0, overflow: 'hidden', transformOrigin: 'top' },
