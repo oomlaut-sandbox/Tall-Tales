@@ -121,7 +121,7 @@ export default function Profiles({ u, openMenu, setControls }) {
           </View>
           {s.list.length ? (
             <Pressable onPress={() => (editing ? setEditing(false) : setGate('edit'))} style={[styles.pill, { backgroundColor: editing ? colors.green : '#3a3a3a' }]} accessibilityRole="button">
-              <Text style={styles.pillText}>{editing ? t('Done') : t('Change profiles')}</Text>
+              <Text style={styles.pillText}>{editing ? t('Done') : t('Edit profiles')}</Text>
             </Pressable>
           ) : null}
           {!canSwitch ? <Text style={styles.small}>{t('A grown-up has turned off switching profiles.')}</Text> : null}
