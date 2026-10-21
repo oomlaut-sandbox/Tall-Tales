@@ -534,6 +534,8 @@ const T = {
   'Soft piano': { de: 'Sanftes Klavier', fr: 'Piano doux', es: 'Piano suave', ja: 'やさしい ピアノ' },
   'Gentle guitar': { de: 'Sanfte Gitarre', fr: 'Guitare douce', es: 'Guitarra suave', ja: 'やさしい ギター' },
   'Dreamy harp': { de: 'Träumerische Harfe', fr: 'Harpe rêveuse', es: 'Arpa de ensueño', ja: 'ゆめみる ハープ' },
+  'Night clouds': { de: 'Nachtwolken', fr: 'Nuages de nuit', es: 'Nubes de noche', ja: 'よるの くも' },
+  'Shruti box': { de: 'Shruti-Box', fr: 'Shruti box', es: 'Shruti box', ja: 'シュルティボックス' },
   'Music and Sounds': { de: 'Musik und Klänge', fr: 'Musique et sons', es: 'Música y sonidos', ja: 'おんがくと しぜんの音' },
   'Relaxing sounds and gentle music': { de: 'Entspannende Klänge und sanfte Musik', fr: 'Sons apaisants et musique douce', es: 'Sonidos relajantes y música suave', ja: 'やさしい音と おんがく' },
   'Record': { de: 'Aufnahme', fr: 'Enregistrer', es: 'Grabar', ja: 'ろくおん' },
