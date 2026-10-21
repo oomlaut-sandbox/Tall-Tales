@@ -241,8 +241,11 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const choosing = nightEnabled && scene === 'choose';
   const nightOn = nightEnabled && !choosing; // the nightlight or Daydream is showing (the lock and alarm are on the bar)
   const dayOn = nightOn && scene === 'day';
-  // as the screen dims for the choice, a speech bubble says what is happening
-  useEffect(() => { if (choosing) { const tm = setTimeout(() => toast && toast(tr('You are in ‘Listening Only’ Mode. Enjoy your story!')), 500); return () => clearTimeout(tm); } return undefined; }, [choosing]);
+  // the choice box stays on screen while it dissolves over the nightlight or Daydream fading in underneath
+  const [boxUp, setBoxUp] = useState(false);
+  const [fromChoice, setFromChoice] = useState(false);
+  useEffect(() => { if (choosing) { setBoxUp(true); setFromChoice(true); } }, [choosing]);
+  const cancelListen = () => { setBoxUp(false); chooseMode(prefs.prevMode && prefs.prevMode !== 'listen' ? prefs.prevMode : 'auto'); };
   // the nightlight's lock lives on the bar beside the moon; where it sits, so it stays tappable over the blocker
   const [nlLocked, setNlLocked] = useState(false);
   const [lockRect, setLockRect] = useState(null);
@@ -873,10 +876,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       ) : null}
       {/* Listen Only: the nightlight (the book almost hidden, a soft breathing sun, brightness, a lock) */}
       {/* Listen Only, first: the screen dims and a small dark box asks: Daydream (the sun) or the nightlight (the moon) */}
-      {choosing ? <ListenChoice area={wide ? { left: 0, top: 0, width: winW - BL.rightW, height: winH } : { left: 0, top: 0, width: winW, height: winH - barH }}
-        onDay={() => pickScene('day')} onNight={() => pickScene('night')} tr={tr} /> : null}
+      {boxUp && nightEnabled ? <ListenChoice area={wide ? { left: 0, top: 0, width: winW - BL.rightW, height: winH } : { left: 0, top: 0, width: winW, height: winH - barH }}
+        onDay={() => pickScene('day')} onNight={() => pickScene('night')} onCancel={cancelListen} onGone={() => setBoxUp(false)} tr={tr} /> : null}
       {nightOn ? (
-        <Nightlight key={scene} day={dayOn} video={prefs.dayVideo || 0} onVideo={(i) => setPrefs((p) => ({ ...p, dayVideo: i }))} title={story.title} playing={reading && !paused} onPlay={onPlay} onPause={onPause} locked={nlLocked} lockRect={lockRect} onUnlock={() => setNlLocked(false)} onSleep={() => { stopReading(); clearTimeout(autoTimer.current); }} eclipse={prefs.eclipse ?? 0} onEclipse={(v) => setPrefs((p) => ({ ...p, eclipse: Math.round(v * 100) / 100 }))}
+        <Nightlight key={scene} quick={fromChoice} day={dayOn} video={prefs.dayVideo || 0} onVideo={(i) => setPrefs((p) => ({ ...p, dayVideo: i }))} title={story.title} playing={reading && !paused} onPlay={onPlay} onPause={onPause} locked={nlLocked} lockRect={lockRect} onUnlock={() => setNlLocked(false)} onSleep={() => { stopReading(); clearTimeout(autoTimer.current); }} eclipse={prefs.eclipse ?? 0} onEclipse={(v) => setPrefs((p) => ({ ...p, eclipse: Math.round(v * 100) / 100 }))}
           alarmTime={prefs.alarmTime || '07:00'} alarmSound={prefs.alarmSound || 'forest-birds'} alarmOn={!!prefs.alarmOn} alarmOpen={alarmOpen} onAlarmClose={() => setAlarmOpen(false)} onAlarm={(patch) => setPrefs((p) => ({ ...p, ...patch }))}
           wide={wide} end={!!(pages[idx] && pages[idx].end)}
           area={wide ? { left: 0, top: 0, width: winW - BL.rightW, height: winH } : { left: 0, top: 0, width: winW, height: winH - barH }} />
@@ -1047,38 +1050,53 @@ const styles = StyleSheet.create({
 
 // Listen Only's choice: the screen dims, and a dark grey rounded square floats in the middle with the simple sun on
 // the left (Daydream), a thin white line down the middle, and the moon on the right (the nightlight)
-function ListenChoice({ area, onDay, onNight, tr }) {
+function ListenChoice({ area, onDay, onNight, onCancel, onGone, tr }) {
   const dim = useRef(new Animated.Value(0)).current;
   const pop = useRef(new Animated.Value(0)).current;
   const [picked, setPicked] = useState(null); // 'day' or 'night': its icon turns solid, a soft click, then off we go
   useEffect(() => {
     Animated.sequence([
-      Animated.timing(dim, { toValue: 1, duration: 900, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+      Animated.timing(dim, { toValue: 1, duration: 550, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
       Animated.spring(pop, { toValue: 1, friction: 7, tension: 60, useNativeDriver: true }),
     ]).start();
   }, []);
+  // chosen: the box and its dark layer dissolve while the nightlight or Daydream fades in underneath (it starts dark)
   const pick = (which) => {
     if (picked) return;
     setPicked(which);
     playSwitch(); tap();
-    setTimeout(() => (which === 'day' ? onDay() : onNight()), 420);
+    setTimeout(() => {
+      (which === 'day' ? onDay : onNight)();
+      Animated.parallel([
+        Animated.timing(pop, { toValue: 0, duration: 450, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+        Animated.timing(dim, { toValue: 0, duration: 600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+      ]).start(() => onGone && onGone());
+    }, 260);
   };
   const side = Math.min(240, area.width * 0.6);
   const ink = 'rgba(255,255,255,0.88)';
+  const word = { color: 'rgba(255,255,255,0.7)', fontFamily: fonts.ui, fontSize: 12, fontWeight: '300', letterSpacing: 1.2, marginBottom: side * 0.09 };
   return (
     <>
-      <Animated.View style={{ position: 'absolute', ...area, zIndex: 40, backgroundColor: 'rgba(0,0,0,0.72)', opacity: dim }} onStartShouldSetResponder={() => true} />
-      <View pointerEvents="box-none" style={{ position: 'absolute', ...area, zIndex: 41, alignItems: 'center', justifyContent: 'center' }}>
-        <Animated.View style={{ width: side, height: side, borderRadius: 30, backgroundColor: '#2b2b2d', flexDirection: 'row', alignItems: 'center', overflow: 'hidden',
-          opacity: pop, transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1] }) }], boxShadow: '0 20px 50px rgba(0,0,0,0.6)' }}>
-          <Pressable onPress={() => pick('day')} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Daydream')}>
-            {picked === 'day' ? <SolidSun size={side * 0.16} color={ink} /> : <SunIcon size={side * 0.16} color={ink} />}
-          </Pressable>
-          <View style={{ width: 1.1, height: side * 0.56, backgroundColor: ink }} />{/* the same fine stroke as the sun and the moon */}
-          <Pressable onPress={() => pick('night')} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Nightlight')}>
-            {picked === 'night'
-              ? <MoonIcon size={side * 0.16 * (226 / 246)} color={ink} />
-              : <Image source={MOON_OUTLINE} style={{ width: side * 0.16, height: side * 0.16, tintColor: ink }} resizeMode="contain" />}
+      <Animated.View style={{ position: 'absolute', ...area, zIndex: 45, backgroundColor: 'rgba(0,0,0,0.75)', opacity: dim }} onStartShouldSetResponder={() => true} />
+      <View pointerEvents="box-none" style={{ position: 'absolute', ...area, zIndex: 46, alignItems: 'center', justifyContent: 'center' }}>
+        <Animated.View pointerEvents={picked ? 'none' : 'auto'} style={{ alignItems: 'flex-end', opacity: pop, transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1] }) }] }}>
+          <View style={{ width: side, height: side, borderRadius: 30, backgroundColor: '#2b2b2d', flexDirection: 'row', alignItems: 'center', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.6)' }}>
+            <Pressable onPress={() => pick('day')} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Daydream')}>
+              <Text style={word}>{tr('Daydream')}</Text>
+              {picked === 'day' ? <SolidSun size={side * 0.16} color={ink} /> : <SunIcon size={side * 0.16} color={ink} />}
+            </Pressable>
+            <View style={{ width: 1.1, height: side * 0.56, backgroundColor: ink }} />{/* the same fine stroke as the sun and the moon */}
+            <Pressable onPress={() => pick('night')} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('Sleep')}>
+              <Text style={word}>{tr('Sleep')}</Text>
+              {picked === 'night'
+                ? <View style={{ width: side * 0.16, height: side * 0.16, alignItems: 'center', justifyContent: 'center' }}><MoonIcon size={side * 0.16 * (226 / 246)} color={ink} /></View>
+                : <Image source={MOON_OUTLINE} style={{ width: side * 0.16, height: side * 0.16, tintColor: ink }} resizeMode="contain" />}
+            </Pressable>
+          </View>
+          {/* Cancel: small, light grey, under the box's bottom right corner: back out of Listen Only */}
+          <Pressable onPress={withTap(onCancel)} hitSlop={14} style={{ marginTop: 12, marginRight: 6 }} accessibilityRole="button">
+            <Text style={{ color: 'rgba(255,255,255,0.55)', fontFamily: fonts.ui, fontSize: 12.5, letterSpacing: 0.4 }}>{tr('Cancel')}</Text>
           </Pressable>
         </Animated.View>
       </View>

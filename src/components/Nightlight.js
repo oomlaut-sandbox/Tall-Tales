@@ -243,7 +243,9 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
 // layers: the dark layer and the sun sit just over a turning page (40, after it) and under the menus (41);
 // locked, a blocker covers everything (78) with the nightlight above it (79), and the question above that (80)
 // area: where the book is (covered)
-export default function Nightlight({ title, playing, onPlay, onPause, onSleep, locked = false, lockRect, onUnlock, eclipse = 0, onEclipse, alarmTime = '07:00', alarmSound = 'forest-birds', alarmOn = false, alarmOpen = false, onAlarmClose, onAlarm, wide, area, end, day = false, video = 0, onVideo }) {
+export default function Nightlight({ title, playing, onPlay, onPause, onSleep, locked = false, lockRect, onUnlock, eclipse = 0, onEclipse, alarmTime = '07:00', alarmSound = 'forest-birds', alarmOn = false, alarmOpen = false, onAlarmClose, onAlarm, wide, area, end, day = false, video = 0, onVideo, quick = false }) {
+  // quick: coming from the Listen Only choice, where the screen is already dark: it stays dark (never a flash of the
+  // page) and the sun or the picture fades in quickly
   // day: Daydream instead of the nightlight: a calm looping video, dimmed a little, with the same information and
   // controls in a see-through black band at the bottom (no eclipse slider)
   const t = useT();
@@ -254,10 +256,14 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
   useEffect(() => { if (!day) setAmbientNight(true); if (onEclipse) onEclipse(0); /* it always opens with the whole sun showing */ return () => { setAmbientNight(false); if (onAlarmClose) onAlarmClose(); }; }, []);
   // when the nightlight starts, the screen fades slowly to black and the sun fades in with it
   const appear = useRef(new Animated.Value(0)).current;
+  const cover = useRef(new Animated.Value(quick ? 0.75 : 0)).current; // the black over the book
   // Daydream: how dark the layer over the video is (a little; all the way when the sleep timer runs out)
   const dayDim = useRef(new Animated.Value(0.22)).current;
   const dimTo = (v, ms) => Animated.timing(dayDim, { toValue: v, duration: ms, useNativeDriver: true }).start();
-  useEffect(() => { Animated.timing(appear, { toValue: 1, duration: 3500, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(); }, []);
+  useEffect(() => {
+    Animated.timing(cover, { toValue: 1, duration: quick ? 600 : 3500, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start();
+    Animated.timing(appear, { toValue: 1, duration: quick ? 900 : 3500, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start();
+  }, []);
   const [now, setNow] = useState(new Date());
   useEffect(() => { const iv = setInterval(() => setNow(new Date()), 5000); return () => clearInterval(iv); }, []);
   const hm = hmOf(now);
@@ -428,11 +434,14 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
       {/* the book, hidden: nothing under it can be touched (The End's buttons still work) */}
       {day ? (
         // Daydream: the video takes the book's place (swipe for another)
-        <Animated.View pointerEvents={end && !locked ? 'none' : 'auto'} style={[styles.abs, area, { backgroundColor: '#000', opacity: appear, zIndex: 40, overflow: 'hidden' }]}>
-          <DaydreamVideo index={video} onIndex={onVideo} dim={dayDim} />
-        </Animated.View>
+        <View pointerEvents={end && !locked ? 'none' : 'auto'} style={[styles.abs, area, { zIndex: 40, overflow: 'hidden' }]}>
+          <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: cover }]} />
+          <Animated.View style={[StyleSheet.absoluteFill, { opacity: appear }]}>
+            <DaydreamVideo index={video} onIndex={onVideo} dim={dayDim} />
+          </Animated.View>
+        </View>
       ) : (
-        <Animated.View pointerEvents={end && !locked ? 'none' : 'auto'} style={[styles.abs, area, { backgroundColor: '#000', opacity: appear, zIndex: 40 }]} />
+        <Animated.View pointerEvents={end && !locked ? 'none' : 'auto'} style={[styles.abs, area, { backgroundColor: '#000', opacity: cover, zIndex: 40 }]} />
       )}
       {/* locked: the whole screen, bars too, takes every touch */}
       {locked ? <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.55)', zIndex: 78 }]} onStartShouldSetResponder={() => true} /> : null}

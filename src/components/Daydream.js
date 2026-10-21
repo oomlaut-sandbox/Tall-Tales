@@ -5,10 +5,10 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, Image, PanResponder, StyleSheet, View } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 
-// the videos, in order (more to come: add them here)
+// the backgrounds, in order: the first is the default; swipe left or right for the others (add more here)
 export const DAY_VIDEOS = [
-  { id: 'trees', src: require('../../assets/daydream/trees.mp4') }, // sunlight through the leaves of a summer tree
-  { id: 'pebbles', image: require('../../assets/daydream/pebbles.jpg') }, // Jörg's felt pebbles (a still picture, drifting very slowly)
+  { id: 'pebbles', image: require('../../assets/daydream/pebbles.jpg') }, // Jörg's felt pebbles (a still picture, drifting very slowly): the default
+  // { id: 'trees', src: require('../../assets/daydream/trees.mp4') }, // sunlight through the leaves (set aside for now)
 ];
 
 // a still picture: it drifts very slowly closer and back, so it feels alive
