@@ -428,7 +428,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const barTitle = (
     // short, so it fits beside the house and the note: the kind of page, then where you are ('Saved' briefly takes its place)
     <View style={{ flex: 1, minWidth: 0, paddingLeft: 12 }}>
-      <Text numberOfLines={1} style={styles.title}>{header}</Text>
+      <Text numberOfLines={1} style={[styles.title, { fontSize: 15 }]}>{t('Notes')}</Text>{/* always just 'Notes', then the page number */}
       <View>
         <Animated.Text numberOfLines={1} style={[styles.sub, { opacity: savedFade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>{t('{a} of {b}', { a: i + 1, b: total })}</Animated.Text>
         <Animated.Text numberOfLines={1} style={[styles.sub, { position: 'absolute', opacity: savedFade }]}>{t('Saved')}</Animated.Text>
