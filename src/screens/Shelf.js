@@ -42,7 +42,13 @@ function Tile({ u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyp
       <View style={styles.tileShadow}>
       <View ref={coverRef} collapsable={false} style={{ aspectRatio: 1, backgroundColor: '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
         {coverArt ? <CoverArt cover={coverArt} /> : cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }} resizeMode="cover" /> : null}
-        {plus ? <Text style={{ color: colors.white, fontSize: 64, fontWeight: '300' }}>+</Text> : null}
+        {/* a small, thin grey + in the top right corner (Create a story, Playlists) */}
+        {plus ? (
+          <View pointerEvents="none" style={{ position: 'absolute', top: 10, right: 10, width: 16, height: 16 }}>
+            <View style={{ position: 'absolute', left: 0, right: 0, top: 7.25, height: 1.5, backgroundColor: '#7c7c7c' }} />
+            <View style={{ position: 'absolute', top: 0, bottom: 0, left: 7.25, width: 1.5, backgroundColor: '#7c7c7c' }} />
+          </View>
+        ) : null}
         {glyph || null}
         {/* a small dog-ear (My Library only; the Book Store covers have none) */}
         {showEar ? <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderLeftWidth: ear, borderBottomWidth: ear, borderLeftColor: 'transparent', borderBottomColor: colors.earUnder }} /> : null}
@@ -89,7 +95,7 @@ function Band({ color, felt, dark, title, sub, action, onAction }) {
 // Your own stories are deleted for good; the built-in books are only removed from the shelf
 // and can be brought back with "Show removed books".
 // My Notebook's cover: the brown leather of the notebook on the start page
-const CREATE_TILE = require('../../assets/tile-create.jpg'); // Jörg's blue felt book on linen, behind the + of Create a story
+const CREATE_TILE = require('../../assets/tile-create.jpg'); // Jörg's blue felt book on linen (a small + sits in the corner)
 const PLAYLISTS_TILE = require('../../assets/tile-playlists.jpg'); // Jörg's stack of felt books, behind the Playlists sign
 const TIP_CHAR = require('../../assets/tip-headphones.png'); // the grey felt character with headphones, in the Audio Player tip
 const NOTEBOOK_COVER = require('../../assets/leather-cover.jpg');
@@ -180,7 +186,7 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
         {!selecting ? <View style={{ width: '100%' }} /> : null}
         {!selecting && controls.create ? <Tile u={u} plus cover={CREATE_TILE} title={t('Create a story')} onPress={onCreate} /> : null}
         {/* Playlists (a picture of its own comes later) */}
-        {!selecting && onPlaylists ? <Tile u={u} cover={PLAYLISTS_TILE} option title={t('Playlists')} onPress={onPlaylists} /> : null}
+        {!selecting && onPlaylists ? <Tile u={u} plus cover={PLAYLISTS_TILE} option title={t('Playlists')} onPress={onPlaylists} /> : null}
         {!selecting && removedCount ? (
           <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
             <Text style={styles.restore}>{t('Show removed books ({n})', { n: removedCount })}</Text>
