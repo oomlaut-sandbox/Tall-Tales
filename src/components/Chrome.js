@@ -12,7 +12,6 @@ import { getAmbient, onAmbient, setAmbientPlayer } from '../ambient';
 // home / music: false to leave them out (a bar that places them itself)
 export function Burger({ onPress, u, home = true, music = true }) {
   const vertical = useContext(BarDir);
-  const playing = useAmbientPlaying();
   const w = u * 7, t = Math.max(3, u * 1), gap = u * 1.7;
   const menu = (
     <Pressable onPress={withTap(onPress)} hitSlop={14} accessibilityRole="button" accessibilityLabel="Menu" style={{ width: w, justifyContent: 'center' }}>
@@ -26,7 +25,7 @@ export function Burger({ onPress, u, home = true, music = true }) {
     <View style={{ flexDirection: vertical ? 'column' : 'row', alignItems: 'center' }}>
       {menu}
       {home ? <HomeButton u={u} vertical={vertical} /> : null}
-      {music && playing ? <BarMusic u={u} vertical={vertical} /> : null}
+      {music ? <BarMusic u={u} vertical={vertical} /> : null}{/* always there, so the Audio Player is one tap away (lit while music plays) */}
     </View>
   );
 }
@@ -289,10 +288,11 @@ export function MusicIcon({ size = 20, color }) {
 // a little apart from the menu, like in the reader
 export function BarMusic({ u, vertical }) {
   const tr = useT();
+  const playing = useAmbientPlaying();
   return (
     <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')}
       style={vertical ? { marginTop: u * 6 } : { marginLeft: u * 5.5 }}>
-      <MusicIcon size={u * 5.6} color="#e0e0e0" /* it only shows while music plays: lit */ />
+      <MusicIcon size={u * 5.6} color={playing ? '#e0e0e0' : IDLE} />
     </Pressable>
   );
 }
