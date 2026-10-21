@@ -11,7 +11,7 @@ import ZoomArt from './ZoomArt';
 // the end of a book: fine grey line-art icons
 const END_AGAIN = require('../../assets/icon-again-line.png');
 const END_LIBRARY = require('../../assets/icon-home.png'); // My Library: the same house as on the bars
-const END_SHARE = require('../../assets/icon-share-line.png'); // the share symbol (box with an arrow up)
+const END_SHARE = require('../../assets/icon-share-line.png'); // a straight arrow to the right, drawn like the Read Again arrow
 
 // The picture area is a perfect square (as wide as the screen). Only on unusually short
 // screens is it capped, so the words always keep at least a third of the page.
