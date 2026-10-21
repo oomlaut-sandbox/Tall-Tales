@@ -10,7 +10,7 @@ import { IDEA_SECTIONS, IDEA_COUNT } from '../ideas';
 import { useT } from '../i18n';
 import { useControls } from '../controls';
 
-const BAND_FELT = require('../../assets/band-ideas.jpg'); // Jörg's moss green felt banner
+const BAND_FELT = require('../../assets/band-ideas.png'); // Jörg's moss green felt banner (cropped close under the stitching, with a soft felt edge)
 const SKIPPY = require('../../assets/ideas-skippy.png'); // Skippy, daydreaming against his book (at the end of the ideas)
 const SPREAD = require('../../assets/ideas-spread.jpg'); // an open book: Skippy writing, and 'Make a book for yourself…' (under the words at the top)
 
@@ -23,7 +23,9 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
   const spreadW = Math.min(520, winW - 48); // the full width of the column
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
-      <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
+      <View style={[styles.band, { paddingTop: insets.top + 30 }, !IS_TABLET && { backgroundColor: 'transparent' }]}>
+        {/* phone: the felt's soft bottom edge shows the desk through it, so the band's own colour only fills the status bar strip */}
+        {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: insets.top + 2, backgroundColor: '#3e4a2c' }} /> : null}
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
         <Text style={styles.title}>{t('Ideas Room')}</Text>
       </View>
