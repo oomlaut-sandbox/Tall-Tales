@@ -457,7 +457,7 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
         )}
         {/* waking up: a pill-shaped Snooze pops up (it works even when the screen is locked) */}
         {waking ? (
-          <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'flex-end', paddingBottom: wide ? 40 : 56 }]}>
+          <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: day ? 'center' : 'flex-end', paddingBottom: day ? 0 : wide ? 40 : 56, marginTop: day ? -120 : 0 }]}>{/* Daydream: in the open picture, clear of the band */}
             <Animated.View style={{ alignItems: 'center', opacity: pop, transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1] }) }] }}>
               <Pressable onPress={withTap(snooze, thunk)} hitSlop={12} style={styles.snooze} accessibilityRole="button" accessibilityLabel={t('Snooze')}>
                 <Text style={styles.snoozeText}>{t('Snooze')}</Text>
