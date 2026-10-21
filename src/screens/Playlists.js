@@ -24,8 +24,9 @@ function Thumb({ s, size }) {
 }
 
 const TAPE = require('../../assets/playlist-tape.png');
+const ENVELOPE = require('../../assets/icon-envelope.png'); // share
 
-export default function Playlists({ u, openMenu, shelf, onPlay }) {
+export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
   const { width: winW } = useWindowDimensions();
   const tapeW = Math.round(Math.min(520, winW - 48) * 0.575); // the cassette itself is about half the column (the rest is its shadow)
   const t = useT();
@@ -50,7 +51,16 @@ export default function Playlists({ u, openMenu, shelf, onPlay }) {
   const books = (p) => p.books.map(byId).filter(Boolean); // only books still on this child's shelf
 
   return (
-    <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
+    <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => (
+      <Bar u={u} vertical={v}>
+        <Burger u={u} onPress={openMenu} />
+        <View style={{ flex: 1 }} />
+        {/* Done: back out of a playlist being changed, else leave Playlists */}
+        <Pressable onPress={() => (pl ? (adding ? setAdding(false) : setEdit(null)) : onDone && onDone())} hitSlop={8} accessibilityRole="button">
+          <View style={styles.donePill}><Text style={styles.donePillText}>{t('Done')}</Text></View>
+        </Pressable>
+      </Bar>
+    )}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         <Text style={styles.title}>{pl ? nameOf(pl) : t('Playlists')}</Text>
       </View>
@@ -67,9 +77,9 @@ export default function Playlists({ u, openMenu, shelf, onPlay }) {
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
                       <View style={{ flex: 1, minWidth: 0 }}>
                         <Text numberOfLines={1} style={styles.cardTitle}>{nameOf(p)}</Text>
-                        <Text style={styles.small}>{bs.length === 1 ? t('1 book') : t('{n} books', { n: bs.length })}{p.shuffle ? ` · ${t('Shuffle')}` : ''}{p.listen ? ` · ${t('Listen only')}` : ''}{p.loop ? ` · ${t('Loop')}` : ''}</Text>
+                        <Text style={styles.small}>{bs.length === 1 ? t('1 book') : t('{n} books', { n: bs.length })}{p.shuffle ? ` · ${t('Shuffle')}` : ''}{p.listen ? ` · ${t('Listen Only Mode')}` : ''}{p.loop ? ` · ${t('Loop')}` : ''}</Text>
                       </View>
-                      <Pressable onPress={() => { setEdit(p.id); setAdding(false); }} hitSlop={8} accessibilityRole="button"><Text style={styles.link}>{t('Change')}</Text></Pressable>
+                      <Pressable onPress={() => { setEdit(p.id); setAdding(false); }} hitSlop={8} accessibilityRole="button"><View style={styles.editTab}><Text style={styles.editTabText}>{t('Edit')}</Text></View></Pressable>
                     </View>
                     {bs.length ? (
                       <View style={{ flexDirection: 'row', gap: 6 }}>
@@ -77,12 +87,13 @@ export default function Playlists({ u, openMenu, shelf, onPlay }) {
                         {bs.length > 6 ? <Text style={[styles.small, { alignSelf: 'center' }]}>+{bs.length - 6}</Text> : null}
                       </View>
                     ) : null}
+                    {/* Play on its own line, then how it plays */}
+                    <Pressable disabled={!bs.length} onPress={() => onPlay(p)} style={[styles.pill, { backgroundColor: colors.green }, !bs.length && { opacity: 0.4 }]} accessibilityRole="button">
+                      <Text style={styles.pillText}>{t('Play')}</Text>
+                    </Pressable>
                     <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
-                      <Pressable disabled={!bs.length} onPress={() => onPlay(p)} style={[styles.pill, { backgroundColor: colors.green }, !bs.length && { opacity: 0.4 }]} accessibilityRole="button">
-                        <Text style={styles.pillText}>{t('Play')}</Text>
-                      </Pressable>
                       <Pressable onPress={() => set(p.id, { listen: !p.listen })} style={[styles.chip, p.listen && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.listen }}>
-                        <Text style={[styles.chipText, p.listen && { color: colors.white }]}>{t('Listen only')}</Text>
+                        <Text style={[styles.chipText, p.listen && { color: colors.white }]}>{t('Listen Only Mode')}</Text>
                       </Pressable>
                       <Pressable onPress={() => set(p.id, { shuffle: !p.shuffle })} style={[styles.chip, p.shuffle && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.shuffle }}>
                         <Text style={[styles.chipText, p.shuffle && { color: colors.white }]}>{p.shuffle ? t('Shuffle') : t('In order')}</Text>
@@ -91,13 +102,15 @@ export default function Playlists({ u, openMenu, shelf, onPlay }) {
                       <Pressable onPress={() => set(p.id, { loop: !p.loop })} style={[styles.chip, p.loop && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.loop }}>
                         <Text style={[styles.chipText, p.loop && { color: colors.white }]}>{t('Loop')}</Text>
                       </Pressable>
-                      {/* Share: the playlist's name and books, with the app link (not when sharing is switched off) */}
-                      {controls.sharing !== false && bs.length ? (
-                        <Pressable onPress={() => sharePlaylist(nameOf(p), bs.map((b) => b.title), t)} style={styles.chip} accessibilityRole="button">
-                          <Text style={styles.chipText}>{t('Share playlist')}</Text>
-                        </Pressable>
-                      ) : null}
                     </View>
+                    {/* Share: a small envelope in the card's bottom right corner (the playlist's name and books, with the app link) */}
+                    {controls.sharing !== false && bs.length ? (
+                      <View style={{ alignItems: 'flex-end', marginTop: -4 }}>
+                        <Pressable onPress={() => sharePlaylist(nameOf(p), bs.map((b) => b.title), t)} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Share playlist')}>
+                          <Image source={ENVELOPE} style={{ width: 24, height: 24, tintColor: colors.white }} resizeMode="contain" />
+                        </Pressable>
+                      </View>
+                    ) : null}
                   </View>
                 );
               })}
@@ -166,6 +179,10 @@ const styles = StyleSheet.create({
   col: { width: '100%', maxWidth: 520, gap: 14 },
   p: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#e6e6e6' },
   small: { fontFamily: fonts.ui, fontSize: 13, lineHeight: 18, color: '#bdbdbd' },
+  editTab: { backgroundColor: '#e8a317', borderRadius: 14, paddingHorizontal: 14, paddingVertical: 6 }, // an orangey yellow tab
+  editTabText: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, color: '#1a1a1a' },
+  donePill: { backgroundColor: colors.green, paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' },
+  donePillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, paddingHorizontal: 3 },
   link: { fontFamily: fonts.ui, fontSize: 15, color: colors.white, textDecorationLine: 'underline' },
   card: { backgroundColor: '#3a3a3a', borderRadius: 14, padding: 16, gap: 12 },
   cardTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 18, color: colors.white },
