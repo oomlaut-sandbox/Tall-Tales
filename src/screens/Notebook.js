@@ -1138,7 +1138,7 @@ const styles = StyleSheet.create({
   prowSub: { color: '#bbb', fontSize: 14, fontWeight: '400', fontFamily: fonts.ui },
   pbtn: { width: 36, height: 36, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
   pbtnText: { color: colors.white, fontWeight: '700', fontSize: 18 },
-  outBox: { width: '100%', maxWidth: 400, gap: 14, paddingHorizontal: 26, paddingTop: 26, paddingBottom: 22, borderRadius: 24, backgroundColor: '#000' },
+  outBox: { width: '100%', maxWidth: 400, gap: 14, paddingHorizontal: 26, paddingTop: 26, paddingBottom: 22, borderRadius: 24, backgroundColor: 'rgba(0,0,0,0.88)' }, // ever so slightly see-through
   outTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20 },
   outPill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
   pageBox: { position: 'absolute', zIndex: 25, backgroundColor: '#4a4a4a', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, flexDirection: 'row', alignItems: 'center', gap: 7 }, // like the recording box in the reader
