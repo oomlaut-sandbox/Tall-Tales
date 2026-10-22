@@ -475,8 +475,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
         </View>
         {across ? (
           <View style={{ flex: 1, padding: M, paddingLeft: M + 16, paddingRight: M + 30, paddingBottom: M + 10, minHeight: cs + 2 * M }}>{/* the words with generous margins */}
-            <View>
-              <View style={{ height: 26 }} />
+            <View style={{ marginTop: -10 }}>{/* the title level with the top of the cover */}
               {info}
             </View>
           </View>
