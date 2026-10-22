@@ -209,7 +209,7 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
             <View style={[styles.knob, light && L.knob, on && { backgroundColor: light ? '#ffffff' : '#1b1b1d', transform: [{ translateX: 20 }] }]} />
           </Pressable>
         </View>
-        <View style={{ flexDirection: wide ? 'row' : 'column', alignItems: 'center', gap: wide ? 28 : 0, marginTop: 8, opacity: on ? 1 : 0.5 }}>
+        <View style={{ flexDirection: wide ? 'row' : 'column', alignItems: 'center', gap: wide ? 28 : 0, marginTop: 8, opacity: on || light ? 1 : 0.5 }}>{/* Daydream's light panel always looks the same: only the switch shows on / off */}
           <FingerWheel light={light} size={size} value={draft} onChange={(v) => { setDraft(v); onTime(v); if (!on) onOn(true); }} label={t('Alarm time')} />
           {/* how to wake up: one amber display and a small knob beside it (turn it, or tap the display, for the next) */}
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginVertical: wide ? 0 : 26 }}>
