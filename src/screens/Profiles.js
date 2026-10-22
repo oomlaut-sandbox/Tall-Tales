@@ -54,7 +54,9 @@ export default function Profiles({ u, openMenu, setControls }) {
   const [gate, setGate] = useState(null); // what waits for the grown-up question: 'add' | 'edit'
   const [editing, setEditing] = useState(false); // tiles open the editor instead of switching
   const [form, setForm] = useState(null); // { id?, name, color, age }
-  const [bandH, setBandH] = useState(0); // the title's height: the edit box's dark layer starts under it
+  const [bandH, setBandH] = useState(0);
+  // the title's height (worked out, not measured: the edit box's dark layer starts under it)
+  const titleH = insets.top + 30 + 40 + 6;
   const [sure, setSure] = useState(false);
   const canSwitch = controls.profiles !== false;
   const { width: winW, height: winH } = useWindowDimensions();
@@ -130,7 +132,7 @@ export default function Profiles({ u, openMenu, setControls }) {
       </ScrollView>
 
       {form ? (
-        <View style={[styles.scrim, { top: bandH, bottom: undefined, height: Math.max(200, (winW > winH * 1.1 ? winH : winH - barGeo(u).row - insets.bottom) - bandH) }]}>{/* exactly the room between the title and the bar: the box is centred in it */}
+        <View style={[styles.scrim, { top: titleH, bottom: undefined, height: Math.max(200, (winW > winH * 1.1 ? winH : winH - barGeo(u).row - insets.bottom) - titleH) }]}>{/* exactly the room between the title and the bar: the box is centred in it */}
           <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20 }} keyboardShouldPersistTaps="handled">{/* in the middle of the screen above the bar (the bar stays uncovered) */}
             <View style={styles.card}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 28 }}>{/* room for the character (drawn a little wider than its box) */}
