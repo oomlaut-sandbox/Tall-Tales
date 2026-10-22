@@ -4,7 +4,7 @@
 // Kids can switch between profiles by tapping (unless a grown-up has turned that off); adding, changing and
 // removing a profile is behind the grown-up question.
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, DESK_BG } from '../look';
@@ -38,7 +38,14 @@ export function ProfileTile({ p, size, active, grow = 1.3 }) {
   );
 }
 
-export default function Profiles({ u, openMenu, setControls }) {
+export default function Profiles({ u, openMenu, setControls, onPicked }) {
+  // picking who reads: the selection box glides to the child, then a quick fade to My Library
+  const cells = useRef({}); // each child's box, in the grid
+  const boxXY = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
+  const [boxSize, setBoxSize] = useState(null);
+  const placed = useRef(false);
+  const pageFade = useRef(new Animated.Value(1)).current;
+  const picking = useRef(false);
   const t = useT();
   const insets = useSafeAreaInsets();
   const controls = useControls();
@@ -84,22 +91,39 @@ export default function Profiles({ u, openMenu, setControls }) {
     setForm(null);
   };
 
+  const pick = (id) => {
+    if (picking.current) return;
+    const L = cells.current[id];
+    picking.current = true;
+    const go = () => {
+      switchProfile(id);
+      Animated.timing(pageFade, { toValue: 0, duration: 220, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => {
+        picking.current = false;
+        if (onPicked) onPicked(); else pageFade.setValue(1);
+      });
+    };
+    if (!L || !placed.current) { go(); return; }
+    Animated.timing(boxXY, { toValue: { x: L.x, y: L.y }, duration: 300, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => setTimeout(go, 120));
+  };
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]} onLayout={(e) => setBandH(e.nativeEvent.layout.height)}>
         <Text style={styles.title}>{t('Profiles')}</Text>
       </View>
-      <ScrollView contentContainerStyle={styles.body}>
+      <Animated.ScrollView style={{ opacity: pageFade }} contentContainerStyle={styles.body}>
         <View style={styles.col}>
           <Text style={styles.p}>{s.list.length
             ? (editing ? t('Tap a child to change their name, character or age.') : t('Who is reading? Tap your name.'))
             : t('Give each child their own notebook, badges, playlists and settings. Their age decides which books they see.')}</Text>
           <View style={styles.grid}>
+            {/* the selection box: one box that glides from child to child */}
+            {boxSize && s.list.length ? <Animated.View pointerEvents="none" style={[styles.cellOn, { position: 'absolute', left: 0, top: 0, width: boxSize.w, height: boxSize.h, borderRadius: 16, borderWidth: 1, transform: boxXY.getTranslateTransform() }]} /> : null}
             {s.list.map((p) => {
               const on = p.id === s.active;
               return (
-                <Pressable key={p.id} disabled={!editing && (!canSwitch || on)} onPress={() => (editing ? openForm(p) : switchProfile(p.id))}
-                  accessibilityRole="button" accessibilityLabel={p.name} accessibilityState={{ selected: on }} style={[styles.cell, { width: side }, on && styles.cellOn]}>
+                <Pressable key={p.id} disabled={!editing && (!canSwitch || on)} onPress={() => (editing ? openForm(p) : pick(p.id))}
+                  onLayout={(e) => { const L = e.nativeEvent.layout; cells.current[p.id] = L; if (on && !picking.current) { boxXY.setValue({ x: L.x, y: L.y }); setBoxSize({ w: L.width, h: L.height }); placed.current = true; } }}
+                  accessibilityRole="button" accessibilityLabel={p.name} accessibilityState={{ selected: on }} style={[styles.cell, { width: side }]}>
                   {/* the child reading now gets a box around them instead of growing */}
                   <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}><ProfileTile p={p} size={Math.round(side * 0.68)} active={on} grow={1} /></View>
                   <Text numberOfLines={1} style={styles.name}>{p.name}</Text>
@@ -129,7 +153,7 @@ export default function Profiles({ u, openMenu, setControls }) {
           {!canSwitch ? <Text style={styles.small}>{t('A grown-up has turned off switching profiles.')}</Text> : null}
           <Text style={styles.small}>{t('Books, the membership, recordings, the language and the music are shared by the whole family.')}</Text>
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
 
       {form ? (
         <View style={[styles.scrim, { top: titleH, bottom: undefined, height: Math.max(200, (winW > winH * 1.1 ? winH : winH - barGeo(u).row - insets.bottom) - titleH) }]}>{/* exactly the room between the title and the bar: the box is centred in it */}
