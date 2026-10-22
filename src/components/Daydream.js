@@ -2,7 +2,7 @@
 // like a zen screensaver for the listener. Swipe left or right for the next video.
 // Each one is silent (the story and the music are what you hear): a seamlessly looping video, or a still picture.
 import React, { useEffect, useRef } from 'react';
-import { Animated, Easing, Image, PanResponder, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { AppState, Animated, Easing, Image, PanResponder, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 
 // the backgrounds, in order: the first is the default; swipe left or right for the others (add more here)
@@ -35,12 +35,18 @@ function Clip({ src, fit = 'cover' }) {
     try { p.audioMixingMode = 'mixWithOthers'; } catch (e) {} // never interrupt the story or the music
     p.play();
   });
-  // start it again once it's ready (on some phones play() before loading does nothing)
+  // Keep it playing. It starts again once it's ready (on some phones play() before loading does nothing), and
+  // whenever iOS stops it on its own: the story's sound starting or stopping, a sound setting changing, the
+  // phone coming back from being locked or from another app. It never stays stopped while Daydream is on.
   useEffect(() => {
-    let sub;
-    try { sub = player.addListener('statusChange', ({ status }) => { if (status === 'readyToPlay') { try { player.play(); } catch (e) {} } }); } catch (e) {}
-    const t = setTimeout(() => { try { player.play(); } catch (e) {} }, 400);
-    return () => { clearTimeout(t); try { sub && sub.remove(); } catch (e) {} try { player.pause(); } catch (e) {} };
+    const subs = [];
+    const kick = () => { try { if (!player.playing) player.play(); } catch (e) {} };
+    try { subs.push(player.addListener('statusChange', ({ status }) => { if (status === 'readyToPlay') kick(); })); } catch (e) {}
+    try { subs.push(player.addListener('playingChange', (ev) => { const on = ev && typeof ev === 'object' ? ev.isPlaying : ev; if (!on) setTimeout(kick, 250); })); } catch (e) {}
+    try { subs.push(AppState.addEventListener('change', (st) => { if (st === 'active') setTimeout(kick, 300); })); } catch (e) {}
+    const t = setTimeout(kick, 400);
+    const watch = setInterval(kick, 2000); // and a gentle check every two seconds, in case nothing said it stopped
+    return () => { clearTimeout(t); clearInterval(watch); subs.forEach((x) => { try { x.remove(); } catch (e) {} }); try { player.pause(); } catch (e) {} };
   }, [player]);
   return <VideoView player={player} style={StyleSheet.absoluteFill} contentFit={fit} nativeControls={false} allowsFullscreen={false} allowsPictureInPicture={false} />;
 }
