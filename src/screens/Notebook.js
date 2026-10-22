@@ -27,6 +27,8 @@ import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadN
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
 import { STORIES } from '../story';
 import { playKey, playSound } from '../sound';
+import { useControls } from '../controls';
+import { printNotebook, shareNotebookPdf } from '../pdf';
 
 const GAP = 30;
 const MAX_PX = 1600;
@@ -78,6 +80,11 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const [newAsk, setNewAsk] = useState(false); // 'What kind of page?'
   const [picAsk, setPicAsk] = useState(false); // the picture square's choices
   const [camGate, setCamGate] = useState(false);
+  // print or share a page or a run of pages (page numbers as shown: the child's pages start at 3)
+  const controls = useControls();
+  const [outRange, setOutRange] = useState(null); // { from, to } (indexes into pages) while the panel is open
+  const [outGate, setOutGate] = useState(null); // 'print' | 'share', behind the grown-up question
+  const [outBusy, setOutBusy] = useState(false);
   const [writing, setWriting] = useState(false); // the notes editor
   const [drawing, setDrawing] = useState(false); // the drawing editor
   const latest = useRef(null);
@@ -570,6 +577,35 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           <Pressable onPress={() => addPage('note')} style={[styles.halfPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('New notes page')}</Text></Pressable>
           <Pressable onPress={() => addPage('sketch')} style={[styles.halfPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('New sketch page')}</Text></Pressable>
         </View>
+        {/* print or share: from page … to page …, then Print or Share (a PDF), after the grown-up question */}
+        {controls.sharing !== false && pages.length ? (() => {
+          const cur = Math.max(0, Math.min(pages.length - 1, i - FIRST_PAGE));
+          const r = outRange || { from: i >= FIRST_PAGE ? cur : 0, to: i >= FIRST_PAGE ? cur : pages.length - 1 };
+          const set = (from, to) => setOutRange({ from: Math.max(0, Math.min(from, pages.length - 1)), to: Math.max(0, Math.min(to, pages.length - 1)) });
+          const step = (which, d) => { if (which === 'from') { const f = r.from + d; set(f, Math.max(r.to, f)); } else { const to = r.to + d; set(Math.min(r.from, to), to); } };
+          const num = (k) => k + FIRST_PAGE + 1;
+          const stepper = (which, v) => (
+            <View style={styles.stepper}>
+              <Pressable onPress={() => step(which, -1)} hitSlop={6} style={styles.stepBtn} accessibilityLabel={t('Earlier page')}><Text style={styles.pbtnText}>−</Text></Pressable>
+              <Text style={styles.stepNum}>{num(v)}</Text>
+              <Pressable onPress={() => step(which, 1)} hitSlop={6} style={styles.stepBtn} accessibilityLabel={t('Later page')}><Text style={styles.pbtnText}>+</Text></Pressable>
+            </View>
+          );
+          return (
+            <View style={styles.outBox}>
+              <Text style={styles.prowTitle}>{t('Print or share pages')}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                <Text style={styles.prowSub}>{t('From page')}</Text>{stepper('from', r.from)}
+                <Text style={styles.prowSub}>{t('to')}</Text>{stepper('to', r.to)}
+                <Pressable onPress={() => set(0, pages.length - 1)} hitSlop={6} style={styles.allChip}><Text style={styles.pbtnText}>{t('All')}</Text></Pressable>
+              </View>
+              <View style={{ flexDirection: 'row', gap: 12 }}>
+                <Pressable disabled={outBusy} onPress={() => { setOutRange(r); setOutGate('print'); }} style={[styles.halfPill, { backgroundColor: '#3a3a3a' }, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><Text style={styles.pillText}>{outBusy ? t('One moment…') : t('Print')}</Text></Pressable>
+                <Pressable disabled={outBusy} onPress={() => { setOutRange(r); setOutGate('share'); }} style={[styles.halfPill, { backgroundColor: '#3a3a3a' }, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Share')}</Text></Pressable>
+              </View>
+            </View>
+          );
+        })() : null}
         <ScrollView style={{ maxHeight: Math.max(340, winH * 0.5) }} contentContainerStyle={{ gap: 14, paddingBottom: 6 }}>
           <Pressable onPress={() => { setI(BADGES); setPagesOpen(false); }} style={[styles.prow, i === BADGES && { borderColor: colors.green }]}>
             <View style={[styles.thumb, { backgroundColor: '#c9a227' }]}><Text style={styles.thumbNum}>★</Text></View>
@@ -619,6 +655,18 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           </View>
         </View>
       ) : null}
+      <ParentGate visible={!!outGate} reason={outGate === 'print' ? t('Printing opens your phone’s print options.') : t('Sharing opens your phone’s messages and email.')}
+        onCancel={() => setOutGate(null)}
+        onPass={async () => {
+          const kind = outGate; setOutGate(null); setPagesOpen(false);
+          const r = outRange || { from: 0, to: pages.length - 1 };
+          const list = pages.slice(r.from, r.to + 1);
+          setOutBusy(true);
+          clearTimeout(timer.current); if (latest.current) await saveNotebook(latest.current);
+          try { if (kind === 'print') await printNotebook(list, r.from + FIRST_PAGE + 1); else await shareNotebookPdf(list, r.from + FIRST_PAGE + 1); }
+          catch (e) { toast(t(e && e.message ? e.message : 'That didn’t work. Try again.')); }
+          setOutBusy(false);
+        }} />
       <ParentGate visible={camGate} reason={t('Taking a photo opens the camera.')} onPass={() => { setCamGate(false); setTimeout(() => choosePhoto('camera'), 250); }} onCancel={() => setCamGate(false)} />
 
       {writing && page ? (
@@ -1054,6 +1102,11 @@ const styles = StyleSheet.create({
   prowSub: { color: '#bbb', fontSize: 14, fontWeight: '400', fontFamily: fonts.ui },
   pbtn: { width: 36, height: 36, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
   pbtnText: { color: colors.white, fontWeight: '700', fontSize: 18 },
+  outBox: { gap: 12, marginBottom: 18, padding: 14, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.06)' },
+  stepper: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  stepBtn: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
+  stepNum: { minWidth: 26, textAlign: 'center', color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  allChip: { height: 30, borderRadius: 15, paddingHorizontal: 12, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
   halfPill: { flex: 1, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
   stackPill: { width: 200, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
   pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },

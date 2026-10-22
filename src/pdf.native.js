@@ -7,9 +7,11 @@ import * as Sharing from 'expo-sharing';
 import { Asset } from 'expo-asset';
 import { File, Paths } from 'expo-file-system';
 import { EBGaramond_400Regular } from '@expo-google-fonts/eb-garamond';
+import { SpecialElite_400Regular } from '@expo-google-fonts/special-elite';
+import { strokesToImage } from './components/Strokes';
 import { bookFont } from './theme';
 
-const FONT_FILES = { serif: EBGaramond_400Regular };
+const FONT_FILES = { serif: EBGaramond_400Regular, typewriter: SpecialElite_400Regular };
 
 const SIZE = 576; // 8 × 8 inch pages (72 per inch), like a square picture book
 
@@ -132,4 +134,80 @@ export async function shareStoryPdf(story, layout, fontKey) {
   } catch (e) {}
   if (!(await Sharing.isAvailableAsync())) throw new Error('Sharing is not available on this device.');
   await Sharing.shareAsync(shareUri, { UTI: 'com.adobe.pdf', mimeType: 'application/pdf', dialogTitle: story.title });
+}
+
+// ---- My Notebook: a page or a run of pages, printed or shared as a PDF ----
+// Each notebook page is one US Letter page, drawn like the notebook: two cream squares with soft round corners,
+// the picture (a photo, a drawing, or a drawing on a photo) above the typed notes; a sketch page is its two drawings.
+async function fileData(uri, type) {
+  try { return `data:${type};base64,${await new File(uri).base64()}`; } catch (e) { return null; }
+}
+async function drawingData(strokes, bg) {
+  if (!strokes || !strokes.length) return null;
+  try { const uri = await strokesToImage(strokes, 1200, bg); return await fileData(uri, 'image/png'); } catch (e) { return null; }
+}
+
+export async function buildNotebookHtml(pages, from = 1) {
+  const face = (await fontFace('typewriter')).replace('font-family:Story', 'font-family:Note');
+  const SQN = 340;
+  const out = [];
+  for (let k = 0; k < pages.length; k++) {
+    const p = pages[k];
+    let top = '', bottom = '';
+    if (p.kind === 'sketch') {
+      const a = await drawingData(p.strokes, '#f4f2ed'), b = await drawingData(p.strokes2, '#f4f2ed');
+      top = a ? `<img src="${a}"/>` : '';
+      bottom = b ? `<img src="${b}"/>` : '';
+    } else {
+      const photo = p.uri ? await fileData(p.uri, /\.png($|\?)/i.test(p.uri) ? 'image/png' : 'image/jpeg') : null;
+      const ink = await drawingData(p.strokes, photo ? '#00000000' : '#f4f2ed');
+      top = `${photo ? `<img src="${photo}"/>` : ''}${ink ? `<img class="over" src="${ink}"/>` : ''}`;
+      bottom = (p.text || '').trim() ? `<div class="note"><p>${esc(p.text).replace(/\n/g, '<br/>')}</p></div>` : '';
+    }
+    out.push(`<div class="pg"><div class="nb"><div class="nsq t">${top}</div><div class="nsq b">${bottom}</div></div><div class="num">My Notebook · ${from + k}</div></div>`);
+  }
+  const style = `${face}
+@page{size:${PAGE_W}pt ${PAGE_H}pt;margin:0}
+html,body{margin:0;padding:0;background:#fff}
+*{box-sizing:border-box}
+.pg{width:${PAGE_W}pt;height:${PAGE_H}pt;position:relative;page-break-after:always;break-after:page;display:flex;align-items:center;justify-content:center}
+.pg:last-child{page-break-after:auto;break-after:auto}
+.nb{width:${SQN}pt;display:flex;flex-direction:column;border:1pt solid #cfcac0;border-radius:26pt;overflow:hidden;background:#f4f2ed}
+.nsq{width:${SQN}pt;height:${SQN}pt;position:relative;overflow:hidden}
+.nsq.t{border-bottom:1pt solid #bdb7ab}
+.nsq img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.nsq img.over{object-fit:fill}
+.note{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 34pt;
+  background:repeating-linear-gradient(to bottom,transparent 0,transparent 26pt,#dcd7cd 26pt,#dcd7cd 27pt)}
+.note p{margin:0;font-family:Note,"Courier New",monospace;font-size:15pt;line-height:27pt;color:#2b2b2b;text-align:center}
+.num{position:absolute;bottom:22pt;font-size:11pt;color:#999;font-family:Helvetica,Arial,sans-serif}`;
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${style}</style></head><body>${out.join('')}</body></html>`;
+}
+
+async function notebookPdf(pages, from) {
+  const html = await buildNotebookHtml(pages, from);
+  const { uri } = await Print.printToFileAsync({ html, width: PAGE_W, height: PAGE_H, margins: { top: 0, right: 0, bottom: 0, left: 0 } });
+  return uri;
+}
+
+export async function printNotebook(pages, from) {
+  const uri = await notebookPdf(pages, from);
+  try { await Print.printAsync({ uri }); } catch (e) {
+    if (!/cancel|did not complete|not completed|dismiss/i.test(String(e && e.message))) throw e;
+  }
+}
+
+export async function shareNotebookPdf(pages, from) {
+  const uri = await notebookPdf(pages, from);
+  let shareUri = uri;
+  try {
+    const to = from + pages.length - 1;
+    const target = new File(Paths.cache, pages.length > 1 ? `My Notebook, pages ${from}-${to}.pdf` : `My Notebook, page ${from}.pdf`);
+    if (target.exists) target.delete();
+    const f = new File(uri);
+    await f.move(target);
+    shareUri = f.uri;
+  } catch (e) {}
+  if (!(await Sharing.isAvailableAsync())) throw new Error('Sharing is not available on this device.');
+  await Sharing.shareAsync(shareUri, { UTI: 'com.adobe.pdf', mimeType: 'application/pdf', dialogTitle: 'My Notebook' });
 }

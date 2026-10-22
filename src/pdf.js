@@ -6,3 +6,11 @@ export async function shareStoryPdf() {
 export async function printStory() {
   throw new Error('Printing works in the iPhone and Android app.');
 }
+
+export async function shareNotebookPdf() {
+  throw new Error('Making PDFs works in the iPhone and Android app.');
+}
+
+export async function printNotebook() {
+  throw new Error('Printing works in the iPhone and Android app.');
+}
