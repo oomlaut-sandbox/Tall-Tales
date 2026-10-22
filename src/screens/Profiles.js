@@ -110,6 +110,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked }) {
       <View style={[styles.band, { paddingTop: insets.top + 30 }]} onLayout={(e) => setBandH(e.nativeEvent.layout.height)}>
         <Text style={styles.title}>{t('Profiles')}</Text>
       </View>
+      {form ? null : (
       <Animated.ScrollView style={{ opacity: pageFade }} contentContainerStyle={styles.body}>
         <View style={styles.col}>
           <Text style={styles.p}>{s.list.length
@@ -154,9 +155,12 @@ export default function Profiles({ u, openMenu, setControls, onPicked }) {
           <Text style={styles.small}>{t('Books, the membership, recordings, the language and the music are shared by the whole family.')}</Text>
         </View>
       </Animated.ScrollView>
+      )}
 
       {form ? (
-        <View style={[styles.scrim, { top: titleH, bottom: undefined, height: Math.max(200, (winW > winH * 1.1 ? winH : winH - barGeo(u).row - insets.bottom) - titleH) }]}>{/* exactly the room between the title and the bar: the box is centred in it */}
+        // the edit box takes the page's place, in the room between the title and the bar (in the normal flow:
+        // nothing is measured or worked out, so it can't land too low or run under the bar)
+        <View style={{ flex: 1 }}>
           <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20 }} keyboardShouldPersistTaps="handled">{/* in the middle of the screen above the bar (the bar stays uncovered) */}
             <View style={styles.card}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 28 }}>{/* room for the character (drawn a little wider than its box) */}
