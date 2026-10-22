@@ -10,7 +10,9 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import { MAX_READERS, addReader, getReaders, setReaderPhoto } from '../recordings';
 import { VoiceFace } from './VoicePick';
 
-export default function ReaderPick({ initial, onCancel, onStart }) {
+// edit: opened from the scissors in 'Who reads this book?': the same box for changing photos or adding a reader,
+// with Done instead of Start recording
+export default function ReaderPick({ initial, onCancel, onStart, edit = false, onDone }) {
   const tr = useT();
   const [list, setList] = useState(null);
   const [pick, setPick] = useState(initial || null);
@@ -56,6 +58,11 @@ export default function ReaderPick({ initial, onCancel, onStart }) {
     });
   }, []);
   const start = async () => {
+    if (edit) { // Done: a new reader is kept if they have a name; then the box closes
+      if (adding && name.trim()) await addReader(name, photo);
+      onDone && onDone();
+      return;
+    }
     if (adding) {
       if (!name.trim()) return;
       const id = await addReader(name, photo);
@@ -71,7 +78,7 @@ export default function ReaderPick({ initial, onCancel, onStart }) {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.back}>
         <View style={styles.box}>
           <Text style={styles.title}>{tr('Who’s reading?')}</Text>
-          <Text style={styles.text}>{tr('Up to three people can record this book in their own voice. Pick who’s reading now, or add a new reader.')}</Text>
+          <Text style={styles.text}>{edit ? tr('Pick a reader to change their photo, or add a new reader.') : tr('Up to three people can record this book in their own voice. Pick who’s reading now, or add a new reader.')}</Text>
           <View style={styles.row}>
             {list.map((r) => (
               <Pressable key={r.id} onPress={withTap(() => { setAdding(false); setPick(r.id); })} accessibilityRole="radio" accessibilityState={{ selected: !adding && pick === r.id }}
@@ -108,8 +115,8 @@ export default function ReaderPick({ initial, onCancel, onStart }) {
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 36 }}>
             <View style={{ flex: 1 }} />
             <Pressable onPress={withTap(onCancel)} style={[styles.pill, { backgroundColor: '#4a4a4a' }]} accessibilityRole="button"><Text style={styles.pillText}>{tr('Cancel')}</Text></Pressable>
-            <Pressable onPress={withTap(start)} disabled={adding && !name.trim()} style={[styles.pill, { backgroundColor: colors.highlight, marginLeft: 10 }, adding && !name.trim() && { opacity: 0.45 }]} accessibilityRole="button">
-              <Text style={styles.pillText}>{tr('Start recording')}</Text>
+            <Pressable onPress={withTap(start)} disabled={!edit && adding && !name.trim()} style={[styles.pill, { backgroundColor: edit ? colors.green : colors.highlight, marginLeft: 10 }, !edit && adding && !name.trim() && { opacity: 0.45 }]} accessibilityRole="button">
+              <Text style={styles.pillText}>{edit ? tr('Done') : tr('Start recording')}</Text>
             </Pressable>
           </View>
         </View>

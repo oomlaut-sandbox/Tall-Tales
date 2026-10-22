@@ -202,7 +202,8 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   const boxOptions = [...NARRATORS.map(([k, label]) => ({ id: `narrator:${k}`, name: label, narrator: true })), ...familyOptions];
   const boxValue = shownVoice === 'narrator' ? `narrator:${narratorOf(prefs)}` : shownVoice;
   const showVoices = true; // the face is always on the bar: there are always the two narrators to choose from
-  const [voiceBox, setVoiceBox] = useState(false); // the 'Who reads this book?' box from the face on the bar
+  const [voiceBox, setVoiceBox] = useState(false);
+  const [editReaders, setEditReaders] = useState(false); // the scissors: the 'Who's reading?' box for editing the readers // the 'Who reads this book?' box from the face on the bar
   // a book the family recorded opens in their voice (the grown-up setting, on unless switched off), unless a voice
   // was already chosen for this book; the reader with the most recorded pages reads
   const voiceAuto = useRef(false);
@@ -1016,8 +1017,10 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       ) : null}
       {trimRec ? <TrimEditor rec={trimRec} title={tr('Page {n}', { n: trimRec.page + 1 })} onCancel={() => setTrimRec(null)}
         onSave={async (start, end) => { await setTrim(story.id, trimRec.pid, start, end, trimRec.reader || 'me'); setTrimRec(null); openRecList(); }} /> : null}
-      {voiceBox ? <VoicePick options={boxOptions} value={boxValue} tr={tr} onPick={pickVoice} onClose={() => setVoiceBox(false)}
+      {voiceBox ? <VoicePick options={boxOptions} value={boxValue} tr={tr} onPick={pickVoice} onClose={() => setVoiceBox(false)} onEdit={controls.recording ? () => setEditReaders(true) : null}
         anchor={wide ? { right: BL.rightW + 10, bottom: Math.max(16, insets.bottom) } : { right: 12, bottom: barH + 10 }} /> : null}
+      {editReaders ? <ReaderPick edit initial={voiceOptions.some((o) => o.id === voice) && voice !== 'narrator' ? voice : null} onCancel={() => { setEditReaders(false); getReaders().then(setReaders); }}
+        onDone={() => { setEditReaders(false); getReaders().then(setReaders); refreshRecPages(); }} /> : null}
       {askReader ? <ReaderPick initial={recReader.current} onCancel={() => { setAskReader(false); recordingSoon.current = false; }}
         onStart={(id) => { recReader.current = id; setAskReader(false); getReaders().then(setReaders); startRec(); }} /> : null}
       <Panel open={panel === 'play'} side="right" title={playView === 'voices' ? tr('Voices') : tr('Reading Options')} {...panelPos} onClose={() => { setPanel(null); setPlayView('main'); }}>

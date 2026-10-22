@@ -8,6 +8,8 @@ import { colors, fonts } from '../theme';
 import { BubbleIcon, PersonIcon } from './Chrome';
 import { withTap } from '../haptics';
 
+const SCISSORS = require('../../assets/icon-scissors.png');
+
 // the face: a dark circle with the reader's photo (or the first letter of their name), or the narrator's speech bubble
 export function VoiceFace({ photo, name, narrator = false, person = false, size = 36 }) {
   return (
@@ -21,7 +23,8 @@ export function VoiceFace({ photo, name, narrator = false, person = false, size 
 }
 
 // the box: anchored just above the bar (upright) or beside it (sideways)
-export default function VoicePick({ options, value, onPick, onClose, tr, anchor }) {
+// onEdit: the scissors in the top-right corner (edit the readers: photos, a new reader); left out when locked
+export default function VoicePick({ options, value, onPick, onClose, tr, anchor, onEdit }) {
   const a = useRef(new Animated.Value(0)).current;
   useEffect(() => { Animated.timing(a, { toValue: 1, duration: 180, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(); }, []);
   const close = (then) => Animated.timing(a, { toValue: 0, duration: 140, easing: Easing.in(Easing.quad), useNativeDriver: true }).start(() => { onClose(); then && then(); });
@@ -30,6 +33,11 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor 
       <Pressable style={StyleSheet.absoluteFill} onPress={() => close()} accessibilityLabel={tr('Close')} />
       <Animated.View style={[styles.box, anchor, { opacity: a, transform: [{ scale: a.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] }) }] }]}>
         <Text style={styles.title}>{tr('Who reads this book?')}</Text>
+        {onEdit ? (
+          <Pressable onPress={withTap(() => close(onEdit))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Edit readers')} style={styles.edit}>
+            <Image source={SCISSORS} style={{ width: 18, height: 18, tintColor: '#9a9a9a' }} resizeMode="contain" />
+          </Pressable>
+        ) : null}
         {options.map((o) => {
           const on = o.id === value;
           return (
@@ -47,6 +55,7 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor 
 
 const styles = StyleSheet.create({
   box: { position: 'absolute', width: 250, backgroundColor: '#2b2b2d', borderRadius: 26, paddingHorizontal: 14, paddingTop: 18, paddingBottom: 14, gap: 6, boxShadow: '0 16px 40px rgba(0,0,0,0.6)' },
+  edit: { position: 'absolute', top: 16, right: 18, padding: 2 },
   title: { color: 'rgba(255,255,255,0.7)', fontFamily: fonts.ui, fontWeight: '700', fontSize: 14, marginLeft: 6, marginBottom: 6 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 8, paddingVertical: 8, borderRadius: 18 },
   rowOn: { backgroundColor: colors.green },
