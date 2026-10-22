@@ -230,7 +230,8 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   // the menu's Playback Settings opens this panel; only a new request does (not one left over from an
   // earlier book, which used to pop the panel open whenever another book was opened)
   const lastMenuRequest = useRef(menuRequest);
-  useEffect(() => { if (menuRequest && menuRequest !== lastMenuRequest.current) setPanel('play'); lastMenuRequest.current = menuRequest; }, [menuRequest]);
+  // (from the main menu; on the shut cover the book opens first, so the panel isn't hidden under it)
+  useEffect(() => { if (menuRequest && menuRequest !== lastMenuRequest.current) { if (coverShut && onOpenCover) { onOpenCover(); setTimeout(() => setPanel('play'), 1100); } else setPanel('play'); } lastMenuRequest.current = menuRequest; }, [menuRequest]);
 
   /* ---------- reading ---------- */
   // pressing record: the reading fades away quickly, and nothing starts reading until recording is over

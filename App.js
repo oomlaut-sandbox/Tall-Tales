@@ -175,6 +175,9 @@ function Root() {
   // closing a book from its first spread: the cover swings shut; swipe up and it goes back to its place on the shelf
   const [closingBook, setClosingBook] = useState(null); // { story, cover, rect }
   const [coverOpenReq, setCoverOpenReq] = useState(0); // the reader asks the shut book to open again (the moon)
+  const coverLeaving = useRef(false); // the shut book is gliding back to the shelf (swipe up)
+  // going anywhere else (the menu, the house…) while the book is shut: the shut book goes away at once
+  useEffect(() => { if (screen !== 'reader' && closingBook && !coverLeaving.current) setClosingBook(null); }, [screen]);
   const lastOpen = useRef({ cover: null, rect: null }); // the book's cover and where its tile was in the library
   const openStory = (s0, rect) => {
     const s = s0 && s0.langs ? localizeStory(s0, readLang) : s0; // a translated book opens in the reading language
@@ -342,7 +345,7 @@ function Root() {
         )}
         {closingBook ? (
           <BookOpen closing openSignal={coverOpenReq} u={u} story={closingBook.story} cover={closingBook.cover} rect={closingBook.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}
-            onDone={() => setClosingBook(null)} onLeave={() => go('library')} onGone={() => setClosingBook(null)} />
+            onDone={() => setClosingBook(null)} onLeave={() => { coverLeaving.current = true; go('library'); }} onGone={() => { coverLeaving.current = false; setClosingBook(null); }} />
         ) : null}
         {opening ? (
           <BookOpen u={u} story={opening.story} cover={opening.cover} rect={opening.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}
