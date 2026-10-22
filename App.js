@@ -48,7 +48,7 @@ import Playlists from './src/screens/Playlists';
 import { playOrder } from './src/playlists';
 import { fadeOutAmbient, getAmbient, onAmbient, setAmbientPlayer } from './src/ambient';
 import { ageAllowed, ageOf } from './src/catalog';
-import { loadProfiles, onProfiles } from './src/profiles';
+import { loadProfiles, onProfiles, switchProfile } from './src/profiles';
 import { playSound, setEffects, setEffectsVolume } from './src/sound';
 import { stopSpeech } from './src/speech';
 import { stopVoice } from './src/voice';
@@ -56,7 +56,7 @@ import { stopVoice } from './src/voice';
 function Root() {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const [screen, setScreen] = useState('start');
+  const [screen, setScreen] = useState(() => takeNextScreen() || 'start'); // (after picking a child in Profiles: My Library)
   // the store owner gets a Store Manager in the menu (checked at launch and whenever someone signs in or out)
   const [storeAdmin, setStoreAdmin] = useState(false);
   // web preview only: #store-demo shows the Store Manager with sample books
@@ -321,7 +321,7 @@ function Root() {
         )}
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} />}
         {screen === 'music' && <MusicSounds u={u} openMenu={openMenu} prefs={prefs} setPrefs={setPrefs} />}
-        {screen === 'profiles' && <Profiles u={u} openMenu={openMenu} setControls={setControls} onPicked={() => go('library')} />}
+        {screen === 'profiles' && <Profiles u={u} openMenu={openMenu} setControls={setControls} onPicked={(id) => { setNextScreen('library'); switchProfile(id); }} />}
         {screen === 'playlists' && <Playlists u={u} openMenu={openMenu} shelf={childShelf} onPlay={playPlaylist} onDone={() => go('library')} />}
         {screen === 'settings' && <Settings u={u} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
           controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} onProfiles={() => go('profiles')} onPlaylists={() => go('playlists')} />}
@@ -429,6 +429,11 @@ const WARM = [require('./assets/leather-cover-round.png'), require('./assets/lea
   require('./assets/tile-library.png'), require('./assets/tile-store.png'), require('./assets/logo-felt.png')];
 // Phones and tablets both turn: sideways, the book goes side by side with the menu bar on the right.
 if (Platform.OS !== 'web') ScreenOrientation.unlockAsync().catch(() => {});
+
+// the screen to start on the next time the app starts afresh (switching children in Profiles lands in My Library)
+let nextScreen = null;
+const setNextScreen = (s) => { nextScreen = s; };
+const takeNextScreen = () => { const s = nextScreen; nextScreen = null; return s; };
 
 export default function App() {
   const [loaded] = useFonts({ EBGaramond_400Regular, EBGaramond_400Regular_Italic, EBGaramond_500Medium, EBGaramond_700Bold, SpecialElite_400Regular, DancingScript_700Bold });

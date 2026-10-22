@@ -95,11 +95,11 @@ export default function Profiles({ u, openMenu, setControls, onPicked }) {
     if (picking.current) return;
     const L = cells.current[id];
     picking.current = true;
+    // fade the page away first; then switch (the app starts afresh for that child, straight into My Library)
     const go = () => {
-      switchProfile(id);
       Animated.timing(pageFade, { toValue: 0, duration: 220, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => {
         picking.current = false;
-        if (onPicked) onPicked(); else pageFade.setValue(1);
+        if (onPicked) onPicked(id); else { switchProfile(id); pageFade.setValue(1); }
       });
     };
     if (!L || !placed.current) { go(); return; }
