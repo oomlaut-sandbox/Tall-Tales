@@ -119,7 +119,7 @@ function NotebookTile({ onPress, hidden, onRect }) {
   return (
     <Pressable onPress={() => measure(onPress)} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={t('My Notebook')}>
       <View ref={ref} collapsable={false} onLayout={(e) => { setW(e.nativeEvent.layout.width); if (onRect) setTimeout(() => measure(onRect), 30); }}
-        style={[{ aspectRatio: 1, backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, elevation: 8, opacity: hidden ? 0 : 1 }, corners]}>
+        style={[{ aspectRatio: 1, backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.72, shadowRadius: 13, elevation: 14, opacity: hidden ? 0 : 1 }, corners]}>
         <View style={[{ flex: 1, overflow: 'hidden' }, corners]}>
           <Image source={NOTEBOOK_COVER} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
         </View>
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: DESK_BG }, // same dark grey as reading
   // a generous gap between the felt title band and the first row of books
   grid: { padding: 20, paddingTop: 42, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
-  tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.55, shadowRadius: 9, elevation: 8 }, // a clear shadow, so covers lift off the felt
+  tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.72, shadowRadius: 13, elevation: 14 }, // a deep shadow, so the books stand up off the felt
   tileTitle: { fontFamily: 'EBGaramond_700Bold', fontSize: 19, lineHeight: 23, color: colors.white }, // book titles and details: the book serif
   tileOption: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, lineHeight: 23 },
   tileSub: { fontFamily: fonts.story, fontSize: 15, lineHeight: 19, color: '#d0d0d0' },
