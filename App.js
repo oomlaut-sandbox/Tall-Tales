@@ -172,6 +172,7 @@ function Root() {
   // inside of the cover); its cover picture is the cover. From My Library, the cover animates open.
   const prepared = (s) => (s.pages[0] && s.pages[0].titlePage ? { ...s, pages: [{ ...s.pages[0], image: null, whiteArt: true }, ...s.pages.slice(1)] } : s);
   const [opening, setOpening] = useState(null); // { story, cover, rect } while a book opens from the library
+  const openingRef = useRef(null); // the fallback timer that removes the opening cover if the reader never says it's ready
   // closing a book from its first spread: the cover swings shut; swipe up and it goes back to its place on the shelf
   const [closingBook, setClosingBook] = useState(null); // { story, cover, rect }
   const [coverOpenReq, setCoverOpenReq] = useState(0); // the reader asks the shut book to open again (the moon)
@@ -183,6 +184,8 @@ function Root() {
     const s = s0 && s0.langs ? localizeStory(s0, readLang) : s0; // a translated book opens in the reading language
     const ready = prepared(s);
     lastOpen.current = { cover: s.cover && s.cover.uri ? { uri: s.cover.uri } : s.pages[0] && s.pages[0].image, rect: rect || null };
+    // the cover picture ready in memory before anything moves
+    if (s.cover && s.cover.uri) Image.prefetch(s.cover.uri).catch(() => {});
     if (rect && (screen === 'library' || screen === 'store')) { setOpening({ story: ready, cover: s.cover && s.cover.uri ? { uri: s.cover.uri } : s.pages[0] && s.pages[0].image, rect }); return; }
     setStory(ready); go('reader');
   };
@@ -195,7 +198,7 @@ function Root() {
   const [queue, setQueue] = useState(null); // { ids, i }
   const queueRef = useRef(null);
   queueRef.current = queue;
-  const openQueued = (q) => { const s = childShelf.find((x) => x.id === q.ids[q.i]); if (!s) return; const s2 = s.langs ? localizeStory(s, readLang) : s; setStory(prepared(s2)); stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen('reader'); };
+  const openQueued = (q) => { const s = childShelf.find((x) => x.id === q.ids[q.i]); if (!s) return; const s2 = s.langs ? localizeStory(s, readLang) : s; lastOpen.current = { cover: s2.cover && s2.cover.uri ? { uri: s2.cover.uri } : s2.pages[0] && s2.pages[0].image, rect: null }; /* its own cover when it closes */ setStory(prepared(s2)); stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen('reader'); };
   const playPlaylist = (pl) => {
     const ids = playOrder(pl, childShelf);
     if (!ids.length) return;
@@ -341,7 +344,7 @@ function Root() {
         {screen === 'profile' && <Profile u={u} openMenu={openMenu} toast={toast} />}
         {screen === 'reader' && story && (
           <Reader key={queue ? `${queue.key}:${queue.i}` : 'one'} u={u} story={story} setToastSpot={setToastSpot} prefs={readerPrefs}
-            autoStart={!!queue} onFinished={onBookFinished} onSettings={() => setSettingsGate(true)} onPlaylists={() => go('playlists')} setPrefs={setReaderPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} onCover={() => { stopSpeech(); stopVoice(); setClosingBook({ story, cover: lastOpen.current.cover || (story.cover && story.cover.uri ? { uri: story.cover.uri } : null), rect: lastOpen.current.rect }); }} toast={toast} menuRequest={playMenu} landscape={landscape} coverShut={!!closingBook} onOpenCover={() => setCoverOpenReq((n) => n + 1)} />
+            autoStart={!!queue} onFinished={onBookFinished} onSettings={() => setSettingsGate(true)} onPlaylists={() => go('playlists')} setPrefs={setReaderPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} onCover={() => { stopSpeech(); stopVoice(); setClosingBook({ story, cover: lastOpen.current.cover || (story.cover && story.cover.uri ? { uri: story.cover.uri } : null), rect: lastOpen.current.rect }); }} toast={toast} menuRequest={playMenu} landscape={landscape} coverShut={!!closingBook} onOpenCover={() => setCoverOpenReq((n) => n + 1)} onShown={() => { if (openingRef.current) { clearTimeout(openingRef.current); openingRef.current = null; setOpening(null); } }} />
         )}
         {closingBook ? (
           <BookOpen closing openSignal={coverOpenReq} u={u} story={closingBook.story} cover={closingBook.cover} rect={closingBook.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}
@@ -349,7 +352,7 @@ function Root() {
         ) : null}
         {opening ? (
           <BookOpen u={u} story={opening.story} cover={opening.cover} rect={opening.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}
-            onDone={() => { setStory(opening.story); go('reader'); setTimeout(() => setOpening(null), 60); }} />
+            onDone={() => { setStory(opening.story); go('reader'); clearTimeout(openingRef.current); openingRef.current = setTimeout(() => { openingRef.current = null; setOpening(null); }, 900); /* (the reader normally says it's ready well before this) */ }} />
         ) : null}
         {/* while the notebook flies, the bottom bar stays put on top (it doesn't fade with the shelf) */}
         {flyer && !sideways ? <View pointerEvents="none" style={{ position: 'absolute', zIndex: 140, left: 0, right: 0, bottom: 0, height: barH, backgroundColor: colors.bar }}><Felt /></View> : null}

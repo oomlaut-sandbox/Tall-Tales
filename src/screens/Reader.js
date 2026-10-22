@@ -97,7 +97,7 @@ export function Seg({ value, options, onChange, stacked }) {
   );
 }
 
-export default function Reader({ coverShut = false, onOpenCover, u, story, prefs, setPrefs, openMenu, goLibrary, onCover, toast, menuRequest, landscape, setToastSpot, autoStart, onFinished, onSettings, onPlaylists }) {
+export default function Reader({ coverShut = false, onOpenCover, u, story, prefs, setPrefs, openMenu, goLibrary, onCover, toast, menuRequest, landscape, setToastSpot, autoStart, onFinished, onSettings, onPlaylists, onShown }) {
   const tr = useT(); // the reader's own panel, in the app's language
   const appLang = useLang();
   const controls = useControls(); // parental controls: recording, sharing and printing may be switched off
@@ -111,6 +111,13 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   useEffect(() => { markReadToday(); }, []);
   useEffect(() => { if (pages[idx] && pages[idx].end) { markFinished(story, story.cover || (story.pages.find((pg) => pg.image) || {}).image); if (onFinished) onFinished(); } }, [idx]);
   const [size, setSize] = useState(null); // book area {w,h}
+  // tells App once the book is laid out and drawn (the opening cover then steps aside, never before)
+  const shownSent = useRef(false);
+  useEffect(() => {
+    if (!size || shownSent.current || !onShown) return;
+    shownSent.current = true;
+    requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => onShown())));
+  }, [size]);
   const [hl, setHl] = useState(-1);
   const [bubble, setBubble] = useState(null);
   const [reading, setReading] = useState(false);

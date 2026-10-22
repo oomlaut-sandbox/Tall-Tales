@@ -12,6 +12,11 @@ import { bookLayout } from './BookFrame';
 import { Fade, PageView } from './PageView';
 import { Felt, DESK_FELT, DeskFelt } from '../look';
 import { playSound } from '../sound';
+import { measureTile } from '../tileSpots';
+
+// wait a couple of frames (so whatever was just built is on screen before an animation starts: an animation
+// started while the phone is still busy drawing skips its first frames)
+const afterFrames = (n, fn) => { if (n <= 0) fn(); else requestAnimationFrame(() => afterFrames(n - 1, fn)); };
 
 // closing: the same, backwards. From the first spread the cover swings shut over the words square and stays there;
 // swipe up and it glides back to its place in My Library (onGone); tap it (or swipe the other way) and it opens again
@@ -47,41 +52,70 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
     shade: flip.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.25, 0] }),
   }).current;
   const [phase, setPhase] = useState(closing ? 1 : 0); // 0 fade + move, 1 flipping, 2 landed (flat); closing: 3 shut
+  // only one thing ever happens to the shut book: it opens again or it goes back to the shelf (never both, never twice)
+  const decided = useRef(null); // null | 'open' | 'leave'
+  const shut = useRef(!closing); // the closing swing has finished
   const swingOpen = () => {
+    if (decided.current) return;
+    decided.current = 'open';
+    if (!shut.current) return; // still closing: it opens as soon as it has shut
     setPhase(1);
-    playSound('coverOpen');
-    Animated.timing(flip, { toValue: 1, duration: 1000, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => {
-      setPhase(2);
-      requestAnimationFrame(() => requestAnimationFrame(() => onDone && onDone()));
+    afterFrames(2, () => {
+      playSound('coverOpen');
+      Animated.timing(flip, { toValue: 1, duration: 1000, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => {
+        setPhase(2);
+        requestAnimationFrame(() => requestAnimationFrame(() => onDone && onDone()));
+      });
     });
   };
-  const left = useRef(false);
+  // where the cover goes back to: its tile in My Library as it is now (measured once the library is back);
+  // when the tile can't be found (a playlist book, a Store book, off screen) the cover fades out where it is
+  const back = useRef(null);
+  if (!back.current) {
+    const r0 = rect || null;
+    back.current = { dx: new Animated.Value(0), dy: new Animated.Value(0), k1: new Animated.Value(0), fade: new Animated.Value(1), r0 };
+  }
   const leave = () => { // the closed book glides back to its place on the shelf as the library comes back
-    if (left.current) return;
-    left.current = true;
+    if (decided.current) return;
+    decided.current = 'leave';
+    if (!shut.current) return; // still closing: it goes as soon as it has shut
     setPhase(4);
     if (onLeave) onLeave();
-    Animated.parallel([
-      Animated.timing(mv, { toValue: 0, duration: 560, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
-      Animated.timing(bg, { toValue: 0, duration: 420, delay: 200, easing: Easing.in(Easing.quad), useNativeDriver: true }),
-    ]).start(() => onGone && onGone());
+    let tries = 0;
+    const go = (spot) => {
+      const ok = spot && spot.w > 0 && spot.y + spot.h > 0 && spot.y < winH && spot.x + spot.w > 0 && spot.x < winW;
+      const B = back.current;
+      if (ok) {
+        B.dx.setValue(spot.x + spot.w / 2 - (tx + s / 2));
+        B.dy.setValue(spot.y + spot.h / 2 - (ty + s / 2));
+        B.k1.setValue(1 - spot.w / s);
+      } else { B.dx.setValue(0); B.dy.setValue(0); B.k1.setValue(0.06); }
+      Animated.parallel([
+        Animated.timing(mv, { toValue: 0, duration: 560, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
+        Animated.timing(bg, { toValue: 0, duration: 420, delay: 200, easing: Easing.in(Easing.quad), useNativeDriver: true }),
+        ok ? null : Animated.timing(B.fade, { toValue: 0, duration: 420, delay: 100, easing: Easing.in(Easing.quad), useNativeDriver: true }),
+      ].filter(Boolean)).start(() => onGone && onGone());
+    };
+    const look = () => afterFrames(2, () => measureTile(story.id, (spot) => {
+      if (spot || ++tries >= 4) go(spot); else look();
+    }));
+    look();
   };
   const acts = useRef({}); acts.current = { ...acts.current, swingOpen, leave, phase };
-  useEffect(() => { if (closing && openSignal && acts.current.phase === 3) acts.current.swingOpen(); }, [openSignal]);
+  useEffect(() => { if (closing && openSignal) acts.current.swingOpen(); }, [openSignal]);
   const shutPan = useRef(PanResponder.create({
-    onStartShouldSetPanResponder: () => acts.current.phase === 3,
-    onStartShouldSetPanResponderCapture: () => acts.current.phase === 3,
-    onMoveShouldSetPanResponderCapture: () => acts.current.phase === 3,
+    onStartShouldSetPanResponder: () => acts.current.phase === 3 || (closing && acts.current.phase === 1 && !decided.current),
+    onStartShouldSetPanResponderCapture: () => acts.current.phase === 3 || (closing && acts.current.phase === 1 && !decided.current),
+    onMoveShouldSetPanResponderCapture: () => acts.current.phase === 3 || (closing && acts.current.phase === 1 && !decided.current),
     onPanResponderTerminationRequest: () => false,
     onPanResponderGrant: () => { acts.current.moved = false; },
     // a clear swipe up: off to the library straight away (no need to wait for the finger to lift)
     onPanResponderMove: (_, g) => {
       if (Math.abs(g.dx) > 8 || Math.abs(g.dy) > 8) acts.current.moved = true;
-      if (acts.current.phase === 3 && g.dy < -24 && Math.abs(g.dy) > Math.abs(g.dx)) acts.current.leave();
+      if (g.dy < -24 && Math.abs(g.dy) > Math.abs(g.dx)) acts.current.leave();
     },
-    onMoveShouldSetPanResponder: () => acts.current.phase === 3,
+    onMoveShouldSetPanResponder: () => acts.current.phase === 3 || (closing && acts.current.phase === 1 && !decided.current),
     onPanResponderRelease: (_, g) => {
-      if (acts.current.phase !== 3) return;
       if (g.dy < -24 && Math.abs(g.dy) > Math.abs(g.dx)) acts.current.leave(); // swipe up: back to the library
       else acts.current.swingOpen(); // a tap or another swipe: open it again
     },
@@ -89,7 +123,15 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
   useEffect(() => {
     if (closing) { // swing shut over the words square
       playSound('coverClose');
-      Animated.timing(flip, { toValue: 0, duration: 950, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => setPhase(3));
+      // (everything is built and drawn first, then it swings: the inside of the cover lies exactly where the
+      // reader's picture was, so the short wait doesn't show)
+      afterFrames(2, () => Animated.timing(flip, { toValue: 0, duration: 950, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => {
+        shut.current = true;
+        setPhase(3);
+        // tapped or swiped while it was still closing: do that now
+        const d = decided.current;
+        if (d) { decided.current = null; if (d === 'open') acts.current.swingOpen(); else acts.current.leave(); }
+      }));
       return;
     }
     playSound('tap');
@@ -97,12 +139,15 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
       Animated.timing(bg, { toValue: 1, duration: 200, easing: Easing.out(Easing.quad), useNativeDriver: true }), // a quick dissolve to the felt
       Animated.timing(mv, { toValue: 1, duration: 520, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
     ]).start(() => {
+      // the words page and the shape under the picture are built (hidden under the cover) before the swing starts
       setPhase(1);
-      playSound('coverOpen');
-      Animated.timing(flip, { toValue: 1, duration: 1100, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => {
-        // land perfectly flat: swap the turned cover for a plain, straight page before the reader takes over
-        setPhase(2);
-        requestAnimationFrame(() => requestAnimationFrame(() => onDone && onDone()));
+      afterFrames(2, () => {
+        playSound('coverOpen');
+        Animated.timing(flip, { toValue: 1, duration: 1100, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => {
+          // land perfectly flat: swap the turned cover for a plain, straight page before the reader takes over
+          setPhase(2);
+          requestAnimationFrame(() => requestAnimationFrame(() => onDone && onDone()));
+        });
       });
     });
   }, []);
@@ -111,11 +156,16 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
   const r = rect || { x: tx, y: ty, w: s, h: s };
   const dx = r.x + r.w / 2 - (tx + s / 2), dy = r.y + r.h / 2 - (ty + s / 2), k = r.w / s;
   const moveRef = useRef(null); // made once too
-  if (!moveRef.current) moveRef.current = [
-    { translateX: mv.interpolate({ inputRange: [0, 1], outputRange: [dx, 0] }) },
-    { translateY: mv.interpolate({ inputRange: [0, 1], outputRange: [dy, 0] }) },
-    { scale: mv.interpolate({ inputRange: [0, 1], outputRange: [k, 1] }) },
-  ];
+  if (!moveRef.current) {
+    // opening: from the tapped tile; going back: to the tile as it is now (set in leave)
+    if (!closing) { back.current.dx.setValue(dx); back.current.dy.setValue(dy); back.current.k1.setValue(1 - k); }
+    const away = Animated.subtract(1, mv); // 1 at the tile, 0 on the words square
+    moveRef.current = [
+      { translateX: Animated.multiply(away, back.current.dx) },
+      { translateY: Animated.multiply(away, back.current.dy) },
+      { scale: Animated.subtract(1, Animated.multiply(away, back.current.k1)) },
+    ];
+  }
   const move = moveRef.current;
   const turn = L.wide ? A.turnSide : A.turnUp;
   const leaf = L.wide
@@ -156,13 +206,13 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
           The turning cover and the landed page cast none of their own: those used to darken the spine while
           it opened, and it went lighter the moment the reader took over. */}
       {phase >= 1 && phase <= 2 ? (
-        <Animated.View pointerEvents="none" style={[styles.shadow, { position: 'absolute', left: bx, top: by, width: s, height: s, backgroundColor: DESK_FELT ? '#262626' : colors.desk, opacity: A.plateIn }]}>
+        <Animated.View pointerEvents="none" shouldRasterizeIOS renderToHardwareTextureAndroid style={[styles.shadow, { position: 'absolute', left: bx, top: by, width: s, height: s, backgroundColor: DESK_FELT ? '#262626' : colors.desk, opacity: A.plateIn }]}>
           <View style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]}><DeskFelt spot="bookopenPlate" /></View>
         </Animated.View>
       ) : null}
       {/* the first words page, uncovered as the cover swings open */}
       {phase >= 1 && phase <= 2 ? (
-        <View pointerEvents="none" style={[styles.shadow, { position: 'absolute', left: tx, top: ty, width: s, height: s }]}>
+        <View pointerEvents="none" shouldRasterizeIOS renderToHardwareTextureAndroid style={[styles.shadow, { position: 'absolute', left: tx, top: ty, width: s, height: s }]}>
           <View style={{ width: s, height: s, overflow: 'hidden' }}>
             <View style={{ position: 'absolute', left: L.wide ? -s : 0, top: L.wide ? 0 : -s }}>
               <PageView page={first} width={L.wide ? 2 * s : s} height={L.wide ? s : 2 * s} textScale={textScale} fontKey={fontKey} />
@@ -178,7 +228,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
         </View>
       ) : null}
       {/* the cover */}
-      <Animated.View pointerEvents="none" style={{ position: 'absolute', left: tx, top: ty, width: s, height: s, transform: move, opacity: phase === 2 ? 0 : 1 }}>
+      <Animated.View pointerEvents="none" style={{ position: 'absolute', left: tx, top: ty, width: s, height: s, transform: move, opacity: phase === 2 ? 0 : phase === 4 ? back.current.fade : 1 }}>
         {/* its shadow while it glides in, on a still shape (never on the turning cover), gone as the turn begins */}
         <Animated.View style={[StyleSheet.absoluteFill, styles.shadow, { backgroundColor: '#828282', opacity: A.plateOut }]} />
         <Animated.View style={[{ width: s, height: s, backgroundColor: '#828282' }, leaf]}>

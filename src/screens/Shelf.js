@@ -1,5 +1,6 @@
 // My Library and Book Store.
 import React, { useEffect, useRef, useState } from 'react';
+import { clearTileSpot, setTileSpot } from '../tileSpots';
 import { Animated, Easing, Image, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
@@ -29,11 +30,13 @@ const TILE = { 2: 47, 3: 31, 4: 22.5 };
 const tileWidth = (w) => `${TILE[COLS(w)]}%`;
 const gridGap = (w) => { const n = COLS(w); return `${(100 - n * TILE[n]) / (n - 1)}%`; };
 
-function Tile({ plain, u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, option, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
+function Tile({ spotId, plain, u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, option, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
   const t = useT();
   const { width: winW } = useWindowDimensions();
   const ear = u * 3;
   const coverRef = useRef(null);
+  // registered by book id, so a shut book can find its way back here
+  useEffect(() => { if (spotId == null) return; setTileSpot(spotId, coverRef); return () => clearTileSpot(spotId, coverRef); }, [spotId]);
   // tells the caller where the cover is on screen (so the book can open from right there)
   const press = () => {
     if (!onPress) return;
@@ -213,7 +216,7 @@ export function Library({ onProfiles, u, stories, openStory, openMenu, onCreate,
         {/* (the parental controls can hide books rated for older children) */}
         {stories.filter((s) => ageAllowed(ageOf(null, s), controls.childAge)).map((s) => (
           // just the title under each cover (no author, pages or other details)
-          <Tile key={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title}
+          <Tile key={s.id} spotId={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title}
             selecting={selecting} selected={picked.includes(s.id)}
             onPress={(rect) => (selecting ? toggle(s.id) : openStory(s, rect))}
             onLongPress={!selecting && s.mine ? () => onEdit(s) : undefined} />
