@@ -474,7 +474,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
           ) : null}
         </View>
         {across ? (
-          <View style={{ flex: 1, padding: M, minHeight: cs + 2 * M }}>
+          <View style={{ flex: 1, padding: M, paddingLeft: M + 16, paddingRight: M + 30, paddingBottom: M + 10, minHeight: cs + 2 * M }}>{/* the words with generous margins */}
             <View>
               <View style={{ height: 26 }} />
               {info}
