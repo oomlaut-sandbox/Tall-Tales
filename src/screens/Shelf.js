@@ -139,7 +139,7 @@ function WhoReads({ onPress }) {
   return (
     <View style={{ width: tileWidth(winW), alignItems: 'flex-start' }}>
       <Pressable onPress={onPress} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Profiles')}
-        style={{ flexDirection: 'row', alignItems: 'center', gap: p ? 10 : 7, marginTop: 4 }}>
+        style={{ flexDirection: 'row', alignItems: 'center', gap: p ? 10 : 7, marginTop: 4, backgroundColor: 'rgba(0,0,0,0.45)', borderRadius: 14, paddingVertical: 8, paddingLeft: p ? 8 : 12, paddingRight: 16 }}>{/* on a see-through black box with rounded corners */}
         {p ? <Image source={feltFor(p.color)} style={{ width: 40, height: 40 }} resizeMode="contain" />
           : <View style={{ alignItems: 'center' }}>{/* a small person: only as tall as itself, so the word centres on it */}
               <View style={{ width: 9, height: 9, borderRadius: 5, backgroundColor: 'rgba(235,235,235,0.9)', marginBottom: 1.5 }} />
