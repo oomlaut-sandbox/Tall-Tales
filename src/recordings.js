@@ -3,8 +3,8 @@
 // recording stays with its page when pages are moved or deleted.
 // { "<storyId>:<pageId>": { uri, seconds, levels?, start?, end? } }            the first reader ('me')
 // { "<storyId>:<pageId>@<readerId>": { … } }                                 every other reader
-// Readers: [{ id, name, char }] (family-wide; char is one of the felt characters, so a child who can't read yet
-// can tell Grandpa from Mom). Which voice each book plays: { <storyId>: 'narrator' | <readerId> }.
+// Readers: [{ id, name, photo? }] (family-wide; a photo chosen or taken, so a child who can't read yet can tell
+// Grandpa from Mom; without one, the first letter of the name). Which voice each book plays: { <storyId>: 'narrator' | <readerId> }.
 import { deleteFile, keepFile, liveUri, loadJSON, saveJSON } from './storage';
 
 export const MAX_READERS = 3;
@@ -31,26 +31,27 @@ export async function getReaders() {
       const r = await load();
       readers = Object.keys(r).length ? [{ id: 'me', name: 'Me' }] : [];
     }
-    // readers from before characters: each gets one of its own
-    readers = readers.map((x, i) => (x.char ? x : { ...x, char: READER_CHARS[i % READER_CHARS.length] }));
   }
-  return readers;
+  return readers.map((x) => (x.photo ? { ...x, photo: liveUri(x.photo) } : x));
 }
-// the order new readers get their character in (each different from the ones already taken)
-export const READER_CHARS = ['orange', 'blue', 'grey', 'green', 'red'];
-export const nextReaderChar = (list) => READER_CHARS.find((c) => !list.some((x) => x.char === c)) || READER_CHARS[0];
-export async function addReader(name, char) {
+export async function addReader(name, photo) {
   const list = await getReaders();
   if (list.length >= MAX_READERS) return null;
   const id = list.some((x) => x.id === 'me') ? `r${Date.now().toString(36)}` : 'me';
-  readers = [...list, { id, name: name.trim() || 'Me', char: char || nextReaderChar(list) }];
+  readers = [...list, { id, name: name.trim() || 'Me' }];
   await saveJSON('readers', readers);
+  if (photo) await setReaderPhoto(id, photo);
   return id;
 }
-export async function setReaderChar(id, char) {
-  const list = await getReaders();
-  readers = list.map((x) => (x.id === id ? { ...x, char } : x));
+// a reader's photo (from the phone's photos or the camera), kept in the app's own folder
+export async function setReaderPhoto(id, uri) {
+  await getReaders();
+  let kept = uri;
+  try { kept = await keepFile(uri, 'readers', `${id}-${Date.now().toString(36)}.jpg`); } catch (e) {}
+  const old = (readers.find((x) => x.id === id) || {}).photo;
+  readers = readers.map((x) => (x.id === id ? { ...x, photo: kept } : x));
   await saveJSON('readers', readers);
+  if (old && old !== kept) { try { deleteFile(old); } catch (e) {} }
 }
 export async function renameReader(id, name) {
   const list = await getReaders();

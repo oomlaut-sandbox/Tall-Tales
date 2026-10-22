@@ -195,11 +195,11 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   const askToRecord = () => { hushForRecording(); setPanel(null); setAskReader(true); };
   useEffect(() => { refreshRecPages(); }, [refreshRecPages]);
   // Who can read this book: the narrator, and everyone in the family who recorded at least one of its pages
-  const familyOptions = readers.filter((r) => recAll.some((x) => x.reader === r.id)).map((r) => ({ id: r.id, name: r.id === 'me' && r.name === 'Me' ? tr('Me') : r.name, char: r.char }));
-  const voiceOptions = [{ id: 'narrator', name: tr('Narrator'), char: null }, ...familyOptions]; // (the Play panel's list)
+  const familyOptions = readers.filter((r) => recAll.some((x) => x.reader === r.id)).map((r) => ({ id: r.id, name: r.id === 'me' && r.name === 'Me' ? tr('Me') : r.name, photo: r.photo }));
+  const voiceOptions = [{ id: 'narrator', name: tr('Narrator'), narrator: true }, ...familyOptions]; // (the Play panel's list)
   const shownVoice = voiceOptions.some((o) => o.id === voice) ? voice : 'narrator';
   // the box from the face on the bar: every voice by name (Fatima, Henry, then the family: Me, Opa…)
-  const boxOptions = [...NARRATORS.map(([k, label]) => ({ id: `narrator:${k}`, name: label, char: null })), ...familyOptions];
+  const boxOptions = [...NARRATORS.map(([k, label]) => ({ id: `narrator:${k}`, name: label, narrator: true })), ...familyOptions];
   const boxValue = shownVoice === 'narrator' ? `narrator:${narratorOf(prefs)}` : shownVoice;
   const showVoices = true; // the face is always on the bar: there are always the two narrators to choose from
   const [voiceBox, setVoiceBox] = useState(false); // the 'Who reads this book?' box from the face on the bar
@@ -946,7 +946,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
             {showVoices ? (
               <View style={cs}>
                 <Pressable onPress={withTap(() => setVoiceBox(true))} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Who reads this book?')}>
-                  <VoiceFace char={(familyOptions.find((o) => o.id === shownVoice) || {}).char} size={u * 7} />
+                  {(() => { const f = familyOptions.find((o) => o.id === shownVoice); return <VoiceFace photo={f && f.photo} name={f && f.name} narrator={!f} size={u * 7} />; })()}
                 </Pressable>
               </View>
             ) : null}

@@ -3,7 +3,7 @@ import { keyFor, scopedKey } from './scope';
 const mem = {};
 // (#voice-demo: two family readers who recorded a page or two of The Rough Lives of Animals, to show the voice picker)
 if (typeof window !== 'undefined' && /voice-demo/.test(window.location.hash)) {
-  mem.readers = JSON.stringify([{ id: 'me', name: 'Me', char: 'orange' }, { id: 'ropa', name: 'Opa', char: 'blue' }]);
+  mem.readers = JSON.stringify([{ id: 'me', name: 'Me' }, { id: 'ropa', name: 'Opa' }]);
   const rec = { uri: 'demo.m4a', seconds: 5 };
   mem.recordings = JSON.stringify({ 'rough-lives:rl01': rec, 'rough-lives:rl01@ropa': rec, 'rough-lives:rl02@ropa': rec });
 }
