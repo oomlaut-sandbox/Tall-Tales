@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
   choice: { paddingHorizontal: 14, height: 36, borderRadius: 18, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
   choiceOn: { backgroundColor: colors.green },
   choiceText: { fontFamily: fonts.ui, fontSize: 15, color: '#dcdcdc', fontWeight: '600' },
-  swatchOn: { borderWidth: 1, borderColor: 'rgba(255,255,255,0.9)', backgroundColor: 'rgba(0,0,0,0.35)' },
+  swatchOn: { borderColor: 'transparent', backgroundColor: 'rgba(0,0,0,0.35)' }, // dark box, no outline
   swatch: { width: 60, height: 70, borderRadius: 13, borderWidth: 1, borderColor: 'transparent', alignItems: 'center', justifyContent: 'center' },
   buttonShadow: { shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.55, shadowRadius: 6, elevation: 6 },
 });
