@@ -81,10 +81,10 @@ export default function ReaderPick({ initial, onCancel, onStart }) {
           ) : null}
           {/* the reader's photo: what a child sees on the bar when this voice reads */}
           {adding || pick ? (() => {
-            const cur = adding ? { photo, name: name || '?' } : (list.find((x) => x.id === pick) || {});
+            const cur = adding ? { photo } : (list.find((x) => x.id === pick) || {});
             return (
               <View style={styles.photoRow}>
-                <VoiceFace photo={cur.photo} name={cur.name} size={104} />
+                <VoiceFace photo={cur.photo} person size={104} />{/* no photo yet: a head and shoulders */}
                 <View style={{ flex: 1, gap: 8, alignItems: 'flex-start' }}>
                   <Pressable onPress={withTap(() => getPhoto('library'))} style={styles.photoBtn} accessibilityRole="button"><Text numberOfLines={1} style={styles.photoText}>{tr('Choose a photo')}</Text></Pressable>
                   <Pressable onPress={withTap(() => getPhoto('camera'))} style={styles.photoBtn} accessibilityRole="button"><Text numberOfLines={1} style={styles.photoText}>{tr('Take a photo')}</Text></Pressable>

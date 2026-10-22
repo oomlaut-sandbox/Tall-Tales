@@ -529,8 +529,10 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         ) : null}
       </View>
       {wide ? (
-        <View style={{ width: BL.rightW, backgroundColor: colors.bar, flexDirection: 'row', justifyContent: 'flex-end' }}>
-          <Bar u={u} vertical>
+        // (each way has its own key: turning the phone builds the bar afresh, so nothing of the sideways layout
+        // (its width, its row) can stay behind on the upright bar and push Done off the screen)
+        <View key="bar-side" style={{ width: BL.rightW, backgroundColor: colors.bar, flexDirection: 'row', justifyContent: 'flex-end' }}>
+          <Bar key="bar-v" u={u} vertical>
             <Burger u={u} onPress={openMenu} />
             <View style={{ alignItems: 'center', gap: 18 }}>
               <Text style={[styles.sub, { textAlign: 'center', marginBottom: 22 }]}>{i + 1}/{total}</Text>
@@ -539,8 +541,8 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           </Bar>
         </View>
       ) : (
-        <View style={{ backgroundColor: colors.bar, paddingTop: spare / 2 }}>
-          <Bar u={u}>
+        <View key="bar-bottom" style={{ alignSelf: 'stretch', flexDirection: 'column', backgroundColor: colors.bar, paddingTop: spare / 2 }}>
+          <Bar key="bar-h" u={u}>
             <Burger u={u} onPress={openMenu} />
             {barTitle}
             {barBtns(false)}
