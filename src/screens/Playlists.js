@@ -56,16 +56,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
   const books = (p) => p.books.map(byId).filter(Boolean); // only books still on this child's shelf
 
   return (
-    <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => (
-      <Bar u={u} vertical={v}>
-        <Burger u={u} onPress={openMenu} />
-        <View style={{ flex: 1 }} />
-        {/* Done: back out of a playlist being changed, else leave Playlists */}
-        <Pressable onPress={() => (pl ? (adding ? setAdding(false) : setEdit(null)) : onDone && onDone())} hitSlop={8} accessibilityRole="button">
-          <View style={styles.donePill}><Text style={styles.donePillText}>{t('Done')}</Text></View>
-        </Pressable>
-      </Bar>
-    )}>
+    <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }, !IS_TABLET && { backgroundColor: 'transparent' }]}>
         {/* Jörg's brown felt banner (phone); its soft bottom edge shows the desk, so the colour only fills the status bar strip */}
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: insets.top + 2, backgroundColor: BAND_COLOR }} /> : null}
@@ -124,6 +115,10 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
               })}
               <Pressable onPress={() => { const n = newPlaylist(t('My playlist')); setLists((l) => [...l, n]); setEdit(n.id); setAdding(true); }} style={[styles.pill, { backgroundColor: '#3a3a3a', alignSelf: 'flex-end', marginTop: 14 }]} accessibilityRole="button">{/* on the right, with room above */}
                 <Text style={styles.pillText}>+  {t('New playlist')}</Text>
+              </Pressable>
+              {/* Done: under New playlist, back to My Library */}
+              <Pressable onPress={() => onDone && onDone()} style={[styles.pill, { backgroundColor: colors.green, alignSelf: 'flex-end' }]} accessibilityRole="button">
+                <Text style={styles.pillText}>{t('Done')}</Text>
               </Pressable>
             </>
           )}
@@ -206,11 +201,11 @@ const styles = StyleSheet.create({
   donePill: { backgroundColor: colors.green, paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' },
   donePillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, paddingHorizontal: 3 },
   link: { fontFamily: fonts.ui, fontSize: 15, color: colors.white, textDecorationLine: 'underline' },
-  card: { backgroundColor: '#3a3a3a', borderRadius: 14, padding: 16, gap: 12 },
+  card: { backgroundColor: '#262626', borderRadius: 14, padding: 16, gap: 12 },
   cardTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 18, color: colors.white },
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
   pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
-  chip: { paddingHorizontal: 16, height: 44, borderRadius: 22, backgroundColor: '#2a2a2a', alignItems: 'center', justifyContent: 'center' },
+  chip: { paddingHorizontal: 16, height: 44, borderRadius: 22, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
   chipOn: { backgroundColor: colors.blue },
   chipText: { fontFamily: fonts.ui, fontSize: 15, color: '#dcdcdc', fontWeight: '600' },
   input: { height: 48, borderRadius: 10, backgroundColor: '#d6d6d6', paddingHorizontal: 14, fontFamily: fonts.ui, fontSize: 20, color: '#222' },
