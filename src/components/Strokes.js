@@ -36,7 +36,7 @@ export function StrokesView({ strokes, width, height, live }) {
 }
 
 // A drawing as a picture (for the book maker): a square PNG on white, as a data address.
-export async function strokesToImage(strokes, px = 1600, bg = '#ffffff') {
+export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo = null) { // eslint-disable-line no-unused-vars
   const out = document.createElement('canvas');
   out.width = px; out.height = px;
   const c = document.createElement('canvas'); // the drawing on its own sheet, so the eraser rubs down to the paper

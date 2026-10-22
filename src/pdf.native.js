@@ -142,9 +142,9 @@ export async function shareStoryPdf(story, layout, fontKey) {
 async function fileData(uri, type) {
   try { return `data:${type};base64,${await new File(uri).base64()}`; } catch (e) { return null; }
 }
-async function drawingData(strokes, bg) {
-  if (!strokes || !strokes.length) return null;
-  try { const uri = await strokesToImage(strokes, 1200, bg); return await fileData(uri, 'image/png'); } catch (e) { return null; }
+async function drawingData(strokes, bg, photo = null) {
+  if ((!strokes || !strokes.length) && !photo) return null;
+  try { const uri = await strokesToImage(strokes || [], 1200, bg, photo); return await fileData(uri, 'image/png'); } catch (e) { return null; }
 }
 
 export async function buildNotebookHtml(pages, from = 1) {
@@ -154,17 +154,18 @@ export async function buildNotebookHtml(pages, from = 1) {
   for (let k = 0; k < pages.length; k++) {
     const p = pages[k];
     let top = '', bottom = '';
+    // every picture is one square image (a drawing on a photo is drawn together first): the iPhone's print
+    // layout doesn't stack pictures on top of each other, so nothing here is layered or absolutely placed
     if (p.kind === 'sketch') {
       const a = await drawingData(p.strokes, '#f4f2ed'), b = await drawingData(p.strokes2, '#f4f2ed');
       top = a ? `<img src="${a}"/>` : '';
       bottom = b ? `<img src="${b}"/>` : '';
     } else {
-      const photo = p.uri ? await fileData(p.uri, /\.png($|\?)/i.test(p.uri) ? 'image/png' : 'image/jpeg') : null;
-      const ink = await drawingData(p.strokes, photo ? '#00000000' : '#f4f2ed');
-      top = `${photo ? `<img src="${photo}"/>` : ''}${ink ? `<img class="over" src="${ink}"/>` : ''}`;
-      bottom = (p.text || '').trim() ? `<div class="note"><p>${esc(p.text).replace(/\n/g, '<br/>')}</p></div>` : '';
+      const pic = await drawingData(p.strokes, '#f4f2ed', p.uri || null);
+      top = pic ? `<img src="${pic}"/>` : '';
+      bottom = (p.text || '').trim() ? `<p>${esc(p.text).replace(/\n/g, '<br/>')}</p>` : '';
     }
-    out.push(`<div class="pg"><div class="nb"><div class="nsq t">${top}</div><div class="nsq b">${bottom}</div></div><div class="num">My Notebook · ${from + k}</div></div>`);
+    out.push(`<div class="pg"><div class="nb"><div class="nsq t">${top}</div><div class="nsq b${p.kind === 'sketch' ? '' : ' note'}">${bottom}</div></div><div class="num">My Notebook · ${from + k}</div></div>`);
   }
   const style = `${face}
 @page{size:${PAGE_W}pt ${PAGE_H}pt;margin:0}
@@ -175,9 +176,8 @@ html,body{margin:0;padding:0;background:#fff}
 .nb{width:${SQN}pt;display:flex;flex-direction:column;border:1pt solid #cfcac0;border-radius:26pt;overflow:hidden;background:#f4f2ed}
 .nsq{width:${SQN}pt;height:${SQN}pt;position:relative;overflow:hidden}
 .nsq.t{border-bottom:1pt solid #bdb7ab}
-.nsq img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.nsq img.over{object-fit:fill}
-.note{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 34pt;
+.nsq img{display:block;width:${SQN}pt;height:${SQN}pt}
+.note{display:flex;align-items:center;justify-content:center;padding:0 34pt;
   background:repeating-linear-gradient(to bottom,transparent 0,transparent 26pt,#dcd7cd 26pt,#dcd7cd 27pt)}
 .note p{margin:0;font-family:Note,"Courier New",monospace;font-size:15pt;line-height:27pt;color:#2b2b2b;text-align:center}
 .num{position:absolute;bottom:22pt;font-size:11pt;color:#999;font-family:Helvetica,Arial,sans-serif}`;

@@ -34,10 +34,21 @@ export function StrokesView({ strokes, width, height, live }) {
 }
 
 // A drawing as a picture (for the book maker): a square PNG, `px` wide, on white. Resolves to the file's address.
-export async function strokesToImage(strokes, px = 1600, bg = '#ffffff') {
+// photo: a photo to lie underneath (filling the square, cropped from its middle), for a drawing on a photo.
+export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo = null) {
   const surface = (Skia.Surface.MakeOffscreen && Skia.Surface.MakeOffscreen(px, px)) || Skia.Surface.Make(px, px);
   const canvas = surface.getCanvas();
   canvas.clear(Skia.Color(bg));
+  if (photo) {
+    try {
+      const data = Skia.Data.fromBytes(await new File(photo).bytes());
+      const img = Skia.Image.MakeImageFromEncoded(data);
+      if (img) {
+        const w = img.width(), h = img.height(), s = Math.min(w, h);
+        canvas.drawImageRect(img, Skia.XYWHRect((w - s) / 2, (h - s) / 2, s, s), Skia.XYWHRect(0, 0, px, px), Skia.Paint());
+      }
+    } catch (e) {}
+  }
   canvas.saveLayer(); // the drawing on its own layer, so the eraser rubs down to the paper, not through it
   const list = drawOrder(strokes);
   for (const st of list) {
