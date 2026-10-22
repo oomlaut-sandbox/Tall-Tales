@@ -206,8 +206,8 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
                       <View style={styles.sureBox}>
                         <Text style={styles.sureText}>{t('Remove {name}? Their notebook and badges stay on this phone, but nobody will see them.', { name: form.name || '?' })}</Text>
                         <View style={{ flexDirection: 'row', gap: 10, marginTop: 26 }}>
-                          <Pressable onPress={() => { setSure(false); removeProfile(form.id); setForm(null); }} style={[styles.pill, styles.pillFit, { backgroundColor: '#b3261e' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Remove')}</Text></Pressable>
-                          <Pressable onPress={() => setSure(false)} style={[styles.pill, styles.pillFit, { backgroundColor: '#3a3a3a', marginLeft: 'auto' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Keep')}</Text></Pressable>
+                          <Pressable onPress={() => { setSure(false); removeProfile(form.id); setForm(null); }} style={[styles.pill, styles.pillFit, { backgroundColor: '#b3261e', marginLeft: 'auto' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Remove')}</Text></Pressable>
+                          <Pressable onPress={() => setSure(false)} style={[styles.pill, styles.pillFit, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Keep')}</Text></Pressable>
                         </View>
                       </View>
                     </View>

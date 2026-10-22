@@ -53,7 +53,7 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
           maxLength={3}
           autoFocus
           onSubmitEditing={check}
-          style={styles.input}
+          style={[styles.input, { marginTop: 16 }]}
           accessibilityLabel={t('Answer')}
         />
         {wrong ? <Text style={styles.wrong}>{t('That’s not quite right. Try again.')}</Text> : null}
@@ -68,13 +68,13 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
 
 const styles = StyleSheet.create({
   scrim: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', paddingHorizontal: 20, zIndex: 80 },
-  card: { backgroundColor: colors.panel, padding: 24, gap: 12 },
+  card: { backgroundColor: colors.panel, paddingHorizontal: 26, paddingTop: 26, paddingBottom: 28, gap: 14 }, // room to breathe
   kicker: { color: colors.muted, fontFamily: fonts.ui, fontSize: 13, fontWeight: '700' },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 24 },
   body: { color: '#e2e2e2', fontFamily: fonts.ui, fontSize: 15, lineHeight: 21 },
   input: { backgroundColor: '#2e2e2e', color: colors.white, fontFamily: fonts.ui, fontSize: 24, fontWeight: '700', paddingHorizontal: 14, paddingVertical: 10 },
   wrong: { color: '#ff7b7b', fontFamily: fonts.ui, fontSize: 14 },
-  row: { flexDirection: 'row', gap: 10, marginTop: 6 },
+  row: { flexDirection: 'row', gap: 10, marginTop: 14 },
   btn: { flex: 1, backgroundColor: colors.tile, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
   btnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
 });
