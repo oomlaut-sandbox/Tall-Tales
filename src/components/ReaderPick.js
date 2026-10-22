@@ -84,9 +84,11 @@ export default function ReaderPick({ initial, onCancel, onStart }) {
             const cur = adding ? { photo, name: name || '?' } : (list.find((x) => x.id === pick) || {});
             return (
               <View style={styles.photoRow}>
-                <VoiceFace photo={cur.photo} name={cur.name} size={56} />
-                <Pressable onPress={withTap(() => getPhoto('library'))} style={styles.photoBtn} accessibilityRole="button"><Text style={styles.photoText}>{tr('Choose a photo')}</Text></Pressable>
-                <Pressable onPress={withTap(() => getPhoto('camera'))} style={styles.photoBtn} accessibilityRole="button"><Text style={styles.photoText}>{tr('Take a photo')}</Text></Pressable>
+                <VoiceFace photo={cur.photo} name={cur.name} size={64} />
+                <View style={{ flex: 1, gap: 8 }}>
+                  <Pressable onPress={withTap(() => getPhoto('library'))} style={styles.photoBtn} accessibilityRole="button"><Text numberOfLines={1} style={styles.photoText}>{tr('Choose a photo')}</Text></Pressable>
+                  <Pressable onPress={withTap(() => getPhoto('camera'))} style={styles.photoBtn} accessibilityRole="button"><Text numberOfLines={1} style={styles.photoText}>{tr('Take a photo')}</Text></Pressable>
+                </View>
               </View>
             );
           })() : null}
@@ -115,7 +117,7 @@ const styles = StyleSheet.create({
   chipText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 15 },
   field: { backgroundColor: '#161616', height: 52, borderRadius: 14, paddingHorizontal: 16, justifyContent: 'center', marginTop: 20 },
   input: { color: colors.white, fontFamily: fonts.ui, fontSize: 17, paddingVertical: 0, paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 },
-  photoRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 20, flexWrap: 'wrap' },
+  photoRow: { flexDirection: 'row', alignItems: 'center', gap: 16, marginTop: 20 },
   photoBtn: { height: 36, borderRadius: 18, paddingHorizontal: 14, backgroundColor: '#3d3d40', alignItems: 'center', justifyContent: 'center' },
   photoText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 14 },
   pill: { height: 46, borderRadius: 23, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
