@@ -30,6 +30,11 @@ const TILE = { 2: 47, 3: 31, 4: 22.5 };
 const tileWidth = (w) => `${TILE[COLS(w)]}%`;
 const gridGap = (w) => { const n = COLS(w); return `${(100 - n * TILE[n]) / (n - 1)}%`; };
 
+import Folder from '../components/Folder';
+import Corkboard from '../components/Corkboard';
+const FOLDER = require('../../assets/folder.png'); // 560 × 564, Jörg's kraft folder
+const PENCIL = require('../../assets/pencil.png'); // 100 × 971
+const MUG = require('../../assets/mug.png'); // 400 × 516, hot chocolate from above
 const LEANER = require('../../assets/store-lean.png'); // Skippy: Jörg's grey character in sunglasses, leaning on the featured book (698 × 700)
 
 function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, option, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
@@ -166,10 +171,11 @@ function WhoReads({ onPress }) {
   );
 }
 
-export function Library({ onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
+export function Library({ narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
   const t = useT();
   const controls = useControls(); // parental controls: My Notebook, Create a story and Select may be hidden
   const { width: winW } = useWindowDimensions();
+  const [folderOpen, setFolderOpen] = useState(false); // My Folder, opened (the sheets)
   const [selecting, setSelecting] = useState(false);
   const [picked, setPicked] = useState([]);
   const [confirm, setConfirm] = useState(false);
@@ -240,7 +246,30 @@ export function Library({ onProfiles, u, stories, openStory, openMenu, onCreate,
             <Text style={styles.restore}>{t('Show removed books ({n})', { n: removedCount })}</Text>
           </Pressable>
         ) : null}
+        {/* My Folder starts its own row: the folder (the size of a book), a pencil beside it, then a mug of hot chocolate */}
+        {!selecting ? <View style={{ width: '100%' }} /> : null}
+        {!selecting ? (() => {
+          const n = COLS(winW), colW = ((winW - 40) * TILE[n]) / 100, gap = ((winW - 40) * ((100 - n * TILE[n]) / (n - 1))) / 100;
+          return (
+            <>
+              <Pressable onPress={() => setFolderOpen(true)} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={t('My Folder')}>
+                <View style={{ width: colW, height: colW, alignItems: 'center', justifyContent: 'center' }}>
+                  <Image source={FOLDER} style={{ width: colW * 1.04, height: colW * 1.04 * 564 / 560 }} resizeMode="contain" />
+                </View>
+                <Text style={[styles.tileTitle, styles.tileOption]}>{t('My Folder')}</Text>
+              </Pressable>
+              <View pointerEvents="none" style={{ width: tileWidth(winW), height: colW }}>
+                <Image source={PENCIL} resizeMode="contain" style={{ position: 'absolute', left: colW * 0.05, top: colW * 0.04, width: colW * 0.92 * 100 / 971, height: colW * 0.92, transform: [{ rotate: '4deg' }] }} />
+                <Image source={MUG} resizeMode="contain" style={{ position: 'absolute', left: colW * 0.3, top: colW * 0.14, width: colW * 0.6, height: colW * 0.6 * 516 / 400, transform: [{ rotate: '-47deg' }] }} />
+              </View>
+              {/* the corkboard: always at the very bottom, as wide as two books */}
+              <View style={{ width: '100%' }} />
+              <Corkboard width={2 * colW + gap} toast={toast} />
+            </>
+          );
+        })() : null}
       </ScrollView>
+      {folderOpen ? <Folder narrator={narrator} toast={toast} canSend={controls.sharing !== false} onClose={() => setFolderOpen(false)} /> : null}
       {confirm ? (
         <View style={styles.confirm}>
           <Text style={styles.confirmText}>

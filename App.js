@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, Dimensions, Linking, Modal, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { importVoices, readVoicesFile } from './src/voiceShare';
+import { SHEET_KIND, sheetPhotoFile } from './src/sheetShare';
+import { addSheet } from './src/folder';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { StatusBar } from 'expo-status-bar';
 import { Asset } from 'expo-asset';
@@ -308,7 +310,7 @@ function Root() {
         ) : null}
         {(screen === 'library' || (screen === 'start' && peek === 'library')) && (
           <Animated.View style={{ flex: 1, opacity: screen === 'library' ? libFade : 1 }}>
-          <Library u={u} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
+          <Library u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
             onNotebook={(rect) => {
               // the notebook stays where it is while the shelf dissolves away to plain felt; then the notebook
               // screen takes over (its own notebook is already in the same spot) and the held one is taken away
@@ -400,7 +402,27 @@ function Root() {
         })() : null}
         <ParentGate visible={settingsGate} reason={t('Changing settings is for grown-ups.')} onPass={() => { setSettingsGate(false); go('settings'); }} onCancel={() => setSettingsGate(false)} />
         <Membership visible={memberOpen} onClose={() => setMemberOpen(false)} toast={toast} />
-        {incoming ? (() => {
+        {incoming && incoming.kind === SHEET_KIND ? (
+          // a sheet someone sent: into My Folder
+          <Modal transparent animationType="fade" visible onRequestClose={() => setIncoming(null)}>
+            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 28 }}>
+              <View style={{ width: '100%', maxWidth: 400, backgroundColor: 'rgba(0,0,0,0.86)', borderRadius: 24, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26 }}>
+                <Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20 }}>{t('{name} sent you a sheet', { name: incoming.from || t('Someone') })}</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, marginTop: 12 }}>{t('Put it in My Folder?')}</Text>
+                <View style={{ flexDirection: 'row', gap: 10, marginTop: 26, justifyContent: 'flex-end' }}>
+                  <Pressable onPress={() => setIncoming(null)} style={{ height: 44, borderRadius: 22, paddingHorizontal: 20, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 }}>{t('Not now')}</Text></Pressable>
+                  <Pressable onPress={async () => {
+                    const d = incoming; setIncoming(null);
+                    try {
+                      await addSheet({ kind: 'page', from: d.from || '', page: d.page }, d.photo ? sheetPhotoFile(d.photo) : null);
+                      go('library'); toast(t('It’s in My Folder.'));
+                    } catch (e) { toast(t('That file couldn’t be opened.')); }
+                  }} style={{ height: 44, borderRadius: 22, paddingHorizontal: 22, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 }}>{t('Add')}</Text></Pressable>
+                </View>
+              </View>
+            </View>
+          </Modal>
+        ) : incoming ? (() => {
           const names = (incoming.readers || []).map((x) => x.name).join(', ');
           const title = incoming.title || '';
           return (

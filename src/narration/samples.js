@@ -38,3 +38,7 @@ export const SAMPLE_LANGS = {
     ja: require("../../assets/narration/gregory/sample/ja.mp3"),
   },
 };
+
+// The Abc sheet: each letter said by each narrator ("B… buh… bear.").
+export const LETTERS = {
+};

@@ -56,10 +56,11 @@ export async function shareBookWithVoices(story) {
   return true;
 }
 
-// A file someone sent (opened in Oomlaut Reader): what's in it, for the "Add Opa's voice?" box.
+// A file someone sent (opened in Oomlaut Reader): what's in it, for the "Add Opa's voice?" box (or a sheet).
 export async function readVoicesFile(uri) {
   try {
     const data = JSON.parse(await new File(uri).text());
+    if (data && data.kind === 'oomlaut-sheet' && data.page) return data; // a sheet for My Folder (see sheetShare)
     if (!data || data.kind !== KIND || !Array.isArray(data.pages)) return null;
     return data;
   } catch (e) { return null; }
