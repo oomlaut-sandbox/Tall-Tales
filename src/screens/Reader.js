@@ -286,7 +286,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   };
 
   const readPage = useCallback((pageIndex) => {
-    if (st.current.recording || recordingSoon.current) return; // never read aloud over a recording
+    if (st.current.recording || recordingSoon.current || pendingRec.current) return; // never read aloud over a recording (or between two recorded pages)
     const p = st.current.pages[pageIndex];
     if (!p) { setReading(false); return; }
     // the last page: the narrator says "The End", softly and slowly (the same clip for every book),
@@ -380,7 +380,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     setPanel(null);
     try {
       const perm = await AudioModule.requestRecordingPermissionsAsync();
-      if (!perm.granted) { recordingSoon.current = false; return toast(tr('Oomlaut Reader needs the microphone to record. You can allow it in Settings.')); }
+      if (!perm.granted) { recordingSoon.current = false; pendingRec.current = false; return toast(tr('Oomlaut Reader needs the microphone to record. You can allow it in Settings.')); }
       await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
       audioModeChanged();
       await recorder.prepareToRecordAsync();
@@ -391,7 +391,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       if (!recAuto.current) toast(tr('Recording page {n}. Turn the page to keep going, or tap ● to stop.', { n: st.current.idx + 1 }));
       recAuto.current = false;
     } catch (e) {
-      recordingSoon.current = false;
+      recordingSoon.current = false; pendingRec.current = false;
       toast(tr('Recording couldn’t start. Try again.'));
     }
   };
@@ -404,8 +404,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   };
   useEffect(() => onRecordRequest(() => recToggle.current && recToggle.current()), []);
 
-  const stopRec = async (save) => {
+  // keep: recording carries on to the next page, so nothing may start reading in between
+  const stopRec = async (save, keep = false) => {
     if (!st.current.recording) return;
+    if (keep) { pendingRec.current = true; recordingSoon.current = true; }
     const page = st.current.idx;
     const seconds = (Date.now() - recStart.current) / 1000;
     setRecording(false);
@@ -425,7 +427,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       toast(tr('That recording couldn’t be saved.'));
     }
     suspendSounds(false);
-    recordingSoon.current = false;
+    recordingSoon.current = keep;
   };
 
   const openRecList = async () => {
@@ -560,7 +562,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const flip = async (dir) => {
     if (busy.current || st.current.turning || !canTurn(dir) || !st.current.size) return false;
     busy.current = true;
-    if (st.current.recording && dir > 0) { await stopRec(true); pendingRec.current = st.current.idx + 1 < story.pages.length; }
+    if (st.current.recording && dir > 0) { const keep = st.current.idx + 1 < story.pages.length; await stopRec(true, keep); pendingRec.current = keep; }
     else if (!pendingRead.current) stopReading();
     playSound('swish');
     await startFlip(dir);
@@ -660,7 +662,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     const commit = d.dir > 0 ? d.p > 0.4 || vel < -0.35 : d.p < 0.6 || vel > 0.35;
     if (commit && st.current.recording) {
       const keepGoing = st.current.idx + 1 < story.pages.length;
-      stopRec(true).then(() => { pendingRec.current = keepGoing; });
+      stopRec(true, keepGoing);
     }
     if (commit) playSound('swish');
     const target = commit ? (d.dir > 0 ? 1 : 0) : (d.dir > 0 ? 0 : 1);

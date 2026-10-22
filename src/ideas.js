@@ -2,6 +2,8 @@
 // in your own words, pictures and voice can be used for. Each idea: a title, what it is, and how to make it
 // with the app (photos, drawings, your voice, the notebook).
 export const IDEA_SECTIONS = [
+  // first: the easiest book of all
+  { title: 'Your favourite books', intro: 'Bring all your favourite picture books in your pocket. Take photos of each page and add your own audio. Easy peasy.', ideas: [] },
   { title: 'Big moments and changes', intro: 'A book makes a big change feel familiar before it happens, and something to come back to afterwards.', ideas: [
     { title: 'We’re moving house', text: 'The old house, the new house, the boxes, the moving day, where the toys will go, the new bedroom.', how: 'Take photos of both houses and the new route. End with “Our home is wherever we are together.”' },
     { title: 'First day at school or daycare', text: 'The door, the cubby, the teacher’s name, what happens at lunch, and who picks them up at the end.', how: 'Ask the school for a few photos. Read it every evening the week before.' },
