@@ -64,7 +64,8 @@ import { audioModeChanged, fadeStopVoice, pauseVoice, playClips, playVoice, resu
 import * as WORDCLIPS from '../narration/words';
 const WORDS = WORDCLIPS.WORDS || {};
 const WORDS_LANG = WORDCLIPS.WORDS_LANG || {}; // (made by the next narration run)
-import { getRecording, listRecordings, pageKey, removeRecording, saveRecording, setTrim } from '../recordings';
+import { getBookVoice, getReaders, getRecording, listRecordings, pageKey, removeRecording, saveRecording, setBookVoice, setTrim } from '../recordings';
+import ReaderPick from '../components/ReaderPick';
 import TrimEditor from '../components/TrimEditor';
 const TRASH = require('../../assets/icon-trash.png');
 import { markFinished, markFirst, markReadToday } from '../badges';
@@ -170,8 +171,20 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   prefsRef.current = prefs;
   const flipP = useRef(new Animated.Value(0)).current; // 0 = page a showing, 1 = page b (a + 1)
   const prog = useRef(0); // the same progress, as a plain number
-  const [recPages, setRecPages] = useState([]); // pages that have a recording of the parent's voice
-  const refreshRecPages = useCallback(() => { listRecordings(story).then((l) => setRecPages(l.map((r) => r.page))).catch(() => {}); }, [story]);
+  const [recAll, setRecAll] = useState([]); // every recording of this book: { page, reader }
+  const recPages = recAll.map((r) => r.page); // pages someone has recorded
+  const refreshRecPages = useCallback(() => { listRecordings(story).then((l) => setRecAll(l.map((r) => ({ page: r.page, reader: r.reader })))).catch(() => {}); }, [story]);
+  // who reads this book aloud: 'narrator' or one of the family's readers (each book remembers its own)
+  const [voice, setVoice] = useState(prefs.voice === 'mine' ? 'me' : 'narrator');
+  const voiceRef = useRef(voice); voiceRef.current = voice;
+  const [readers, setReaders] = useState([]);
+  useEffect(() => {
+    getReaders().then(setReaders).catch(() => {});
+    getBookVoice(story.id).then((v) => { if (v) setVoice(v); }).catch(() => {});
+  }, [story.id]);
+  const recReader = useRef('me'); // who is recording now
+  const [askReader, setAskReader] = useState(false); // the 'Who's reading?' box before recording
+  const askToRecord = () => { hushForRecording(); setPanel(null); setAskReader(true); };
   useEffect(() => { refreshRecPages(); }, [refreshRecPages]);
   const [shareGate, setShareGate] = useState(false); // 'Share Book' on the last page, behind the parent gate
   const [peel, setPeel] = useState(null); // {front, back, corner}: pictures for the paper peel
@@ -205,7 +218,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const showControls = (prefs.mode !== 'self' && !listen) || recording;
   const barH = BL.barH;
   // a small 'Your voice' mark when this page will play the parent's recording
-  const mineHere = prefs.voice === 'mine' && recPages.includes(idx) && prefs.mode !== 'self' && !recording;
+  const mineHere = voice !== 'narrator' && recAll.some((x) => x.page === idx && x.reader === voice) && prefs.mode !== 'self' && !recording;
   const panelPos = wide ? { bottom: 0, inset: BL.rightW } : { bottom: barH };
   const n = story.pages.length;
   const tokens = useMemo(() => (pages[idx] && pages[idx].text ? tokenize(pages[idx].text) : []), [pages, idx]);
@@ -361,8 +374,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       }
       speakTracked(p.text, { lang: story.lang, rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage });
     };
-    if (prefs.voice === 'mine') {
-      getRecording(story.id, pageKey(p, pageIndex)).then((rec) => {
+    if (voiceRef.current && voiceRef.current !== 'narrator') {
+      getRecording(story.id, pageKey(p, pageIndex), voiceRef.current).then((rec) => {
         if (st.current.idx !== pageIndex) return;
         if (rec && playVoice(rec.uri, { rate: speedOf(prefs) / DEFAULT_SPEED, start: rec.start || 0, end: rec.end || null, // a parent's own pace at the default setting; only the trimmed part
            onProgress: (f) => hlChar(Math.floor(f * p.text.length)), onDone: afterPage,
@@ -375,7 +388,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       return;
     }
     narrate();
-  }, [prefs.speed, prefs.rate, prefs.voice, prefs.narrator, story]);
+  }, [prefs.speed, prefs.rate, prefs.voice, prefs.narrator, story, voice]);
   // a playlist: each book starts reading by itself
   useEffect(() => { if (!autoStart && !listen) return undefined; if (listen && scene === 'choose' && controls.nightlight !== false) return undefined; /* Listen Only: reads once Daydream or Nightlight is chosen */ const tm = setTimeout(() => readPage(0), 1200); return () => clearTimeout(tm); }, []);
 
@@ -416,7 +429,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const recToggle = useRef(null);
   recToggle.current = () => {
     if (!controls.recording) return;
-    if (st.current.recording) stopRec(true); else startRec();
+    if (st.current.recording) stopRec(true); else askToRecord();
   };
   useEffect(() => onRecordRequest(() => recToggle.current && recToggle.current()), []);
 
@@ -436,8 +449,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
       audioModeChanged();
       if (save && recorder.uri && seconds > 0.7) {
-        await saveRecording(story.id, pageKey(story.pages[page], page), recorder.uri, seconds, levels);
-        if (prefsRef.current.voice !== 'mine') setPrefs((p) => ({ ...p, voice: 'mine' }));
+        await saveRecording(story.id, pageKey(story.pages[page], page), recorder.uri, seconds, levels, recReader.current);
+        if (voiceRef.current !== recReader.current) { setVoice(recReader.current); setBookVoice(story.id, recReader.current); } // the book now reads in this reader's voice
         setSavedPage({ n: page + 1, k: Date.now() }); // a green 'Page 2 saved' beside the recording box (no speech bubble)
         markFirst('firstRecording'); // a badge in My Notebook
         refreshRecPages();
@@ -449,7 +462,10 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     recordingSoon.current = keep;
   };
 
+  const readerName = (id) => { const x = readers.find((y) => y.id === id); return x ? (x.id === 'me' && x.name === 'Me' ? tr('Me') : x.name) : tr('Me'); };
+  const readerIndex = (id) => { const k = readers.findIndex((y) => y.id === id); return k < 0 ? 99 : k; };
   const openRecList = async () => {
+    getReaders().then(setReaders).catch(() => {});
     setRecList(await listRecordings(story));
     refreshRecPages();
     setRecView('list');
@@ -934,7 +950,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         </Animated.View>
       ) : null}
       {trimRec ? <TrimEditor rec={trimRec} title={tr('Page {n}', { n: trimRec.page + 1 })} onCancel={() => setTrimRec(null)}
-        onSave={async (start, end) => { await setTrim(story.id, trimRec.pid, start, end); setTrimRec(null); openRecList(); }} /> : null}
+        onSave={async (start, end) => { await setTrim(story.id, trimRec.pid, start, end, trimRec.reader || 'me'); setTrimRec(null); openRecList(); }} /> : null}
+      {askReader ? <ReaderPick initial={recReader.current} onCancel={() => { setAskReader(false); recordingSoon.current = false; }}
+        onStart={(id) => { recReader.current = id; setAskReader(false); getReaders().then(setReaders); startRec(); }} /> : null}
       <Panel open={panel === 'play'} side="right" title={playView === 'voices' ? tr('Voices') : tr('Reading Options')} {...panelPos} onClose={() => { setPanel(null); setPlayView('main'); }}>
         {playView === 'voices' ? (
           <>
@@ -1014,7 +1032,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       <Panel open={panel === 'rec'} side="right" title={tr('Recording Options')} {...panelPos} onClose={() => { setPanel(null); recordingSoon.current = false; }}>
         {recView === 'main' ? (
           <>
-            <Option glyph={<DotIcon />} title={tr('Start Recording')} sub={tr('Read this story in your own voice, starting on page {n}', { n: Math.min(idx + 1, n) })} disabled={idx >= n} onPress={startRec} />
+            <Option glyph={<DotIcon />} title={tr('Start Recording')} sub={tr('Read this story in your own voice, starting on page {n}', { n: Math.min(idx + 1, n) })} disabled={idx >= n} onPress={askToRecord} />
             <Option glyph={<ListIcon />} title={tr('Your Recordings')} sub={tr('Listen to or remove the pages you recorded')} onPress={openRecList} />
             <Option glyph={<GearIcon size={MENU_ICON} />} title={tr('Recording Settings')} sub={tr('Choose whose voice reads the story')} onPress={() => setRecView('settings')} />
             <Option glyph={<TextIcon text="?" />} title={tr('Help')} sub={tr('How recording works')} onPress={() => setRecView('help')} />
@@ -1023,23 +1041,28 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           <Pressable onPress={() => setRecView('main')} hitSlop={8}><Text style={styles.back}>{tr('‹ Back')}</Text></Pressable>
         )}
         {recView === 'list' ? (
-          recList.length ? recList.map((r) => (
-            <View key={r.pid} style={styles.row}>
+          recList.length ? recList.slice().sort((x, y) => readerIndex(x.reader) - readerIndex(y.reader) || x.page - y.page).map((r, k, arr) => (
+            <React.Fragment key={`${r.reader}/${r.pid}`}>
+            {/* each reader's pages together, under their name */}
+            {k === 0 || arr[k - 1].reader !== r.reader ? <Text style={[styles.help, { marginTop: k ? 10 : 0, fontWeight: '700', color: colors.white }]}>{readerName(r.reader)}</Text> : null}
+            <View style={styles.row}>
               <Text style={styles.rowText}>{tr('Page {n} · {s}s', { n: r.page + 1, s: Math.round((r.end || r.seconds) - (r.start || 0)) })}</Text>
               <Pressable style={styles.rowBtn} onPress={() => { stopReading(); playVoice(r.uri, { start: r.start || 0, end: r.end || null, onFail: () => toast(tr('This recording can’t be played. Record the page again.')) }); }}><Text style={styles.rowBtnText}>{tr('Play')}</Text></Pressable>
               {/* Trim: the trim editor (a box in the middle of the screen) */}
               <Pressable style={styles.rowBtn} onPress={() => { stopReading(); stopVoice(); setTrimRec(r); }}><Text style={styles.rowBtnText}>{tr('Trim')}</Text></Pressable>
               {/* delete: a small trash can */}
-              <Pressable hitSlop={10} onPress={async () => { stopVoice(); await removeRecording(story.id, r.pid); openRecList(); }} accessibilityRole="button" accessibilityLabel={tr('Delete')} style={{ paddingHorizontal: 4 }}>
+              <Pressable hitSlop={10} onPress={async () => { stopVoice(); await removeRecording(story.id, r.pid, r.reader); openRecList(); }} accessibilityRole="button" accessibilityLabel={tr('Delete')} style={{ paddingHorizontal: 4 }}>
                 <Image source={TRASH} style={{ width: 20, height: 20, tintColor: '#bdbdbd' }} resizeMode="contain" />
               </Pressable>
             </View>
+            </React.Fragment>
           )) : <Text style={styles.help}>{tr('Nothing recorded yet. Tap Start Recording to read this story in your own voice.')}</Text>
         ) : null}
         {recView === 'settings' ? (
           <>
             <Text style={styles.help}>{tr('Who reads the story aloud')}</Text>
-            <Seg value={prefs.voice || 'narrator'} options={[['narrator', tr('Narrator')], ['mine', tr('Your voice')]]} onChange={(v) => { stopReading(); setPrefs((p) => ({ ...p, voice: v })); }} />
+            {/* for this book: the narrator or one of the family's readers */}
+            <Seg stacked={readers.length > 1} value={voice} options={[['narrator', tr('Narrator')], ...readers.map((x) => [x.id, readerName(x.id)])]} onChange={(v) => { stopReading(); setVoice(v); setBookVoice(story.id, v); }} />
             <Text style={styles.help}>{tr('Pages you haven’t recorded use the narrator.')}</Text>
           </>
         ) : null}
