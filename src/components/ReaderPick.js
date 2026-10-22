@@ -1,11 +1,12 @@
 // Before recording: who's reading? Up to three people can record a book in their own voice (Mom, Grandpa,
 // a child…). Pick who's reading now, or add a new reader; then Start recording.
 import React, { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../theme';
 import { useT } from '../i18n';
 import { withTap } from '../haptics';
-import { MAX_READERS, addReader, getReaders } from '../recordings';
+import { MAX_READERS, addReader, getReaders, nextReaderChar } from '../recordings';
+import { PROFILE_COLORS } from '../profiles';
 
 export default function ReaderPick({ initial, onCancel, onStart }) {
   const tr = useT();
@@ -13,9 +14,11 @@ export default function ReaderPick({ initial, onCancel, onStart }) {
   const [pick, setPick] = useState(initial || null);
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState('');
+  const [char, setChar] = useState(null); // the new reader's felt character (so a child can tell who's who)
   useEffect(() => {
     getReaders().then((l) => {
       setList(l);
+      setChar(nextReaderChar(l));
       if (!l.length) setAdding(true); // nobody yet: straight to the name
       else if (!l.some((x) => x.id === pick)) setPick(l[0].id);
     });
@@ -23,7 +26,7 @@ export default function ReaderPick({ initial, onCancel, onStart }) {
   const start = async () => {
     if (adding) {
       if (!name.trim()) return;
-      const id = await addReader(name);
+      const id = await addReader(name, char);
       if (id) onStart(id);
       return;
     }
@@ -56,6 +59,15 @@ export default function ReaderPick({ initial, onCancel, onStart }) {
                 returnKeyType="done" onSubmitEditing={start} style={styles.input} accessibilityLabel={tr('Reader’s name')} />
             </View>
           ) : null}
+          {adding ? (
+            <View style={styles.chars}>
+              {PROFILE_COLORS.map(([c, img]) => (
+                <Pressable key={c} onPress={withTap(() => setChar(c))} accessibilityRole="radio" accessibilityState={{ selected: char === c }} style={[styles.char, char === c && styles.charOn]}>
+                  <Image source={img} style={{ width: 44, height: 50 }} resizeMode="contain" />
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 36 }}>
             <View style={{ flex: 1 }} />
             <Pressable onPress={withTap(onCancel)} style={[styles.pill, { backgroundColor: '#4a4a4a' }]} accessibilityRole="button"><Text style={styles.pillText}>{tr('Cancel')}</Text></Pressable>
@@ -80,6 +92,9 @@ const styles = StyleSheet.create({
   chipText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 15 },
   field: { backgroundColor: '#161616', height: 52, borderRadius: 14, paddingHorizontal: 16, justifyContent: 'center', marginTop: 20 },
   input: { color: colors.white, fontFamily: fonts.ui, fontSize: 17, paddingVertical: 0, paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 },
+  chars: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 18 },
+  char: { width: 60, height: 66, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  charOn: { backgroundColor: 'rgba(0,0,0,0.35)' },
   pill: { height: 46, borderRadius: 23, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
   pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
 });

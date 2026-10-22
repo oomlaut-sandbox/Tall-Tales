@@ -11,6 +11,7 @@ export const DEFAULT_CONTROLS = {
   playback: true,   // the child may change how books play (the Playback menu)
   playMode: null,   // null: as chosen in the Playback menu; or always 'self' | 'learn' | 'auto' | 'page'
   recording: true,  // recording your own voice
+  familyVoices: true, // a book the family recorded opens in their voice (the narrator reads the pages they didn't)
   sharing: true,    // sharing and printing books
   language: true,   // the child may change the language (the list on the start page)
   childAge: null,   // the child's age: books rated for older children are hidden (null: show every book)
@@ -20,7 +21,7 @@ export const DEFAULT_CONTROLS = {
   alarm: false,     // the nightlight shows the alarm time (set there) and wakes the child: the sun rises, a gentle sound plays
 };
 // settings that add something rather than limit the child (not counted as restricted)
-const EXTRAS = ['nightlight', 'clock', 'alarm'];
+const EXTRAS = ['nightlight', 'clock', 'alarm', 'familyVoices'];
 
 // everything off: only My Library and its books, played the way they're set now
 export const lockedControls = (mode, childAge = null) => ({ store: false, notebook: false, create: false, help: false, playback: false, playMode: mode || 'page', recording: false, sharing: false, language: false, profiles: false, childAge });

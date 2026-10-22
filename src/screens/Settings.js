@@ -103,6 +103,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
             <Toggle label={t('Show Create a Story')} value={controls.create} onChange={(v) => set({ create: v })} />
             <Toggle label={t('Ideas, Support and About')} value={controls.help} onChange={(v) => set({ help: v })} />
             <Toggle label={t('Recording own voice')} value={controls.recording} onChange={(v) => set({ recording: v })} />
+            <Toggle label={t('Read in family voices when there are some')} value={controls.familyVoices !== false} onChange={(v) => set({ familyVoices: v })} />
             <Toggle label={t('Sharing and printing')} value={controls.sharing} onChange={(v) => set({ sharing: v })} />
             <Toggle label={t('Let my child change the language')} value={controls.language} onChange={(v) => set({ language: v })} />
             <Toggle label={t('Let my child switch profiles')} value={controls.profiles !== false} onChange={(v) => set({ profiles: v })} />

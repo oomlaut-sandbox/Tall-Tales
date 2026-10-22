@@ -129,6 +129,7 @@ const T = {
   'Show Help': { de: 'Hilfe zeigen', fr: 'Afficher l’aide', es: 'Mostrar la ayuda', ja: 'ヘルプを見せる' },
   'Let my child change playback': { de: 'Vorlese-Einstellungen änderbar', fr: 'Mon enfant peut changer la lecture', es: 'Mi hijo puede cambiar la lectura', ja: 'こどもがよみかたをかえられる' },
   'Always play like this': { de: 'Immer so vorlesen', fr: 'Toujours lire ainsi', es: 'Leer siempre así', ja: 'いつもこのよみかた' },
+  'Read in family voices when there are some': { de: 'In Familienstimmen vorlesen, wenn es welche gibt', fr: 'Lire avec les voix de la famille quand il y en a', es: 'Leer con las voces de la familia cuando las haya', ja: 'かぞくの ろくおんが あれば その こえで よむ' },
   'Recording own voice': { de: 'Eigene Stimme aufnehmen', fr: 'Enregistrer sa voix', es: 'Grabar su propia voz', ja: '自分の声でろくおん' },
   'Sharing and printing': { de: 'Teilen und drucken', fr: 'Partager et imprimer', es: 'Compartir e imprimir', ja: 'シェアといんさつ' },
   'Let my child change the language': { de: 'Sprache änderbar', fr: 'Mon enfant peut changer la langue', es: 'Mi hijo puede cambiar el idioma', ja: 'こどもがことばをかえられる' },

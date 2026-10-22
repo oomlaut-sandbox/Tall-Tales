@@ -30,6 +30,8 @@ export default {
   'Page {n} · 1 second': { de: 'Seite {n} · 1 Sekunde', fr: 'Page {n} · 1 seconde', es: 'Página {n} · 1 segundo', ja: '{n}ページ · 1びょう' },
   'Removed your recording of page {n}.': { de: 'Deine Aufnahme von Seite {n} ist entfernt.', fr: 'Ton enregistrement de la page {n} est retiré.', es: 'Se quitó tu grabación de la página {n}.', ja: '{n}ページの ろくおんを けしたよ。' },
   'Nothing recorded yet. Tap Start Recording to read this story in your own voice.': { de: 'Noch nichts aufgenommen. Tippe auf „Aufnahme starten“, um diese Geschichte mit deiner eigenen Stimme zu lesen.', fr: 'Rien d’enregistré pour l’instant. Touche « Commencer l’enregistrement » pour lire cette histoire avec ta propre voix.', es: 'Aún no hay nada grabado. Toca «Empezar a grabar» para leer este cuento con tu propia voz.', ja: 'まだ ろくおんは ありません。「ろくおんを はじめる」を タップして、じぶんの こえで よんでみよう。' },
+  'Who reads this book?': { de: 'Wer liest dieses Buch?', fr: 'Qui lit ce livre ?', es: '¿Quién lee este libro?', ja: 'だれが この本を よむ？' },
+  'Who reads this book': { de: 'Wer liest dieses Buch', fr: 'Qui lit ce livre', es: 'Quién lee este libro', ja: 'だれが この本を よむ' },
   'Who reads the story aloud': { de: 'Wer liest die Geschichte vor?', fr: 'Qui lit l’histoire à voix haute', es: 'Quién lee el cuento en voz alta', ja: 'だれが こえに だして よむ？' },
   'Narrator': { de: 'Vorleser', fr: 'Narrateur', es: 'Narrador', ja: 'よみて' },
   'Your voice': { de: 'Deine Stimme', fr: 'Ta voix', es: 'Tu voz', ja: 'じぶんの こえ' },
