@@ -8,7 +8,7 @@ import { Animated, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, Vi
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, DESK_BG } from '../look';
-import { Bar, Burger, WithBar } from '../components/Chrome';
+import { Bar, Burger, WithBar, barGeo } from '../components/Chrome';
 import ParentGate from '../components/ParentGate';
 import { useT } from '../i18n';
 import { useControls, DEFAULT_CONTROLS } from '../controls';
@@ -57,7 +57,7 @@ export default function Profiles({ u, openMenu, setControls }) {
   const [bandH, setBandH] = useState(0); // the title's height: the edit box's dark layer starts under it
   const [sure, setSure] = useState(false);
   const canSwitch = controls.profiles !== false;
-  const { width: winW } = useWindowDimensions();
+  const { width: winW, height: winH } = useWindowDimensions();
   const side = Math.min(112, Math.floor((Math.min(520, winW - 48) - 32) / 3));
 
   const openForm = (p) => {
@@ -130,7 +130,7 @@ export default function Profiles({ u, openMenu, setControls }) {
       </ScrollView>
 
       {form ? (
-        <View style={[styles.scrim, { top: bandH }]}>{/* below the title, which stays in view */}
+        <View style={[styles.scrim, { top: bandH, bottom: undefined, height: Math.max(200, (winW > winH * 1.1 ? winH : winH - barGeo(u).row - insets.bottom) - bandH) }]}>{/* exactly the room between the title and the bar: the box is centred in it */}
           <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20 }} keyboardShouldPersistTaps="handled">{/* in the middle of the screen above the bar (the bar stays uncovered) */}
             <View style={styles.card}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 28 }}>{/* room for the character (drawn a little wider than its box) */}
