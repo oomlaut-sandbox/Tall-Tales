@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { colors, fonts } from '../theme';
-import { Bar, Burger, DogEar, Panel } from '../components/Chrome';
+import { Bar, Burger, DogEar, Panel, barGeo } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, Felt, DESK_BG } from '../look';
@@ -444,14 +444,16 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     setOutAsk(kind);
   };
   const barBtns = (vertical) => (
-    <View style={vertical ? { alignItems: 'center', gap: 18, marginBottom: 26 } : { flexDirection: 'row', alignItems: 'center', gap: 14 }}>{/* sideways: lifted up from the corner */}
+    // upright: the envelope and printer in slots one step apart, like the house and the note, and Done the same
+    // distance (edge to edge) after the printer
+    <View style={vertical ? { alignItems: 'center', gap: 18, marginBottom: 26 } : { flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch' }}>{/* sideways: lifted up from the corner */}
       {/* share (the envelope) and print (the printer): which pages, then the grown-up question */}
       {controls.sharing !== false && pages.length ? (
         <>
-          <Pressable onPress={() => openOut('share')} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Share pages')}>
+          <Pressable onPress={() => openOut('share')} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Share pages')} style={vertical ? null : { width: barGeo(u).step, alignItems: 'center' }}>
             <Image source={ENVELOPE} style={{ width: 24, height: 24, tintColor: colors.white }} resizeMode="contain" />
           </Pressable>
-          <Pressable onPress={() => openOut('print')} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Print pages')}>
+          <Pressable onPress={() => openOut('print')} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Print pages')} style={vertical ? null : { width: barGeo(u).step, alignItems: 'center', marginRight: (barGeo(u).step - 25) / 2 }}>
             <Image source={PRINTER} style={{ width: 25, height: 25, tintColor: colors.white }} resizeMode="contain" />
           </Pressable>
         </>
