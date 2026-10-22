@@ -24,7 +24,7 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
   const [kbTop, setKbTop] = useState(null); // where the keyboard starts, from the top of the screen
   const [frame, setFrame] = useState(null); // where this dark layer sits on screen
   const scrimRef = useRef(null);
-  const { height: winH } = useWindowDimensions();
+  const { width: winW, height: winH } = useWindowDimensions();
   useEffect(() => {
     const show = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', (e) => setKbTop(e.endCoordinates.screenY));
     const hide = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setKbTop(null));
@@ -37,30 +37,37 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
     if (parseInt(answer, 10) === q.a * q.b) onPass();
     else { setWrong(true); setAnswer(''); }
   };
+  // sideways the keyboard takes most of the screen: a compact box (the question, then the answer field and
+  // the two buttons on one line), centred in the space above the keyboard and no wider than it needs to be
+  const flat = winW > winH;
+  const input = (
+    <TextInput
+      value={answer}
+      onChangeText={(t) => { setAnswer(t.replace(/\D/g, '')); setWrong(false); }}
+      keyboardType="number-pad"
+      maxLength={3}
+      autoFocus
+      onSubmitEditing={check}
+      style={[styles.input, flat ? { flex: 1, minWidth: 0, fontSize: 20, paddingVertical: 6 } : { marginTop: 16 }]}
+      accessibilityLabel={t('Answer')}
+    />
+  );
+  const cancelBtn = <Pressable onPress={onCancel} style={[styles.btn, flat && styles.btnFlat]}><Text style={styles.btnText}>{t('Cancel')}</Text></Pressable>;
+  const goBtn = <Pressable onPress={check} style={[styles.btn, flat && styles.btnFlat, { backgroundColor: colors.deepRed }]}><Text style={styles.btnText}>{t('Continue')}</Text></Pressable>;
   return (
-    <View ref={scrimRef} style={[styles.scrim, { paddingBottom: covered }]}
+    <View ref={scrimRef} style={[styles.scrim, { paddingBottom: covered }, flat && { alignItems: 'center', paddingTop: 8 }]}
       onLayout={() => scrimRef.current && scrimRef.current.measureInWindow((x, y, w, h) => setFrame({ y, h: h || winH }))}>
-      <View style={styles.card}>
+      <View style={[styles.card, flat && styles.cardFlat]}>
         {/* a grown-up holding a child's hand, so even little ones can see this is for a grown-up */}
-        <Image source={GROWNUP} style={{ position: 'absolute', top: 18, right: 18, width: 48, height: 48, tintColor: '#8a8a8a' }} resizeMode="contain" accessibilityIgnoresInvertColors />
-        <Text style={styles.kicker}>{t('For grown-ups')}</Text>
-        <Text style={[styles.title, { paddingRight: 52 }]}>{t('What is {a} times {b}?', { a: words[q.a], b: words[q.b] })}</Text>
-        {reason ? <Text style={styles.body}>{t(reason)}</Text> : null}
-        <TextInput
-          value={answer}
-          onChangeText={(t) => { setAnswer(t.replace(/\D/g, '')); setWrong(false); }}
-          keyboardType="number-pad"
-          maxLength={3}
-          autoFocus
-          onSubmitEditing={check}
-          style={[styles.input, { marginTop: 16 }]}
-          accessibilityLabel={t('Answer')}
-        />
+        <Image source={GROWNUP} style={[{ position: 'absolute', top: 18, right: 18, width: 48, height: 48, tintColor: '#8a8a8a' }, flat && { top: 12, right: 14, width: 34, height: 34 }]} resizeMode="contain" accessibilityIgnoresInvertColors />
+        {flat ? null : <Text style={styles.kicker}>{t('For grown-ups')}</Text>}
+        <Text style={[styles.title, { paddingRight: flat ? 40 : 52 }, flat && { fontSize: 19 }]}>{t('What is {a} times {b}?', { a: words[q.a], b: words[q.b] })}</Text>
+        {reason && !flat ? <Text style={styles.body}>{t(reason)}</Text> : null}
+        {flat ? (
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 2 }}>{input}{cancelBtn}{goBtn}</View>
+        ) : input}
         {wrong ? <Text style={styles.wrong}>{t('That’s not quite right. Try again.')}</Text> : null}
-        <View style={styles.row}>
-          <Pressable onPress={onCancel} style={styles.btn}><Text style={styles.btnText}>{t('Cancel')}</Text></Pressable>
-          <Pressable onPress={check} style={[styles.btn, { backgroundColor: colors.deepRed }]}><Text style={styles.btnText}>{t('Continue')}</Text></Pressable>
-        </View>
+        {flat ? null : <View style={styles.row}>{cancelBtn}{goBtn}</View>}
       </View>
     </View>
   );
@@ -76,5 +83,7 @@ const styles = StyleSheet.create({
   wrong: { color: '#ff7b7b', fontFamily: fonts.ui, fontSize: 14 },
   row: { flexDirection: 'row', gap: 10, marginTop: 14 },
   btn: { flex: 1, backgroundColor: colors.tile, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
+  cardFlat: { width: '100%', maxWidth: 560, paddingHorizontal: 20, paddingTop: 14, paddingBottom: 16, gap: 10, borderRadius: 16 },
+  btnFlat: { flex: 0, height: 40, paddingHorizontal: 18 },
   btnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
 });
