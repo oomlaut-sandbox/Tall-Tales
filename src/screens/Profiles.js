@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
   link: { fontFamily: fonts.ui, fontSize: 14, color: '#ff9a8a', textDecorationLine: 'underline', marginTop: 4 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 16, rowGap: 10, marginTop: 6 }, // room under the words above
   cell: { alignItems: 'center', gap: 4, paddingTop: 12, paddingBottom: 12, borderRadius: 16, borderWidth: 1, borderColor: 'transparent' },
-  cellOn: { backgroundColor: 'rgba(0,0,0,0.35)', borderColor: 'rgba(255,255,255,0.9)' }, // a large see-through black box with a thin white line
+  cellOn: { backgroundColor: 'rgba(0,0,0,0.35)', borderColor: 'transparent' }, // a large see-through black box (no outline)
   activeRing: { borderWidth: 3, borderColor: colors.white },
   initial: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
   name: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, color: colors.white, maxWidth: '100%', marginTop: 8 }, // clear of the character
