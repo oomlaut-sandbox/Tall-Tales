@@ -19,7 +19,7 @@ import { DESK_FELT, DeskFelt, Felt } from '../look';
 const SHOW_DESK_LOGO = true;
 const DESK_LOGO = require('../../assets/logo-felt.png'); // 1233 x 434
 import { Bar, Burger } from '../components/Chrome';
-import BookFrame, { Spine, startRoom } from '../components/BookFrame';
+import BookFrame, { Spine, bookLayout, startRoom } from '../components/BookFrame';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Fade } from '../components/PageView';
 import { playSound } from '../sound';
@@ -160,7 +160,17 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
             {/* the felt logo, lying on the desk in the square the cover opens onto */}
             {SHOW_DESK_LOGO ? (
               <View pointerEvents="none" style={[at1, { justifyContent: 'center', alignItems: 'center' }]}>
-                <Image source={DESK_LOGO} resizeMode="contain" style={{ width: side * 0.86, height: side * 0.86 * 434 / 1233 }} accessibilityLabel="Oomlaut Reader" />
+                {(() => {
+                  if (!wide) return <Image source={DESK_LOGO} resizeMode="contain" style={{ width: side * 0.86, height: side * 0.86 * 434 / 1233 }} accessibilityLabel="Oomlaut Reader" />;
+                  // sideways: the logo keeps its left edge but is a little smaller, so the felt between it and the
+                  // notebook is as wide as the felt on its left (the picture's letters run from 26 to 1218 of 1233)
+                  const L = bookLayout(winW, winH, insets, u * 17, startRoom(winW, winH));
+                  const m = Math.max(0, (winW - L.leftW - L.rightW - 2 * side) / 2); // the felt left of the book
+                  const w0 = side * 0.86, a = m + (side - w0) / 2 + w0 * 26 / 1233; // felt left of the letters now
+                  const vis = Math.max(side * 0.4, m + side - 2 * a); // the letters' width, equal felt each side
+                  const w = vis * 1233 / 1192;
+                  return <Image source={DESK_LOGO} resizeMode="contain" style={{ position: 'absolute', left: a - m - w * 26 / 1233, width: w, height: w * 434 / 1233 }} accessibilityLabel="Oomlaut Reader" />;
+                })()}
               </View>
             ) : null}
             {/* the words square: the menu */}
