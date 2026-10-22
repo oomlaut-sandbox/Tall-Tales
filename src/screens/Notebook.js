@@ -28,6 +28,10 @@ import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../bad
 import { STORIES } from '../story';
 import { playKey, playSound } from '../sound';
 import { useControls } from '../controls';
+
+const ENVELOPE = require('../../assets/icon-envelope.png');
+const PRINTER = require('../../assets/icon-printer.png');
+const TRASH = require('../../assets/icon-trash.png');
 import { printNotebook, shareNotebookPdf } from '../pdf';
 
 const GAP = 30;
@@ -82,7 +86,8 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const [camGate, setCamGate] = useState(false);
   // print or share a page or a run of pages (page numbers as shown: the child's pages start at 3)
   const controls = useControls();
-  const [outRange, setOutRange] = useState(null); // { from, to } (indexes into pages) while the panel is open
+  const [outRange, setOutRange] = useState(null); // { from, to } (indexes into pages)
+  const [outAsk, setOutAsk] = useState(null); // 'print' | 'share': the box that asks which pages
   const [outGate, setOutGate] = useState(null); // 'print' | 'share', behind the grown-up question
   const [outBusy, setOutBusy] = useState(false);
   const [writing, setWriting] = useState(false); // the notes editor
@@ -432,19 +437,25 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   };
 
   const header = i === COVER_SPREAD ? t('My Notes') : i === BADGES ? t('Badges') : page && page.kind === 'sketch' ? t('Sketch') : t('Notes');
-  const barTitle = (
-    // short, so it fits beside the house and the note: the kind of page, then where you are ('Saved' briefly takes its place)
-    <View style={{ flex: 1, minWidth: 0, paddingLeft: 12 }}>
-      <Text numberOfLines={1} style={[styles.title, { fontSize: 15 }]}>{t('Notes')}</Text>{/* always just 'Notes', then the page number */}
-      <View>
-        <Animated.Text numberOfLines={1} style={[styles.sub, { opacity: savedFade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>{t('{a} of {b}', { a: i + 1, b: total })}</Animated.Text>
-        <Animated.Text numberOfLines={1} style={[styles.sub, { position: 'absolute', opacity: savedFade }]}>{t('Saved')}</Animated.Text>
-      </View>
-    </View>
-  );
+  // the box that asks which pages: this page to start with (or every page from the badges or the cover)
+  const openOut = (kind) => {
+    const cur = Math.max(0, Math.min(pages.length - 1, i - FIRST_PAGE));
+    setOutRange(i >= FIRST_PAGE ? { from: cur, to: cur } : { from: 0, to: pages.length - 1 });
+    setOutAsk(kind);
+  };
   const barBtns = (vertical) => (
     <View style={vertical ? { alignItems: 'center', gap: 18, marginBottom: 26 } : { flexDirection: 'row', alignItems: 'center', gap: 14 }}>{/* sideways: lifted up from the corner */}
-      <Pressable onPress={() => setPagesOpen(true)} hitSlop={8} accessibilityRole="button"><Text style={styles.btn}>{t('Pages')}</Text></Pressable>
+      {/* share (the envelope) and print (the printer): which pages, then the grown-up question */}
+      {controls.sharing !== false && pages.length ? (
+        <>
+          <Pressable onPress={() => openOut('share')} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Share pages')}>
+            <Image source={ENVELOPE} style={{ width: 24, height: 24, tintColor: colors.white }} resizeMode="contain" />
+          </Pressable>
+          <Pressable onPress={() => openOut('print')} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Print pages')}>
+            <Image source={PRINTER} style={{ width: 25, height: 25, tintColor: colors.white }} resizeMode="contain" />
+          </Pressable>
+        </>
+      ) : null}
       <Pressable onPress={async () => { clearTimeout(timer.current); if (latest.current) await saveNotebook(latest.current); onDone(); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Close the notebook')}>
         <View style={styles.finish}><Text style={styles.btn}>{t('Done')}</Text></View>
       </Pressable>
@@ -520,6 +531,20 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
               </Animated.View>
             ) : null}
             <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { opacity: intro === 'fly' ? 0 : 1 }]}>{layers}</View>
+            {/* top-left of the top page (the left page sideways): a small grey box, like the recording box in the
+                reader: the kind of page and where you are ('Saved' briefly takes its place); tap it for Pages */}
+            {!intro && i !== COVER_SPREAD && !(flipPair && peelLive && !landed) ? (
+              <Pressable onPress={() => setPagesOpen(true)} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Pages')}
+                style={[styles.pageBox, { top: Math.max(12, R * 0.42), left: Math.max(12, R * 0.42) }]}>
+                <Text style={styles.pageBoxLabel}>{header}</Text>
+                <View>
+                  <Animated.Text numberOfLines={1} style={[styles.pageBoxSub, { opacity: savedFade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>{t('{a} of {b}', { a: i + 1, b: total })}</Animated.Text>
+                  <Animated.Text numberOfLines={1} style={[styles.pageBoxSub, { position: 'absolute', opacity: savedFade }]}>{t('Saved')}</Animated.Text>
+                </View>
+                <View style={styles.pageBoxRule} />
+                <Text style={styles.pageBoxLabel}>{t('Pages')}</Text>
+              </Pressable>
+            ) : null}
             {/* the corner spots: there until the paper starts to lift, back as soon as the page lands */}
             {!(flipPair && peelLive && !landed) && !intro ? (
               <>
@@ -551,7 +576,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         <View key="bar-bottom" style={{ alignSelf: 'stretch', flexDirection: 'column', backgroundColor: colors.bar, paddingTop: spare / 2 }}>
           <Bar key="bar-h" u={u}>
             <Burger u={u} onPress={openMenu} />
-            {barTitle}
+            <View style={{ flex: 1 }} />
             {barBtns(false)}
           </Bar>
         </View>
@@ -577,35 +602,6 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           <Pressable onPress={() => addPage('note')} style={[styles.halfPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('New notes page')}</Text></Pressable>
           <Pressable onPress={() => addPage('sketch')} style={[styles.halfPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('New sketch page')}</Text></Pressable>
         </View>
-        {/* print or share: from page … to page …, then Print or Share (a PDF), after the grown-up question */}
-        {controls.sharing !== false && pages.length ? (() => {
-          const cur = Math.max(0, Math.min(pages.length - 1, i - FIRST_PAGE));
-          const r = outRange || { from: i >= FIRST_PAGE ? cur : 0, to: i >= FIRST_PAGE ? cur : pages.length - 1 };
-          const set = (from, to) => setOutRange({ from: Math.max(0, Math.min(from, pages.length - 1)), to: Math.max(0, Math.min(to, pages.length - 1)) });
-          const step = (which, d) => { if (which === 'from') { const f = r.from + d; set(f, Math.max(r.to, f)); } else { const to = r.to + d; set(Math.min(r.from, to), to); } };
-          const num = (k) => k + FIRST_PAGE + 1;
-          const stepper = (which, v) => (
-            <View style={styles.stepper}>
-              <Pressable onPress={() => step(which, -1)} hitSlop={6} style={styles.stepBtn} accessibilityLabel={t('Earlier page')}><Text style={styles.pbtnText}>−</Text></Pressable>
-              <Text style={styles.stepNum}>{num(v)}</Text>
-              <Pressable onPress={() => step(which, 1)} hitSlop={6} style={styles.stepBtn} accessibilityLabel={t('Later page')}><Text style={styles.pbtnText}>+</Text></Pressable>
-            </View>
-          );
-          return (
-            <View style={styles.outBox}>
-              <Text style={styles.prowTitle}>{t('Print or share pages')}</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                <Text style={styles.prowSub}>{t('From page')}</Text>{stepper('from', r.from)}
-                <Text style={styles.prowSub}>{t('to')}</Text>{stepper('to', r.to)}
-                <Pressable onPress={() => set(0, pages.length - 1)} hitSlop={6} style={styles.allChip}><Text style={styles.pbtnText}>{t('All')}</Text></Pressable>
-              </View>
-              <View style={{ flexDirection: 'row', gap: 12 }}>
-                <Pressable disabled={outBusy} onPress={() => { setOutRange(r); setOutGate('print'); }} style={[styles.halfPill, { backgroundColor: '#3a3a3a' }, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><Text style={styles.pillText}>{outBusy ? t('One moment…') : t('Print')}</Text></Pressable>
-                <Pressable disabled={outBusy} onPress={() => { setOutRange(r); setOutGate('share'); }} style={[styles.halfPill, { backgroundColor: '#3a3a3a' }, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Share')}</Text></Pressable>
-              </View>
-            </View>
-          );
-        })() : null}
         <ScrollView style={{ maxHeight: Math.max(340, winH * 0.5) }} contentContainerStyle={{ gap: 14, paddingBottom: 6 }}>
           <Pressable onPress={() => { setI(BADGES); setPagesOpen(false); }} style={[styles.prow, i === BADGES && { borderColor: colors.green }]}>
             <View style={[styles.thumb, { backgroundColor: '#c9a227' }]}><Text style={styles.thumbNum}>★</Text></View>
@@ -624,7 +620,15 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
                 <View style={{ flexDirection: 'row', gap: 8 }}>
                   <Pressable onPress={() => move(k, -1)} disabled={k === 0} hitSlop={6} style={[styles.pbtn, k === 0 && { opacity: 0.3 }]} accessibilityLabel={t('Move up')}><Text style={styles.pbtnText}>↑</Text></Pressable>
                   <Pressable onPress={() => move(k, 1)} disabled={k === pages.length - 1} hitSlop={6} style={[styles.pbtn, k === pages.length - 1 && { opacity: 0.3 }]} accessibilityLabel={t('Move down')}><Text style={styles.pbtnText}>↓</Text></Pressable>
-                  <Pressable onPress={() => removePage(k)} hitSlop={6} style={styles.pbtn} accessibilityLabel={t('Delete page')}><Text style={styles.pbtnText}>✕</Text></Pressable>
+                  {/* print just this page (after the grown-up question) */}
+                  {controls.sharing !== false ? (
+                    <Pressable onPress={() => { setPagesOpen(false); setOutRange({ from: k, to: k }); setOutGate('print'); }} hitSlop={6} style={styles.pbtn} accessibilityLabel={t('Print this page')}>
+                      <Image source={PRINTER} style={{ width: 17, height: 17, tintColor: colors.white }} resizeMode="contain" />
+                    </Pressable>
+                  ) : null}
+                  <Pressable onPress={() => removePage(k)} hitSlop={6} style={styles.pbtn} accessibilityLabel={t('Delete page')}>
+                    <Image source={TRASH} style={{ width: 16, height: 16, tintColor: colors.white }} resizeMode="contain" />
+                  </Pressable>
                 </View>
               </View>
             </View>
@@ -655,10 +659,40 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           </View>
         </View>
       ) : null}
+      {outAsk ? (() => {
+        const r = outRange || { from: 0, to: pages.length - 1 };
+        const set = (from, to) => setOutRange({ from: Math.max(0, Math.min(from, pages.length - 1)), to: Math.max(0, Math.min(to, pages.length - 1)) });
+        const step = (which, d) => { if (which === 'from') { const f = r.from + d; set(f, Math.max(r.to, f)); } else { const to = r.to + d; set(Math.min(r.from, to), to); } };
+        const num = (k) => k + FIRST_PAGE + 1;
+        const stepper = (which, v) => (
+          <View style={styles.stepper}>
+            <Pressable onPress={() => step(which, -1)} hitSlop={6} style={styles.stepBtn} accessibilityLabel={t('Earlier page')}><Text style={styles.pbtnText}>−</Text></Pressable>
+            <Text style={styles.stepNum}>{num(v)}</Text>
+            <Pressable onPress={() => step(which, 1)} hitSlop={6} style={styles.stepBtn} accessibilityLabel={t('Later page')}><Text style={styles.pbtnText}>+</Text></Pressable>
+          </View>
+        );
+        return (
+          <View style={[StyleSheet.absoluteFill, styles.choiceBack, { zIndex: 90 }]}>
+            <Pressable style={StyleSheet.absoluteFill} onPress={() => setOutAsk(null)} accessible={false} />
+            <View style={styles.outBox}>
+              <Text style={styles.outTitle}>{outAsk === 'print' ? t('Print pages') : t('Share pages')}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                <Text style={styles.prowSub}>{t('From page')}</Text>{stepper('from', r.from)}
+                <Text style={styles.prowSub}>{t('to')}</Text>{stepper('to', r.to)}
+              </View>
+              <Pressable onPress={() => set(0, pages.length - 1)} hitSlop={6} style={[styles.allChip, { alignSelf: 'flex-start' }]}><Text style={styles.pbtnText}>{t('All pages')}</Text></Pressable>
+              <View style={{ flexDirection: 'row', gap: 10, justifyContent: 'flex-end', marginTop: 6 }}>
+                <Pressable onPress={() => setOutAsk(null)} style={[styles.outPill, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Cancel')}</Text></Pressable>
+                <Pressable onPress={() => { const k = outAsk; setOutAsk(null); setOutGate(k); }} style={[styles.outPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{outAsk === 'print' ? t('Print') : t('Share')}</Text></Pressable>
+              </View>
+            </View>
+          </View>
+        );
+      })() : null}
       <ParentGate visible={!!outGate} reason={outGate === 'print' ? t('Printing opens your phone’s print options.') : t('Sharing opens your phone’s messages and email.')}
         onCancel={() => setOutGate(null)}
         onPass={async () => {
-          const kind = outGate; setOutGate(null); setPagesOpen(false);
+          const kind = outGate; setOutGate(null);
           const r = outRange || { from: 0, to: pages.length - 1 };
           const list = pages.slice(r.from, r.to + 1);
           setOutBusy(true);
@@ -1102,7 +1136,13 @@ const styles = StyleSheet.create({
   prowSub: { color: '#bbb', fontSize: 14, fontWeight: '400', fontFamily: fonts.ui },
   pbtn: { width: 36, height: 36, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
   pbtnText: { color: colors.white, fontWeight: '700', fontSize: 18 },
-  outBox: { gap: 12, marginBottom: 18, padding: 14, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.06)' },
+  outBox: { width: '100%', maxWidth: 400, gap: 14, paddingHorizontal: 26, paddingTop: 26, paddingBottom: 22, borderRadius: 24, backgroundColor: '#000' },
+  outTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20 },
+  outPill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
+  pageBox: { position: 'absolute', zIndex: 25, backgroundColor: '#4a4a4a', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, flexDirection: 'row', alignItems: 'center', gap: 7 }, // like the recording box in the reader
+  pageBoxLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 14 },
+  pageBoxSub: { color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 13 },
+  pageBoxRule: { width: 1, height: 14, backgroundColor: 'rgba(255,255,255,0.35)' },
   stepper: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   stepBtn: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
   stepNum: { minWidth: 26, textAlign: 'center', color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
