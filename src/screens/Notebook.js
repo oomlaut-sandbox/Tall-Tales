@@ -535,7 +535,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
             <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { opacity: intro === 'fly' ? 0 : 1 }]}>{layers}</View>
             {/* top-left of the top page (the left page sideways): a small grey box, like the recording box in the
                 reader: the kind of page and where you are ('Saved' briefly takes its place); tap it for Pages */}
-            {!intro && i !== COVER_SPREAD && !(flipPair && peelLive && !landed) ? (
+            {!intro && !wide && i !== COVER_SPREAD && i !== BADGES && !(flipPair && peelLive && !landed) ? (
               <Pressable onPress={() => setPagesOpen(true)} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Pages')}
                 style={[styles.pageBox, { top: Math.max(12, R * 0.42), left: Math.max(12, R * 0.42) }]}>
                 <Text style={styles.pageBoxLabel}>{header}</Text>
@@ -1141,7 +1141,7 @@ const styles = StyleSheet.create({
   outBox: { width: '100%', maxWidth: 400, gap: 14, paddingHorizontal: 26, paddingTop: 26, paddingBottom: 22, borderRadius: 24, backgroundColor: 'rgba(0,0,0,0.78)' }, // slightly see-through
   outTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20 },
   outPill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
-  pageBox: { position: 'absolute', zIndex: 25, backgroundColor: '#4a4a4a', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, flexDirection: 'row', alignItems: 'center', gap: 7 }, // like the recording box in the reader
+  pageBox: { position: 'absolute', zIndex: 25, backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, flexDirection: 'row', alignItems: 'center', gap: 7 }, // like the recording box in the reader
   pageBoxLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 14 },
   pageBoxSub: { color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 13 },
   pageBoxRule: { width: 1, height: 14, backgroundColor: 'rgba(255,255,255,0.35)' },
