@@ -44,7 +44,7 @@ function Tile({ plain, u, cover, coverArt, title, sub, onPress, onLongPress, plu
     <Pressable onPress={press} onLongPress={onLongPress} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={label}>
       {/* a very subtle drop shadow under the square cover */}
       <View style={styles.tileShadow}>
-      <View ref={coverRef} collapsable={false} style={{ aspectRatio: 1, backgroundColor: plain ? '#2a2a2a' : '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>{/* plain: a solid dark grey square (pictures to come) */}
+      <View ref={coverRef} collapsable={false} style={{ aspectRatio: 1, backgroundColor: plain ? '#3a3a3a' : '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>{/* plain: a solid dark grey square (pictures to come) */}
         {coverArt ? <CoverArt cover={coverArt} /> : cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }} resizeMode="cover" /> : null}
         {/* a small, thin grey + in the top right corner (Create a story, Playlists) */}
         {plus ? (
