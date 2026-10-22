@@ -1049,8 +1049,10 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
             <React.Fragment key={`${r.reader}/${r.pid}`}>
             {/* each reader's pages together, under their name */}
             {k === 0 || arr[k - 1].reader !== r.reader ? <Text style={[styles.help, { marginTop: k ? 10 : 0, fontWeight: '700', color: colors.white }]}>{readerName(r.reader)}</Text> : null}
-            <View style={styles.row}>
+            {/* the page and its length on their own line, the buttons underneath */}
+            <View style={[styles.row, { flexDirection: 'column', alignItems: 'stretch', gap: 10 }]}>
               <Text style={styles.rowText}>{tr('Page {n} · {s}s', { n: r.page + 1, s: Math.round((r.end || r.seconds) - (r.start || 0)) })}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
               <Pressable style={styles.rowBtn} onPress={() => { stopReading(); playVoice(r.uri, { start: r.start || 0, end: r.end || null, onFail: () => toast(tr('This recording can’t be played. Record the page again.')) }); }}><Text style={styles.rowBtnText}>{tr('Play')}</Text></Pressable>
               {/* Trim: the trim editor (a box in the middle of the screen) */}
               <Pressable style={styles.rowBtn} onPress={() => { stopReading(); stopVoice(); setTrimRec(r); }}><Text style={styles.rowBtnText}>{tr('Trim')}</Text></Pressable>
@@ -1058,6 +1060,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
               <Pressable hitSlop={10} onPress={async () => { stopVoice(); await removeRecording(story.id, r.pid, r.reader); openRecList(); }} accessibilityRole="button" accessibilityLabel={tr('Delete')} style={{ paddingHorizontal: 4 }}>
                 <Image source={TRASH} style={{ width: 20, height: 20, tintColor: '#bdbdbd' }} resizeMode="contain" />
               </Pressable>
+              </View>
             </View>
             </React.Fragment>
           )) : <Text style={styles.help}>{tr('Nothing recorded yet. Tap Start Recording to read this story in your own voice.')}</Text>
@@ -1142,7 +1145,7 @@ const styles = StyleSheet.create({
   backlink: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, fontWeight: '700', paddingVertical: 6 },
   help: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#2a2a2a', padding: 12 },
-  rowText: { flex: 1, color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  rowText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   rowBtn: { backgroundColor: colors.tile, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 18 }, // pills
   rowBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
   seg: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#333', paddingHorizontal: 8, paddingVertical: 10, borderRadius: 22 }, // pills
