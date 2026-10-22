@@ -885,8 +885,8 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
                 <View style={{ transform: v ? [] : [{ translateX: -3 }, { translateY: u * 0.154 }] }}><AlarmClockIcon size={u * 5.1} color={prefs.alarmOn ? '#e0e0e0' : IDLE} /></View>
                 {/* the alarm time: right of the clock (upright), under it (sideways); it takes no room in the slot */}
                 {prefs.alarmOn ? (v
-                  ? <Text numberOfLines={1} style={[styles.alarmTime, { position: 'absolute', top: G.step / 2 + u * 3.4, left: 0, right: 0, textAlign: 'center' }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text>
-                  : <Text style={[styles.alarmTime, { position: 'absolute', left: G.step / 2 + u * 3.6 - 3, width: u * 24 }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text>) : null}
+                  ? <Text numberOfLines={1} style={[styles.alarmTime, { position: 'absolute', top: G.step / 2 + u * 4.6, left: -20, right: -20, textAlign: 'center' }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text>
+                  : <Text style={[styles.alarmTime, { position: 'absolute', left: G.step / 2 + u * 5.2 - 3, width: u * 24 }]}>{fmtTime(prefs.alarmTime || '07:00')}</Text>) : null}
               </Pressable>
               </>
             ) : null}
