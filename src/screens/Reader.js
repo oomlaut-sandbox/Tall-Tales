@@ -160,7 +160,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const pendingRec = useRef(false);
   const recLevels = useRef([]);
   const meterTimer = useRef(null);
-  const [trimRec, setTrimRec] = useState(null); // the recording open in the trim editor
+  const [trimRec, setTrimRec] = useState(() => (Platform.OS === 'web' && typeof window !== 'undefined' && /trim-demo/.test(window.location.hash)
+    ? { page: 1, pid: 'demo', uri: '', seconds: 14, start: 1.2, end: 11.5, levels: Array.from({ length: 280 }, (_, i) => Math.abs(Math.sin(i / 9)) * (0.4 + 0.6 * Math.abs(Math.sin(i / 37)))) } : null)); // the recording open in the trim editor (web preview #trim-demo shows a sample)
   const [savedPage, setSavedPage] = useState(null); // { n, k }: the page just saved, shown for a moment
   useEffect(() => { if (!savedPage) return undefined; const t = setTimeout(() => setSavedPage(null), 2600); return () => clearTimeout(t); }, [savedPage]);
   const recAuto = useRef(false); // recording carried on to the next page by itself (no instructions bubble again)
