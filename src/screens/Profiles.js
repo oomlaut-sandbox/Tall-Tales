@@ -4,7 +4,7 @@
 // Kids can switch between profiles by tapping (unless a grown-up has turned that off); adding, changing and
 // removing a profile is behind the grown-up question.
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, DESK_BG } from '../look';
@@ -192,21 +192,26 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
               </View>
               <Text style={styles.small}>{t('Books rated for older children are hidden.')}</Text>
               {/* Save and (for a profile that exists) a red Delete; Cancel on the same line, on the right */}
-              <View style={{ flexDirection: 'row', gap: 10, marginTop: 6, alignItems: 'center' }}>
-                <Pressable onPress={saveForm} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Save')}</Text></Pressable>
-                {form.id ? <Pressable onPress={() => setSure(true)} style={[styles.pill, { backgroundColor: '#b3261e' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Delete')}</Text></Pressable> : null}
-                <View style={{ flex: 1 }} />
-                <Pressable onPress={() => setForm(null)} style={[styles.pill, { backgroundColor: '#4a4a4a' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Cancel')}</Text></Pressable>
+              {/* (they shrink to fit, so longer words in other languages never push one out of the box) */}
+              <View style={{ flexDirection: 'row', gap: 8, marginTop: 6, alignItems: 'center' }}>
+                <Pressable onPress={saveForm} style={[styles.pill, styles.pillFit, { backgroundColor: colors.green }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Save')}</Text></Pressable>
+                {form.id ? <Pressable onPress={() => setSure(true)} style={[styles.pill, styles.pillFit, { backgroundColor: '#b3261e' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Delete')}</Text></Pressable> : null}
+                <Pressable onPress={() => setForm(null)} style={[styles.pill, styles.pillFit, { backgroundColor: '#4a4a4a', marginLeft: 'auto' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Cancel')}</Text></Pressable>
               </View>
               {form.id ? (
                 sure ? (
-                  <View style={{ gap: 8 }}>
-                    <Text style={styles.small}>{t('Remove {name}? Their notebook and badges stay on this phone, but nobody will see them.', { name: form.name || '?' })}</Text>
-                    <View style={{ flexDirection: 'row', gap: 10 }}>
-                      <Pressable onPress={() => { removeProfile(form.id); setForm(null); }} style={[styles.pill, { backgroundColor: '#a33' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Remove')}</Text></Pressable>
-                      <Pressable onPress={() => setSure(false)} style={[styles.pill, { backgroundColor: '#2a2a2a' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Keep')}</Text></Pressable>
+                  // are you sure? a solid black box popping up over everything
+                  <Modal transparent animationType="fade" visible onRequestClose={() => setSure(false)}>
+                    <View style={styles.sureBack}>
+                      <View style={styles.sureBox}>
+                        <Text style={styles.sureText}>{t('Remove {name}? Their notebook and badges stay on this phone, but nobody will see them.', { name: form.name || '?' })}</Text>
+                        <View style={{ flexDirection: 'row', gap: 10, marginTop: 26 }}>
+                          <Pressable onPress={() => { setSure(false); removeProfile(form.id); setForm(null); }} style={[styles.pill, styles.pillFit, { backgroundColor: '#b3261e' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Remove')}</Text></Pressable>
+                          <Pressable onPress={() => setSure(false)} style={[styles.pill, styles.pillFit, { backgroundColor: '#3a3a3a', marginLeft: 'auto' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Keep')}</Text></Pressable>
+                        </View>
+                      </View>
                     </View>
-                  </View>
+                  </Modal>
                 ) : null
               ) : null}
             </View>
@@ -239,6 +244,10 @@ const styles = StyleSheet.create({
   addTile: { borderWidth: 2, borderColor: '#777', borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' },
   plus: { color: '#aaa', fontFamily: fonts.ui, fontWeight: '300' },
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 24, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
+  pillFit: { flexShrink: 1, minWidth: 0, paddingHorizontal: 18 },
+  sureBack: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 28 },
+  sureBox: { width: '100%', maxWidth: 400, backgroundColor: '#000', borderRadius: 24, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26 },
+  sureText: { color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24 },
   pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 50, overflow: 'hidden' }, // within the page: the bar stays uncovered
   card: { backgroundColor: '#242424', borderRadius: 16, padding: 22, paddingTop: 24, paddingBottom: 28, gap: 14, width: '100%', maxWidth: 480, alignSelf: 'center' },
