@@ -7,8 +7,10 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 
 // the backgrounds, in order: the first is the default; swipe left or right for the others (add more here)
 export const DAY_VIDEOS = [
-  { id: 'pebbles', image: require('../../assets/daydream/pebbles.jpg') }, // Jörg's felt pebbles (a still picture, drifting very slowly): the default
-  // { id: 'trees', src: require('../../assets/daydream/trees.mp4') }, // sunlight through the leaves (set aside for now)
+  // sunlight through the leaves (a seamless looping video); the pebbles sit underneath, so if the video can't play
+  // the pebbles show instead of black
+  { id: 'trees', src: require('../../assets/daydream/trees.mp4'), image: require('../../assets/daydream/pebbles.jpg') },
+  // { id: 'pebbles', image: require('../../assets/daydream/pebbles.jpg') }, // Jörg's felt pebbles (a still picture, drifting very slowly)
 ];
 
 // a still picture: it drifts very slowly closer and back, so it feels alive
@@ -33,7 +35,13 @@ function Clip({ src }) {
     try { p.audioMixingMode = 'mixWithOthers'; } catch (e) {} // never interrupt the story or the music
     p.play();
   });
-  useEffect(() => () => { try { player.pause(); } catch (e) {} }, [player]);
+  // start it again once it's ready (on some phones play() before loading does nothing)
+  useEffect(() => {
+    let sub;
+    try { sub = player.addListener('statusChange', ({ status }) => { if (status === 'readyToPlay') { try { player.play(); } catch (e) {} } }); } catch (e) {}
+    const t = setTimeout(() => { try { player.play(); } catch (e) {} }, 400);
+    return () => { clearTimeout(t); try { sub && sub.remove(); } catch (e) {} try { player.pause(); } catch (e) {} };
+  }, [player]);
   return <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} allowsFullscreen={false} allowsPictureInPicture={false} />;
 }
 
@@ -57,7 +65,8 @@ export default function DaydreamVideo({ index = 0, onIndex, dim }) {
   return (
     <View style={StyleSheet.absoluteFill} {...pan.panHandlers}>
       <Animated.View style={[StyleSheet.absoluteFill, { opacity: fade, backgroundColor: '#000' }]}>
-        {DAY_VIDEOS[i].image ? <Still key={DAY_VIDEOS[i].id} src={DAY_VIDEOS[i].image} /> : <Clip key={DAY_VIDEOS[i].id} src={DAY_VIDEOS[i].src} />}
+        {DAY_VIDEOS[i].image ? <Still key={`s${DAY_VIDEOS[i].id}`} src={DAY_VIDEOS[i].image} /> : null}
+        {DAY_VIDEOS[i].src ? <Clip key={`v${DAY_VIDEOS[i].id}`} src={DAY_VIDEOS[i].src} /> : null}
       </Animated.View>
       {/* the screen dims a little, like the nightlight (and fully, when the sleep timer runs out) */}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: dim }]} />

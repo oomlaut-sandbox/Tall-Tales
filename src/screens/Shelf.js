@@ -139,14 +139,14 @@ function WhoReads({ onPress }) {
   return (
     <View style={{ width: tileWidth(winW), alignItems: 'flex-start' }}>
       <Pressable onPress={onPress} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Profiles')}
-        style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 4 }}>
+        style={{ flexDirection: 'row', alignItems: 'center', gap: p ? 10 : 7, marginTop: 4 }}>
         {p ? <Image source={feltFor(p.color)} style={{ width: 40, height: 40 }} resizeMode="contain" />
-          : <View style={{ width: 28, height: 28, alignItems: 'center', justifyContent: 'flex-end' }}>
-              <View style={{ width: 11, height: 11, borderRadius: 6, backgroundColor: 'rgba(235,235,235,0.9)', marginBottom: 2 }} />
-              <View style={{ width: 20, height: 9, borderTopLeftRadius: 10, borderTopRightRadius: 10, backgroundColor: 'rgba(235,235,235,0.9)' }} />
+          : <View style={{ alignItems: 'center' }}>{/* a small person: only as tall as itself, so the word centres on it */}
+              <View style={{ width: 9, height: 9, borderRadius: 5, backgroundColor: 'rgba(235,235,235,0.9)', marginBottom: 1.5 }} />
+              <View style={{ width: 16, height: 7.5, borderTopLeftRadius: 8, borderTopRightRadius: 8, backgroundColor: 'rgba(235,235,235,0.9)' }} />
             </View>}
         <View style={{ flexShrink: 1 }}>
-          <Text numberOfLines={1} style={styles.whoName}>{p ? p.name : t('Profiles')}</Text>
+          <Text numberOfLines={1} style={[styles.whoName, !p && { fontSize: 14 }]}>{p ? p.name : t('Profiles')}</Text>
           {p ? <Text style={styles.whoSub}>{t('Reading now')}</Text> : null}
         </View>
       </Pressable>
