@@ -676,9 +676,9 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
             <Pressable style={StyleSheet.absoluteFill} onPress={() => setOutAsk(null)} accessible={false} />
             <View style={styles.outBox}>
               <Text style={styles.outTitle}>{outAsk === 'print' ? t('Print pages') : t('Share pages')}</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                <Text style={styles.prowSub}>{t('From page')}</Text>{stepper('from', r.from)}
-                <Text style={styles.prowSub}>{t('to')}</Text>{stepper('to', r.to)}
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 22 }}>
+                <View style={{ gap: 6 }}><Text style={styles.prowSub}>{t('From page')}</Text>{stepper('from', r.from)}</View>
+                <View style={{ gap: 6 }}><Text style={styles.prowSub}>{t('To page')}</Text>{stepper('to', r.to)}</View>
               </View>
               <Pressable onPress={() => set(0, pages.length - 1)} hitSlop={6} style={[styles.allChip, { alignSelf: 'flex-start' }]}><Text style={styles.pbtnText}>{t('All pages')}</Text></Pressable>
               <View style={{ flexDirection: 'row', gap: 10, justifyContent: 'flex-end', marginTop: 6 }}>

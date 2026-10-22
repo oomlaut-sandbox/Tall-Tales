@@ -138,7 +138,7 @@ const T = {
   'That file couldn’t be opened.': { de: 'Die Datei konnte nicht geöffnet werden.', fr: 'Impossible d’ouvrir ce fichier.', es: 'No se pudo abrir el archivo.', ja: 'その ファイルを ひらけませんでした。' },
   'Print or share pages': { de: 'Seiten drucken oder teilen', fr: 'Imprimer ou partager des pages', es: 'Imprimir o compartir páginas', ja: 'ページを いんさつ・シェア' },
   'From page': { de: 'Von Seite', fr: 'De la page', es: 'De la página', ja: 'ページ' },
-  'to': { de: 'bis', fr: 'à', es: 'a', ja: 'から' },
+  'To page': { de: 'Bis Seite', fr: 'À la page', es: 'Hasta la página', ja: 'ページまで' },
   'All': { de: 'Alle', fr: 'Toutes', es: 'Todas', ja: 'ぜんぶ' },
   'Earlier page': { de: 'Frühere Seite', fr: 'Page précédente', es: 'Página anterior', ja: 'まえの ページ' },
   'Later page': { de: 'Spätere Seite', fr: 'Page suivante', es: 'Página siguiente', ja: 'つぎの ページ' },
