@@ -64,17 +64,12 @@ function FineSlider({ value, onChange, width, label }) {
   );
 }
 
-// a simple sun: a small ring with eight short rays
+// a simple sun: a small ring with eight short rays (a picture drawn exactly round and centred: built out of
+// views, the ring came out slightly square and the rays off-centre on the phone)
+const SUN_OUTLINE = require('../../assets/icon-sun-outline.png');
+export const SUN_SOLID = require('../../assets/icon-sun-solid.png');
 export function SunIcon({ size = 18, color = 'rgba(244,226,207,0.6)' }) {
-  const r = size * 0.22;
-  return (
-    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-      {Array.from({ length: 8 }, (_, i) => (
-        <View key={i} style={{ position: 'absolute', width: 1.4, height: size * 0.2, backgroundColor: color, transform: [{ rotate: `${i * 45}deg` }, { translateY: -size * 0.38 }] }} />
-      ))}
-      <View style={{ width: r * 2, height: r * 2, borderRadius: r, borderWidth: 1.4, borderColor: color }} />
-    </View>
-  );
+  return <Image source={SUN_OUTLINE} style={{ width: size, height: size, tintColor: color }} resizeMode="contain" />;
 }
 
 // a simple clock: a ring with two hands

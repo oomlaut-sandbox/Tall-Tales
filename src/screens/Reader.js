@@ -72,7 +72,7 @@ const TRASH = require('../../assets/icon-trash.png');
 import { markFinished, markFirst, markReadToday } from '../badges';
 import { AUDIO, TIMINGS } from '../narration';
 import { SAMPLES, SAMPLE_LANGS, THE_END } from '../narration/samples';
-import Nightlight, { SunIcon } from '../components/Nightlight';
+import Nightlight, { SUN_SOLID, SunIcon } from '../components/Nightlight';
 const MOON_OUTLINE = require('../../assets/icon-moon-outline.png'); // the moon logo, traced as a fine outline (the same weight as the sun)
 import { tap, thunk, withTap } from '../haptics';
 import { fmtTime } from '../clock';
@@ -1279,14 +1279,6 @@ function ListenChoice({ area, center, onDay, onNight, onCancel, onGone, tr }) {
 
 // Daydream's mark on the bar (in place of the moon): a small solid sun; tap it to close Daydream
 function SolidSun({ size, color }) {
-  const r = size * 0.24;
-  return (
-    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-      {Array.from({ length: 8 }, (_, i) => (
-        <View key={i} style={{ position: 'absolute', width: Math.max(1.6, size * 0.09), height: size * 0.2, borderRadius: size * 0.05, backgroundColor: color, transform: [{ rotate: `${i * 45}deg` }, { translateY: -size * 0.39 }] }} />
-      ))}
-      <View style={{ width: r * 2, height: r * 2, borderRadius: r, backgroundColor: color }} />
-    </View>
-  );
+  return <Image source={SUN_SOLID} style={{ width: size, height: size, tintColor: color }} resizeMode="contain" />;
 }
 
