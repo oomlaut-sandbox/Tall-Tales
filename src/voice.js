@@ -45,7 +45,7 @@ function ensurePlayback() {
 // source: a file uri string or a bundled audio file. onProgress(fraction 0..1), onTime(seconds), onDone()
 // Returns true straight away; the sound starts as soon as the audio mode is ready.
 // start / end (seconds): play only that part of the file (a trimmed recording)
-export function playVoice(source, { onProgress, onTime, onDone, onFail, rate = 1, start = 0, end = null } = {}) {
+export function playVoice(source, { onProgress, onTime, onDone, onFail, rate = 1, start: from = 0, end: to = null } = {}) {
   stopVoice();
   const my = session;
   let tries = 0;
@@ -57,33 +57,33 @@ export function playVoice(source, { onProgress, onTime, onDone, onFail, rate = 1
       player = createAudioPlayer(typeof source === 'string' ? { uri: source } : source);
       sub = player.addListener('playbackStatusUpdate', (s) => {
         if (my !== session) return;
-        if (s.duration > 0 && onProgress) { const e = end || s.duration; onProgress(Math.max(0, Math.min(1, (s.currentTime - start) / Math.max(0.1, e - start)))); }
+        if (s.duration > 0 && onProgress) { const e = to || s.duration; onProgress(Math.max(0, Math.min(1, (s.currentTime - from) / Math.max(0.1, e - from)))); }
         if (s.didJustFinish) {
           stopVoice();
           onDone && onDone();
         }
       });
       if (rate !== 1) { try { player.setPlaybackRate(rate, 'high'); } catch (e) {} }
-      if (end) {
+      if (to) {
         // a trimmed recording: stop at the end point
         const stopper = setInterval(() => {
           if (my !== session || !player) { clearInterval(stopper); return; }
           let t = 0; try { t = player.currentTime || 0; } catch (e) {}
-          if (t >= end) { clearInterval(stopper); stopVoice(); onDone && onDone(); }
+          if (t >= to) { clearInterval(stopper); stopVoice(); onDone && onDone(); }
         }, 40);
       }
       if (onTime) {
         // Status updates are too slow for word-by-word highlighting, so check the time often.
         ticker = setInterval(() => { if (my === session && player) { try { onTime(player.currentTime || 0); } catch (e) {} } }, 70);
       }
-      if (start > 0) { try { player.seekTo(start).catch(() => {}); } catch (e) {} }
+      if (from > 0) { try { player.seekTo(from).catch(() => {}); } catch (e) {} }
       player.play();
       // Watchdog: if the sound hasn't actually started, try once more with a fresh player; if it
       // still won't start, give up so the caller can use another voice (and Play works again).
       setTimeout(() => {
         if (my !== session || !player) return;
         let started = false;
-        try { started = player.playing || (player.currentTime || 0) > start + 0.05; } catch (e) {}
+        try { started = player.playing || (player.currentTime || 0) > from + 0.05; } catch (e) {}
         if (started) return;
         if (tries < 2) return start();
         stopVoice();
