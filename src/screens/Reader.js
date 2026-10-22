@@ -456,7 +456,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       if (save && recorder.uri && seconds > 0.7) {
         await saveRecording(story.id, pageKey(story.pages[page], page), recorder.uri, seconds, levels, recReader.current);
         if (voiceRef.current !== recReader.current) { setVoice(recReader.current); setBookVoice(story.id, recReader.current); } // the book now reads in this reader's voice
-        setSavedPage({ n: page + 1, k: Date.now() }); // a green 'Page 2 saved' beside the recording box (no speech bubble)
+        setSavedPage({ n: page + 1, k: Date.now(), who: recReader.current }); // a green 'Page 2 saved' beside the recording box (no speech bubble)
         markFirst('firstRecording'); // a badge in My Notebook
         refreshRecPages();
       }
@@ -847,8 +847,8 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
             tapping it stops the recording */}
         {/* (and to its right, a green 'Page 2 saved' for a moment after each page is saved) */}
         {size && (recording || REC_DEMO || savedPage) ? (
-          <RecTimer start={recStart.current || DEMO_T0} onStop={() => stopRec(true)} running={recording || REC_DEMO} saved={savedPage ? savedPage.n : null}
-            style={size.w > size.h * 1.25 ? { top: size.h * 0.06, left: size.w * 0.54 } : { top: size.h * 0.5 + size.w * 0.07, left: size.w * 0.08 }} />
+          <RecTimer start={recStart.current || DEMO_T0} onStop={() => stopRec(true)} running={recording || REC_DEMO} saved={savedPage ? savedPage.n : null} who={readerName(savedPage && savedPage.who ? savedPage.who : recReader.current)}
+            style={size.w > size.h * 1.25 ? { top: size.h * 0.06, left: size.w * 0.52 } : { top: size.h * 0.5 + size.w * 0.07, left: size.w * 0.04 }} />
         ) : null}
         {/* the dog-ear hides while a page is turning, and comes back once the new page has landed */}
         {idx < pages.length - 1 && !flipPair && !listen ? <View style={{ position: 'absolute', right: 0, bottom: 0, zIndex: 20 }}><DogEar u={u} under={colors.earUnder} onPress={() => flip(1)} /></View> : null}
@@ -1087,7 +1087,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
 
 // The recording timer: a small grey box with the time recorded so far (0:03), beside the pulsing record button.
 const DEMO_T0 = Date.now() - 4000; // (web preview #rec-demo only)
-function RecTimer({ start, style, onStop, running = true, saved }) {
+function RecTimer({ start, style, onStop, running = true, saved, who }) {
   const tr = useT();
   const [secs, setSecs] = useState(0);
   useEffect(() => {
@@ -1095,7 +1095,7 @@ function RecTimer({ start, style, onStop, running = true, saved }) {
     return () => clearInterval(t);
   }, [start]);
   const savedPill = saved ? (
-    <View style={[styles.recBox, { backgroundColor: colors.green }]} accessibilityLiveRegion="polite"><Text style={styles.recBoxLabel}>{tr('Page {n} saved', { n: saved })}</Text></View>
+    <View style={[styles.recBox, { backgroundColor: colors.green }]} accessibilityLiveRegion="polite"><Text style={styles.recBoxLabel}>{tr('Page {n} saved', { n: saved })}{who ? ` · ${who}` : ''}</Text></View>
   ) : null;
   if (!running) {
     // the recording has stopped: only the green 'saved' note, where the box was, for a moment
@@ -1107,7 +1107,7 @@ function RecTimer({ start, style, onStop, running = true, saved }) {
         <View style={styles.recDot} />
         <View style={styles.recBox} accessibilityLabel={tr('Recording, {n} seconds', { n: secs })}>
           <View style={styles.recStop} />
-          <Text style={styles.recBoxLabel}>{tr('Recording')}</Text>
+          <Text style={styles.recBoxLabel}>{tr('Recording')}{who ? ` · ${who}` : ''}</Text>
           <Text style={styles.recBoxTime}>{Math.floor(secs / 60)}:{String(secs % 60).padStart(2, '0')}</Text>
         </View>
       </Pressable>
