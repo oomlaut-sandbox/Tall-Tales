@@ -2,7 +2,7 @@
 // like a zen screensaver for the listener. Swipe left or right for the next video.
 // Each one is silent (the story and the music are what you hear): a seamlessly looping video, or a still picture.
 import React, { useEffect, useRef } from 'react';
-import { Animated, Easing, Image, PanResponder, StyleSheet, View } from 'react-native';
+import { Animated, Easing, Image, PanResponder, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 
 // the backgrounds, in order: the first is the default; swipe left or right for the others (add more here)
@@ -28,7 +28,7 @@ function Still({ src }) {
   return <Animated.Image source={src} resizeMode="cover" style={[StyleSheet.absoluteFill, { width: '100%', height: '100%', transform: [{ scale }] }]} />;
 }
 
-function Clip({ src }) {
+function Clip({ src, fit = 'cover' }) {
   const player = useVideoPlayer(src, (p) => {
     p.loop = true;
     p.muted = true;
@@ -42,11 +42,13 @@ function Clip({ src }) {
     const t = setTimeout(() => { try { player.play(); } catch (e) {} }, 400);
     return () => { clearTimeout(t); try { sub && sub.remove(); } catch (e) {} try { player.pause(); } catch (e) {} };
   }, [player]);
-  return <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} allowsFullscreen={false} allowsPictureInPicture={false} />;
+  return <VideoView player={player} style={StyleSheet.absoluteFill} contentFit={fit} nativeControls={false} allowsFullscreen={false} allowsPictureInPicture={false} />;
 }
 
 // index: which video; onIndex(i): a swipe chose another; dim: 0..1, how dark the layer over it is
 export default function DaydreamVideo({ index = 0, onIndex, dim }) {
+  const { width: winW, height: winH } = useWindowDimensions();
+  const upright = winH > winW; // upright: the video keeps its own wide shape (never cropped or turned), across the screen
   const i = ((index % DAY_VIDEOS.length) + DAY_VIDEOS.length) % DAY_VIDEOS.length;
   const fade = useRef(new Animated.Value(1)).current;
   const idx = useRef(i); idx.current = i;
@@ -65,8 +67,20 @@ export default function DaydreamVideo({ index = 0, onIndex, dim }) {
   return (
     <View style={StyleSheet.absoluteFill} {...pan.panHandlers}>
       <Animated.View style={[StyleSheet.absoluteFill, { opacity: fade, backgroundColor: '#000' }]}>
-        {DAY_VIDEOS[i].image ? <Still key={`s${DAY_VIDEOS[i].id}`} src={DAY_VIDEOS[i].image} /> : null}
-        {DAY_VIDEOS[i].src ? <Clip key={`v${DAY_VIDEOS[i].id}`} src={DAY_VIDEOS[i].src} /> : null}
+        {DAY_VIDEOS[i].src && upright ? (
+          // a wide strip in the middle, on black; the pebbles only behind the strip, in case the video can't play
+          <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]}>
+            <View style={{ width: '100%', aspectRatio: 16 / 9, overflow: 'hidden' }}>
+              {DAY_VIDEOS[i].image ? <Still key={`s${DAY_VIDEOS[i].id}`} src={DAY_VIDEOS[i].image} /> : null}
+              <Clip key={`v${DAY_VIDEOS[i].id}`} src={DAY_VIDEOS[i].src} fit="contain" />
+            </View>
+          </View>
+        ) : (
+          <>
+            {DAY_VIDEOS[i].image ? <Still key={`s${DAY_VIDEOS[i].id}`} src={DAY_VIDEOS[i].image} /> : null}
+            {DAY_VIDEOS[i].src ? <Clip key={`v${DAY_VIDEOS[i].id}`} src={DAY_VIDEOS[i].src} /> : null}
+          </>
+        )}
       </Animated.View>
       {/* the screen dims a little, like the nightlight (and fully, when the sleep timer runs out) */}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: dim }]} />
