@@ -80,15 +80,25 @@ export function playVoice(source, { onProgress, onTime, onDone, onFail, rate = 1
       player.play();
       // Watchdog: if the sound hasn't actually started, try once more with a fresh player; if it
       // still won't start, give up so the caller can use another voice (and Play works again).
-      setTimeout(() => {
-        if (my !== session || !player) return;
-        let started = false;
+      // A file that is still loading is given time (up to about 3 seconds) instead of being restarted:
+      // restarting a sound that was just about to begin is what made the narration stutter and then
+      // switch to the phone's voice.
+      const mine = player;
+      let waited = 0;
+      const check = () => {
+        if (my !== session || !player || player !== mine) return;
+        let started = false, loaded = true;
         try { started = player.playing || (player.currentTime || 0) > from + 0.05; } catch (e) {}
+        try { if (player.isLoaded === false) loaded = false; } catch (e) {}
         if (started) return;
+        waited += 300;
+        if (!loaded && waited < 3000) { setTimeout(check, 300); return; } // still loading: wait
+        if (loaded && waited < 1200) { setTimeout(check, 300); return; } // loaded: a moment to begin
         if (tries < 2) return start();
         stopVoice();
         (onFail || onDone) && (onFail || onDone)();
-      }, 900);
+      };
+      setTimeout(check, 300);
     } catch (e) {
       stopVoice();
       (onFail || onDone) && (onFail || onDone)();

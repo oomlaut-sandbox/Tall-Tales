@@ -238,7 +238,7 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
       {/* Close: small, under the box's bottom right corner (like the Audio Player's) */}
       <View style={[{ width: '100%', alignItems: 'flex-end', marginTop: 12 }, wide && { maxWidth: 640 }, !wide && { maxWidth: 380 }]} onStartShouldSetResponder={() => true}>
         <Pressable onPress={withTap(close)} hitSlop={14} style={{ marginRight: 6 }} accessibilityRole="button">
-          <Text style={{ color: light ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.6)', fontFamily: fonts.ui, fontSize: 12.5, letterSpacing: 0.4 }}>{t('Close')}</Text>
+          <Text style={{ color: '#8a8a8a', fontFamily: fonts.ui, fontSize: 12.5, letterSpacing: 0.4 }}>{t('Close')}</Text>
         </Pressable>
       </View>
     </Animated.View>

@@ -1041,7 +1041,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
         }} />
       <ParentGate visible={!!printGate} reason={tr('Printing opens your phone’s print options.')} onPass={() => doPrint(printGate)} onCancel={() => setPrintGate(null)} />
 
-      <Panel open={panel === 'rec'} side="right" title={tr('Recording Options')} {...panelPos} onClose={() => { setPanel(null); recordingSoon.current = false; }}>
+      <Panel open={panel === 'rec'} side="right" title={tr('Playback Options')} {...panelPos} onClose={() => { setPanel(null); recordingSoon.current = false; }}>
         {recView === 'main' ? (
           <>
             <Option glyph={<DotIcon />} title={tr('Start Recording')} sub={tr('Read this story in your own voice, starting on page {n}', { n: Math.min(idx + 1, n) })} disabled={idx >= n} onPress={askToRecord} />
