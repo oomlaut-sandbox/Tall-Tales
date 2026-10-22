@@ -831,7 +831,7 @@ const styles = StyleSheet.create({
   countBox: { position: 'absolute', zIndex: 6, backgroundColor: '#4a4a4a', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, alignItems: 'center', justifyContent: 'center' },
   countText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 13, fontVariant: ['tabular-nums'] },
   coverHead: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 17, marginBottom: 4 },
-  fieldBox: { backgroundColor: '#2e2e2e', height: 48, borderRadius: 14, paddingHorizontal: 14 },
+  fieldBox: { backgroundColor: '#161616', height: 48, borderRadius: 14, paddingHorizontal: 14 },
   fieldBoxSmall: { flex: 1, minWidth: 0, height: 42 },
   fieldText: { color: colors.white, fontFamily: fonts.ui, fontSize: 17 },
   fieldSmall: { flex: 1, minWidth: 0, height: 42, fontSize: 15 },
