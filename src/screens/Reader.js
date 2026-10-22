@@ -1164,7 +1164,8 @@ function RecTimer({ start, style, onStop, running = true, saved, who }) {
     return <View pointerEvents="none" style={[{ position: 'absolute', zIndex: 30, flexDirection: 'row', alignItems: 'center', gap: 8 }, style]}>{savedPill}</View>; // where the red dot was
   }
   return (
-    <View pointerEvents="box-none" style={[{ position: 'absolute', zIndex: 30, flexDirection: 'row', alignItems: 'center', gap: 8 }, style]}>
+    // the recording box stays put; a green 'Page 5 saved' shows just below it, on the left (never pushed off the page)
+    <View pointerEvents="box-none" style={[{ position: 'absolute', zIndex: 30, flexDirection: 'column', alignItems: 'flex-start', gap: 8 }, style]}>
       <Pressable onPress={onStop} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Stop recording')} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
         <View style={styles.recDot} />
         <View style={styles.recBox} accessibilityLabel={tr('Recording, {n} seconds', { n: secs })}>
