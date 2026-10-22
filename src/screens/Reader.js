@@ -946,7 +946,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
             {showVoices ? (
               <View style={[cs, !v && { transform: [{ translateX: -u * 1.2 }] }]}>{/* upright: a little to the left, clear of the red button */}
                 <Pressable onPress={withTap(() => setVoiceBox(true))} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Who reads this book?')}>
-                  {(() => { const f = familyOptions.find((o) => o.id === shownVoice); return <VoiceFace photo={f && f.photo} name={f && f.name} narrator={!f} size={f && f.photo ? u * 9.5 : u * 7} />; /* a photo: a bigger circle, so the face is easy to see */ })()}
+                  {(() => { const f = familyOptions.find((o) => o.id === shownVoice); return <VoiceFace photo={f && f.photo} name={f && f.name} narrator={!f} size={u * 7} />; })()}
                 </Pressable>
               </View>
             ) : null}
