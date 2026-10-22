@@ -52,6 +52,7 @@ const VOICE_RECORDING = {
   sampleRate: 44100,
   numberOfChannels: 1,
   bitRate: 128000,
+  isMeteringEnabled: true, // how loud the voice is, for the trim editor's picture of the sound
   ios: { ...RecordingPresets.HIGH_QUALITY.ios, sampleRate: 44100 },
   android: { ...RecordingPresets.HIGH_QUALITY.android, sampleRate: 44100 },
 };
@@ -63,7 +64,9 @@ import { audioModeChanged, fadeStopVoice, pauseVoice, playClips, playVoice, resu
 import * as WORDCLIPS from '../narration/words';
 const WORDS = WORDCLIPS.WORDS || {};
 const WORDS_LANG = WORDCLIPS.WORDS_LANG || {}; // (made by the next narration run)
-import { getRecording, listRecordings, pageKey, removeRecording, saveRecording } from '../recordings';
+import { getRecording, listRecordings, pageKey, removeRecording, saveRecording, setTrim } from '../recordings';
+import TrimEditor from '../components/TrimEditor';
+const TRASH = require('../../assets/icon-trash.png');
 import { markFinished, markFirst, markReadToday } from '../badges';
 import { AUDIO, TIMINGS } from '../narration';
 import { SAMPLES, SAMPLE_LANGS, THE_END } from '../narration/samples';
@@ -155,6 +158,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const recorder = useAudioRecorder(VOICE_RECORDING);
   const recStart = useRef(0);
   const pendingRec = useRef(false);
+  const recLevels = useRef([]);
+  const meterTimer = useRef(null);
+  const [trimRec, setTrimRec] = useState(null); // the recording open in the trim editor
   const [savedPage, setSavedPage] = useState(null); // { n, k }: the page just saved, shown for a moment
   useEffect(() => { if (!savedPage) return undefined; const t = setTimeout(() => setSavedPage(null), 2600); return () => clearTimeout(t); }, [savedPage]);
   const recAuto = useRef(false); // recording carried on to the next page by itself (no instructions bubble again)
@@ -357,7 +363,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (prefs.voice === 'mine') {
       getRecording(story.id, pageKey(p, pageIndex)).then((rec) => {
         if (st.current.idx !== pageIndex) return;
-        if (rec && playVoice(rec.uri, { rate: speedOf(prefs) / DEFAULT_SPEED, // a parent's own pace at the default setting
+        if (rec && playVoice(rec.uri, { rate: speedOf(prefs) / DEFAULT_SPEED, start: rec.start || 0, end: rec.end || null, // a parent's own pace at the default setting; only the trimmed part
            onProgress: (f) => hlChar(Math.floor(f * p.text.length)), onDone: afterPage,
            onFail: () => { if (st.current.idx === pageIndex) narrate(); } })) {
           usingVoice.current = true;
@@ -389,6 +395,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       await recorder.prepareToRecordAsync();
       recorder.record();
       recStart.current = Date.now();
+      // sample the voice's loudness about 20 times a second (decibels: about -50 quiet .. 0 loud)
+      recLevels.current = [];
+      clearInterval(meterTimer.current);
+      meterTimer.current = setInterval(() => {
+        try { const st0 = recorder.getStatus(); const db = st0 && typeof st0.metering === 'number' ? st0.metering : null; if (db != null) recLevels.current.push(Math.max(0, Math.min(1, (db + 50) / 50))); } catch (e) {}
+      }, 50);
       suspendSounds(true);
       setRecording(true);
       if (!recAuto.current) toast(tr('Recording page {n}. Turn the page to keep going, or tap ● to stop.', { n: st.current.idx + 1 }));
@@ -413,6 +425,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     if (keep) { pendingRec.current = true; recordingSoon.current = true; }
     const page = st.current.idx;
     const seconds = (Date.now() - recStart.current) / 1000;
+    clearInterval(meterTimer.current);
+    // keep about 20 samples a second at most, rounded (small to store)
+    const levels = recLevels.current.map((v) => Math.round(v * 100) / 100);
     setRecording(false);
     st.current.recording = false;
     try {
@@ -420,7 +435,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
       audioModeChanged();
       if (save && recorder.uri && seconds > 0.7) {
-        await saveRecording(story.id, pageKey(story.pages[page], page), recorder.uri, seconds);
+        await saveRecording(story.id, pageKey(story.pages[page], page), recorder.uri, seconds, levels);
         if (prefsRef.current.voice !== 'mine') setPrefs((p) => ({ ...p, voice: 'mine' }));
         setSavedPage({ n: page + 1, k: Date.now() }); // a green 'Page 2 saved' beside the recording box (no speech bubble)
         markFirst('firstRecording'); // a badge in My Notebook
@@ -439,7 +454,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     setRecView('list');
   };
 
-  useEffect(() => () => { if (st.current.recording) recorder.stop().catch(() => {}); }, []);
+  useEffect(() => () => { clearInterval(meterTimer.current); if (st.current.recording) recorder.stop().catch(() => {}); }, []);
 
   useEffect(() => {
     // after a page turn, continue reading in Auto and Page-by-Page modes
@@ -917,6 +932,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           area={wide ? { left: 0, top: 0, width: winW - BL.rightW, height: winH } : { left: 0, top: 0, width: winW, height: winH - barH }} />
         </Animated.View>
       ) : null}
+      {trimRec ? <TrimEditor rec={trimRec} title={tr('Page {n}', { n: trimRec.page + 1 })} onCancel={() => setTrimRec(null)}
+        onSave={async (start, end) => { await setTrim(story.id, trimRec.pid, start, end); setTrimRec(null); openRecList(); }} /> : null}
       <Panel open={panel === 'play'} side="right" title={playView === 'voices' ? tr('Voices') : tr('Reading Options')} {...panelPos} onClose={() => { setPanel(null); setPlayView('main'); }}>
         {playView === 'voices' ? (
           <>
@@ -1007,9 +1024,14 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         {recView === 'list' ? (
           recList.length ? recList.map((r) => (
             <View key={r.pid} style={styles.row}>
-              <Text style={styles.rowText}>{tr('Page {n} · {s}s', { n: r.page + 1, s: Math.round(r.seconds) })}</Text>
-              <Pressable style={styles.rowBtn} onPress={() => { stopReading(); playVoice(r.uri, { onFail: () => toast(tr('This recording can’t be played. Record the page again.')) }); }}><Text style={styles.rowBtnText}>{tr('Play')}</Text></Pressable>
-              <Pressable style={styles.rowBtn} onPress={async () => { stopVoice(); await removeRecording(story.id, r.pid); openRecList(); }}><Text style={styles.rowBtnText}>{tr('Remove')}</Text></Pressable>
+              <Text style={styles.rowText}>{tr('Page {n} · {s}s', { n: r.page + 1, s: Math.round((r.end || r.seconds) - (r.start || 0)) })}</Text>
+              <Pressable style={styles.rowBtn} onPress={() => { stopReading(); playVoice(r.uri, { start: r.start || 0, end: r.end || null, onFail: () => toast(tr('This recording can’t be played. Record the page again.')) }); }}><Text style={styles.rowBtnText}>{tr('Play')}</Text></Pressable>
+              {/* Trim: the trim editor (a box in the middle of the screen) */}
+              <Pressable style={styles.rowBtn} onPress={() => { stopReading(); stopVoice(); setTrimRec(r); }}><Text style={styles.rowBtnText}>{tr('Trim')}</Text></Pressable>
+              {/* delete: a small trash can */}
+              <Pressable hitSlop={10} onPress={async () => { stopVoice(); await removeRecording(story.id, r.pid); openRecList(); }} accessibilityRole="button" accessibilityLabel={tr('Delete')} style={{ paddingHorizontal: 4 }}>
+                <Image source={TRASH} style={{ width: 20, height: 20, tintColor: '#bdbdbd' }} resizeMode="contain" />
+              </Pressable>
             </View>
           )) : <Text style={styles.help}>{tr('Nothing recorded yet. Tap Start Recording to read this story in your own voice.')}</Text>
         ) : null}

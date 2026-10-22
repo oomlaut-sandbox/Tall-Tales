@@ -28,12 +28,22 @@ export async function listRecordings(story) {
   return out;
 }
 
-export async function saveRecording(storyId, pid, tempUri, seconds) {
+// levels: the voice's loudness while recording (0..1, about 20 a second), for the trim editor's picture of the sound
+export async function saveRecording(storyId, pid, tempUri, seconds, levels) {
   const r = await load();
   const key = `${storyId}:${pid}`;
   const uri = await keepFile(tempUri, 'recordings', `${storyId}-${pid}-${Date.now()}.m4a`);
   if (r[key] && r[key].uri !== uri) deleteFile(liveUri(r[key].uri));
-  r[key] = { uri, seconds };
+  r[key] = { uri, seconds, ...(levels && levels.length ? { levels } : {}) };
+  await saveJSON('recordings', r);
+}
+
+// Trim: only the part between start and end (seconds) plays; the file itself is kept whole, so it can be untrimmed
+export async function setTrim(storyId, pid, start, end) {
+  const r = await load();
+  const key = `${storyId}:${pid}`;
+  if (!r[key]) return;
+  r[key] = { ...r[key], start, end };
   await saveJSON('recordings', r);
 }
 
