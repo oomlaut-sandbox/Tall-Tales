@@ -38,7 +38,7 @@ export function ProfileTile({ p, size, active, grow = 1.3 }) {
   );
 }
 
-export default function Profiles({ u, openMenu, setControls, onPicked }) {
+export default function Profiles({ u, openMenu, setControls, onPicked, onBack }) {
   // picking who reads: the selection box glides to the child, then a quick fade to My Library
   const cells = useRef({}); // each child's box, in the grid
   const boxXY = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
@@ -91,6 +91,12 @@ export default function Profiles({ u, openMenu, setControls, onPicked }) {
     setForm(null);
   };
 
+  // tapping the child already reading: straight back to My Library (the same quick fade)
+  const backToLibrary = () => {
+    if (picking.current || !onBack) return;
+    picking.current = true;
+    Animated.timing(pageFade, { toValue: 0, duration: 220, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => { picking.current = false; onBack(); });
+  };
   const pick = (id) => {
     if (picking.current) return;
     const L = cells.current[id];
@@ -122,7 +128,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked }) {
             {s.list.map((p) => {
               const on = p.id === s.active;
               return (
-                <Pressable key={p.id} disabled={!editing && (!canSwitch || on)} onPress={() => (editing ? openForm(p) : pick(p.id))}
+                <Pressable key={p.id} disabled={!editing && !canSwitch && !on} onPress={() => (editing ? openForm(p) : on ? backToLibrary() : pick(p.id))}
                   onLayout={(e) => { const L = e.nativeEvent.layout; cells.current[p.id] = L; if (on && !picking.current) { boxXY.setValue({ x: L.x, y: L.y }); setBoxSize({ w: L.width, h: L.height }); placed.current = true; } }}
                   accessibilityRole="button" accessibilityLabel={p.name} accessibilityState={{ selected: on }} style={[styles.cell, { width: side }]}>
                   {/* the child reading now gets a box around them instead of growing */}
@@ -141,7 +147,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked }) {
                     <View style={{ position: 'absolute', width: 2, height: side * 0.2, backgroundColor: '#aaa' }} />
                   </View>
                 </View>
-                <Text numberOfLines={1} style={styles.name}>{t('Add a child')}</Text>
+                <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75} style={styles.name}>{t('Add a child')}</Text>
                 <Text style={styles.age}> </Text>
               </Pressable>
             ) : null}
