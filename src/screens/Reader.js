@@ -959,7 +959,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
               // sideways: one button that is Play, or Pause while it reads (the column is too short for both)
               (reading && !paused) || between
                 ? <View style={cs}><PauseButton k={ck} onPress={onPause} disabled={recording} active /></View>
-                : <View style={cs}><PlayButton k={ck} onPress={onPlay} active={false} disabled={recording} /></View>
+                : <View style={[cs, { transform: [...(cs.transform || []), { translateX: -2 }] }]}><PlayButton k={ck} onPress={onPlay} active={false} disabled={recording} /></View>
             ) : (
               <>
                 <View style={cs}><PauseButton k={ck} onPress={onPause} disabled={recording} active={(reading && !paused) || between} /></View>
