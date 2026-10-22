@@ -94,11 +94,6 @@ export default function AmbientControls({ prefs, setPrefs }) {
       <View style={styles.chips}>
         {SLEEP_TIMES.map((m) => <Chip key={m} label={m ? t('{n} min', { n: m }) : t('Off')} on={s.sleep === m} onPress={() => setSleepTimer(m)} />)}
       </View>
-      <Text style={styles.group}>{t('Audio Player on screen')}</Text>
-      <View style={styles.chips}>
-        <Chip label={t('Show')} on={s.showPlayer} onPress={() => setAmbientPlayer(true)} />
-        <Chip label={t('Hide')} on={!s.showPlayer} onPress={() => setAmbientPlayer(false)} />
-      </View>
       {/* sound effects: the page turn in books */}
       {prefs && setPrefs ? (
         <>
@@ -107,6 +102,7 @@ export default function AmbientControls({ prefs, setPrefs }) {
             <Chip label={t('On')} on={!!prefs.sound} onPress={() => { setPrefs((p) => ({ ...p, sound: true })); setEffects(true); playSound('swish'); }} />
             <Chip label={t('Off')} on={!prefs.sound} onPress={() => { setPrefs((p) => ({ ...p, sound: false })); setEffects(false); }} />
           </View>
+          <View style={{ height: 18 }} />{/* room below, before the box ends */}
         </>
       ) : null}
     </View>
