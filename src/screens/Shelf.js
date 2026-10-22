@@ -374,7 +374,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
   const boxW = Math.min(areaW - 40, across ? 600 : 400);
   const M = 20; // margin around the cover inside the card
   const ear = Math.max(24, u * 7.5); // the dog-ear's size (as in DogEar)
-  const cs = Math.round(across ? Math.min(boxW * 0.42, areaH - Math.max(insets.top, 20) - 40 - 2 * M) : boxW * 0.52); // cover size
+  const cs = Math.round(across ? Math.min(boxW * 0.42, areaH - Math.max(insets.top, 20) - 40 - 2 * M - 54) : boxW * 0.52); // cover size (sideways: room for the green button under it)
   const [boxH, setBoxH] = useState(0);
   // right in the middle of the space between the bars (top bar / camera strip and the menu bar)
   const spaceL = across ? insets.left : 0, spaceT = across ? 0 : insets.top;
@@ -462,8 +462,10 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
           <View style={{ position: 'absolute', right: 0, top: 0, width: 0, height: 0, borderTopWidth: ear, borderLeftWidth: ear, borderTopColor: 'transparent', borderLeftColor: CARD_GREY }} />
         </Animated.View>
         <Animated.View pointerEvents={boxH ? 'auto' : 'none'} style={{ opacity: fade, flexDirection: across ? 'row' : 'column' }}>
-        <View style={{ flexDirection: 'row' }}>
-          <View style={{ width: cs + M, height: cs + 2 * M }} />{/* the same margin above and below the cover */}
+        <View style={{ flexDirection: across ? 'column' : 'row' }}>
+          <View style={{ width: cs + M, height: across ? cs + M : cs + 2 * M }} />{/* the same margin above and below the cover */}
+          {/* sideways: the green button under the cover, on its left edge */}
+          {across ? <View style={{ paddingLeft: M, paddingTop: 14, paddingBottom: M, alignItems: 'flex-start' }}>{pill}</View> : null}
           {!across ? (
             <View style={{ flex: 1, justifyContent: 'space-between', alignItems: 'flex-start', padding: 14, paddingLeft: 16, paddingTop: M, paddingBottom: M }}>
               <View />
@@ -472,12 +474,11 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
           ) : null}
         </View>
         {across ? (
-          <View style={{ flex: 1, padding: M, minHeight: cs + 2 * M, justifyContent: 'space-between' }}>
+          <View style={{ flex: 1, padding: M, minHeight: cs + 2 * M }}>
             <View>
               <View style={{ height: 26 }} />
               {info}
             </View>
-            <View style={{ alignItems: 'flex-start', marginTop: 14 }}>{pill}</View>
           </View>
         ) : (
           <View style={{ padding: M, paddingTop: 2, paddingBottom: M + 8 }}>{info}</View>
