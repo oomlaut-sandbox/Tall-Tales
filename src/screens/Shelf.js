@@ -137,10 +137,10 @@ function WhoReads({ onPress }) {
   useEffect(() => onProfilesChange(() => bump((n) => n + 1)), []);
   const p = activeProfile();
   return (
-    <View style={{ width: tileWidth(winW), alignItems: 'flex-start' }}>
+    <View style={{ width: tileWidth(winW) }}>{/* the box is as wide as a book */}
       <Pressable onPress={onPress} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Profiles')}
-        style={{ flexDirection: 'row', alignItems: 'center', gap: p ? 10 : 7, marginTop: 4, backgroundColor: 'rgba(0,0,0,0.45)', borderRadius: 14, paddingVertical: 8, paddingLeft: p ? 8 : 12, paddingRight: 16 }}>{/* on a see-through black box with rounded corners */}
-        {p ? <Image source={feltFor(p.color)} style={{ width: 40, height: 40 }} resizeMode="contain" />
+        style={{ alignSelf: 'stretch', flexDirection: 'row', alignItems: 'center', gap: p ? 12 : 9, backgroundColor: 'rgba(0,0,0,0.45)', borderRadius: 14, paddingVertical: 10, paddingLeft: p ? 12 : 16, paddingRight: 14 }}>{/* on a see-through black box with rounded corners */}
+        {p ? <Image source={feltFor(p.color)} style={{ width: 48, height: 48 }} resizeMode="contain" />
           : <View style={{ alignItems: 'center' }}>{/* a small person: only as tall as itself, so the word centres on it */}
               <View style={{ width: 9, height: 9, borderRadius: 5, backgroundColor: 'rgba(235,235,235,0.9)', marginBottom: 1.5 }} />
               <View style={{ width: 16, height: 7.5, borderTopLeftRadius: 8, borderTopRightRadius: 8, backgroundColor: 'rgba(235,235,235,0.9)' }} />
