@@ -95,7 +95,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
                         <Text style={[styles.chipText, p.listen && { color: colors.white }]}>{t('Listen Only Mode')}</Text>
                       </Pressable>
                       <Pressable onPress={() => set(p.id, { shuffle: !p.shuffle })} style={[styles.chip, p.shuffle && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.shuffle }}>
-                        <Text style={[styles.chipText, p.shuffle && { color: colors.white }]}>{p.shuffle ? t('Shuffle') : t('In order')}</Text>
+                        <Text style={[styles.chipText, p.shuffle && { color: colors.white }]}>{t('Shuffle')}</Text>
                       </Pressable>
                       {/* Loop: after the last book it starts again from the first */}
                       <Pressable onPress={() => set(p.id, { loop: !p.loop })} style={[styles.chip, p.loop && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.loop }}>
