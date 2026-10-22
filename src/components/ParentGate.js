@@ -84,6 +84,6 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: 10, marginTop: 14 },
   btn: { flex: 1, backgroundColor: colors.tile, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
   cardFlat: { width: '100%', maxWidth: 560, paddingHorizontal: 20, paddingTop: 14, paddingBottom: 16, gap: 10, borderRadius: 16 },
-  btnFlat: { flex: 0, height: 40, paddingHorizontal: 18 },
+  btnFlat: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto', height: 40, paddingHorizontal: 18 },
   btnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
 });
