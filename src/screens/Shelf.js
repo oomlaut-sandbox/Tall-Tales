@@ -30,7 +30,7 @@ const TILE = { 2: 47, 3: 31, 4: 22.5 };
 const tileWidth = (w) => `${TILE[COLS(w)]}%`;
 const gridGap = (w) => { const n = COLS(w); return `${(100 - n * TILE[n]) / (n - 1)}%`; };
 
-const LEANER = require('../../assets/store-lean.png'); // Jörg's grey character in sunglasses, leaning on the featured book (698 × 700)
+const LEANER = require('../../assets/store-lean.png'); // Skippy: Jörg's grey character in sunglasses, leaning on the featured book (698 × 700)
 
 function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, option, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
   const t = useT();
@@ -52,7 +52,7 @@ function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onP
       {/* the featured book: a grey character leans against its right side, his hand on its edge, feet on the felt */}
       {lean && leanW ? (
         <Image source={LEANER} pointerEvents="none" resizeMode="contain" accessibilityIgnoresInvertColors
-          style={{ position: 'absolute', zIndex: 2, width: leanW * 0.86 * 698 / 700, height: leanW * 0.86, left: leanW - leanW * 0.86 * 0.012, bottom: -leanW * 0.02 }} />
+          style={{ position: 'absolute', zIndex: 2, width: leanW * 0.43 * 698 / 700, height: leanW * 0.43, left: leanW - leanW * 0.43 * 0.012, bottom: -leanW * 0.01 }} />
       ) : null}
       {/* a very subtle drop shadow under the square cover */}
       <View style={styles.tileShadow}>
