@@ -955,8 +955,17 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
               ) : null}
               {controls.recording ? <View style={cs}><RecordButton k={ck} active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} /></View> : null}
             </View>
-            <View style={cs}><PauseButton k={ck} onPress={onPause} disabled={recording} active={(reading && !paused) || between} /></View>
-            <View style={cs}><PlayButton k={ck} onPress={onPlay} active={(reading && !paused) || between} disabled={recording} /></View>
+            {v ? (
+              // sideways: one button that is Play, or Pause while it reads (the column is too short for both)
+              (reading && !paused) || between
+                ? <View style={cs}><PauseButton k={ck} onPress={onPause} disabled={recording} active /></View>
+                : <View style={cs}><PlayButton k={ck} onPress={onPlay} active={false} disabled={recording} /></View>
+            ) : (
+              <>
+                <View style={cs}><PauseButton k={ck} onPress={onPause} disabled={recording} active={(reading && !paused) || between} /></View>
+                <View style={cs}><PlayButton k={ck} onPress={onPlay} active={(reading && !paused) || between} disabled={recording} /></View>
+              </>
+            )}
           </View>
         ) : null;
         return v ? (
