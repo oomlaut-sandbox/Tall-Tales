@@ -48,7 +48,8 @@ function Clip({ src, fit = 'cover' }) {
 // index: which video; onIndex(i): a swipe chose another; dim: 0..1, how dark the layer over it is
 export default function DaydreamVideo({ index = 0, onIndex, dim }) {
   const { width: winW, height: winH } = useWindowDimensions();
-  const upright = winH > winW; // upright: the video keeps its own wide shape (never cropped or turned), across the screen
+  const upright = winH > winW;
+  const [box, setBox] = React.useState(null); // the space the video fills (upright) // upright: the video keeps its own wide shape (never cropped or turned), across the screen
   const i = ((index % DAY_VIDEOS.length) + DAY_VIDEOS.length) % DAY_VIDEOS.length;
   const fade = useRef(new Animated.Value(1)).current;
   const idx = useRef(i); idx.current = i;
@@ -68,12 +69,14 @@ export default function DaydreamVideo({ index = 0, onIndex, dim }) {
     <View style={StyleSheet.absoluteFill} {...pan.panHandlers}>
       <Animated.View style={[StyleSheet.absoluteFill, { opacity: fade, backgroundColor: '#000' }]}>
         {DAY_VIDEOS[i].src && upright ? (
-          // a wide strip in the middle, on black; the pebbles only behind the strip, in case the video can't play
-          <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]}>
-            <View style={{ width: '100%', aspectRatio: 16 / 9, overflow: 'hidden' }}>
-              {DAY_VIDEOS[i].image ? <Still key={`s${DAY_VIDEOS[i].id}`} src={DAY_VIDEOS[i].image} /> : null}
-              <Clip key={`v${DAY_VIDEOS[i].id}`} src={DAY_VIDEOS[i].src} fit="contain" />
-            </View>
+          // upright: the wide video turned a quarter turn (anticlockwise) so it stands tall and fills the screen
+          <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }]} onLayout={(e) => setBox({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
+            {DAY_VIDEOS[i].image ? <Still key={`s${DAY_VIDEOS[i].id}`} src={DAY_VIDEOS[i].image} /> : null}
+            {box ? (
+              <View style={{ width: box.h, height: box.w, transform: [{ rotate: '-90deg' }] }}>
+                <Clip key={`v${DAY_VIDEOS[i].id}`} src={DAY_VIDEOS[i].src} />
+              </View>
+            ) : null}
           </View>
         ) : (
           <>
