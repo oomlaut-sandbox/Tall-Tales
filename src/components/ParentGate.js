@@ -1,9 +1,11 @@
 // A simple grown-up check before anything leaves the app (Apple's Kids category requires one).
 import React, { useEffect, useRef, useState } from 'react';
-import { Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Image, Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
 
 import { NUMBER_WORDS, useLang, useT } from '../i18n';
+
+const GROWNUP = require('../../assets/icon-grownup.png');
 
 export default function ParentGate({ visible, reason, onPass, onCancel }) {
   const t = useT();
@@ -39,6 +41,8 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
     <View ref={scrimRef} style={[styles.scrim, { paddingBottom: covered }]}
       onLayout={() => scrimRef.current && scrimRef.current.measureInWindow((x, y, w, h) => setFrame({ y, h: h || winH }))}>
       <View style={styles.card}>
+        {/* a grown-up holding a child's hand, so even little ones can see this is for a grown-up */}
+        <Image source={GROWNUP} style={{ position: 'absolute', top: 18, right: 18, width: 48, height: 48, tintColor: '#8a8a8a' }} resizeMode="contain" accessibilityIgnoresInvertColors />
         <Text style={styles.kicker}>{t('For grown-ups')}</Text>
         <Text style={styles.title}>{t('What is {a} times {b}?', { a: words[q.a], b: words[q.b] })}</Text>
         {reason ? <Text style={styles.body}>{t(reason)}</Text> : null}
