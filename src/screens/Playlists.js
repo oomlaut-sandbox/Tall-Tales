@@ -2,7 +2,7 @@
 // them all by themselves (Auto Play), one book after the next. Each child has their own playlists;
 // "Bedtime" is there from the start.
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, LayoutAnimation, Platform, Pressable, ScrollView, UIManager, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, LayoutAnimation, Platform, Pressable, ScrollView, UIManager, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, DESK_BG, IS_TABLET } from '../look';
@@ -24,6 +24,31 @@ function Thumb({ s, size }) {
 }
 
 const TAPE = require('../../assets/playlist-tape.png');
+// the two reels, cut from the cassette picture (same size and place), turning slowly like a tape playing
+const REEL_L = require('../../assets/playlist-reel-l.png');
+const REEL_R = require('../../assets/playlist-reel-r.png');
+const REELS = [[REEL_L, 296.2, 320.6], [REEL_R, 621.0, 320.5]]; // centres in the 920 × 675 picture
+const REEL_R0 = 39; // their radius there
+
+function Cassette({ width }) {
+  const spin = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const loop = Animated.loop(Animated.timing(spin, { toValue: 1, duration: 5200, easing: Easing.linear, useNativeDriver: true }));
+    loop.start();
+    return () => loop.stop();
+  }, []);
+  const k = width / 920, h = width * 675 / 920;
+  const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+  return (
+    <View style={{ width, height: h, alignSelf: 'center', marginBottom: 6 }}>
+      <Image source={TAPE} style={{ width, height: h }} resizeMode="contain" accessibilityIgnoresInvertColors />
+      {REELS.map(([src, cx, cy], i) => (
+        <Animated.Image key={i} source={src} resizeMode="stretch"
+          style={{ position: 'absolute', left: (cx - REEL_R0) * k, top: (cy - REEL_R0) * k, width: 2 * REEL_R0 * k, height: 2 * REEL_R0 * k, transform: [{ rotate }] }} />
+      ))}
+    </View>
+  );
+}
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) UIManager.setLayoutAnimationEnabledExperimental(true);
 const BAND_FELT = require('../../assets/band-playlists.png'); // Jörg's brown felt banner
 const BAND_COLOR = '#7a5534'; // its colour (iPad, and the status bar strip)
@@ -68,7 +93,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
           {(
             <>
               {/* Jörg's felt cassette, centred, about half the column wide (its soft shadow is part of the picture) */}
-              <Image source={TAPE} style={{ width: tapeW, height: tapeW * 675 / 920, alignSelf: 'center', marginBottom: 6 }} resizeMode="contain" accessibilityIgnoresInvertColors />
+              <Cassette width={tapeW} />{/* its two reels turn */}
               {lists.map((p) => {
                 const bs = books(p);
                 return (
