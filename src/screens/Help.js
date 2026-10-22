@@ -69,9 +69,17 @@ export const HELP = [
     'The alarm works while the nightlight is showing and the app stays open.',
   ] },
   { section: 'Your voice', title: 'Recording yourself reading', text: [
-    'A grown-up can record their own voice reading each page, so the book plays in a familiar voice.',
-    'Open a book and tap the red record button. Read the page, then turn the page to keep going: recording carries on with the next page. Tap the red button again to stop.',
-    'Pages with your voice show a small red dot. Your recordings are listed in the recording menu, where you can play or remove them.',
+    'A grown-up can record their own voice reading each page, so the book plays in a familiar voice. Up to three people can record each book (Mom, Opa…).',
+    'Open a book, tap the red button, then Start Recording. Pick who’s reading, or add a new reader with their name and a photo. Read the page, then turn it to keep going: each page saves on its own. Tap the red button to stop.',
+    'Your Recordings lists every page by reader: play it, trim the start and end, or delete it.',
+  ] },
+  { section: 'Your voice', title: 'Choosing a voice', text: [
+    'The round face on the reading bar shows who reads the book. Tap it to choose Fatima, Henry or anyone in the family who recorded this book. Pages they didn’t record are read by the narrator.',
+    'A grown-up can tap the scissors in that box to change a reader’s photo, add a reader or remove one (with their recordings).',
+  ] },
+  { section: 'Your voice', title: 'Sharing a book in your voice', text: [
+    'Share Book on the last page sends an invitation to the app. When the book has recordings, a file with your voice goes along with it.',
+    'Whoever gets it taps the file and opens it in Oomlaut Reader to add your voice to the same book on their phone.',
   ] },
   { section: 'Making books', title: 'Making your own book', text: [
     'Choose Create a Story from the menu (or the + tile in My Library).',
@@ -88,6 +96,11 @@ export const HELP = [
     'Tap Pages in the bottom bar to see every page. Move pages up or down, or delete them.',
     'From there you can also share the book as a PDF, print it, or delete the whole book. Printing and sharing ask a grown-up first.',
   ] },
+  { section: 'Making books', title: 'How long can a book be?', text: [
+    'A book can have up to 40 pages, each with a picture and words. A few sentences a page reads best; longer text gets smaller to fit.',
+    'Pictures are kept sharp but small, so a whole book is usually 15 to 25 MB. Recordings take about 1 MB a minute.',
+    'My Notebook has room for 60 pages.',
+  ] },
   { section: 'My Notebook', title: 'Your notebook', text: [
     'My Notebook is always at the top of My Library. Tap it to open it.',
     'The first page is the inside cover with “My Notes”. Turn the page to see your badges, then your own pages.',
@@ -97,6 +110,10 @@ export const HELP = [
     'Tap a picture square to make a drawing, choose a photo or take one. You can also draw on top of a photo.',
     'Draw with your finger in crayon colours. Pick a thin, medium or thick crayon. The paint roller fills a shape with the colour you pick: tap inside it. The eraser rubs out whole lines and fills; undo takes back the last line or fill; Clear starts over.',
     'Tap the lined square to write notes.',
+  ] },
+  { section: 'My Notebook', title: 'Printing and sharing pages', text: [
+    'Tap the envelope to share pages as a PDF, or the printer to print them. Pick the pages (or All pages); a grown-up is asked first.',
+    'In Pages, each page also has its own printer and a trash can.',
   ] },
   { section: 'My Notebook', title: 'Badges', text: [
     'Badges are earned by reading: finishing books, reading several days in a row, reading at bedtime, and firsts like your first recording, first drawing and first book made.',
