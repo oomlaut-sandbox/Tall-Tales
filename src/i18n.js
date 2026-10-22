@@ -248,6 +248,7 @@ const T = {
   'Reading now': { de: 'Liest gerade', fr: 'Lit en ce moment', es: 'Leyendo ahora', ja: 'よんでいるひと' },
   'Age {n}': { de: '{n} Jahre', fr: '{n} ans', es: '{n} años', ja: '{n}さい' },
   'Add a child': { de: 'Kind hinzufügen', fr: 'Ajouter un enfant', es: 'Añadir un niño', ja: 'こどもをついか' },
+  'Done editing': { de: 'Fertig bearbeitet', fr: 'Modifications terminées', es: 'Terminar de editar', ja: 'へんしゅう おわり' },
   'Edit profiles': { de: 'Profile bearbeiten', fr: 'Modifier les profils', es: 'Editar perfiles', ja: 'プロフィールを へんしゅう' },
   'A grown-up has turned off switching profiles.': { de: 'Ein Erwachsener hat das Wechseln der Profile ausgeschaltet.', fr: 'Un adulte a désactivé le changement de profil.', es: 'Un adulto ha desactivado el cambio de perfil.', ja: 'おとなが、プロフィールのきりかえをオフにしています。' },
   'Books, the membership, recordings, the language and the music are shared by the whole family.': { de: 'Bücher, Mitgliedschaft, Aufnahmen, Sprache und Musik teilt sich die ganze Familie.', fr: 'Les livres, l’abonnement, les enregistrements, la langue et la musique sont partagés par toute la famille.', es: 'Los libros, la membresía, las grabaciones, el idioma y la música son de toda la familia.', ja: 'ほん・メンバーシップ・ろくおん・ことば・おんがくは、かぞくみんなでつかいます。' },
