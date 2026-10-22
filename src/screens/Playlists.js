@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
   donePill: { backgroundColor: colors.green, paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' },
   donePillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, paddingHorizontal: 3 },
   link: { fontFamily: fonts.ui, fontSize: 15, color: colors.white, textDecorationLine: 'underline' },
-  card: { backgroundColor: '#262626', borderRadius: 14, padding: 16, gap: 12 },
+  card: { backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 14, padding: 16, gap: 12 },
   cardTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 18, color: colors.white },
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
   pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
