@@ -407,6 +407,7 @@ const T = {
   'Reader’s name': { de: 'Name', fr: 'Nom du lecteur', es: 'Nombre', ja: 'よむ ひとの なまえ' },
   'Start recording': { de: 'Aufnahme starten', fr: 'Commencer', es: 'Empezar a grabar', ja: 'ろくおん スタート' },
   'Me': { de: 'Ich', fr: 'Moi', es: 'Yo', ja: 'わたし' },
+  'Create a cover': { de: 'Umschlag gestalten', fr: 'Créer une couverture', es: 'Crear una portada', ja: 'ひょうしを つくろう' },
   'Recording': { de: 'Aufnahme', fr: 'Enregistrement', es: 'Grabando', ja: 'ろくおんちゅう' },
   'Stop recording': { de: 'Aufnahme beenden', fr: 'Arrêter l’enregistrement', es: 'Detener la grabación', ja: 'ろくおんを とめる' },
   'Start writing': { de: 'Los geht’s', fr: 'Commencer à écrire', es: 'Empezar a escribir', ja: 'かきはじめる' },

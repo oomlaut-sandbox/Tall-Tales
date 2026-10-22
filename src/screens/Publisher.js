@@ -649,7 +649,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                  must never unmount mid-tap, or the keyboard opens and shuts straight away) */}
             {!titleEditing ? (
               <View style={{ width: Math.min(winW - insets.left - insets.right - 2 * GAP, 560), gap: 8, marginBottom: 26 }}>{/* a little more room above the picture */}
-                {!kbUp ? <Text style={styles.coverHead}>{tr('Cover')}</Text> : null}
+                {!kbUp ? <Text style={styles.coverHead}>{tr('Create a cover')}</Text> : null}
                 <CenteredField value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder={tr('Book title')}
                   onFocus={() => setFieldOn(true)} onBlur={() => setFieldOn(false)} box={styles.fieldBox} text={[styles.fieldText, { fontWeight: '700' }]} />
                 <View style={{ flexDirection: 'row', gap: 8 }}>
