@@ -234,6 +234,10 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
             {Array.from({ length: Math.ceil((popW || 380) / 128) * Math.ceil((popH || 700) / 128) }, (_, k) => <Image key={k} source={GRAIN} style={{ width: 128, height: 128 }} />)}
           </View>
         </View>
+        {/* Close: small, under the box's bottom right corner (like the Audio Player's) */}
+        <Pressable onPress={withTap(close)} hitSlop={14} style={{ position: 'absolute', top: '100%', right: 6, marginTop: 12 }} accessibilityRole="button">
+          <Text style={{ color: light ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.6)', fontFamily: fonts.ui, fontSize: 12.5, letterSpacing: 0.4 }}>{t('Close')}</Text>
+        </Pressable>
       </View>
     </Animated.View>
   );
