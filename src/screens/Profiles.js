@@ -163,7 +163,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked }) {
         <View style={{ flex: 1 }}>
           <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20 }} keyboardShouldPersistTaps="handled">{/* in the middle of the screen above the bar (the bar stays uncovered) */}
             <View style={styles.card}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 28 }}>{/* room for the character (drawn a little wider than its box) */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 44, paddingVertical: 10, paddingLeft: 10 }}>{/* plenty of room all round the character (it's drawn wider than its box) */}
                 <ProfileTile p={{ name: form.name || '?', color: form.color }} size={60} />
                 <TextInput value={form.name} onChangeText={(name) => setForm({ ...form, name })} placeholder={t('Name')} placeholderTextColor="#8a8a8a"
                   style={styles.input} maxLength={20} autoCapitalize="words" autoCorrect={false} returnKeyType="done" accessibilityLabel={t('Name')} />
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 24, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
   pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 50, overflow: 'hidden' }, // within the page: the bar stays uncovered
-  card: { backgroundColor: '#242424', borderRadius: 16, padding: 20, paddingBottom: 22, gap: 12, width: '100%', maxWidth: 480, alignSelf: 'center' },
+  card: { backgroundColor: '#242424', borderRadius: 16, padding: 22, paddingTop: 24, paddingBottom: 28, gap: 14, width: '100%', maxWidth: 480, alignSelf: 'center' },
   input: { flex: 1, minWidth: 0, height: 48, borderRadius: 10, backgroundColor: '#d6d6d6', paddingHorizontal: 14, paddingTop: 0, paddingBottom: 5, fontFamily: fonts.ui, fontSize: 20, color: '#222' },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 6 },
   choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
