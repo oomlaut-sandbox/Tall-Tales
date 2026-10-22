@@ -44,7 +44,7 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
         {/* a grown-up holding a child's hand, so even little ones can see this is for a grown-up */}
         <Image source={GROWNUP} style={{ position: 'absolute', top: 18, right: 18, width: 48, height: 48, tintColor: '#8a8a8a' }} resizeMode="contain" accessibilityIgnoresInvertColors />
         <Text style={styles.kicker}>{t('For grown-ups')}</Text>
-        <Text style={styles.title}>{t('What is {a} times {b}?', { a: words[q.a], b: words[q.b] })}</Text>
+        <Text style={[styles.title, { paddingRight: 52 }]}>{t('What is {a} times {b}?', { a: words[q.a], b: words[q.b] })}</Text>
         {reason ? <Text style={styles.body}>{t(reason)}</Text> : null}
         <TextInput
           value={answer}
