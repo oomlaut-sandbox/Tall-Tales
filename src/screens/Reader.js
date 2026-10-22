@@ -195,9 +195,13 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   const askToRecord = () => { hushForRecording(); setPanel(null); setAskReader(true); };
   useEffect(() => { refreshRecPages(); }, [refreshRecPages]);
   // Who can read this book: the narrator, and everyone in the family who recorded at least one of its pages
-  const voiceOptions = [{ id: 'narrator', name: tr('Narrator'), char: null },
-    ...readers.filter((r) => recAll.some((x) => x.reader === r.id)).map((r) => ({ id: r.id, name: r.id === 'me' && r.name === 'Me' ? tr('Me') : r.name, char: r.char }))];
+  const familyOptions = readers.filter((r) => recAll.some((x) => x.reader === r.id)).map((r) => ({ id: r.id, name: r.id === 'me' && r.name === 'Me' ? tr('Me') : r.name, char: r.char }));
+  const voiceOptions = [{ id: 'narrator', name: tr('Narrator'), char: null }, ...familyOptions]; // (the Play panel's list)
   const shownVoice = voiceOptions.some((o) => o.id === voice) ? voice : 'narrator';
+  // the box from the face on the bar: every voice by name (Fatima, Henry, then the family: Me, Opa…)
+  const boxOptions = [...NARRATORS.map(([k, label]) => ({ id: `narrator:${k}`, name: label, char: null })), ...familyOptions];
+  const boxValue = shownVoice === 'narrator' ? `narrator:${narratorOf(prefs)}` : shownVoice;
+  const showVoices = true; // the face is always on the bar: there are always the two narrators to choose from
   const [voiceBox, setVoiceBox] = useState(false); // the 'Who reads this book?' box from the face on the bar
   // a book the family recorded opens in their voice (the grown-up setting, on unless switched off), unless a voice
   // was already chosen for this book; the reader with the most recorded pages reads
@@ -214,9 +218,11 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   }, [recAll, readers]);
   // picking a voice: the book remembers it; a page that was reading starts again in the new voice
   const restartInVoice = useRef(false);
-  const pickVoice = (id) => {
+  const pickVoice = (id0) => {
     const was = reading || between;
     stopReading();
+    let id = id0;
+    if (id0.startsWith('narrator:')) { const k = id0.slice(9); id = 'narrator'; if (k !== narratorOf(prefs)) setPrefs((p) => ({ ...p, narrator: k })); }
     setVoice(id); setBookVoice(story.id, id);
     if (was) restartInVoice.current = true;
   };
@@ -937,10 +943,10 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
         const ctlEls = showControls ? (
           <View style={v ? { alignItems: 'center', marginBottom: sideTop(u, winH) + 16 * ck - G.step / 2 } : { flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch', marginRight: -(G.step / 2 - 16 * ck) }}>
             {/* who reads: a face (only when someone in the family recorded this book); tap for the list */}
-            {voiceOptions.length > 1 ? (
+            {showVoices ? (
               <View style={cs}>
                 <Pressable onPress={withTap(() => setVoiceBox(true))} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Who reads this book?')}>
-                  <VoiceFace char={(voiceOptions.find((o) => o.id === shownVoice) || {}).char} size={u * 7} />
+                  <VoiceFace char={(familyOptions.find((o) => o.id === shownVoice) || {}).char} size={u * 7} />
                 </Pressable>
               </View>
             ) : null}
@@ -1000,7 +1006,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       ) : null}
       {trimRec ? <TrimEditor rec={trimRec} title={tr('Page {n}', { n: trimRec.page + 1 })} onCancel={() => setTrimRec(null)}
         onSave={async (start, end) => { await setTrim(story.id, trimRec.pid, start, end, trimRec.reader || 'me'); setTrimRec(null); openRecList(); }} /> : null}
-      {voiceBox ? <VoicePick options={voiceOptions} value={shownVoice} tr={tr} onPick={pickVoice} onClose={() => setVoiceBox(false)}
+      {voiceBox ? <VoicePick options={boxOptions} value={boxValue} tr={tr} onPick={pickVoice} onClose={() => setVoiceBox(false)}
         anchor={wide ? { right: BL.rightW + 10, bottom: Math.max(16, insets.bottom) } : { right: 12, bottom: barH + 10 }} /> : null}
       {askReader ? <ReaderPick initial={recReader.current} onCancel={() => { setAskReader(false); recordingSoon.current = false; }}
         onStart={(id) => { recReader.current = id; setAskReader(false); getReaders().then(setReaders); startRec(); }} /> : null}
