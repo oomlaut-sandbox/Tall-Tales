@@ -143,7 +143,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   }, [recording, size]);
   useEffect(() => () => setToastSpot && setToastSpot(null), []);
   // web preview only (#rec-demo): shows where the recording bubble goes
-  useEffect(() => { if (REC_DEMO) setTimeout(() => toast(tr('Recording page {n}. Turn the page to keep going, or tap ● to stop.', { n: 2 })), 1500); }, []);
+  useEffect(() => { if (REC_DEMO) setTimeout(() => toast(tr('Hint – Record the whole book at once. We’ll do the rest.')), 1500); }, []);
   const [recView, setRecView] = useState('main'); // main | list | settings | help
   const [recList, setRecList] = useState([]);
   const [playView, setPlayView] = useState('main'); // 'main' | 'voices' inside Playback Options
@@ -465,7 +465,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       }, 50);
       suspendSounds(true);
       setRecording(true);
-      if (!recAuto.current) toast(tr('Recording page {n}. Turn the page to keep going, or tap ● to stop.', { n: st.current.idx + 1 }));
+      if (!recAuto.current) toast(tr('Hint – Record the whole book at once. We’ll do the rest.'));
       recAuto.current = false;
     } catch (e) {
       recordingSoon.current = false; pendingRec.current = false;
