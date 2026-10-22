@@ -593,7 +593,7 @@ let bubbleNow = null, bubbleSeq = 0;
 const bubbleSubs = new Set();
 const tellBubble = () => bubbleSubs.forEach((f) => f(bubbleNow));
 
-export function Toast({ message, area, onDismiss, center }) {
+export function Toast({ message, area, onDismiss, center, ms = BUBBLE_MS }) {
   const dismiss = useRef(onDismiss);
   dismiss.current = onDismiss;
   const mine = useRef(null);
@@ -602,7 +602,7 @@ export function Toast({ message, area, onDismiss, center }) {
     if (!message) return undefined;
     const id = ++bubbleSeq;
     mine.current = id;
-    bubbleNow = { id, message, area, center, onDismiss: () => dismiss.current && dismiss.current() };
+    bubbleNow = { id, message, area, center, ms, onDismiss: () => dismiss.current && dismiss.current() };
     tellBubble();
     return () => { if (bubbleNow && bubbleNow.id === id) { bubbleNow = null; tellBubble(); } };
   }, [message, areaKey, center]);
@@ -622,7 +622,7 @@ export function BubbleHost({ defaultArea }) {
   // 3 seconds after each new bubble, it closes by itself (a tap closes it sooner)
   useEffect(() => {
     if (!b) return undefined;
-    const t = setTimeout(() => { if (bubbleNow && bubbleNow.id === b.id) close(); }, BUBBLE_MS);
+    const t = setTimeout(() => { if (bubbleNow && bubbleNow.id === b.id) close(); }, b.ms || BUBBLE_MS);
     return () => clearTimeout(t);
   }, [b && b.id]);
   if (!b || !b.message) return null;

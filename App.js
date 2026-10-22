@@ -123,10 +123,12 @@ function Root() {
   const [playOpen, setPlayOpen] = useState(false); // Playback Options away from a book
   const toastTimer = useRef(null);
 
-  const toast = useCallback((m) => {
-    setMessage(m);
+  const [toastMs, setToastMs] = useState(3000);
+  // ms: how long it stays (3 seconds unless asked for longer)
+  const toast = useCallback((m, ms = 3000) => {
+    setMessage(m); setToastMs(ms);
     clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setMessage(''), 3500); // the bubble itself closes after 3 seconds (or sooner with a tap)
+    toastTimer.current = setTimeout(() => setMessage(''), ms + 500); // the bubble itself closes after ms (or sooner with a tap)
   }, []);
   // a new reading badge: a little speech bubble (the badges are on the first page of My Notebook)
   useEffect(() => onNewBadge((fresh) => {
@@ -386,7 +388,7 @@ function Root() {
         <ParentGate visible={settingsGate} reason={t('Changing settings is for grown-ups.')} onPass={() => { setSettingsGate(false); go('settings'); }} onCancel={() => setSettingsGate(false)} />
         <Membership visible={memberOpen} onClose={() => setMemberOpen(false)} toast={toast} />
         <ParentGate visible={profileGate} reason={t('Your profile is for grown-ups.')} onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
-        <Toast message={message} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
+        <Toast message={message} ms={toastMs} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         {/* the Audio Player for music and nature sounds: in the middle of the screen over a dark layer until it's closed */}
         <TapePlayer area={{ left: 0, top: 0, right: drawerRight, bottom: drawerBottom }} onMenu={() => { setAmbientPlayer(false); go('music'); }} />{/* the black bar stays on top, uncovered */}
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 175 }]}>
