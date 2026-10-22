@@ -7,7 +7,7 @@ import { useT } from '../i18n';
 import { withTap } from '../haptics';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
-import { MAX_READERS, addReader, getReaders, setReaderPhoto } from '../recordings';
+import { MAX_READERS, addReader, getReaders, removeReader, setReaderPhoto } from '../recordings';
 import { VoiceFace } from './VoicePick';
 
 // edit: opened from the scissors in 'Who reads this book?': the same box for changing photos or adding a reader,
@@ -20,6 +20,7 @@ export default function ReaderPick({ initial, onCancel, onStart, edit = false, o
   const [name, setName] = useState('');
   const [photo, setPhoto] = useState(null); // the new reader's photo (so a child can tell who's who)
   const [photoErr, setPhotoErr] = useState(null);
+  const [sure, setSure] = useState(false); // 'Remove Opa and all of Opa's recordings?'
   // a photo from the phone's photos or the camera: for the new reader, or for the reader picked
   const getPhoto = async (source) => {
     setPhotoErr(null);
@@ -112,6 +113,30 @@ export default function ReaderPick({ initial, onCancel, onStart, edit = false, o
             );
           })() : null}
           {photoErr ? <Text style={[styles.text, { color: '#ff9b9b', marginTop: 10 }]}>{photoErr}</Text> : null}
+          {/* editing: the reader picked can be removed (asks first) */}
+          {edit && !adding && pick ? (
+            <Pressable onPress={withTap(() => setSure(true))} hitSlop={10} accessibilityRole="button" style={{ alignSelf: 'flex-start', marginTop: 18 }}>
+              <Text style={styles.removeLink}>{tr('Remove reader')}</Text>
+            </Pressable>
+          ) : null}
+          {sure ? (() => {
+            const who = (list.find((x) => x.id === pick) || {}).name || '';
+            const nm = who === 'Me' && pick === 'me' ? tr('Me') : who;
+            return (
+              <Modal transparent animationType="fade" visible onRequestClose={() => setSure(false)}>
+                <View style={styles.sureBack}>
+                  <View style={styles.sureBox}>
+                    <Text style={styles.sureText}>{tr('Remove {name} and all of {name}’s recordings?', { name: nm })}</Text>
+                    <View style={{ flexDirection: 'row', gap: 10, marginTop: 26 }}>
+                      <Pressable onPress={withTap(async () => { setSure(false); await removeReader(pick); const l = await getReaders(); setList(l); setPick(l[0] ? l[0].id : null); if (!l.length) setAdding(true); })}
+                        style={[styles.pill, { backgroundColor: '#b3261e', marginLeft: 'auto' }]} accessibilityRole="button"><Text style={styles.pillText}>{tr('Remove')}</Text></Pressable>
+                      <Pressable onPress={withTap(() => setSure(false))} style={[styles.pill, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text style={styles.pillText}>{tr('Keep')}</Text></Pressable>
+                    </View>
+                  </View>
+                </View>
+              </Modal>
+            );
+          })() : null}
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 36 }}>
             <View style={{ flex: 1 }} />
             <Pressable onPress={withTap(onCancel)} style={[styles.pill, { backgroundColor: '#4a4a4a' }]} accessibilityRole="button"><Text style={styles.pillText}>{tr('Cancel')}</Text></Pressable>
@@ -139,6 +164,10 @@ const styles = StyleSheet.create({
   photoRow: { flexDirection: 'row', alignItems: 'center', gap: 18, marginTop: 22 },
   photoBtn: { height: 32, borderRadius: 16, paddingHorizontal: 14, backgroundColor: '#3d3d40', alignItems: 'center', justifyContent: 'center' },
   photoText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 13 },
+  removeLink: { color: '#ff8a80', fontFamily: fonts.ui, fontWeight: '600', fontSize: 14 },
+  sureBack: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 28 },
+  sureBox: { width: '100%', maxWidth: 400, backgroundColor: '#000', borderRadius: 24, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26 },
+  sureText: { color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24 },
   pill: { height: 46, borderRadius: 23, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
   pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
 });

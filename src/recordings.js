@@ -53,6 +53,27 @@ export async function setReaderPhoto(id, uri) {
   await saveJSON('readers', readers);
   if (old && old !== kept) { try { deleteFile(old); } catch (e) {} }
 }
+// a reader removed: their recordings and photo go too; books set to their voice go back to the narrator
+export async function removeReader(id) {
+  const list = await getReaders();
+  const gone = list.find((x) => x.id === id);
+  if (!gone) return;
+  const r = await load();
+  for (const key of Object.keys(r)) {
+    if (readerOfKey(key) !== id) continue;
+    try { deleteFile(liveUri(r[key].uri)); } catch (e) {}
+    delete r[key];
+  }
+  await saveJSON('recordings', r);
+  if (gone.photo) { try { deleteFile(gone.photo); } catch (e) {} }
+  readers = list.filter((x) => x.id !== id);
+  await saveJSON('readers', readers);
+  if (!voices) voices = await loadJSON('bookVoices', {});
+  const v = { ...voices };
+  Object.keys(v).forEach((k) => { if (v[k] === id) delete v[k]; });
+  voices = v;
+  await saveJSON('bookVoices', voices);
+}
 export async function renameReader(id, name) {
   const list = await getReaders();
   readers = list.map((x) => (x.id === id ? { ...x, name: name.trim() || x.name } : x));
