@@ -30,10 +30,13 @@ const TILE = { 2: 47, 3: 31, 4: 22.5 };
 const tileWidth = (w) => `${TILE[COLS(w)]}%`;
 const gridGap = (w) => { const n = COLS(w); return `${(100 - n * TILE[n]) / (n - 1)}%`; };
 
-function Tile({ spotId, plain, u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, option, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
+const LEANER = require('../../assets/store-lean.png'); // Jörg's grey character in sunglasses, leaning on the featured book (698 × 700)
+
+function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, option, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
   const t = useT();
   const { width: winW } = useWindowDimensions();
   const ear = u * 3;
+  const [leanW, setLeanW] = useState(0);
   const coverRef = useRef(null);
   // registered by book id, so a shut book can find its way back here
   useEffect(() => { if (spotId == null) return; setTileSpot(spotId, coverRef); return () => clearTileSpot(spotId, coverRef); }, [spotId]);
@@ -44,7 +47,13 @@ function Tile({ spotId, plain, u, cover, coverArt, title, sub, onPress, onLongPr
     else onPress(null);
   };
   return (
-    <Pressable onPress={press} onLongPress={onLongPress} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={label}>
+    <Pressable onPress={press} onLongPress={onLongPress} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={label}
+      onLayout={lean ? (e) => setLeanW(e.nativeEvent.layout.width) : undefined}>
+      {/* the featured book: a grey character leans against its right side, his hand on its edge, feet on the felt */}
+      {lean && leanW ? (
+        <Image source={LEANER} pointerEvents="none" resizeMode="contain" accessibilityIgnoresInvertColors
+          style={{ position: 'absolute', zIndex: 2, width: leanW * 0.86 * 698 / 700, height: leanW * 0.86, left: leanW - leanW * 0.86 * 0.012, bottom: -leanW * 0.02 }} />
+      ) : null}
       {/* a very subtle drop shadow under the square cover */}
       <View style={styles.tileShadow}>
       <View ref={coverRef} collapsable={false} style={{ aspectRatio: 1, backgroundColor: plain ? '#3a3a3a' : '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>{/* plain: a solid dark grey square (pictures to come) */}
@@ -338,7 +347,7 @@ export function Store({ u, openStory, openMenu, toast }) {
             <View style={[styles.shelfGrid, { columnGap: gridGap(winW) }]}>
               {sh.books.map((b) => (
                 // covers only: the title and author are in the details box that opens on a tap
-                <Tile key={b.id} u={u} ear={false} cover={coverFor(b)} coverArt={coverArtFor(b)} label={sh.id === 'featured' ? t('{title}, featured', { title: b.title }) : b.title}
+                <Tile key={b.id} lean={sh.id === 'featured'} u={u} ear={false} cover={coverFor(b)} coverArt={coverArtFor(b)} label={sh.id === 'featured' ? t('{title}, featured', { title: b.title }) : b.title}
                   badge={<Badge book={b} />}
                   onPress={(rect) => setOpen({ book: b, rect })} />
               ))}
