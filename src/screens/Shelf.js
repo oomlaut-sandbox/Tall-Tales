@@ -384,6 +384,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
   // and fades out again when closed.
   const mv = useRef(new Animated.Value(1)).current; // cover position: kept in the card
   const fade = useRef(new Animated.Value(0)).current; // the card and its cover
+  const coverRef = useRef(null); // the cover in the card: where it is on screen when Read now is tapped
   const coverOp = useRef(new Animated.Value(0)).current; // the cover (stays put when 'Read now' opens the book)
   const blur = useRef(new Animated.Value(0)).current; // the blur behind it (not on the native driver)
   const started = useRef(false);
@@ -429,7 +430,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
   const action = canRead ? 'read' : book.access === 'paid' ? 'buy' : book.access === 'member' ? 'join' : null;
   const label = busy ? t('One moment…') : action === 'read' ? t('Read now') : action === 'buy' ? t('Buy {price}', { price: book.price_label || PRICES.book }) : action === 'join' ? t('Join to read') : t('Read now');
   const pill = (
-    <Pressable disabled={!action || busy} onPress={() => (action === 'read' ? onRead({ x: boxX + M, y: boxY + M, w: cs, h: cs }) : action === 'buy' ? onBuy() : onJoin())}
+    <Pressable disabled={!action || busy} onPress={() => (action === 'read' ? (() => { const fallback = { x: boxX + M, y: boxY + M, w: cs, h: cs }; const v = coverRef.current; if (v && v.measureInWindow) v.measureInWindow((x, y, w, h) => onRead(w ? { x, y, w, h } : fallback)); else onRead(fallback); })() : action === 'buy' ? onBuy() : onJoin())}
       style={[styles.sheetBtn, { paddingHorizontal: 16 }, !action && { opacity: 0.45 }]} accessibilityRole="button">
       <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={styles.sheetBtnText}>{label}</Text>
     </Pressable>
@@ -489,7 +490,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
         </Animated.View>
       </View>
       {/* the cover, already in place in the card's top-left corner (it fades with the box) */}
-      <Animated.View pointerEvents="none" style={[styles.tileShadow, { position: 'absolute', left: boxX + M, top: boxY + M, width: cs, height: cs, opacity: boxH ? coverOp : 0, transform: coverMove }]}>
+      <Animated.View ref={coverRef} collapsable={false} pointerEvents="none" style={[styles.tileShadow, { position: 'absolute', left: boxX + M, top: boxY + M, width: cs, height: cs, opacity: boxH ? coverOp : 0, transform: coverMove }]}>
         {coverArtFor(book) ? <CoverArt cover={coverArtFor(book)} /> : cover ? <Image source={cover} style={styles.coverImg} resizeMode="cover" /> : null}
         {/* a very thin dark grey line just outside the cover */}
         <View pointerEvents="none" style={{ position: 'absolute', left: -1, top: -1, right: -1, bottom: -1, borderWidth: 1, borderColor: '#8c8c8c' }} />
