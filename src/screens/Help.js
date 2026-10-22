@@ -250,8 +250,8 @@ const styles = StyleSheet.create({
   // with the phone's text size and slipped down; the words no longer scale with it either.)
   search: { alignSelf: 'stretch', flex: 1, backgroundColor: 'transparent', paddingHorizontal: 18, paddingVertical: 0, includeFontPadding: false,
     fontFamily: fonts.ui, fontSize: 16, color: colors.ink, outlineWidth: 0 },
-  goCircle: { width: 24, height: 24, borderRadius: 12, borderWidth: 1.5, borderColor: colors.white, alignItems: 'center', justifyContent: 'center' },
-  goChevron: { width: 7, height: 7, borderRightWidth: 1.75, borderTopWidth: 1.75, borderColor: colors.white, transform: [{ translateX: -1.5 }, { rotate: '45deg' }] },
+  goCircle: { width: 21, height: 21, borderRadius: 10.5, borderWidth: 1.5, borderColor: colors.white, alignItems: 'center', justifyContent: 'center' },
+  goChevron: { width: 6, height: 6, borderRightWidth: 1.6, borderTopWidth: 1.6, borderColor: colors.white, transform: [{ translateX: -1.3 }, { rotate: '45deg' }] },
   ideas: { borderRadius: 26, shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, elevation: 5 },
   ideasTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.white },
   ideasText: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: colors.white, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 },
