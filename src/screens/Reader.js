@@ -942,15 +942,25 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
         const cs = { ...slotStyle(u, v) };
         const ctlEls = showControls ? (
           <View style={v ? { alignItems: 'center', marginBottom: sideTop(u, winH) + 16 * ck - G.step / 2 } : { flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch', marginRight: -(G.step / 2 - 16 * ck) }}>
-            {/* who reads: a face (only when someone in the family recorded this book); tap for the list */}
-            {showVoices ? (
-              <View style={[cs, !v && { transform: [{ translateX: -u * 1.2 }] }]}>{/* upright: a little to the left, clear of the red button */}
-                <Pressable onPress={withTap(() => setVoiceBox(true))} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Who reads this book?')}>
-                  {(() => { const f = familyOptions.find((o) => o.id === shownVoice); return <VoiceFace photo={f && f.photo} name={f && f.name} narrator={!f} size={u * 7} />; })()}
-                </Pressable>
-              </View>
-            ) : null}
-            {controls.recording ? <View style={cs}><RecordButton k={ck} active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} /></View> : null}
+            {/* who reads (the face) and Record, tied together by one dark grey rounded box behind them */}
+            <View style={{ flexDirection: v ? 'column' : 'row', alignSelf: v ? 'stretch' : 'auto' }}>
+              {showVoices && controls.recording ? (() => {
+                const pad = u * 1.7, fr = u * 3.5, rr = (34 * ck) / 2, th = 2 * fr + 2 * pad;
+                const shift = v ? 0 : -u * 1.2; // (upright the face sits a little left)
+                const from = G.step / 2 + shift - fr - pad, to = G.step * 1.5 + rr + pad;
+                return <View pointerEvents="none" style={v
+                  ? { position: 'absolute', top: from, height: to - from, left: '50%', marginLeft: -th / 2 - 2, width: th, borderRadius: th / 2, backgroundColor: '#262626' }
+                  : { position: 'absolute', left: from, width: to - from, top: '50%', marginTop: -th / 2, height: th, borderRadius: th / 2, backgroundColor: '#262626' }} />;
+              })() : null}
+              {showVoices ? (
+                <View style={[cs, !v && { transform: [{ translateX: -u * 1.2 }] }]}>{/* upright: a little to the left, clear of the red button */}
+                  <Pressable onPress={withTap(() => setVoiceBox(true))} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Who reads this book?')}>
+                    {(() => { const f = familyOptions.find((o) => o.id === shownVoice); return <VoiceFace photo={f && f.photo} name={f && f.name} narrator={!f} size={u * 7} />; })()}
+                  </Pressable>
+                </View>
+              ) : null}
+              {controls.recording ? <View style={cs}><RecordButton k={ck} active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} /></View> : null}
+            </View>
             <View style={cs}><PauseButton k={ck} onPress={onPause} disabled={recording} active={(reading && !paused) || between} /></View>
             <View style={cs}><PlayButton k={ck} onPress={onPlay} active={(reading && !paused) || between} disabled={recording} /></View>
           </View>
