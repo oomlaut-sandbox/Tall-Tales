@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
   sureText: { color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24 },
   pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 50, overflow: 'hidden' }, // within the page: the bar stays uncovered
-  card: { backgroundColor: '#242424', borderRadius: 16, padding: 22, paddingTop: 24, paddingBottom: 28, gap: 14, width: '100%', maxWidth: 480, alignSelf: 'center' },
+  card: { backgroundColor: 'rgba(0,0,0,0.4)', /* see-through black, lighter than the playlist boxes */ borderRadius: 16, padding: 22, paddingTop: 24, paddingBottom: 28, gap: 14, width: '100%', maxWidth: 480, alignSelf: 'center' },
   input: { flex: 1, minWidth: 0, height: 48, borderRadius: 10, backgroundColor: '#d6d6d6', paddingHorizontal: 14, paddingTop: 0, paddingBottom: 5, fontFamily: fonts.ui, fontSize: 20, color: '#222' },
   section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 6 },
   choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },

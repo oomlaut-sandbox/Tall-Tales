@@ -190,7 +190,11 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
             <View style={{ flex: 1, gap: 6, justifyContent: 'center', paddingLeft: '12%', paddingRight: '8%', paddingVertical: '8%' }}>
               <Text style={styles.ideasTitle}>{t('Ideas Room')}</Text>
               <Text style={styles.ideasText}>{t('Many ideas for books you can make together: your photos and drawings, your words, your voice.')}</Text>
-              <Text style={[styles.ideasGo, { marginTop: 14 }]}>{t('Visit the Ideas Room')} ›</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 14 }}>
+                <Text style={styles.ideasGo}>{t('Visit the Ideas Room')}</Text>
+                {/* a small arrow in a circle, like the Back buttons */}
+                <View style={styles.goCircle}><View style={styles.goChevron} /></View>
+              </View>
             </View>
           </Pressable>
           {/* the search window: a white pill the width of the topics, with a soft inner shadow along its top edge */}
@@ -198,7 +202,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
             <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.22)', 'rgba(0,0,0,0.06)', 'rgba(0,0,0,0)']} locations={[0, 0.35, 1]} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 14 }} />
             <LinearGradient pointerEvents="none" start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['rgba(0,0,0,0.08)', 'rgba(0,0,0,0)']} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 16 }} />
             <TextInput ref={searchRef} value={q} onChangeText={setQ} placeholder={t('Search ideas and support')} placeholderTextColor="#666"
-              style={styles.search} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel={t('Search ideas and support')} />
+              style={styles.search} allowFontScaling={false} multiline={false} numberOfLines={1} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel={t('Search ideas and support')} />
           </Pressable>
           {/* About lives here now (it left the main menu) */}
           <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>{t('About Oomlaut Reader')}</Text></Pressable>
@@ -241,10 +245,13 @@ const styles = StyleSheet.create({
   videoPlay: { color: 'rgba(255,255,255,0.85)', fontSize: 34 },
   videoText: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 14 },
   searchWrap: { height: 44, borderRadius: 22, overflow: 'hidden', backgroundColor: '#d6d6d6', justifyContent: 'center' }, // light grey
-  // the field is only as tall as its words and the pill centres it, so the words always sit in the middle
-  // (a field the pill's full height left it to iOS, which didn't always centre them)
-  search: { backgroundColor: 'transparent', paddingHorizontal: 18, paddingVertical: 0, includeFontPadding: false,
+  // the field fills the pill exactly (alignSelf stretch, the pill's height) with no padding top or bottom and no
+  // lineHeight: a single-line iPhone field then centres its own words. (A field only as tall as its words grew
+  // with the phone's text size and slipped down; the words no longer scale with it either.)
+  search: { alignSelf: 'stretch', flex: 1, backgroundColor: 'transparent', paddingHorizontal: 18, paddingVertical: 0, includeFontPadding: false,
     fontFamily: fonts.ui, fontSize: 16, color: colors.ink, outlineWidth: 0 },
+  goCircle: { width: 24, height: 24, borderRadius: 12, borderWidth: 1.5, borderColor: colors.white, alignItems: 'center', justifyContent: 'center' },
+  goChevron: { width: 7, height: 7, borderRightWidth: 1.75, borderTopWidth: 1.75, borderColor: colors.white, transform: [{ translateX: -1.5 }, { rotate: '45deg' }] },
   ideas: { borderRadius: 26, shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, elevation: 5 },
   ideasTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.white },
   ideasText: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: colors.white, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 },

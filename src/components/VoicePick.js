@@ -54,7 +54,7 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
 }
 
 const styles = StyleSheet.create({
-  box: { position: 'absolute', width: 250, backgroundColor: '#2b2b2d', borderRadius: 26, paddingHorizontal: 14, paddingTop: 18, paddingBottom: 14, gap: 6, boxShadow: '0 16px 40px rgba(0,0,0,0.6)' },
+  box: { position: 'absolute', width: 250, backgroundColor: 'rgba(0,0,0,0.6)', /* see-through black, like the playlist boxes */ borderRadius: 26, paddingHorizontal: 14, paddingTop: 18, paddingBottom: 14, gap: 6, boxShadow: '0 16px 40px rgba(0,0,0,0.6)' },
   edit: { position: 'absolute', top: 16, right: 18, padding: 2 },
   title: { color: 'rgba(255,255,255,0.7)', fontFamily: fonts.ui, fontWeight: '700', fontSize: 14, marginLeft: 6, marginBottom: 6 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 8, paddingVertical: 8, borderRadius: 18 },
