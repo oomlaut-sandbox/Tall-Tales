@@ -487,9 +487,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <View style={{ alignItems: 'center', gap: 18 }}>
               {/* the page count sits above Pages, with plenty of room between them */}
               <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ alignItems: 'center', gap: 18, opacity: barFade, marginBottom: 26 }}>
-              <Pressable onPress={() => openCover()} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><Text style={styles.btn}>{tr('Cover')}</Text></Pressable>
-              <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>{tr('Pages')}</Text></Pressable>
-              <Pressable onPress={() => finish()} hitSlop={8} accessibilityLabel={tr('Finish and save the book')}><View style={styles.finish}><Text style={styles.btn}>{tr('Finish')}</Text></View></Pressable>
+              <Pressable onPress={() => openCover()} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><Text allowFontScaling={false} style={styles.btn}>{tr('Cover')}</Text></Pressable>
+              <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text allowFontScaling={false} style={styles.btn}>{tr('Pages')}</Text></Pressable>
+              <Pressable onPress={() => finish()} hitSlop={8} accessibilityLabel={tr('Finish and save the book')}><View style={styles.finish}><Text allowFontScaling={false} style={styles.btn}>{tr('Finish')}</Text></View></Pressable>
               </Animated.View>
             </View>
           </Bar>
@@ -498,12 +498,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       <View style={{ backgroundColor: colors.bar, paddingTop: spare / 2 }}>
       <Bar u={u}>
         <Burger u={u} onPress={openMenu} />{/* the menu, house and note stay, even on the cover */}
-        <View style={{ flex: 1 }} />
-        {/* Cover, Pages, Finish (the page count floats on the page itself) */}
-        <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ flexDirection: 'row', alignItems: 'center', gap: 16, opacity: barFade }}>
-        <Pressable onPress={() => openCover()} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><Text style={styles.btn}>{tr('Cover')}</Text></Pressable>
-        <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text style={styles.btn}>{tr('Pages')}</Text></Pressable>
-        <Pressable onPress={() => finish()} hitSlop={8} accessibilityLabel={tr('Finish and save the book')}><View style={styles.finish}><Text style={styles.btn}>{tr('Finish')}</Text></View></Pressable>
+        {/* Cover, Pages, Finish on the right (the page count floats on the page itself); they keep their size even
+            with the phone's larger text setting, so they always fit beside the menu, house and note */}
+        <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ marginLeft: 'auto', flexShrink: 0, flexDirection: 'row', alignItems: 'center', gap: 12, opacity: barFade }}>
+        <Pressable onPress={() => openCover()} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><Text allowFontScaling={false} style={styles.btn}>{tr('Cover')}</Text></Pressable>
+        <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text allowFontScaling={false} style={styles.btn}>{tr('Pages')}</Text></Pressable>
+        <Pressable onPress={() => finish()} hitSlop={8} accessibilityLabel={tr('Finish and save the book')}><View style={styles.finish}><Text allowFontScaling={false} style={styles.btn}>{tr('Finish')}</Text></View></Pressable>
         </Animated.View>
       </Bar>
       </View>
