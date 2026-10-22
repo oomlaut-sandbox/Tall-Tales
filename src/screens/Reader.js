@@ -1042,9 +1042,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
             <Option glyph={<GearIcon size={MENU_ICON} />} title={tr('Recording Settings')} sub={tr('Choose whose voice reads the story')} onPress={() => setRecView('settings')} />
             <Option glyph={<TextIcon text="?" />} title={tr('Help')} sub={tr('How recording works')} onPress={() => setRecView('help')} />
           </>
-        ) : (
-          <Pressable onPress={() => setRecView('main')} hitSlop={8}><Text style={styles.back}>{tr('‹ Back')}</Text></Pressable>
-        )}
+        ) : null}
         {recView === 'list' ? (
           recList.length ? recList.slice().sort((x, y) => readerIndex(x.reader) - readerIndex(y.reader) || x.page - y.page).map((r, k, arr) => (
             <React.Fragment key={`${r.reader}/${r.pid}`}>
@@ -1079,6 +1077,13 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
             <Text style={styles.help}>{tr('Tap Start Recording and read the page out loud. Turn the page and keep reading: each page saves on its own.')}</Text>
             <Text style={styles.help}>{tr('Tap the red button to stop. Your recordings stay on this phone, and the story will read back in your voice.')}</Text>
           </>
+        ) : null}
+        {/* Back: well below the content, a little arrow in a circle beside the word */}
+        {recView !== 'main' ? (
+          <Pressable onPress={() => setRecView('main')} hitSlop={10} accessibilityRole="button" style={styles.backRow}>
+            <View style={styles.backCircle}><View style={styles.backChevron} /></View>
+            <Text style={styles.back}>{tr('Back')}</Text>
+          </Pressable>
         ) : null}
       </Panel>
     </View>
@@ -1138,7 +1143,10 @@ const styles = StyleSheet.create({
   recStop: { width: 9, height: 9, borderRadius: 1.5, backgroundColor: colors.white },
   recBoxLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 14 },
   recBoxTime: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14, fontVariant: ['tabular-nums'], minWidth: 34, textAlign: 'left' },
-  back: { color: colors.muted, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
+  back: { color: '#bdbdbd', fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
+  backRow: { flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: 'flex-start', marginTop: 34 },
+  backCircle: { width: 26, height: 26, borderRadius: 13, borderWidth: 1.5, borderColor: '#bdbdbd', alignItems: 'center', justifyContent: 'center' },
+  backChevron: { width: 8, height: 8, borderLeftWidth: 1.75, borderBottomWidth: 1.75, borderColor: '#bdbdbd', transform: [{ translateX: 1.5 }, { rotate: '45deg' }] },
   setting: { gap: 8, paddingTop: 10, paddingBottom: 8 },
   printBtn: { alignItems: 'center', gap: 6 },
   printIc: { width: 64, height: 64, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
