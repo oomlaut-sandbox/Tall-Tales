@@ -16,7 +16,8 @@ import { playSound } from '../sound';
 // closing: the same, backwards. From the first spread the cover swings shut over the words square and stays there;
 // swipe up and it glides back to its place in My Library (onGone); tap it (or swipe the other way) and it opens again
 // (onDone, back to the reader).
-export default function BookOpen({ u, story, cover, rect, textScale, fontKey, onDone, closing = false, onLeave, onGone }) {
+// openSignal: a number that changes when something else (the moon on the bar) wants the shut book opened again
+export default function BookOpen({ u, story, cover, rect, textScale, fontKey, onDone, closing = false, onLeave, onGone, openSignal = 0 }) {
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
   const L = bookLayout(winW, winH, insets, u * 17); // the reader's layout (its bar is u * 17, like every bar)
@@ -66,6 +67,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
     ]).start(() => onGone && onGone());
   };
   const acts = useRef({}); acts.current = { ...acts.current, swingOpen, leave, phase };
+  useEffect(() => { if (closing && openSignal && acts.current.phase === 3) acts.current.swingOpen(); }, [openSignal]);
   const shutPan = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => acts.current.phase === 3,
     onStartShouldSetPanResponderCapture: () => acts.current.phase === 3,

@@ -97,7 +97,7 @@ export function Seg({ value, options, onChange, stacked }) {
   );
 }
 
-export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary, onCover, toast, menuRequest, landscape, setToastSpot, autoStart, onFinished, onSettings, onPlaylists }) {
+export default function Reader({ coverShut = false, onOpenCover, u, story, prefs, setPrefs, openMenu, goLibrary, onCover, toast, menuRequest, landscape, setToastSpot, autoStart, onFinished, onSettings, onPlaylists }) {
   const tr = useT(); // the reader's own panel, in the app's language
   const appLang = useLang();
   const controls = useControls(); // parental controls: recording, sharing and printing may be switched off
@@ -285,9 +285,12 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const lockNight = () => { const n = nlLockRef.current; if (n && n.measureInWindow) n.measureInWindow((x, y, width, height) => { setLockRect({ x, y, width, height }); setNlLocked(true); }); else setNlLocked(true); };
   useEffect(() => { if (prefs.mode !== 'listen') setNlLocked(false); }, [prefs.mode]);
   // the moon on the bar: into Listen Only (the sun / moon choice), and back out again
+  const toggleRef = useRef(null);
   const nlOut = useRef(new Animated.Value(1)).current;
   const [leavingNight, setLeavingNight] = useState(false);
   const toggleNight = () => {
+    // on the shut cover: the book opens first, then the moon does its job
+    if (coverShut && onOpenCover) { onOpenCover(); setTimeout(() => toggleRef.current && toggleRef.current(), 1150); return; }
     if (prefs.mode === 'listen') {
       const back = prefs.prevMode && prefs.prevMode !== 'listen' ? prefs.prevMode : 'auto';
       if (!nightOn) { chooseMode(back); return; }
@@ -302,6 +305,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
     }
     chooseMode('listen'); // the same choice as from the menu: Daydream or the nightlight
   };
+  toggleRef.current = toggleNight; // (the latest one: once the cover is open it goes straight on)
 
   const wordAt = (ch) => {
     for (let i = 0; i < tokens.length; i++) if (tokens[i].start <= ch && ch < tokens[i].end + 1) return i;
