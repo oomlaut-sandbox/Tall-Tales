@@ -1098,7 +1098,7 @@ function RecTimer({ start, style, onStop, running = true, saved }) {
   ) : null;
   if (!running) {
     // the recording has stopped: only the green 'saved' note, where the box was, for a moment
-    return <View pointerEvents="none" style={[{ position: 'absolute', zIndex: 30, flexDirection: 'row', alignItems: 'center', gap: 8 }, style, { marginLeft: 18 }]}>{savedPill}</View>;
+    return <View pointerEvents="none" style={[{ position: 'absolute', zIndex: 30, flexDirection: 'row', alignItems: 'center', gap: 8 }, style]}>{savedPill}</View>; // where the red dot was
   }
   return (
     <View pointerEvents="box-none" style={[{ position: 'absolute', zIndex: 30, flexDirection: 'row', alignItems: 'center', gap: 8 }, style]}>
