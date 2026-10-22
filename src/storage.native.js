@@ -34,6 +34,18 @@ export async function keepFile(uri, folder, filename) {
   return target.uri;
 }
 
+// A file kept in the app's Documents folder, at today's address: iOS gives the app a new folder path with every
+// update, so a path saved before an update (…/<old id>/Documents/recordings/x.m4a) is moved onto the current one.
+export function liveUri(uri) {
+  if (!uri || typeof uri !== 'string') return uri;
+  const k = uri.indexOf('/Documents/');
+  if (k < 0) return uri;
+  try {
+    const base = Paths.document.uri.replace(/\/$/, '');
+    return base + uri.slice(k + '/Documents'.length);
+  } catch (e) { return uri; }
+}
+
 export function deleteFile(uri) {
   try {
     const f = new File(uri);

@@ -11,6 +11,7 @@ export async function keepFile(uri) {
   return uri;
 }
 export function deleteFile() {}
+export const liveUri = (uri) => uri;
 
 // A file's bytes, for uploading (Book Store publishing).
 export async function readBytes(uri) {

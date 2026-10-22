@@ -1,7 +1,7 @@
 // Parent recordings, one per page. Keyed by the page's own id (not its position),
 // so a recording stays with its page when pages are moved or deleted.
 // { "<storyId>:<pageId>": { uri, seconds } }
-import { deleteFile, keepFile, loadJSON, saveJSON } from './storage';
+import { deleteFile, keepFile, liveUri, loadJSON, saveJSON } from './storage';
 
 let all = null;
 
@@ -13,7 +13,8 @@ async function load() {
 export const pageKey = (page, index) => (page && page.pid) || `i${index}`;
 
 export async function getRecording(storyId, pid) {
-  return (await load())[`${storyId}:${pid}`] || null;
+  const rec = (await load())[`${storyId}:${pid}`];
+  return rec ? { ...rec, uri: liveUri(rec.uri) } : null;
 }
 
 // Recordings in the story's current page order: [{ page (index), pid, uri, seconds }]
@@ -22,7 +23,7 @@ export async function listRecordings(story) {
   const out = [];
   story.pages.forEach((p, i) => {
     const rec = r[`${story.id}:${pageKey(p, i)}`];
-    if (rec) out.push({ page: i, pid: pageKey(p, i), ...rec });
+    if (rec) out.push({ page: i, pid: pageKey(p, i), ...rec, uri: liveUri(rec.uri) });
   });
   return out;
 }
@@ -31,7 +32,7 @@ export async function saveRecording(storyId, pid, tempUri, seconds) {
   const r = await load();
   const key = `${storyId}:${pid}`;
   const uri = await keepFile(tempUri, 'recordings', `${storyId}-${pid}-${Date.now()}.m4a`);
-  if (r[key] && r[key].uri !== uri) deleteFile(r[key].uri);
+  if (r[key] && r[key].uri !== uri) deleteFile(liveUri(r[key].uri));
   r[key] = { uri, seconds };
   await saveJSON('recordings', r);
 }
@@ -39,7 +40,7 @@ export async function saveRecording(storyId, pid, tempUri, seconds) {
 export async function removeRecording(storyId, pid) {
   const r = await load();
   const key = `${storyId}:${pid}`;
-  if (r[key]) deleteFile(r[key].uri);
+  if (r[key]) deleteFile(liveUri(r[key].uri));
   delete r[key];
   await saveJSON('recordings', r);
 }
@@ -51,7 +52,7 @@ export async function pruneRecordings(storyId, keepPids = []) {
   for (const key of Object.keys(r)) {
     if (!key.startsWith(`${storyId}:`)) continue;
     if (keepPids.includes(key.slice(storyId.length + 1))) continue;
-    deleteFile(r[key].uri);
+    deleteFile(liveUri(r[key].uri));
     delete r[key];
     changed = true;
   }

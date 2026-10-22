@@ -48,11 +48,12 @@ export const narratorOf = (prefs) => (NARRATORS.some(([k]) => k === prefs.narrat
 const NARRATOR = 0.92; // the phone voice's normal pace
 const VOICE_RECORDING = {
   ...RecordingPresets.HIGH_QUALITY,
-  sampleRate: 48000,
+  // (mono AAC at a standard 44.1 kHz / 128 kbps: the phone's encoder always accepts it, so the file always plays)
+  sampleRate: 44100,
   numberOfChannels: 1,
-  bitRate: 192000,
-  ios: { ...RecordingPresets.HIGH_QUALITY.ios, audioQuality: 127, sampleRate: 48000 },
-  android: { ...RecordingPresets.HIGH_QUALITY.android, sampleRate: 48000 },
+  bitRate: 128000,
+  ios: { ...RecordingPresets.HIGH_QUALITY.ios, sampleRate: 44100 },
+  android: { ...RecordingPresets.HIGH_QUALITY.android, sampleRate: 44100 },
 };
 import { checkVolume } from '../volume';
 import { playSound, playSwitch, setEffects, setEffectsVolume, suspendSounds } from '../sound';
@@ -1007,8 +1008,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
           recList.length ? recList.map((r) => (
             <View key={r.pid} style={styles.row}>
               <Text style={styles.rowText}>{tr('Page {n} · {s}s', { n: r.page + 1, s: Math.round(r.seconds) })}</Text>
-              <Pressable style={styles.rowBtn} onPress={() => { stopReading(); playVoice(r.uri); }}><Text style={styles.rowBtnText}>{tr('Play')}</Text></Pressable>
-              <Pressable style={styles.rowBtn} onPress={async () => { stopVoice(); await removeRecording(story.id, r.pid); openRecList(); toast(tr('Removed your recording of page {n}.', { n: r.page + 1 })); }}><Text style={styles.rowBtnText}>{tr('Remove')}</Text></Pressable>
+              <Pressable style={styles.rowBtn} onPress={() => { stopReading(); playVoice(r.uri, { onFail: () => toast(tr('This recording can’t be played. Record the page again.')) }); }}><Text style={styles.rowBtnText}>{tr('Play')}</Text></Pressable>
+              <Pressable style={styles.rowBtn} onPress={async () => { stopVoice(); await removeRecording(story.id, r.pid); openRecList(); }}><Text style={styles.rowBtnText}>{tr('Remove')}</Text></Pressable>
             </View>
           )) : <Text style={styles.help}>{tr('Nothing recorded yet. Tap Start Recording to read this story in your own voice.')}</Text>
         ) : null}
