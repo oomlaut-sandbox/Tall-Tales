@@ -6,6 +6,7 @@ import { colors, fonts } from '../theme';
 import { useT } from '../i18n';
 import { withTap } from '../haptics';
 import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { MAX_READERS, addReader, getReaders, setReaderPhoto } from '../recordings';
 import { VoiceFace } from './VoicePick';
 
@@ -21,7 +22,12 @@ export default function ReaderPick({ initial, onCancel, onStart }) {
   const getPhoto = async (source) => {
     setPhotoErr(null);
     try {
-      const opts = { mediaTypes: 'images', quality: 0.85, allowsEditing: true, aspect: [1, 1] };
+      // Photos opens straight away without the crop step (asking iOS to crop makes it use its older, slower
+      // picker: about three seconds to open); the circle shows the middle of the photo anyway, and the photo is
+      // made small afterwards
+      const opts = source === 'camera'
+        ? { mediaTypes: 'images', quality: 0.85, allowsEditing: true, aspect: [1, 1] }
+        : { mediaTypes: 'images', quality: 1, allowsEditing: false, preferredAssetRepresentationMode: ImagePicker.UIImagePickerPreferredAssetRepresentationMode ? ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Current : 'current' };
       let r;
       if (source === 'camera') {
         const perm = await ImagePicker.requestCameraPermissionsAsync();
@@ -29,7 +35,13 @@ export default function ReaderPick({ initial, onCancel, onStart }) {
         r = await ImagePicker.launchCameraAsync(opts);
       } else r = await ImagePicker.launchImageLibraryAsync(opts);
       if (r.canceled || !r.assets || !r.assets[0]) return;
-      const uri = r.assets[0].uri;
+      let uri = r.assets[0].uri;
+      // a small square copy from the middle of the photo (quick to show, small to keep)
+      try {
+        const a0 = r.assets[0], w = a0.width || 0, h = a0.height || 0, side = Math.min(w, h);
+        const acts = side ? [{ crop: { originX: Math.round((w - side) / 2), originY: Math.round((h - side) / 2), width: side, height: side } }, { resize: { width: Math.min(600, side) } }] : [{ resize: { width: 600 } }];
+        uri = (await ImageManipulator.manipulateAsync(uri, acts, { compress: 0.85, format: ImageManipulator.SaveFormat.JPEG })).uri;
+      } catch (e) {}
       if (adding) setPhoto(uri);
       else if (pick) { await setReaderPhoto(pick, uri); setList(await getReaders()); }
     } catch (e) {
