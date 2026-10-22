@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, Image, Dimensions, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, Dimensions, Linking, Modal, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { importVoices, readVoicesFile } from './src/voiceShare';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { StatusBar } from 'expo-status-bar';
 import { Asset } from 'expo-asset';
@@ -122,6 +123,18 @@ function Root() {
   const [playMenu, setPlayMenu] = useState(0);
   const [playOpen, setPlayOpen] = useState(false); // Playback Options away from a book
   const toastTimer = useRef(null);
+  // a book in someone's voice, sent as a file (Messages, Mail…) and opened in Oomlaut Reader: "Add Opa's voice?"
+  const [incoming, setIncoming] = useState(null);
+  useEffect(() => {
+    const handle = async (url) => {
+      if (!url || !/\.oomlaut$/i.test(decodeURIComponent(url))) return;
+      const data = await readVoicesFile(url);
+      if (data) setIncoming(data);
+    };
+    Linking.getInitialURL().then(handle).catch(() => {});
+    const sub = Linking.addEventListener('url', ({ url }) => handle(url));
+    return () => { try { sub.remove(); } catch (e) {} };
+  }, []);
 
   const [toastMs, setToastMs] = useState(3000);
   // ms: how long it stays (3 seconds unless asked for longer)
@@ -387,6 +400,30 @@ function Root() {
         })() : null}
         <ParentGate visible={settingsGate} reason={t('Changing settings is for grown-ups.')} onPass={() => { setSettingsGate(false); go('settings'); }} onCancel={() => setSettingsGate(false)} />
         <Membership visible={memberOpen} onClose={() => setMemberOpen(false)} toast={toast} />
+        {incoming ? (() => {
+          const names = (incoming.readers || []).map((x) => x.name).join(', ');
+          const title = incoming.title || '';
+          return (
+            <Modal transparent animationType="fade" visible onRequestClose={() => setIncoming(null)}>
+              <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 28 }}>
+                <View style={{ width: '100%', maxWidth: 400, backgroundColor: '#000', borderRadius: 24, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26 }}>
+                  <Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20 }}>{t('{names} read “{title}” for you', { names, title })}</Text>
+                  <Text style={{ color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, marginTop: 12 }}>{t('Add their voice to this book on this phone? Pages they didn’t record are read by the narrator.')}</Text>
+                  <View style={{ flexDirection: 'row', gap: 10, marginTop: 26, justifyContent: 'flex-end' }}>
+                    <Pressable onPress={() => setIncoming(null)} style={{ height: 44, borderRadius: 22, paddingHorizontal: 20, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 }}>{t('Not now')}</Text></Pressable>
+                    <Pressable onPress={async () => {
+                      const data = incoming; setIncoming(null);
+                      const res = await importVoices(data);
+                      if (res.ok) { go('library'); toast(t('{names}’s voice is ready in “{title}”.', { names, title }), 5000); }
+                      else if (res.reason === 'full') toast(t('There’s room for three readers on this phone. Remove one first: tap the voice on the reading bar, then the scissors.'), 6000);
+                      else toast(t('That file couldn’t be opened.'));
+                    }} style={{ height: 44, borderRadius: 22, paddingHorizontal: 22, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 }}>{t('Add')}</Text></Pressable>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+          );
+        })() : null}
         <ParentGate visible={profileGate} reason={t('Your profile is for grown-ups.')} onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
         <Toast message={message} ms={toastMs} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         {/* the Audio Player for music and nature sounds: in the middle of the screen over a dark layer until it's closed */}

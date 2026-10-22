@@ -13,7 +13,36 @@
       "bundleIdentifier": "com.oomlaut.reader",
       "infoPlist": {
         "NSMicrophoneUsageDescription": "Oomlaut Reader records your voice so you can read stories aloud for your child.",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleDocumentTypes": [
+          {
+            "CFBundleTypeName": "Oomlaut voices",
+            "CFBundleTypeRole": "Viewer",
+            "LSHandlerRank": "Owner",
+            "LSItemContentTypes": [
+              "com.oomlaut.voices"
+            ]
+          }
+        ],
+        "UTExportedTypeDeclarations": [
+          {
+            "UTTypeIdentifier": "com.oomlaut.voices",
+            "UTTypeDescription": "Oomlaut voices",
+            "UTTypeConformsTo": [
+              "public.data",
+              "public.content"
+            ],
+            "UTTypeTagSpecification": {
+              "public.filename-extension": [
+                "oomlaut"
+              ],
+              "public.mime-type": [
+                "application/x-oomlaut"
+              ]
+            }
+          }
+        ],
+        "LSSupportsOpeningDocumentsInPlace": false
       },
       "config": {
         "usesNonExemptEncryption": false

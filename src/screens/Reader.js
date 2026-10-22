@@ -60,6 +60,7 @@ import { checkVolume } from '../volume';
 import { playSound, playSwitch, setEffects, setEffectsVolume, suspendSounds } from '../sound';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { shareInvite } from '../invite';
+import { shareBookWithVoices } from '../voiceShare';
 import { audioModeChanged, fadeStopVoice, pauseVoice, playClips, playVoice, resumeVoice, stopVoice } from '../voice';
 import * as WORDCLIPS from '../narration/words';
 const WORDS = WORDCLIPS.WORDS || {};
@@ -1094,7 +1095,8 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       <ParentGate visible={shareGate} reason={tr('Sharing opens your phone’s messages and email.')} onCancel={() => setShareGate(false)}
         onPass={() => {
           setShareGate(false);
-          shareInvite(story.title);
+          // recorded in the family's voice: the recordings go along as a file (opened in Oomlaut Reader); otherwise the invitation
+          shareBookWithVoices(story).then((sent) => { if (!sent) shareInvite(story.title); }).catch(() => shareInvite(story.title));
         }} />
       <ParentGate visible={!!printGate} reason={tr('Printing opens your phone’s print options.')} onPass={() => doPrint(printGate)} onCancel={() => setPrintGate(null)} />
 
