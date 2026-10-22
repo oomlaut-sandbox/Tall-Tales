@@ -153,7 +153,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
             ) : null}
           </View>
           {s.list.length ? (
-            <Pressable onPress={() => (editing ? setEditing(false) : setGate('edit'))} style={[styles.pill, { backgroundColor: editing ? colors.green : '#3a3a3a' }]} accessibilityRole="button">
+            <Pressable onPress={() => (editing ? setEditing(false) : setGate('edit'))} style={[styles.pill, { backgroundColor: editing ? colors.green : '#3a3a3a', marginTop: 22 }]} accessibilityRole="button">{/* well clear of the children above */}
               <Text style={styles.pillText}>{editing ? t('Done editing') : t('Edit profiles')}</Text>
             </Pressable>
           ) : null}
