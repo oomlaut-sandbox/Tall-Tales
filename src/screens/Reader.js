@@ -949,9 +949,17 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
                 const pad = u * 1.7, fr = u * 3.5, rr = (34 * ck) / 2, th = 2 * fr + 2 * pad;
                 const shift = v ? 0 : -u * 1.2; // (upright the face sits a little left)
                 const from = G.step / 2 + shift - fr - pad, to = G.step * 1.5 + rr + pad;
-                return <View pointerEvents="none" style={v
-                  ? { position: 'absolute', top: from, height: to - from, left: '50%', marginLeft: -th / 2 - 2, width: th, borderRadius: th / 2, backgroundColor: '#262626' }
-                  : { position: 'absolute', left: from, width: to - from, top: '50%', marginTop: -th / 2, height: th, borderRadius: th / 2, backgroundColor: '#262626' }} />;
+                // (a full-height (or full-width) strip that centres the pill on the icons: no percentages, which iOS
+                // placed too low)
+                return (
+                  <View pointerEvents="none" style={v
+                    ? { position: 'absolute', top: from, height: to - from, left: 0, right: 0, alignItems: 'center' }
+                    : { position: 'absolute', left: from, width: to - from, top: 0, bottom: 0, justifyContent: 'center' }}>
+                    <View style={v
+                      ? { width: th, flex: 1, borderRadius: th / 2, backgroundColor: '#262626', transform: [{ translateX: -2 }] }
+                      : { height: th, alignSelf: 'stretch', borderRadius: th / 2, backgroundColor: '#262626' }} />
+                  </View>
+                );
               })() : null}
               {showVoices ? (
                 <View style={[cs, !v && { transform: [{ translateX: -u * 1.2 }] }]}>{/* upright: a little to the left, clear of the red button */}
