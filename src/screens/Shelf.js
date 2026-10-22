@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG } from '../look';
 import { Bar, BarMeta, Burger, DogEar, IDLE, Panel, PlaylistIcon, WithBar, slotStyle } from '../components/Chrome';
+import { activeProfile, feltFor, onProfiles as onProfilesChange } from '../profiles';
 const SHARE_ICON = require('../../assets/icon-envelope.png');
 const EDIT_ICON = require('../../assets/icon-scissors.png');
 const TRASH_ICON = require('../../assets/icon-trash.png');
@@ -128,7 +129,32 @@ function NotebookTile({ onPress, hidden, onRect }) {
   );
 }
 
-export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
+// the child reading now, at the top of the space beside My Notebook (or 'Profiles' before any are made)
+function WhoReads({ onPress }) {
+  const t = useT();
+  const { width: winW } = useWindowDimensions();
+  const [, bump] = useState(0);
+  useEffect(() => onProfilesChange(() => bump((n) => n + 1)), []);
+  const p = activeProfile();
+  return (
+    <View style={{ width: tileWidth(winW), alignItems: 'flex-start' }}>
+      <Pressable onPress={onPress} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Profiles')}
+        style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 4 }}>
+        {p ? <Image source={feltFor(p.color)} style={{ width: 40, height: 40 }} resizeMode="contain" />
+          : <View style={{ width: 28, height: 28, alignItems: 'center', justifyContent: 'flex-end' }}>
+              <View style={{ width: 11, height: 11, borderRadius: 6, backgroundColor: 'rgba(235,235,235,0.9)', marginBottom: 2 }} />
+              <View style={{ width: 20, height: 9, borderTopLeftRadius: 10, borderTopRightRadius: 10, backgroundColor: 'rgba(235,235,235,0.9)' }} />
+            </View>}
+        <View style={{ flexShrink: 1 }}>
+          <Text numberOfLines={1} style={styles.whoName}>{p ? p.name : t('Profiles')}</Text>
+          {p ? <Text style={styles.whoSub}>{t('Reading now')}</Text> : null}
+        </View>
+      </Pressable>
+    </View>
+  );
+}
+
+export function Library({ onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
   const t = useT();
   const controls = useControls(); // parental controls: My Notebook, Create a story and Select may be hidden
   const { width: winW } = useWindowDimensions();
@@ -181,6 +207,8 @@ export function Library({ u, stories, openStory, openMenu, onCreate, onPlaylists
       <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]}>
         {/* My Notebook: always the first book on the shelf (notes, drawings and reading badges) */}
         {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
+        {/* beside the notebook: who is reading (their felt character and name); tap it for Profiles */}
+        {!selecting && onNotebook && onProfiles ? <WhoReads onPress={onProfiles} /> : null}
         {!selecting && onNotebook ? <View style={{ width: '100%' }} /> : null}{/* the notebook has the top row to itself */}
         {/* (the parental controls can hide books rated for older children) */}
         {stories.filter((s) => ageAllowed(ageOf(null, s), controls.childAge)).map((s) => (
@@ -514,6 +542,8 @@ const styles = StyleSheet.create({
   actBtn: { flex: 1, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
   actText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
   cancelPill: { backgroundColor: '#d4312a', paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' },
+  whoName: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  whoSub: { color: 'rgba(235,235,235,0.6)', fontFamily: fonts.ui, fontSize: 12, marginTop: 1 },
   barBtn: { paddingVertical: 10, paddingHorizontal: 6 },
   barSmall: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 }, // Select / Cancel: the same size as Share, Edit and Delete, on the same line
   barBtnOff: { opacity: 0.35 },
