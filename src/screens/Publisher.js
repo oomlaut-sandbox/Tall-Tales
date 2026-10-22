@@ -671,7 +671,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             {(() => {
               // room for the tools under the square (hidden while typing) and, upright, for Done at the bottom
               const toolsH = kbUp ? 60 : coverTitling ? 56 + (coverTool ? 96 : 0) : 0;
-              const doneH = kbUp || winW > winH ? 0 : 98;
+              const doneH = kbUp || winW > winH ? 0 : 138;
               const fitH = coverArea ? coverArea.h - toolsH - doneH - 8 : winW;
               const W = Math.max(120, Math.floor(Math.min(winW - insets.left - insets.right - 2 * GAP, fitH)));
               coverSize.current = W;
@@ -763,7 +763,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           {coverTitling && coverTip && !kbUp ? <Toast message={tr('Tap the title to type. Drag it anywhere on the cover.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 74 }} onDismiss={() => setCoverTip(false)} /> : null}
           {/* Done: bottom right, lined up with the cover's right edge */}
           {/* a new book: 'Start writing' goes on to page 1 (nobody is stuck on the cover) */}
-          {!kbUp ? <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { position: 'absolute', right: GAP + (wide ? 0 : insets.right), bottom: GAP, marginBottom: 0 }]}>{/* as far from the bar as from the right edge */}<Text style={styles.donePillText}>{startMode ? tr('Start writing') : tr('Done')}</Text></Pressable> : null}
+          {!kbUp ? <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { position: 'absolute', right: GAP + (wide ? 0 : insets.right), bottom: GAP + 40, marginBottom: 0 }]}>{/* as far from the bar as from the right edge */}<Text style={styles.donePillText}>{startMode ? tr('Start writing') : tr('Done')}</Text></Pressable> : null}
           {coverAsk ? (
             <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
               <View style={styles.choice}>
