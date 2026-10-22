@@ -13,7 +13,7 @@ export function VoiceFace({ photo, name, narrator = false, person = false, size 
   return (
     <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
       {photo ? <Image source={{ uri: photo }} style={{ width: size, height: size }} resizeMode="cover" />
-        : person ? <View style={{ transform: [{ translateY: size * 0.13 }] }}><PersonIcon size={size * 0.66} color="#8a8a8a" /></View>
+        : person ? <View style={{ transform: [{ translateY: size * 0.02 }] }}><PersonIcon size={size * 0.4} color="#8a8a8a" /></View>
         : narrator || !name ? <View style={{ transform: [{ translateY: size * 0.07 }] }}><BubbleIcon size={size * 0.5} color="#e0e0e0" /></View>
         : <Text allowFontScaling={false} style={{ color: '#e0e0e0', fontFamily: fonts.ui, fontWeight: '700', fontSize: size * 0.44 }}>{name.trim().charAt(0).toUpperCase()}</Text>}
     </View>
