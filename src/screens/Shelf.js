@@ -29,7 +29,7 @@ const TILE = { 2: 47, 3: 31, 4: 22.5 };
 const tileWidth = (w) => `${TILE[COLS(w)]}%`;
 const gridGap = (w) => { const n = COLS(w); return `${(100 - n * TILE[n]) / (n - 1)}%`; };
 
-function Tile({ u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, option, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
+function Tile({ plain, u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, option, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
   const t = useT();
   const { width: winW } = useWindowDimensions();
   const ear = u * 3;
@@ -44,13 +44,13 @@ function Tile({ u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyp
     <Pressable onPress={press} onLongPress={onLongPress} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={label}>
       {/* a very subtle drop shadow under the square cover */}
       <View style={styles.tileShadow}>
-      <View ref={coverRef} collapsable={false} style={{ aspectRatio: 1, backgroundColor: '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
+      <View ref={coverRef} collapsable={false} style={{ aspectRatio: 1, backgroundColor: plain ? '#2a2a2a' : '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>{/* plain: a solid dark grey square (pictures to come) */}
         {coverArt ? <CoverArt cover={coverArt} /> : cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }} resizeMode="cover" /> : null}
         {/* a small, thin grey + in the top right corner (Create a story, Playlists) */}
         {plus ? (
           <View pointerEvents="none" style={{ position: 'absolute', top: 10, right: 10, width: 16, height: 16 }}>
-            <View style={{ position: 'absolute', left: 0, right: 0, top: 7.25, height: 1.5, backgroundColor: '#7c7c7c' }} />
-            <View style={{ position: 'absolute', top: 0, bottom: 0, left: 7.25, width: 1.5, backgroundColor: '#7c7c7c' }} />
+            <View style={{ position: 'absolute', left: 0, right: 0, top: 7.25, height: 1.5, backgroundColor: '#8a8a8a' }} />
+            <View style={{ position: 'absolute', top: 0, bottom: 0, left: 7.25, width: 1.5, backgroundColor: '#8a8a8a' }} />
           </View>
         ) : null}
         {glyph || null}
@@ -220,9 +220,9 @@ export function Library({ onProfiles, u, stories, openStory, openMenu, onCreate,
         ))}
         {/* Create a story always starts its own row, below the books */}
         {!selecting ? <View style={{ width: '100%' }} /> : null}
-        {!selecting && controls.create ? <Tile u={u} plus cover={CREATE_TILE} title={t('Create a story')} onPress={onCreate} /> : null}
+        {!selecting && controls.create ? <Tile u={u} plus plain title={t('Create a story')} onPress={onCreate} /> : null}
         {/* Playlists (a picture of its own comes later) */}
-        {!selecting && onPlaylists ? <Tile u={u} plus cover={PLAYLISTS_TILE} option title={t('Playlists')} onPress={onPlaylists} /> : null}
+        {!selecting && onPlaylists ? <Tile u={u} plus plain option title={t('Playlists')} onPress={onPlaylists} /> : null}
         {!selecting && removedCount ? (
           <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
             <Text style={styles.restore}>{t('Show removed books ({n})', { n: removedCount })}</Text>
