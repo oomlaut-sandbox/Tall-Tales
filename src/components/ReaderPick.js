@@ -56,7 +56,7 @@ export default function ReaderPick({ initial, onCancel, onStart }) {
                 returnKeyType="done" onSubmitEditing={start} style={styles.input} accessibilityLabel={tr('Reader’s name')} />
             </View>
           ) : null}
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 36 }}>
             <View style={{ flex: 1 }} />
             <Pressable onPress={withTap(onCancel)} style={[styles.pill, { backgroundColor: '#4a4a4a' }]} accessibilityRole="button"><Text style={styles.pillText}>{tr('Cancel')}</Text></Pressable>
             <Pressable onPress={withTap(start)} disabled={adding && !name.trim()} style={[styles.pill, { backgroundColor: colors.highlight, marginLeft: 10 }, adding && !name.trim() && { opacity: 0.45 }]} accessibilityRole="button">
@@ -71,15 +71,15 @@ export default function ReaderPick({ initial, onCancel, onStart }) {
 
 const styles = StyleSheet.create({
   back: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: 16 },
-  box: { width: '100%', maxWidth: 420, backgroundColor: '#2b2b2d', borderRadius: 24, padding: 22, boxShadow: '0 20px 50px rgba(0,0,0,0.6)' },
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20 },
-  text: { color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, marginTop: 8 },
-  row: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 18 },
-  chip: { height: 36, borderRadius: 18, paddingHorizontal: 14, backgroundColor: '#3d3d40', alignItems: 'center', justifyContent: 'center' },
+  box: { width: '100%', maxWidth: 460, backgroundColor: '#2b2b2d', borderRadius: 28, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26, boxShadow: '0 20px 50px rgba(0,0,0,0.6)' },
+  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 22 },
+  text: { color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, marginTop: 14 },
+  row: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 28 },
+  chip: { height: 42, borderRadius: 21, paddingHorizontal: 18, backgroundColor: '#3d3d40', alignItems: 'center', justifyContent: 'center' },
   chipOn: { backgroundColor: colors.green },
   chipText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 15 },
-  field: { backgroundColor: '#161616', height: 46, borderRadius: 12, paddingHorizontal: 14, justifyContent: 'center', marginTop: 14 },
+  field: { backgroundColor: '#161616', height: 52, borderRadius: 14, paddingHorizontal: 16, justifyContent: 'center', marginTop: 20 },
   input: { color: colors.white, fontFamily: fonts.ui, fontSize: 17, paddingVertical: 0, paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 },
-  pill: { height: 40, borderRadius: 20, paddingHorizontal: 18, alignItems: 'center', justifyContent: 'center' },
-  pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
+  pill: { height: 46, borderRadius: 23, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
+  pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
 });

@@ -26,8 +26,8 @@ function barsFor(levels) {
 export default function TrimEditor({ rec, title, onCancel, onSave }) {
   const tr = useT();
   const { width: winW } = useWindowDimensions();
-  const W = Math.min(winW - 64, 380); // the picture's width
-  const H = 120;
+  const W = Math.min(winW - 88, 420); // the picture's width
+  const H = 150;
   const dur = Math.max(0.5, rec ? rec.seconds : 1);
   const [a, setA] = useState(rec && rec.start ? rec.start / dur : 0);
   const [b, setB] = useState(rec && rec.end ? rec.end / dur : 1);
@@ -77,7 +77,7 @@ export default function TrimEditor({ rec, title, onCancel, onSave }) {
             <Text style={styles.len}>{secs.toFixed(1)} s</Text>
           </View>
           {/* the sound, in white; outside the two lines it fades back */}
-          <View style={{ width: W, height: H, marginTop: 18, alignSelf: 'center' }}>
+          <View style={{ width: W, height: H, marginTop: 34, alignSelf: 'center' }}>
             <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               {bars.map((v, i) => {
                 const f = (i + 0.5) / BARS, inside = f >= a && f <= b;
@@ -99,7 +99,7 @@ export default function TrimEditor({ rec, title, onCancel, onSave }) {
             </View>
           </View>
           {/* below: play / pause on the left; Cancel and Save on the right */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 28 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 44 }}>
             <Pressable onPress={withTap(play)} hitSlop={10} accessibilityRole="button" accessibilityLabel={playing ? tr('Pause') : tr('Play')} style={styles.playBtn}>
               {playing ? (
                 <View style={{ flexDirection: 'row', gap: 5 }}><View style={styles.bar} /><View style={styles.bar} /></View>
@@ -119,12 +119,12 @@ export default function TrimEditor({ rec, title, onCancel, onSave }) {
 
 const styles = StyleSheet.create({
   back: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: 16 },
-  box: { backgroundColor: '#2b2b2d', borderRadius: 24, paddingHorizontal: 16, paddingTop: 20, paddingBottom: 18, boxShadow: '0 20px 50px rgba(0,0,0,0.6)' },
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 17, marginLeft: 4 },
-  len: { color: 'rgba(255,255,255,0.55)', fontFamily: fonts.ui, fontSize: 13, fontVariant: ['tabular-nums'], marginRight: 4 },
+  box: { backgroundColor: '#2b2b2d', borderRadius: 28, paddingHorizontal: 28, paddingTop: 28, paddingBottom: 26, boxShadow: '0 20px 50px rgba(0,0,0,0.6)' },
+  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20 },
+  len: { color: 'rgba(255,255,255,0.55)', fontFamily: fonts.ui, fontSize: 13, fontVariant: ['tabular-nums'] },
   knob: { width: 14, height: 14, borderRadius: 7, backgroundColor: '#ffffff', marginTop: -2 },
-  playBtn: { width: 46, height: 46, borderRadius: 23, backgroundColor: '#3d3d40', alignItems: 'center', justifyContent: 'center' },
+  playBtn: { width: 52, height: 52, borderRadius: 26, backgroundColor: '#3d3d40', alignItems: 'center', justifyContent: 'center' },
   bar: { width: 5, height: 18, borderRadius: 1, backgroundColor: '#ffffff' },
-  pill: { height: 40, borderRadius: 20, paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center' },
-  pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
+  pill: { height: 46, borderRadius: 23, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
+  pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
 });
