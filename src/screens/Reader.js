@@ -154,6 +154,8 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
   const recorder = useAudioRecorder(VOICE_RECORDING);
   const recStart = useRef(0);
   const pendingRec = useRef(false);
+  const [savedPage, setSavedPage] = useState(null); // { n, k }: the page just saved, shown for a moment
+  useEffect(() => { if (!savedPage) return undefined; const t = setTimeout(() => setSavedPage(null), 2600); return () => clearTimeout(t); }, [savedPage]);
   const recAuto = useRef(false); // recording carried on to the next page by itself (no instructions bubble again)
   const usingVoice = useRef(false);
   const prefsRef = useRef(prefs);
@@ -419,7 +421,7 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
       if (save && recorder.uri && seconds > 0.7) {
         await saveRecording(story.id, pageKey(story.pages[page], page), recorder.uri, seconds);
         if (prefsRef.current.voice !== 'mine') setPrefs((p) => ({ ...p, voice: 'mine' }));
-        toast(tr('Saved your voice for page {n}.', { n: page + 1 }));
+        setSavedPage({ n: page + 1, k: Date.now() }); // a green 'Page 2 saved' beside the recording box (no speech bubble)
         markFirst('firstRecording'); // a badge in My Notebook
         refreshRecPages();
       }
@@ -805,8 +807,9 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
         {size && idx < pages.length - 1 && !listen ? <Pressable onPress={() => flip(1)} accessibilityLabel={tr('Next page')} style={[styles.edge, { right: 0, width: edgeW }]} /> : null}
         {/* while recording: a red dot and a small grey box ('■ Recording 0:04') at the top left of the words page;
             tapping it stops the recording */}
-        {size && (recording || REC_DEMO) ? (
-          <RecTimer start={recStart.current || DEMO_T0} onStop={() => stopRec(true)}
+        {/* (and to its right, a green 'Page 2 saved' for a moment after each page is saved) */}
+        {size && (recording || REC_DEMO || savedPage) ? (
+          <RecTimer start={recStart.current || DEMO_T0} onStop={() => stopRec(true)} running={recording || REC_DEMO} saved={savedPage ? savedPage.n : null}
             style={size.w > size.h * 1.25 ? { top: size.h * 0.06, left: size.w * 0.54 } : { top: size.h * 0.5 + size.w * 0.07, left: size.w * 0.08 }} />
         ) : null}
         {/* the dog-ear hides while a page is turning, and comes back once the new page has landed */}
@@ -1029,23 +1032,32 @@ export default function Reader({ u, story, prefs, setPrefs, openMenu, goLibrary,
 
 // The recording timer: a small grey box with the time recorded so far (0:03), beside the pulsing record button.
 const DEMO_T0 = Date.now() - 4000; // (web preview #rec-demo only)
-function RecTimer({ start, style, onStop }) {
+function RecTimer({ start, style, onStop, running = true, saved }) {
   const tr = useT();
   const [secs, setSecs] = useState(0);
   useEffect(() => {
     const t = setInterval(() => setSecs(Math.floor((Date.now() - start) / 1000)), 250);
     return () => clearInterval(t);
   }, [start]);
+  const savedPill = saved ? (
+    <View style={[styles.recBox, { backgroundColor: colors.green }]} accessibilityLiveRegion="polite"><Text style={styles.recBoxLabel}>{tr('Page {n} saved', { n: saved })}</Text></View>
+  ) : null;
+  if (!running) {
+    // the recording has stopped: only the green 'saved' note, where the box was, for a moment
+    return <View pointerEvents="none" style={[{ position: 'absolute', zIndex: 30, flexDirection: 'row', alignItems: 'center', gap: 8 }, style, { marginLeft: 18 }]}>{savedPill}</View>;
+  }
   return (
-    <Pressable onPress={onStop} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Stop recording')}
-      style={[{ position: 'absolute', zIndex: 30, flexDirection: 'row', alignItems: 'center', gap: 8 }, style]}>
-      <View style={styles.recDot} />
-      <View style={styles.recBox} accessibilityLabel={tr('Recording, {n} seconds', { n: secs })}>
-        <View style={styles.recStop} />
-        <Text style={styles.recBoxLabel}>{tr('Recording')}</Text>
-        <Text style={styles.recBoxTime}>{Math.floor(secs / 60)}:{String(secs % 60).padStart(2, '0')}</Text>
-      </View>
-    </Pressable>
+    <View pointerEvents="box-none" style={[{ position: 'absolute', zIndex: 30, flexDirection: 'row', alignItems: 'center', gap: 8 }, style]}>
+      <Pressable onPress={onStop} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Stop recording')} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <View style={styles.recDot} />
+        <View style={styles.recBox} accessibilityLabel={tr('Recording, {n} seconds', { n: secs })}>
+          <View style={styles.recStop} />
+          <Text style={styles.recBoxLabel}>{tr('Recording')}</Text>
+          <Text style={styles.recBoxTime}>{Math.floor(secs / 60)}:{String(secs % 60).padStart(2, '0')}</Text>
+        </View>
+      </Pressable>
+      {savedPill}
+    </View>
   );
 }
 

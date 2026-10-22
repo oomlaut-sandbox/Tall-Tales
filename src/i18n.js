@@ -395,6 +395,7 @@ const T = {
   'Close': { de: 'Schließen', fr: 'Fermer', es: 'Cerrar', ja: 'とじる' },
   'Your favourite books': { de: 'Deine Lieblingsbücher', fr: 'Tes livres préférés', es: 'Tus libros favoritos', ja: 'おきにいりの ほん' },
   'Bring all your favourite picture books in your pocket. Take photos of each page and add your own audio. Easy peasy.': { de: 'Nimm all deine Lieblingsbilderbücher in der Hosentasche mit. Fotografiere jede Seite und sprich sie selbst dazu. Kinderleicht.', fr: 'Emporte tous tes albums préférés dans ta poche. Prends chaque page en photo et ajoute ta propre voix. Un jeu d’enfant.', es: 'Lleva todos tus álbumes ilustrados favoritos en el bolsillo. Haz una foto de cada página y añade tu propia voz. Facilísimo.', ja: 'おきにいりの えほんを ぜんぶ ポケットに。ページを しゃしんに とって、じぶんの こえを いれよう。かんたん!' },
+  'Page {n} saved': { de: 'Seite {n} gespeichert', fr: 'Page {n} enregistrée', es: 'Página {n} guardada', ja: '{n}ページ ほぞんしたよ' },
   'Recording': { de: 'Aufnahme', fr: 'Enregistrement', es: 'Grabando', ja: 'ろくおんちゅう' },
   'Stop recording': { de: 'Aufnahme beenden', fr: 'Arrêter l’enregistrement', es: 'Detener la grabación', ja: 'ろくおんを とめる' },
   'Start writing': { de: 'Los geht’s', fr: 'Commencer à écrire', es: 'Empezar a escribir', ja: 'かきはじめる' },
