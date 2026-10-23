@@ -1119,7 +1119,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
         {TRAY.map(([k, name]) => (
           <Pressable key={k} onPress={() => pickTool(k)} accessibilityRole="button" accessibilityLabel={t(name)} accessibilityState={{ selected: onTool === k }}
             style={{ width: tw, height: th, transform: [{ translateY: onTool === k ? tw * 0.06 : tw * 0.45 }] }}>
-            <ToolPic kind={k} color={pen} width={tw} height={th} />
+            <ToolPic kind={k} width={tw} height={th} />
           </Pressable>
         ))}
       </View>
