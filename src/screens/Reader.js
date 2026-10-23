@@ -243,7 +243,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   // rest, and the screen dims to a soft night level
   const listen = prefs.mode === 'listen';
   const listenRef = useRef(listen); listenRef.current = listen;
-  st.current = { idx, size, reading, paused, mode: listen ? 'auto' : prefs.mode, turning: !!flipPair, pages, recording };
+  st.current = { idx, size, reading, paused, mode: listen ? 'auto' : prefs.mode, turning: !!flipPair, pages, recording, amber: !!prefs.amber };
   if (idx > pages.length - 1) setIdx(pages.length - 1);
   const pendingRead = useRef(false);
   const autoTimer = useRef(null);
@@ -611,8 +611,9 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     let pics = null;
     if (supportsCurl && peelWorks.ok) { // upright and sideways: the paper peel
       // pictures of both pages for the paper peel
-      const fa = dir > 0 ? await snapshot(refs.cur) : (cache.current[a] || (await snapshot(refs.prev)));
-      const fb = dir > 0 ? (cache.current[a + 1] || (await snapshot(refs.next))) : await snapshot(refs.cur);
+      const cached = (k) => { const c = cache.current[k]; return c && c.amber === !!st.current.amber ? c.img : null; }; // only a picture in today's light
+      const fa = dir > 0 ? await snapshot(refs.cur) : (cached(a) || (await snapshot(refs.prev)));
+      const fb = dir > 0 ? (cached(a + 1) || (await snapshot(refs.next))) : await snapshot(refs.cur);
       // sideways the words page peels from its bottom-right corner (or top-right when the finger
       // starts high up); in the peel's upright frame those are its 'left' and 'right' corners
       if (fa && fb) pics = { front: fa, back: fb, corner: st.current.wide ? (corner === 'top' ? 'right' : 'left') : corner };
@@ -758,13 +759,21 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   };
 
   // Keep fresh pictures of the neighbouring pages ready, so a turn starts without a delay.
+  // Each picture remembers whether Amber light was on when it was taken, and a picture still being taken when the
+  // page or the light changes is thrown away, so a turn never shows the old colour.
+  const cacheGen = useRef(0);
   useEffect(() => {
     cache.current = {};
+    const gen = ++cacheGen.current, amber = !!prefs.amber;
     if (!supportsCurl || !size || flipPair) return;
-    const t = setTimeout(async () => {
-      if (refs.next.current) cache.current[idx + 1] = await snapshot(refs.next);
-      if (refs.prev.current) cache.current[idx - 1] = await snapshot(refs.prev);
-    }, 500);
+    const take = async () => {
+      const n = refs.next.current ? await snapshot(refs.next) : null;
+      const p = refs.prev.current ? await snapshot(refs.prev) : null;
+      if (gen !== cacheGen.current) return; // the page or the light changed meanwhile
+      if (n) cache.current[idx + 1] = { img: n, amber };
+      if (p) cache.current[idx - 1] = { img: p, amber };
+    };
+    const t = setTimeout(take, 500);
     return () => clearTimeout(t);
   }, [idx, size, prefs.textScale, prefs.font, !!prefs.amber, !!flipPair]); // (Amber light on or off: fresh pictures, so the next page never turns in the old colour)
 
