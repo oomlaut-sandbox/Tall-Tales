@@ -1076,8 +1076,9 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     const S2 = size * 1.12;
     return (
       <Pressable key={hex} onPress={onPress} hitSlop={3} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: !!on }}
-        style={{ width: S2, height: S2, alignItems: 'center', justifyContent: 'center', transform: [{ scale: on ? 1.12 : 1 }] }}>
-        {on ? <Image source={shape} style={{ position: 'absolute', width: S2 * 1.18, height: S2 * 1.18, tintColor: colors.white, transform: [{ rotate: '40deg' }] }} /> : null}
+        style={{ width: S2, height: S2, alignItems: 'center', justifyContent: 'center' }}>
+        {/* the colour you're using sits on a rounded square of black glass, like the reader picked in Profiles */}
+        {on ? <View style={{ position: 'absolute', width: S2 * 1.32, height: S2 * 1.32, borderRadius: S2 * 0.3, backgroundColor: 'rgba(0,0,0,0.55)' }} /> : null}
         <Image source={shape} style={{ position: 'absolute', width: S2, height: S2, tintColor: hex }} />
         <Image source={tex} style={{ position: 'absolute', width: S2, height: S2, opacity: 0.55 }} />
       </Pressable>
