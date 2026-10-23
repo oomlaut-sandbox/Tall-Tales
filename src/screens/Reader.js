@@ -766,7 +766,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       if (refs.prev.current) cache.current[idx - 1] = await snapshot(refs.prev);
     }, 500);
     return () => clearTimeout(t);
-  }, [idx, size, prefs.textScale, prefs.font, !!flipPair]);
+  }, [idx, size, prefs.textScale, prefs.font, !!prefs.amber, !!flipPair]); // (Amber light on or off: fresh pictures, so the next page never turns in the old colour)
 
   /* ---------- render ---------- */
   const W = size?.w || 0, H = size?.h || 0;
