@@ -152,11 +152,19 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
               </Pressable>
             ) : null}
           </View>
-          {s.list.length ? (
-            <Pressable onPress={() => (editing ? setEditing(false) : setGate('edit'))} style={[styles.pill, { backgroundColor: editing ? colors.green : '#3a3a3a', marginTop: 22 }]} accessibilityRole="button">{/* well clear of the children above */}
-              <Text style={styles.pillText}>{editing ? t('Done editing') : t('Edit profiles')}</Text>
-            </Pressable>
-          ) : null}
+          {/* Edit profiles on the left; My Library (back to the books) on the right, level with it */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 22 }}>
+            {s.list.length ? (
+              <Pressable onPress={() => (editing ? setEditing(false) : setGate('edit'))} style={[styles.pill, { backgroundColor: editing ? colors.green : '#3a3a3a' }]} accessibilityRole="button">{/* well clear of the children above */}
+                <Text style={styles.pillText}>{editing ? t('Done editing') : t('Edit profiles')}</Text>
+              </Pressable>
+            ) : <View />}
+            {onBack && !editing ? (
+              <Pressable onPress={backToLibrary} style={[styles.pill, { backgroundColor: '#2f5a31' }]} accessibilityRole="button">
+                <Text style={styles.pillText}>{t('My Library')}</Text>
+              </Pressable>
+            ) : null}
+          </View>
           {!canSwitch ? <Text style={styles.small}>{t('A grown-up has turned off switching profiles.')}</Text> : null}
           <Text style={styles.small}>{t('Books, the membership, recordings, the language and the music are shared by the whole family.')}</Text>
         </View>
