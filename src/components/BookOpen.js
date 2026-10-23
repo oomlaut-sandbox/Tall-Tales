@@ -206,13 +206,13 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
           The turning cover and the landed page cast none of their own: those used to darken the spine while
           it opened, and it went lighter the moment the reader took over. */}
       {phase >= 1 && phase <= 2 ? (
-        <Animated.View pointerEvents="none" shouldRasterizeIOS renderToHardwareTextureAndroid style={[styles.shadow, { position: 'absolute', left: bx, top: by, width: s, height: s, backgroundColor: DESK_FELT ? '#262626' : colors.desk, opacity: A.plateIn }]}>
+        <Animated.View pointerEvents="none" style={[styles.shadow, { position: 'absolute', left: bx, top: by, width: s, height: s, backgroundColor: DESK_FELT ? '#262626' : colors.desk, opacity: A.plateIn }]}>
           <View style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]}><DeskFelt spot="bookopenPlate" /></View>
         </Animated.View>
       ) : null}
       {/* the first words page, uncovered as the cover swings open */}
       {phase >= 1 && phase <= 2 ? (
-        <View pointerEvents="none" shouldRasterizeIOS renderToHardwareTextureAndroid style={[styles.shadow, { position: 'absolute', left: tx, top: ty, width: s, height: s }]}>
+        <View pointerEvents="none" style={[styles.shadow, { position: 'absolute', left: tx, top: ty, width: s, height: s }]}>
           <View style={{ width: s, height: s, overflow: 'hidden' }}>
             <View style={{ position: 'absolute', left: L.wide ? -s : 0, top: L.wide ? 0 : -s }}>
               <PageView page={first} width={L.wide ? 2 * s : s} height={L.wide ? s : 2 * s} textScale={textScale} fontKey={fontKey} />
