@@ -4,8 +4,14 @@ import React from 'react';
 import { View } from 'react-native';
 import { drawOrder, layersFor } from '../strokes';
 
+const src = (m) => (typeof m === 'string' ? m : (m && (m.uri || m.default)) || '');
+const GRAIN = src(require('../../assets/paper-grain.png'));
+const TOOTH = src(require('../../assets/paper-tooth.png'));
+const TILE = 0.7; // one repeat of the paper texture, in widths of the drawing (as on the phone)
+
 let uid = 0;
-export function StrokesView({ strokes, width, height, live }) {
+// The paper: its tooth shows through what's drawn (lighter specks where the paper dips), a faint grain over all.
+export function StrokesView({ strokes, width, height, live, noPaper }) {
   const all = drawOrder(live ? [...(strokes || []), live] : strokes || []);
   const h = React.createElement;
   const id = React.useMemo(() => `s${++uid}`, []);
@@ -25,12 +31,22 @@ export function StrokesView({ strokes, width, height, live }) {
     paths.push(h('path', {
       key: `${i}-${j}`, d: L.d, fill: L.fill ? st.c : 'none', stroke: L.fill ? 'none' : st.c, strokeWidth: L.fill ? 0 : L.width,
       strokeLinecap: 'round', strokeLinejoin: 'round', opacity: L.alpha, filter: fid ? `url(#${fid})` : undefined,
-      style: L.multiply ? { mixBlendMode: 'multiply' } : undefined, strokeDasharray: L.grain ? '6 0.6' : undefined,
+      style: L.multiply ? { mixBlendMode: 'multiply' } : undefined, strokeDasharray: L.grain === 'crayon' ? '3 1.4' : L.grain ? '6 0.6' : undefined,
     }));
   }));
+  const tile = TILE * width;
+  defs.push(h('filter', { key: 'tooth', id: `${id}-tooth`, x: 0, y: 0, width, height, filterUnits: 'userSpaceOnUse' },
+    h('feImage', { href: TOOTH, x: 0, y: 0, width: tile, height: tile, preserveAspectRatio: 'none', result: 't' }),
+    h('feTile', { in: 't', result: 'tt' }),
+    h('feComponentTransfer', { in: 'tt', result: 'ta' }, h('feFuncA', { type: 'linear', slope: 0.85 })),
+    h('feComposite', { in: 'ta', in2: 'SourceGraphic', operator: 'atop' })));
+  defs.push(h('pattern', { key: 'grain', id: `${id}-grain`, patternUnits: 'userSpaceOnUse', width: tile, height: tile },
+    h('image', { href: GRAIN, x: 0, y: 0, width: tile, height: tile, preserveAspectRatio: 'none' })));
   return (
     <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width, height }}>
-      {h('svg', { width, height, viewBox: `0 0 ${width} ${height}`, style: { position: 'absolute', left: 0, top: 0 } }, h('defs', null, defs), paths)}
+      {h('svg', { width, height, viewBox: `0 0 ${width} ${height}`, style: { position: 'absolute', left: 0, top: 0 } }, h('defs', null, defs),
+        h('g', { filter: `url(#${id}-tooth)` }, h('g', null, paths)),
+        noPaper ? null : h('rect', { x: 0, y: 0, width, height, fill: `url(#${id}-grain)`, style: { mixBlendMode: 'multiply', pointerEvents: 'none' } }))}
     </View>
   );
 }

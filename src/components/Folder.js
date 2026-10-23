@@ -31,7 +31,7 @@ function SheetPage({ page, size }) {
     <View style={{ width: size, backgroundColor: CREAM, borderRadius: size * 0.06, overflow: 'hidden' }}>
       <View style={{ width: size, height: size, borderBottomWidth: 1, borderColor: '#cfc9bd' }}>
         {page.uri ? <Image source={{ uri: page.uri }} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
-        <StrokesView strokes={page.strokes || []} width={size} height={size} />
+        <StrokesView strokes={page.strokes || []} width={size} height={size} noPaper={!!page.uri} />
       </View>
       {page.kind === 'sketch' ? (
         <View style={{ width: size, height: size }}><StrokesView strokes={page.strokes2 || []} width={size} height={size} /></View>

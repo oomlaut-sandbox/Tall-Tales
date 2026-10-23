@@ -22,7 +22,7 @@ import ParentGate from '../components/ParentGate';
 import { StrokesView } from '../components/Strokes';
 import { EarArt } from '../components/Ear';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
-import { BRUSHES, PENS, SHAPES, SIZES, makeFill, near, shapePts } from '../strokes';
+import { BRUSHES, PENS, PENS_BRIGHT, SHAPES, SIZES, makeFill, mixColours, near, shapePts, withMirrors } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
 import { STORIES } from '../story';
@@ -414,7 +414,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       <View style={[StyleSheet.absoluteFill, { flexDirection: wide ? 'row' : 'column' }]}>
         <Pressable disabled={!live} onPress={() => setPicAsk(true)} style={[styles.art, { width: side, height: side }]} accessibilityRole="button" accessibilityLabel={pg.uri || pg.strokes.length ? t('Change the picture') : t('Add a picture or a drawing')}>
           {pg.uri ? <Image source={{ uri: pg.uri }} style={styles.fill} resizeMode="cover" /> : <View style={[styles.fill, { backgroundColor: WHITE }]} />}
-          <StrokesView strokes={pg.strokes} width={side} height={side} />
+          <StrokesView strokes={pg.strokes} width={side} height={side} noPaper={!!pg.uri} />
           {!pg.uri && !pg.strokes.length ? (
             <View style={{ alignItems: 'center' }}>
               <Text style={[styles.plus, { fontSize: u * 24, lineHeight: u * 24 }]}>+</Text>
@@ -613,7 +613,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
             <View key={p.pid} style={[styles.prow, i === k + FIRST_PAGE && { borderColor: colors.green }]}>
               <Pressable onPress={() => { setI(k + FIRST_PAGE); setPagesOpen(false); }} style={[styles.thumb, { backgroundColor: WHITE }]} accessibilityLabel={t('Go to page {n}', { n: k + 3 })}>
                 {p.uri ? <Image source={{ uri: p.uri }} style={styles.fill} resizeMode="cover" /> : null}
-                <StrokesView strokes={p.strokes} width={64} height={64} />
+                <StrokesView strokes={p.strokes} width={64} height={64} noPaper />
               </Pressable>
               <View style={{ flex: 1, minWidth: 0, height: 64, justifyContent: 'space-between' }}>
                 <Pressable onPress={() => { setI(k + FIRST_PAGE); setPagesOpen(false); }}>
@@ -900,9 +900,9 @@ function BucketIcon() {
   );
 }
 
-function UndoIcon() {
+function UndoIcon({ flip }) {
   return (
-    <View style={{ width: 22, height: 18 }}>
+    <View style={{ width: 22, height: 18, transform: flip ? [{ scaleX: -1 }] : undefined }}>
       <View style={{ position: 'absolute', left: 6, top: 2, width: 14, height: 14, borderTopWidth: 3, borderRightWidth: 3, borderBottomWidth: 3, borderColor: colors.white, borderTopRightRadius: 8, borderBottomRightRadius: 8 }} />
       <View style={{ position: 'absolute', left: 0, top: -2.5, width: 0, height: 0, borderTopWidth: 6.5, borderBottomWidth: 6.5, borderRightWidth: 8, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderRightColor: colors.white }} />
     </View>
@@ -926,9 +926,15 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const [erase, setErase] = useState(false);
   const [bucket, setBucket] = useState(false); // the paint bucket: a tap fills the shape with the colour
   const [area, setArea] = useState(null);
+  const [palette, setPalette] = useState('earthy'); // the earthy colours or the bright ones
+  const [mixing, setMixing] = useState(false); // Mix: a tapped colour is mixed into the pen's colour, like paint
+  const [mirror, setMirror] = useState(false); // Mirror: everything drawn appears flipped on the other side too
+  const [redo, setRedo] = useState([]); // strokes taken back with Undo, to put back with Redo
+  const lastWater = useRef(null); // the last watercolour stroke and when it was finished (still wet for a while)
   const S = useRef({});
-  S.current = { strokes, pen, size, erase, bucket, tall, brush, shape };
-  const toolsH = 340; // (two rows of colours; the brushes and the shapes take a row each)
+  S.current = { strokes, pen, size, erase, bucket, tall, brush, shape, mirror };
+  const toolsH = 390; // (two rows of colours, the colour row; the brushes, the sizes and the shapes take a row each)
+  const add = (st) => { setStrokes((s) => [...s, st]); setRedo([]); };
   const W = !area ? 0 : wideScreen ? Math.max(120, Math.floor(Math.min(area.h, area.w - TOOLS_W - 28)))
     : Math.max(120, Math.floor(Math.min(winW - 2 * GAP, tall ? (area.h - toolsH) / 2 : area.h - toolsH)));
   const Wref = useRef(W);
@@ -942,19 +948,22 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     onPanResponderGrant: (e) => {
       const [x, y] = at(e);
       if (S.current.bucket) {
-        const f = makeFill(S.current.strokes.filter((st) => !st.e), x, y, S.current.tall ? 2 : 1, S.current.pen);
-        if (f) setStrokes((s) => [...s, f]);
+        const f = makeFill(withMirrors(S.current.strokes.filter((st) => !st.e)), x, y, S.current.tall ? 2 : 1, S.current.pen);
+        if (f) add(S.current.mirror ? { ...f, m: 1 } : f);
         return;
       }
+      const m = S.current.mirror ? { m: 1 } : null;
       if (S.current.shape) {
-        cur.current = { c: S.current.pen, s: S.current.size, b: S.current.brush, z: 1, k: S.current.shape, o: [x, y], p: shapePts(S.current.shape, x, y, x, y) };
+        cur.current = { c: S.current.pen, s: S.current.size, b: S.current.brush, z: 1, k: S.current.shape, o: [x, y], p: shapePts(S.current.shape, x, y, x, y), ...m };
         setLive({ ...cur.current });
         return;
       }
       // the eraser: a soft round line that rubs out what is under it (a little wider than the pen)
+      // Apple Pencil: how hard it presses (0 to 1) is kept for each point; a finger has none (speed sets the width)
+      const force = e.nativeEvent.force || 0;
       cur.current = S.current.erase
-        ? { e: 1, c: '#000000', s: Math.max(0.035, S.current.size * 2.2), p: [+x.toFixed(4), +y.toFixed(4)] }
-        : { c: S.current.pen, s: S.current.size, b: S.current.brush, p: [+x.toFixed(4), +y.toFixed(4)] };
+        ? { e: 1, c: '#000000', s: Math.max(0.035, S.current.size * 2.2), p: [+x.toFixed(4), +y.toFixed(4)], ...m }
+        : { c: S.current.pen, s: S.current.size, b: S.current.brush, p: [+x.toFixed(4), +y.toFixed(4)], ...(force > 0 ? { q: [+force.toFixed(2)] } : null), ...m };
       setLive({ ...cur.current });
     },
     onPanResponderMove: (e) => {
@@ -966,7 +975,8 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       const n = c.p.length;
       if ((c.p[n - 2] - x) ** 2 + (c.p[n - 1] - y) ** 2 < 0.004 ** 2) return;
       c.p.push(+x.toFixed(4), +y.toFixed(4));
-      setLive({ ...c, p: [...c.p] });
+      if (c.q) c.q.push(+(e.nativeEvent.force || 0).toFixed(2));
+      setLive({ ...c, p: [...c.p], q: c.q ? [...c.q] : undefined });
     },
     onPanResponderRelease: () => {
       const c = cur.current;
@@ -975,26 +985,62 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
         const { o, k, ...keep } = c;
         const p = keep.p; let w = 0;
         for (let i = 2; i < p.length; i += 2) w = Math.max(w, Math.abs(p[i] - p[0]), Math.abs(p[i + 1] - p[1]));
-        if (w > 0.02) setStrokes((s) => [...s, keep]);
+        if (w > 0.02) add(keep);
         return;
       }
-      if (c) setStrokes((s) => [...s, c]);
+      if (!c) return;
+      if (c.q && !c.q.some((v) => v > 0)) delete c.q;
+      // watercolour over a wash that's still wet (painted in the last few seconds, where they overlap): it bleeds
+      // softly into it and the colours mix
+      if (c.b === 'water' && !c.e) {
+        const box = (st) => { let a = 9, b = 9, cc = -9, d = -9; const p = st.p || []; for (let i = 0; i < p.length; i += 2) { a = Math.min(a, p[i]); cc = Math.max(cc, p[i]); b = Math.min(b, p[i + 1]); d = Math.max(d, p[i + 1]); } const r = (st.s || 0.01) * 1.2; return [a - r, b - r, cc + r, d + r]; };
+        const L = lastWater.current;
+        if (L && Date.now() - L.t < 12000) {
+          const A = box(c), B = box(L.st);
+          if (A[0] < B[2] && B[0] < A[2] && A[1] < B[3] && B[1] < A[3]) c.wet = 1;
+        }
+        lastWater.current = { st: c, t: Date.now() };
+      }
+      add(c);
     },
   })).current;
   const paper = (
     <View {...pad.panHandlers} style={[styles.drawPaper, { width: W, height: tall ? W * 2 : W }]}>
       {photo ? <Image source={{ uri: photo }} style={StyleSheet.absoluteFill} resizeMode="cover" pointerEvents="none" /> : null}
-      <StrokesView strokes={strokes} live={live} width={W} height={tall ? W * 2 : W} />
+      <StrokesView strokes={strokes} live={live} width={W} height={tall ? W * 2 : W} noPaper={!!photo} />
+      {/* Mirror: a faint line down the middle, where the two sides meet */}
+      {mirror ? <View pointerEvents="none" style={{ position: 'absolute', left: W / 2 - 0.5, top: 0, bottom: 0, borderLeftWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(0,0,0,0.22)' }} /> : null}
     </View>
   );
+  const COLS = palette === 'bright' ? PENS_BRIGHT : PENS;
+  const pick = (hex) => { setPen((p) => (mixing ? mixColours(p, hex) : hex)); setErase(false); };
   const swatches = (w, perRow) => (
     <View style={{ width: w, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', columnGap: perRow ? 0 : 7, rowGap: 14 }}>{/* the colours close together */}
-      {PENS.map(([hex, name]) => (
+      {COLS.map(([hex, name]) => (
         <View key={hex} style={{ width: perRow ? w / perRow : undefined, alignItems: perRow ? 'center' : undefined }}>
-          <Pressable onPress={() => { setPen(hex); setErase(false); }} accessibilityLabel={t('{name} pen', { name: t(name) })}
-            style={[styles.swatch, { backgroundColor: hex }, !erase && pen === hex && styles.swatchOn]} />
+          <Pressable onPress={() => pick(hex)} accessibilityLabel={mixing ? t('Mix in {name}', { name: t(name) }) : t('{name} pen', { name: t(name) })}
+            style={[styles.swatch, { backgroundColor: hex }, !erase && !mixing && pen === hex && styles.swatchOn]} />
         </View>
       ))}
+    </View>
+  );
+  // the colour row: the pen's colour now (mixed colours show here), Mix, the other palette, and Mirror
+  const other = palette === 'bright' ? PENS : PENS_BRIGHT;
+  const colourRow = (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      <View accessibilityLabel={t('The colour you are drawing with')} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: pen, borderWidth: 3, borderColor: colors.white }} />
+      <Pressable onPress={() => setMixing((x) => !x)} style={[styles.toolWide, mixing && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mix colours')}>
+        <Text style={styles.toolText}>{t('Mix')}</Text>
+      </Pressable>
+      {/* the other palette: four of its colours, tap to switch */}
+      <Pressable onPress={() => setPalette((p) => (p === 'bright' ? 'earthy' : 'bright'))} style={[styles.tool, { flexDirection: 'row', flexWrap: 'wrap', width: 38, padding: 8, gap: 2 }]} accessibilityRole="button"
+        accessibilityLabel={palette === 'bright' ? t('Earthy colours') : t('Bright colours')}>
+        {[2, 9, 13, 4].map((i) => <View key={i} style={{ width: 9, height: 9, borderRadius: 4.5, backgroundColor: other[i][0] }} />)}
+      </Pressable>
+      <View style={{ flex: 1 }} />
+      <Pressable onPress={() => setMirror((x) => !x)} style={[styles.toolWide, mirror && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mirror drawing')}>
+        <Text style={styles.toolText}>{t('Mirror')}</Text>
+      </Pressable>
     </View>
   );
   const sizesEl = (
@@ -1030,7 +1076,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const brushesEl = (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
       {BRUSHES.map(([k, name]) => (
-        <Pressable key={k} onPress={() => { setBrush(k); setErase(false); setBucket(false); }} style={[styles.toolWide, !erase && !bucket && brush === k && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t(name)}>
+        <Pressable key={k} onPress={() => { setBrush(k); setErase(false); setBucket(false); }} style={[styles.toolWide, { paddingHorizontal: 9 }, !erase && !bucket && brush === k && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t(name)}>
           <Text style={styles.toolText}>{t(name)}</Text>
         </Pressable>
       ))}
@@ -1038,10 +1084,13 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   );
   const undoEl = (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-      <Pressable onPress={() => setStrokes((s) => s.slice(0, -1))} disabled={!strokes.length} style={[styles.tool, !strokes.length && { opacity: 0.35 }]} accessibilityLabel={t('Undo')}>
+      <Pressable onPress={() => { const last = strokes[strokes.length - 1]; if (!last) return; setStrokes(strokes.slice(0, -1)); setRedo((r) => [...r, last]); }} disabled={!strokes.length} style={[styles.tool, !strokes.length && { opacity: 0.35 }]} accessibilityLabel={t('Undo')}>
         <UndoIcon />
       </Pressable>
-      <Pressable onPress={() => setStrokes([])} disabled={!strokes.length} style={[styles.toolWide, !strokes.length && { opacity: 0.35 }]} accessibilityLabel={t('Clear the drawing')}>
+      <Pressable onPress={() => { const back = redo[redo.length - 1]; if (!back) return; setRedo(redo.slice(0, -1)); setStrokes((s) => [...s, back]); }} disabled={!redo.length} style={[styles.tool, !redo.length && { opacity: 0.35 }]} accessibilityLabel={t('Redo')}>
+        <UndoIcon flip />
+      </Pressable>
+      <Pressable onPress={() => { setStrokes([]); setRedo([]); }} disabled={!strokes.length} style={[styles.toolWide, !strokes.length && { opacity: 0.35 }]} accessibilityLabel={t('Clear the drawing')}>
         <Text style={styles.toolText}>{t('Clear')}</Text>
       </Pressable>
     </View>
@@ -1060,11 +1109,12 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
             <View style={{ gap: 22 }}>
               {/* the colours in two rows of eight, starting at the same left edge as the buttons below */}
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 3, rowGap: 8, width: 8 * 26 }}>
-                {PENS.map(([hex, name]) => (
-                  <Pressable key={hex} onPress={() => { setPen(hex); setErase(false); }} accessibilityLabel={t('{name} pen', { name: t(name) })} hitSlop={3}
-                    style={[styles.swatch, { width: 23, height: 23, borderRadius: 11.5, backgroundColor: hex }, !erase && pen === hex && styles.swatchOn]} />
+                {COLS.map(([hex, name]) => (
+                  <Pressable key={hex} onPress={() => pick(hex)} accessibilityLabel={mixing ? t('Mix in {name}', { name: t(name) }) : t('{name} pen', { name: t(name) })} hitSlop={3}
+                    style={[styles.swatch, { width: 23, height: 23, borderRadius: 11.5, backgroundColor: hex }, !erase && !mixing && pen === hex && styles.swatchOn]} />
                 ))}
               </View>
+              {colourRow}
               {brushesEl}
               {sizesEl}
               {shapesEl}
@@ -1087,6 +1137,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
               {paper}
               <View style={{ width: W, marginTop: 30, gap: 24 }}>{/* the tools line up with the page's left and right edges */}
                 {swatches(W, 8)}
+                {colourRow}
                 {brushesEl}
                 {sizesEl}
                 {shapesEl}

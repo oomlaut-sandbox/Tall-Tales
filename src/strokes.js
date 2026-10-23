@@ -26,6 +26,37 @@ export const PENS = [
   ['#2f4a4c', 'Deep teal'], ['#5f7672', 'Slate'], ['#93a08f', 'Sage'], ['#8a7660', 'Taupe'],
   ['#d2ab86', 'Sand'], ['#b98a3e', 'Ochre'], ['#9a4f36', 'Rust'], ['#4e3125', 'Umber'],
 ];
+// the bright colours, for children: two rows of eight, the other palette (switch between them under the page)
+export const PENS_BRIGHT = [
+  ['#ffffff', 'White'], ['#111111', 'Black'], ['#e53935', 'Red'], ['#fb8c00', 'Orange'],
+  ['#fdd835', 'Yellow'], ['#9ccc3d', 'Lime'], ['#3a9a4a', 'Green'], ['#00a29a', 'Teal'],
+  ['#4fb0f0', 'Sky blue'], ['#1f5fc8', 'Blue'], ['#7e57c2', 'Purple'], ['#ec6fa8', 'Pink'],
+  ['#c2185b', 'Raspberry'], ['#ffb38a', 'Peach'], ['#8d5524', 'Brown'], ['#9e9e9e', 'Grey'],
+];
+
+// Mixing colours like paint (the Mix button): blue and yellow make green, red and yellow orange, white makes it
+// paler. Each colour is treated as how much light the paint lets through, and mixing multiplies those (a weighted
+// geometric mean in linear light), which is how pigments behave, not how light on a screen adds up.
+const lin = (v) => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+const unlin = (v) => Math.round(255 * Math.max(0, Math.min(1, v <= 0.0031308 ? v * 12.92 : 1.055 * v ** (1 / 2.4) - 0.055)));
+const rgbOf = (hex) => { const h = hex.replace('#', ''); const f = h.length === 3 ? h.split('').map((c) => c + c).join('') : h; return [0, 2, 4].map((i) => parseInt(f.slice(i, i + 2), 16)); };
+export function mixColours(a, b, k = 0.35) {
+  const A = rgbOf(a), B = rgbOf(b);
+  const out = A.map((va, i) => {
+    const x = Math.max(0.012, lin(va)), y = Math.max(0.012, lin(B[i]));
+    return unlin(Math.exp((1 - k) * Math.log(x) + k * Math.log(y)));
+  });
+  return '#' + out.map((v) => v.toString(16).padStart(2, '0')).join('');
+}
+
+// Mirror drawing: a stroke kept with m: 1 is drawn twice, once as it was drawn and once flipped left to right.
+export function mirrored(st) {
+  if (st.f) { const g = st.g || 160, f = st.f.slice(); for (let i = 0; i < f.length; i += 3) { const a = g - f[i + 2], b = g - f[i + 1]; f[i + 1] = a; f[i + 2] = b; } return { ...st, m: 0, f }; }
+  const p = (st.p || []).slice(); for (let i = 0; i < p.length; i += 2) p[i] = +(1 - p[i]).toFixed(4);
+  return { ...st, m: 0, p };
+}
+// the strokes with every mirrored one doubled (for the paint bucket, which needs all the lines as walls)
+export const withMirrors = (list) => (list || []).flatMap((st) => (st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]));
 export const SIZES = [['thin', 0.007], ['medium', 0.015], ['thick', 0.032]]; // a sharp pencil, a crayon, a chunky crayon
 
 // is the point (x, y) close to any point of the stroke? (for the eraser)
@@ -138,7 +169,8 @@ export function inFill(st, x, y) {
 //          like a brush pen
 //   water: watercolour: soft, see-through, a little bleeding at the edges; where strokes cross they deepen
 //   pencil: a fine, slightly grainy line
-export const BRUSHES = [['ink', 'Ink'], ['water', 'Watercolour'], ['pencil', 'Pencil']];
+//   crayon: a waxy, broken line, like a wax crayon on paper
+export const BRUSHES = [['ink', 'Ink'], ['water', 'Watercolour'], ['pencil', 'Pencil'], ['crayon', 'Crayon']];
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 // the stroke's points in pixels, softened (corner cutting) so quick scribbles still come out as curves
@@ -172,7 +204,9 @@ export function inkD(st, w) {
   const step = (i) => (i ? Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]) : 0);
   for (let i = 0; i < n; i++) {
     v = i < 2 ? step(1) : v * 0.82 + step(i) * 0.18;
-    const f = clamp(1.28 - v / (base * 2.6 + 4), 0.45, 1.25);
+    // Apple Pencil: how hard it presses sets the width (q: the pressure at each point, 0 to 1); a finger: the speed
+    const qi = st.q && st.q.length ? st.q[Math.min(st.q.length - 1, Math.round((i / Math.max(1, n - 1)) * (st.q.length - 1)))] : null;
+    const f = qi != null ? clamp(0.3 + qi * 1.25, 0.3, 1.45) : clamp(1.28 - v / (base * 2.6 + 4), 0.45, 1.25);
     const a = st.z ? 1 : Math.min(1, 0.3 + 0.7 * (i / Math.min(6, n - 1)));
     const b = st.z ? 1 : Math.min(1, 0.18 + 0.82 * ((n - 1 - i) / Math.min(10, n - 1)));
     ws.push(base * (st.z ? 1 : f) * Math.min(a, b)); // (a shape: an even line all the way round)
@@ -205,6 +239,7 @@ export function inkD(st, w) {
 //   where it crosses other colour; grain: a slightly rough, pencil-like edge; inner: the blur only inside the
 //   edge (a darker rim, like dried watercolour; drawn on the phone only)
 export function layersFor(st, w) {
+  if (st.m) return [...layersFor({ ...st, m: 0 }, w), ...layersFor(mirrored(st), w)]; // mirror drawing: both sides
   // the eraser: a soft round line that rubs out what was drawn before it (down to the paper or the photo)
   if (st.e) return [{ d: strokeD(st, w), width: Math.max(2, (st.s || 0.05) * w), alpha: 1, erase: true }];
   if (st.f) return [{ d: fillD(st, w), fill: true, alpha: 0.94 }];
@@ -215,13 +250,30 @@ export function layersFor(st, w) {
     // a wash with a defined edge: the see-through body, the pigment gathering at its rim as it dries (an inner
     // glow on the phone), and a faint bloom where the water spread. Crossing strokes deepen (multiply).
     const d = strokeD(st, w);
+    // wet into wet (painted over a wash that hadn't dried yet): it runs softly into the colour under it, with no
+    // hard rim, and the two colours mix where they meet (multiply: blue into yellow turns green)
+    if (st.wet) return [
+      { d, width: lw * 2.1, alpha: light ? 0.3 : 0.1, blur: lw * 0.55, multiply: !light }, // the bleed
+      { d, width: lw * 1.45, alpha: light ? 0.55 : 0.3, blur: Math.max(1, lw * 0.2), multiply: !light }, // the body
+    ];
     return [
       { d, width: lw * 1.75, alpha: light ? 0.3 : 0.07, blur: lw * 0.3, multiply: !light }, // the bloom
       { d, width: lw * 1.4, alpha: light ? 0.55 : 0.26, blur: Math.max(0.6, lw * 0.05), multiply: !light }, // the body
       { d, width: lw * 1.4, alpha: light ? 0 : 0.42, blur: Math.max(1, lw * 0.14), multiply: !light, inner: true }, // the rim
     ];
   }
-  if (b === 'pencil') return [{ d: strokeD(st, w), width: Math.max(1, lw * 0.5), alpha: 0.82, grain: true }];
+  if (b === 'pencil') {
+    if (st.q && st.q.length) return [{ d: inkD({ ...st, s: (st.s || 0.01) * 0.55 }, w), fill: true, alpha: 0.82, grain: true }]; // Apple Pencil: pressing harder, a darker, wider line
+    return [{ d: strokeD(st, w), width: Math.max(1, lw * 0.5), alpha: 0.82, grain: true }];
+  }
+  // crayon: waxy and broken, two passes of a rough line that deepen where they cross; the paper's tooth shows through
+  if (b === 'crayon') {
+    const d = strokeD(st, w);
+    return [
+      { d, width: lw * 1.25, alpha: light ? 0.7 : 0.62, grain: 'crayon', multiply: !light },
+      { d, width: lw * 0.75, alpha: light ? 0.6 : 0.5, grain: 'crayon', multiply: !light },
+    ];
+  }
   return [{ d: inkD(st, w), fill: true, alpha: 1 }]; // (no blur: lighter to draw, so pages snapshot and turn smoothly)
 }
 
