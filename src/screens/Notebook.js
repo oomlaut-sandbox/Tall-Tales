@@ -971,6 +971,18 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const [recent, setRecent] = useState(['#1e2324', '#f1e8d8', '#2f4a4c', '#93a08f', '#b98a3e', '#9a4f36', '#4e3125']); // the seven colours in the pill: earthy to start (the bright ones are under +)
   const [more, setMore] = useState(false); // the + sheet: all the colours, Mix, Shapes, Mirror
   const [sizePop, setSizePop] = useState(null); // the tool whose sizes are showing
+  // after a size is picked the pill stays a moment, then dissolves
+  const sizeFade = useRef(new Animated.Value(1)).current;
+  const sizeTimer = useRef(null);
+  useEffect(() => { clearTimeout(sizeTimer.current); sizeFade.stopAnimation(); sizeFade.setValue(1); }, [sizePop]);
+  useEffect(() => () => clearTimeout(sizeTimer.current), []);
+  const pickSize = (sz) => {
+    setSize(sz);
+    clearTimeout(sizeTimer.current); sizeFade.stopAnimation(); sizeFade.setValue(1);
+    sizeTimer.current = setTimeout(() => {
+      Animated.timing(sizeFade, { toValue: 0, duration: 450, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(({ finished }) => { if (finished) setSizePop(null); });
+    }, 700);
+  };
   const lastWater = useRef(null); // the last watercolour stroke and when it was finished (still wet for a while)
   const S = useRef({});
   S.current = { strokes, pen, size, erase, bucket, tall, brush, shape, mirror };
@@ -1055,14 +1067,14 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const sizePopEl = () => {
     if (!sizePop) return null;
     return (
-      <View style={[styles.sizePop, { left: 10, bottom: 10 }]}>
+      <Animated.View style={[styles.sizePop, { left: 10, bottom: 10, opacity: sizeFade }]}>
         {SIZES.map(([name, sz]) => (
-          <Pressable key={name} onPress={() => { setSize(sz); setSizePop(null); }} hitSlop={6} accessibilityRole="button" accessibilityLabel={t('{name} pen', { name: t(name) })}
+          <Pressable key={name} onPress={() => pickSize(sz)} hitSlop={6} accessibilityRole="button" accessibilityLabel={t('{name} pen', { name: t(name) })}
             style={{ width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', backgroundColor: size === sz ? colors.green : 'transparent' }}>
             <View style={{ width: 5 + sz * 280, height: 5 + sz * 280, borderRadius: 20, backgroundColor: colors.white }} />
           </Pressable>
         ))}
-      </View>
+      </Animated.View>
     );
   };
   const paper = (
