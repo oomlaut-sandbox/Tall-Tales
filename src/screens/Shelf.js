@@ -176,6 +176,7 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
   const t = useT();
   const gardenAsked = useRef(false);
   const gardenPull = useRef(false);
+  if (typeof window !== 'undefined' && window.location && /garden/.test(window.location.hash || '')) window.__openGarden = onGarden; // (web preview screenshots)
   const controls = useControls(); // parental controls: My Notebook, Create a story and Select may be hidden
   const { width: winW } = useWindowDimensions();
   const [folderOpen, setFolderOpen] = useState(false); // My Folder, opened (the sheets)
