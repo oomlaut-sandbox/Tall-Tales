@@ -1300,7 +1300,7 @@ const styles = StyleSheet.create({
   outTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20 },
   outPill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
   countBox: { height: 30, minWidth: 74, paddingHorizontal: 12, borderRadius: 15, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
-  countText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 14, transform: [{ translateY: 1.5 }] }, // (Helvetica sits high: nudged down to look centred)
+  countText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 14 }, // (centred as it is on the phone)
   pageBox: { position: 'absolute', zIndex: 25, backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, flexDirection: 'row', alignItems: 'center', gap: 7 }, // like the recording box in the reader
   pageBoxLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 14 },
   pageBoxSub: { color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 13 },
@@ -1325,7 +1325,7 @@ const styles = StyleSheet.create({
   donePill: { backgroundColor: colors.green, height: 40, borderRadius: 20, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
   drawPaper: { backgroundColor: WHITE, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
   swatch: { width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: 'rgba(255,255,255,0.35)' },
-  panel: { backgroundColor: '#3c3c3c' }, // a dark grey, a little darker than Jörg's tool drawing
+  panel: { backgroundColor: 'rgba(0,0,0,0.62)' }, // black glass: the felt shows through softly
   trayName: { position: 'absolute', top: 2, width: 140, color: 'rgba(255,255,255,0.85)', fontFamily: fonts.ui, fontSize: 12 },
   currentBox: { width: 60, height: 60, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center',
     borderWidth: StyleSheet.hairlineWidth * 2, borderColor: 'rgba(255,255,255,0.18)', shadowColor: '#fff', shadowOpacity: 0.22, shadowRadius: 8, shadowOffset: { width: 0, height: 0 } },
