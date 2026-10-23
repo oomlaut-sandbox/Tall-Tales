@@ -55,6 +55,9 @@ export function mirrored(st) {
   const p = (st.p || []).slice(); for (let i = 0; i < p.length; i += 2) p[i] = +(1 - p[i]).toFixed(4);
   return { ...st, m: 0, p };
 }
+// The smudge: { sm: 1, s, p }: a fingertip rubbed over the drawing, blurring and blending what's under it. Its
+// shape (where it rubbed) as SVG path data, and how soft (the blur, in pixels).
+export const smudgeOf = (st, w) => ({ d: strokeD(st, w), width: Math.max(4, (st.s || 0.03) * w), blur: Math.max(2, (st.s || 0.03) * w * 0.35) });
 // the strokes with every mirrored one doubled (for the paint bucket, which needs all the lines as walls)
 export const withMirrors = (list) => (list || []).flatMap((st) => (st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]));
 export const SIZES = [['thin', 0.007], ['medium', 0.015], ['thick', 0.032]]; // a sharp pencil, a crayon, a chunky crayon
@@ -243,6 +246,7 @@ export function inkD(st, w, taper = 1, swing = 1) {
 //   where it crosses other colour; grain: a slightly rough, pencil-like edge; inner: the blur only inside the
 //   edge (a darker rim, like dried watercolour; drawn on the phone only)
 export function layersFor(st, w) {
+  if (st.sm) return []; // the smudge draws nothing of its own: it softens what's under it (see smudgeOutline)
   if (st.m) return [...layersFor({ ...st, m: 0 }, w), ...layersFor(mirrored(st), w)]; // mirror drawing: both sides
   // the eraser: a soft round line that rubs out what was drawn before it (down to the paper or the photo)
   if (st.e) return [{ d: strokeD(st, w), width: Math.max(2, (st.s || 0.05) * w), alpha: 1, erase: true }];
@@ -320,7 +324,7 @@ export function drawOrder(list) {
   const out = [];
   let seg = [];
   const flush = () => { out.push(...seg.filter((st) => st.f), ...seg.filter((st) => !st.f)); seg = []; };
-  for (const st of list || []) { if (st.e) { flush(); out.push(st); } else seg.push(st); }
+  for (const st of list || []) { if (st.e || st.sm) { flush(); out.push(st); } else seg.push(st); } // (the eraser and the smudge work on what came before them)
   flush();
   return out;
 }

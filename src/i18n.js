@@ -556,6 +556,7 @@ const T = {
   'Watercolour brush': { de: 'Pinsel', fr: 'Pinceau', es: 'Pincel', ja: 'えふで' },
   'Wax crayon': { de: 'Wachsmalstift', fr: 'Craie grasse', es: 'Cera', ja: 'クレヨン' },
   'Paint roller': { de: 'Farbroller', fr: 'Rouleau', es: 'Rodillo', ja: 'ローラー' },
+  'Smudge': { de: 'Verwischen', fr: 'Estomper', es: 'Difuminar', ja: 'ぼかす' },
   'Crayon': { de: 'Wachsmalstift', fr: 'Craie grasse', es: 'Cera', ja: 'クレヨン' },
   'Mix': { de: 'Mischen', fr: 'Mélanger', es: 'Mezclar', ja: 'まぜる' },
   'Mix colours': { de: 'Farben mischen', fr: 'Mélanger les couleurs', es: 'Mezclar colores', ja: 'いろを まぜる' },

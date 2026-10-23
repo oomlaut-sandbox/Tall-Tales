@@ -4,10 +4,10 @@
 // faint grain lies over the whole page. (The web preview uses Strokes.js.)
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { BlendMode, BlurMask, BlurStyle, Canvas, DiscretePathEffect, Group, ImageShader, PaintStyle, Path, Rect, Skia, StrokeCap, StrokeJoin, TileMode, useImage } from '@shopify/react-native-skia';
+import { BackdropBlur, BlendMode, BlurMask, BlurStyle, Canvas, ClipOp, DiscretePathEffect, Group, ImageShader, PaintStyle, Path, Rect, Skia, StrokeCap, StrokeJoin, TileMode, useImage } from '@shopify/react-native-skia';
 import { Asset } from 'expo-asset';
 import { File, Paths } from 'expo-file-system';
-import { drawOrder, layersFor } from '../strokes';
+import { drawOrder, layersFor, mirrored, smudgeOf } from '../strokes';
 
 const GRAIN = require('../../assets/paper-grain.png'); // 512 × 512, repeats without seams
 const TOOTH = require('../../assets/paper-tooth.png');
@@ -29,7 +29,7 @@ function Layer({ L, color }) {
 }
 // the strokes in drawing order, in runs: a run of textured strokes (pencil, crayon, watercolour) is drawn on its own
 // layer with the paper's tooth over it, so the ink of the fountain pen stays solid. tex: 0 none, 1 light, 2 strong
-const texOf = (st, w) => (st.e ? -1 : Math.max(0, ...layersFor(st, w).map((L) => L.tex || 0)));
+const texOf = (st, w) => (st.e || st.sm ? -1 : Math.max(0, ...layersFor(st, w).map((L) => L.tex || 0)));
 export function runsOf(list, w) {
   const runs = [];
   for (const st of list) {
@@ -41,7 +41,22 @@ export function runsOf(list, w) {
   return runs;
 }
 const TOOTH_OF = { 1: 0.45, 2: 0.7 }; // (gentle: the paper shows, it doesn't take over)
+// the smudge's shape as an outline Skia can clip to (the rubbed line, as wide as the fingertip)
+function smudgePath(st, w) {
+  const S = smudgeOf(st, w);
+  const p = Skia.Path.MakeFromSVGString(S.d);
+  if (!p) return null;
+  const out = p.copy();
+  out.stroke({ width: S.width, cap: StrokeCap.Round, join: StrokeJoin.Round });
+  return { path: out, blur: S.blur };
+}
+function Smudge({ st, width }) {
+  const parts = useMemo(() => (st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]).map((q) => smudgePath(q, width)).filter(Boolean), [st, width]);
+  // blurs what has been drawn so far, only where the finger rubbed
+  return <>{parts.map((P, i) => <BackdropBlur key={i} blur={P.blur} clip={P.path} />)}</>;
+}
 function One({ st, width }) {
+  if (st.sm) return <Smudge st={st} width={width} />;
   const layers = useMemo(() => layersFor(st, width), [st, width]);
   return <>{layers.filter((L) => L.alpha).map((L, i) => <Layer key={i} L={L} color={st.c} />)}</>;
 }
@@ -114,6 +129,18 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
   for (const r of runsOf(drawOrder(strokes), px)) {
    if (r.tex > 0) canvas.saveLayer();
    for (const st of r.list) {
+    if (st.sm) { // the smudge: blur what's there so far, inside where the finger rubbed
+      for (const q of st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]) {
+        const P = smudgePath(q, px);
+        if (!P) continue;
+        canvas.save();
+        canvas.clipPath(P.path, ClipOp.Intersect, true);
+        canvas.saveLayer(undefined, null, Skia.ImageFilter.MakeBlur(P.blur, P.blur, TileMode.Clamp, null));
+        canvas.restore();
+        canvas.restore();
+      }
+      continue;
+    }
     for (const L of layersFor(st, px)) {
       if (!L.alpha) continue;
       const path = Skia.Path.MakeFromSVGString(L.d);

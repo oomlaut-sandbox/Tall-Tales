@@ -2,7 +2,7 @@
 // Phones use Strokes.native.js.
 import React from 'react';
 import { View } from 'react-native';
-import { drawOrder, layersFor } from '../strokes';
+import { drawOrder, layersFor, smudgeOf } from '../strokes';
 
 const src = (m) => (typeof m === 'string' ? m : (m && (m.uri || m.default)) || '');
 const GRAIN = src(require('../../assets/paper-grain.png'));
@@ -17,7 +17,13 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
   const id = React.useMemo(() => `s${++uid}`, []);
   const defs = [];
   let paths = [];
-  all.forEach((st, i) => layersFor(st, width).filter((L) => L.alpha && !L.inner).forEach((L, j) => { // (the inner rim is drawn on the phone only)
+  all.forEach((st, i) => (st.sm ? (() => { // the smudge: a blurred copy of everything so far, shown only where the finger rubbed
+    const S = smudgeOf(st, width), mid = `${id}-s${i}`, fid = `${id}-sb${i}`;
+    defs.push(h('mask', { key: mid, id: mid, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width, height },
+      h('path', { d: S.d, fill: 'none', stroke: 'white', strokeWidth: S.width, strokeLinecap: 'round', strokeLinejoin: 'round' })));
+    defs.push(h('filter', { key: fid, id: fid, x: '-10%', y: '-10%', width: '120%', height: '120%' }, h('feGaussianBlur', { stdDeviation: S.blur })));
+    paths = [h('g', { key: `${mid}-a` }, paths), h('g', { key: `${mid}-b`, mask: `url(#${mid})` }, h('g', { filter: `url(#${fid})` }, paths))];
+  })() : layersFor(st, width).filter((L) => L.alpha && !L.inner).forEach((L, j) => { // (the inner rim is drawn on the phone only)
     if (L.erase) { // the eraser: everything so far goes into a group, masked where it rubbed
       const mid = `${id}-m${i}`;
       defs.push(h('mask', { key: mid, id: mid, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width, height },
@@ -33,7 +39,7 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
       strokeLinecap: 'round', strokeLinejoin: 'round', opacity: L.alpha, filter: fid ? `url(#${fid})` : undefined,
       style: L.multiply ? { mixBlendMode: 'multiply' } : undefined, strokeDasharray: L.grain === 'crayon' ? '3 1.4' : L.grain ? '6 0.6' : undefined,
     }));
-  }));
+  })));
   const tile = TILE * width;
   defs.push(h('filter', { key: 'tooth', id: `${id}-tooth`, x: 0, y: 0, width, height, filterUnits: 'userSpaceOnUse' },
     h('feImage', { href: TOOTH, x: 0, y: 0, width: tile, height: tile, preserveAspectRatio: 'none', result: 't' }),

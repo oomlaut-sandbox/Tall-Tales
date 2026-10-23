@@ -990,7 +990,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       setSizePop(null); setMore(false); // drawing puts away the sizes and the + sheet
       const [x, y] = at(e);
       if (S.current.bucket) {
-        const f = makeFill(withMirrors(S.current.strokes.filter((st) => !st.e)), x, y, S.current.tall ? 2 : 1, S.current.pen);
+        const f = makeFill(withMirrors(S.current.strokes.filter((st) => !st.e && !st.sm)), x, y, S.current.tall ? 2 : 1, S.current.pen);
         if (f) add(S.current.mirror ? { ...f, m: 1 } : f);
         return;
       }
@@ -1003,7 +1003,9 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       // the eraser: a soft round line that rubs out what is under it (a little wider than the pen)
       // Apple Pencil: how hard it presses (0 to 1) is kept for each point; a finger has none (speed sets the width)
       const force = e.nativeEvent.force || 0;
-      cur.current = S.current.erase
+      cur.current = S.current.brush === 'smudge' && !S.current.erase
+        ? { sm: 1, c: '#000000', s: Math.max(0.03, S.current.size * 2.4), p: [+x.toFixed(4), +y.toFixed(4)], ...m } // a fingertip, rubbing
+        : S.current.erase
         ? { e: 1, c: '#000000', s: Math.max(0.035, S.current.size * 2.2), p: [+x.toFixed(4), +y.toFixed(4)], ...m }
         : { c: S.current.pen, s: S.current.size, b: S.current.brush, p: [+x.toFixed(4), +y.toFixed(4)], ...(force > 0 ? { q: [+force.toFixed(2)] } : null), ...m };
       setLive({ ...cur.current });
@@ -1120,8 +1122,8 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   );
   // the tools in a tray, like real ones on a desk (the one in your hand stands up higher): an eraser, a pencil, a
   // fountain pen (ink), a watercolour brush, a wax crayon and a paint roller (fill), as Jörg rendered them
-  const TRAY = [['eraser', 'Eraser'], ['pencil', 'Pencil'], ['pen', 'Ink'], ['water', 'Watercolour'], ['crayon', 'Crayon'], ['roller', 'Fill']];
-  const BRUSH_OF = { pencil: 'pencil', pen: 'ink', water: 'water', crayon: 'crayon' };
+  const TRAY = [['eraser', 'Eraser'], ['pencil', 'Pencil'], ['pen', 'Ink'], ['water', 'Watercolour'], ['smudge', 'Smudge'], ['roller', 'Fill']];
+  const BRUSH_OF = { pencil: 'pencil', pen: 'ink', water: 'water', smudge: 'smudge' };
   const onTool = erase ? 'eraser' : bucket ? 'roller' : Object.keys(BRUSH_OF).find((k) => BRUSH_OF[k] === brush) || 'pen';
   const pickTool = (k) => {
     if (k === onTool && k !== 'roller') { setSizePop((x) => (x ? null : k)); return; } // the one in your hand: its sizes
@@ -1132,7 +1134,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   };
   // the tools stand in a row on dark grey, as in Jörg's drawing; the one in your hand gets a fine box with its name above
   const TRAY_H = 158, BOX_TOP = 22, TOOL_GAP = 16;
-  const TRAY_NAMES = { eraser: 'Eraser', pencil: 'Pencil', pen: 'Fountain pen', water: 'Watercolour brush', crayon: 'Wax crayon', roller: 'Paint roller' };
+  const TRAY_NAMES = { eraser: 'Eraser', pencil: 'Pencil', pen: 'Fountain pen', water: 'Watercolour brush', smudge: 'Smudge', roller: 'Paint roller' };
   const trayEl = (w) => {
     const tw = Math.floor((w - 20) / TRAY.length), th = (TRAY_H - BOX_TOP - TOOL_GAP) * 1.5;
     return (
