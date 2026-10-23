@@ -26,14 +26,17 @@ const SPOTS = [
   { game: 'pebbles', box: [0.1, 0.74, 0.37, 0.9], label: 'The rocks' }, // the big rock pile at the bottom
   { game: 'sticks', box: [0.57, 0.1, 0.86, 0.28], label: 'The woodpile' }, // the sticks on the picnic table
   { game: 'sticks', box: [0.14, 0.08, 0.25, 0.13], label: 'The woodpile' }, // the wooden crate by the gate
+  { game: 'home', box: [0.38, 0.0, 0.53, 0.09], label: 'My Library' }, // the gate at the top: back to the books
+  { game: 'home', box: [0.5, 0.88, 0.7, 0.96], label: 'My Library' }, // the gate at the bottom
   { game: 'pinwheel', box: [0.1, 0.3, 0.5, 0.46], label: 'The flowers' }, // the flower meadow along the path
 ];
 
-export default function Garden({ u, openMenu, toast }) {
+export default function Garden({ u, openMenu, toast, onHome }) {
   const t = useT();
   const [game, setGame] = useState(null);
   const [area, setArea] = useState(null);
   const open = (g) => {
+    if (g === 'home') { onHome && onHome(); return; }
     setGame(g);
   };
   const [tod, setTod] = useState(timeOfDay());
@@ -92,7 +95,7 @@ function Pebbles({ area, onBack }) {
   const handIn = useRef(new Animated.Value(1)).current;
   const drag = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
   const [stones, setStones] = useState([]);
-  const S = useRef({}); S.current = { hand, W, H, base, handX, handY };
+  const S = useRef({}); S.current = { ...S.current, hand, W, H, base, handX, handY, stones };
 
   const throwTo = (fromX, fromY, toX, toY, power) => {
     const { hand: k, H: h, base: b } = S.current;
@@ -103,7 +106,7 @@ function Pebbles({ area, onBack }) {
     const settle = new Animated.Value(0);
     const rot = Math.round((Math.random() - 0.5) * 140);
     const id = nextId++;
-    const st = { id, k, x: toX, y: toY, size: s1, p, settle, fromX, fromY, s0: b, rot, arc: 70 + 160 * power, fade: new Animated.Value(1) };
+    const st = { id, k, x: toX, y: toY, size: s1, p, settle, fromX, fromY, s0: b, rot, arc: 70 + 160 * power, fade: new Animated.Value(1), mv: new Animated.ValueXY({ x: 0, y: 0 }), lift: new Animated.Value(0), ox: 0, oy: 0, landed: false };
     setStones((list) => {
       const out = [...list, st];
       if (out.length > MAX_ON_BEACH) { const old = out[0]; Animated.timing(old.fade, { toValue: 0, duration: 600, useNativeDriver: true }).start(() => setStones((l) => l.filter((x) => x.id !== old.id))); }
@@ -111,6 +114,7 @@ function Pebbles({ area, onBack }) {
     });
     const dur = 480 + 320 * power;
     Animated.timing(p, { toValue: 1, duration: dur, easing: Easing.linear, useNativeDriver: true }).start(() => {
+      st.landed = true;
       playPebble(0.55 + 0.45 * power);
       Animated.sequence([
         Animated.timing(settle, { toValue: 1, duration: 90, easing: Easing.out(Easing.quad), useNativeDriver: true }),
@@ -127,9 +131,39 @@ function Pebbles({ area, onBack }) {
   const pan = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: () => true,
-    onPanResponderGrant: (e) => { S.current.start = { x: e.nativeEvent.locationX, y: e.nativeEvent.locationY, onHand: Math.hypot(e.nativeEvent.locationX - S.current.handX, e.nativeEvent.locationY - S.current.handY) < S.current.base }; },
-    onPanResponderMove: (e, g) => { if (S.current.start && S.current.start.onHand) drag.setValue({ x: g.dx, y: g.dy }); },
+    onPanResponderGrant: (e) => {
+      const x = e.nativeEvent.locationX, y = e.nativeEvent.locationY;
+      const onHand = Math.hypot(x - S.current.handX, y - S.current.handY) < S.current.base;
+      // a pebble already on the beach: pick it up to move it (the top one under the finger)
+      let held = null;
+      if (!onHand) {
+        const list = S.current.stones || [];
+        for (let n = list.length - 1; n >= 0; n--) {
+          const q = list[n];
+          if (q.landed && Math.hypot(x - (q.x + q.ox), y - (q.y + q.oy)) < q.size * 0.55) { held = q; break; }
+        }
+      }
+      S.current.start = { x, y, onHand, held };
+      if (held) {
+        setStones((l) => [...l.filter((q) => q.id !== held.id), held]); // on top of the others
+        Animated.timing(held.lift, { toValue: 1, duration: 120, useNativeDriver: true }).start();
+      }
+    },
+    onPanResponderMove: (e, g) => {
+      const st = S.current.start;
+      if (!st) return;
+      if (st.held) { st.held.mv.setValue({ x: st.held.ox + g.dx, y: st.held.oy + g.dy }); return; }
+      if (st.onHand) drag.setValue({ x: g.dx, y: g.dy });
+    },
     onPanResponderRelease: (e, g) => {
+      const held = S.current.start && S.current.start.held;
+      if (held) { // set it down where it is now
+        held.ox += g.dx; held.oy += g.dy;
+        held.mv.setValue({ x: held.ox, y: held.oy });
+        Animated.timing(held.lift, { toValue: 0, duration: 140, useNativeDriver: true }).start();
+        if (Math.hypot(g.dx, g.dy) > 6) playPebble(0.35);
+        return;
+      }
       const { W: w, H: h, handX: hx, handY: hy } = S.current;
       const st = S.current.start || {};
       const fromX = st.onHand ? hx + g.dx : hx, fromY = st.onHand ? hy + g.dy : hy;
@@ -174,10 +208,14 @@ function Pebbles({ area, onBack }) {
           const squash = st.settle.interpolate({ inputRange: [0, 1], outputRange: [1, 0.9] });
           const rot = st.p.interpolate({ inputRange: [0, 1], outputRange: [`${st.rot * 3}deg`, `${st.rot}deg`] });
           return (
-            <Animated.View key={st.id} pointerEvents="none" style={{ position: 'absolute', left: st.x - w / 2, top: st.y - hh / 2, width: w, height: hh, opacity: st.fade }}>
-              {/* its shadow on the beach: far below it while it flies, tucked under it once it lands */}
-              <Animated.Image source={img} style={{ position: 'absolute', left: w * 0.06, top: hh * 0.1, width: w, height: hh, tintColor: '#000',
-                opacity: st.p.interpolate({ inputRange: [0, 1], outputRange: [0.15, 0.6] }), transform: [{ translateX: tx }, { translateY: groundY }, { scale }, { rotate: rot }] }} />
+            <Animated.View key={st.id} pointerEvents="none" style={{ position: 'absolute', left: st.x - w / 2, top: st.y - hh / 2, width: w, height: hh, opacity: st.fade,
+              transform: [{ translateX: st.mv.x }, { translateY: st.mv.y }, { scale: st.lift.interpolate({ inputRange: [0, 1], outputRange: [1, 1.08] }) }] }}>
+              {/* its shadow on the beach: far below it while it flies, tucked under it once it lands; further away while it's held */}
+              <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: w, height: hh,
+                transform: [{ translateX: st.lift.interpolate({ inputRange: [0, 1], outputRange: [w * 0.07, w * 0.14] }) }, { translateY: st.lift.interpolate({ inputRange: [0, 1], outputRange: [hh * 0.11, hh * 0.22] }) }] }}>
+                <Animated.Image source={img} blurRadius={5} style={{ width: w, height: hh, tintColor: '#000',
+                  opacity: st.p.interpolate({ inputRange: [0, 1], outputRange: [0.2, 0.75] }), transform: [{ translateX: tx }, { translateY: groundY }, { scale }, { rotate: rot }] }} />
+              </Animated.View>
               <Animated.Image source={img} style={{ width: w, height: hh, transform: [{ translateX: tx }, { translateY: ty }, { scale }, { scaleY: squash }, { rotate: rot }] }} />
             </Animated.View>
           );
@@ -185,7 +223,7 @@ function Pebbles({ area, onBack }) {
         {/* the pebble in the hand, waiting at the bottom */}
         <Animated.View pointerEvents="none" style={{ position: 'absolute', left: handX - (handStone[1] * hk) / 2, top: handY - (handStone[2] * hk) / 2,
           transform: [{ translateX: drag.x }, { translateY: drag.y }, { scale: handIn }] }}>
-          <Image source={handStone[0]} style={{ position: 'absolute', left: 6, top: 10, width: handStone[1] * hk, height: handStone[2] * hk, tintColor: '#000', opacity: 0.42 }} />
+          <Image source={handStone[0]} blurRadius={5} style={{ position: 'absolute', left: 9, top: 14, width: handStone[1] * hk, height: handStone[2] * hk, tintColor: '#000', opacity: 0.7 }} />
           <Image source={handStone[0]} style={{ width: handStone[1] * hk, height: handStone[2] * hk }} />
         </Animated.View>
       </View>

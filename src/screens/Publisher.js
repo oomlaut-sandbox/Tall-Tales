@@ -56,7 +56,7 @@ export function CenteredField({ value, onChangeText, placeholder, onFocus, onBlu
     <Pressable onPress={() => ref.current && ref.current.focus()} style={[{ justifyContent: 'center' }, box]} accessible={false}>
       <TextInput ref={ref} value={value} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor="#8a8a8a"
         onFocus={onFocus} onBlur={onBlur} returnKeyType="done" onSubmitEditing={() => Keyboard.dismiss()}
-        allowFontScaling={false} style={[{ alignSelf: 'stretch', height: Math.ceil(fs * 1.25), paddingVertical: 0, paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 }, text]} accessibilityLabel={placeholder} />
+        allowFontScaling={false} style={[{ alignSelf: 'stretch', height: Math.ceil(fs * 1.6), paddingVertical: 0, paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 }, text]} accessibilityLabel={placeholder} />
     </Pressable>
   );
 }

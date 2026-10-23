@@ -350,7 +350,7 @@ function Root() {
         {screen === 'playlists' && <Playlists u={u} openMenu={openMenu} shelf={childShelf} onPlay={playPlaylist} onDone={() => go('library')} />}
         {screen === 'settings' && <Settings u={u} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
           controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} onProfiles={() => go('profiles')} onPlaylists={() => go('playlists')} />}
-        {screen === 'garden' && <Garden u={u} openMenu={openMenu} toast={toast} />}
+        {screen === 'garden' && <Garden u={u} openMenu={openMenu} toast={toast} onHome={() => go('library')} />}
         {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} />}
         {screen === 'ideas' && <IdeaRoom u={u} openMenu={openMenu} onMake={() => openPublisher(null)} onHelp={() => go('help')} />}
         {screen === 'covertest' && <CoverTest u={u} openMenu={openMenu} />}
