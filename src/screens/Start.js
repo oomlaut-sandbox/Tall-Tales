@@ -14,7 +14,7 @@ import React, { useContext, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, DeskFelt, Felt } from '../look';
-// The felt Coro Reader logo on the desk where the cover opens, so the open cover hides it.
+// The felt coro. Reader logo (Jörg's felt letters, with the felt Reader from the old logo) on the desk where the cover opens, so the open cover hides it.
 // To undo: set SHOW_DESK_LOGO to false (or remove these lines and assets/logo-felt.png).
 const SHOW_DESK_LOGO = true;
 const DESK_LOGO = require('../../assets/logo-felt.png'); // 1233 x 434
@@ -168,8 +168,9 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
                   const m = Math.max(0, (winW - L.leftW - L.rightW - 2 * side) / 2); // the felt left of the book
                   const w0 = side * 0.86, a = m + (side - w0) / 2 + w0 * 26 / 1233; // felt left of the letters now
                   const vis = Math.max(side * 0.4, m + side - 2 * a); // the letters' width, equal felt each side
-                  const w = vis * 1233 / 1192;
-                  return <Image source={DESK_LOGO} resizeMode="contain" style={{ position: 'absolute', left: a - m - w * 26 / 1233, width: w, height: w * 434 / 1233 }} accessibilityLabel="Coro Reader" />;
+                  const w = vis * 1233 / 1192; // the same size the old oomlaut logo had here, so the letters keep their height
+                  const cw = w * 601 / 1233; // coro's letters: 316 to 917 of 1233, centred in that room
+                  return <Image source={DESK_LOGO} resizeMode="contain" style={{ position: 'absolute', left: a - m + (vis - cw) / 2 - w * 316 / 1233, width: w, height: w * 434 / 1233 }} accessibilityLabel="Coro Reader" />;
                 })()}
               </View>
             ) : null}
