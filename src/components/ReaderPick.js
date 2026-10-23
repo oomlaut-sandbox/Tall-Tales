@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   chipOn: { backgroundColor: colors.green },
   chipText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 15 },
   field: { backgroundColor: '#161616', height: 52, borderRadius: 14, paddingHorizontal: 16, justifyContent: 'center', marginTop: 20 },
-  input: { alignSelf: 'stretch', flex: 1, color: colors.white, fontFamily: fonts.ui, fontSize: 17, paddingVertical: 0, paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 }, // fills the box: iOS centres the words
+  input: { alignSelf: 'stretch', height: 22, color: colors.white, fontFamily: fonts.ui, fontSize: 17, paddingVertical: 0, paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 }, // exactly one line tall; the box centres it
   photoRow: { flexDirection: 'row', alignItems: 'center', gap: 18, marginTop: 22 },
   photoBtn: { height: 32, borderRadius: 16, paddingHorizontal: 14, backgroundColor: '#3d3d40', alignItems: 'center', justifyContent: 'center' },
   photoText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 13 },

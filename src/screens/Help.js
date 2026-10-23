@@ -245,10 +245,9 @@ const styles = StyleSheet.create({
   videoPlay: { color: 'rgba(255,255,255,0.85)', fontSize: 34 },
   videoText: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 14 },
   searchWrap: { height: 44, borderRadius: 22, overflow: 'hidden', backgroundColor: '#d6d6d6', justifyContent: 'center' }, // light grey
-  // the field fills the pill exactly (alignSelf stretch, the pill's height) with no padding top or bottom and no
-  // lineHeight: a single-line iPhone field then centres its own words. (A field only as tall as its words grew
-  // with the phone's text size and slipped down; the words no longer scale with it either.)
-  search: { alignSelf: 'stretch', flex: 1, backgroundColor: 'transparent', paddingHorizontal: 18, paddingVertical: 0, includeFontPadding: false,
+  // the field is exactly one line tall (fontSize 16 → 20) and the pill centres it: a field filling the pill put its
+  // words low on the iPhone. No padding top or bottom, no lineHeight, not scaled with the phone's text size.
+  search: { alignSelf: 'stretch', height: 20, backgroundColor: 'transparent', paddingHorizontal: 18, paddingVertical: 0, includeFontPadding: false,
     fontFamily: fonts.ui, fontSize: 16, color: colors.ink, outlineWidth: 0 },
   goCircle: { width: 21, height: 21, borderRadius: 10.5, borderWidth: 1.5, borderColor: colors.white, alignItems: 'center', justifyContent: 'center' },
   goChevron: { width: 6, height: 6, borderRightWidth: 1.6, borderTopWidth: 1.6, borderColor: colors.white, transform: [{ translateX: -1.3 }, { rotate: '45deg' }] },

@@ -16,14 +16,12 @@ export default function About({ u, openMenu, onSecret }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
-  // the words run the width of the page; Skippy stands on his own at the bottom right and stays put
-  // (the words leave room for him at the end, so the last lines never sit behind him)
+  // one thin column of words (never stretched across a wide iPad), with Skippy standing under it at its right,
+  // with room all round him: he is part of the page, so the words never run behind him
   const skW = Math.min(150, Math.round(winW * 0.32));
   const skH = Math.round(skW * 600 / 449);
-  // phones: slightly smaller words so it all fits; the last paragraph runs beside Skippy, like a wrap
   const phone = winW < 600;
   const textStyle = phone ? (winH < 740 ? { fontSize: 14.5, lineHeight: 20 } : { fontSize: 17, lineHeight: 24 }) : null;
-  const beside = { marginRight: skW + 16 }; // a little narrower, so Skippy has room
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
@@ -38,20 +36,20 @@ export default function About({ u, openMenu, onSecret }) {
         <Text style={styles.tagline}>{t('Picture books in your voice.')}</Text>
       </View>
       <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={[styles.body, { paddingBottom: 24 }, phone && winH < 740 && { paddingTop: 22, gap: 12 }]}>
+      <ScrollView contentContainerStyle={[styles.body, { maxWidth: 520 }, { paddingBottom: 24 }, phone && winH < 740 && { paddingTop: 22, gap: 12 }]}>
         <Text style={[styles.p, textStyle]}>
           {t('Oomlaut Reader is a home for beautifully illustrated stories, made for children who are learning to read and the grown-ups who read with them.')}
         </Text>
         <Text style={[styles.p, textStyle]}>
           {t('Every book can be read aloud by a warm narrator, with each word lighting up as it’s spoken. In Learn to Read mode, children tap any word to hear it sounded out, one part at a time. Parents can record themselves reading each page, so a favourite story can be heard in a familiar voice, any time. And families can make their own books, with their own pictures and words.')}
         </Text>
-        <Text style={[styles.p, textStyle, beside]}>{t('Oomlaut is always looking for new picture books. If you’ve written or illustrated a story, send it to us and join the Oomlaut author community. Visit oomlaut.com for more information.')}</Text>
-        <Text style={[styles.version, beside]}>{t('Version {v}', { v: VERSION })}</Text>
-      </ScrollView>
+        <Text style={[styles.p, textStyle]}>{t('Oomlaut is always looking for new picture books. If you’ve written or illustrated a story, send it to us and join the Oomlaut author community. Visit oomlaut.com for more information.')}</Text>
+        <Text style={styles.version}>{t('Version {v}', { v: VERSION })}</Text>
       {/* the store owner's way in: hold Skippy for five seconds (nothing happens on a tap) */}
-      <Pressable onLongPress={onSecret} delayLongPress={5000} style={{ position: 'absolute', right: 14, bottom: 12, width: skW, height: skH }} accessible={false}>
+      <Pressable onLongPress={onSecret} delayLongPress={5000} style={{ alignSelf: 'flex-end', marginTop: 8, width: skW, height: skH }} accessible={false}>
         <Image source={SKIPPY} resizeMode="contain" accessibilityIgnoresInvertColors style={{ width: skW, height: skH }} />
       </Pressable>
+      </ScrollView>
       </View>
     </WithBar>
   );

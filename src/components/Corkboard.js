@@ -2,7 +2,8 @@
 // note or a photo to it with the pin button (taking a photo asks a grown-up first, as everywhere). Tap a pin to
 // see it big, or to take it down.
 import React, { useEffect, useState } from 'react';
-import { Image, KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { colors, fonts } from '../theme';
@@ -36,6 +37,7 @@ function Pin({ p, W }) {
 
 export default function Corkboard({ width, toast }) {
   const t = useT();
+  const insets = useSafeAreaInsets();
   const [pins, setPins] = useState([]);
   const [ask, setAsk] = useState(false); // 'what to pin?'
   const [writing, setWriting] = useState(null); // the sticky note being written
@@ -117,8 +119,11 @@ export default function Corkboard({ width, toast }) {
       {/* writing a sticky note */}
       {writing != null ? (
         <Modal transparent animationType="fade" visible onRequestClose={() => setWriting(null)}>
-          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.back}>
-            <View style={[styles.note, { width: 260, height: 260, padding: 22 }]}>
+          {/* the note stays put near the top, above the keyboard (no jump when the keyboard comes or goes), and a tap
+              on Pin it or Cancel counts the first time, keyboard up or not */}
+          <ScrollView scrollEnabled={false} keyboardShouldPersistTaps="always" style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)' }}
+            contentContainerStyle={{ flexGrow: 1, alignItems: 'center', paddingTop: Math.max(70, insets.top + 30), paddingHorizontal: 24 }}>
+            <View style={[styles.note, { width: 240, height: 240, padding: 22 }]}>
               <TextInput value={writing} onChangeText={setWriting} autoFocus multiline maxLength={80} placeholder={t('Write a note')} placeholderTextColor="rgba(0,0,0,0.35)"
                 style={[styles.noteText, { flex: 1, alignSelf: 'stretch', fontSize: 22, lineHeight: 32, textAlignVertical: 'center' }]} />
             </View>
@@ -127,7 +132,7 @@ export default function Corkboard({ width, toast }) {
               <Pressable disabled={!writing.trim()} onPress={withTap(async () => { const txt = writing; setWriting(null); setPins(await pinNote(txt)); })}
                 style={[styles.pill, { backgroundColor: colors.green }, !writing.trim() && { opacity: 0.45 }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Pin it')}</Text></Pressable>
             </View>
-          </KeyboardAvoidingView>
+          </ScrollView>
         </Modal>
       ) : null}
 

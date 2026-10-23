@@ -46,16 +46,17 @@ export function draftFrom(story) {
 // square (measured from the picture: the blue runs 28.3%–71.1% across and 24.3%–68.4% down).
 const POLAROID = require('../../assets/polaroid.jpg');
 const BLUE = { l: 0.283, r: 0.711, t: 0.243, b: 0.684 };
-// A text field whose words always sit in the middle, top to bottom: a one-line field that fills its box exactly
-// (no padding top or bottom, no lineHeight, not scaled with the phone's text size), so iOS centres the words.
+// A text field whose words always sit in the middle, top to bottom: the box centres a one-line field that is exactly
+// one line tall (no padding, no lineHeight, not scaled with the phone's text size). A taller field put the words low on iOS.
 // Tapping anywhere on the box types in it.
 export function CenteredField({ value, onChangeText, placeholder, onFocus, onBlur, box, text }) {
   const ref = useRef(null);
+  const fs = (StyleSheet.flatten(text) || {}).fontSize || 17;
   return (
     <Pressable onPress={() => ref.current && ref.current.focus()} style={[{ justifyContent: 'center' }, box]} accessible={false}>
       <TextInput ref={ref} value={value} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor="#8a8a8a"
         onFocus={onFocus} onBlur={onBlur} returnKeyType="done" onSubmitEditing={() => Keyboard.dismiss()}
-        allowFontScaling={false} style={[{ alignSelf: 'stretch', flex: 1, paddingVertical: 0, paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 }, text]} accessibilityLabel={placeholder} />
+        allowFontScaling={false} style={[{ alignSelf: 'stretch', height: Math.ceil(fs * 1.25), paddingVertical: 0, paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 }, text]} accessibilityLabel={placeholder} />
     </Pressable>
   );
 }

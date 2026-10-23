@@ -1,7 +1,7 @@
 // Guard: the Ideas and Support search field must keep its words in the middle of the pill, top to bottom.
-// The rule that works on iOS: the pill (searchWrap) is a fixed height; the field (search) fills it (flex: 1,
-// alignSelf stretch) with no vertical padding, no font padding, no lineHeight and no nudges, so the single-line
-// iPhone field centres its own words; and it doesn't grow with the phone's text size (allowFontScaling={false}).
+// The rule: the pill (searchWrap) is a fixed height and centres the field; the field (search) is exactly one line
+// tall with no vertical padding, no font padding, no lineHeight and no nudges (a field filling the pill put the words
+// low on the iPhone); and it doesn't grow with the phone's text size (allowFontScaling={false}).
 // Runs in CI and before every TestFlight build; a failure stops the build.
 const fs = require('fs');
 const src = fs.readFileSync(require('path').join(__dirname, '..', 'src', 'screens', 'Help.js'), 'utf8');
@@ -19,8 +19,10 @@ if (wrap) {
   if (!/justifyContent:\s*'center'/.test(wrap)) problems.push("searchWrap must centre its child (justifyContent: 'center')");
 }
 if (field) {
-  if (/(^|[^a-zA-Z])height:/.test(field)) problems.push('search field must not set its own height (it fills the pill)');
-  if (!/flex:\s*1/.test(field) || !/alignSelf:\s*'stretch'/.test(field)) problems.push("search field must fill the pill (flex: 1, alignSelf: 'stretch')");
+  const h = (field.match(/(?:^|[^a-zA-Z])height:\s*(\d+)/) || [])[1];
+  const fsz = (field.match(/fontSize:\s*(\d+)/) || [])[1];
+  if (!h || !fsz || Number(h) !== Math.ceil(Number(fsz) * 1.25)) problems.push('search field must be exactly one line tall (height = ceil(fontSize × 1.25)); the pill centres it');
+  if (/flex:\s*1/.test(field)) problems.push('search field must not fill the pill (iOS then puts the words low)');
   if (/paddingTop|paddingBottom/.test(field)) problems.push('search field must not have top or bottom padding');
   if (!/paddingVertical:\s*0/.test(field)) problems.push('search field needs paddingVertical: 0');
   if (!/includeFontPadding:\s*false/.test(field)) problems.push('search field needs includeFontPadding: false');
@@ -36,4 +38,4 @@ if (problems.length) {
   console.error('SEARCH FIELD CHECK FAILED:\n - ' + problems.join('\n - '));
   process.exit(1);
 }
-console.log('search field: centred (the field fills the pill, no padding or lineHeight, no font scaling)');
+console.log('search field: centred (one line tall in a centring pill, no padding or lineHeight, no font scaling)');
