@@ -72,7 +72,7 @@ function Pebbles({ area, onBack }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const W = area.w, H = area.h;
-  const base = Math.min(W, H) * 0.2; // a pebble in the hand, across its longest side
+  const base = Math.min(W, H) * 0.24; // a pebble in the hand, across its longest side
   const handX = W / 2, handY = H - base * 0.95;
   const [hand, setHand] = useState(() => pickStone(-1));
   const handIn = useRef(new Animated.Value(1)).current;
@@ -84,7 +84,7 @@ function Pebbles({ area, onBack }) {
     const { hand: k, H: h, base: b } = S.current;
     // further away is smaller (the beach seen at a slant): the size where it lands
     const depth = Math.max(0, Math.min(1, toY / h));
-    const s1 = b * (0.48 + 0.42 * depth);
+    const s1 = b * (0.6 + 0.45 * depth);
     const p = new Animated.Value(0);
     const settle = new Animated.Value(0);
     const rot = Math.round((Math.random() - 0.5) * 140);
@@ -142,6 +142,8 @@ function Pebbles({ area, onBack }) {
   return (
     <View style={StyleSheet.absoluteFill}>
       <Image source={BEACH} style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} resizeMode="cover" />
+      {/* the beach a shade darker, so the thrown pebbles stand out on it */}
+      <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: W, height: H, backgroundColor: 'rgba(0,0,0,0.18)' }} />
       <View style={StyleSheet.absoluteFill} {...pan.panHandlers}>
         {stones.map((st) => {
           const [img, iw, ih] = STONES[st.k];
@@ -161,7 +163,7 @@ function Pebbles({ area, onBack }) {
             <Animated.View key={st.id} pointerEvents="none" style={{ position: 'absolute', left: st.x - w / 2, top: st.y - hh / 2, width: w, height: hh, opacity: st.fade }}>
               {/* its shadow on the beach: far below it while it flies, tucked under it once it lands */}
               <Animated.Image source={img} style={{ position: 'absolute', left: w * 0.06, top: hh * 0.1, width: w, height: hh, tintColor: '#000',
-                opacity: st.p.interpolate({ inputRange: [0, 1], outputRange: [0.12, 0.42] }), transform: [{ translateX: tx }, { translateY: groundY }, { scale }, { rotate: rot }] }} />
+                opacity: st.p.interpolate({ inputRange: [0, 1], outputRange: [0.15, 0.6] }), transform: [{ translateX: tx }, { translateY: groundY }, { scale }, { rotate: rot }] }} />
               <Animated.Image source={img} style={{ width: w, height: hh, transform: [{ translateX: tx }, { translateY: ty }, { scale }, { scaleY: squash }, { rotate: rot }] }} />
             </Animated.View>
           );
