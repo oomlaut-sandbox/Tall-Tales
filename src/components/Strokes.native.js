@@ -12,7 +12,6 @@ import { drawOrder, layersFor } from '../strokes';
 const GRAIN = require('../../assets/paper-grain.png'); // 512 × 512, repeats without seams
 const TOOTH = require('../../assets/paper-tooth.png');
 export const TILE = 0.7; // one repeat of the paper texture, in widths of the drawing (the same at every size)
-const TOOTH_ALPHA = 0.85;
 
 const grainOf = (L) => (L.grain === 'crayon' ? [4, 1.5] : [2.5, 0.7]); // the rough edge: segment length, how far it wanders
 
@@ -28,6 +27,20 @@ function Layer({ L, color }) {
     </Path>
   );
 }
+// the strokes in drawing order, in runs: a run of textured strokes (pencil, crayon, watercolour) is drawn on its own
+// layer with the paper's tooth over it, so the ink of the fountain pen stays solid. tex: 0 none, 1 light, 2 strong
+const texOf = (st, w) => (st.e ? -1 : Math.max(0, ...layersFor(st, w).map((L) => L.tex || 0)));
+export function runsOf(list, w) {
+  const runs = [];
+  for (const st of list) {
+    const t = texOf(st, w);
+    const last = runs[runs.length - 1];
+    if (last && last.tex === t && t > 0) last.list.push(st);
+    else runs.push({ tex: t, list: [st] });
+  }
+  return runs;
+}
+const TOOTH_OF = { 1: 0.7, 2: 1 };
 function One({ st, width }) {
   const layers = useMemo(() => layersFor(st, width), [st, width]);
   return <>{layers.filter((L) => L.alpha).map((L, i) => <Layer key={i} L={L} color={st.c} />)}</>;
@@ -45,8 +58,12 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
         {/* the drawing on its own layer: the eraser rubs down to the paper, and the tooth only marks what's drawn */}
         <Group layer>
           {/* fills under the lines, the eraser rubbing out what came before it (see drawOrder) */}
-          {drawOrder(live ? [...(strokes || []), live] : strokes).map((st, i) => <One key={i} st={st} width={width} />)}
-          {tooth ? <Rect x={0} y={0} width={width} height={height} blendMode="srcATop" opacity={TOOTH_ALPHA}>{tex(tooth)}</Rect> : null}
+          {runsOf(drawOrder(live ? [...(strokes || []), live] : strokes), width).map((r, i) => (r.tex > 0 ? (
+            <Group key={i} layer>
+              {r.list.map((st, j) => <One key={j} st={st} width={width} />)}
+              {tooth ? <Rect x={0} y={0} width={width} height={height} blendMode="srcATop" opacity={TOOTH_OF[r.tex]}>{tex(tooth)}</Rect> : null}
+            </Group>
+          ) : r.list.map((st, j) => <One key={`${i}-${j}`} st={st} width={width} />)))}
         </Group>
         {grain && !noPaper ? <Rect x={0} y={0} width={width} height={height} blendMode="multiply">{tex(grain)}</Rect> : null}
       </Canvas>
@@ -94,8 +111,9 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
     } catch (e) {}
   }
   canvas.saveLayer(); // the drawing on its own layer, so the eraser rubs down to the paper, not through it
-  const list = drawOrder(strokes);
-  for (const st of list) {
+  for (const r of runsOf(drawOrder(strokes), px)) {
+   if (r.tex > 0) canvas.saveLayer();
+   for (const st of r.list) {
     for (const L of layersFor(st, px)) {
       if (!L.alpha) continue;
       const path = Skia.Path.MakeFromSVGString(L.d);
@@ -112,8 +130,9 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
       if (L.grain) { const [gl, gd] = grainOf(L); paint.setPathEffect(Skia.PathEffect.MakeDiscrete(gl * px / 400, gd * px / 400, 0)); }
       canvas.drawPath(path, paint);
     }
+   }
+   if (r.tex > 0) { if (T.tooth) canvas.drawRect(Skia.XYWHRect(0, 0, px, px), texPaint(T.tooth, px, BlendMode.SrcATop, TOOTH_OF[r.tex])); canvas.restore(); }
   }
-  if (T.tooth) canvas.drawRect(Skia.XYWHRect(0, 0, px, px), texPaint(T.tooth, px, BlendMode.SrcATop, TOOTH_ALPHA));
   canvas.restore();
   if (T.grain && !photo) canvas.drawRect(Skia.XYWHRect(0, 0, px, px), texPaint(T.grain, px, BlendMode.Multiply));
   surface.flush();

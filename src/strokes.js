@@ -178,7 +178,7 @@ function smoothPts(st, w) {
   const p = st.p || [];
   let pts = [];
   for (let i = 0; i + 1 < p.length; i += 2) pts.push([p[i] * w, p[i + 1] * w]);
-  for (let k = 0; k < (st.z ? 1 : 2) && pts.length > 2; k++) {
+  for (let k = 0; k < (st.z ? 1 : 3) && pts.length > 2; k++) { // (three rounds of corner cutting: smooth curves)
     const out = [pts[0]];
     for (let i = 0; i < pts.length - 1; i++) {
       const [ax, ay] = pts[i], [bx, by] = pts[i + 1];
@@ -192,7 +192,9 @@ function smoothPts(st, w) {
 const circleD = (x, y, r) => `M${(x - r).toFixed(1)} ${y.toFixed(1)}a${r.toFixed(1)} ${r.toFixed(1)} 0 1 0 ${(2 * r).toFixed(1)} 0a${r.toFixed(1)} ${r.toFixed(1)} 0 1 0 ${(-2 * r).toFixed(1)} 0Z`;
 
 // the brush-pen outline: a filled shape whose width follows the speed of the finger
-export function inkD(st, w) {
+// taper: how long the thin ends are (1: a pen's short taper; 2–3: a brush's long, pointed ends)
+// swing: how much the speed changes the width (1: a pen; more: a soft brush)
+export function inkD(st, w, taper = 1, swing = 1) {
   const base = Math.max(1, (st.s || 0.01) * w) / 2;
   const pts = smoothPts(st, w);
   if (!pts.length) return '';
@@ -203,12 +205,14 @@ export function inkD(st, w) {
   let v = 0;
   const step = (i) => (i ? Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]) : 0);
   for (let i = 0; i < n; i++) {
-    v = i < 2 ? step(1) : v * 0.82 + step(i) * 0.18;
+    v = i < 2 ? step(1) : v * 0.85 + step(i) * 0.15; // (speed changes gently, so the width flows)
     // Apple Pencil: how hard it presses sets the width (q: the pressure at each point, 0 to 1); a finger: the speed
     const qi = st.q && st.q.length ? st.q[Math.min(st.q.length - 1, Math.round((i / Math.max(1, n - 1)) * (st.q.length - 1)))] : null;
-    const f = qi != null ? clamp(0.3 + qi * 1.25, 0.3, 1.45) : clamp(1.28 - v / (base * 2.6 + 4), 0.45, 1.25);
-    const a = st.z ? 1 : Math.min(1, 0.3 + 0.7 * (i / Math.min(6, n - 1)));
-    const b = st.z ? 1 : Math.min(1, 0.18 + 0.82 * ((n - 1 - i) / Math.min(10, n - 1)));
+    const f = qi != null ? clamp(0.3 + qi * 1.25, 0.3, 1.45) : clamp(1.5 - (v / (base * 1.5 + 3)) * swing, 0.22, 1.5); // slow: full; fast: thin
+    const ta = Math.min(n - 1, Math.round(8 * taper)), tb = Math.min(n - 1, Math.round(14 * taper));
+    const ease = (q) => q * q * (3 - 2 * q); // a smooth point, not a blunt end
+    const a = st.z ? 1 : Math.min(1, 0.12 + 0.88 * ease(Math.min(1, i / ta)));
+    const b = st.z ? 1 : Math.min(1, 0.06 + 0.94 * ease(Math.min(1, (n - 1 - i) / tb)));
     ws.push(base * (st.z ? 1 : f) * Math.min(a, b)); // (a shape: an even line all the way round)
   }
   const L = [], R = [];
@@ -247,34 +251,32 @@ export function layersFor(st, w) {
   const b = st.b || 'ink';
   const light = /^#f{3,6}$/i.test(st.c || '') || /^#f1e8d8$/i.test(st.c || ''); // white or cream: lighter than the paper's shadows, so no multiply
   if (b === 'water') {
-    // a wash with a defined edge: the see-through body, the pigment gathering at its rim as it dries (an inner
-    // glow on the phone), and a faint bloom where the water spread. Crossing strokes deepen (multiply).
-    const d = strokeD(st, w);
-    // wet into wet (painted over a wash that hadn't dried yet): it runs softly into the colour under it, with no
-    // hard rim, and the two colours mix where they meet (multiply: blue into yellow turns green)
+    // a soft round brush: long pointed ends and a width that swells and thins a lot with the speed; a see-through
+    // body, the pigment gathering at its rim as it dries, a faint bloom where the water spread. Crossing strokes
+    // deepen (multiply). Wet into wet (painted over a wash that hadn't dried yet): no rim, it runs into the colour under it.
+    const B = (k) => inkD({ ...st, s: (st.s || 0.01) * k }, w, 2.6, 1.6);
     if (st.wet) return [
-      { d, width: lw * 2.1, alpha: light ? 0.3 : 0.1, blur: lw * 0.55, multiply: !light }, // the bleed
-      { d, width: lw * 1.45, alpha: light ? 0.55 : 0.3, blur: Math.max(1, lw * 0.2), multiply: !light }, // the body
+      { d: B(2.0), fill: true, alpha: light ? 0.3 : 0.1, blur: lw * 0.5, multiply: !light, tex: 1 }, // the bleed
+      { d: B(1.45), fill: true, alpha: light ? 0.55 : 0.32, blur: Math.max(1, lw * 0.16), multiply: !light, tex: 1 }, // the body
     ];
+    const body = B(1.45);
     return [
-      { d, width: lw * 1.75, alpha: light ? 0.3 : 0.07, blur: lw * 0.3, multiply: !light }, // the bloom
-      { d, width: lw * 1.4, alpha: light ? 0.55 : 0.26, blur: Math.max(0.6, lw * 0.05), multiply: !light }, // the body
-      { d, width: lw * 1.4, alpha: light ? 0 : 0.42, blur: Math.max(1, lw * 0.14), multiply: !light, inner: true }, // the rim
+      { d: B(1.8), fill: true, alpha: light ? 0.3 : 0.07, blur: lw * 0.28, multiply: !light, tex: 1 }, // the bloom
+      { d: body, fill: true, alpha: light ? 0.55 : 0.28, blur: Math.max(0.6, lw * 0.05), multiply: !light, tex: 1 }, // the body
+      { d: body, fill: true, alpha: light ? 0 : 0.42, blur: Math.max(1, lw * 0.14), multiply: !light, inner: true, tex: 1 }, // the rim
     ];
   }
-  if (b === 'pencil') {
-    if (st.q && st.q.length) return [{ d: inkD({ ...st, s: (st.s || 0.01) * 0.55 }, w), fill: true, alpha: 0.82, grain: true }]; // Apple Pencil: pressing harder, a darker, wider line
-    return [{ d: strokeD(st, w), width: Math.max(1, lw * 0.5), alpha: 0.82, grain: true }];
-  }
-  // crayon: waxy and broken, two passes of a rough line that deepen where they cross; the paper's tooth shows through
+  // pencil: a fine, smooth graphite line (thinner when fast, a short taper), the paper's tooth showing in it
+  if (b === 'pencil') return [{ d: inkD({ ...st, s: (st.s || 0.01) * 0.55 }, w, 1.4, 0.6), fill: true, alpha: 0.8, tex: 1 }];
+  // crayon: waxy and smooth-edged, the paper's tooth breaking it up; two soft passes that deepen where they cross
   if (b === 'crayon') {
-    const d = strokeD(st, w);
+    const d = inkD({ ...st, s: (st.s || 0.01) * 1.25 }, w, 0.8, 0.35);
     return [
-      { d, width: lw * 1.25, alpha: light ? 0.7 : 0.62, grain: 'crayon', multiply: !light },
-      { d, width: lw * 0.75, alpha: light ? 0.6 : 0.5, grain: 'crayon', multiply: !light },
+      { d, fill: true, alpha: light ? 0.75 : 0.62, multiply: !light, tex: 2 },
+      { d: inkD({ ...st, s: (st.s || 0.01) * 0.8 }, w, 0.8, 0.35), fill: true, alpha: light ? 0.6 : 0.45, multiply: !light, tex: 2 },
     ];
   }
-  return [{ d: inkD(st, w), fill: true, alpha: 1 }]; // (no blur: lighter to draw, so pages snapshot and turn smoothly)
+  return [{ d: inkD(st, w, 1.2, 1.3), fill: true, alpha: 1 }]; // the fountain pen: solid ink, thick to thin with the speed // (no blur: lighter to draw, so pages snapshot and turn smoothly)
 }
 
 // ---- Shapes: drag on the page to draw one; it's kept as an ordinary closed stroke (so the brushes, the eraser

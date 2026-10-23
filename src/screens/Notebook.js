@@ -1022,8 +1022,11 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       if (!c) return;
       if (c.z) { c.p = shapePts(c.k, c.o[0], c.o[1], x, y); setLive({ ...c }); return; } // a shape grows with the drag
       const n = c.p.length;
-      if ((c.p[n - 2] - x) ** 2 + (c.p[n - 1] - y) ** 2 < 0.004 ** 2) return;
-      c.p.push(+x.toFixed(4), +y.toFixed(4));
+      // steady the hand: each new point is pulled a little towards the last one, so wobbles smooth out into curves
+      // (lightly: the line still keeps up with the finger)
+      const sx = c.p[n - 2] + (x - c.p[n - 2]) * 0.55, sy = c.p[n - 1] + (y - c.p[n - 1]) * 0.55;
+      if ((c.p[n - 2] - sx) ** 2 + (c.p[n - 1] - sy) ** 2 < 0.0035 ** 2) return;
+      c.p.push(+sx.toFixed(4), +sy.toFixed(4));
       if (c.q) c.q.push(+(e.nativeEvent.force || 0).toFixed(2));
       setLive({ ...c, p: [...c.p], q: c.q ? [...c.q] : undefined });
     },
