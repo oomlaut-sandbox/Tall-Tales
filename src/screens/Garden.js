@@ -266,11 +266,11 @@ const STICKS = [
   [require('../../assets/garden/sticks/stick-15.png'), 468, 64], [require('../../assets/garden/sticks/stick-16.png'), 414, 46],
 ];
 const LONGEST = 614;
-// Jörg's dominoes, cut from his photo: [picture, width, height]. They lie on the felt with the sticks.
+// Jörg's dominoes (his own cut-outs): [picture, width, height]. They lie on the felt with the sticks.
 const DOMINOES = [
-  [require('../../assets/garden/dominoes/5-6.png'), 300, 164], [require('../../assets/garden/dominoes/1-4.png'), 300, 163],
-  [require('../../assets/garden/dominoes/2-6.png'), 300, 161], [require('../../assets/garden/dominoes/3-3.png'), 300, 161],
-  [require('../../assets/garden/dominoes/1-1.png'), 300, 171], [require('../../assets/garden/dominoes/0-0.png'), 300, 138],
+  [require('../../assets/garden/dominoes/5-6.png'), 300, 169], [require('../../assets/garden/dominoes/1-4.png'), 300, 160],
+  [require('../../assets/garden/dominoes/2-6.png'), 300, 154], [require('../../assets/garden/dominoes/3-3.png'), 300, 156],
+  [require('../../assets/garden/dominoes/1-1.png'), 300, 166],
 ];
 const NS = STICKS.length;
 const PIECES = [...STICKS, ...DOMINOES]; // a piece's number: the sticks first, then the dominoes
