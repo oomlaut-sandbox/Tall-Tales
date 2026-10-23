@@ -19,9 +19,10 @@ export const DEFAULT_CONTROLS = {
   nightlight: true, // Listen Only can become the nightlight (the moon on the reading bar)
   clock: false,     // (no longer offered)
   alarm: false,     // the nightlight shows the alarm time (set there) and wakes the child: the sun rises, a gentle sound plays
+  garden: false,    // the Garden: a secret place below My Library, locked until a grown-up unlocks it (a surprise, a reward)
 };
 // settings that add something rather than limit the child (not counted as restricted)
-const EXTRAS = ['nightlight', 'clock', 'alarm', 'familyVoices'];
+const EXTRAS = ['nightlight', 'clock', 'alarm', 'familyVoices', 'garden'];
 
 // everything off: only My Library and its books, played the way they're set now
 export const lockedControls = (mode, childAge = null) => ({ store: false, notebook: false, create: false, help: false, playback: false, playMode: mode || 'page', recording: false, sharing: false, language: false, profiles: false, childAge });

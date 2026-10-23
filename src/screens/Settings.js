@@ -44,8 +44,8 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
   const ps = usePurchases();
   const set = (patch) => setControls({ ...controls, ...patch });
   // (the child's age is its own setting: Lock and Unlock everything keep it)
-  // the nightlight's clock and alarm are kept whatever preset is chosen (and don't count when comparing)
-  const NIGHT = ['nightlight', 'clock', 'alarm'];
+  // the nightlight's clock and alarm, and the Garden, are kept whatever preset is chosen (and don't count when comparing)
+  const NIGHT = ['nightlight', 'clock', 'alarm', 'garden'];
   const night = Object.fromEntries(NIGHT.map((k) => [k, controls[k] ?? DEFAULT_CONTROLS[k]]));
   const same = (a, b) => Object.keys(DEFAULT_CONTROLS).every((k) => k === 'childAge' || NIGHT.includes(k) || a[k] === b[k]);
   const allOn = same(controls, DEFAULT_CONTROLS);
@@ -132,6 +132,13 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
             <Text style={styles.small}>{t('In Listen Only, the screen becomes a soft nightlight. It can also show the time and wake your child gently.')}</Text>
             <Toggle label={t('Nightlight mode')} value={controls.nightlight !== false} onChange={(v) => set({ nightlight: v })} />
             <Text style={styles.small}>{t('The alarm lives on the nightlight’s bar, beside the lock. It works while the nightlight is on: keep the app open in Listen Only, with the phone plugged in.')}</Text>
+          </View>
+          {/* the Garden: a secret place below My Library, locked until a grown-up unlocks it */}
+          <Text style={styles.section}>{t('The Garden')}</Text>
+          <View style={styles.card}>
+            <Text style={styles.small}>{t('The Garden is a secret place for your child to discover: calm nature games with rocks, sticks and animals, to play and learn after a good book. It starts locked. Unlock it whenever you like, as a surprise or a reward.')}</Text>
+            <Toggle label={t('Unlock the Garden')} value={!!controls.garden} onChange={(v) => set({ garden: v })} />
+            <Text style={styles.small}>{t('Once it’s unlocked, your child finds the way in by scrolling past the corkboard at the bottom of My Library. We won’t tell them.')}</Text>
           </View>
           {/* haptic feedback: small clicks you feel on the dials, knobs, sliders and buttons (for the whole phone) */}
           <Text style={styles.section}>{t('Haptic feedback')}</Text>

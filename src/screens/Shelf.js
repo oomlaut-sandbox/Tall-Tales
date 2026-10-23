@@ -233,12 +233,13 @@ export function Library({ narrator, toast, onProfiles, u, stories, openStory, op
       ))}>
       <Band color={colors.green} felt="library" title={selecting ? t('Select books') : t('My Library')}
         sub={selecting ? (picked.length ? t('{n} selected', { n: picked.length }) : t('Tap books to select them')) : t('Your stories, ready to read')} />
-      {/* pulled up past the corkboard at the very bottom: a speech bubble invites you on to the Garden (once per pull) */}
+      {/* pulled up past the corkboard at the very bottom: a speech bubble invites you on to the Garden (once per pull),
+          only once a grown-up has unlocked it in Settings → The Garden */}
       <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]} scrollEventThrottle={64}
         onScroll={(e) => {
           const { contentOffset: o, layoutMeasurement: l, contentSize: c } = e.nativeEvent;
           const past = o.y + l.height - c.height;
-          if (past > 70 && !gardenAsked.current) { gardenAsked.current = true; toast && toast(t('Come explore the Garden'), 3500); }
+          if (past > 70 && !gardenAsked.current && controls.garden) { gardenAsked.current = true; toast && toast(t('Come explore the Garden'), 3500); }
           else if (past < 0) gardenAsked.current = false;
         }}>
         {/* My Notebook: always the first book on the shelf (notes, drawings and reading badges) */}
