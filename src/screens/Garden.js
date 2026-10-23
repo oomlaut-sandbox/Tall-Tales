@@ -1,7 +1,7 @@
 // The Garden: a secret place below My Library (a grown-up unlocks it in Settings → The Garden). A garden seen from
 // above; tap a place in it to play there. Calm nature games, nothing to win:
 //   the rocks: throw felt pebbles onto the pebble beach and hear them land
-//   the woodpile: arrange driftwood sticks on the felt
+//   the woodpile: arrange driftwood sticks and dominoes on the felt
 //   the flowers: a paper pinwheel to spin with a swipe
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, View } from 'react-native';
@@ -266,12 +266,22 @@ const STICKS = [
   [require('../../assets/garden/sticks/stick-15.png'), 468, 64], [require('../../assets/garden/sticks/stick-16.png'), 414, 46],
 ];
 const LONGEST = 614;
-function scatter(W, H, len) {
-  // every stick somewhere on the felt, at a slant, not too close to the edges
-  return STICKS.map((st, k) => {
-    const L = (st[1] / LONGEST) * len;
-    const a = Math.round(Math.random() * 180 - 90), r = (a * Math.PI) / 180;
-    const hx = Math.abs(Math.cos(r)) * L / 2 + 14, hy = Math.abs(Math.sin(r)) * L / 2 + 24; // keep the whole stick on the felt
+// Jörg's dominoes, cut from his photo: [picture, width, height]. They lie on the felt with the sticks.
+const DOMINOES = [
+  [require('../../assets/garden/dominoes/5-6.png'), 300, 164], [require('../../assets/garden/dominoes/1-4.png'), 300, 163],
+  [require('../../assets/garden/dominoes/2-6.png'), 300, 161], [require('../../assets/garden/dominoes/3-3.png'), 300, 161],
+  [require('../../assets/garden/dominoes/1-1.png'), 300, 171], [require('../../assets/garden/dominoes/0-0.png'), 300, 138],
+];
+const NS = STICKS.length;
+const PIECES = [...STICKS, ...DOMINOES]; // a piece's number: the sticks first, then the dominoes
+const isDom = (k) => k >= NS;
+function scatter(W, H, len, dom) {
+  // every piece somewhere on the felt, not too close to the edges: the sticks at a slant, the dominoes square
+  return PIECES.map((st, k) => {
+    const d = isDom(k);
+    const L = d ? dom : (st[1] / LONGEST) * len, T = L * st[2] / st[1];
+    const a = d ? 90 * Math.floor(Math.random() * 2) : Math.round(Math.random() * 180 - 90), r = (a * Math.PI) / 180;
+    const hx = Math.abs(Math.cos(r)) * L / 2 + Math.abs(Math.sin(r)) * T / 2 + 14, hy = Math.abs(Math.sin(r)) * L / 2 + Math.abs(Math.cos(r)) * T / 2 + 24; // keep it all on the felt
     return { k, x: hx + Math.random() * Math.max(1, W - 2 * hx), y: hy + Math.random() * Math.max(1, H - 2 * hy), a };
   });
 }
@@ -280,19 +290,53 @@ function Driftwood({ area, onBack }) {
   const insets = useSafeAreaInsets();
   const W = area.w, H = area.h;
   const len = Math.min(W, H) * 0.62; // the longest stick, on screen
+  const dom = Math.min(W, H) * 0.26; // a domino's long side, on screen
   const sticks = useRef(null);
   if (!sticks.current) {
-    sticks.current = scatter(W, H, len).map((p) => ({ ...p, pos: new Animated.ValueXY({ x: p.x, y: p.y }), rot: new Animated.Value(p.a), lift: new Animated.Value(0) }));
+    sticks.current = scatter(W, H, len, dom).map((p) => ({ ...p, pos: new Animated.ValueXY({ x: p.x, y: p.y }), rot: new Animated.Value(p.a), lift: new Animated.Value(0) }));
   }
   const [order, setOrder] = useState(() => sticks.current.map((s) => s.k)); // drawn in this order (the last one on top)
   const S = useRef({}); S.current.order = order;
-  const sizeOf = (k) => { const [, iw, ih] = STICKS[k]; const L = (iw / LONGEST) * len; return [L, L * ih / iw]; };
-  // is the point on this stick? (measured along it and across it, a little generous so thin sticks are easy to grab)
+  const sizeOf = (k) => { const [, iw, ih] = PIECES[k]; const L = isDom(k) ? dom : (iw / LONGEST) * len; return [L, L * ih / iw]; };
+  // is the point on this piece? (measured along it and across it, a little generous so thin sticks are easy to grab)
   const hit = (s, x, y) => {
     const [L, T] = sizeOf(s.k);
     const r = (-s.a * Math.PI) / 180, dx = x - s.x, dy = y - s.y;
     const u = dx * Math.cos(r) - dy * Math.sin(r), v = dx * Math.sin(r) + dy * Math.cos(r);
     return Math.abs(u) <= L / 2 + 8 && Math.abs(v) <= Math.max(T / 2, 22);
+  };
+  // a domino's half width and half height as it lies (it is always straight or on its side)
+  const half = (s) => { const [L, T] = sizeOf(s.k); return (Math.round(s.a / 90) % 2) ? [T / 2, L / 2] : [L / 2, T / 2]; };
+  // a domino let go close to another one slides gently against it, edge to edge and lined up (like laying a row)
+  const snap = (s) => {
+    const SN = dom * 0.14;
+    const [hx, hy] = half(s);
+    let best = null;
+    for (const o of sticks.current) {
+      if (o === s || !isDom(o.k)) continue;
+      const [ox, oy] = half(o);
+      // side by side (left or right of it), close enough up and down
+      for (const side of [-1, 1]) {
+        const gx = o.x + side * (ox + hx), dx = gx - s.x;
+        if (Math.abs(dx) < SN && Math.abs(s.y - o.y) < oy + hy - 4) {
+          const ny = Math.abs(s.y - o.y) < SN ? o.y : Math.abs(s.y - hy - (o.y - oy)) < SN ? o.y - oy + hy : Math.abs(s.y + hy - (o.y + oy)) < SN ? o.y + oy - hy : s.y; // lined up: middles, or top or bottom edges
+          const d = Math.abs(dx) + Math.abs(ny - s.y);
+          if (!best || d < best.d) best = { x: gx, y: ny, d };
+        }
+      }
+      // above or below it
+      for (const side of [-1, 1]) {
+        const gy = o.y + side * (oy + hy), dy = gy - s.y;
+        if (Math.abs(dy) < SN && Math.abs(s.x - o.x) < ox + hx - 4) {
+          const nx = Math.abs(s.x - o.x) < SN ? o.x : Math.abs(s.x - hx - (o.x - ox)) < SN ? o.x - ox + hx : Math.abs(s.x + hx - (o.x + ox)) < SN ? o.x + ox - hx : s.x;
+          const d = Math.abs(dy) + Math.abs(nx - s.x);
+          if (!best || d < best.d) best = { x: nx, y: gy, d };
+        }
+      }
+    }
+    if (!best) return false;
+    s.x = best.x; s.y = best.y;
+    return true;
   };
   const pan = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => true,
@@ -315,15 +359,19 @@ function Driftwood({ area, onBack }) {
     onPanResponderRelease: (e, g) => {
       const s = S.current.picked; if (!s) return;
       S.current.picked = null;
-      if (Math.hypot(g.dx, g.dy) < 8) { // a tap: turn it a little
-        s.a += 30;
+      const d = isDom(s.k);
+      let touched = false;
+      if (Math.hypot(g.dx, g.dy) < 8) { // a tap: a stick turns a little, a domino a quarter turn
+        s.a += d ? 90 : 30;
         Animated.spring(s.rot, { toValue: s.a, friction: 7, tension: 80, useNativeDriver: true }).start();
+        if (d) { touched = snap(s); if (touched) Animated.spring(s.pos, { toValue: { x: s.x, y: s.y }, friction: 8, tension: 90, useNativeDriver: true }).start(); }
       } else {
         s.x = Math.max(0, Math.min(W, S.current.start.x + g.dx)); s.y = Math.max(0, Math.min(H, S.current.start.y + g.dy));
         s.pos.setValue({ x: s.x, y: s.y });
+        if (d) { touched = snap(s); if (touched) Animated.spring(s.pos, { toValue: { x: s.x, y: s.y }, friction: 8, tension: 90, useNativeDriver: true }).start(); }
       }
       Animated.timing(s.lift, { toValue: 0, duration: 140, useNativeDriver: true }).start();
-      playGarden('stick');
+      playGarden(d ? (touched ? 'domclick' : 'domdown') : 'stick');
     },
   })).current;
   return (
@@ -333,15 +381,16 @@ function Driftwood({ area, onBack }) {
         {order.map((k) => {
           const s = sticks.current[k];
           const [L, T] = sizeOf(k);
+          const d = isDom(k);
           const rot = s.rot.interpolate({ inputRange: [-3600, 3600], outputRange: ['-3600deg', '3600deg'] });
-          const scale = s.lift.interpolate({ inputRange: [0, 1], outputRange: [1, 1.06] });
-          const sh = s.lift.interpolate({ inputRange: [0, 1], outputRange: [2, 7] });
+          const scale = s.lift.interpolate({ inputRange: [0, 1], outputRange: [1, d ? 1.05 : 1.06] });
+          const sh = s.lift.interpolate({ inputRange: [0, 1], outputRange: d ? [1.5, 8] : [2, 7] });
           return (
             <Animated.View key={k} pointerEvents="none" style={{ position: 'absolute', left: -L / 2, top: -T / 2, width: L, height: T,
               transform: [{ translateX: s.pos.x }, { translateY: s.pos.y }, { rotate: rot }, { scale }] }}>
               {/* its shadow on the felt: its own shape, darker, lifting further away while it's held */}
-              <Animated.Image source={STICKS[k][0]} style={{ position: 'absolute', left: 0, top: 0, width: L, height: T, tintColor: '#000', opacity: 0.55, transform: [{ translateX: sh }, { translateY: sh }] }} />
-              <Image source={STICKS[k][0]} style={{ width: L, height: T }} />
+              <Animated.Image source={PIECES[k][0]} style={{ position: 'absolute', left: 0, top: 0, width: L, height: T, tintColor: '#000', opacity: d ? 0.45 : 0.55, transform: [{ translateX: sh }, { translateY: sh }] }} />
+              <Image source={PIECES[k][0]} style={{ width: L, height: T }} />
             </Animated.View>
           );
         })}
