@@ -211,7 +211,13 @@ export function Library({ narrator, toast, onProfiles, u, stories, openStory, op
           </View>
           <View style={{ flex: 1 }} />{/* (Edit and Share simply grey out when they can't be used) */}
           {/* Cancel sits where Select was: the bottom right of the bar */}
-          <Pressable onPress={stop} hitSlop={10} accessibilityRole="button"><View style={styles.cancelPill}><Text style={styles.barSmall}>{t('Cancel')}</Text></View></Pressable>{/* a small red pill */}
+          {/* Cancel: a red circle with a small white ×, the same size as the select icon (fits every language) */}
+          <Pressable onPress={stop} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Cancel')} style={{ paddingHorizontal: 4 }}>
+            <View style={{ width: 29, height: 29, borderRadius: 14.5, backgroundColor: colors.deepRed, alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ position: 'absolute', width: 12, height: 2, borderRadius: 1, backgroundColor: colors.white, transform: [{ rotate: '45deg' }] }} />
+              <View style={{ position: 'absolute', width: 12, height: 2, borderRadius: 1, backgroundColor: colors.white, transform: [{ rotate: '-45deg' }] }} />
+            </View>
+          </Pressable>
         </Bar>
       ) : (
         <Bar u={u} vertical={v}>
