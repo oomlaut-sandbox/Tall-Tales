@@ -131,7 +131,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
               <Text style={styles.pillText}>{t('Send a sheet')}</Text>
             </Pressable>
           ) : null}
-          <Pressable onPress={close} hitSlop={10} style={{ marginTop: 22 }}><Text style={styles.closeText}>{t('Close')}</Text></Pressable>
+          <Pressable onPress={close} hitSlop={10} style={[styles.pill, styles.closePill]} accessibilityRole="button"><Text style={styles.pillText}>{t('Close')}</Text></Pressable>
         </ScrollView>
       </Animated.View>
 
@@ -159,7 +159,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
               </Pressable>
             </View>
           )}
-          <Pressable onPress={() => { stopVoice(); stopSpeech(); setOpen(null); }} hitSlop={10} style={{ marginTop: 22 }}><Text style={styles.closeText}>{t('Close')}</Text></Pressable>
+          <Pressable onPress={() => { stopVoice(); stopSpeech(); setOpen(null); }} hitSlop={10} style={[styles.pill, styles.closePill]} accessibilityRole="button"><Text style={styles.pillText}>{t('Close')}</Text></Pressable>
         </View>
       ) : null}
 
@@ -214,6 +214,7 @@ const styles = StyleSheet.create({
   sendPill: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 46, borderRadius: 23, paddingHorizontal: 22, backgroundColor: '#3a3a3a', marginTop: 36 },
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
   pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  closePill: { backgroundColor: colors.deepRed, marginTop: 22 }, // a dark red pill
   closeText: { color: '#8a8a8a', fontFamily: fonts.ui, fontSize: 15 },
   sureBox: { width: '100%', maxWidth: 400, backgroundColor: 'rgba(0,0,0,0.86)', borderRadius: 24, paddingHorizontal: 24, paddingTop: 26, paddingBottom: 22 },
   sureText: { color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24 },
