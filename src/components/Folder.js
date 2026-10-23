@@ -5,7 +5,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
-import { useT } from '../i18n';
+import { useLang, useT } from '../i18n';
+import { alphabetFor } from '../alphabets';
 import { withTap } from '../haptics';
 import { playVoice, stopVoice } from '../voice';
 import { speakTracked, stopSpeech } from '../speech';
@@ -23,7 +24,6 @@ const ENVELOPE = require('../../assets/icon-envelope.png');
 const TRASH = require('../../assets/icon-trash.png');
 const TYPE = 'SpecialElite_400Regular'; // the typewriter, like My Notebook
 const CREAM = '#f4f2ed';
-const ABC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
 // a page from someone's notebook, drawn like the notebook: the picture square above the notes
 function SheetPage({ page, size }) {
@@ -46,37 +46,46 @@ function SheetPage({ page, size }) {
 
 // the Abc sheet, opened: a kraft square nearly as wide as the phone, the whole alphabet on it
 function AbcSheet({ size, narrator }) {
+  const lang = useLang();
+  const ABC_L = alphabetFor(lang);
   const [hit, setHit] = useState(null);
   const bounce = useRef(new Animated.Value(1)).current;
-  const say = (ch) => {
+  const say = ([ch, key, , word]) => {
     setHit(ch);
     bounce.setValue(0.82);
     Animated.spring(bounce, { toValue: 1, friction: 4, tension: 140, useNativeDriver: true }).start();
     stopSpeech(); stopVoice();
-    const clip = (LETTERS.lily || {})[ch.toLowerCase()]; // always Fatima
-    if (clip && playVoice(clip, { onFail: () => speakTracked(phone(ch), { rate: 0.7 }) })) return;
-    speakTracked(phone(ch), { rate: 0.7 });
+    const clip = ((LETTERS.lily || {})[lang] || {})[key]; // always Fatima, in the app's language
+    const fallback = () => speakTracked(`${ch}. ${word}.`, { rate: 0.7, lang });
+    if (clip && playVoice(clip, { onFail: fallback })) return;
+    fallback();
   };
-  const cell = (size - 36) / 6;
+  const cols = ABC_L.length > 36 ? 7 : 6; // Japanese has 46 hiragana
+  const cell = (size - 36) / cols;
+  const latin = lang !== 'ja';
   return (
     <View style={{ width: size, height: size, borderRadius: 6, overflow: 'hidden' }}>
       <Image source={KRAFT} style={StyleSheet.absoluteFill} resizeMode="cover" />
       <View style={{ flex: 1, padding: 18, flexDirection: 'row', flexWrap: 'wrap', alignContent: 'center' }}>
-        {ABC.map((ch) => (
-          <Pressable key={ch} onPress={() => say(ch)} accessibilityRole="button" accessibilityLabel={ch} style={{ width: cell, height: cell * 1.02, alignItems: 'center', justifyContent: 'center' }}>
-            <Animated.Text allowFontScaling={false} style={[styles.letter, { fontSize: cell * 0.58 }, hit === ch && { color: '#8a2c1b', transform: [{ scale: bounce }] }]}>{ch}<Text style={{ fontSize: cell * 0.42 }}>{ch.toLowerCase()}</Text></Animated.Text>
-          </Pressable>
-        ))}
+        {ABC_L.map((L) => {
+          const ch = L[0];
+          const pair = latin && ch.toLowerCase() !== ch; // Aa, Ää … (ß has no capital: shown once)
+          return (
+            <Pressable key={L[1]} onPress={() => say(L)} accessibilityRole="button" accessibilityLabel={ch} style={{ width: cell, height: cell * 1.02, alignItems: 'center', justifyContent: 'center' }}>
+              <Animated.Text allowFontScaling={false} style={[styles.letter, !latin && styles.kana, { fontSize: cell * (latin ? 0.58 : 0.6) }, hit === ch && { color: '#8a2c1b', transform: [{ scale: bounce }] }]}>
+                {ch}{pair ? <Text style={{ fontSize: cell * 0.42 }}>{ch.toLowerCase()}</Text> : null}
+              </Animated.Text>
+            </Pressable>
+          );
+        })}
       </View>
     </View>
   );
 }
-// what the phone's own voice says until the narrator's letters are made
-const WORD = { a: 'apple', b: 'bear', c: 'cat', d: 'dog', e: 'egg', f: 'fish', g: 'goat', h: 'hat', i: 'igloo', j: 'jam', k: 'kite', l: 'lion', m: 'moon', n: 'nest', o: 'octopus', p: 'pig', q: 'queen', r: 'rabbit', s: 'sun', t: 'tree', u: 'umbrella', v: 'van', w: 'whale', x: 'fox', y: 'yo-yo', z: 'zebra' };
-const phone = (ch) => `${ch}. ${WORD[ch.toLowerCase()]}.`;
 
 export default function Folder({ narrator = 'lily', onClose, toast, canSend = true }) {
   const t = useT();
+  const lang = useLang();
   const { width: winW, height: winH } = useWindowDimensions();
   const [sheets, setSheets] = useState([]);
   const [open, setOpen] = useState(null); // 'welcome' | 'abc' | a sheet
@@ -120,7 +129,8 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
             {card('abc', t('Abc'), (
               <View style={{ width: thumb, height: thumb, borderRadius: 4, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
                 <Image source={KRAFT} style={StyleSheet.absoluteFill} resizeMode="cover" />
-                <Text allowFontScaling={false} style={[styles.letter, { fontSize: thumb * 0.36 }]}>Abc</Text>
+                {/* lifted a little, so it sits in the optical middle of the card */}
+                <Text allowFontScaling={false} style={[styles.letter, lang === 'ja' && styles.kana, { fontSize: thumb * (lang === 'ja' ? 0.3 : 0.36), transform: [{ translateY: -thumb * 0.05 }] }]}>{lang === 'ja' ? 'あいう' : lang === 'de' ? 'Äbc' : 'Abc'}</Text>
               </View>
             ), 2.5, () => setOpen('abc'))}
             {sheets.map((s, k) => card(s.id, s.from ? t('From {name}', { name: s.from }) : t('A sheet'), <SheetPage page={s.page} size={thumb} />, k % 2 ? 2 : -2, () => setOpen(s)))}
@@ -210,6 +220,7 @@ const styles = StyleSheet.create({
   hand: { fontFamily: TYPE, color: '#3a2f22' },
   letterText: { fontFamily: TYPE, fontSize: 16, lineHeight: 25, color: '#3a3226', marginBottom: 10 },
   letter: { fontFamily: 'EBGaramond_700Bold', color: '#2f2418' },
+  kana: { fontFamily: undefined, fontWeight: '700' },
   openBack: { backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 14 },
   sendPill: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 46, borderRadius: 23, paddingHorizontal: 22, backgroundColor: '#3a3a3a', marginTop: 36 },
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },

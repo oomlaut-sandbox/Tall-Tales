@@ -174,27 +174,31 @@ async function makeTheEnd(v, voiceId) {
 }
 // The Abc sheet in My Folder: each letter's name, its sound and a word ("B… buh… bear."), slowly and clearly.
 // (Written so the voice says the sound, not the spelling: "buh", "ah", "kuh"…)
-const LETTERS = {
-  a: 'A… ah… apple.', b: 'B… buh… bear.', c: 'C… kuh… cat.', d: 'D… duh… dog.', e: 'E… eh… egg.', f: 'F… fff… fish.',
-  g: 'G… guh… goat.', h: 'H… hhh… hat.', i: 'I… ih… igloo.', j: 'J… juh… jam.', k: 'K… kuh… kite.', l: 'L… lll… lion.',
-  m: 'M… mmm… moon.', n: 'N… nnn… nest.', o: 'O… oh… octopus.', p: 'P… puh… pig.', q: 'Q… kwuh… queen.', r: 'R… rrr… rabbit.',
-  s: 'S… sss… sun.', t: 'T… tuh… tree.', u: 'U… uh… umbrella.', v: 'V… vvv… van.', w: 'W… wuh… whale.', x: 'X… ks… fox.',
-  y: 'Y… yuh… yo-yo.', z: 'Z… zzz… zebra.',
-};
+// The Abc sheet in every language (src/alphabets.js): Fatima says each letter (Japanese: each hiragana) and a word.
+// English keeps its old files (letters/a.mp3); the others go in letters/<lang>/<key>.mp3.
+function loadAlphabets() {
+  const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'alphabets.js'), 'utf8').replace(/export const /g, 'const ').replace(/export /g, '');
+  // eslint-disable-next-line no-new-func
+  return new Function(`${src}; return ALPHABETS;`)();
+}
 async function makeLetters(v, voiceId) {
   samples.letters = samples.letters || {};
   const mine = (samples.letters[v.key] = samples.letters[v.key] || {});
-  for (const [ch, text] of Object.entries(LETTERS)) {
-    const speed = 0.7;
-    const fp = crypto.createHash('sha1').update(`${MODEL}|${voiceId}|${speed}|${text}`).digest('hex').slice(0, 12);
-    const file = path.join('assets/narration', v.key, 'letters', `${ch}.mp3`);
-    if (mine[ch] === fp && fs.existsSync(file)) continue;
-    const audio = await speakClip(voiceId, text, speed, { stability: 0.7 }, 'en');
-    if (!audio) { say(`FAILED letter ${ch} for ${v.label}`); continue; }
-    fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(file, audio);
-    mine[ch] = fp;
-    say(`${v.label}: letter ${ch} made`);
+  const ALPHA = loadAlphabets();
+  for (const [lang, list] of Object.entries(ALPHA)) {
+    for (const [, key, text] of list) {
+      const id = lang === 'en' ? key : `${lang}/${key}`;
+      const speed = lang === 'en' ? 0.7 : 0.78;
+      const fp = crypto.createHash('sha1').update(`${MODEL}|${voiceId}|${speed}|${text}`).digest('hex').slice(0, 12);
+      const file = path.join('assets/narration', v.key, 'letters', `${id}.mp3`);
+      if (mine[id] === fp && fs.existsSync(file)) continue;
+      const audio = await speakClip(voiceId, text, speed, { stability: 0.7 }, lang);
+      if (!audio) { say(`FAILED letter ${id} for ${v.label}`); continue; }
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      fs.writeFileSync(file, audio);
+      mine[id] = fp;
+      say(`${v.label}: letter ${id} made`);
+    }
   }
 }
 async function makeWords(v, voiceId) {
@@ -387,7 +391,11 @@ async function makeWords(v, voiceId) {
   sl.push('};', '', '// The Abc sheet: each letter said by each narrator ("B… buh… bear.").', 'export const LETTERS = {');
   for (const [vk, chars] of Object.entries(samples.letters || {})) {
     const have = Object.keys(chars).filter((c) => fs.existsSync(path.join('assets/narration', vk, 'letters', `${c}.mp3`)));
-    sl.push(`  ${vk}: {`, ...have.map((c) => `    ${c}: require(${JSON.stringify(`../../assets/narration/${vk}/letters/${c}.mp3`)}),`), '  },');
+    const byLang = {};
+    for (const c of have) { const [lg, k] = c.includes('/') ? c.split('/') : ['en', c]; (byLang[lg] = byLang[lg] || []).push([k, c]); }
+    sl.push(`  ${vk}: {`);
+    for (const [lg, list] of Object.entries(byLang)) sl.push(`    ${lg}: {`, ...list.map(([k, c]) => `      ${JSON.stringify(k)}: require(${JSON.stringify(`../../assets/narration/${vk}/letters/${c}.mp3`)}),`), '    },');
+    sl.push('  },');
   }
   sl.push('};', '');
   fs.writeFileSync('src/narration/samples.js', sl.join('\n'));
