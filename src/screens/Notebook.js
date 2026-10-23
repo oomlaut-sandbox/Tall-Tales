@@ -32,6 +32,15 @@ import { useControls } from '../controls';
 
 const ENVELOPE = require('../../assets/icon-envelope.png');
 const PRINTER = require('../../assets/icon-printer.png');
+const SPLOTCH = [ // round splotches of paint: the shape (tinted with the colour) and the darker rim and grain over it
+  [require('../../assets/splotch/splotch-1.png'), require('../../assets/splotch/splotch-1-tex.png')],
+  [require('../../assets/splotch/splotch-2.png'), require('../../assets/splotch/splotch-2-tex.png')],
+  [require('../../assets/splotch/splotch-3.png'), require('../../assets/splotch/splotch-3-tex.png')],
+  [require('../../assets/splotch/splotch-4.png'), require('../../assets/splotch/splotch-4-tex.png')],
+  [require('../../assets/splotch/splotch-5.png'), require('../../assets/splotch/splotch-5-tex.png')],
+  [require('../../assets/splotch/splotch-6.png'), require('../../assets/splotch/splotch-6-tex.png')],
+  [require('../../assets/splotch/splotch-7.png'), require('../../assets/splotch/splotch-7-tex.png')],
+];
 const TRASH = require('../../assets/icon-trash.png');
 import { printNotebook, shareNotebookPdf } from '../pdf';
 
@@ -966,7 +975,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const [mixing, setMixing] = useState(false); // Mix: a tapped colour is mixed into the pen's colour, like paint
   const [mirror, setMirror] = useState(false); // Mirror: everything drawn appears flipped on the other side too
   const [redo, setRedo] = useState([]); // strokes taken back with Undo, to put back with Redo
-  const [recent, setRecent] = useState(['#1e2324', '#e53935', '#fdd835', '#1f5fc8', '#3a9a4a', '#7e57c2', '#f1e8d8']); // the seven colours in the pill
+  const [recent, setRecent] = useState(['#1e2324', '#f1e8d8', '#2f4a4c', '#93a08f', '#b98a3e', '#9a4f36', '#4e3125']); // the seven colours in the pill: earthy to start (the bright ones are under +)
   const [more, setMore] = useState(false); // the + sheet: all the colours, Mix, Shapes, Mirror
   const [sizePop, setSizePop] = useState(null); // the tool whose sizes are showing
   const lastWater = useRef(null); // the last watercolour stroke and when it was finished (still wet for a while)
@@ -1061,10 +1070,21 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     setPen(next); setErase(false); setBucket(false);
     add7(next);
   };
-  const swatch = (hex, label, size, onPress, on) => (
-    <Pressable key={hex} onPress={onPress} hitSlop={3} accessibilityRole="button" accessibilityLabel={label}
-      style={[styles.swatch, { width: size, height: size, borderRadius: size / 2, backgroundColor: hex }, on && styles.swatchOn]} />
-  );
+  // each colour is a round splotch of paint (one of seven shapes, always the same one for a colour), its rim a
+  // little darker where the paint pooled; the one you're using sits on a soft white splotch, a little bigger
+  const swatch = (hex, label, size, onPress, on) => {
+    const n = [...hex].reduce((a, c) => a + c.charCodeAt(0), 0) % SPLOTCH.length;
+    const [shape, tex] = SPLOTCH[n];
+    const S2 = size * 1.12;
+    return (
+      <Pressable key={hex} onPress={onPress} hitSlop={3} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: !!on }}
+        style={{ width: S2, height: S2, alignItems: 'center', justifyContent: 'center', transform: [{ scale: on ? 1.12 : 1 }] }}>
+        {on ? <Image source={shape} style={{ position: 'absolute', width: S2 * 1.18, height: S2 * 1.18, tintColor: colors.white, transform: [{ rotate: '40deg' }] }} /> : null}
+        <Image source={shape} style={{ position: 'absolute', width: S2, height: S2, tintColor: hex }} />
+        <Image source={tex} style={{ position: 'absolute', width: S2, height: S2, opacity: 0.55 }} />
+      </Pressable>
+    );
+  };
   const colourName = (hex) => { const f = [...PENS_BRIGHT, ...PENS].find(([h]) => h.toLowerCase() === hex.toLowerCase()); return f ? t(f[1]) : t('Mixed colour'); };
   const pillEl = (w) => {
     const sz = Math.min(34, Math.floor((w - 20) / 7) - 8);
@@ -1126,7 +1146,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
             style={{ width: tw, height: TRAY_H }}>
             {onTool === k ? (
               <>
-                <Text numberOfLines={1} style={[styles.trayName, n >= TRAY.length - 2 ? { right: 0, textAlign: 'right' } : { left: 0 }]}>{t(TRAY_NAMES[k])}</Text>
+                <Text style={[styles.trayName, n >= TRAY.length - 2 ? { right: 0, textAlign: 'right' } : { left: 0 }]}>{t(TRAY_NAMES[k])}</Text>
                 <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: BOX_TOP, bottom: -2, borderWidth: StyleSheet.hairlineWidth * 2, borderColor: 'rgba(255,255,255,0.4)' }} />
               </>
             ) : null}

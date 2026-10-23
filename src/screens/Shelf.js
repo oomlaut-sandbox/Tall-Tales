@@ -178,7 +178,7 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
   const gardenPull = useRef(false);
   if (typeof window !== 'undefined' && window.location && /garden/.test(window.location.hash || '')) window.__openGarden = onGarden; // (web preview screenshots)
   const controls = useControls(); // parental controls: My Notebook, Create a story and Select may be hidden
-  const { width: winW } = useWindowDimensions();
+  const { width: winW, height: winH } = useWindowDimensions();
   const [folderOpen, setFolderOpen] = useState(false); // My Folder, opened (the sheets)
   const [selecting, setSelecting] = useState(false);
   const [picked, setPicked] = useState([]);
@@ -302,10 +302,10 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
                 <Text style={[styles.tileTitle, styles.tileOption]}>{t('My Folder')}</Text>
               </Pressable>
               <View pointerEvents="none" style={{ width: tileWidth(winW), height: colW }}>
-                {/* a pencil and a mug of hot chocolate (turned 47° anticlockwise), each with a deep soft shadow to the
+                {/* (sideways: both a little further right, clear of the folder) a pencil and a mug of hot chocolate (turned 47° anticlockwise), each with a deep soft shadow to the
                     bottom right (drawn into the pictures: the pencil 969 tall in 1237, the mug 452 × 439 in 856 × 843) */}
-                {(() => { const k = (colW * 0.46) / 969; return <Image source={PENCIL} resizeMode="stretch" style={{ position: 'absolute', left: colW * 0.06 - 134 * k, top: colW * 0.27 - 134 * k, width: 419 * k, height: 1237 * k }} />; })()}
-                {(() => { const k = (colW * 0.4) / 400; return <Image source={MUG} resizeMode="stretch" style={{ position: 'absolute', left: colW * 0.6 - (856 * k) / 2, top: colW * 0.48 - (843 * k) / 2, width: 856 * k, height: 843 * k }} />; })()}
+                {(() => { const k = (colW * 0.46) / 969; return <Image source={PENCIL} resizeMode="stretch" style={{ position: 'absolute', left: colW * (winW > winH * 1.1 ? 0.14 : 0.06) - 134 * k, top: colW * 0.27 - 134 * k, width: 419 * k, height: 1237 * k }} />; })()}
+                {(() => { const k = (colW * 0.4) / 400; return <Image source={MUG} resizeMode="stretch" style={{ position: 'absolute', left: colW * (winW > winH * 1.1 ? 0.68 : 0.6) - (856 * k) / 2, top: colW * 0.48 - (843 * k) / 2, width: 856 * k, height: 843 * k }} />; })()}
               </View>
               {/* the corkboard: always at the very bottom, as wide as two books */}
               <View style={{ width: '100%' }} />
