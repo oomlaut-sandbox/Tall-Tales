@@ -1288,7 +1288,7 @@ const styles = StyleSheet.create({
   outTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20 },
   outPill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
   countBox: { height: 30, minWidth: 74, paddingHorizontal: 12, borderRadius: 15, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
-  countText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 14 },
+  countText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 14, transform: [{ translateY: 1.5 }] }, // (Helvetica sits high: nudged down to look centred)
   pageBox: { position: 'absolute', zIndex: 25, backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, flexDirection: 'row', alignItems: 'center', gap: 7 }, // like the recording box in the reader
   pageBoxLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 14 },
   pageBoxSub: { color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 13 },
