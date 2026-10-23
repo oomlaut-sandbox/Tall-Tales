@@ -714,7 +714,7 @@ export function DoneTick({ size = 34 }) {
 }
 // the book's cover: a closed book seen from the front, its spine on the left, a little picture on it
 export function CoverIcon({ size = 28, color = colors.white }) {
-  const w = Math.max(2, size * 0.085);
+  const w = Math.max(1.6, size * 0.07); // the same thin stroke as the house and the note
   return (
     <View style={{ width: size * 0.84, height: size, borderWidth: w, borderColor: color, borderRadius: size * 0.09 }}>
       <View style={{ position: 'absolute', left: size * 0.13, top: 0, bottom: 0, width: w, backgroundColor: color }} />
@@ -724,7 +724,7 @@ export function CoverIcon({ size = 28, color = colors.white }) {
 }
 // the pages: a stack of pages, the front one whole and two edges peeking out behind it
 export function PagesIcon({ size = 28, color = colors.white }) {
-  const w = Math.max(2, size * 0.085);
+  const w = Math.max(1.6, size * 0.07); // the same thin stroke as the house and the note
   const pw = size * 0.66, ph = size * 0.76;
   return (
     <View style={{ width: size, height: size }}>

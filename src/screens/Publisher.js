@@ -52,11 +52,15 @@ const BLUE = { l: 0.283, r: 0.711, t: 0.243, b: 0.684 };
 export function CenteredField({ value, onChangeText, placeholder, onFocus, onBlur, box, text }) {
   const ref = useRef(null);
   const fs = (StyleSheet.flatten(text) || {}).fontSize || 17;
+  const H = (StyleSheet.flatten(box) || {}).height || 48;
+  const lh = Math.round(fs * 1.25);
+  // a one-line text box as tall as the box, its line placed in the middle by padding (the one-line iPhone field
+  // centred its words its own way and put them low, even cut them off)
   return (
-    <Pressable onPress={() => ref.current && ref.current.focus()} style={[{ justifyContent: 'center' }, box]} accessible={false}>
-      <TextInput ref={ref} value={value} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor="#8a8a8a"
-        onFocus={onFocus} onBlur={onBlur} returnKeyType="done" onSubmitEditing={() => Keyboard.dismiss()}
-        allowFontScaling={false} style={[{ alignSelf: 'stretch', height: Math.ceil(fs * 1.6), paddingVertical: 0, paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 }, text]} accessibilityLabel={placeholder} />
+    <Pressable onPress={() => ref.current && ref.current.focus()} style={box} accessible={false}>
+      <TextInput ref={ref} value={value} onChangeText={(v) => onChangeText(v.replace(/\n/g, ''))} placeholder={placeholder} placeholderTextColor="#8a8a8a"
+        onFocus={onFocus} onBlur={onBlur} returnKeyType="done" multiline scrollEnabled={false} submitBehavior="blurAndSubmit"
+        allowFontScaling={false} style={[{ alignSelf: 'stretch', paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 }, text, { height: H, lineHeight: lh, paddingTop: Math.round((H - lh) / 2), paddingBottom: 0 }]} accessibilityLabel={placeholder} />
     </Pressable>
   );
 }
@@ -488,8 +492,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <View style={{ alignItems: 'center', gap: 18 }}>
               {/* the page count sits above Pages, with plenty of room between them */}
               <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ alignItems: 'center', gap: 18, opacity: barFade, marginBottom: 26 }}>
-              <Pressable onPress={() => openCover()} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><CoverIcon size={27} /></Pressable>
-              <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Pages')}><PagesIcon size={28} /></Pressable>
+              <Pressable onPress={() => openCover()} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><CoverIcon size={23} /></Pressable>
+              <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Pages')}><PagesIcon size={24} /></Pressable>
               <Pressable onPress={() => finish()} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Finish and save the book')}><DoneTick size={34} /></Pressable>
               </Animated.View>
             </View>
@@ -502,8 +506,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         {/* Cover, Pages, Finish on the right (the page count floats on the page itself); they keep their size even
             with the phone's larger text setting, so they always fit beside the menu, house and note */}
         <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ marginLeft: 'auto', flexShrink: 0, flexDirection: 'row', alignItems: 'center', gap: 22, opacity: barFade }}>
-        <Pressable onPress={() => openCover()} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><CoverIcon size={27} /></Pressable>
-        <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Pages')}><PagesIcon size={28} /></Pressable>
+        <Pressable onPress={() => openCover()} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><CoverIcon size={23} /></Pressable>
+        <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Pages')}><PagesIcon size={24} /></Pressable>
         <Pressable onPress={() => finish()} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Finish and save the book')}><DoneTick size={34} /></Pressable>
         </Animated.View>
       </Bar>

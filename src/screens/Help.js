@@ -201,8 +201,10 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
           <Pressable onPress={() => searchRef.current && searchRef.current.focus()} accessible={false} style={[styles.searchWrap, { marginTop: 14 }]}>
             <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.22)', 'rgba(0,0,0,0.06)', 'rgba(0,0,0,0)']} locations={[0, 0.35, 1]} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 14 }} />
             <LinearGradient pointerEvents="none" start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['rgba(0,0,0,0.08)', 'rgba(0,0,0,0)']} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 16 }} />
-            <TextInput ref={searchRef} value={q} onChangeText={setQ} placeholder={t('Search ideas and support')} placeholderTextColor="#666"
-              style={styles.search} allowFontScaling={false} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel={t('Search ideas and support')} />
+            {/* a text box (multiline, one line only) with its line placed exactly in the middle by padding: the
+                one-line iPhone field centres its words its own way and kept putting them low */}
+            <TextInput ref={searchRef} value={q} onChangeText={(v) => setQ(v.replace(/\n/g, ''))} placeholder={t('Search ideas and support')} placeholderTextColor="#666"
+              style={styles.search} allowFontScaling={false} multiline scrollEnabled={false} submitBehavior="blurAndSubmit" returnKeyType="search" accessibilityLabel={t('Search ideas and support')} />
           </Pressable>
           {/* About lives here now (it left the main menu) */}
           <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>{t('About Oomlaut Reader')}</Text></Pressable>
@@ -245,10 +247,9 @@ const styles = StyleSheet.create({
   videoPlay: { color: 'rgba(255,255,255,0.85)', fontSize: 34 },
   videoText: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 14 },
   searchWrap: { height: 44, borderRadius: 22, overflow: 'hidden', backgroundColor: '#d6d6d6', justifyContent: 'center' }, // light grey
-  // the field is exactly one line tall (fontSize 16 → 20) and the pill centres it: a field filling the pill put its
-  // words low on the iPhone. No padding top or bottom, no lineHeight, not scaled with the phone's text size.
-  search: { alignSelf: 'stretch', height: 20, backgroundColor: 'transparent', paddingHorizontal: 18, paddingVertical: 0, includeFontPadding: false,
-    fontFamily: fonts.ui, fontSize: 16, color: colors.ink, outlineWidth: 0 },
+  // the pill is 44 tall; the line is 20 tall (fontSize 16, lineHeight 20), so 12 above it puts it in the middle
+  search: { alignSelf: 'stretch', height: 44, backgroundColor: 'transparent', paddingHorizontal: 18, paddingTop: 12, paddingBottom: 0, includeFontPadding: false,
+    fontFamily: fonts.ui, fontSize: 16, lineHeight: 20, color: colors.ink, outlineWidth: 0 },
   goCircle: { width: 21, height: 21, borderRadius: 10.5, borderWidth: 1.5, borderColor: colors.white, alignItems: 'center', justifyContent: 'center' },
   goChevron: { width: 6, height: 6, borderRightWidth: 1.6, borderTopWidth: 1.6, borderColor: colors.white, transform: [{ translateX: -1.3 }, { rotate: '45deg' }] },
   ideas: { borderRadius: 26, shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, elevation: 5 },
