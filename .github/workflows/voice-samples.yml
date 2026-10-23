@@ -1,0 +1,29 @@
+# One sample sentence in voices we're considering; saved to the voice-samples branch (not the app).
+name: Voice samples
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  samples:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Make samples
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: node ci/voice-samples.js
+      - name: Save to the voice-samples branch
+        run: |
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          cp -r samples /tmp/samples
+          git checkout -q --orphan voice-samples
+          git rm -rfq --cached . > /dev/null
+          rm -rf ./* .gitignore .github 2>/dev/null || true
+          cp /tmp/samples/* .
+          git add -f *.mp3 report.txt 2>/dev/null || git add -f report.txt
+          git commit -qm "Voice samples" && git push -qf origin HEAD:voice-samples
