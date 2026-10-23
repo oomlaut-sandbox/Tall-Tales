@@ -20,7 +20,7 @@ const HAND = 'SpecialElite_400Regular'; // the typewriter, like My Notebook
 
 function Pin({ p, W }) {
   const s = Math.round(W * (p.kind === 'note' ? 0.26 : 0.28));
-  const head = <Image source={PIN_HEAD} style={{ position: 'absolute', top: -s * 0.08, left: s / 2 - 11, width: 22, height: 22, zIndex: 2 }} />;
+  const head = <Image source={PIN_HEAD} style={{ position: 'absolute', top: -s * 0.02, left: s / 2 - 4, width: 8, height: 8, zIndex: 2 }} />;
   return p.kind === 'note' ? (
     <View style={[styles.note, { width: s, height: s }]}>
       {head}

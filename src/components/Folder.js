@@ -53,7 +53,7 @@ function AbcSheet({ size, narrator }) {
     bounce.setValue(0.82);
     Animated.spring(bounce, { toValue: 1, friction: 4, tension: 140, useNativeDriver: true }).start();
     stopSpeech(); stopVoice();
-    const clip = (LETTERS[narrator] || {})[ch.toLowerCase()] || (LETTERS.lily || {})[ch.toLowerCase()];
+    const clip = (LETTERS.lily || {})[ch.toLowerCase()]; // always Fatima
     if (clip && playVoice(clip, { onFail: () => speakTracked(phone(ch), { rate: 0.7 }) })) return;
     speakTracked(phone(ch), { rate: 0.7 });
   };
