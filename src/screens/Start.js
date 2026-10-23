@@ -205,8 +205,8 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
       }}
     </BookFrame>
     {/* A thin see-through black strip across the top, above everything (the cover opens underneath it):
-        the languages on the left (tap one to switch, unless the parental controls keep the language fixed)
-        and Profiles on the right (the child reading now, once there are profiles), centred in the strip. */}
+        the languages on the left (tap one to switch, unless the parental controls keep the language fixed).
+        (Profiles lives in My Library now.) */}
     <View pointerEvents="box-none" style={{ position: 'absolute', left: insets.left, right: winW > winH * 1.1 ? Math.round(u * 17 * 1.15) + insets.right : 0, top: insets.top, height: 32, zIndex: 100,
       flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingBottom: 2, gap: 10 }}>{/* (the words sit a point above the middle) */}
       <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 11, flexShrink: 1, flexWrap: 'wrap' }}>
@@ -216,10 +216,6 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
           </Pressable>
         ))}
       </View>
-      <Pressable onPress={() => go('profiles')} hitSlop={8} style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }} accessibilityRole="button" accessibilityLabel={t('Profiles')}>
-        <UserIcon color="rgba(235,235,235,0.9)" />
-        <Text numberOfLines={1} style={[styles.corner, { color: 'rgba(235,235,235,0.9)', maxWidth: 90 }]}>{(activeProfile() || {}).name || t('Profiles')}</Text>
-      </Pressable>
     </View>
     </View>
   );
