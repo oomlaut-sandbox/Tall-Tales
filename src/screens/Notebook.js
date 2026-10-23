@@ -67,6 +67,8 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const { width: winW, height: winH } = useWindowDimensions();
   const [nb, setNb] = useState(null);
   const [i, setI] = useState(COVER_SPREAD);
+  const iRef = useRef(i);
+  iRef.current = i;
   const [log, setLog] = useState(null);
   const [saved, setSaved] = useState(true);
   const savedFade = useRef(new Animated.Value(0)).current; // 'Saved' fades in after each save, then away
@@ -169,6 +171,27 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     return () => clearTimeout(t);
   }, [intro, bookAt, nb]);
   const opening = intro === 'fly' || intro === 'flip';
+  // ---- closing, back to My Library: on the first spread, turning back swings the cover shut over the first page,
+  // then the closed notebook shrinks back to its place on the shelf (the opening, backwards) ----
+  const closing = intro === 'close' || intro === 'shrink';
+  const closeBook = async () => {
+    if (busy.current || introRef.current) return;
+    busy.current = true;
+    clearTimeout(timer.current);
+    if (latest.current) saveNotebook(latest.current);
+    fly.setValue(1); swing.setValue(1);
+    setIntro('close');
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      playSound('coverClose');
+      Animated.timing(swing, { toValue: 0, duration: 650, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => {
+        if (!from) { onDone(); return; }
+        setIntro('shrink');
+        Animated.timing(fly, { toValue: 0, duration: 360, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => onDone());
+      });
+    }));
+  };
+  const closeRef = useRef(closeBook);
+  closeRef.current = closeBook;
   const introRef = useRef(intro);
   introRef.current = intro; // the real notebook stays hidden under the flying cover
 
@@ -320,7 +343,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   // A flick turns the page the same way a corner tap does (the page doesn't follow the finger): a quick swipe
   // left or up for the next page, right or down to go back. Taps still go to the squares and the corners.
   const flickTo = useRef(null);
-  flickTo.current = (dir) => { if (dir > 0) next(); else if (i > 0) turn(-1); };
+  flickTo.current = (dir) => { if (dir > 0) next(); else if (i > 0) turn(-1); else closeRef.current(); }; // back from the first spread: close the cover
   const flick = useRef(PanResponder.create({
     onMoveShouldSetPanResponderCapture: (_, g) => !busy.current && !introRef.current && (Math.abs(g.dx) > 14 || Math.abs(g.dy) > 14),
     onPanResponderTerminationRequest: () => false,
@@ -338,6 +361,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     onPanResponderGrant: (_, g) => {
       const vert = Math.abs(g.dy) >= Math.abs(g.dx);
       const dir = (vert ? g.dy : g.dx) < 0 ? 1 : -1;
+      if (dir < 0 && iRef.current === COVER_SPREAD) { closeRef.current(); return; } // back from the first spread: close the cover
       const d = { vert, dir, p: dir > 0 ? 0 : 1, t: null, ended: null };
       drag.current = d;
       prepareRef.current(dir).then((t) => {
@@ -458,7 +482,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           </Pressable>
         </>
       ) : null}
-      <Pressable onPress={async () => { clearTimeout(timer.current); if (latest.current) await saveNotebook(latest.current); onDone(); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Close the notebook')}>
+      <Pressable onPress={async () => { if (i === COVER_SPREAD && !intro) { closeRef.current(); return; } clearTimeout(timer.current); if (latest.current) await saveNotebook(latest.current); onDone(); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Close the notebook')}>
         <View style={styles.finish}><Text style={styles.btn}>{t('Done')}</Text></View>
       </Pressable>
     </View>
@@ -466,20 +490,22 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
 
   // the closed cover, flying in from the shelf and then swinging open (drawn over everything)
   let introEl = null;
-  if (intro && from) {
+  if (intro && (from || closing)) {
     // One view, placed exactly over the little notebook on the shelf from the very first frame. It only
     // moves and grows (translate and scale) towards the spot where the cover opens; until that spot is
     // known it doesn't move at all, so nothing jumps or blinks.
-    const S0 = from.w;
     const to = bookAt ? (wide ? { x: bookAt.x + side, y: bookAt.y } : { x: bookAt.x, y: bookAt.y + side }) : null;
+    // (closing a notebook that wasn't opened from the shelf: the cover just swings shut where it is)
+    const F = from || (to ? { x: to.x, y: to.y, w: side } : { x: 0, y: 0, w: side });
+    const S0 = F.w;
     const k = to ? side / S0 : 1;
-    const dx = to ? to.x + side / 2 - (from.x + S0 / 2) : 0, dy = to ? to.y + side / 2 - (from.y + S0 / 2) : 0;
+    const dx = to ? to.x + side / 2 - (F.x + S0 / 2) : 0, dy = to ? to.y + side / 2 - (F.y + S0 / 2) : 0;
     const round = wide
       ? { borderTopLeftRadius: S0 * R_SPINE, borderBottomLeftRadius: S0 * R_SPINE, borderTopRightRadius: S0 * R_EDGE, borderBottomRightRadius: S0 * R_EDGE }
       : { borderTopLeftRadius: S0 * R_SPINE, borderTopRightRadius: S0 * R_SPINE, borderBottomLeftRadius: S0 * R_EDGE, borderBottomRightRadius: S0 * R_EDGE };
     introEl = (
       <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 45 }]}>
-        <Animated.View style={{ position: 'absolute', left: from.x, top: from.y, width: S0, height: S0,
+        <Animated.View style={{ position: 'absolute', left: F.x, top: F.y, width: S0, height: S0,
           transform: [{ translateX: fly.interpolate({ inputRange: [0, 1], outputRange: [0, dx] }) }, { translateY: fly.interpolate({ inputRange: [0, 1], outputRange: [0, dy] }) }, { scale: fly.interpolate({ inputRange: [0, 1], outputRange: [1, k] }) }] }}>
           {/* the shelf notebook's own shadow, still (never on the turning cover: that flickers), fading as it grows */}
           <Animated.View style={[StyleSheet.absoluteFill, round, { backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, opacity: fade.out }]} />
@@ -524,18 +550,24 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         <DeskFelt spot="notebook1" />
         {nb ? (
           <View ref={bookRef} collapsable={false} onLayout={measureBook} {...flick.panHandlers}
-            style={[styles.bookShadow, shape, { width: bookW, height: bookH }, opening ? { backgroundColor: 'transparent', shadowOpacity: 0 } : null]}>
+            style={[styles.bookShadow, shape, { width: bookW, height: bookH }, opening || closing ? { backgroundColor: 'transparent', shadowOpacity: 0 } : null]}>
             {/* While it opens, the book's shadow is a still felt-coloured shape underneath that grows in with the
                 flying cover; in the same frame it goes, the book's own shadow comes on, so it never flares.
                 It lies only under the closed book (the bottom half; the right half sideways): where the cover is
                 about to land there's nothing yet, so no outline of the book shows on the felt while it swings. */}
-            {opening ? (
+            {opening || closing ? (
               <Animated.View pointerEvents="none" style={[{ position: 'absolute', ...(wide ? { left: bookW / 2, top: 0, width: bookW / 2, height: bookH } : { left: 0, top: bookH / 2, width: bookW, height: bookH / 2 }) },
                 wide ? { borderTopRightRadius: R, borderBottomRightRadius: R } : { borderBottomLeftRadius: R, borderBottomRightRadius: R }, { backgroundColor: DESK_FELT ? '#262626' : DESK_BG, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, opacity: fade.in }]}>
                 <View style={[StyleSheet.absoluteFill, wide ? { borderTopRightRadius: R, borderBottomRightRadius: R } : { borderBottomLeftRadius: R, borderBottomRightRadius: R }, { overflow: 'hidden' }]}><DeskFelt spot="notebookPlate" /></View>
               </Animated.View>
             ) : null}
-            <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { opacity: intro === 'fly' ? 0 : 1 }]}>{layers}</View>
+            <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { opacity: intro === 'fly' || intro === 'shrink' ? 0 : 1 }]}>{layers}</View>
+            {/* closing: where the cover lay open there's only felt now (the closing cover is drawn over it) */}
+            {closing ? (
+              <View pointerEvents="none" style={[{ position: 'absolute', left: 0, top: 0, overflow: 'hidden' }, wide ? { width: bookW / 2, height: bookH, borderTopLeftRadius: R, borderBottomLeftRadius: R } : { width: bookW, height: bookH / 2, borderTopLeftRadius: R, borderTopRightRadius: R }, { backgroundColor: DESK_FELT ? '#262626' : DESK_BG }]}>
+                <DeskFelt spot="notebookShut" />
+              </View>
+            ) : null}
             {/* top-left of the top page (the left page sideways): a small grey box, like the recording box in the
                 reader: the kind of page and where you are ('Saved' briefly takes its place); tap it for Pages */}
             {!intro && !wide && i !== COVER_SPREAD && i !== BADGES && !(flipPair && peelLive && !landed) ? (
