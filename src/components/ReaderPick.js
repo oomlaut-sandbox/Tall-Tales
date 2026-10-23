@@ -1,7 +1,7 @@
 // Before recording: who's reading? Up to three people can record a book in their own voice (Mom, Grandpa,
 // a child…). Pick who's reading now, or add a new reader; then Start recording.
 import React, { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View, ScrollView } from 'react-native';
 import { colors, fonts } from '../theme';
 import { useT } from '../i18n';
 import { withTap } from '../haptics';
@@ -77,6 +77,8 @@ export default function ReaderPick({ initial, onCancel, onStart, edit = false, o
   return (
     <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={onCancel}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.back}>
+        {/* (scrolls when the phone is sideways and the box is taller than the screen) */}
+        <ScrollView style={{ width: '100%', maxWidth: 460, flexGrow: 0 }} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} keyboardShouldPersistTaps="handled" bounces={false}>
         <View style={styles.box}>
           <Text style={styles.title}>{tr('Who’s reading?')}</Text>
           <Text style={styles.text}>{edit ? tr('Pick a reader to change their photo, or add a new reader.') : tr('Up to three people can record this book in their own voice. Pick who’s reading now, or add a new reader.')}</Text>
@@ -145,6 +147,7 @@ export default function ReaderPick({ initial, onCancel, onStart, edit = false, o
             </Pressable>
           </View>
         </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </Modal>
   );
