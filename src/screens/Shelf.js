@@ -36,7 +36,7 @@ const SELECT_ICON = require('../../assets/icon-select.png');
 const FOLDER = require('../../assets/folder.png'); // 560 × 564, Jörg's kraft folder
 const PENCIL = require('../../assets/pencil-shadow.png');
 const MUG = require('../../assets/mug-shadow.png'); // hot chocolate from above, already turned
-const LEANER = require('../../assets/store-lean.png'); // Skippy: Jörg's grey character in sunglasses, leaning on the featured book (698 × 700)
+const LEANER = require('../../assets/store-lean.png'); // Skippy: Jörg's grey character in sunglasses, leaning on the featured book (700 × 696)
 
 function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, option, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
   const t = useT();
@@ -58,7 +58,7 @@ function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onP
       {/* the featured book: a grey character leans against its right side, his hand on its edge, feet on the felt */}
       {lean && leanW ? (
         <Image source={LEANER} pointerEvents="none" resizeMode="contain" accessibilityIgnoresInvertColors
-          style={{ position: 'absolute', zIndex: 2, width: leanW * 0.43 * 698 / 700, height: leanW * 0.43, left: leanW - leanW * 0.43 * 0.012, bottom: -leanW * 0.01 }} />
+          style={{ position: 'absolute', zIndex: 2, width: leanW * 0.43 * 700 / 696, height: leanW * 0.43, left: leanW - leanW * 0.43 * 0.012, bottom: -leanW * 0.01 }} />
       ) : null}
       {/* a very subtle drop shadow under the square cover */}
       <View style={styles.tileShadow}>
