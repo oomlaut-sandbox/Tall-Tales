@@ -69,7 +69,7 @@ export default function TrimEditor({ rec, title, onCancel, onSave }) {
 
   const LINE = 3, GRAB = 36;
   return (
-    <Modal transparent animationType="fade" visible onRequestClose={() => { stop(); onCancel(); }}>
+    <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => { stop(); onCancel(); }}>
       <View style={styles.back}>
         <View style={styles.box}>
           <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' }}>

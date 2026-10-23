@@ -209,7 +209,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
               {form.id ? (
                 sure ? (
                   // are you sure? a solid black box popping up over everything
-                  <Modal transparent animationType="fade" visible onRequestClose={() => setSure(false)}>
+                  <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setSure(false)}>
                     <View style={styles.sureBack}>
                       <View style={styles.sureBox}>
                         <Text style={styles.sureText}>{t('Remove {name}? Their notebook and badges stay on this phone, but nobody will see them.', { name: form.name || '?' })}</Text>

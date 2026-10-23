@@ -406,7 +406,7 @@ function Root() {
         <Membership visible={memberOpen} onClose={() => setMemberOpen(false)} toast={toast} />
         {incoming && incoming.kind === SHEET_KIND ? (
           // a sheet someone sent: into My Folder
-          <Modal transparent animationType="fade" visible onRequestClose={() => setIncoming(null)}>
+          <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setIncoming(null)}>
             <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 28 }}>
               <View style={{ width: '100%', maxWidth: 400, backgroundColor: 'rgba(0,0,0,0.86)', borderRadius: 24, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26 }}>
                 <Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20 }}>{t('{name} sent you a sheet', { name: incoming.from || t('Someone') })}</Text>
@@ -428,7 +428,7 @@ function Root() {
           const names = (incoming.readers || []).map((x) => x.name).join(', ');
           const title = incoming.title || '';
           return (
-            <Modal transparent animationType="fade" visible onRequestClose={() => setIncoming(null)}>
+            <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setIncoming(null)}>
               <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 28 }}>
                 <View style={{ width: '100%', maxWidth: 400, backgroundColor: '#000', borderRadius: 24, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26 }}>
                   <Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20 }}>{t('{names} read “{title}” for you', { names, title })}</Text>

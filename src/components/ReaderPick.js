@@ -75,7 +75,7 @@ export default function ReaderPick({ initial, onCancel, onStart, edit = false, o
   if (!list) return null;
   const canAdd = list.length < MAX_READERS;
   return (
-    <Modal transparent animationType="fade" visible onRequestClose={onCancel}>
+    <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={onCancel}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.back}>
         <View style={styles.box}>
           <Text style={styles.title}>{tr('Who’s reading?')}</Text>
@@ -123,7 +123,7 @@ export default function ReaderPick({ initial, onCancel, onStart, edit = false, o
             const who = (list.find((x) => x.id === pick) || {}).name || '';
             const nm = who === 'Me' && pick === 'me' ? tr('Me') : who;
             return (
-              <Modal transparent animationType="fade" visible onRequestClose={() => setSure(false)}>
+              <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setSure(false)}>
                 <View style={styles.sureBack}>
                   <View style={styles.sureBox}>
                     <Text style={styles.sureText}>{tr('Remove {name} and all of {name}’s recordings?', { name: nm })}</Text>

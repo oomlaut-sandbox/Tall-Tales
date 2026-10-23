@@ -81,7 +81,7 @@ export default function AmbientControls({ prefs, setPrefs }) {
       {sheet ? <MyMusicSheet visible kind={sheet} onClose={() => setSheet(null)} /> : null}
       {/* the question keeps its words while it fades away (they used to vanish first and the box jumped) */}
       {/* (in its own full-screen layer: inside the page it sat in the middle of the long list and jumped about) */}
-      <Modal visible={!!gate} transparent animationType="fade" onRequestClose={() => setGate(null)}>
+      <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} visible={!!gate} transparent animationType="fade" onRequestClose={() => setGate(null)}>
         <ParentGate visible reason={(gate || lastGate.current || {}).reason || ''} onPass={() => { const g = gate; setGate(null); if (g) setTimeout(g.run, 600); }} onCancel={() => setGate(null)} />
       </Modal>
       <Text style={styles.group}>{t('Volume')}</Text>

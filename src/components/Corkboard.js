@@ -97,7 +97,7 @@ export default function Corkboard({ width, toast }) {
 
       {/* what to pin */}
       {ask ? (
-        <Modal transparent animationType="fade" visible onRequestClose={() => setAsk(false)}>
+        <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setAsk(false)}>
           <Pressable style={styles.back} onPress={() => setAsk(false)}>
             <View style={styles.box}>
               <Text style={styles.boxTitle}>{t('Pin something')}</Text>
@@ -118,7 +118,7 @@ export default function Corkboard({ width, toast }) {
 
       {/* writing a sticky note */}
       {writing != null ? (
-        <Modal transparent animationType="fade" visible onRequestClose={() => setWriting(null)}>
+        <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setWriting(null)}>
           {/* the note stays put near the top, above the keyboard (no jump when the keyboard comes or goes), and a tap
               on Pin it or Cancel counts the first time, keyboard up or not */}
           <ScrollView scrollEnabled={false} keyboardShouldPersistTaps="always" style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)' }}
@@ -138,7 +138,7 @@ export default function Corkboard({ width, toast }) {
 
       {/* a pin, big: take it down, or close */}
       {open ? (
-        <Modal transparent animationType="fade" visible onRequestClose={() => setOpen(null)}>
+        <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setOpen(null)}>
           <Pressable style={styles.back} onPress={() => setOpen(null)}>
             <View style={{ transform: [{ rotate: `${(open.rot || 0) / 2}deg` }] }}><Pin p={open} W={Math.min(width * 2.6, 900)} /></View>
             <View style={{ flexDirection: 'row', gap: 10, marginTop: 34 }}>

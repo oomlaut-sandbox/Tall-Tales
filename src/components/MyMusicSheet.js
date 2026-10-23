@@ -76,7 +76,7 @@ export default function MyMusicSheet({ visible, onClose, kind = 'music' }) {
     </Pressable>
   );
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={close}>
+    <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} visible={visible} transparent animationType="fade" onRequestClose={close}>
       <Pressable style={styles.scrim} onPress={close}>
         <Pressable style={styles.card} onPress={() => {}}>
           <Text style={styles.title}>{isSound ? t('Upload or record a sound') : t('Upload or record music')}</Text>

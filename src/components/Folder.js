@@ -114,7 +114,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
   const name = (activeProfile() || {}).name || '';
 
   return (
-    <Modal transparent visible animationType="none" onRequestClose={close}>
+    <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent visible animationType="none" onRequestClose={close}>
       <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.78)', opacity: fade }]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={close} accessibilityLabel={t('Close')} />
         <ScrollView contentContainerStyle={{ paddingTop: 90, paddingBottom: 60, paddingHorizontal: 24, alignItems: 'center' }}>
