@@ -52,12 +52,13 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
       accessibilityLabel={t('Answer')}
     />
   );
+  const wide = !flat && Math.min(winW, winH) >= 600; // iPad: a compact box in the middle (iPhone unchanged)
   const cancelBtn = <Pressable onPress={onCancel} style={[styles.btn, flat && styles.btnFlat]}><Text style={styles.btnText}>{t('Cancel')}</Text></Pressable>;
   const goBtn = <Pressable onPress={check} style={[styles.btn, flat && styles.btnFlat, { backgroundColor: colors.deepRed }]}><Text style={styles.btnText}>{t('Continue')}</Text></Pressable>;
   return (
-    <View ref={scrimRef} style={[styles.scrim, { paddingBottom: covered }, flat && { alignItems: 'center', paddingTop: 8 }]}
+    <View ref={scrimRef} style={[styles.scrim, { paddingBottom: covered }, (flat || wide) && { alignItems: 'center' }, flat && { paddingTop: 8 }]}
       onLayout={() => scrimRef.current && scrimRef.current.measureInWindow((x, y, w, h) => setFrame({ y, h: h || winH }))}>
-      <View style={[styles.card, flat && styles.cardFlat]}>
+      <View style={[styles.card, flat ? styles.cardFlat : wide && styles.cardWide]}>
         {/* a grown-up holding a child's hand, so even little ones can see this is for a grown-up */}
         <Image source={GROWNUP} style={[{ position: 'absolute', top: 18, right: 18, width: 48, height: 48, tintColor: '#8a8a8a' }, flat && { top: 12, right: 14, width: 34, height: 34 }]} resizeMode="contain" accessibilityIgnoresInvertColors />
         {flat ? null : <Text style={styles.kicker}>{t('For grown-ups')}</Text>}
@@ -84,6 +85,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: 10, marginTop: 14 },
   btn: { flex: 1, backgroundColor: colors.tile, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
   cardFlat: { width: '100%', maxWidth: 560, paddingHorizontal: 20, paddingTop: 14, paddingBottom: 16, gap: 10, borderRadius: 16 },
+  cardWide: { width: 460, borderRadius: 20 },
   btnFlat: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto', height: 40, paddingHorizontal: 18 },
   btnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
 });
