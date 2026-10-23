@@ -9,7 +9,7 @@ import { Animated, Easing, Image, PanResponder, StyleSheet, View, useWindowDimen
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme';
 import { bookLayout } from './BookFrame';
-import { Fade, PageView } from './PageView';
+import { AmberTint, Fade, PageView } from './PageView';
 import { Felt, DESK_FELT, DeskFelt } from '../look';
 import { playSound } from '../sound';
 import { measureTile } from '../tileSpots';
@@ -22,7 +22,7 @@ const afterFrames = (n, fn) => { if (n <= 0) fn(); else requestAnimationFrame(()
 // swipe up and it glides back to its place in My Library (onGone); tap it (or swipe the other way) and it opens again
 // (onDone, back to the reader).
 // openSignal: a number that changes when something else (the moon on the bar) wants the shut book opened again
-export default function BookOpen({ u, story, cover, rect, textScale, fontKey, onDone, closing = false, onLeave, onGone, openSignal = 0 }) {
+export default function BookOpen({ u, story, cover, rect, textScale, fontKey, amber, onDone, closing = false, onLeave, onGone, openSignal = 0 }) {
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
   const L = bookLayout(winW, winH, insets, u * 17); // the reader's layout (its bar is u * 17, like every bar)
@@ -215,7 +215,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
         <View pointerEvents="none" style={[styles.shadow, { position: 'absolute', left: tx, top: ty, width: s, height: s }]}>
           <View style={{ width: s, height: s, overflow: 'hidden' }}>
             <View style={{ position: 'absolute', left: L.wide ? -s : 0, top: L.wide ? 0 : -s }}>
-              <PageView page={first} width={L.wide ? 2 * s : s} height={L.wide ? s : 2 * s} textScale={textScale} fontKey={fontKey} />
+              <PageView page={first} width={L.wide ? 2 * s : s} height={L.wide ? s : 2 * s} textScale={textScale} fontKey={fontKey} amber={amber} />
             </View>
           </View>
         </View>
@@ -224,6 +224,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
       {phase === 2 ? (
         <View pointerEvents="none" style={{ position: 'absolute', left: bx, top: by, width: s, height: s, backgroundColor: colors.white, overflow: 'hidden' }}>
           {inside ? <Image source={inside} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s }} resizeMode="cover" /> : null}
+          {inside && amber ? <AmberTint /> : null}
           <Fade edge={L.wide ? 'right' : 'bottom'} size={Math.round(s * 0.1)} max={0.22} />
         </View>
       ) : null}
@@ -240,6 +241,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
           {/* the inside of the cover, mirrored so it reads right once turned over */}
           <Animated.View style={[StyleSheet.absoluteFill, { opacity: backOp, backgroundColor: colors.white, transform: [L.wide ? { scaleX: -1 } : { scaleY: -1 }] }]}>
             {inside ? <Image source={inside} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s }} resizeMode="cover" /> : null}
+          {inside && amber ? <AmberTint /> : null}
             {/* the spine shadow is there from the moment the inside shows (same as the reader's) */}
             <Fade edge={L.wide ? 'right' : 'bottom'} size={Math.round(s * 0.1)} max={0.22} />
           </Animated.View>

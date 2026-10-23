@@ -777,7 +777,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     return { artH, textH, tables: flapTables({ textH, artH }) };
   }, [W, H]);
   const pageProps = (i) => ({
-    page: pages[i], end: !!pages[i]?.end, width: W, height: H, textScale: prefs.textScale || 1, fontKey: prefs.font || 'serif',
+    page: pages[i], end: !!pages[i]?.end, width: W, height: H, textScale: prefs.textScale || 1, fontKey: prefs.font || 'serif', amber: !!prefs.amber,
     onReadAgain: () => { stopReading(); setIdx(0); }, onLibrary: goLibrary, onShare: controls.sharing ? () => setShareGate(true) : null,
   });
   const showHot = false; // Interactive mode is switched off for now
@@ -1076,6 +1076,11 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
         <View style={styles.setting}>
           <Text style={styles.help}>{tr('Book font')}</Text>
           <Seg stacked value={prefs.font || 'serif'} options={Object.entries(BOOK_FONTS).map(([k, f]) => [k, tr(f.label), f.family])} onChange={(v) => setPrefs((p) => ({ ...p, font: v }))} />
+        </View>
+        {/* Amber light: warm, softer pages for the evening */}
+        <View style={styles.setting}>
+          <Text style={styles.help}>{tr('Amber light')}</Text>
+          <Seg value={prefs.amber ? 'on' : 'off'} options={[['off', tr('Off')], ['on', tr('On')]]} onChange={(v) => setPrefs((p) => ({ ...p, amber: v === 'on' }))} />
         </View>
         <View style={styles.setting}>
           <Text style={styles.help}>{tr('Sound effects')}</Text>

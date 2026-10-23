@@ -547,6 +547,7 @@ const T = {
   'The woodpile': { de: 'Der Holzstapel', fr: 'Le tas de bois', es: 'La pila de leña', ja: 'まきの やま' },
   'Back to the Garden': { de: 'Zurück in den Garten', fr: 'Retour au Jardin', es: 'Volver al Jardín', ja: 'おにわに もどる' },
   'The driftwood is still drying in the sun. Come back soon.': { de: 'Das Treibholz trocknet noch in der Sonne. Komm bald wieder.', fr: 'Le bois flotté sèche encore au soleil. Reviens bientôt.', es: 'La madera de la playa todavía se seca al sol. Vuelve pronto.', ja: 'ながれぎは まだ おひさまで かわかしているよ。また きてね。' },
+  'Amber light': { de: 'Bernsteinlicht', fr: 'Lumière ambrée', es: 'Luz ámbar', ja: 'こはくいろの あかり' },
   'Crayon': { de: 'Wachsmalstift', fr: 'Craie grasse', es: 'Cera', ja: 'クレヨン' },
   'Mix': { de: 'Mischen', fr: 'Mélanger', es: 'Mezclar', ja: 'まぜる' },
   'Mix colours': { de: 'Farben mischen', fr: 'Mélanger les couleurs', es: 'Mezclar colores', ja: 'いろを まぜる' },

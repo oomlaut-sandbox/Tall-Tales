@@ -366,11 +366,11 @@ function Root() {
             autoStart={!!queue} onFinished={onBookFinished} onSettings={() => setSettingsGate(true)} onPlaylists={() => go('playlists')} setPrefs={setReaderPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} onCover={() => { stopSpeech(); stopVoice(); setClosingBook({ story, cover: lastOpen.current.cover || (story.cover && story.cover.uri ? { uri: story.cover.uri } : null), rect: lastOpen.current.rect }); }} toast={toast} menuRequest={playMenu} landscape={landscape} coverShut={!!closingBook} onOpenCover={() => setCoverOpenReq((n) => n + 1)} onShown={() => { if (openingRef.current) { clearTimeout(openingRef.current); openingRef.current = null; setOpening(null); } }} />
         )}
         {closingBook ? (
-          <BookOpen closing openSignal={coverOpenReq} u={u} story={closingBook.story} cover={closingBook.cover} rect={closingBook.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}
+          <BookOpen closing openSignal={coverOpenReq} u={u} story={closingBook.story} cover={closingBook.cover} rect={closingBook.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'} amber={!!prefs.amber}
             onDone={() => setClosingBook(null)} onLeave={() => { coverLeaving.current = true; go('library'); }} onGone={() => { coverLeaving.current = false; setClosingBook(null); }} />
         ) : null}
         {opening ? (
-          <BookOpen u={u} story={opening.story} cover={opening.cover} rect={opening.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'}
+          <BookOpen u={u} story={opening.story} cover={opening.cover} rect={opening.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'} amber={!!prefs.amber}
             onDone={() => { setStory(opening.story); go('reader'); clearTimeout(openingRef.current); openingRef.current = setTimeout(() => { openingRef.current = null; setOpening(null); }, 900); /* (the reader normally says it's ready well before this) */ }} />
         ) : null}
         {/* while the notebook flies, the bottom bar stays put on top (it doesn't fade with the shelf) */}

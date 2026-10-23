@@ -62,8 +62,20 @@ export function Fade({ edge, size, max }) {
   );
 }
 
+// Amber light (Reading Options): warm, lower-contrast pages for evenings: amber paper, warm brown words, and the
+// pictures tinted amber and a little dimmer. Off by default (white pages show the pictures best by day).
+export const AMBER = { paper: '#dcbd8c', ink: '#3a2618', title: '#4a3322', tint: '#ffe0b0', dim: 0.08 };
+export function AmberTint() {
+  return (
+    <>
+      <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: AMBER.tint, mixBlendMode: 'multiply' }]} />
+      <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: `rgba(40,20,0,${AMBER.dim})` }]} />
+    </>
+  );
+}
+
 export const PageView = forwardRef(function PageView(
-  { page, width, height, bottomInset = 0, textScale = 1, fontKey = 'serif', highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary, onShare, zoomable },
+  { page, width, height, bottomInset = 0, textScale = 1, fontKey = 'serif', highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary, onShare, zoomable, amber },
   ref,
 ) {
   const t = useT();
@@ -73,7 +85,7 @@ export const PageView = forwardRef(function PageView(
   const { artW, artH } = L;
   const font = bookFont(fontKey);
   const fs = useMemo(() => fitFontSize(page?.text || '', L, textScale, font), [page, L, textScale, font]);
-  const storyStyle = [styles.story, { fontFamily: font.family, fontSize: fs, lineHeight: fs * 1.62 }];
+  const storyStyle = [styles.story, { fontFamily: font.family, fontSize: fs, lineHeight: fs * 1.62 }, amber && { color: AMBER.ink }];
 
   // Map hotspot fractions onto the image as drawn with "cover".
   const spots = useMemo(() => {
@@ -88,10 +100,10 @@ export const PageView = forwardRef(function PageView(
   }, [page, artW, artH]);
 
   // A page that doesn't exist (shouldn't happen) is drawn as blank paper instead of crashing.
-  if (!page && !end) return <View ref={ref} collapsable={false} style={[styles.page, { width, height }]} />;
+  if (!page && !end) return <View ref={ref} collapsable={false} style={[styles.page, { width, height }, amber && { backgroundColor: AMBER.paper }]} />;
 
   return (
-    <View ref={ref} collapsable={false} style={[styles.page, { width, height }, L.wide && styles.row]}>
+    <View ref={ref} collapsable={false} style={[styles.page, { width, height }, L.wide && styles.row, amber && { backgroundColor: AMBER.paper }]}>
       {/* The picture square, with a very soft shadow falling below it. */}
       <View style={[L.wide ? { width: artW, height, justifyContent: 'center' } : styles.artShadow, { zIndex: 1 }]}>
       <View style={[styles.art, { width: artW, height: artH }, page?.whiteArt && { backgroundColor: colors.white }, page?.blankArt && { backgroundColor: '#d9d9d9' }]}>{/* blankArt: a light grey placeholder until a picture is added */}
@@ -114,6 +126,8 @@ export const PageView = forwardRef(function PageView(
             <Text style={styles.bubbleText}>{bubble.say}</Text>
           </View>
         ) : null}
+        {/* Amber light: the picture warmed (a soft amber laid over it, multiplied) and a little dimmer */}
+        {amber ? <AmberTint /> : null}
         {/* the spine shading: on the picture's edge where it meets the words (bottom upright, right when sideways) */}
         {L.wide ? <Fade edge="right" size={Math.round(artW * 0.1)} max={0.22} /> : <Fade edge="bottom" size={Math.round(artH * 0.1)} max={0.22} />}
       </View>
@@ -152,7 +166,7 @@ export const PageView = forwardRef(function PageView(
             if (k >= 0 && k < words.length - 1) {
               return (
                 <View style={{ alignItems: 'center' }}>
-                  <Text style={[storyStyle, font.bold ? { fontFamily: font.bold } : styles.titleWords, { fontSize: Math.round(fs * 1.45), lineHeight: Math.round(fs * 1.45 * 1.2), color: '#454545', textAlign: 'center' }]}>
+                  <Text style={[storyStyle, font.bold ? { fontFamily: font.bold } : styles.titleWords, { fontSize: Math.round(fs * 1.45), lineHeight: Math.round(fs * 1.45 * 1.2), color: amber ? AMBER.title : '#454545', textAlign: 'center' }]}>
                     {words.slice(0, k + 1).map((w, i) => word(w, i, k, i === k ? w.word.replace(/\.$/, '') : undefined))}
                   </Text>
                   <View style={{ height: fs * 0.7 }} />
