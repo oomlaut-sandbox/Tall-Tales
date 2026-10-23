@@ -86,7 +86,7 @@ export default function Corkboard({ width, toast }) {
         })}
         {/* the pin button: pin something new */}
         <Pressable onPress={withTap(() => setAsk(true))} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Pin something')} style={styles.pinBtn}>
-          <Image source={PIN_ICON} style={{ width: 22, height: 22, tintColor: colors.white }} resizeMode="contain" />
+          <Image source={PIN_ICON} style={{ width: 16, height: 16, tintColor: colors.white }} resizeMode="contain" />
         </Pressable>
       </View>
 
