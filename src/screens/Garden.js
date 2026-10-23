@@ -24,8 +24,9 @@ const MAP_AR = 1116 / 1999;
 const SPOTS = [
   { game: 'pebbles', box: [0.12, 0.17, 0.33, 0.27], label: 'The rocks' }, // the rock pile at the top
   { game: 'pebbles', box: [0.1, 0.74, 0.37, 0.9], label: 'The rocks' }, // the big rock pile at the bottom
-  { game: 'sticks', box: [0.57, 0.1, 0.86, 0.28], label: 'The woodpile' }, // the sticks on the picnic table
-  { game: 'sticks', box: [0.14, 0.08, 0.25, 0.13], label: 'The woodpile' }, // the wooden crate by the gate
+  // (the woodpile, sticks and dominoes on the picnic table, is put away for now: Jörg will send new cut-outs)
+  // { game: 'sticks', box: [0.57, 0.1, 0.86, 0.28], label: 'The woodpile' }, // the sticks on the picnic table
+  // { game: 'sticks', box: [0.14, 0.08, 0.25, 0.13], label: 'The woodpile' }, // the wooden crate by the gate
   { game: 'home', box: [0.38, 0.0, 0.53, 0.09], label: 'My Library' }, // the gate at the top: back to the books
   { game: 'home', box: [0.5, 0.88, 0.7, 0.96], label: 'My Library' }, // the gate at the bottom
   { game: 'pinwheel', box: [0.1, 0.3, 0.5, 0.46], label: 'The flowers' }, // the flower meadow along the path
