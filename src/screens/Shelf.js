@@ -58,7 +58,7 @@ function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onP
       {/* the featured book: a grey character leans against its right side, his hand on its edge, feet on the felt */}
       {lean && leanW ? (
         <Image source={LEANER} pointerEvents="none" resizeMode="contain" accessibilityIgnoresInvertColors
-          style={{ position: 'absolute', zIndex: 2, width: leanW * 0.43 * 700 / 696, height: leanW * 0.43, left: leanW - leanW * 0.43 * 0.012, bottom: -leanW * 0.01 }} />
+          style={{ position: 'absolute', zIndex: 2, width: leanW * 0.52 * 700 / 696, height: leanW * 0.52, left: leanW - leanW * 0.52 * 0.012, bottom: -leanW * 0.01 }} />
       ) : null}
       {/* a very subtle drop shadow under the square cover */}
       <View style={styles.tileShadow}>
