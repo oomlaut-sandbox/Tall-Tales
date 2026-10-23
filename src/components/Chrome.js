@@ -713,7 +713,7 @@ export function BulbIcon({ size = 22, on = false }) {
         backgroundColor: on ? 'rgba(255,201,107,0.28)' : 'transparent', ...(on ? { shadowColor: '#ffb84d', shadowOpacity: 0.9, shadowRadius: size * 0.35, shadowOffset: { width: 0, height: 0 } } : {}) }} />
       {/* the screw base: two lines as wide as the neck, then a shorter one, just under the glass */}
       {[0, 1, 2].map((n) => {
-        const lw = n < 2 ? d * 0.44 : d * 0.3, top = size * 0.04 + d + w * 1.4 + n * w * 2.2;
+        const lw = n < 2 ? d * 0.44 : d * 0.3, top = size * 0.04 + d + w + n * w * 2; // the same small gap (one line's thickness) under the glass and between the lines
         return <View key={n} style={{ position: 'absolute', left: cx - lw / 2, top, width: lw, height: w, borderRadius: w, backgroundColor: col }} />;
       })}
     </View>
