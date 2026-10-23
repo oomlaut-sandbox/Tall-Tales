@@ -1114,15 +1114,23 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     if (k === 'roller') { setBucket(true); setErase(false); setShape(null); return; }
     setBrush(BRUSH_OF[k]); setErase(false); setBucket(false);
   };
-  const TRAY_H = 120;
+  // the tools stand in a row on dark grey, as in Jörg's drawing; the one in your hand gets a fine box with its name above
+  const TRAY_H = 158, BOX_TOP = 22, TOOL_GAP = 16;
+  const TRAY_NAMES = { eraser: 'Eraser', pencil: 'Pencil', pen: 'Fountain pen', water: 'Watercolour brush', crayon: 'Wax crayon', roller: 'Paint roller' };
   const trayEl = (w) => {
-    const tw = Math.floor((w - 20) / TRAY.length), th = TRAY_H * 1.55; // (a little smaller, with room around them)
+    const tw = Math.floor((w - 20) / TRAY.length), th = (TRAY_H - BOX_TOP - TOOL_GAP) * 1.5;
     return (
       <View style={{ width: w, height: TRAY_H, overflow: 'hidden', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10 }}>
-        {TRAY.map(([k, name]) => (
+        {TRAY.map(([k, name], n) => (
           <Pressable key={k} onPress={() => pickTool(k)} accessibilityRole="button" accessibilityLabel={t(name)} accessibilityState={{ selected: onTool === k }}
-            style={{ width: tw, height: th, transform: [{ translateY: onTool === k ? 10 : 44 }] }}>
-            <ToolPic kind={k} width={tw} height={th} />
+            style={{ width: tw, height: TRAY_H }}>
+            {onTool === k ? (
+              <>
+                <Text numberOfLines={1} style={[styles.trayName, n >= TRAY.length - 2 ? { right: 0, textAlign: 'right' } : { left: 0 }]}>{t(TRAY_NAMES[k])}</Text>
+                <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: BOX_TOP, bottom: -2, borderWidth: StyleSheet.hairlineWidth * 2, borderColor: 'rgba(255,255,255,0.4)' }} />
+              </>
+            ) : null}
+            <View style={{ position: 'absolute', left: 0, top: BOX_TOP + TOOL_GAP }}><ToolPic kind={k} width={tw} height={th} /></View>
           </Pressable>
         ))}
       </View>
@@ -1287,7 +1295,8 @@ const styles = StyleSheet.create({
   donePill: { backgroundColor: colors.green, height: 40, borderRadius: 20, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
   drawPaper: { backgroundColor: WHITE, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
   swatch: { width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: 'rgba(255,255,255,0.35)' },
-  panel: { backgroundColor: 'rgba(0,0,0,0.5)' }, // see-through black: the felt shows through
+  panel: { backgroundColor: '#3c3c3c' }, // a dark grey, a little darker than Jörg's tool drawing
+  trayName: { position: 'absolute', top: 2, width: 140, color: 'rgba(255,255,255,0.85)', fontFamily: fonts.ui, fontSize: 12 },
   pill: { height: 52, borderRadius: 26, backgroundColor: '#161616', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', paddingHorizontal: 6 },
   plusBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
   sizePop: { position: 'absolute', zIndex: 5, width: 150, height: 54, borderRadius: 27, backgroundColor: '#111', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', paddingHorizontal: 6, shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 8, shadowOffset: { width: 0, height: 4 } },
