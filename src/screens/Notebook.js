@@ -526,10 +526,13 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           <View ref={bookRef} collapsable={false} onLayout={measureBook} {...flick.panHandlers}
             style={[styles.bookShadow, shape, { width: bookW, height: bookH }, opening ? { backgroundColor: 'transparent', shadowOpacity: 0 } : null]}>
             {/* While it opens, the book's shadow is a still felt-coloured shape underneath that grows in with the
-                flying cover; in the same frame it goes, the book's own shadow comes on, so it never flares. */}
+                flying cover; in the same frame it goes, the book's own shadow comes on, so it never flares.
+                It lies only under the closed book (the bottom half; the right half sideways): where the cover is
+                about to land there's nothing yet, so no outline of the book shows on the felt while it swings. */}
             {opening ? (
-              <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, shape, { backgroundColor: DESK_FELT ? '#262626' : DESK_BG, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, opacity: fade.in }]}>
-                <View style={[StyleSheet.absoluteFill, shape, { overflow: 'hidden' }]}><DeskFelt spot="notebookPlate" /></View>
+              <Animated.View pointerEvents="none" style={[{ position: 'absolute', ...(wide ? { left: bookW / 2, top: 0, width: bookW / 2, height: bookH } : { left: 0, top: bookH / 2, width: bookW, height: bookH / 2 }) },
+                wide ? { borderTopRightRadius: R, borderBottomRightRadius: R } : { borderBottomLeftRadius: R, borderBottomRightRadius: R }, { backgroundColor: DESK_FELT ? '#262626' : DESK_BG, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, opacity: fade.in }]}>
+                <View style={[StyleSheet.absoluteFill, wide ? { borderTopRightRadius: R, borderBottomRightRadius: R } : { borderBottomLeftRadius: R, borderBottomRightRadius: R }, { overflow: 'hidden' }]}><DeskFelt spot="notebookPlate" /></View>
               </Animated.View>
             ) : null}
             <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { opacity: intro === 'fly' ? 0 : 1 }]}>{layers}</View>
