@@ -1,7 +1,7 @@
 // Before recording: who's reading? Up to three people can record a book in their own voice (Mom, Grandpa,
 // a child…). Pick who's reading now, or add a new reader; then Start recording.
 import React, { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View, ScrollView } from 'react-native';
+import { Image, KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View, ScrollView } from 'react-native';
 import { colors, fonts } from '../theme';
 import { useT } from '../i18n';
 import { withTap } from '../haptics';
@@ -9,6 +9,8 @@ import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { MAX_READERS, addReader, getReaders, removeReader, setReaderPhoto } from '../recordings';
 import { VoiceFace } from './VoicePick';
+
+const TRASH = require('../../assets/icon-trash.png');
 
 // edit: opened from the scissors in 'Who reads this book?': the same box for changing photos or adding a reader,
 // with Done instead of Start recording
@@ -106,7 +108,15 @@ export default function ReaderPick({ initial, onCancel, onStart, edit = false, o
             const cur = adding ? { photo } : (list.find((x) => x.id === pick) || {});
             return (
               <View style={styles.photoRow}>
-                <VoiceFace photo={cur.photo} person size={104} />{/* no photo yet: a head and shoulders */}
+                <View>
+                  <VoiceFace photo={cur.photo} person size={104} />{/* no photo yet: a head and shoulders */}
+                  {/* editing: a round red trash can at the photo's bottom left removes this reader (asks first) */}
+                  {edit && !adding && pick ? (
+                    <Pressable onPress={withTap(() => setSure(true))} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Remove reader')} style={styles.removeDot}>
+                      <Image source={TRASH} style={{ width: 18, height: 18, tintColor: '#fff' }} resizeMode="contain" />
+                    </Pressable>
+                  ) : null}
+                </View>
                 <View style={{ flex: 1, gap: 8, alignItems: 'flex-start' }}>
                   <Pressable onPress={withTap(() => getPhoto('library'))} style={styles.photoBtn} accessibilityRole="button"><Text numberOfLines={1} style={styles.photoText}>{tr('Choose a photo')}</Text></Pressable>
                   <Pressable onPress={withTap(() => getPhoto('camera'))} style={styles.photoBtn} accessibilityRole="button"><Text numberOfLines={1} style={styles.photoText}>{tr('Take a photo')}</Text></Pressable>
@@ -115,12 +125,6 @@ export default function ReaderPick({ initial, onCancel, onStart, edit = false, o
             );
           })() : null}
           {photoErr ? <Text style={[styles.text, { color: '#ff9b9b', marginTop: 10 }]}>{photoErr}</Text> : null}
-          {/* editing: the reader picked can be removed (asks first) */}
-          {edit && !adding && pick ? (
-            <Pressable onPress={withTap(() => setSure(true))} hitSlop={10} accessibilityRole="button" style={{ alignSelf: 'flex-start', marginTop: 18 }}>
-              <Text style={styles.removeLink}>{tr('Remove reader')}</Text>
-            </Pressable>
-          ) : null}
           {sure ? (() => {
             const who = (list.find((x) => x.id === pick) || {}).name || '';
             const nm = who === 'Me' && pick === 'me' ? tr('Me') : who;
@@ -167,7 +171,7 @@ const styles = StyleSheet.create({
   photoRow: { flexDirection: 'row', alignItems: 'center', gap: 18, marginTop: 22 },
   photoBtn: { height: 32, borderRadius: 16, paddingHorizontal: 14, backgroundColor: '#3d3d40', alignItems: 'center', justifyContent: 'center' },
   photoText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 13 },
-  removeLink: { color: '#ff8a80', fontFamily: fonts.ui, fontWeight: '600', fontSize: 14 },
+  removeDot: { position: 'absolute', left: -2, bottom: -2, width: 38, height: 38, borderRadius: 19, backgroundColor: '#d32f2f', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#0b0b0b' },
   sureBack: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 28 },
   sureBox: { width: '100%', maxWidth: 400, backgroundColor: '#000', borderRadius: 24, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26 },
   sureText: { color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24 },

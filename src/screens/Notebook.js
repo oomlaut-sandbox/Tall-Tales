@@ -1094,7 +1094,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   // the other colours you used last (six), in the pill
   const pillEl = (w) => {
     const others = recent.filter((hex) => hex.toLowerCase() !== pen.toLowerCase()).slice(0, 6);
-    const sz = Math.min(32, Math.floor((w - 20) / 6) - 10);
+    const sz = Math.min(30, Math.floor((w - 12) / 6) - 4);
     return (
       <View style={styles.pill}>
         {others.map((hex) => swatch(hex, mixing ? t('Mix in {name}', { name: colourName(hex) }) : t('{name} pen', { name: colourName(hex) }), sz,
