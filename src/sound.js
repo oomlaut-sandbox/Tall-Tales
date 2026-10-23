@@ -111,7 +111,25 @@ export function playPebble(volume = 1) {
 
 // The Garden's other sounds (driftwood, the pinwheel, eggs, the chalkboard), several recordings of each taken at
 // random. Part of the games, so they play even when the page-turn sound effects are off (never while recording).
-const GARDEN = {};
+const GARDEN = {
+  stick: [require('../assets/sfx/garden/stick-down-1.mp3'), require('../assets/sfx/garden/stick-down-2.mp3'), require('../assets/sfx/garden/stick-down-3.mp3')],
+  click: [require('../assets/sfx/garden/stick-click-1.mp3'), require('../assets/sfx/garden/stick-click-2.mp3'), require('../assets/sfx/garden/stick-click-3.mp3')],
+  egg: [require('../assets/sfx/garden/egg-1.mp3'), require('../assets/sfx/garden/egg-2.mp3'), require('../assets/sfx/garden/egg-3.mp3')],
+  cluck: [require('../assets/sfx/garden/cluck-1.mp3'), require('../assets/sfx/garden/cluck-2.mp3'), require('../assets/sfx/garden/cluck-3.mp3')],
+  chalk: [require('../assets/sfx/garden/chalk-1.mp3'), require('../assets/sfx/garden/chalk-2.mp3'), require('../assets/sfx/garden/chalk-3.mp3')],
+  wipe: [require('../assets/sfx/garden/wipe-1.mp3'), require('../assets/sfx/garden/wipe-2.mp3'), require('../assets/sfx/garden/wipe-3.mp3')],
+};
+// the pinwheel's whirr: one looping sound whose loudness follows how fast it spins (0 = silent)
+let whirr = null;
+export function pinwheelWhirr(level) {
+  try {
+    if (!whirr) { whirr = createAudioPlayer(require('../assets/sfx/garden/pinwheel-loop.mp3')); whirr.loop = true; whirr.volume = 0; }
+    const v = suspended ? 0 : Math.max(0, Math.min(1, level));
+    whirr.volume = v * 0.9;
+    if (v > 0.02 && !whirr.playing) whirr.play();
+    else if (v <= 0.02 && whirr.playing) whirr.pause();
+  } catch (e) {}
+}
 const gardenPlayers = {};
 export function playGarden(kind, volume = 1) {
   if (suspended || !GARDEN[kind]) return null;

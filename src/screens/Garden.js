@@ -2,6 +2,7 @@
 // above; tap a place in it to play there. Calm nature games, nothing to win:
 //   the rocks: throw felt pebbles onto the pebble beach and hear them land
 //   the woodpile: arrange driftwood sticks on the felt
+//   the flowers: a paper pinwheel to spin with a swipe
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -9,7 +10,7 @@ import { Bar, Burger, WithBar } from '../components/Chrome';
 import { colors } from '../theme';
 import { useT } from '../i18n';
 import { withTap } from '../haptics';
-import { playGarden, playPebble } from '../sound';
+import { pinwheelWhirr, playGarden, playPebble } from '../sound';
 
 // Jörg's garden, 1116 × 2000, as the day goes: in daylight, in the golden evening, and at night under the lights
 const MAPS = {
@@ -25,6 +26,7 @@ const SPOTS = [
   { game: 'pebbles', box: [0.13, 0.76, 0.38, 0.885], label: 'The rocks' }, // the big rock pile at the bottom
   { game: 'sticks', box: [0.33, 0.72, 0.43, 0.77], label: 'The woodpile' },
   { game: 'sticks', box: [0.17, 0.035, 0.27, 0.075], label: 'The woodpile' }, // the wooden crate by the gate
+  { game: 'pinwheel', box: [0.12, 0.33, 0.58, 0.47], label: 'The flowers' }, // the flower meadow along the path
 ];
 
 export default function Garden({ u, openMenu, toast }) {
@@ -57,6 +59,7 @@ export default function Garden({ u, openMenu, toast }) {
         {map}
         {game === 'pebbles' && area ? <Pebbles area={area} onBack={() => setGame(null)} /> : null}
         {game === 'sticks' && area ? <Driftwood area={area} onBack={() => setGame(null)} /> : null}
+        {game === 'pinwheel' && area ? <Pinwheel area={area} onBack={() => setGame(null)} /> : null}
       </View>
     </WithBar>
   );
@@ -292,6 +295,73 @@ function Driftwood({ area, onBack }) {
           );
         })}
       </View>
+      <Pressable onPress={withTap(onBack)} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Back to the Garden')}
+        style={[styles.back, { top: Math.max(insets.top, 12) + 8 }]}>
+        <View style={styles.backChevron} />
+      </Pressable>
+    </View>
+  );
+}
+
+// ---- The pinwheel: a paper pinwheel on a stick. Swipe across it to spin it (the faster the swipe, the faster it
+// spins), tap it for a little push; it slows down by itself, whirring softly while it turns. ----
+const HEAD = require('../../assets/garden/pinwheel-head.png'); // 560 × 560, the hub in the middle
+const HEAD_BLUR = require('../../assets/garden/pinwheel-blur.png'); // the same, blurred round (for fast spins)
+const POLE = require('../../assets/garden/pinwheel-stick.png'); // 20 × 456
+function Pinwheel({ area, onBack }) {
+  const t = useT();
+  const insets = useSafeAreaInsets();
+  const W = area.w, H = area.h;
+  const D = Math.min(W * 0.95, H * 0.6); // the pinwheel across
+  const cx = W / 2, cy = Math.max(D / 2 + 30, H * 0.38);
+  const angle = useRef(new Animated.Value(0)).current;
+  const blur = useRef(new Animated.Value(0)).current;
+  const st = useRef({ a: 0, w: 0, last: 0, raf: 0 }).current; // a: degrees, w: degrees a second
+  useEffect(() => {
+    const tick = (now) => {
+      const dt = st.last ? Math.min(0.05, (now - st.last) / 1000) : 0;
+      st.last = now;
+      st.w *= Math.exp(-0.55 * dt); // the air slows it down
+      if (Math.abs(st.w) < 4) st.w = 0;
+      st.a = (st.a + st.w * dt) % 360;
+      angle.setValue(st.a);
+      const sp = Math.min(1, Math.abs(st.w) / 900);
+      blur.setValue(Math.max(0, (sp - 0.25) / 0.75));
+      pinwheelWhirr(sp);
+      st.raf = requestAnimationFrame(tick);
+    };
+    st.raf = requestAnimationFrame(tick);
+    return () => { cancelAnimationFrame(st.raf); pinwheelWhirr(0); };
+  }, []);
+  const pan = useRef(PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderGrant: (e) => { st.g = { x: e.nativeEvent.locationX, y: e.nativeEvent.locationY }; },
+    onPanResponderMove: (e, g) => {
+      // the swipe turns it like wind on the blades: its push around the hub (cross product), not straight at it
+      const x = e.nativeEvent.locationX, y = e.nativeEvent.locationY;
+      const rx = x - cx, ry = y - cy, r2 = Math.max(rx * rx + ry * ry, (D * 0.15) ** 2);
+      const torque = (rx * g.vy - ry * g.vx) / Math.sqrt(r2); // px/ms around the hub
+      st.w = Math.max(-1800, Math.min(1800, st.w * 0.9 + torque * 180));
+    },
+    onPanResponderRelease: (e, g) => {
+      if (Math.hypot(g.dx, g.dy) < 8) st.w = Math.max(-1800, Math.min(1800, (st.w || 0) + (st.w < 0 ? -260 : 260))); // a tap: a little push
+    },
+  })).current;
+  const rot = angle.interpolate({ inputRange: [0, 360], outputRange: ['0deg', '360deg'] });
+  const poleH = H - cy + 10, poleW = Math.max(7, D * 0.028);
+  return (
+    <View style={StyleSheet.absoluteFill} {...pan.panHandlers}>
+      <Image source={FELT} style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} resizeMode="cover" />
+      {/* the stick, from the hub down into the felt, with a soft shadow */}
+      <Image source={POLE} style={{ position: 'absolute', left: cx - poleW / 2 + 5, top: cy + 6, width: poleW, height: poleH, tintColor: '#000', opacity: 0.35 }} resizeMode="stretch" />
+      <Image source={POLE} style={{ position: 'absolute', left: cx - poleW / 2, top: cy, width: poleW, height: poleH }} resizeMode="stretch" />
+      {/* the blades: sharp when slow, blurred round when fast */}
+      <Animated.View pointerEvents="none" style={{ position: 'absolute', left: cx - D / 2, top: cy - D / 2, width: D, height: D, transform: [{ rotate: rot }] }}>
+        <Image source={HEAD} style={{ position: 'absolute', left: 8, top: 12, width: D, height: D, tintColor: '#000', opacity: 0.28 }} />
+        <Animated.Image source={HEAD} style={{ position: 'absolute', left: 0, top: 0, width: D, height: D, opacity: blur.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }} />
+        <Animated.Image source={HEAD_BLUR} style={{ position: 'absolute', left: 0, top: 0, width: D, height: D, opacity: blur }} />
+      </Animated.View>
       <Pressable onPress={withTap(onBack)} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Back to the Garden')}
         style={[styles.back, { top: Math.max(insets.top, 12) + 8 }]}>
         <View style={styles.backChevron} />
