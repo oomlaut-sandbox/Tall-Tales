@@ -11,26 +11,28 @@ import { colors } from '../theme';
 import { useT } from '../i18n';
 import { withTap } from '../haptics';
 import { pinwheelWhirr, playGarden, playPebble } from '../sound';
+import { createAudioPlayer } from 'expo-audio';
 
-// Jörg's garden, 1116 × 1999 (it fills the screen edge to edge), as the day goes: in daylight, in the golden evening, and at night under the lights
+// Jörg's garden, 1116 × 1886 (it fills the screen edge to edge), as the day goes: in daylight, in the golden evening, and at night under the lights
 const MAPS = {
   day: [require('../../assets/garden/map-day.jpg'), '#5e693e'],
   evening: [require('../../assets/garden/map-evening.jpg'), '#62482f'],
   night: [require('../../assets/garden/map-night.jpg'), '#0d1e28'],
 };
 const timeOfDay = (d = new Date()) => { const hash = typeof window !== 'undefined' && window.location ? window.location.hash || '' : ''; if (/night|evening|day/.test(hash)) return hash.match(/night|evening|day/)[0]; /* (web preview screenshots) */ const h = d.getHours(); return h >= 6 && h < 17 ? 'day' : h >= 17 && h < 20 ? 'evening' : 'night'; };
-const MAP_AR = 1116 / 1999;
-// the places to tap, as parts of the map (left, top, right, bottom)
+const MAP_AR = 1116 / 1886; // (the grey patch below the bottom gate is cut off)
+const ORDER = ['day', 'evening', 'night'];
+// the places to tap, as parts of the map (left, top, right, bottom). For now only the gates: the games aren't ready
 const SPOTS = [
-  { game: 'pebbles', box: [0.12, 0.17, 0.33, 0.27], label: 'The rocks' }, // the rock pile at the top
-  { game: 'pebbles', box: [0.1, 0.74, 0.37, 0.9], label: 'The rocks' }, // the big rock pile at the bottom
-  // (the woodpile, sticks and dominoes on the picnic table, is put away for now: Jörg will send new cut-outs)
-  // { game: 'sticks', box: [0.57, 0.1, 0.86, 0.28], label: 'The woodpile' }, // the sticks on the picnic table
-  // { game: 'sticks', box: [0.14, 0.08, 0.25, 0.13], label: 'The woodpile' }, // the wooden crate by the gate
-  { game: 'home', box: [0.38, 0.0, 0.53, 0.09], label: 'My Library' }, // the gate at the top: back to the books
-  { game: 'home', box: [0.5, 0.88, 0.7, 0.96], label: 'My Library' }, // the gate at the bottom
-  { game: 'pinwheel', box: [0.1, 0.3, 0.5, 0.46], label: 'The flowers' }, // the flower meadow along the path
+  { game: 'home', box: [0.38, 0.0, 0.53, 0.095], label: 'My Library' }, // the gate at the top: back to the books
+  { game: 'home', box: [0.48, 0.86, 0.72, 1.0], label: 'My Library' }, // the gate at the bottom
+  // (put away until they're ready)
+  // { game: 'pebbles', box: [0.12, 0.18, 0.33, 0.29], label: 'The rocks' },
+  // { game: 'pebbles', box: [0.1, 0.78, 0.37, 0.95], label: 'The rocks' },
+  // { game: 'sticks', box: [0.57, 0.11, 0.86, 0.3], label: 'The woodpile' },
+  // { game: 'pinwheel', box: [0.1, 0.32, 0.5, 0.49], label: 'The flowers' },
 ];
+const BIRDS = require('../../assets/ambient/forest-birds.mp3'); // birdsong, fading in very slowly while you're in the garden
 
 export default function Garden({ u, openMenu, toast, onHome }) {
   const t = useT();
@@ -40,17 +42,41 @@ export default function Garden({ u, openMenu, toast, onHome }) {
     if (g === 'home') { onHome && onHome(); return; }
     setGame(g);
   };
+  // the light: it starts as the time of day, and a tap anywhere else in the garden dissolves to the next
+  // (day → sunset → night → day)
   const [tod, setTod] = useState(timeOfDay());
-  useEffect(() => { const id = setInterval(() => setTod(timeOfDay()), 60000); return () => clearInterval(id); }, []);
+  const [prev, setPrev] = useState(null); // the picture dissolving away
+  const fade = useRef(new Animated.Value(0)).current;
+  const nextLight = () => {
+    const n = ORDER[(ORDER.indexOf(tod) + 1) % ORDER.length];
+    setPrev(tod); setTod(n);
+    fade.setValue(1);
+    Animated.timing(fade, { toValue: 0, duration: 1600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(({ finished }) => { if (finished) setPrev(null); });
+  };
+  // birdsong: starts silent and comes up very slowly; goes quiet when you leave
+  useEffect(() => {
+    let p = null, id = null, v = 0;
+    try {
+      p = createAudioPlayer(BIRDS); p.loop = true; p.volume = 0; p.play();
+      id = setInterval(() => { v = Math.min(0.55, v + 0.005); try { p.volume = v; } catch (e) {} if (v >= 0.55) clearInterval(id); }, 200); // about 22 seconds to full
+    } catch (e) {}
+    return () => { clearInterval(id); try { p && p.pause(); p && p.remove(); } catch (e) {} };
+  }, []);
   const [MAP, MAP_BG] = MAPS[tod];
   let map = null;
   if (area) {
-    const w = Math.max(area.w, area.h * MAP_AR), h = w / MAP_AR; // fills the screen (only the dark edge of the picture is cut)
+    // sideways the garden lies on its side (its top gate on the left), so the whole of it still fills the screen
+    const side = area.w > area.h;
+    const W0 = side ? area.h : area.w, H0 = side ? area.w : area.h; // the room, in the garden's own upright frame
+    const w = Math.max(W0, H0 * MAP_AR), h = w / MAP_AR;
     const l = (area.w - w) / 2, tp = (area.h - h) / 2;
     map = (
-      <View style={{ position: 'absolute', left: l, top: tp, width: w, height: h }}>
-        <Image source={MAP} style={{ width: w, height: h }} resizeMode="cover" />
-        {tod === 'night' ? <Fireflies w={w} h={h} /> : null}
+      <View style={{ position: 'absolute', left: l, top: tp, width: w, height: h, transform: side ? [{ rotate: '-90deg' }] : [] }}>
+        <Pressable onPress={nextLight} accessibilityRole="button" accessibilityLabel={t('Change the light')} style={StyleSheet.absoluteFill}>
+          <Image source={MAP} style={{ width: w, height: h }} resizeMode="cover" fadeDuration={0} />
+          {prev ? <Animated.Image source={MAPS[prev][0]} style={{ position: 'absolute', left: 0, top: 0, width: w, height: h, opacity: fade }} resizeMode="cover" fadeDuration={0} /> : null}
+        </Pressable>
+        {tod === 'night' ? <View pointerEvents="none" style={StyleSheet.absoluteFill}><Fireflies w={w} h={h} /></View> : null}
         {SPOTS.map((s, i) => (
           <Pressable key={i} onPress={withTap(() => open(s.game))} accessibilityRole="button" accessibilityLabel={t(s.label)}
             style={{ position: 'absolute', left: s.box[0] * w, top: s.box[1] * h, width: (s.box[2] - s.box[0]) * w, height: (s.box[3] - s.box[1]) * h }} />
@@ -60,7 +86,7 @@ export default function Garden({ u, openMenu, toast, onHome }) {
   }
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} vertical={v} /></Bar>}>
-      <View style={{ flex: 1, backgroundColor: MAP_BG }} onLayout={(e) => setArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
+      <View style={{ flex: 1, backgroundColor: MAP_BG, overflow: 'hidden' }} onLayout={(e) => setArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
         {map}
         {game === 'pebbles' && area ? <Pebbles area={area} onBack={() => setGame(null)} /> : null}
         {game === 'sticks' && area ? <Driftwood area={area} onBack={() => setGame(null)} /> : null}
