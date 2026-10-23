@@ -15,6 +15,13 @@ const FX = [
   ['page-swish', 0.9, 'A soft, quiet paper swish of one picture book page being turned: a gentle airy sweep of paper, no crinkle, no thump, smooth and short. Quiet room, close, natural, no music.'],
   ['pebble-land', 0.9, 'A small smooth river stone tossed gently onto a beach of rounded pebbles: one soft natural clack of stone on stone and a brief rattle of pebbles settling. Calm outdoors, close, natural, no music.'],
   ['pebble-soft', 0.8, 'A small round pebble dropped onto other pebbles from a little height: a soft hollow stony knock and a tiny rolling clatter that settles. Quiet outdoors, close, natural, no music.'],
+  ['stick-down', 0.6, 'A small piece of dry, light driftwood set down on a thick wool felt mat: one soft, short, hollow wooden knock, muffled by the felt. Close, quiet, natural, no music.'],
+  ['stick-click', 0.5, 'Two small pieces of dry driftwood gently tapped together once: a light, hollow, woody click. Close, quiet, natural, no music.'],
+  ['pinwheel', 3.0, 'A colourful paper pinwheel spinning steadily in a gentle breeze outdoors: a soft, even fluttering whirr of paper blades, light wind, calm. Close, natural, no music, no voices.'],
+  ['egg-tap', 0.5, 'A hen egg set down gently into a straw nest: one tiny soft tap with a faint rustle of straw. Close, quiet, natural, no music.'],
+  ['hen-cluck', 1.0, 'A contented farm hen clucking softly two or three times, calm and gentle, close by, in a quiet barn. Natural, no music.'],
+  ['chalk-line', 1.4, 'Drawing a long smooth line with a piece of chalk on an old school blackboard: a soft, gentle scratchy chalk sound, not squeaky. Close, quiet room, natural, no music.'],
+  ['chalk-wipe', 1.0, 'Wiping an old school blackboard with a felt eraser: one soft, papery swish. Close, quiet room, natural, no music.'],
 ];
 // ONLY=name1,name2 makes just those (each three times)
 const ONLY = (process.env.ONLY || '').split(',').filter(Boolean);
