@@ -12,21 +12,21 @@ import { useT } from '../i18n';
 import { withTap } from '../haptics';
 import { pinwheelWhirr, playGarden, playPebble } from '../sound';
 
-// Jörg's garden, 1116 × 2000, as the day goes: in daylight, in the golden evening, and at night under the lights
+// Jörg's garden, 1116 × 1999 (it fills the screen edge to edge), as the day goes: in daylight, in the golden evening, and at night under the lights
 const MAPS = {
-  day: [require('../../assets/garden/map-day.jpg'), '#232524'],
-  evening: [require('../../assets/garden/map-evening.jpg'), '#3a2f31'],
-  night: [require('../../assets/garden/map-night.jpg'), '#16171f'],
+  day: [require('../../assets/garden/map-day.jpg'), '#5e693e'],
+  evening: [require('../../assets/garden/map-evening.jpg'), '#62482f'],
+  night: [require('../../assets/garden/map-night.jpg'), '#0d1e28'],
 };
 const timeOfDay = (d = new Date()) => { const hash = typeof window !== 'undefined' && window.location ? window.location.hash || '' : ''; if (/night|evening|day/.test(hash)) return hash.match(/night|evening|day/)[0]; /* (web preview screenshots) */ const h = d.getHours(); return h >= 6 && h < 17 ? 'day' : h >= 17 && h < 20 ? 'evening' : 'night'; };
-const MAP_AR = 1116 / 2000;
+const MAP_AR = 1116 / 1999;
 // the places to tap, as parts of the map (left, top, right, bottom)
 const SPOTS = [
-  { game: 'pebbles', box: [0.16, 0.235, 0.35, 0.31], label: 'The rocks' }, // the rock pile at the top
-  { game: 'pebbles', box: [0.13, 0.76, 0.38, 0.885], label: 'The rocks' }, // the big rock pile at the bottom
-  { game: 'sticks', box: [0.33, 0.72, 0.43, 0.77], label: 'The woodpile' },
-  { game: 'sticks', box: [0.17, 0.035, 0.27, 0.075], label: 'The woodpile' }, // the wooden crate by the gate
-  { game: 'pinwheel', box: [0.12, 0.33, 0.58, 0.47], label: 'The flowers' }, // the flower meadow along the path
+  { game: 'pebbles', box: [0.12, 0.17, 0.33, 0.27], label: 'The rocks' }, // the rock pile at the top
+  { game: 'pebbles', box: [0.1, 0.74, 0.37, 0.9], label: 'The rocks' }, // the big rock pile at the bottom
+  { game: 'sticks', box: [0.57, 0.1, 0.86, 0.28], label: 'The woodpile' }, // the sticks on the picnic table
+  { game: 'sticks', box: [0.14, 0.08, 0.25, 0.13], label: 'The woodpile' }, // the wooden crate by the gate
+  { game: 'pinwheel', box: [0.1, 0.3, 0.5, 0.46], label: 'The flowers' }, // the flower meadow along the path
 ];
 
 export default function Garden({ u, openMenu, toast }) {
