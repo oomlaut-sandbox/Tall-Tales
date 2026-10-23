@@ -172,9 +172,10 @@ function WhoReads({ onPress }) {
   );
 }
 
-export function Library({ narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
+export function Library({ onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
   const t = useT();
   const gardenAsked = useRef(false);
+  const gardenPull = useRef(false);
   const controls = useControls(); // parental controls: My Notebook, Create a story and Select may be hidden
   const { width: winW } = useWindowDimensions();
   const [folderOpen, setFolderOpen] = useState(false); // My Folder, opened (the sheets)
@@ -239,8 +240,15 @@ export function Library({ narrator, toast, onProfiles, u, stories, openStory, op
         onScroll={(e) => {
           const { contentOffset: o, layoutMeasurement: l, contentSize: c } = e.nativeEvent;
           const past = o.y + l.height - c.height;
-          if (past > 70 && !gardenAsked.current && controls.garden) { gardenAsked.current = true; toast && toast(t('Come explore the Garden'), 3500); }
+          if (past > 70 && !gardenAsked.current && onGarden) { gardenAsked.current = true; toast && toast(t('Come explore the Garden'), 3500); }
           else if (past < 0) gardenAsked.current = false;
+          if (past > 70) gardenPull.current = true;
+        }}
+        // let go while pulled up far enough: into the Garden
+        onScrollEndDrag={(e) => {
+          const { contentOffset: o, layoutMeasurement: l, contentSize: c } = e.nativeEvent;
+          if (onGarden && gardenPull.current && o.y + l.height - c.height > 70) { gardenPull.current = false; onGarden(); }
+          else gardenPull.current = false;
         }}>
         {/* My Notebook: always the first book on the shelf (notes, drawings and reading badges) */}
         {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}

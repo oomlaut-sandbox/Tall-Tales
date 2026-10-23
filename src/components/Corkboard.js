@@ -16,7 +16,7 @@ import { onScopeChange } from '../scope';
 const CORK = require('../../assets/cork.jpg');
 const PIN_ICON = require('../../assets/icon-pin.png');
 const PIN_HEAD = require('../../assets/pin-head.png');
-const NOTE_YELLOW = '#f7e27a';
+const NOTE_YELLOW = '#e9da92'; // a softer, less saturated yellow
 const HAND = 'SpecialElite_400Regular'; // the typewriter, like My Notebook
 
 function Pin({ p, W }) {

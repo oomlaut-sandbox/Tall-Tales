@@ -88,3 +88,23 @@ export function playSwitch() {
     Promise.resolve(p.seekTo(0)).catch(() => {}).then(() => { try { p.play(); } catch (e) {} });
   } catch (e) {}
 }
+
+// The Garden's pebbles: six recordings of a stone landing on a pebble beach, taken in turn so quick throws don't cut
+// each other off. Part of the game, so they play even when the page-turn sound effects are off (never while recording).
+const PEBBLES = [
+  require('../assets/sfx/pebble-1.mp3'), require('../assets/sfx/pebble-2.mp3'), require('../assets/sfx/pebble-3.mp3'),
+  require('../assets/sfx/pebble-4.mp3'), require('../assets/sfx/pebble-5.mp3'), require('../assets/sfx/pebble-6.mp3'),
+];
+let pebblePlayers = null;
+let lastPebble = -1;
+export function playPebble(volume = 1) {
+  if (suspended) return;
+  try {
+    if (!pebblePlayers) pebblePlayers = PEBBLES.map((s) => createAudioPlayer(s));
+    let k; do { k = Math.floor(Math.random() * PEBBLES.length); } while (k === lastPebble);
+    lastPebble = k;
+    const p = pebblePlayers[k];
+    p.volume = Math.max(0.15, Math.min(1, volume * 0.8));
+    Promise.resolve(p.seekTo(0)).catch(() => {}).then(() => { try { p.play(); } catch (e) {} });
+  } catch (e) {}
+}
