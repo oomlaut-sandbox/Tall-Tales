@@ -113,7 +113,9 @@ async function speakClip(voiceId, text, speed, settings, lang) {
     text, model_id: MODEL, ...(lang ? { language_code: lang } : {}),
     voice_settings: { stability: 0.6, similarity_boost: 0.8, style: 0.1, use_speaker_boost: true, speed, ...(settings || {}) },
   });
-  return r.status === 200 && r.json && r.json.audio_base64 ? Buffer.from(r.json.audio_base64, 'base64') : null;
+  if (r.status === 200 && r.json && r.json.audio_base64) return Buffer.from(r.json.audio_base64, 'base64');
+  say(`  (HTTP ${r.status}: ${String(r.text || '').slice(0, 200)})`); // why it failed (never includes the key)
+  return null;
 }
 async function makeSample(v, voiceId) {
   const speed = v.pace || PACE;

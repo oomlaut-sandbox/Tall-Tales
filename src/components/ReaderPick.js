@@ -152,7 +152,7 @@ export default function ReaderPick({ initial, onCancel, onStart, edit = false, o
 
 const styles = StyleSheet.create({
   back: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: 16 },
-  box: { width: '100%', maxWidth: 460, backgroundColor: '#2b2b2d', borderRadius: 28, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26, boxShadow: '0 20px 50px rgba(0,0,0,0.6)' },
+  box: { width: '100%', maxWidth: 460, backgroundColor: 'rgba(0,0,0,0.86)', /* see-through black, like the other boxes */ borderRadius: 28, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26, boxShadow: '0 20px 50px rgba(0,0,0,0.6)' },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 22 },
   text: { color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, marginTop: 14 },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 28 },
