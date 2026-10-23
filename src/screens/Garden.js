@@ -53,6 +53,11 @@ export default function Garden({ u, openMenu, toast, onHome }) {
     fade.setValue(1);
     Animated.timing(fade, { toValue: 0, duration: 1600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(({ finished }) => { if (finished) setPrev(null); });
   };
+  // a couple of seconds in: a word that the Garden is a beta (the same speech bubble as the library's)
+  useEffect(() => {
+    const id = setTimeout(() => toast && toast(t('The garden is a beta feature that might get removed. Tap the gate to get outa here.'), 5500), 2200);
+    return () => clearTimeout(id);
+  }, []);
   // birdsong: starts silent and comes up very slowly; goes quiet when you leave
   useEffect(() => {
     let p = null, id = null, v = 0;
