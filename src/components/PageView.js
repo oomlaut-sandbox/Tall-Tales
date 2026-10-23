@@ -64,7 +64,7 @@ export function Fade({ edge, size, max }) {
 
 // Amber light (Reading Options): warm, lower-contrast pages for evenings: amber paper, warm brown words, and the
 // pictures tinted amber and a little dimmer. Off by default (white pages show the pictures best by day).
-export const AMBER = { paper: '#dcbd8c', ink: '#3a2618', title: '#4a3322', tint: '#ffe0b0', dim: 0.08 };
+export const AMBER = { paper: '#dcbd8c', ink: '#3a2618', title: '#4a3322', tint: '#ffe0b0', dim: 0.08, flap: '#e8cfa3' }; // flap: the dog-ear (the back of the amber page, a little lighter)
 export function AmberTint() {
   return (
     <>

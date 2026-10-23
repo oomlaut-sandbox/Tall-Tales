@@ -701,6 +701,26 @@ export function AlarmClockIcon({ size = 20, color = colors.white, weight }) {
   );
 }
 
+// A very fine light bulb (Amber light on the reader's felt): a round glass, a narrow neck, two thin lines for the
+// screw base. Lit: warm amber, with a soft glow.
+export function BulbIcon({ size = 22, on = false }) {
+  const w = Math.max(1.1, size * 0.055);
+  const col = on ? '#ffc96b' : 'rgba(255,255,255,0.6)';
+  const d = size * 0.6, cx = size / 2;
+  return (
+    <View style={{ width: size, height: size }}>
+      <View style={{ position: 'absolute', left: cx - d / 2, top: size * 0.04, width: d, height: d, borderRadius: d / 2, borderWidth: w, borderColor: col,
+        backgroundColor: on ? 'rgba(255,201,107,0.28)' : 'transparent', ...(on ? { shadowColor: '#ffb84d', shadowOpacity: 0.9, shadowRadius: size * 0.35, shadowOffset: { width: 0, height: 0 } } : {}) }} />
+      {/* the neck: two short lines down from the glass */}
+      <View style={{ position: 'absolute', left: cx - d * 0.22, top: size * 0.04 + d * 0.86, width: w, height: size * 0.14, backgroundColor: col }} />
+      <View style={{ position: 'absolute', left: cx + d * 0.22 - w, top: size * 0.04 + d * 0.86, width: w, height: size * 0.14, backgroundColor: col }} />
+      {/* the screw base */}
+      <View style={{ position: 'absolute', left: cx - d * 0.22, top: size * 0.8, width: d * 0.44, height: w, borderRadius: w, backgroundColor: col }} />
+      <View style={{ position: 'absolute', left: cx - d * 0.16, top: size * 0.8 + w * 2.2, width: d * 0.32, height: w, borderRadius: w, backgroundColor: col }} />
+    </View>
+  );
+}
+
 // ---- Bar icons that replace words (they read the same in every language) ----
 // Done / Finish: a green circle with a white tick (the partner of the red Cancel circle)
 export function DoneTick({ size = 34 }) {

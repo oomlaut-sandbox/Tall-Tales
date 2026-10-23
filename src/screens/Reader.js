@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOOK_FONTS, colors, fonts } from '../theme';
 import { DESK_FELT, DeskFelt, Felt, IS_TABLET, DESK_BG } from '../look';
 import { tokenize, cleanWord, syllablesFor } from '../story';
-import { Fade, PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
+import { AMBER, Fade, PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
 import { FLAP_PERSPECTIVE, flapTables } from '../flapStrips';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
 import { bookLayout } from '../components/BookFrame';
@@ -35,7 +35,7 @@ function PeelLayer({ start, ...props }) {
 }
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { Bar, BarMeta, HomeButton, BubbleIcon, HeadphonesIcon, MoonIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon, sideTop } from '../components/Chrome';
+import { BulbIcon, Bar, BarMeta, HomeButton, BubbleIcon, HeadphonesIcon, MoonIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon, sideTop } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
@@ -882,7 +882,14 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
         // tap it (it's small, so the finger gets a generous area) to hear what it means
         <Pressable onPress={() => toast(tr('This red dot means you’ve recorded this page in your own voice.'))} hitSlop={20}
           accessibilityRole="button" accessibilityLabel={tr('This page has a voice recording')}
-          style={[styles.recMark, IS_TABLET ? { left: 14 } : { right: 14 }]} />
+          style={[styles.recMark, IS_TABLET ? { left: 46 } : { right: 14 }]} />
+      ) : null}
+      {/* Amber light: a very fine light bulb at the top left of the felt turns it on and off */}
+      {!listen ? (
+        <Pressable onPress={withTap(() => setPrefs((p) => ({ ...p, amber: !p.amber })))} hitSlop={14} accessibilityRole="switch" accessibilityState={{ checked: !!prefs.amber }}
+          accessibilityLabel={tr('Amber light')} style={styles.bulb}>
+          <BulbIcon size={20} on={!!prefs.amber} />
+        </Pressable>
       ) : null}
       <View style={[styles.bookShadow, { width: BL.bookW, height: BL.bookH }]}>
       <View ref={bookRef} collapsable={false} style={styles.book} onLayout={(e) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })} {...(listen ? {} : pan.panHandlers)}>
@@ -898,7 +905,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
             style={size.w > size.h * 1.25 ? { top: size.h * 0.06, left: size.w * 0.52 } : { top: size.h * 0.5 + size.w * 0.07, left: size.w * 0.04 }} />
         ) : null}
         {/* the dog-ear hides while a page is turning, and comes back once the new page has landed */}
-        {idx < pages.length - 1 && !flipPair && !listen ? <View style={{ position: 'absolute', right: 0, bottom: 0, zIndex: 20 }}><DogEar u={u} under={colors.earUnder} onPress={() => flip(1)} /></View> : null}
+        {idx < pages.length - 1 && !flipPair && !listen ? <View style={{ position: 'absolute', right: 0, bottom: 0, zIndex: 20 }}><DogEar u={u} under={colors.earUnder} flap={prefs.amber ? AMBER.flap : undefined} onPress={() => flip(1)} /></View> : null}
       </View>
       </View>
       {/* Listen Only: the soft night level (nothing under it can be touched) */}
@@ -1215,6 +1222,7 @@ const styles = StyleSheet.create({
   bookShadow: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
   book: { flex: 1, overflow: 'hidden', backgroundColor: colors.paper },
   mine: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 14, marginTop: 3 },
+  bulb: { position: 'absolute', top: 6, left: 12, zIndex: 6 },
   recMark: { position: 'absolute', top: 12, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.highlight, opacity: 0.75, zIndex: 5 },
   mineDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.deepRed },
   mineText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 12 },
