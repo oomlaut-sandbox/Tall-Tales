@@ -30,7 +30,7 @@ export default function Garden({ u, openMenu, toast }) {
   };
   let map = null;
   if (area) {
-    const w = Math.min(area.w, area.h * MAP_AR), h = w / MAP_AR;
+    const w = Math.max(area.w, area.h * MAP_AR), h = w / MAP_AR; // fills the screen (only the white edge of the picture is cut)
     const l = (area.w - w) / 2, tp = (area.h - h) / 2;
     map = (
       <View style={{ position: 'absolute', left: l, top: tp, width: w, height: h }}>
@@ -141,7 +141,7 @@ function Pebbles({ area, onBack }) {
   const hk = base / Math.max(handStone[1], handStone[2]);
   return (
     <View style={StyleSheet.absoluteFill}>
-      <Image source={BEACH} style={StyleSheet.absoluteFill} resizeMode="cover" />
+      <Image source={BEACH} style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} resizeMode="cover" />
       <View style={StyleSheet.absoluteFill} {...pan.panHandlers}>
         {stones.map((st) => {
           const [img, iw, ih] = STONES[st.k];
@@ -160,8 +160,8 @@ function Pebbles({ area, onBack }) {
           return (
             <Animated.View key={st.id} pointerEvents="none" style={{ position: 'absolute', left: st.x - w / 2, top: st.y - hh / 2, width: w, height: hh, opacity: st.fade }}>
               {/* its shadow on the beach: far below it while it flies, tucked under it once it lands */}
-              <Animated.View style={{ position: 'absolute', left: w * 0.08, top: hh * 0.16, width: w * 0.92, height: hh * 0.92, borderRadius: Math.max(w, hh), backgroundColor: 'rgba(0,0,0,0.38)',
-                opacity: st.p.interpolate({ inputRange: [0, 1], outputRange: [0.25, 1] }), transform: [{ translateX: tx }, { translateY: groundY }, { scale }] }} />
+              <Animated.Image source={img} style={{ position: 'absolute', left: w * 0.06, top: hh * 0.1, width: w, height: hh, tintColor: '#000',
+                opacity: st.p.interpolate({ inputRange: [0, 1], outputRange: [0.12, 0.42] }), transform: [{ translateX: tx }, { translateY: groundY }, { scale }, { rotate: rot }] }} />
               <Animated.Image source={img} style={{ width: w, height: hh, transform: [{ translateX: tx }, { translateY: ty }, { scale }, { scaleY: squash }, { rotate: rot }] }} />
             </Animated.View>
           );
@@ -169,7 +169,7 @@ function Pebbles({ area, onBack }) {
         {/* the pebble in the hand, waiting at the bottom */}
         <Animated.View pointerEvents="none" style={{ position: 'absolute', left: handX - (handStone[1] * hk) / 2, top: handY - (handStone[2] * hk) / 2,
           transform: [{ translateX: drag.x }, { translateY: drag.y }, { scale: handIn }] }}>
-          <View style={{ position: 'absolute', left: 6, top: 10, width: handStone[1] * hk, height: handStone[2] * hk, borderRadius: base, backgroundColor: 'rgba(0,0,0,0.4)' }} />
+          <Image source={handStone[0]} style={{ position: 'absolute', left: 6, top: 10, width: handStone[1] * hk, height: handStone[2] * hk, tintColor: '#000', opacity: 0.42 }} />
           <Image source={handStone[0]} style={{ width: handStone[1] * hk, height: handStone[2] * hk }} />
         </Animated.View>
       </View>

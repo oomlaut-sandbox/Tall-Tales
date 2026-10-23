@@ -56,7 +56,7 @@ export function CurlCanvas({ width: W, height: H, under, turning, fold }) {
             <LinearGradient
               start={g0}
               end={vec(M[0] + nx * Math.max(1, depth), M[1] + ny * Math.max(1, depth))}
-              colors={['rgba(0,0,0,0.22)', 'rgba(0,0,0,0)', 'rgba(255,255,255,0.35)', 'rgba(0,0,0,0.08)']}
+              colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0)', 'rgba(0,0,0,0)', 'rgba(0,0,0,0.07)']}
               positions={[0, Math.min(0.5, 22 / Math.max(1, depth)), 0.55, 1]}
             />
           </Rect>
@@ -155,7 +155,8 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back, ox
           <BlurMask blur={8} style="normal" />
         </Path>
       </Group>
-      {/* the lifted part, folded over and rising toward the reader: its back shows the next page's picture */}
+      {/* the lifted part, folded over and rising toward the reader: its back shows the next page's picture.
+          Matte paper: a soft shadow at the crease and a touch darker at the far edge, no shine. */}
       <Group matrix={lift || undefined}>
       <Group transform={reflect}>
         <Group clip={cut}>
@@ -164,7 +165,7 @@ export function FlapPeel({ width: W, height: H, artH, t, corner, front, back, ox
             <LinearGradient
               start={g0}
               end={vec(M[0] + nx * Math.max(1, depth), M[1] + ny * Math.max(1, depth))}
-              colors={matte ? [`rgba(0,0,0,${(0.1 * settle).toFixed(3)})`, 'rgba(0,0,0,0)', 'rgba(0,0,0,0)', 'rgba(0,0,0,0)'] : [`rgba(0,0,0,${(0.2 * settle).toFixed(3)})`, 'rgba(0,0,0,0)', `rgba(255,255,255,${(0.12 * settle).toFixed(3)})`, `rgba(0,0,0,${(0.05 * settle).toFixed(3)})`]}
+              colors={matte ? [`rgba(0,0,0,${(0.1 * settle).toFixed(3)})`, 'rgba(0,0,0,0)', 'rgba(0,0,0,0)', 'rgba(0,0,0,0)'] : [`rgba(0,0,0,${(0.17 * settle).toFixed(3)})`, 'rgba(0,0,0,0)', 'rgba(0,0,0,0)', `rgba(0,0,0,${(0.06 * settle).toFixed(3)})`]}
               positions={[0, Math.min(0.5, 20 / Math.max(1, depth)), 0.55, 1]}
             />
           </Rect>
