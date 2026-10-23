@@ -42,16 +42,20 @@ export function runsOf(list, w) {
 }
 const TOOTH_OF = { 1: 0.45, 2: 0.7 }; // (gentle: the paper shows, it doesn't take over)
 // the smudge's shape as an outline Skia can clip to (the rubbed line, as wide as the fingertip)
-function smudgePath(st, w) {
+// soft edges: three rubs, wide and light, then narrower and stronger, so the blur fades out at its edges
+const SMUDGE_PASSES = [[1.6, 0.25], [1.2, 0.5], [0.85, 1]];
+function smudgePaths(st, w) {
   const S = smudgeOf(st, w);
   const p = Skia.Path.MakeFromSVGString(S.d);
-  if (!p) return null;
-  const out = p.copy();
-  out.stroke({ width: S.width, cap: StrokeCap.Round, join: StrokeJoin.Round });
-  return { path: out, blur: S.blur };
+  if (!p) return [];
+  return SMUDGE_PASSES.map(([kw, kb]) => {
+    const out = p.copy();
+    out.stroke({ width: S.width * kw, cap: StrokeCap.Round, join: StrokeJoin.Round });
+    return { path: out, blur: S.blur * kb };
+  });
 }
 function Smudge({ st, width }) {
-  const parts = useMemo(() => (st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]).map((q) => smudgePath(q, width)).filter(Boolean), [st, width]);
+  const parts = useMemo(() => (st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]).flatMap((q) => smudgePaths(q, width)), [st, width]);
   // blurs what has been drawn so far, only where the finger rubbed
   return <>{parts.map((P, i) => <BackdropBlur key={i} blur={P.blur} clip={P.path} />)}</>;
 }
@@ -131,13 +135,13 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
    for (const st of r.list) {
     if (st.sm) { // the smudge: blur what's there so far, inside where the finger rubbed
       for (const q of st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]) {
-        const P = smudgePath(q, px);
-        if (!P) continue;
+        for (const P of smudgePaths(q, px)) {
         canvas.save();
         canvas.clipPath(P.path, ClipOp.Intersect, true);
         canvas.saveLayer(undefined, null, Skia.ImageFilter.MakeBlur(P.blur, P.blur, TileMode.Clamp, null));
         canvas.restore();
         canvas.restore();
+        }
       }
       continue;
     }

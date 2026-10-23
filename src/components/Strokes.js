@@ -20,7 +20,8 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
   all.forEach((st, i) => (st.sm ? (() => { // the smudge: a blurred copy of everything so far, shown only where the finger rubbed
     const S = smudgeOf(st, width), mid = `${id}-s${i}`, fid = `${id}-sb${i}`;
     defs.push(h('mask', { key: mid, id: mid, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width, height },
-      h('path', { d: S.d, fill: 'none', stroke: 'white', strokeWidth: S.width, strokeLinecap: 'round', strokeLinejoin: 'round' })));
+      h('path', { d: S.d, fill: 'none', stroke: 'white', strokeWidth: S.width * 1.2, strokeLinecap: 'round', strokeLinejoin: 'round', filter: `url(#${mid}-f)` })));
+    defs.push(h('filter', { key: `${mid}-f`, id: `${mid}-f`, x: '-20%', y: '-20%', width: '140%', height: '140%' }, h('feGaussianBlur', { stdDeviation: S.width * 0.25 }))); // (soft edges)
     defs.push(h('filter', { key: fid, id: fid, x: '-10%', y: '-10%', width: '120%', height: '120%' }, h('feGaussianBlur', { stdDeviation: S.blur })));
     paths = [h('g', { key: `${mid}-a` }, paths), h('g', { key: `${mid}-b`, mask: `url(#${mid})` }, h('g', { filter: `url(#${fid})` }, paths))];
   })() : layersFor(st, width).filter((L) => L.alpha && !L.inner).forEach((L, j) => { // (the inner rim is drawn on the phone only)

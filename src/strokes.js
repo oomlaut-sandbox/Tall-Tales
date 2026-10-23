@@ -207,15 +207,19 @@ export function inkD(st, w, taper = 1, swing = 1) {
   const ws = [];
   let v = 0;
   const step = (i) => (i ? Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]) : 0);
+  const along = []; let total = 0;
+  for (let i = 0; i < n; i++) { total += step(i); along.push(total); }
   for (let i = 0; i < n; i++) {
     v = i < 2 ? step(1) : v * 0.85 + step(i) * 0.15; // (speed changes gently, so the width flows)
     // Apple Pencil: how hard it presses sets the width (q: the pressure at each point, 0 to 1); a finger: the speed
     const qi = st.q && st.q.length ? st.q[Math.min(st.q.length - 1, Math.round((i / Math.max(1, n - 1)) * (st.q.length - 1)))] : null;
     const f = qi != null ? clamp(0.3 + qi * 1.25, 0.3, 1.45) : clamp(1.5 - (v / (base * 1.5 + 3)) * swing, 0.22, 1.5); // slow: full; fast: thin
-    const ta = Math.min(n - 1, Math.round(8 * taper)), tb = Math.min(n - 1, Math.round(14 * taper));
+    // thin, then thick, then thin again: the ends taper over a length along the line (not a number of points),
+    // the same at the start as at the end, never more than a third of the line each
     const ease = (q) => q * q * (3 - 2 * q); // a smooth point, not a blunt end
-    const a = st.z ? 1 : Math.min(1, 0.12 + 0.88 * ease(Math.min(1, i / ta)));
-    const b = st.z ? 1 : Math.min(1, 0.06 + 0.94 * ease(Math.min(1, (n - 1 - i) / tb)));
+    const run = Math.min(base * 9 * taper, total / 3 || 1);
+    const a = st.z ? 1 : Math.min(1, 0.08 + 0.92 * ease(Math.min(1, along[i] / run)));
+    const b = st.z ? 1 : Math.min(1, 0.06 + 0.94 * ease(Math.min(1, (total - along[i]) / run)));
     ws.push(base * (st.z ? 1 : f) * Math.min(a, b)); // (a shape: an even line all the way round)
   }
   const L = [], R = [];

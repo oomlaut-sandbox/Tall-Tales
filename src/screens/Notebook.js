@@ -1085,11 +1085,19 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     );
   };
   const colourName = (hex) => { const f = [...PENS_BRIGHT, ...PENS].find(([h]) => h.toLowerCase() === hex.toLowerCase()); return f ? t(f[1]) : t('Mixed colour'); };
+  // the colour you're drawing with, on its own, bigger, in a rounded box of black glass with a soft white glow
+  const currentEl = (
+    <View style={styles.currentBox} accessibilityLabel={t('The colour you are drawing with')}>
+      {swatch(pen, t('The colour you are drawing with'), 36, () => setMore(true), false)}
+    </View>
+  );
+  // the other colours you used last (six), in the pill
   const pillEl = (w) => {
-    const sz = Math.min(34, Math.floor((w - 20) / 7) - 8);
+    const others = recent.filter((hex) => hex.toLowerCase() !== pen.toLowerCase()).slice(0, 6);
+    const sz = Math.min(32, Math.floor((w - 20) / 6) - 10);
     return (
       <View style={styles.pill}>
-        {recent.map((hex) => swatch(hex, mixing ? t('Mix in {name}', { name: colourName(hex) }) : t('{name} pen', { name: colourName(hex) }), sz,
+        {others.map((hex) => swatch(hex, mixing ? t('Mix in {name}', { name: colourName(hex) }) : t('{name} pen', { name: colourName(hex) }), sz,
           () => pick(hex), !erase && !mixing && pen.toLowerCase() === hex.toLowerCase()))}
       </View>
     );
@@ -1223,7 +1231,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
             {headEl}
             <View style={{ gap: 14 }}>
               {pillEl(TOOLS_W)}
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>{plusEl}{binEl}</View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>{plusEl}{currentEl}{binEl}</View>
             </View>
             <View>{sizePopEl(TOOLS_W)}{trayEl(TOOLS_W)}</View>
           </View>
@@ -1243,7 +1251,8 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       <View style={[styles.panel, { paddingBottom: insets.bottom }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingTop: 16, paddingBottom: 38 }}>
           {plusEl}
-          <View style={{ flex: 1 }}>{pillEl(winW - 2 * 14 - 2 * 40 - 20)}</View>
+          {currentEl}
+          <View style={{ flex: 1 }}>{pillEl(winW - 2 * 14 - 2 * 40 - 64 - 30)}</View>
           {binEl}
         </View>
         <View>{sizePopEl(winW)}{trayEl(winW)}</View>
@@ -1318,6 +1327,8 @@ const styles = StyleSheet.create({
   swatch: { width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: 'rgba(255,255,255,0.35)' },
   panel: { backgroundColor: '#3c3c3c' }, // a dark grey, a little darker than Jörg's tool drawing
   trayName: { position: 'absolute', top: 2, width: 140, color: 'rgba(255,255,255,0.85)', fontFamily: fonts.ui, fontSize: 12 },
+  currentBox: { width: 60, height: 60, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center',
+    borderWidth: StyleSheet.hairlineWidth * 2, borderColor: 'rgba(255,255,255,0.18)', shadowColor: '#fff', shadowOpacity: 0.22, shadowRadius: 8, shadowOffset: { width: 0, height: 0 } },
   pill: { height: 52, borderRadius: 26, backgroundColor: '#161616', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', paddingHorizontal: 6 },
   plusBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
   sizePop: { position: 'absolute', zIndex: 5, width: 150, height: 54, borderRadius: 27, backgroundColor: '#111', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', paddingHorizontal: 6, shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 8, shadowOffset: { width: 0, height: 4 } },

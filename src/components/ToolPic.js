@@ -23,8 +23,8 @@ export default function ToolPic({ kind, width, height }) {
     <View pointerEvents="none" style={{ width, height, alignItems: 'center' }}>
       <View style={{ width: w, height: h }}>
         {/* its shadow on the tray: its own shape, dark and soft, a little down and to the right */}
-        <Image source={img} blurRadius={6} style={{ position: 'absolute', left: 4, top: 6, width: w, height: h, tintColor: '#000', opacity: 0.45 }} />
-        <Image source={img} style={{ position: 'absolute', left: 0, top: 0, width: w, height: h }} />
+        {/* one picture, its soft shadow drawn by the phone from its own shape (a second, darkened copy showed as a double) */}
+        <Image source={img} style={{ position: 'absolute', left: 0, top: 0, width: w, height: h, shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 6, shadowOffset: { width: 3, height: 5 } }} />
       </View>
     </View>
   );
