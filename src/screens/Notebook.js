@@ -22,7 +22,7 @@ import ParentGate from '../components/ParentGate';
 import { StrokesView } from '../components/Strokes';
 import { EarArt } from '../components/Ear';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
-import ToolArt from '../components/ToolArt';
+import ToolPic from '../components/ToolPic';
 import { BRUSHES, PENS, PENS_BRIGHT, SHAPES, SIZES, makeFill, mixColours, near, shapePts, withMirrors } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
@@ -1113,13 +1113,13 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     setBrush(BRUSH_OF[k]); setErase(false); setBucket(false);
   };
   const trayEl = (w) => {
-    const tw = Math.min(54, w / TRAY.length), th = tw * 2;
+    const tw = Math.min(56, w / TRAY.length), th = tw * 2.3;
     return (
       <View style={{ width: w, height: tw * 1.45, overflow: 'hidden', flexDirection: 'row', justifyContent: 'space-between', borderTopLeftRadius: 10, borderTopRightRadius: 10, backgroundColor: 'rgba(0,0,0,0.28)', paddingHorizontal: 4 }}>
         {TRAY.map(([k, name]) => (
           <Pressable key={k} onPress={() => pickTool(k)} accessibilityRole="button" accessibilityLabel={t(name)} accessibilityState={{ selected: onTool === k }}
-            style={{ width: tw, height: th, transform: [{ translateY: onTool === k ? tw * 0.08 : tw * 0.42 }] }}>
-            <ToolArt kind={k} color={pen} width={tw} height={th} />
+            style={{ width: tw, height: th, transform: [{ translateY: onTool === k ? tw * 0.06 : tw * 0.45 }] }}>
+            <ToolPic kind={k} color={pen} width={tw} height={th} />
           </Pressable>
         ))}
       </View>
