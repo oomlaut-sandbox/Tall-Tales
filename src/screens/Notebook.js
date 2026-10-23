@@ -1114,14 +1114,14 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     if (k === 'roller') { setBucket(true); setErase(false); setShape(null); return; }
     setBrush(BRUSH_OF[k]); setErase(false); setBucket(false);
   };
-  const TRAY_H = 112;
+  const TRAY_H = 120;
   const trayEl = (w) => {
-    const tw = Math.floor(w / TRAY.length), th = TRAY_H * 1.75;
+    const tw = Math.floor(w / TRAY.length), th = TRAY_H * 1.55; // (a little smaller, with room around them)
     return (
       <View style={{ width: w, height: TRAY_H, overflow: 'hidden', flexDirection: 'row', justifyContent: 'space-between' }}>
         {TRAY.map(([k, name]) => (
           <Pressable key={k} onPress={() => pickTool(k)} accessibilityRole="button" accessibilityLabel={t(name)} accessibilityState={{ selected: onTool === k }}
-            style={{ width: tw, height: th, transform: [{ translateY: onTool === k ? 2 : 40 }] }}>
+            style={{ width: tw, height: th, transform: [{ translateY: onTool === k ? 10 : 44 }] }}>
             <ToolPic kind={k} width={tw} height={th} />
           </Pressable>
         ))}
@@ -1214,7 +1214,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       </View>
       {/* the panel at the bottom */}
       <View style={[styles.panel, { paddingBottom: insets.bottom }]}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingTop: 14, paddingBottom: 6 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingTop: 16, paddingBottom: 26 }}>
           {plusEl}
           <View style={{ flex: 1 }}>{pillEl(winW - 2 * 14 - 2 * 40 - 20)}</View>
           {binEl}
@@ -1287,7 +1287,7 @@ const styles = StyleSheet.create({
   donePill: { backgroundColor: colors.green, height: 40, borderRadius: 20, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
   drawPaper: { backgroundColor: WHITE, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
   swatch: { width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: 'rgba(255,255,255,0.35)' },
-  panel: { backgroundColor: '#262626', borderTopWidth: StyleSheet.hairlineWidth, borderColor: '#3a3a3a' },
+  panel: { backgroundColor: 'rgba(0,0,0,0.5)' }, // see-through black: the felt shows through
   pill: { height: 52, borderRadius: 26, backgroundColor: '#161616', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', paddingHorizontal: 6 },
   plusBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
   sizePop: { position: 'absolute', zIndex: 5, width: 150, height: 54, borderRadius: 27, backgroundColor: '#111', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', paddingHorizontal: 6, shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 8, shadowOffset: { width: 0, height: 4 } },
