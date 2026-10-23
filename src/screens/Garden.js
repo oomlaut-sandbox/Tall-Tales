@@ -18,7 +18,7 @@ const MAPS = {
   evening: [require('../../assets/garden/map-evening.jpg'), '#3a2f31'],
   night: [require('../../assets/garden/map-night.jpg'), '#16171f'],
 };
-const timeOfDay = (d = new Date()) => { const h = d.getHours(); return h >= 6 && h < 17 ? 'day' : h >= 17 && h < 20 ? 'evening' : 'night'; };
+const timeOfDay = (d = new Date()) => { const hash = typeof window !== 'undefined' && window.location ? window.location.hash || '' : ''; if (/night|evening|day/.test(hash)) return hash.match(/night|evening|day/)[0]; /* (web preview screenshots) */ const h = d.getHours(); return h >= 6 && h < 17 ? 'day' : h >= 17 && h < 20 ? 'evening' : 'night'; };
 const MAP_AR = 1116 / 2000;
 // the places to tap, as parts of the map (left, top, right, bottom)
 const SPOTS = [
@@ -46,6 +46,7 @@ export default function Garden({ u, openMenu, toast }) {
     map = (
       <View style={{ position: 'absolute', left: l, top: tp, width: w, height: h }}>
         <Image source={MAP} style={{ width: w, height: h }} resizeMode="cover" />
+        {tod === 'night' ? <Fireflies w={w} h={h} /> : null}
         {SPOTS.map((s, i) => (
           <Pressable key={i} onPress={withTap(() => open(s.game))} accessibilityRole="button" accessibilityLabel={t(s.label)}
             style={{ position: 'absolute', left: s.box[0] * w, top: s.box[1] * h, width: (s.box[2] - s.box[0]) * w, height: (s.box[3] - s.box[1]) * h }} />
@@ -368,4 +369,55 @@ function Pinwheel({ area, onBack }) {
       </Pressable>
     </View>
   );
+}
+
+// ---- Fireflies over the night garden: a few small glowing points that drift slowly and at random, each glowing up
+// and fading away again, then turning up somewhere else ----
+function Firefly({ w, h, delay }) {
+  const x = useRef(new Animated.Value(Math.random() * w)).current;
+  const y = useRef(new Animated.Value(h * (0.1 + Math.random() * 0.8))).current;
+  const glow = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    let alive = true;
+    const flight = () => {
+      if (!alive) return;
+      // a new spot somewhere in the garden, then a slow wandering path through two or three points
+      const sx = w * (0.08 + Math.random() * 0.84), sy = h * (0.1 + Math.random() * 0.8);
+      x.setValue(sx); y.setValue(sy);
+      const legs = [];
+      let px = sx, py = sy;
+      for (let k = 0; k < 3; k++) {
+        px = Math.max(10, Math.min(w - 10, px + (Math.random() - 0.5) * w * 0.25));
+        py = Math.max(10, Math.min(h - 10, py + (Math.random() - 0.5) * h * 0.12));
+        const d = 1800 + Math.random() * 2200;
+        legs.push(Animated.parallel([
+          Animated.timing(x, { toValue: px, duration: d, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+          Animated.timing(y, { toValue: py, duration: d, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+        ]));
+      }
+      const total = 6000 + Math.random() * 4000;
+      Animated.parallel([
+        Animated.sequence(legs),
+        Animated.sequence([
+          Animated.timing(glow, { toValue: 1, duration: 1400, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+          Animated.timing(glow, { toValue: 0.55, duration: total * 0.3, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+          Animated.timing(glow, { toValue: 1, duration: total * 0.3, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+          Animated.timing(glow, { toValue: 0, duration: 1600, easing: Easing.in(Easing.quad), useNativeDriver: true }),
+        ]),
+      ]).start(() => { if (alive) setTimeout(flight, 600 + Math.random() * 3500); });
+    };
+    const t0 = setTimeout(flight, delay);
+    return () => { alive = false; clearTimeout(t0); };
+  }, [w, h]);
+  return (
+    <Animated.View pointerEvents="none" style={{ position: 'absolute', left: -14, top: -14, width: 28, height: 28, opacity: glow, transform: [{ translateX: x }, { translateY: y }] }}>
+      {/* a soft halo and a bright little heart */}
+      <View style={{ position: 'absolute', left: 0, top: 0, width: 28, height: 28, borderRadius: 14, backgroundColor: 'rgba(220,255,140,0.13)' }} />
+      <View style={{ position: 'absolute', left: 7, top: 7, width: 14, height: 14, borderRadius: 7, backgroundColor: 'rgba(225,255,150,0.28)' }} />
+      <View style={{ position: 'absolute', left: 11.5, top: 11.5, width: 5, height: 5, borderRadius: 2.5, backgroundColor: '#f4ffc8', shadowColor: '#e6ff9a', shadowOpacity: 1, shadowRadius: 6, shadowOffset: { width: 0, height: 0 } }} />
+    </Animated.View>
+  );
+}
+function Fireflies({ w, h }) {
+  return <>{[0, 1, 2, 3, 4, 5].map((i) => <Firefly key={i} w={w} h={h} delay={i * 1300 + Math.random() * 1500} />)}</>;
 }
