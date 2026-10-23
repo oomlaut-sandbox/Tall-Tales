@@ -1224,7 +1224,7 @@ const styles = StyleSheet.create({
   bookShadow: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
   book: { flex: 1, overflow: 'hidden', backgroundColor: colors.paper },
   mine: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 14, marginTop: 3 },
-  bulb: { position: 'absolute', top: 6, left: 12, zIndex: 6 },
+  bulb: { position: 'absolute', top: 8, left: 12, zIndex: 6 },
   recMark: { position: 'absolute', top: 12, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.highlight, opacity: 0.75, zIndex: 5 },
   mineDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.deepRed },
   mineText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 12 },

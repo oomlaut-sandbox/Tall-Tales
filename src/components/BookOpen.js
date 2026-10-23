@@ -9,7 +9,7 @@ import { Animated, Easing, Image, PanResponder, StyleSheet, View, useWindowDimen
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme';
 import { bookLayout } from './BookFrame';
-import { AmberTint, Fade, PageView } from './PageView';
+import { AMBER, AmberTint, Fade, PageView } from './PageView';
 import { Felt, DESK_FELT, DeskFelt } from '../look';
 import { playSound } from '../sound';
 import { measureTile } from '../tileSpots';
@@ -222,7 +222,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, am
       ) : null}
       {/* landed: the inside of the cover lying flat in the picture square */}
       {phase === 2 ? (
-        <View pointerEvents="none" style={{ position: 'absolute', left: bx, top: by, width: s, height: s, backgroundColor: colors.white, overflow: 'hidden' }}>
+        <View pointerEvents="none" style={{ position: 'absolute', left: bx, top: by, width: s, height: s, backgroundColor: amber ? AMBER.white : colors.white, overflow: 'hidden' }}>
           {inside ? <Image source={inside} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s }} resizeMode="cover" /> : null}
           {inside && amber ? <AmberTint /> : null}
           <Fade edge={L.wide ? 'right' : 'bottom'} size={Math.round(s * 0.1)} max={0.22} />
@@ -237,9 +237,11 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, am
         <Animated.View style={[{ width: s, height: s, backgroundColor: '#828282' }, leaf]}>
           <Animated.View style={[StyleSheet.absoluteFill, { opacity: frontOp, backgroundColor: '#828282' }]}>
             {cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s }} resizeMode="cover" /> : null}
+            {/* Amber light: the cover warmed like the pictures inside */}
+            {cover && amber ? <AmberTint /> : null}
           </Animated.View>
           {/* the inside of the cover, mirrored so it reads right once turned over */}
-          <Animated.View style={[StyleSheet.absoluteFill, { opacity: backOp, backgroundColor: colors.white, transform: [L.wide ? { scaleX: -1 } : { scaleY: -1 }] }]}>
+          <Animated.View style={[StyleSheet.absoluteFill, { opacity: backOp, backgroundColor: amber ? AMBER.white : colors.white, transform: [L.wide ? { scaleX: -1 } : { scaleY: -1 }] }]}>
             {inside ? <Image source={inside} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s }} resizeMode="cover" /> : null}
           {inside && amber ? <AmberTint /> : null}
             {/* the spine shadow is there from the moment the inside shows (same as the reader's) */}
