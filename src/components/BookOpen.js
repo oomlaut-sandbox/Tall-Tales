@@ -231,12 +231,14 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, on
       <Animated.View pointerEvents="none" style={{ position: 'absolute', left: tx, top: ty, width: s, height: s, transform: move, opacity: phase === 2 ? 0 : phase === 4 ? back.current.fade : 1 }}>
         {/* its shadow while it glides in, on a still shape (never on the turning cover), gone as the turn begins */}
         <Animated.View style={[StyleSheet.absoluteFill, styles.shadow, { backgroundColor: '#828282', opacity: A.plateOut }]} />
+        {/* nothing inside the turning cover clips (no overflow hidden): clipping under a 3D turn makes iOS redraw
+            the cover off screen on every frame, which made the swing choppy. The pictures are exactly square. */}
         <Animated.View style={[{ width: s, height: s, backgroundColor: '#828282' }, leaf]}>
-          <Animated.View style={[StyleSheet.absoluteFill, { opacity: frontOp, backgroundColor: '#828282', overflow: 'hidden' }]}>
+          <Animated.View style={[StyleSheet.absoluteFill, { opacity: frontOp, backgroundColor: '#828282' }]}>
             {cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s }} resizeMode="cover" /> : null}
           </Animated.View>
           {/* the inside of the cover, mirrored so it reads right once turned over */}
-          <Animated.View style={[StyleSheet.absoluteFill, { opacity: backOp, backgroundColor: colors.white, overflow: 'hidden', transform: [L.wide ? { scaleX: -1 } : { scaleY: -1 }] }]}>
+          <Animated.View style={[StyleSheet.absoluteFill, { opacity: backOp, backgroundColor: colors.white, transform: [L.wide ? { scaleX: -1 } : { scaleY: -1 }] }]}>
             {inside ? <Image source={inside} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s }} resizeMode="cover" /> : null}
             {/* the spine shadow is there from the moment the inside shows (same as the reader's) */}
             <Fade edge={L.wide ? 'right' : 'bottom'} size={Math.round(s * 0.1)} max={0.22} />
