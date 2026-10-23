@@ -126,7 +126,7 @@ function Root() {
   const [playMenu, setPlayMenu] = useState(0);
   const [playOpen, setPlayOpen] = useState(false); // Playback Options away from a book
   const toastTimer = useRef(null);
-  // a book in someone's voice, sent as a file (Messages, Mail…) and opened in Oomlaut Reader: "Add Opa's voice?"
+  // a book in someone's voice, sent as a file (Messages, Mail…) and opened in Coro Reader: "Add Opa's voice?"
   const [incoming, setIncoming] = useState(null);
   useEffect(() => {
     const handle = async (url) => {

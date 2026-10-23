@@ -328,7 +328,7 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
           </View>
         </View>
       ) : null}
-      <ParentGate visible={!!gate} reason={gate === 'share' ? t('Sharing sends an invitation to Oomlaut Reader by message or email.') : t('Deleting books from the library.')}
+      <ParentGate visible={!!gate} reason={gate === 'share' ? t('Sharing sends an invitation to Coro Reader by message or email.') : t('Deleting books from the library.')}
         onCancel={() => setGate(null)}
         onPass={() => {
           const g = gate; setGate(null);

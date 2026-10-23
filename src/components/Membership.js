@@ -47,7 +47,7 @@ export default function Membership({ visible, onClose, toast }) {
       <View style={styles.card}>
         <ScrollView contentContainerStyle={{ gap: 14 }} bounces={false}>
           <Text style={styles.kicker}>{t('For grown-ups')}</Text>
-          <Text style={styles.title}>{t('Oomlaut Reader Membership')}</Text>
+          <Text style={styles.title}>{t('Coro Reader Membership')}</Text>
           <Text style={styles.body}>{t('Every book in the Book Store, and every new book as it arrives. Read them aloud, record your own voice, keep reading together.')}</Text>
           <View style={{ gap: 10 }}>
             <Plan id="yearly" title={t('Yearly')} price={planPrice(s, 'yearly')} per={t(' / year')} note={t('Best value: about a third off')} />

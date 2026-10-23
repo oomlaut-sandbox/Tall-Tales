@@ -1,6 +1,6 @@
 -- The Store Manager: lets the store's owner (Jörg) add, edit and publish Book Store books from inside
 -- the app. Run once in Supabase: SQL Editor → New query → paste all → Run.
--- Before running, put the email you sign in to Oomlaut Reader with on the last line
+-- Before running, put the email you sign in to Coro Reader with on the last line
 -- (Profile shows it under "Signed in as").
 
 -- Who may manage the store.

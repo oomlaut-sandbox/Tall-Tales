@@ -35,7 +35,7 @@ export default function ReaderPick({ initial, onCancel, onStart, edit = false, o
       let r;
       if (source === 'camera') {
         const perm = await ImagePicker.requestCameraPermissionsAsync();
-        if (!perm.granted) { setPhotoErr(tr('Oomlaut Reader isn’t allowed to use the camera. You can turn it on in Settings.')); return; }
+        if (!perm.granted) { setPhotoErr(tr('Coro Reader isn’t allowed to use the camera. You can turn it on in Settings.')); return; }
         r = await ImagePicker.launchCameraAsync(opts);
       } else r = await ImagePicker.launchImageLibraryAsync(opts);
       if (r.canceled || !r.assets || !r.assets[0]) return;
@@ -49,7 +49,7 @@ export default function ReaderPick({ initial, onCancel, onStart, edit = false, o
       if (adding) setPhoto(uri);
       else if (pick) { await setReaderPhoto(pick, uri); setList(await getReaders()); }
     } catch (e) {
-      setPhotoErr(source === 'camera' ? tr('Couldn’t open the camera.') : tr('Couldn’t open your photos. Check that Oomlaut Reader is allowed to use Photos in Settings.'));
+      setPhotoErr(source === 'camera' ? tr('Couldn’t open the camera.') : tr('Couldn’t open your photos. Check that Coro Reader is allowed to use Photos in Settings.'));
     }
   };
   useEffect(() => {

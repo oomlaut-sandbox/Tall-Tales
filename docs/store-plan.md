@@ -33,7 +33,7 @@ Things agreed with Jörg for when we build the store publishing pipeline. Not st
 ### Setting it up (Jörg; never paste keys or secrets in chat)
 1. App Store Connect → Business: accept the Paid Apps Agreement, add banking and tax. Apply for the
    App Store Small Business Program (15% instead of 30%).
-2. App Store Connect → the app → Subscriptions: a group "Oomlaut Reader Membership" with
+2. App Store Connect → the app → Subscriptions: a group "Coro Reader Membership" with
    - oomlaut.member.monthly — $4.99, 1 month, introductory offer: free for 1 week
    - oomlaut.member.yearly — $39.99, 1 year, introductory offer: free for 1 week
 3. App Store Connect → In-App Purchases (non-consumable), one per paid book:

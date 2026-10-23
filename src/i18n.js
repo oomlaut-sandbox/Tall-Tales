@@ -67,7 +67,7 @@ const T = {
 
   // ---- membership ----
   'For grown-ups': { de: 'Für Erwachsene', fr: 'Pour les grands', es: 'Para adultos', ja: 'おとなのかたへ' },
-  'Oomlaut Reader Membership': { de: 'Oomlaut Reader Mitgliedschaft', fr: 'Abonnement Oomlaut Reader', es: 'Membresía de Oomlaut Reader', ja: 'Oomlaut Reader メンバーシップ' },
+  'Coro Reader Membership': { de: 'Coro Reader Mitgliedschaft', fr: 'Abonnement Coro Reader', es: 'Membresía de Coro Reader', ja: 'Coro Reader メンバーシップ' },
   'Every book in the Book Store, and every new book as it arrives. Read them aloud, record your own voice, keep reading together.': {
     de: 'Alle Bücher im Buchladen, und jedes neue Buch, sobald es da ist. Vorlesen lassen, mit eigener Stimme aufnehmen, gemeinsam weiterlesen.',
     fr: 'Tous les livres de la librairie, et chaque nouveau livre dès sa sortie. Écoutez-les, enregistrez votre propre voix, lisez ensemble.',
@@ -164,7 +164,7 @@ const T = {
   'Throw this sheet away?': { de: 'Dieses Blatt wegwerfen?', fr: 'Jeter cette feuille ?', es: '¿Tirar esta hoja?', ja: 'この シートを すてますか？' },
   'Which page from My Notebook?': { de: 'Welche Seite aus Mein Notizbuch?', fr: 'Quelle page de Mon carnet ?', es: '¿Qué página de Mi cuaderno?', ja: 'マイノートの どの ページ？' },
   'a friend': { de: 'ein Freund', fr: 'un ami', es: 'un amigo', ja: 'ともだち' },
-  'A sheet for you from {name}. Open the file in Oomlaut Reader to put it in My Folder.': { de: 'Ein Blatt für dich von {name}. Öffne die Datei in Oomlaut Reader, um es in Mein Ordner zu legen.', fr: 'Une feuille pour toi de {name}. Ouvre le fichier dans Oomlaut Reader pour la ranger dans Mon dossier.', es: 'Una hoja para ti de {name}. Abre el archivo en Oomlaut Reader para guardarla en Mi carpeta.', ja: '{name}から シートが とどいたよ。Oomlaut Readerで ひらくと マイフォルダに はいります。' },
+  'A sheet for you from {name}. Open the file in Coro Reader to put it in My Folder.': { de: 'Ein Blatt für dich von {name}. Öffne die Datei in Coro Reader, um es in Mein Ordner zu legen.', fr: 'Une feuille pour toi de {name}. Ouvre le fichier dans Coro Reader pour la ranger dans Mon dossier.', es: 'Una hoja para ti de {name}. Abre el archivo en Coro Reader para guardarla en Mi carpeta.', ja: '{name}から シートが とどいたよ。Coro Readerで ひらくと マイフォルダに はいります。' },
   'Your notebook has no pages to send yet.': { de: 'Dein Notizbuch hat noch keine Seiten zum Schicken.', fr: 'Ton carnet n’a pas encore de page à envoyer.', es: 'Tu cuaderno aún no tiene páginas para enviar.', ja: 'まだ おくれる ページが ありません。' },
   'Sending a sheet opens your phone’s messages and email.': { de: 'Ein Blatt zu schicken öffnet Nachrichten und E-Mail.', fr: 'Envoyer une feuille ouvre les messages et l’e-mail du téléphone.', es: 'Enviar una hoja abre los mensajes y el correo del teléfono.', ja: 'シートを おくると メッセージや メールが ひらきます。' },
   '{name} sent you a sheet': { de: '{name} hat dir ein Blatt geschickt', fr: '{name} t’a envoyé une feuille', es: '{name} te ha enviado una hoja', ja: '{name}が シートを おくってくれたよ' },
@@ -230,11 +230,11 @@ const T = {
   'Clear': { de: 'Löschen', fr: 'Effacer', es: 'Borrar', ja: 'ぜんぶけす' },
   // ---- About ----
   'Picture books in your voice.': { de: 'Bilderbücher mit deiner Stimme.', fr: 'Des albums illustrés, avec votre voix.', es: 'Libros ilustrados con tu voz.', ja: 'あなたの声でよむ、えほん。' },
-  'Oomlaut Reader is a home for beautifully illustrated stories, made for children who are learning to read and the grown-ups who read with them.': {
-    de: 'Oomlaut Reader ist ein Zuhause für wunderschön illustrierte Geschichten – für Kinder, die lesen lernen, und die Großen, die mit ihnen lesen.',
-    fr: 'Oomlaut Reader est la maison d’histoires joliment illustrées, pour les enfants qui apprennent à lire et les grands qui lisent avec eux.',
-    es: 'Oomlaut Reader es un hogar para cuentos bellamente ilustrados, hecho para los niños que aprenden a leer y los adultos que leen con ellos.',
-    ja: 'Oomlaut Readerは、うつくしいえのお話があつまる場所です。よむことをまなぶこどもたちと、いっしょによむおとなのために。' },
+  'Coro Reader is a home for beautifully illustrated stories, made for children who are learning to read and the grown-ups who read with them.': {
+    de: 'Coro Reader ist ein Zuhause für wunderschön illustrierte Geschichten – für Kinder, die lesen lernen, und die Großen, die mit ihnen lesen.',
+    fr: 'Coro Reader est la maison d’histoires joliment illustrées, pour les enfants qui apprennent à lire et les grands qui lisent avec eux.',
+    es: 'Coro Reader es un hogar para cuentos bellamente ilustrados, hecho para los niños que aprenden a leer y los adultos que leen con ellos.',
+    ja: 'Coro Readerは、うつくしいえのお話があつまる場所です。よむことをまなぶこどもたちと、いっしょによむおとなのために。' },
   'Every book can be read aloud by a warm narrator, with each word lighting up as it’s spoken. In Learn to Read mode, children tap any word to hear it sounded out, one part at a time. Parents can record themselves reading each page, so a favourite story can be heard in a familiar voice, any time. And families can make their own books, with their own pictures and words.': {
     de: 'Jedes Buch kann von einer warmen Erzählstimme vorgelesen werden, und jedes Wort leuchtet auf, während es gesprochen wird. Im Modus „Lesen lernen“ tippen Kinder auf ein Wort und hören es Silbe für Silbe. Eltern können sich beim Vorlesen jeder Seite aufnehmen, damit eine Lieblingsgeschichte jederzeit in einer vertrauten Stimme klingt. Und Familien können eigene Bücher machen, mit eigenen Bildern und Worten.',
     fr: 'Chaque livre peut être lu à voix haute par un narrateur chaleureux, et chaque mot s’illumine quand il est prononcé. En mode Apprendre à lire, les enfants touchent un mot pour l’entendre, syllabe par syllabe. Les parents peuvent s’enregistrer en lisant chaque page, pour qu’une histoire préférée s’écoute dans une voix familière, à tout moment. Et les familles peuvent créer leurs propres livres, avec leurs images et leurs mots.',
@@ -378,8 +378,8 @@ const T = {
   'Making your PDF…': { de: 'Dein PDF wird erstellt…', fr: 'Création de ton PDF…', es: 'Creando tu PDF…', ja: 'PDFを つくって います…' },
   'Couldn’t print the book. Please try again.': { de: 'Das Buch konnte nicht gedruckt werden. Bitte versuche es noch einmal.', fr: 'Impossible d’imprimer le livre. Réessaie.', es: 'No se pudo imprimir el libro. Inténtalo de nuevo.', ja: 'ほんを いんさつ できませんでした。もういちど ためしてね。' },
   'Couldn’t make the PDF. Please try again.': { de: 'Das PDF konnte nicht erstellt werden. Bitte versuche es noch einmal.', fr: 'Impossible de créer le PDF. Réessaie.', es: 'No se pudo crear el PDF. Inténtalo de nuevo.', ja: 'PDFを つくれませんでした。もういちど ためしてね。' },
-  'Oomlaut Reader isn’t allowed to use the camera. You can turn it on in Settings.': { de: 'Oomlaut Reader darf die Kamera nicht benutzen. Du kannst das in den Einstellungen erlauben.', fr: 'Oomlaut Reader n’a pas accès à l’appareil photo. Tu peux l’autoriser dans les Réglages.', es: 'Oomlaut Reader no puede usar la cámara. Puedes permitirlo en Ajustes.', ja: 'Oomlaut Reader は カメラを つかえません。せっていで オンに できます。' },
-  'Couldn’t open your photos. Check that Oomlaut Reader is allowed to use Photos in Settings.': { de: 'Deine Fotos konnten nicht geöffnet werden. Prüfe in den Einstellungen, ob Oomlaut Reader auf Fotos zugreifen darf.', fr: 'Impossible d’ouvrir tes photos. Vérifie dans les Réglages que Oomlaut Reader peut accéder aux Photos.', es: 'No se pudieron abrir tus fotos. Comprueba en Ajustes que Oomlaut Reader puede usar Fotos.', ja: 'しゃしんを ひらけませんでした。せっていで Oomlaut Reader が しゃしんを つかえるか たしかめてね。' },
+  'Coro Reader isn’t allowed to use the camera. You can turn it on in Settings.': { de: 'Coro Reader darf die Kamera nicht benutzen. Du kannst das in den Einstellungen erlauben.', fr: 'Coro Reader n’a pas accès à l’appareil photo. Tu peux l’autoriser dans les Réglages.', es: 'Coro Reader no puede usar la cámara. Puedes permitirlo en Ajustes.', ja: 'Coro Reader は カメラを つかえません。せっていで オンに できます。' },
+  'Couldn’t open your photos. Check that Coro Reader is allowed to use Photos in Settings.': { de: 'Deine Fotos konnten nicht geöffnet werden. Prüfe in den Einstellungen, ob Coro Reader auf Fotos zugreifen darf.', fr: 'Impossible d’ouvrir tes photos. Vérifie dans les Réglages que Coro Reader peut accéder aux Photos.', es: 'No se pudieron abrir tus fotos. Comprueba en Ajustes que Coro Reader puede usar Fotos.', ja: 'しゃしんを ひらけませんでした。せっていで Coro Reader が しゃしんを つかえるか たしかめてね。' },
   'Couldn’t open the camera.': { de: 'Die Kamera konnte nicht geöffnet werden.', fr: 'Impossible d’ouvrir l’appareil photo.', es: 'No se pudo abrir la cámara.', ja: 'カメラを ひらけませんでした。' },
   'Add a picture or some words before the next page.': { de: 'Füge ein Bild oder ein paar Wörter hinzu, bevor du umblätterst.', fr: 'Ajoute une image ou quelques mots avant la page suivante.', es: 'Añade una imagen o unas palabras antes de la siguiente página.', ja: 'つぎの ページの まえに えか ことばを いれてね。' },
   'Page {n} deleted.': { de: 'Seite {n} gelöscht.', fr: 'Page {n} supprimée.', es: 'Página {n} borrada.', ja: '{n}ページを けしました。' },
@@ -627,7 +627,7 @@ const T = {
   'Listen Only Mode': { de: 'Nur Zuhören', fr: 'Écoute seule', es: 'Solo escuchar', ja: 'きくだけ モード' },
   'Edit playlist': { de: 'Playlist bearbeiten', fr: 'Modifier la liste', es: 'Editar la lista', ja: 'プレイリストを へんしゅう' },
   'Share playlist': { de: 'Playlist teilen', fr: 'Partager la liste', es: 'Compartir la lista', ja: 'プレイリストを シェア' },
-  'Our playlist “{name}” in Oomlaut Reader:': { de: 'Unsere Playlist „{name}“ in Oomlaut Reader:', fr: 'Notre liste « {name} » dans Oomlaut Reader :', es: 'Nuestra lista «{name}» en Oomlaut Reader:', ja: 'Oomlaut Reader の プレイリスト「{name}」:' },
+  'Our playlist “{name}” in Coro Reader:': { de: 'Unsere Playlist „{name}“ in Coro Reader:', fr: 'Notre liste « {name} » dans Coro Reader :', es: 'Nuestra lista «{name}» en Coro Reader:', ja: 'Coro Reader の プレイリスト「{name}」:' },
   'Open Audio Player': { de: 'Audio-Player öffnen', fr: 'Ouvrir le lecteur audio', es: 'Abrir el reproductor', ja: 'オーディオプレーヤーを ひらく' },
   'Close Audio Player': { de: 'Audio-Player schließen', fr: 'Fermer le lecteur audio', es: 'Cerrar el reproductor de audio', ja: 'オーディオプレーヤーをとじる' },
   'Close the player': { de: 'Spieler schließen', fr: 'Fermer le lecteur', es: 'Cerrar el reproductor', ja: 'プレーヤーをとじる' },
@@ -668,7 +668,7 @@ const T = {
   'Settings is locked. A grown-up can open it from the menu.': { de: 'Gesperrt. Erwachsene können es im Menü öffnen.', fr: 'Verrouillé. Un adulte peut l’ouvrir depuis le menu.', es: 'Bloqueado. Un adulto puede abrirlo desde el menú.', ja: 'ロックされています。おとなのかたがメニューからひらけます。' },
   'Search help': { de: 'Hilfe durchsuchen', fr: 'Rechercher dans l’aide', es: 'Buscar en la ayuda', ja: 'ヘルプをけんさく' },
   'Search ideas and support': { de: 'Ideen und Hilfe durchsuchen', fr: 'Rechercher dans Idées et aide', es: 'Buscar en Ideas y ayuda', ja: 'アイデアと サポートを けんさく' },
-  'About Oomlaut Reader': { de: 'Über Oomlaut Reader', fr: 'À propos d’Oomlaut Reader', es: 'Acerca de Oomlaut Reader', ja: 'Oomlaut Readerについて' },
+  'About Coro Reader': { de: 'Über Coro Reader', fr: 'À propos d’Coro Reader', es: 'Acerca de Coro Reader', ja: 'Coro Readerについて' },
   'Books in this language arrive as they are translated.': { de: 'Bücher in dieser Sprache kommen nach und nach dazu.', fr: 'Les livres dans cette langue arrivent au fur et à mesure des traductions.', es: 'Los libros en este idioma llegan a medida que se traducen.', ja: 'このことばの本は、ほんやくができしだいふえていきます。' },
 };
 

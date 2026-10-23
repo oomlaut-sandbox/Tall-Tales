@@ -1,4 +1,4 @@
-// About Oomlaut Reader (from the Settings menu).
+// About Coro Reader (from the Settings menu).
 import React from 'react';
 import { Pressable, Image, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,25 +23,20 @@ export default function About({ u, openMenu, onSecret }) {
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {/* Jörg's red felt, treated like the other banners (phones); iPad keeps the classic solid red */}
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
-        {/* the ® sits raised (superscript) after Oomlaut */}
-        <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-          <Text style={styles.title}>Oomlaut</Text>
-          <Text style={styles.reg}>®</Text>
-          <Text style={styles.title}> Reader</Text>
-        </View>
+        <Text style={styles.title}>Coro Reader</Text>
         <Text style={styles.tagline}>{t('Picture books in your voice.')}</Text>
       </View>
       <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={[styles.body, { maxWidth: 520 }, { paddingBottom: 24 }, phone && winH < 740 && { paddingTop: 22, gap: 12 }]}>
         <Text style={[styles.p, textStyle]}>
-          {t('Oomlaut Reader is a home for beautifully illustrated stories, made for children who are learning to read and the grown-ups who read with them.')}
+          {t('Coro Reader is a home for beautifully illustrated stories, made for children who are learning to read and the grown-ups who read with them.')}
         </Text>
         <Text style={[styles.p, textStyle]}>
           {t('Every book can be read aloud by a warm narrator, with each word lighting up as it’s spoken. In Learn to Read mode, children tap any word to hear it sounded out, one part at a time. Parents can record themselves reading each page, so a favourite story can be heard in a familiar voice, any time. And families can make their own books, with their own pictures and words.')}
         </Text>
         <Text style={[styles.p, textStyle]}>{t('Oomlaut is always looking for new picture books. If you’ve written or illustrated a story, send it to us and join the Oomlaut author community. Visit oomlaut.com for more information.')}</Text>
         {/* the store owner's way in: hold the version line for five seconds (nothing happens on a tap) */}
-        <Pressable onLongPress={onSecret} delayLongPress={5000} accessible={false}><Text style={styles.version}>{t('Version {v}', { v: VERSION })}</Text></Pressable>
+        <Pressable onLongPress={onSecret} delayLongPress={5000} accessible={false}><Text style={styles.version}>{t('Version {v}', { v: VERSION })} · © 2026 Oomlaut Inc.</Text></Pressable>
       </ScrollView>
       </View>
     </WithBar>

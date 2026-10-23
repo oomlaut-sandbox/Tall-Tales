@@ -54,7 +54,7 @@ export default function Corkboard({ width, toast }) {
       let r;
       if (source === 'camera') {
         const perm = await ImagePicker.requestCameraPermissionsAsync();
-        if (!perm.granted) return toast && toast(t('Oomlaut Reader isn’t allowed to use the camera. You can turn it on in Settings.'));
+        if (!perm.granted) return toast && toast(t('Coro Reader isn’t allowed to use the camera. You can turn it on in Settings.'));
         r = await ImagePicker.launchCameraAsync({ mediaTypes: 'images', quality: 0.85 });
       } else r = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'images', quality: 1 });
       if (r.canceled || !r.assets || !r.assets[0]) return;
@@ -67,7 +67,7 @@ export default function Corkboard({ width, toast }) {
       } catch (e) {}
       setPins(await pinPhoto(uri));
     } catch (e) {
-      toast && toast(source === 'camera' ? t('Couldn’t open the camera.') : t('Couldn’t open your photos. Check that Oomlaut Reader is allowed to use Photos in Settings.'));
+      toast && toast(source === 'camera' ? t('Couldn’t open the camera.') : t('Couldn’t open your photos. Check that Coro Reader is allowed to use Photos in Settings.'));
     }
   };
 

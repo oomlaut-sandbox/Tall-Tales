@@ -24,7 +24,7 @@ try {
 function ErrorScreen({ text }) {
   return (
     <View style={{ flex: 1, backgroundColor: '#111', paddingTop: 70, paddingHorizontal: 18 }}>
-      <Text style={{ color: '#ff5a5a', fontSize: 18, fontWeight: '700', marginBottom: 12 }}>oomlaut Reader hit a problem</Text>
+      <Text style={{ color: '#ff5a5a', fontSize: 18, fontWeight: '700', marginBottom: 12 }}>Coro Reader hit a problem</Text>
       <Text style={{ color: '#ccc', fontSize: 13, marginBottom: 12 }}>Take a screenshot of this screen and send it to Claude.</Text>
       <ScrollView><Text selectable style={{ color: '#eee', fontSize: 12, fontFamily: 'Menlo' }}>{text}</Text></ScrollView>
     </View>

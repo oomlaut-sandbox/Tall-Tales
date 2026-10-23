@@ -5,7 +5,7 @@ import { Share } from 'react-native';
 export const APP_LINK = 'https://apps.apple.com/app/id6822165068';
 
 export function inviteMessage(title) {
-  return `We’ve been reading “${title}” together in Oomlaut Reader: Picture books in your voice. Come and read with us! ${APP_LINK}`;
+  return `We’ve been reading “${title}” together in Coro Reader: Picture books in your voice. Come and read with us! ${APP_LINK}`;
 }
 
 export function shareInvite(title) {
@@ -15,6 +15,6 @@ export function shareInvite(title) {
 // a playlist: its name and its books, with the app link
 export function sharePlaylist(name, titles, t) {
   const list = titles.map((x, i) => `${i + 1}. ${x}`).join('\n');
-  const message = `${t('Our playlist “{name}” in Oomlaut Reader:', { name })}\n${list}\n\n${APP_LINK}`;
+  const message = `${t('Our playlist “{name}” in Coro Reader:', { name })}\n${list}\n\n${APP_LINK}`;
   return Share.share({ message }).catch(() => {});
 }

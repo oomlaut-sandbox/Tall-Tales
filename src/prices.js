@@ -1,4 +1,4 @@
-// Oomlaut Reader's prices (Jörg, 18 Oct 2026), in US dollars; Apple sets the matching price in other countries.
+// Coro Reader's prices (Jörg, 18 Oct 2026), in US dollars; Apple sets the matching price in other countries.
 // The real prices always come from the App Store once purchases are switched on; these are only shown
 // until then (and in the web preview).
 //   Membership: $4.99 a month, or $39.99 a year, both with a 7-day free trial. Unlocks every book.

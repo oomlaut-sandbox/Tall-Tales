@@ -21,7 +21,7 @@ export const HELP = [
     'The menu button (three lines) in the bottom bar takes you anywhere in the app.',
   ] },
   { section: 'Getting started', title: 'Profiles for each child', text: [
-    'Each child can have their own profile, with their own notebook, badges, playlists and settings. Grown-ups add and change them at the bottom of Settings. A child can switch by tapping the name at the top of the start page.',
+    'Each child can have their own profile, with their own notebook, badges, playlists and settings. Grown-ups add and change them at the bottom of Settings. A child can switch by tapping their picture beside My Notebook in My Library.',
   ] },
   { section: 'Reading', title: 'Reading a book', text: [
     'Open My Library and tap a book. Its cover opens and the first page appears.',
@@ -39,6 +39,10 @@ export const HELP = [
   ] },
   { section: 'Reading', title: 'Text size, font and sound effects', text: [
     'Reading Options also has the size of the words, the book font, and the page-turn sound with a volume slider.',
+  ] },
+  { section: 'Reading', title: 'Amber light', text: [
+    'Amber light warms the pages for evening reading: amber paper, softer words and warmer pictures.',
+    'Tap the small light bulb at the top left of the felt to turn it on or off, or switch it in Reading Options.',
   ] },
   { section: 'Music and sounds', title: 'The Audio Player', text: [
     'Tap the music note on the black bar to open the Audio Player. It’s there while you read, in My Library and in the Book Store.',
@@ -79,7 +83,7 @@ export const HELP = [
   ] },
   { section: 'Your voice', title: 'Sharing a book in your voice', text: [
     'Share Book on the last page sends an invitation to the app. When the book has recordings, a file with your voice goes along with it.',
-    'Whoever gets it taps the file and opens it in Oomlaut Reader to add your voice to the same book on their phone.',
+    'Whoever gets it taps the file and opens it in Coro Reader to add your voice to the same book on their phone.',
   ] },
   { section: 'Making books', title: 'Making your own book', text: [
     'Choose Create a Story from the menu (or the + tile in My Library).',
@@ -108,7 +112,9 @@ export const HELP = [
   ] },
   { section: 'My Notebook', title: 'Drawing and notes', text: [
     'Tap a picture square to make a drawing, choose a photo or take one. You can also draw on top of a photo.',
-    'Draw with your finger in crayon colours. Pick a thin, medium or thick crayon. The paint roller fills a shape with the colour you pick: tap inside it. The eraser rubs out whole lines and fills; undo takes back the last line or fill; Clear starts over.',
+    'The drawing tools lie in the tray at the bottom: the eraser, a pencil, an ink pen, a watercolour brush, the smudge tool and the paint roller. Tap a tool to pick it up, and tap it again to choose a thin, medium or thick line.',
+    'Pick a colour from the paint splotches. The + has every colour, bright and earthy, and Mix, Shapes and Mirror. The paint roller fills a shape: tap inside it. The smudge tool softly blurs what you’ve drawn.',
+    'Undo and Redo are at the top, beside the green tick for Done. The bin clears the page.',
     'Tap the lined square to write notes.',
   ] },
   { section: 'My Notebook', title: 'Printing and sharing pages', text: [
@@ -122,6 +128,10 @@ export const HELP = [
   { section: 'Books', title: 'My Library', text: [
     'All your books are here: the books that come with the app, books from the Book Store, and books you made.',
     'Tap Select to choose books to share or delete. Books that came with the app can be brought back with “Show removed books”.',
+  ] },
+  { section: 'Books', title: 'My Folder and the corkboard', text: [
+    'My Folder is in My Library, under your books. It holds a note from us, the Abc sheet (tap a letter to hear it) and sheets other families send you.',
+    'The corkboard at the very bottom of My Library is for sticky notes and photos. Tap the pin to add one, and tap a note or photo to see it big or take it down.',
   ] },
   { section: 'Books', title: 'The Book Store', text: [
     'The Book Store has new books to discover. Tap a cover to see what it’s about, then Read now.',
@@ -139,12 +149,13 @@ export const HELP = [
     'Your child’s age: every book has an age rating, and books rated for older children are hidden.',
     'Lock everything leaves only My Library and its books, read the way you chose. Unlock everything brings it all back.',
     'Nightlight mode: switch the bedtime nightlight on or off. Haptic feedback: feel soft clicks on dials, knobs and buttons, or switch them off.',
+    'The Garden (a beta that may change): a quiet garden to visit, with birdsong. Turn it on in Settings, then pull up past the bottom of My Library to go in. Tap the garden to change the light, and tap a gate to leave.',
   ] },
   { section: 'Grown-ups', title: 'The grown-up check', text: [
     'Some things, like taking photos, printing, sharing and deleting, first ask a quick question only a grown-up can answer.',
   ] },
   { section: 'Grown-ups', title: 'Sending us your book', text: [
-    'Authors and illustrators young and old can send their books to the Oomlaut Book Store. Visit oomlaut.com for more information.',
+    'Authors and illustrators young and old can send their books to the Coro Reader Book Store. Visit oomlaut.com for more information.',
   ] },
 ];
 
@@ -207,7 +218,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
               style={styles.search} allowFontScaling={false} multiline scrollEnabled={false} submitBehavior="blurAndSubmit" returnKeyType="search" accessibilityLabel={t('Search ideas and support')} />
           </Pressable>
           {/* About lives here now (it left the main menu) */}
-          <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>{t('About Oomlaut Reader')}</Text></Pressable>
+          <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>{t('About Coro Reader')}</Text></Pressable>
           <View style={{ height: 18 }} />
           {!found.length ? <Text style={[styles.p, { color: colors.white }]}>{t('Nothing found for “{q}”. Try another word.', { q: q.trim() })}</Text> : null}
           {found.map((h) => {

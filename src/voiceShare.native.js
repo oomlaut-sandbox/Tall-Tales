@@ -1,6 +1,6 @@
 // Sharing a book in your own voice: the family's recordings of one book packed into a single file
 // ("Different – read by Opa.oomlaut"), sent with the invitation by text or email. Whoever gets it taps the file and
-// opens it in Oomlaut Reader: the readers and their pages are added to that book on their phone, and it reads in
+// opens it in Coro Reader: the readers and their pages are added to that book on their phone, and it reads in
 // that voice. Nothing goes online; the file is the whole thing.
 // The file: JSON { kind: 'oomlaut-voices', v: 1, storyId, title, readers: [{ id, name, photo? }], pages: [{ reader,
 // pid, seconds, start?, end?, levels?, audio (base64 m4a) }] }
@@ -51,12 +51,12 @@ export async function shareBookWithVoices(story) {
   const file = new File(Paths.cache, `${safeName(story.title)} – read by ${safeName(names)}.oomlaut`);
   try { if (file.exists) file.delete(); } catch (e) {}
   file.write(JSON.stringify({ kind: KIND, v: 1, storyId: story.id, title: story.title, readers: people, pages }));
-  const message = `${inviteMessage(story.title)}\n\nTap the attached file and open it in Oomlaut Reader to hear it in ${names}’s voice.`;
+  const message = `${inviteMessage(story.title)}\n\nTap the attached file and open it in Coro Reader to hear it in ${names}’s voice.`;
   await Share.share({ message, url: file.uri }).catch(() => {});
   return true;
 }
 
-// A file someone sent (opened in Oomlaut Reader): what's in it, for the "Add Opa's voice?" box (or a sheet).
+// A file someone sent (opened in Coro Reader): what's in it, for the "Add Opa's voice?" box (or a sheet).
 export async function readVoicesFile(uri) {
   try {
     const data = JSON.parse(await new File(uri).text());

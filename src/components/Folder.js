@@ -194,7 +194,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
             {picking.length ? (
               <ScrollView style={{ marginTop: 16 }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
                 {picking.map((p, k) => (
-                  <Pressable key={p.pid} onPress={withTap(async () => { setPicking(null); await shareSheet(p, name || t('a friend'), t('A sheet for you from {name}. Open the file in Oomlaut Reader to put it in My Folder.', { name: name || t('a friend') })); })}
+                  <Pressable key={p.pid} onPress={withTap(async () => { setPicking(null); await shareSheet(p, name || t('a friend'), t('A sheet for you from {name}. Open the file in Coro Reader to put it in My Folder.', { name: name || t('a friend') })); })}
                     style={{ alignItems: 'center', gap: 4 }} accessibilityRole="button" accessibilityLabel={t('Page {n}', { n: k + 3 })}>
                     <SheetPage page={p} size={90} />
                     <Text style={styles.cardLabel}>{t('Page {n}', { n: k + 3 })}</Text>
