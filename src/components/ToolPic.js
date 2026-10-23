@@ -21,6 +21,8 @@ export default function ToolPic({ kind, width, height }) {
   return (
     <View pointerEvents="none" style={{ width, height, alignItems: 'center' }}>
       <View style={{ width: w, height: h }}>
+        {/* its shadow on the tray: its own shape, dark and soft, a little down and to the right */}
+        <Image source={img} blurRadius={6} style={{ position: 'absolute', left: 5, top: 8, width: w, height: h, tintColor: '#000', opacity: 0.6 }} />
         <Image source={img} style={{ position: 'absolute', left: 0, top: 0, width: w, height: h }} />
       </View>
     </View>

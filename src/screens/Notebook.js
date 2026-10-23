@@ -966,10 +966,13 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const [mixing, setMixing] = useState(false); // Mix: a tapped colour is mixed into the pen's colour, like paint
   const [mirror, setMirror] = useState(false); // Mirror: everything drawn appears flipped on the other side too
   const [redo, setRedo] = useState([]); // strokes taken back with Undo, to put back with Redo
+  const [recent, setRecent] = useState(['#1e2324', '#e53935', '#fdd835', '#1f5fc8', '#3a9a4a', '#7e57c2', '#f1e8d8']); // the seven colours in the pill
+  const [more, setMore] = useState(false); // the + sheet: all the colours, Mix, Shapes, Mirror
+  const [sizePop, setSizePop] = useState(null); // the tool whose sizes are showing
   const lastWater = useRef(null); // the last watercolour stroke and when it was finished (still wet for a while)
   const S = useRef({});
   S.current = { strokes, pen, size, erase, bucket, tall, brush, shape, mirror };
-  const toolsH = 420; // (two rows of colours, the colour row; the brushes, the sizes and the shapes take a row each)
+  const toolsH = 16; // (portrait: the panel has its own room below the page) // (two rows of colours, the colour row; the brushes, the sizes and the shapes take a row each)
   const add = (st) => { setStrokes((s) => [...s, st]); setRedo([]); };
   const W = !area ? 0 : wideScreen ? Math.max(120, Math.floor(Math.min(area.h, area.w - TOOLS_W - 28)))
     : Math.max(120, Math.floor(Math.min(winW - 2 * GAP, tall ? (area.h - toolsH) / 2 : area.h - toolsH)));
@@ -982,6 +985,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     onMoveShouldSetPanResponder: () => true,
     onPanResponderTerminationRequest: () => false,
     onPanResponderGrant: (e) => {
+      setSizePop(null); setMore(false); // drawing puts away the sizes and the + sheet
       const [x, y] = at(e);
       if (S.current.bucket) {
         const f = makeFill(withMirrors(S.current.strokes.filter((st) => !st.e)), x, y, S.current.tall ? 2 : 1, S.current.pen);
@@ -1048,109 +1052,140 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       {mirror ? <View pointerEvents="none" style={{ position: 'absolute', left: W / 2 - 0.5, top: 0, bottom: 0, borderLeftWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(0,0,0,0.22)' }} /> : null}
     </View>
   );
-  const COLS = palette === 'bright' ? PENS_BRIGHT : PENS;
-  const pick = (hex) => { setPen((p) => (mixing ? mixColours(p, hex) : hex)); setErase(false); };
-  const swatches = (w, perRow) => (
-    <View style={{ width: w, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', columnGap: perRow ? 0 : 7, rowGap: 14 }}>{/* the colours close together */}
-      {COLS.map(([hex, name]) => (
-        <View key={hex} style={{ width: perRow ? w / perRow : undefined, alignItems: perRow ? 'center' : undefined }}>
-          <Pressable onPress={() => pick(hex)} accessibilityLabel={mixing ? t('Mix in {name}', { name: t(name) }) : t('{name} pen', { name: t(name) })}
-            style={[styles.swatch, { backgroundColor: hex }, !erase && !mixing && pen === hex && styles.swatchOn]} />
-        </View>
-      ))}
-    </View>
+  // ---- the panel, like Paper's: seven colours in a pill (the ones you used last), the tools in a tray, Clear as
+  // the bin; Undo, Redo and Done above the page. The + opens everything else: all the colours, Mix, Shapes and
+  // Mirror. Tap the tool you're holding again for its sizes. ----
+  const add7 = (hex) => setRecent((r) => [hex, ...r.filter((x) => x.toLowerCase() !== hex.toLowerCase())].slice(0, 7));
+  const pick = (hex) => {
+    const next = mixing ? mixColours(pen, hex) : hex;
+    setPen(next); setErase(false); setBucket(false);
+    add7(next);
+  };
+  const swatch = (hex, label, size, onPress, on) => (
+    <Pressable key={hex} onPress={onPress} hitSlop={3} accessibilityRole="button" accessibilityLabel={label}
+      style={[styles.swatch, { width: size, height: size, borderRadius: size / 2, backgroundColor: hex }, on && styles.swatchOn]} />
   );
-  // the colour row: the pen's colour now (mixed colours show here), Mix, the other palette, and Mirror
-  const other = palette === 'bright' ? PENS : PENS_BRIGHT;
-  const colourRow = (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-      <View accessibilityLabel={t('The colour you are drawing with')} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: pen, borderWidth: 3, borderColor: colors.white }} />
-      <Pressable onPress={() => setMixing((x) => !x)} style={[styles.toolWide, mixing && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mix colours')}>
-        <Text style={styles.toolText}>{t('Mix')}</Text>
-      </Pressable>
-      {/* the other palette: four of its colours, tap to switch */}
-      <Pressable onPress={() => setPalette((p) => (p === 'bright' ? 'earthy' : 'bright'))} style={[styles.tool, { flexDirection: 'row', flexWrap: 'wrap', width: 38, padding: 8, gap: 2 }]} accessibilityRole="button"
-        accessibilityLabel={palette === 'bright' ? t('Earthy colours') : t('Bright colours')}>
-        {[2, 9, 13, 4].map((i) => <View key={i} style={{ width: 9, height: 9, borderRadius: 4.5, backgroundColor: other[i][0] }} />)}
-      </Pressable>
-      <View style={{ flex: 1 }} />
-      <Pressable onPress={() => setMirror((x) => !x)} style={[styles.toolWide, mirror && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mirror drawing')}>
-        <Text style={styles.toolText}>{t('Mirror')}</Text>
-      </Pressable>
-    </View>
+  const colourName = (hex) => { const f = [...PENS_BRIGHT, ...PENS].find(([h]) => h.toLowerCase() === hex.toLowerCase()); return f ? t(f[1]) : t('Mixed colour'); };
+  const pillEl = (w) => {
+    const sz = Math.min(34, Math.floor((w - 20) / 7) - 8);
+    return (
+      <View style={styles.pill}>
+        {recent.map((hex) => swatch(hex, mixing ? t('Mix in {name}', { name: colourName(hex) }) : t('{name} pen', { name: colourName(hex) }), sz,
+          () => pick(hex), !erase && !mixing && pen.toLowerCase() === hex.toLowerCase()))}
+      </View>
+    );
+  };
+  const plusEl = (
+    <Pressable onPress={() => setMore(true)} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('More colours and tools')} style={styles.plusBtn}>
+      <View style={{ position: 'absolute', width: 22, height: 3, borderRadius: 1.5, backgroundColor: colors.white }} />
+      <View style={{ position: 'absolute', width: 3, height: 22, borderRadius: 1.5, backgroundColor: colors.white }} />
+      {mixing || mirror || shape ? <View style={{ position: 'absolute', top: 2, right: 2, width: 9, height: 9, borderRadius: 4.5, backgroundColor: colors.green }} /> : null}
+    </Pressable>
   );
-  const sizesEl = (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-      {SIZES.map(([name, s]) => (
-        <Pressable key={name} onPress={() => { setSize(s); setErase(false); setBucket(false); }} style={[styles.tool, !erase && !bucket && size === s && styles.toolOn]} accessibilityLabel={t('{name} pen', { name: t(name) })}>
-          <View style={{ width: 5 + s * 280, height: 5 + s * 280, borderRadius: 20, backgroundColor: colors.white }} />
-        </Pressable>
-      ))}
-    </View>
+  const binEl = (
+    <Pressable onPress={() => { setStrokes([]); setRedo([]); }} disabled={!strokes.length} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Clear the drawing')}
+      style={[styles.plusBtn, !strokes.length && { opacity: 0.35 }]}>
+      <Image source={TRASH} style={{ width: 22, height: 22, tintColor: colors.white }} resizeMode="contain" />
+    </Pressable>
   );
-  // Shapes: the button opens the five shapes beside it; pick one, then drag on the page (tap it again to draw freely)
-  const shapesEl = (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-      <Pressable onPress={() => { setShapesOpen((x) => !x); if (shapesOpen) setShape(null); }} style={[styles.toolWide, (shapesOpen || shape) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Shapes')}>
-        <Text style={styles.toolText}>{t('Shapes')}</Text>
+  const headEl = (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+      <Text numberOfLines={1} style={[styles.editorTitle, { flex: 1 }]}>{title}</Text>
+      <Pressable onPress={() => { const last = strokes[strokes.length - 1]; if (!last) return; setStrokes(strokes.slice(0, -1)); setRedo((r) => [...r, last]); }} disabled={!strokes.length}
+        style={[styles.tool, !strokes.length && { opacity: 0.35 }]} accessibilityRole="button" accessibilityLabel={t('Undo')}>
+        <UndoIcon />
       </Pressable>
-      {shapesOpen ? SHAPES.map(([k, glyph, name]) => (
-        <Pressable key={k} onPress={() => { setShape((x) => (x === k ? null : k)); setErase(false); setBucket(false); }} style={[styles.tool, shape === k && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t(name)}>
-          <Text style={[styles.toolText, { fontSize: 20, lineHeight: 24 }]}>{glyph}</Text>
-        </Pressable>
-      )) : null}
+      <Pressable onPress={() => { const back = redo[redo.length - 1]; if (!back) return; setRedo(redo.slice(0, -1)); setStrokes((s2) => [...s2, back]); }} disabled={!redo.length}
+        style={[styles.tool, !redo.length && { opacity: 0.35 }]} accessibilityRole="button" accessibilityLabel={t('Redo')}>
+        <UndoIcon flip />
+      </Pressable>
+      <Pressable onPress={() => onDone(strokes)} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Done')}><DoneTick size={38} /></Pressable>
     </View>
   );
   // the tools in a tray, like real ones on a desk (the one in your hand stands up higher): an eraser, a pencil, a
-  // fountain pen (ink), a watercolour brush, a wax crayon and a paint roller (fill). The pencil, crayon and the
-  // paint on the brush and roller take the colour you're drawing with.
+  // fountain pen (ink), a watercolour brush, a wax crayon and a paint roller (fill), as Jörg rendered them
   const TRAY = [['eraser', 'Eraser'], ['pencil', 'Pencil'], ['pen', 'Ink'], ['water', 'Watercolour'], ['crayon', 'Crayon'], ['roller', 'Fill']];
   const BRUSH_OF = { pencil: 'pencil', pen: 'ink', water: 'water', crayon: 'crayon' };
   const onTool = erase ? 'eraser' : bucket ? 'roller' : Object.keys(BRUSH_OF).find((k) => BRUSH_OF[k] === brush) || 'pen';
   const pickTool = (k) => {
+    if (k === onTool && k !== 'roller') { setSizePop((x) => (x ? null : k)); return; } // the one in your hand: its sizes
+    setSizePop(null);
     if (k === 'eraser') { setErase(true); setBucket(false); setShape(null); return; }
     if (k === 'roller') { setBucket(true); setErase(false); setShape(null); return; }
     setBrush(BRUSH_OF[k]); setErase(false); setBucket(false);
   };
+  const TRAY_H = 112;
   const trayEl = (w) => {
-    const tw = Math.min(56, w / TRAY.length), th = tw * 2.3;
+    const tw = Math.floor(w / TRAY.length), th = TRAY_H * 1.75;
     return (
-      <View style={{ width: w, height: tw * 1.45, overflow: 'hidden', flexDirection: 'row', justifyContent: 'space-between', borderTopLeftRadius: 10, borderTopRightRadius: 10, backgroundColor: 'rgba(0,0,0,0.28)', paddingHorizontal: 4 }}>
+      <View style={{ width: w, height: TRAY_H, overflow: 'hidden', flexDirection: 'row', justifyContent: 'space-between' }}>
         {TRAY.map(([k, name]) => (
           <Pressable key={k} onPress={() => pickTool(k)} accessibilityRole="button" accessibilityLabel={t(name)} accessibilityState={{ selected: onTool === k }}
-            style={{ width: tw, height: th, transform: [{ translateY: onTool === k ? tw * 0.06 : tw * 0.45 }] }}>
+            style={{ width: tw, height: th, transform: [{ translateY: onTool === k ? 8 : 34 }] }}>
             <ToolPic kind={k} width={tw} height={th} />
           </Pressable>
         ))}
       </View>
     );
   };
-  // the brushes: a brush pen (ink), soft watercolour, a fine pencil
-  const brushesEl = (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-      {BRUSHES.map(([k, name]) => (
-        <Pressable key={k} onPress={() => { setBrush(k); setErase(false); setBucket(false); }} style={[styles.toolWide, { paddingHorizontal: 9 }, !erase && !bucket && brush === k && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t(name)}>
-          <Text style={styles.toolText}>{t(name)}</Text>
-        </Pressable>
-      ))}
-    </View>
-  );
-  const undoEl = (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-      <Pressable onPress={() => { const last = strokes[strokes.length - 1]; if (!last) return; setStrokes(strokes.slice(0, -1)); setRedo((r) => [...r, last]); }} disabled={!strokes.length} style={[styles.tool, !strokes.length && { opacity: 0.35 }]} accessibilityLabel={t('Undo')}>
-        <UndoIcon />
-      </Pressable>
-      <Pressable onPress={() => { const back = redo[redo.length - 1]; if (!back) return; setRedo(redo.slice(0, -1)); setStrokes((s) => [...s, back]); }} disabled={!redo.length} style={[styles.tool, !redo.length && { opacity: 0.35 }]} accessibilityLabel={t('Redo')}>
-        <UndoIcon flip />
-      </Pressable>
-      <Pressable onPress={() => { setStrokes([]); setRedo([]); }} disabled={!strokes.length} style={[styles.toolWide, !strokes.length && { opacity: 0.35 }]} accessibilityLabel={t('Clear the drawing')}>
-        <Text style={styles.toolText}>{t('Clear')}</Text>
-      </Pressable>
-    </View>
-  );
-  const doneEl = <Pressable onPress={() => onDone(strokes)} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { marginBottom: 0 }]}><Text style={styles.pillText}>{t('Done')}</Text></Pressable>;
+  // the sizes of the tool in your hand, in a little dark bubble above it
+  const sizePopEl = (w) => {
+    if (!sizePop) return null;
+    const n = TRAY.findIndex(([k]) => k === sizePop), tw = Math.floor(w / TRAY.length);
+    const left = Math.max(0, Math.min(w - 150, n * tw + tw / 2 - 75));
+    return (
+      <View style={[styles.sizePop, { left, bottom: TRAY_H - 4 }]}>
+        {SIZES.map(([name, sz]) => (
+          <Pressable key={name} onPress={() => { setSize(sz); setSizePop(null); }} hitSlop={6} accessibilityRole="button" accessibilityLabel={t('{name} pen', { name: t(name) })}
+            style={{ width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', backgroundColor: size === sz ? colors.green : 'transparent' }}>
+            <View style={{ width: 5 + sz * 280, height: 5 + sz * 280, borderRadius: 20, backgroundColor: colors.white }} />
+          </Pressable>
+        ))}
+      </View>
+    );
+  };
+  // the + : all the colours (bright and earthy), Mix, Shapes and Mirror
+  const moreEl = (w) => {
+    if (!more) return null;
+    const sz = Math.min(34, Math.floor((w - 44) / 8) - 8);
+    const grid = (list) => (
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 8, rowGap: 10 }}>
+        {list.map(([hex, name]) => swatch(hex, mixing ? t('Mix in {name}', { name: t(name) }) : t('{name} pen', { name: t(name) }), sz, () => pick(hex), !erase && !mixing && pen.toLowerCase() === hex.toLowerCase()))}
+      </View>
+    );
+    return (
+      <View style={[styles.sheet, { width: w, paddingBottom: insets.bottom + 18 }]}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <View accessibilityLabel={t('The colour you are drawing with')} style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: pen, borderWidth: 3, borderColor: colors.white }} />
+          <Text style={[styles.editorTitle, { flex: 1 }]}>{t('Colours')}</Text>
+          <Pressable onPress={() => setMore(false)} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Close')} style={styles.plusBtn}>
+            <View style={{ position: 'absolute', width: 20, height: 2.6, borderRadius: 1.3, backgroundColor: colors.white, transform: [{ rotate: '45deg' }] }} />
+            <View style={{ position: 'absolute', width: 20, height: 2.6, borderRadius: 1.3, backgroundColor: colors.white, transform: [{ rotate: '-45deg' }] }} />
+          </Pressable>
+        </View>
+        <Text style={styles.sheetLabel}>{t('Bright colours')}</Text>
+        {grid(PENS_BRIGHT)}
+        <Text style={styles.sheetLabel}>{t('Earthy colours')}</Text>
+        {grid(PENS)}
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 20 }}>
+          <Pressable onPress={() => setMixing((x) => !x)} style={[styles.toolWide, mixing && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mix colours')}><Text style={styles.toolText}>{t('Mix')}</Text></Pressable>
+          <Pressable onPress={() => { setShapesOpen((x) => !x); if (shapesOpen) setShape(null); }} style={[styles.toolWide, (shapesOpen || shape) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Shapes')}><Text style={styles.toolText}>{t('Shapes')}</Text></Pressable>
+          <Pressable onPress={() => setMirror((x) => !x)} style={[styles.toolWide, mirror && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mirror drawing')}><Text style={styles.toolText}>{t('Mirror')}</Text></Pressable>
+        </View>
+        {shapesOpen ? (
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
+            {SHAPES.map(([k, glyph, name]) => (
+              <Pressable key={k} onPress={() => { setShape((x) => (x === k ? null : k)); setErase(false); setBucket(false); setMore(false); }} style={[styles.tool, shape === k && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t(name)}>
+                <Text style={[styles.toolText, { fontSize: 20, lineHeight: 24 }]}>{glyph}</Text>
+              </Pressable>
+            ))}
+          </View>
+        ) : null}
+      </View>
+    );
+  };
   if (wideScreen) {
-    // sideways: a big page on the left (as tall as there's room for), the title and tools in a column on the right
+    // sideways: a big page on the left (as tall as there's room for), the panel down the right
     return (
       <View style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk }]}>
         <DeskFelt spot="notebook3" overlay />
@@ -1158,52 +1193,35 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
           onLayout={(e) => setArea({ w: e.nativeEvent.layout.width - insets.left - insets.right - 48, h: e.nativeEvent.layout.height - Math.max(insets.top, 16) - Math.max(insets.bottom, 12) - 16 })}>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>{W ? paper : null}</View>
           <View style={{ width: TOOLS_W, justifyContent: 'space-between' }}>
-            <Text style={styles.editorTitle}>{title}</Text>
-            <View style={{ gap: 22 }}>
-              {/* the colours in two rows of eight, starting at the same left edge as the buttons below */}
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 3, rowGap: 8, width: 8 * 26 }}>
-                {COLS.map(([hex, name]) => (
-                  <Pressable key={hex} onPress={() => pick(hex)} accessibilityLabel={mixing ? t('Mix in {name}', { name: t(name) }) : t('{name} pen', { name: t(name) })} hitSlop={3}
-                    style={[styles.swatch, { width: 23, height: 23, borderRadius: 11.5, backgroundColor: hex }, !erase && !mixing && pen === hex && styles.swatchOn]} />
-                ))}
-              </View>
-              {colourRow}
-              {sizesEl}
-              {shapesEl}
-              {trayEl(TOOLS_W)}
+            {headEl}
+            <View style={{ gap: 14 }}>
+              {pillEl(TOOLS_W)}
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>{plusEl}{binEl}</View>
             </View>
-            {/* Undo and Clear, down at the bottom away from the drawing tools, with Done */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>{undoEl}{doneEl}</View>
+            <View>{sizePopEl(TOOLS_W)}{trayEl(TOOLS_W)}</View>
           </View>
         </View>
+        {more ? <View style={{ position: 'absolute', right: insets.right, bottom: 0 }}>{moreEl(TOOLS_W + 48)}</View> : null}
       </View>
     );
   }
   return (
     <View style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk }]}>
       <DeskFelt spot="notebook4" overlay />
-      <View style={{ flex: 1, alignItems: 'center', paddingTop: insets.top + 20, paddingBottom: insets.bottom + 10 }}>
-        <View style={styles.editorHead}><Text style={styles.editorTitle}>{title}</Text></View>
-        <View style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center' }} onLayout={(e) => setArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
-          {W ? (
-            <>
-              {paper}
-              <View style={{ width: W, marginTop: 30, gap: 24 }}>{/* the tools line up with the page's left and right edges */}
-                {swatches(W, 8)}
-                {colourRow}
-                {sizesEl}
-                {shapesEl}
-                {trayEl(W)}
-              </View>
-            </>
-          ) : null}
-        </View>
-        {/* Undo and Clear, down at the bottom away from the drawing tools, with Done */}
-        <View style={{ width: W || winW - 2 * GAP, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          {undoEl}
-          {doneEl}
-        </View>
+      <View style={{ paddingTop: insets.top + 14, paddingHorizontal: GAP }}>{headEl}</View>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onLayout={(e) => setArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
+        {W ? paper : null}
       </View>
+      {/* the panel at the bottom */}
+      <View style={[styles.panel, { paddingBottom: insets.bottom }]}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingTop: 14, paddingBottom: 6 }}>
+          {plusEl}
+          <View style={{ flex: 1 }}>{pillEl(winW - 2 * 14 - 2 * 40 - 20)}</View>
+          {binEl}
+        </View>
+        <View>{sizePopEl(winW)}{trayEl(winW)}</View>
+      </View>
+      {more ? <View style={{ position: 'absolute', left: 0, bottom: 0 }}>{moreEl(winW)}</View> : null}
     </View>
   );
 }
@@ -1269,6 +1287,12 @@ const styles = StyleSheet.create({
   donePill: { backgroundColor: colors.green, height: 40, borderRadius: 20, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
   drawPaper: { backgroundColor: WHITE, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
   swatch: { width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: 'rgba(255,255,255,0.35)' },
+  panel: { backgroundColor: '#262626', borderTopWidth: StyleSheet.hairlineWidth, borderColor: '#3a3a3a' },
+  pill: { height: 52, borderRadius: 26, backgroundColor: '#161616', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', paddingHorizontal: 6 },
+  plusBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+  sizePop: { position: 'absolute', zIndex: 5, width: 150, height: 54, borderRadius: 27, backgroundColor: '#111', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', paddingHorizontal: 6, shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 8, shadowOffset: { width: 0, height: 4 } },
+  sheet: { backgroundColor: '#1c1c1c', borderTopLeftRadius: 22, borderTopRightRadius: 22, paddingHorizontal: 22, paddingTop: 20, shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 14, shadowOffset: { width: 0, height: -4 } },
+  sheetLabel: { color: '#aaa', fontFamily: fonts.ui, fontWeight: '700', fontSize: 13, letterSpacing: 0.5, marginTop: 16, marginBottom: 10, textTransform: 'uppercase' },
   swatchOn: { borderColor: colors.white, borderWidth: 3, transform: [{ scale: 1.15 }] },
   tool: { width: 38, height: 38, borderRadius: 19, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   toolWide: { height: 38, borderRadius: 19, paddingHorizontal: 11, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
