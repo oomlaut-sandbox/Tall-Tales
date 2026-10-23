@@ -222,7 +222,9 @@ function scatter(W, H, len) {
   // every stick somewhere on the felt, at a slant, not too close to the edges
   return STICKS.map((st, k) => {
     const L = (st[1] / LONGEST) * len;
-    return { k, x: L / 2 + 12 + Math.random() * Math.max(1, W - L - 24), y: 40 + Math.random() * Math.max(1, H - 80), a: Math.round(Math.random() * 180 - 90) };
+    const a = Math.round(Math.random() * 180 - 90), r = (a * Math.PI) / 180;
+    const hx = Math.abs(Math.cos(r)) * L / 2 + 14, hy = Math.abs(Math.sin(r)) * L / 2 + 24; // keep the whole stick on the felt
+    return { k, x: hx + Math.random() * Math.max(1, W - 2 * hx), y: hy + Math.random() * Math.max(1, H - 2 * hy), a };
   });
 }
 function Driftwood({ area, onBack }) {
