@@ -1,0 +1,38 @@
+[
+  {
+    "name": "domino-down",
+    "n": 1,
+    "dur": 0.5,
+    "text": "A single old ivory domino tile set down flat on a thick wool felt mat: one short, soft, muted clack of bone, muffled by the felt. Close, quiet, natural, no music."
+  },
+  {
+    "name": "domino-down",
+    "n": 2,
+    "dur": 0.5,
+    "text": "A single old ivory domino tile set down flat on a thick wool felt mat: one short, soft, muted clack of bone, muffled by the felt. Close, quiet, natural, no music."
+  },
+  {
+    "name": "domino-down",
+    "n": 3,
+    "dur": 0.5,
+    "text": "A single old ivory domino tile set down flat on a thick wool felt mat: one short, soft, muted clack of bone, muffled by the felt. Close, quiet, natural, no music."
+  },
+  {
+    "name": "domino-click",
+    "n": 1,
+    "dur": 0.5,
+    "text": "Two old ivory domino tiles nudged together edge to edge on a table: one small crisp clack, light and bony. Close, quiet, natural, no music."
+  },
+  {
+    "name": "domino-click",
+    "n": 2,
+    "dur": 0.5,
+    "text": "Two old ivory domino tiles nudged together edge to edge on a table: one small crisp clack, light and bony. Close, quiet, natural, no music."
+  },
+  {
+    "name": "domino-click",
+    "n": 3,
+    "dur": 0.5,
+    "text": "Two old ivory domino tiles nudged together edge to edge on a table: one small crisp clack, light and bony. Close, quiet, natural, no music."
+  }
+]
