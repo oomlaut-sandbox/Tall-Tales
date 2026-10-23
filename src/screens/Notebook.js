@@ -1051,12 +1051,30 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       add(c);
     },
   })).current;
+  // the sizes of the tool in your hand, in a little dark pill in the page's bottom left corner
+  const sizePopEl = () => {
+    if (!sizePop) return null;
+    return (
+      <View style={[styles.sizePop, { left: 10, bottom: 10 }]}>
+        {SIZES.map(([name, sz]) => (
+          <Pressable key={name} onPress={() => { setSize(sz); setSizePop(null); }} hitSlop={6} accessibilityRole="button" accessibilityLabel={t('{name} pen', { name: t(name) })}
+            style={{ width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', backgroundColor: size === sz ? colors.green : 'transparent' }}>
+            <View style={{ width: 5 + sz * 280, height: 5 + sz * 280, borderRadius: 20, backgroundColor: colors.white }} />
+          </Pressable>
+        ))}
+      </View>
+    );
+  };
   const paper = (
+    <View>
     <View {...pad.panHandlers} style={[styles.drawPaper, { width: W, height: tall ? W * 2 : W }]}>
       {photo ? <Image source={{ uri: photo }} style={StyleSheet.absoluteFill} resizeMode="cover" pointerEvents="none" /> : null}
       <StrokesView strokes={strokes} live={live} width={W} height={tall ? W * 2 : W} noPaper={!!photo} />
       {/* Mirror: a faint line down the middle, where the two sides meet */}
       {mirror ? <View pointerEvents="none" style={{ position: 'absolute', left: W / 2 - 0.5, top: 0, bottom: 0, borderLeftWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(0,0,0,0.22)' }} /> : null}
+    </View>
+    {/* the sizes of the tool in your hand: a little dark pill in the bottom left corner of the page */}
+    {sizePopEl()}
     </View>
   );
   // ---- the panel, like Paper's: seven colours in a pill (the ones you used last), the tools in a tray, Clear as
@@ -1163,22 +1181,6 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       </View>
     );
   };
-  // the sizes of the tool in your hand, in a little dark bubble above it
-  const sizePopEl = (w) => {
-    if (!sizePop) return null;
-    const n = TRAY.findIndex(([k]) => k === sizePop), tw = Math.floor(w / TRAY.length);
-    const left = Math.max(0, Math.min(w - 150, n * tw + tw / 2 - 75));
-    return (
-      <View style={[styles.sizePop, { left, bottom: TRAY_H - 4 }]}>
-        {SIZES.map(([name, sz]) => (
-          <Pressable key={name} onPress={() => { setSize(sz); setSizePop(null); }} hitSlop={6} accessibilityRole="button" accessibilityLabel={t('{name} pen', { name: t(name) })}
-            style={{ width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', backgroundColor: size === sz ? colors.green : 'transparent' }}>
-            <View style={{ width: 5 + sz * 280, height: 5 + sz * 280, borderRadius: 20, backgroundColor: colors.white }} />
-          </Pressable>
-        ))}
-      </View>
-    );
-  };
   // the + : all the colours (bright and earthy), Mix, Shapes and Mirror
   const moreEl = (w) => {
     if (!more) return null;
@@ -1233,7 +1235,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
               {pillEl(TOOLS_W)}
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>{plusEl}{currentEl}{binEl}</View>
             </View>
-            <View>{sizePopEl(TOOLS_W)}{trayEl(TOOLS_W)}</View>
+            <View>{trayEl(TOOLS_W)}</View>
           </View>
         </View>
         {more ? <View style={{ position: 'absolute', right: insets.right, bottom: 0 }}>{moreEl(TOOLS_W + 48)}</View> : null}
@@ -1255,7 +1257,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
           <View style={{ flex: 1 }}>{pillEl(winW - 2 * 14 - 2 * 40 - 64 - 30)}</View>
           {binEl}
         </View>
-        <View>{sizePopEl(winW)}{trayEl(winW)}</View>
+        <View>{trayEl(winW)}</View>
       </View>
       {more ? <View style={{ position: 'absolute', left: 0, bottom: 0 }}>{moreEl(winW)}</View> : null}
     </View>
