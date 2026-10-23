@@ -29,6 +29,8 @@ if (field) {
 }
 // the field must sit directly in the pill
 if (!/style=\{styles\.search\} allowFontScaling=\{false\}/.test(src)) problems.push('search field needs allowFontScaling={false}');
+// numberOfLines or multiline turn the field into a text box that puts its words at the top on iOS
+if (/<TextInput[^>]*styles\.search[^>]*(numberOfLines|multiline)/s.test(src)) problems.push('search field must not use numberOfLines or multiline');
 if (!/styles\.searchWrap[^\n]*\n(?:(?!<\/Pressable>|<\/View>)[\s\S])*?<TextInput[\s\S]*?style=\{styles\.search\}/.test(src)) problems.push('the search TextInput must sit in the searchWrap pill and use styles.search alone');
 if (problems.length) {
   console.error('SEARCH FIELD CHECK FAILED:\n - ' + problems.join('\n - '));

@@ -158,7 +158,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
               <ScrollView contentContainerStyle={{ padding: 20, gap: 14 }} keyboardShouldPersistTaps="handled">
                 <Text style={styles.sheetTitle}>{t('Edit playlist')}</Text>
             <>
-              <TextInput value={pl.name} onChangeText={(name) => set(pl.id, { name })} style={styles.input} maxLength={30} accessibilityLabel={t('Playlist name')} placeholder={t('Playlist name')} placeholderTextColor="#888" />
+              <TextInput allowFontScaling={false} value={pl.name} onChangeText={(name) => set(pl.id, { name })} style={styles.input} maxLength={30} accessibilityLabel={t('Playlist name')} placeholder={t('Playlist name')} placeholderTextColor="#888" />
               {adding ? (
                 <>
                   <Text style={styles.p}>{t('Tap books to add them. Tap again to take them out.')}</Text>
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   chip: { paddingHorizontal: 12, height: 30, borderRadius: 15, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
   chipOn: { backgroundColor: colors.blue },
   chipText: { fontFamily: fonts.ui, fontSize: 13, color: '#dcdcdc', fontWeight: '600' },
-  input: { height: 48, borderRadius: 10, backgroundColor: '#d6d6d6', paddingHorizontal: 14, fontFamily: fonts.ui, fontSize: 20, color: '#222' },
+  input: { height: 48, borderRadius: 10, backgroundColor: '#d6d6d6', paddingHorizontal: 14, paddingVertical: 0, includeFontPadding: false, fontFamily: fonts.ui, fontSize: 20, color: '#222' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 14 },
   bookName: { fontFamily: fonts.ui, fontSize: 13, color: colors.white },
   tick: { position: 'absolute', right: 4, top: 4, width: 26, height: 26, borderRadius: 13, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: colors.white },

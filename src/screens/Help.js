@@ -202,7 +202,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
             <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.22)', 'rgba(0,0,0,0.06)', 'rgba(0,0,0,0)']} locations={[0, 0.35, 1]} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 14 }} />
             <LinearGradient pointerEvents="none" start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['rgba(0,0,0,0.08)', 'rgba(0,0,0,0)']} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 16 }} />
             <TextInput ref={searchRef} value={q} onChangeText={setQ} placeholder={t('Search ideas and support')} placeholderTextColor="#666"
-              style={styles.search} allowFontScaling={false} multiline={false} numberOfLines={1} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel={t('Search ideas and support')} />
+              style={styles.search} allowFontScaling={false} clearButtonMode="while-editing" returnKeyType="search" accessibilityLabel={t('Search ideas and support')} />
           </Pressable>
           {/* About lives here now (it left the main menu) */}
           <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>{t('About Oomlaut Reader')}</Text></Pressable>

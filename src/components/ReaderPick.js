@@ -96,7 +96,7 @@ export default function ReaderPick({ initial, onCancel, onStart, edit = false, o
           {adding ? (
             <View style={styles.field}>
               <TextInput value={name} onChangeText={setName} placeholder={tr('Name, e.g. Grandpa')} placeholderTextColor="#7a7a7a" autoFocus maxLength={16}
-                returnKeyType="done" onSubmitEditing={start} style={styles.input} accessibilityLabel={tr('Reader’s name')} />
+                allowFontScaling={false} returnKeyType="done" onSubmitEditing={start} style={styles.input} accessibilityLabel={tr('Reader’s name')} />
             </View>
           ) : null}
           {/* the reader's photo: what a child sees on the bar when this voice reads */}
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   chipOn: { backgroundColor: colors.green },
   chipText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 15 },
   field: { backgroundColor: '#161616', height: 52, borderRadius: 14, paddingHorizontal: 16, justifyContent: 'center', marginTop: 20 },
-  input: { color: colors.white, fontFamily: fonts.ui, fontSize: 17, paddingVertical: 0, paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 },
+  input: { alignSelf: 'stretch', flex: 1, color: colors.white, fontFamily: fonts.ui, fontSize: 17, paddingVertical: 0, paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 }, // fills the box: iOS centres the words
   photoRow: { flexDirection: 'row', alignItems: 'center', gap: 18, marginTop: 22 },
   photoBtn: { height: 32, borderRadius: 16, paddingHorizontal: 14, backgroundColor: '#3d3d40', alignItems: 'center', justifyContent: 'center' },
   photoText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 13 },

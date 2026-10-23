@@ -48,7 +48,7 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
       maxLength={3}
       autoFocus
       onSubmitEditing={check}
-      style={[styles.input, flat ? { flex: 1, minWidth: 0, fontSize: 20, paddingVertical: 6 } : { marginTop: 16 }]}
+      allowFontScaling={false} style={[styles.input, flat ? { flex: 1, minWidth: 0, fontSize: 20, height: 40 } : { marginTop: 16 }]}
       accessibilityLabel={t('Answer')}
     />
   );
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   kicker: { color: colors.muted, fontFamily: fonts.ui, fontSize: 13, fontWeight: '700' },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 24 },
   body: { color: '#e2e2e2', fontFamily: fonts.ui, fontSize: 15, lineHeight: 21 },
-  input: { backgroundColor: '#2e2e2e', color: colors.white, fontFamily: fonts.ui, fontSize: 24, fontWeight: '700', paddingHorizontal: 14, paddingVertical: 10 },
+  input: { backgroundColor: '#2e2e2e', color: colors.white, fontFamily: fonts.ui, fontSize: 24, fontWeight: '700', paddingHorizontal: 14, paddingVertical: 0, includeFontPadding: false, height: 52 },
   wrong: { color: '#ff7b7b', fontFamily: fonts.ui, fontSize: 14 },
   row: { flexDirection: 'row', gap: 10, marginTop: 14 },
   btn: { flex: 1, backgroundColor: colors.tile, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills

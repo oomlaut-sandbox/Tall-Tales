@@ -63,7 +63,7 @@ export default function Profile({ u, openMenu, toast }) {
         <Text style={styles.label}>{t('Signed in as')}</Text>
         <Text style={styles.value}>{user.email || t('Your Apple ID (email hidden)')}</Text>
         <Text style={[styles.label, { marginTop: 18 }]}>{t('Your name')}</Text>
-        <TextInput value={name} onChangeText={setName} placeholder={t('Your name')} placeholderTextColor="#777" style={styles.input}
+        <TextInput allowFontScaling={false} value={name} onChangeText={setName} placeholder={t('Your name')} placeholderTextColor="#777" style={styles.input}
           autoCapitalize="words" returnKeyType="done"
           onEndEditing={() => name !== (user.user_metadata?.name || '') && run(async () => { await updateProfile({ name: name.trim() }); toast && toast(t('Saved.')); })} />
         <Text style={styles.small}>{t('Coming next: your stories and recordings backed up, and on all your family’s devices.')}</Text>
@@ -104,7 +104,7 @@ export default function Profile({ u, openMenu, toast }) {
     body = (
       <>
         <Text style={styles.p}>{t('We’ll email you a 6-digit code.')}</Text>
-        <TextInput value={email} onChangeText={setEmail} placeholder="you@example.com" placeholderTextColor="#777" style={styles.input}
+        <TextInput allowFontScaling={false} value={email} onChangeText={setEmail} placeholder="you@example.com" placeholderTextColor="#777" style={styles.input}
           keyboardType="email-address" autoCapitalize="none" autoCorrect={false} textContentType="emailAddress" autoComplete="email" />
         <Pressable disabled={busy || !/.+@.+\..+/.test(email)} onPress={() => run(async () => { await sendEmailCode(email); setStep('code'); })}
           style={[styles.btn, (busy || !/.+@.+\..+/.test(email)) && styles.off]} accessibilityRole="button">
@@ -117,7 +117,7 @@ export default function Profile({ u, openMenu, toast }) {
     body = (
       <>
         <Text style={styles.p}>{t('Enter the code we sent to {email}.', { email: email.trim() })}</Text>
-        <TextInput value={code} onChangeText={(v) => setCode(v.replace(/\D/g, '').slice(0, 6))} placeholder="123456" placeholderTextColor="#777"
+        <TextInput allowFontScaling={false} value={code} onChangeText={(v) => setCode(v.replace(/\D/g, '').slice(0, 6))} placeholder="123456" placeholderTextColor="#777"
           style={[styles.input, styles.codeInput]} keyboardType="number-pad" textContentType="oneTimeCode" autoComplete="one-time-code" maxLength={6} />
         <Pressable disabled={busy || code.length !== 6} onPress={() => run(() => verifyEmailCode(email, code))}
           style={[styles.btn, (busy || code.length !== 6) && styles.off]} accessibilityRole="button">
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   small: { fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, color: '#444', marginTop: 6 },
   label: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#555', textTransform: 'uppercase', letterSpacing: 0.5 },
   value: { fontFamily: fonts.ui, fontSize: 17, color: colors.ink },
-  input: { backgroundColor: colors.white, borderRadius: 14, paddingHorizontal: 16, paddingVertical: 12, fontFamily: fonts.ui, fontSize: 17, color: colors.ink },
+  input: { backgroundColor: colors.white, borderRadius: 14, paddingHorizontal: 16, paddingVertical: 0, includeFontPadding: false, height: 50, fontFamily: fonts.ui, fontSize: 17, color: colors.ink },
   codeInput: { fontSize: 26, letterSpacing: 8, textAlign: 'center' },
   btn: { backgroundColor: '#3b3b3b', height: 52, borderRadius: 26, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }, // Apple-style pills
   off: { opacity: 0.4 },

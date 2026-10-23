@@ -200,7 +200,7 @@ export default function StoreManager({ u, openMenu, toast, demo }) {
             <Text style={styles.note}>The rows of the Book Store, top to bottom. A shelf with no shown books doesn’t appear.</Text>
             {data.shelves.map((sh) => <ShelfRow key={sh.id} shelf={sh} shelves={data.shelves} onChanged={() => load(false)} toast={toast} />)}
             <View style={[styles.row, { padding: 12, gap: 8 }]}>
-              <TextInput value={newShelf} onChangeText={setNewShelf} placeholder="New shelf, e.g. Animals" placeholderTextColor="#888" style={styles.input} />
+              <TextInput allowFontScaling={false} value={newShelf} onChangeText={setNewShelf} placeholder="New shelf, e.g. Animals" placeholderTextColor="#888" style={styles.input} />
               <Pressable disabled={!newShelf.trim()} onPress={async () => { try { await addShelf(newShelf); setNewShelf(''); toast('Shelf added.'); load(false); } catch (e) { toast(`Couldn’t add it. ${e.message}`); } }}
                 style={[styles.pill, { backgroundColor: colors.green }, !newShelf.trim() && { opacity: 0.4 }]}><Text style={styles.pillText}>Add shelf</Text></Pressable>
             </View>

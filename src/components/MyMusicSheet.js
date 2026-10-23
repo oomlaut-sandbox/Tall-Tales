@@ -107,7 +107,7 @@ export default function MyMusicSheet({ visible, onClose, kind = 'music' }) {
           {step === 'name' ? (
             <View style={{ marginTop: 12 }}>
               <Text style={styles.label}>{t('Name')}</Text>
-              <TextInput value={name} onChangeText={setName} placeholder={isSound ? t('Rain on our window') : t('Grandma’s lullaby')} placeholderTextColor="#777" style={styles.input} autoFocus maxLength={40} returnKeyType="done" onSubmitEditing={save} />
+              <TextInput allowFontScaling={false} value={name} onChangeText={setName} placeholder={isSound ? t('Rain on our window') : t('Grandma’s lullaby')} placeholderTextColor="#777" style={styles.input} autoFocus maxLength={40} returnKeyType="done" onSubmitEditing={save} />
               <View style={{ marginTop: 16 }}><Pill label={isSound ? t('Add to Sounds') : t('Add to Music')} onPress={save} disabled={!name.trim()} /></View>
             </View>
           ) : null}
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   title: { color: colors.white, fontFamily: fonts.ui, fontSize: 19, fontWeight: '700', marginBottom: 8 },
   small: { color: '#b5b5b5', fontFamily: fonts.ui, fontSize: 14, lineHeight: 19 },
   label: { color: '#b5b5b5', fontFamily: fonts.ui, fontSize: 13, marginBottom: 6 },
-  input: { backgroundColor: '#333', color: colors.white, fontFamily: fonts.ui, fontSize: 17, borderRadius: 10, paddingHorizontal: 12, height: 46 },
+  input: { backgroundColor: '#333', color: colors.white, fontFamily: fonts.ui, fontSize: 17, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 0, includeFontPadding: false, height: 46 },
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
   pillText: { color: colors.white, fontFamily: fonts.ui, fontSize: 16, fontWeight: '700' },
   timer: { color: colors.white, fontFamily: fonts.ui, fontSize: 34, fontWeight: '200', marginBottom: 14, fontVariant: ['tabular-nums'] },
