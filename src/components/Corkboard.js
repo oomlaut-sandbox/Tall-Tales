@@ -84,12 +84,14 @@ export default function Corkboard({ width, toast }) {
             </Pressable>
           );
         })}
-        {!pins.length ? <Text pointerEvents="none" style={styles.empty}>{t('Pin notes and photos here')}</Text> : null}
         {/* the pin button: pin something new */}
         <Pressable onPress={withTap(() => setAsk(true))} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Pin something')} style={styles.pinBtn}>
           <Image source={PIN_ICON} style={{ width: 22, height: 22, tintColor: colors.white }} resizeMode="contain" />
         </Pressable>
       </View>
+
+      {/* underneath the board, in light grey */}
+      <Text style={styles.caption}>{t('Pin notes and photos here')}</Text>
 
       {/* what to pin */}
       {ask ? (
@@ -149,6 +151,7 @@ export default function Corkboard({ width, toast }) {
 const styles = StyleSheet.create({
   board: { borderRadius: 10, backgroundColor: '#b07a4f', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.6, shadowRadius: 13, elevation: 10 },
   pinBtn: { position: 'absolute', top: 10, right: 10, width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center' },
+  caption: { color: '#b4b4b4', fontFamily: fonts.ui, fontSize: 15, marginTop: 12 },
   empty: { position: 'absolute', left: 0, right: 0, top: '44%', textAlign: 'center', color: 'rgba(60,35,15,0.6)', fontFamily: HAND, fontSize: 16 },
   note: { backgroundColor: NOTE_YELLOW, alignItems: 'center', justifyContent: 'center', padding: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 4 }, shadowOpacity: 0.35, shadowRadius: 4, elevation: 4 },
   noteText: { color: '#3b3214', fontFamily: HAND, textAlign: 'center' },
