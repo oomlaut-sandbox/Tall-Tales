@@ -1180,22 +1180,27 @@ function RecTimer({ start, style, onStop, running = true, saved, who }) {
     const t = setInterval(() => setSecs(Math.floor((Date.now() - start) / 1000)), 250);
     return () => clearInterval(t);
   }, [start]);
-  const savedPill = saved ? (
-    <View style={[styles.recBox, { backgroundColor: colors.green }]} accessibilityLiveRegion="polite"><Text style={styles.recBoxLabel}>{tr('Page {n} saved', { n: saved })}{who ? ` · ${who}` : ''}</Text></View>
-  ) : null;
+  // 'Saved' fades in and out in its own place, to the right of the box, so nothing moves while you record
+  const fade = useRef(new Animated.Value(saved ? 1 : 0)).current;
+  useEffect(() => { Animated.timing(fade, { toValue: saved ? 1 : 0, duration: saved ? 160 : 400, useNativeDriver: true }).start(); }, [saved]);
+  const savedPill = (
+    <Animated.View style={[styles.recBox, { backgroundColor: colors.green, opacity: fade }]} accessibilityLiveRegion="polite" accessibilityLabel={saved ? tr('Page {n} saved', { n: saved }) : undefined}>
+      <Text style={styles.recBoxLabel}>{tr('Saved')}</Text>
+    </Animated.View>
+  );
   if (!running) {
-    // the recording has stopped: only the green 'saved' note, where the box was, for a moment
-    return <View pointerEvents="none" style={[{ position: 'absolute', zIndex: 30, flexDirection: 'row', alignItems: 'center', gap: 8 }, style]}>{savedPill}</View>; // where the red dot was
+    // the recording has stopped: only the green 'Saved', where the box was, for a moment
+    return <View pointerEvents="none" style={[{ position: 'absolute', zIndex: 30, flexDirection: 'row', alignItems: 'center', gap: 8 }, style]}>{savedPill}</View>;
   }
   return (
-    // the recording box stays put; a green 'Page 5 saved' shows just below it, on the left (never pushed off the page)
-    <View pointerEvents="box-none" style={[{ position: 'absolute', zIndex: 30, flexDirection: 'column', alignItems: 'flex-start', gap: 8 }, style]}>
+    // the recording box stays put; a green 'Saved' shows to its right for a moment after each page
+    <View pointerEvents="box-none" style={[{ position: 'absolute', zIndex: 30, flexDirection: 'row', alignItems: 'center', gap: 8 }, style]}>
       <Pressable onPress={onStop} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Stop recording')} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
         <View style={styles.recDot} />
         <View style={styles.recBox} accessibilityLabel={tr('Recording, {n} seconds', { n: secs })}>
           <View style={styles.recStop} />
           <Text style={styles.recBoxLabel}>{tr('Recording')}{who ? ` · ${who}` : ''}</Text>
-          <Text style={styles.recBoxTime}>{Math.floor(secs / 60)}:{String(secs % 60).padStart(2, '0')}</Text>
+          <Text style={[styles.recBoxTime, { minWidth: 38 }]}>{Math.floor(secs / 60)}:{String(secs % 60).padStart(2, '0')}</Text>
         </View>
       </Pressable>
       {savedPill}
