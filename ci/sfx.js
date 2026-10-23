@@ -13,6 +13,8 @@ const FX = [
   ['tap', 0.5, 'A fingertip tapping once on a cardboard book cover: a tiny soft dull tap. Close, natural, no music.'],
   ['typewriter-key', 0.5, 'A single key strike on an old mechanical typewriter: one crisp metallic clack of the typebar hitting paper on the platen, short and dry, no bell, no carriage return. Close, natural, no music.'],
   ['page-swish', 0.9, 'A soft, quiet paper swish of one picture book page being turned: a gentle airy sweep of paper, no crinkle, no thump, smooth and short. Quiet room, close, natural, no music.'],
+  ['pebble-land', 0.9, 'A small smooth river stone tossed gently onto a beach of rounded pebbles: one soft natural clack of stone on stone and a brief rattle of pebbles settling. Calm outdoors, close, natural, no music.'],
+  ['pebble-soft', 0.8, 'A small round pebble dropped onto other pebbles from a little height: a soft hollow stony knock and a tiny rolling clatter that settles. Quiet outdoors, close, natural, no music.'],
 ];
 // ONLY=name1,name2 makes just those (each three times)
 const ONLY = (process.env.ONLY || '').split(',').filter(Boolean);
