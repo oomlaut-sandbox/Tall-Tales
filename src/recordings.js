@@ -119,7 +119,7 @@ export async function saveRecording(storyId, pid, tempUri, seconds, levels, read
   const key = keyOf(storyId, pid, reader);
   const uri = await keepFile(tempUri, 'recordings', `${storyId}-${pid}-${reader}-${Date.now()}.m4a`);
   if (r[key] && r[key].uri !== uri) deleteFile(liveUri(r[key].uri));
-  r[key] = { uri, seconds, ...(levels && levels.length ? { levels } : {}) };
+  r[key] = { uri, seconds, at: Date.now(), ...(levels && levels.length ? { levels } : {}) }; // at: when it was recorded
   await saveJSON('recordings', r);
 }
 

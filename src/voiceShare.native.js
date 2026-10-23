@@ -37,7 +37,7 @@ export async function shareBookWithVoices(story) {
   for (const r of recs) {
     try {
       const audio = await new File(r.uri).base64();
-      pages.push({ reader: r.reader, pid: r.pid, seconds: r.seconds, ...(r.start ? { start: r.start } : {}), ...(r.end ? { end: r.end } : {}), ...(r.levels ? { levels: r.levels } : {}), audio });
+      pages.push({ reader: r.reader, pid: r.pid, seconds: r.seconds, ...(r.start ? { start: r.start } : {}), ...(r.end ? { end: r.end } : {}), ...(r.levels ? { levels: r.levels } : {}), ...(r.at ? { at: r.at } : {}), audio });
     } catch (e) {}
   }
   if (!pages.length) return false;

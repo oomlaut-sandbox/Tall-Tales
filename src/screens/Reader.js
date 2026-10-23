@@ -1127,7 +1127,14 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
             {k === 0 || arr[k - 1].reader !== r.reader ? <Text style={[styles.help, { marginTop: k ? 10 : 0, fontWeight: '700', color: colors.white }]}>{readerName(r.reader)}</Text> : null}
             {/* the page and its length on their own line, the buttons underneath */}
             <View style={[styles.row, { flexDirection: 'column', alignItems: 'stretch', gap: 10 }]}>
-              <Text style={styles.rowText}>{(() => { const sec = Math.max(1, Math.round((r.end || r.seconds) - (r.start || 0))); return sec === 1 ? tr('Page {n} · 1 second', { n: r.page + 1 }) : tr('Page {n} · {s} seconds', { n: r.page + 1, s: sec }); })()}</Text>
+              <Text style={styles.rowText}>{(() => {
+                const sec = Math.max(1, Math.round((r.end || r.seconds) - (r.start || 0)));
+                const len = sec === 1 ? tr('Page {n} · 1 second', { n: r.page + 1 }) : tr('Page {n} · {s} seconds', { n: r.page + 1, s: sec });
+                // when it was recorded (recordings from before this was kept have no date)
+                let when = '';
+                if (r.at) { try { const d = new Date(r.at); when = ' · ' + d.toLocaleDateString(appLang, d.getFullYear() === new Date().getFullYear() ? { month: 'short', day: 'numeric' } : { month: 'short', day: 'numeric', year: 'numeric' }); } catch (e) {} }
+                return len + when;
+              })()}</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
               <Pressable style={styles.rowBtn} onPress={() => { stopReading(); playVoice(r.uri, { start: r.start || 0, end: r.end || null, onFail: () => toast(tr('This recording can’t be played. Record the page again.')) }); }}><Text style={styles.rowBtnText}>{tr('Play')}</Text></Pressable>
               {/* Trim: the trim editor (a box in the middle of the screen) */}
