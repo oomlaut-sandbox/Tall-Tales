@@ -284,7 +284,7 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children, portr
             </Pressable>
           </View>
           {/* Only scrolls when it can't fit (e.g. sideways on a phone). */}
-          <ScrollView style={{ flexGrow: 0, flexShrink: 1, backgroundColor: colors.panel }} contentContainerStyle={[styles.panelList, wide && styles.panelCols, compact && { gap: 10, paddingTop: 14, paddingBottom: 14 }]} bounces={false}>
+          <ScrollView style={{ flexGrow: 0, flexShrink: 1, backgroundColor: 'transparent' }} contentContainerStyle={[styles.panelList, wide && styles.panelCols, compact && { gap: 10, paddingTop: 14, paddingBottom: 14 }]} bounces={false}>
             {wide ? flat(children).map((c, i) => <View key={i} style={{ width: colW }}>{c}</View>) : children}
           </ScrollView>
           <Stitch inset={6} />
@@ -656,15 +656,15 @@ const styles = StyleSheet.create({
   metaSub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 13, marginTop: 2 },
   ctl: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   ear: { position: 'absolute', right: 0, bottom: 0, width: 48, height: 48, zIndex: 20 },
-  panel: { position: 'absolute', width: '82%', maxWidth: 440 },
+  panel: { position: 'absolute', width: '82%', maxWidth: 440, backgroundColor: colors.glass }, // black glass
   panelClip: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, overflow: 'hidden', zIndex: 41 },
-  panelHead: { backgroundColor: '#141414', paddingLeft: 24, paddingRight: 12, paddingTop: 24, paddingBottom: 20, flexDirection: 'row', alignItems: 'center' },
+  panelHead: { backgroundColor: 'rgba(0,0,0,0.3)', paddingLeft: 24, paddingRight: 12, paddingTop: 24, paddingBottom: 20, flexDirection: 'row', alignItems: 'center' },
   closeBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   chev: { width: 22, height: 22, alignItems: 'center', justifyContent: 'center' },
   chevCorner: { width: 13, height: 13, borderRightWidth: 3, borderBottomWidth: 3, borderColor: colors.white, transform: [{ translateY: -3 }, { rotate: '45deg' }] }, // points down
   panelTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 24, transform: [{ translateY: -3 }] }, // a nudge up, so it sits in the middle of the heading
   panelCols: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 22, rowGap: 16, paddingTop: 16, paddingBottom: 30 },
-  panelList: { backgroundColor: colors.panel, paddingHorizontal: 22, paddingTop: 20, paddingBottom: 22, gap: 16 },
+  panelList: { backgroundColor: 'transparent', paddingHorizontal: 22, paddingTop: 20, paddingBottom: 22, gap: 16 },
   opt: { flexDirection: 'row', alignItems: 'center', gap: 18 },
   optIc: { width: 54, height: 54, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
   optGlyph: { color: colors.white, fontSize: 22, fontWeight: '700', fontFamily: fonts.ui },

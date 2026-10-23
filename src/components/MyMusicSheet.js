@@ -121,7 +121,7 @@ export default function MyMusicSheet({ visible, onClose, kind = 'music' }) {
 
 const styles = StyleSheet.create({
   scrim: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', alignItems: 'center', justifyContent: 'center', padding: 20 },
-  card: { width: '100%', maxWidth: 380, backgroundColor: '#222', borderRadius: 20, padding: 22 },
+  card: { width: '100%', maxWidth: 380, backgroundColor: colors.glass, borderRadius: 20, padding: 22 },
   title: { color: colors.white, fontFamily: fonts.ui, fontSize: 19, fontWeight: '700', marginBottom: 8 },
   small: { color: '#b5b5b5', fontFamily: fonts.ui, fontSize: 14, lineHeight: 19 },
   label: { color: '#b5b5b5', fontFamily: fonts.ui, fontSize: 13, marginBottom: 6 },

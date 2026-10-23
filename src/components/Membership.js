@@ -74,7 +74,7 @@ export default function Membership({ visible, onClose, toast }) {
 
 const styles = StyleSheet.create({
   scrim: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', paddingHorizontal: 20, paddingVertical: 50, zIndex: 85 },
-  card: { backgroundColor: colors.panel, padding: 24, maxHeight: '100%', alignSelf: 'center', width: '100%', maxWidth: 480 },
+  card: { backgroundColor: colors.glass, borderRadius: 24, padding: 24, maxHeight: '100%', alignSelf: 'center', width: '100%', maxWidth: 480 },
   kicker: { color: colors.muted, fontFamily: fonts.ui, fontSize: 13, fontWeight: '700' },
   title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 24 },
   body: { color: '#e2e2e2', fontFamily: fonts.ui, fontSize: 15, lineHeight: 21 },

@@ -12,6 +12,7 @@ export const colors = {
   // Create a Story are trying Jörg's charcoal felt (DESK_FELT in look.js) over it; remove that to go back to this grey
   earUnder: '#a3a3a3', // the page showing under the dog-ear in books (a little lighter than before)
   panel: '#1c1c1c',
+  glass: 'rgba(0,0,0,0.86)', // black glass: the see-through black of every pop-up box
   panelHead: 'rgba(0,0,0,0.78)',
   tile: '#5f5f5f',
   orange: '#f28a00',

@@ -624,7 +624,7 @@ const styles = StyleSheet.create({
   checkOn: { backgroundColor: colors.green, borderColor: colors.white }, // selected: the standard green
   checkMark: { color: colors.white, fontWeight: '800', fontSize: 16, lineHeight: 18 },
   restore: { fontFamily: fonts.ui, fontSize: 15, color: '#d0d0d0', textDecorationLine: 'underline', textAlign: 'center' },
-  confirm: { position: 'absolute', left: 16, right: 16, bottom: 150, backgroundColor: colors.panel, padding: 18, gap: 14, zIndex: 40 },
+  confirm: { position: 'absolute', left: 16, right: 16, bottom: 150, backgroundColor: colors.glass, borderRadius: 20, padding: 18, gap: 14, zIndex: 40 },
   confirmText: { color: colors.white, fontFamily: fonts.ui, fontSize: 16, lineHeight: 22 },
   actBtn: { flex: 1, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
   actText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
