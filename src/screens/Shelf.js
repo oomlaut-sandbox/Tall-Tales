@@ -220,7 +220,7 @@ export function Library({ narrator, toast, onProfiles, u, stories, openStory, op
           {/* Select: in the bottom right corner of the bar (not when the parental controls turn sharing off) */}
           {/* Select: an icon (a circle with a tick), so it fits the sideways bar in every language */}
           {controls.sharing ? <Pressable onPress={() => setSelecting(true)} hitSlop={12} style={[styles.barBtn, { paddingHorizontal: 4 }]} accessibilityRole="button" accessibilityLabel={t('Select')}>
-            <Image source={SELECT_ICON} style={{ width: 24, height: 24, tintColor: colors.white }} resizeMode="contain" />
+            <Image source={SELECT_ICON} style={{ width: 29, height: 29, tintColor: colors.white }} resizeMode="contain" />
           </Pressable> : null}
         </Bar>
       ))}>
