@@ -40,7 +40,7 @@ export function runsOf(list, w) {
   }
   return runs;
 }
-const TOOTH_OF = { 1: 0.7, 2: 1 };
+const TOOTH_OF = { 1: 0.45, 2: 0.7 }; // (gentle: the paper shows, it doesn't take over)
 function One({ st, width }) {
   const layers = useMemo(() => layersFor(st, width), [st, width]);
   return <>{layers.filter((L) => L.alpha).map((L, i) => <Layer key={i} L={L} color={st.c} />)}</>;
@@ -65,7 +65,7 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
             </Group>
           ) : r.list.map((st, j) => <One key={`${i}-${j}`} st={st} width={width} />)))}
         </Group>
-        {grain && !noPaper ? <Rect x={0} y={0} width={width} height={height} blendMode="multiply">{tex(grain)}</Rect> : null}
+        {grain && !noPaper ? <Rect x={0} y={0} width={width} height={height} blendMode="multiply" opacity={0.6}>{tex(grain)}</Rect> : null}
       </Canvas>
     </View>
   );
@@ -134,7 +134,7 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
    if (r.tex > 0) { if (T.tooth) canvas.drawRect(Skia.XYWHRect(0, 0, px, px), texPaint(T.tooth, px, BlendMode.SrcATop, TOOTH_OF[r.tex])); canvas.restore(); }
   }
   canvas.restore();
-  if (T.grain && !photo) canvas.drawRect(Skia.XYWHRect(0, 0, px, px), texPaint(T.grain, px, BlendMode.Multiply));
+  if (T.grain && !photo) canvas.drawRect(Skia.XYWHRect(0, 0, px, px), texPaint(T.grain, px, BlendMode.Multiply, 0.6));
   surface.flush();
   const bytes = surface.makeImageSnapshot().encodeToBytes();
   const f = new File(Paths.cache, `drawing-${Date.now()}.png`);

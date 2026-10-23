@@ -38,7 +38,7 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
   defs.push(h('filter', { key: 'tooth', id: `${id}-tooth`, x: 0, y: 0, width, height, filterUnits: 'userSpaceOnUse' },
     h('feImage', { href: TOOTH, x: 0, y: 0, width: tile, height: tile, preserveAspectRatio: 'none', result: 't' }),
     h('feTile', { in: 't', result: 'tt' }),
-    h('feComponentTransfer', { in: 'tt', result: 'ta' }, h('feFuncA', { type: 'linear', slope: 0.85 })),
+    h('feComponentTransfer', { in: 'tt', result: 'ta' }, h('feFuncA', { type: 'linear', slope: 0.5 })),
     h('feComposite', { in: 'ta', in2: 'SourceGraphic', operator: 'atop' })));
   defs.push(h('pattern', { key: 'grain', id: `${id}-grain`, patternUnits: 'userSpaceOnUse', width: tile, height: tile },
     h('image', { href: GRAIN, x: 0, y: 0, width: tile, height: tile, preserveAspectRatio: 'none' })));
@@ -46,7 +46,7 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
     <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width, height }}>
       {h('svg', { width, height, viewBox: `0 0 ${width} ${height}`, style: { position: 'absolute', left: 0, top: 0 } }, h('defs', null, defs),
         h('g', { filter: `url(#${id}-tooth)` }, h('g', null, paths)),
-        noPaper ? null : h('rect', { x: 0, y: 0, width, height, fill: `url(#${id}-grain)`, style: { mixBlendMode: 'multiply', pointerEvents: 'none' } }))}
+        noPaper ? null : h('rect', { x: 0, y: 0, width, height, fill: `url(#${id}-grain)`, style: { mixBlendMode: 'multiply', pointerEvents: 'none', opacity: 0.6 } }))}
     </View>
   );
 }

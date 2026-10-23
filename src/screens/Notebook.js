@@ -477,6 +477,12 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     setOutRange(i >= FIRST_PAGE ? { from: cur, to: cur } : { from: 0, to: pages.length - 1 });
     setOutAsk(kind);
   };
+  const pageCount = intro || i === COVER_SPREAD || i === BADGES ? null : (
+    <Pressable onPress={() => setPagesOpen(true)} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Pages')} style={styles.countBox}>
+      <Animated.Text numberOfLines={1} style={[styles.countText, { opacity: savedFade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>{t('{a} of {b}', { a: i + 1, b: total })}</Animated.Text>
+      <Animated.Text numberOfLines={1} style={[styles.countText, { position: 'absolute', opacity: savedFade }]}>{t('Saved')}</Animated.Text>
+    </Pressable>
+  );
   const barBtns = (vertical) => (
     // upright: the envelope and printer in slots one step apart, like the house and the note, and Done the same
     // distance (edge to edge) after the printer
@@ -578,20 +584,6 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
                 <DeskFelt spot="notebookShut" />
               </View>
             ) : null}
-            {/* top-left of the top page (the left page sideways): a small grey box, like the recording box in the
-                reader: the kind of page and where you are ('Saved' briefly takes its place); tap it for Pages */}
-            {!intro && !wide && i !== COVER_SPREAD && i !== BADGES && !(flipPair && peelLive && !landed) ? (
-              <Pressable onPress={() => setPagesOpen(true)} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Pages')}
-                style={[styles.pageBox, { top: Math.max(12, R * 0.42), left: Math.max(12, R * 0.42) }]}>
-                <Text style={styles.pageBoxLabel}>{header}</Text>
-                <View>
-                  <Animated.Text numberOfLines={1} style={[styles.pageBoxSub, { opacity: savedFade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>{t('{a} of {b}', { a: i + 1, b: total })}</Animated.Text>
-                  <Animated.Text numberOfLines={1} style={[styles.pageBoxSub, { position: 'absolute', opacity: savedFade }]}>{t('Saved')}</Animated.Text>
-                </View>
-                <View style={styles.pageBoxRule} />
-                <Text style={styles.pageBoxLabel}>{t('Pages')}</Text>
-              </Pressable>
-            ) : null}
             {/* the corner spots: there until the paper starts to lift, back as soon as the page lands */}
             {!(flipPair && peelLive && !landed) && !intro ? (
               <>
@@ -614,7 +606,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           <Bar key="bar-v" u={u} vertical>
             <Burger u={u} onPress={openMenu} />
             <View style={{ alignItems: 'center', gap: 18 }}>
-              <Text style={[styles.sub, { textAlign: 'center', marginBottom: 22 }]}>{i + 1}/{total}</Text>
+              <View style={{ marginBottom: 22 }}>{pageCount}</View>
               {barBtns(true)}
             </View>
           </Bar>
@@ -623,7 +615,8 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         <View key="bar-bottom" style={{ alignSelf: 'stretch', flexDirection: 'column', backgroundColor: colors.bar, paddingTop: spare / 2 }}>
           <Bar key="bar-h" u={u}>
             <Burger u={u} onPress={openMenu} />
-            <View style={{ flex: 1 }} />
+            {/* where you are, in the middle of the bar ('Saved' briefly takes its place); tap it for Pages */}
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>{pageCount}</View>
             {barBtns(false)}
           </Bar>
         </View>
@@ -1294,6 +1287,8 @@ const styles = StyleSheet.create({
   outBox: { width: '100%', maxWidth: 400, gap: 14, paddingHorizontal: 26, paddingTop: 26, paddingBottom: 22, borderRadius: 24, backgroundColor: 'rgba(0,0,0,0.78)' }, // slightly see-through
   outTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20 },
   outPill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
+  countBox: { height: 30, minWidth: 74, paddingHorizontal: 12, borderRadius: 15, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
+  countText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 14 },
   pageBox: { position: 'absolute', zIndex: 25, backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, flexDirection: 'row', alignItems: 'center', gap: 7 }, // like the recording box in the reader
   pageBoxLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 14 },
   pageBoxSub: { color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 13 },
