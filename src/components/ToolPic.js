@@ -16,7 +16,7 @@ export default function ToolPic({ kind, width, height }) {
   const T = TOOLS[kind];
   if (!T) return null;
   const [img, , iw, ih] = T;
-  const k = Math.min(height / ih, (width * 1.15) / iw);
+  const k = Math.min(height / ih, (width * 0.82) / iw); // (room between the tools)
   const w = iw * k, h = ih * k;
   return (
     <View pointerEvents="none" style={{ width, height, alignItems: 'center' }}>

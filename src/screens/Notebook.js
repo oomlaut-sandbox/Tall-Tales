@@ -1116,9 +1116,9 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   };
   const TRAY_H = 120;
   const trayEl = (w) => {
-    const tw = Math.floor(w / TRAY.length), th = TRAY_H * 1.55; // (a little smaller, with room around them)
+    const tw = Math.floor((w - 20) / TRAY.length), th = TRAY_H * 1.55; // (a little smaller, with room around them)
     return (
-      <View style={{ width: w, height: TRAY_H, overflow: 'hidden', flexDirection: 'row', justifyContent: 'space-between' }}>
+      <View style={{ width: w, height: TRAY_H, overflow: 'hidden', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10 }}>
         {TRAY.map(([k, name]) => (
           <Pressable key={k} onPress={() => pickTool(k)} accessibilityRole="button" accessibilityLabel={t(name)} accessibilityState={{ selected: onTool === k }}
             style={{ width: tw, height: th, transform: [{ translateY: onTool === k ? 10 : 44 }] }}>
@@ -1214,7 +1214,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       </View>
       {/* the panel at the bottom */}
       <View style={[styles.panel, { paddingBottom: insets.bottom }]}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingTop: 16, paddingBottom: 26 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingTop: 16, paddingBottom: 38 }}>
           {plusEl}
           <View style={{ flex: 1 }}>{pillEl(winW - 2 * 14 - 2 * 40 - 20)}</View>
           {binEl}
