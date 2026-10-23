@@ -21,6 +21,8 @@ const FX = [
   ['egg-tap', 0.5, 'A hen egg set down gently into a straw nest: one tiny soft tap with a faint rustle of straw. Close, quiet, natural, no music.'],
   ['hen-cluck', 1.0, 'A contented farm hen clucking softly two or three times, calm and gentle, close by, in a quiet barn. Natural, no music.'],
   ['chalk-line', 1.4, 'Drawing a long smooth line with a piece of chalk on an old school blackboard: a soft, gentle scratchy chalk sound, not squeaky. Close, quiet room, natural, no music.'],
+  ['domino-down', 0.5, 'A single old ivory domino tile set down flat on a thick wool felt mat: one short, soft, muted clack of bone, muffled by the felt. Close, quiet, natural, no music.'],
+  ['domino-click', 0.5, 'Two old ivory domino tiles nudged together edge to edge on a table: one small crisp clack, light and bony. Close, quiet, natural, no music.'],
   ['chalk-wipe', 1.0, 'Wiping an old school blackboard with a felt eraser: one soft, papery swish. Close, quiet room, natural, no music.'],
 ];
 // ONLY=name1,name2 makes just those (each three times)
