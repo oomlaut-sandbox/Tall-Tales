@@ -72,14 +72,18 @@ export default function Garden({ u, openMenu, toast, onHome }) {
 // ---- Pebbles: throw felt pebbles onto the pebble beach. Flick one up from the bottom (harder flies further), or tap
 // a spot to toss it there. Each lands with the sound of stone on stone and stays where it fell. ----
 const BEACH = require('../../assets/daydream/pebbles.jpg'); // Jörg's felt pebbles
+// Jörg's felt pebbles: [picture, width, height, how big it is next to the biggest]
 const STONES = [
-  [require('../../assets/garden/pebble-1.png'), 154, 191],
-  [require('../../assets/garden/pebble-2.png'), 189, 206],
-  [require('../../assets/garden/pebble-3.png'), 240, 150],
-  [require('../../assets/garden/pebble-4.png'), 221, 240],
-  [require('../../assets/garden/pebble-5.png'), 146, 168],
-  [require('../../assets/garden/pebble-6.png'), 221, 159],
-  [require('../../assets/garden/pebble-7.png'), 240, 214],
+  [require('../../assets/garden/pebble-1.png'), 195, 199, 0.42],
+  [require('../../assets/garden/pebble-2.png'), 260, 253, 0.78],
+  [require('../../assets/garden/pebble-3.png'), 260, 246, 0.68],
+  [require('../../assets/garden/pebble-4.png'), 260, 229, 0.81],
+  [require('../../assets/garden/pebble-5.png'), 216, 260, 0.81],
+  [require('../../assets/garden/pebble-6.png'), 258, 195, 1.0],
+  [require('../../assets/garden/pebble-7.png'), 260, 258, 0.79],
+  [require('../../assets/garden/pebble-8.png'), 218, 260, 0.7],
+  [require('../../assets/garden/pebble-9.png'), 216, 224, 0.47],
+  [require('../../assets/garden/pebble-10.png'), 206, 205, 0.48],
 ];
 const MAX_ON_BEACH = 30;
 let nextId = 1;
@@ -101,7 +105,7 @@ function Pebbles({ area, onBack }) {
     const { hand: k, H: h, base: b } = S.current;
     // further away is smaller (the beach seen at a slant): the size where it lands
     const depth = Math.max(0, Math.min(1, toY / h));
-    const s1 = b * (0.6 + 0.45 * depth);
+    const s1 = b * (0.6 + 0.45 * depth) * (0.55 + 0.45 * STONES[k][3]); // (small pebbles stay small)
     const p = new Animated.Value(0);
     const settle = new Animated.Value(0);
     const rot = Math.round((Math.random() - 0.5) * 140);
@@ -147,6 +151,7 @@ function Pebbles({ area, onBack }) {
       if (held) {
         setStones((l) => [...l.filter((q) => q.id !== held.id), held]); // on top of the others
         Animated.timing(held.lift, { toValue: 1, duration: 120, useNativeDriver: true }).start();
+        playPebble(0.25); // a little clack as it's lifted off the others
       }
     },
     onPanResponderMove: (e, g) => {
@@ -186,7 +191,8 @@ function Pebbles({ area, onBack }) {
   })).current;
 
   const handStone = STONES[hand];
-  const hk = base / Math.max(handStone[1], handStone[2]);
+  const hk = (base * (0.62 + 0.38 * handStone[3])) / Math.max(handStone[1], handStone[2]);
+  const hw = handStone[1] * hk, hh2 = handStone[2] * hk;
   return (
     <View style={StyleSheet.absoluteFill}>
       <Image source={BEACH} style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} resizeMode="cover" />
@@ -221,10 +227,14 @@ function Pebbles({ area, onBack }) {
           );
         })}
         {/* the pebble in the hand, waiting at the bottom */}
-        <Animated.View pointerEvents="none" style={{ position: 'absolute', left: handX - (handStone[1] * hk) / 2, top: handY - (handStone[2] * hk) / 2,
+        {/* the pebble in your hand, ready to throw: a big dark glow round it and a thin white outline, so it stands
+            out on the beach (once thrown it lands with an ordinary drop shadow) */}
+        <Animated.View pointerEvents="none" style={{ position: 'absolute', left: handX - hw / 2, top: handY - hh2 / 2, width: hw, height: hh2,
           transform: [{ translateX: drag.x }, { translateY: drag.y }, { scale: handIn }] }}>
-          <Image source={handStone[0]} blurRadius={5} style={{ position: 'absolute', left: 9, top: 14, width: handStone[1] * hk, height: handStone[2] * hk, tintColor: '#000', opacity: 0.7 }} />
-          <Image source={handStone[0]} style={{ width: handStone[1] * hk, height: handStone[2] * hk }} />
+          <Image source={handStone[0]} blurRadius={18} style={{ position: 'absolute', left: -hw * 0.25, top: -hh2 * 0.25, width: hw * 1.5, height: hh2 * 1.5, tintColor: '#000', opacity: 0.9 }} />
+          <Image source={handStone[0]} blurRadius={8} style={{ position: 'absolute', left: hw * 0.04, top: hh2 * 0.08, width: hw, height: hh2, tintColor: '#000', opacity: 0.8 }} />
+          <Image source={handStone[0]} style={{ position: 'absolute', left: -2.5, top: -2.5, width: hw + 5, height: hh2 + 5, tintColor: '#fff', opacity: 0.95 }} />
+          <Image source={handStone[0]} style={{ width: hw, height: hh2 }} />
         </Animated.View>
       </View>
       {/* back to the garden */}
