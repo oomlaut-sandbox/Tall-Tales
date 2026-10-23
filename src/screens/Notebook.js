@@ -22,6 +22,7 @@ import ParentGate from '../components/ParentGate';
 import { StrokesView } from '../components/Strokes';
 import { EarArt } from '../components/Ear';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
+import ToolArt from '../components/ToolArt';
 import { BRUSHES, PENS, PENS_BRIGHT, SHAPES, SIZES, makeFill, mixColours, near, shapePts, withMirrors } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
@@ -968,7 +969,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const lastWater = useRef(null); // the last watercolour stroke and when it was finished (still wet for a while)
   const S = useRef({});
   S.current = { strokes, pen, size, erase, bucket, tall, brush, shape, mirror };
-  const toolsH = 390; // (two rows of colours, the colour row; the brushes, the sizes and the shapes take a row each)
+  const toolsH = 420; // (two rows of colours, the colour row; the brushes, the sizes and the shapes take a row each)
   const add = (st) => { setStrokes((s) => [...s, st]); setRedo([]); };
   const W = !area ? 0 : wideScreen ? Math.max(120, Math.floor(Math.min(area.h, area.w - TOOLS_W - 28)))
     : Math.max(120, Math.floor(Math.min(winW - 2 * GAP, tall ? (area.h - toolsH) / 2 : area.h - toolsH)));
@@ -1085,13 +1086,6 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
           <View style={{ width: 5 + s * 280, height: 5 + s * 280, borderRadius: 20, backgroundColor: colors.white }} />
         </Pressable>
       ))}
-      <Pressable onPress={() => { setErase((x) => !x); setBucket(false); setShape(null); }} style={[styles.toolWide, erase && styles.toolOn]} accessibilityLabel={t('Eraser')}>
-        <Text style={styles.toolText}>{t('Eraser')}</Text>
-      </Pressable>
-      {/* Fill: tap inside a shape to fill it with the colour */}
-      <Pressable onPress={() => { setBucket((x) => !x); setErase(false); setShape(null); }} style={[styles.toolWide, bucket && styles.toolOn]} accessibilityLabel={t('Fill')}>
-        <Text style={styles.toolText}>{t('Fill')}</Text>
-      </Pressable>
     </View>
   );
   // Shapes: the button opens the five shapes beside it; pick one, then drag on the page (tap it again to draw freely)
@@ -1107,6 +1101,30 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       )) : null}
     </View>
   );
+  // the tools in a tray, like real ones on a desk (the one in your hand stands up higher): an eraser, a pencil, a
+  // fountain pen (ink), a watercolour brush, a wax crayon and a paint roller (fill). The pencil, crayon and the
+  // paint on the brush and roller take the colour you're drawing with.
+  const TRAY = [['eraser', 'Eraser'], ['pencil', 'Pencil'], ['pen', 'Ink'], ['water', 'Watercolour'], ['crayon', 'Crayon'], ['roller', 'Fill']];
+  const BRUSH_OF = { pencil: 'pencil', pen: 'ink', water: 'water', crayon: 'crayon' };
+  const onTool = erase ? 'eraser' : bucket ? 'roller' : Object.keys(BRUSH_OF).find((k) => BRUSH_OF[k] === brush) || 'pen';
+  const pickTool = (k) => {
+    if (k === 'eraser') { setErase(true); setBucket(false); setShape(null); return; }
+    if (k === 'roller') { setBucket(true); setErase(false); setShape(null); return; }
+    setBrush(BRUSH_OF[k]); setErase(false); setBucket(false);
+  };
+  const trayEl = (w) => {
+    const tw = Math.min(54, w / TRAY.length), th = tw * 2;
+    return (
+      <View style={{ width: w, height: tw * 1.45, overflow: 'hidden', flexDirection: 'row', justifyContent: 'space-between', borderTopLeftRadius: 10, borderTopRightRadius: 10, backgroundColor: 'rgba(0,0,0,0.28)', paddingHorizontal: 4 }}>
+        {TRAY.map(([k, name]) => (
+          <Pressable key={k} onPress={() => pickTool(k)} accessibilityRole="button" accessibilityLabel={t(name)} accessibilityState={{ selected: onTool === k }}
+            style={{ width: tw, height: th, transform: [{ translateY: onTool === k ? tw * 0.08 : tw * 0.42 }] }}>
+            <ToolArt kind={k} color={pen} width={tw} height={th} />
+          </Pressable>
+        ))}
+      </View>
+    );
+  };
   // the brushes: a brush pen (ink), soft watercolour, a fine pencil
   const brushesEl = (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
@@ -1150,9 +1168,9 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
                 ))}
               </View>
               {colourRow}
-              {brushesEl}
               {sizesEl}
               {shapesEl}
+              {trayEl(TOOLS_W)}
             </View>
             {/* Undo and Clear, down at the bottom away from the drawing tools, with Done */}
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>{undoEl}{doneEl}</View>
@@ -1173,9 +1191,9 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
               <View style={{ width: W, marginTop: 30, gap: 24 }}>{/* the tools line up with the page's left and right edges */}
                 {swatches(W, 8)}
                 {colourRow}
-                {brushesEl}
                 {sizesEl}
                 {shapesEl}
+                {trayEl(W)}
               </View>
             </>
           ) : null}
