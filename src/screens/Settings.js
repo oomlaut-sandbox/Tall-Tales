@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, DESK_BG, IS_TABLET } from '../look';
 
+const IDEAS_FELT = require('../../assets/ideas-felt.png'); // the mossy green stitched felt (Ideas and Support), 1100 × 805
 const BAND_FELT = require('../../assets/band-settings.jpg'); // Jörg's grey stitched felt banner
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import { LANGS, useT } from '../i18n';
@@ -40,6 +41,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
   const t = useT();
   const insets = useSafeAreaInsets();
   const [hap, setHap] = useState(hapticsOn());
+  const [gardenBox, setGardenBox] = useState(null); // the Garden's felt card, once measured
   useEffect(() => onHaptics(setHap), []);
   const ps = usePurchases();
   const set = (patch) => setControls({ ...controls, ...patch });
@@ -135,10 +137,13 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
           </View>
           {/* the Garden: a secret place below My Library, locked until a grown-up unlocks it */}
           <Text style={styles.section}>{t('The Garden')}</Text>
-          <View style={styles.card}>
-            <Text style={styles.small}>{t('The Garden is a secret place for your child to discover: calm nature games with rocks, sticks and animals, to play and learn after a good book. It starts locked. Unlock it whenever you like, as a surprise or a reward.')}</Text>
+          {/* on the mossy green stitched felt from Ideas and Support */}
+          <View onLayout={(e) => setGardenBox({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}
+            style={[styles.card, { backgroundColor: '#4f5a2e', paddingHorizontal: 26, paddingVertical: 26, borderRadius: gardenBox ? gardenBox.w * 98 / 1100 : 24 }]}>
+            {gardenBox ? <Image source={IDEAS_FELT} style={{ position: 'absolute', left: 0, top: 0, width: gardenBox.w, height: gardenBox.h }} resizeMode="stretch" /> : null}
+            <Text style={[styles.small, { color: '#eef0e2' }]}>{t('The Garden is a secret place for your child to discover: calm nature games with rocks, sticks and animals, to play and learn after a good book. It starts locked. Unlock it whenever you like, as a surprise or a reward.')}</Text>
             <Toggle label={t('Unlock the Garden')} value={!!controls.garden} onChange={(v) => set({ garden: v })} />
-            <Text style={styles.small}>{t('Once it’s unlocked, your child finds the way in by scrolling past the corkboard at the bottom of My Library. We won’t tell them.')}</Text>
+            <Text style={[styles.small, { color: '#eef0e2' }]}>{t('Once it’s unlocked, your child finds the way in by scrolling past the corkboard at the bottom of My Library. We won’t tell them.')}</Text>
           </View>
           {/* haptic feedback: small clicks you feel on the dials, knobs, sliders and buttons (for the whole phone) */}
           <Text style={styles.section}>{t('Haptic feedback')}</Text>
