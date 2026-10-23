@@ -679,16 +679,24 @@ const styles = StyleSheet.create({
 
 
 // the alarm clock: a ring (the same stroke as the menu's circle icons) with an L for the hands, its corner on the
-// very middle, every line the same stroke
+// very middle, and two small rounded bells over its shoulders, every line the same stroke
 export function AlarmClockIcon({ size = 20, color = colors.white, weight }) {
   const w = weight || Math.max(1.5, size * 0.1);
-  const d = size * 0.92, c = (d - 2 * w) / 2; // c: the middle, inside the ring's stroke
+  const d = size * 0.8, c = (d - 2 * w) / 2; // c: the middle, inside the ring's stroke
+  const cx = size / 2, cy = size / 2 + size * 0.08; // the ring sits a little low, to make room for the bells
+  const R = d / 2 + w * 1.15, L = size * 0.24; // the bells: just outside the ring, at ten and two o'clock
+  const bell = (side) => {
+    const a = (side * 46 * Math.PI) / 180;
+    const bx = cx + R * Math.sin(a), by = cy - R * Math.cos(a);
+    return <View key={side} style={{ position: 'absolute', left: bx - L / 2, top: by - w / 2, width: L, height: w, borderRadius: w / 2, backgroundColor: color, transform: [{ rotate: `${side * 46}deg` }] }} />;
+  };
   return (
-    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{ width: d, height: d, borderRadius: d / 2, borderWidth: w, borderColor: color }}>
+    <View style={{ width: size, height: size }}>
+      <View style={{ position: 'absolute', left: cx - d / 2, top: cy - d / 2, width: d, height: d, borderRadius: d / 2, borderWidth: w, borderColor: color }}>
         <View style={{ position: 'absolute', left: c - w / 2, top: c - d * 0.3, width: w, height: d * 0.3 + w / 2, backgroundColor: color }} />
         <View style={{ position: 'absolute', left: c - w / 2, top: c - w / 2, width: d * 0.24 + w / 2, height: w, backgroundColor: color }} />
       </View>
+      {bell(-1)}{bell(1)}
     </View>
   );
 }
