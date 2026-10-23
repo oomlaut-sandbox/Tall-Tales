@@ -1,7 +1,7 @@
 // The Garden: a secret place below My Library (a grown-up unlocks it in Settings → The Garden). A garden seen from
 // above; tap a place in it to play there. Calm nature games, nothing to win:
 //   the rocks: throw felt pebbles onto the pebble beach and hear them land
-//   the woodpile: arrange driftwood sticks (coming)
+//   the woodpile: arrange driftwood sticks on the felt
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -9,15 +9,22 @@ import { Bar, Burger, WithBar } from '../components/Chrome';
 import { colors } from '../theme';
 import { useT } from '../i18n';
 import { withTap } from '../haptics';
-import { playPebble } from '../sound';
+import { playGarden, playPebble } from '../sound';
 
-const MAP = require('../../assets/garden/map.jpg'); // Jörg's placeholder garden, 1116 × 2000
+// Jörg's garden, 1116 × 2000, as the day goes: in daylight, in the golden evening, and at night under the lights
+const MAPS = {
+  day: [require('../../assets/garden/map-day.jpg'), '#232524'],
+  evening: [require('../../assets/garden/map-evening.jpg'), '#3a2f31'],
+  night: [require('../../assets/garden/map-night.jpg'), '#16171f'],
+};
+const timeOfDay = (d = new Date()) => { const h = d.getHours(); return h >= 6 && h < 17 ? 'day' : h >= 17 && h < 20 ? 'evening' : 'night'; };
 const MAP_AR = 1116 / 2000;
 // the places to tap, as parts of the map (left, top, right, bottom)
 const SPOTS = [
   { game: 'pebbles', box: [0.16, 0.235, 0.35, 0.31], label: 'The rocks' }, // the rock pile at the top
   { game: 'pebbles', box: [0.13, 0.76, 0.38, 0.885], label: 'The rocks' }, // the big rock pile at the bottom
   { game: 'sticks', box: [0.33, 0.72, 0.43, 0.77], label: 'The woodpile' },
+  { game: 'sticks', box: [0.17, 0.035, 0.27, 0.075], label: 'The woodpile' }, // the wooden crate by the gate
 ];
 
 export default function Garden({ u, openMenu, toast }) {
@@ -25,12 +32,14 @@ export default function Garden({ u, openMenu, toast }) {
   const [game, setGame] = useState(null);
   const [area, setArea] = useState(null);
   const open = (g) => {
-    if (g === 'sticks') { toast && toast(t('The driftwood is still drying in the sun. Come back soon.'), 3500); return; }
     setGame(g);
   };
+  const [tod, setTod] = useState(timeOfDay());
+  useEffect(() => { const id = setInterval(() => setTod(timeOfDay()), 60000); return () => clearInterval(id); }, []);
+  const [MAP, MAP_BG] = MAPS[tod];
   let map = null;
   if (area) {
-    const w = Math.max(area.w, area.h * MAP_AR), h = w / MAP_AR; // fills the screen (only the white edge of the picture is cut)
+    const w = Math.max(area.w, area.h * MAP_AR), h = w / MAP_AR; // fills the screen (only the dark edge of the picture is cut)
     const l = (area.w - w) / 2, tp = (area.h - h) / 2;
     map = (
       <View style={{ position: 'absolute', left: l, top: tp, width: w, height: h }}>
@@ -44,9 +53,10 @@ export default function Garden({ u, openMenu, toast }) {
   }
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} vertical={v} /></Bar>}>
-      <View style={{ flex: 1, backgroundColor: '#5d6b3a' }} onLayout={(e) => setArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
+      <View style={{ flex: 1, backgroundColor: MAP_BG }} onLayout={(e) => setArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
         {map}
         {game === 'pebbles' && area ? <Pebbles area={area} onBack={() => setGame(null)} /> : null}
+        {game === 'sticks' && area ? <Driftwood area={area} onBack={() => setGame(null)} /> : null}
       </View>
     </WithBar>
   );
@@ -189,3 +199,103 @@ const styles = StyleSheet.create({
   back: { position: 'absolute', left: 16, width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center' },
   backChevron: { width: 12, height: 12, borderLeftWidth: 2.6, borderBottomWidth: 2.6, borderColor: colors.white, transform: [{ translateX: 2 }, { rotate: '45deg' }] },
 });
+
+// ---- Driftwood: sticks of driftwood lying on felt. Drag one to move it, tap it to turn it. Lay them into a fence, a
+// house, a star, a letter, whatever you like. A soft wooden knock as each one is set down. ----
+const FELT = require('../../assets/desk-felt.jpg');
+const STICKS = [
+  [require('../../assets/garden/sticks/stick-1.png'), 462, 44], [require('../../assets/garden/sticks/stick-2.png'), 558, 48],
+  [require('../../assets/garden/sticks/stick-3.png'), 466, 44], [require('../../assets/garden/sticks/stick-4.png'), 614, 52],
+  [require('../../assets/garden/sticks/stick-5.png'), 332, 48], [require('../../assets/garden/sticks/stick-6.png'), 420, 44],
+  [require('../../assets/garden/sticks/stick-7.png'), 382, 52], [require('../../assets/garden/sticks/stick-8.png'), 374, 40],
+  [require('../../assets/garden/sticks/stick-9.png'), 378, 38], [require('../../assets/garden/sticks/stick-10.png'), 512, 50],
+  [require('../../assets/garden/sticks/stick-11.png'), 470, 48], [require('../../assets/garden/sticks/stick-12.png'), 418, 46],
+  [require('../../assets/garden/sticks/stick-13.png'), 472, 64], [require('../../assets/garden/sticks/stick-14.png'), 362, 152],
+  [require('../../assets/garden/sticks/stick-15.png'), 468, 64], [require('../../assets/garden/sticks/stick-16.png'), 414, 46],
+];
+const LONGEST = 614;
+function scatter(W, H, len) {
+  // every stick somewhere on the felt, at a slant, not too close to the edges
+  return STICKS.map((st, k) => {
+    const L = (st[1] / LONGEST) * len;
+    return { k, x: L / 2 + 12 + Math.random() * Math.max(1, W - L - 24), y: 40 + Math.random() * Math.max(1, H - 80), a: Math.round(Math.random() * 180 - 90) };
+  });
+}
+function Driftwood({ area, onBack }) {
+  const t = useT();
+  const insets = useSafeAreaInsets();
+  const W = area.w, H = area.h;
+  const len = Math.min(W, H) * 0.62; // the longest stick, on screen
+  const sticks = useRef(null);
+  if (!sticks.current) {
+    sticks.current = scatter(W, H, len).map((p) => ({ ...p, pos: new Animated.ValueXY({ x: p.x, y: p.y }), rot: new Animated.Value(p.a), lift: new Animated.Value(0) }));
+  }
+  const [order, setOrder] = useState(() => sticks.current.map((s) => s.k)); // drawn in this order (the last one on top)
+  const S = useRef({}); S.current.order = order;
+  const sizeOf = (k) => { const [, iw, ih] = STICKS[k]; const L = (iw / LONGEST) * len; return [L, L * ih / iw]; };
+  // is the point on this stick? (measured along it and across it, a little generous so thin sticks are easy to grab)
+  const hit = (s, x, y) => {
+    const [L, T] = sizeOf(s.k);
+    const r = (-s.a * Math.PI) / 180, dx = x - s.x, dy = y - s.y;
+    const u = dx * Math.cos(r) - dy * Math.sin(r), v = dx * Math.sin(r) + dy * Math.cos(r);
+    return Math.abs(u) <= L / 2 + 8 && Math.abs(v) <= Math.max(T / 2, 22);
+  };
+  const pan = useRef(PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderGrant: (e) => {
+      const x = e.nativeEvent.locationX, y = e.nativeEvent.locationY;
+      const ord = S.current.order;
+      let picked = null;
+      for (let n = ord.length - 1; n >= 0; n--) { const s = sticks.current[ord[n]]; if (hit(s, x, y)) { picked = s; break; } }
+      S.current.picked = picked;
+      if (!picked) return;
+      S.current.start = { x: picked.x, y: picked.y };
+      setOrder((o) => [...o.filter((k) => k !== picked.k), picked.k]); // to the top
+      Animated.timing(picked.lift, { toValue: 1, duration: 120, useNativeDriver: true }).start();
+    },
+    onPanResponderMove: (e, g) => {
+      const s = S.current.picked; if (!s) return;
+      s.pos.setValue({ x: S.current.start.x + g.dx, y: S.current.start.y + g.dy });
+    },
+    onPanResponderRelease: (e, g) => {
+      const s = S.current.picked; if (!s) return;
+      S.current.picked = null;
+      if (Math.hypot(g.dx, g.dy) < 8) { // a tap: turn it a little
+        s.a += 30;
+        Animated.spring(s.rot, { toValue: s.a, friction: 7, tension: 80, useNativeDriver: true }).start();
+      } else {
+        s.x = Math.max(0, Math.min(W, S.current.start.x + g.dx)); s.y = Math.max(0, Math.min(H, S.current.start.y + g.dy));
+        s.pos.setValue({ x: s.x, y: s.y });
+      }
+      Animated.timing(s.lift, { toValue: 0, duration: 140, useNativeDriver: true }).start();
+      playGarden('stick');
+    },
+  })).current;
+  return (
+    <View style={StyleSheet.absoluteFill}>
+      <Image source={FELT} style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} resizeMode="cover" />
+      <View style={StyleSheet.absoluteFill} {...pan.panHandlers}>
+        {order.map((k) => {
+          const s = sticks.current[k];
+          const [L, T] = sizeOf(k);
+          const rot = s.rot.interpolate({ inputRange: [-3600, 3600], outputRange: ['-3600deg', '3600deg'] });
+          const scale = s.lift.interpolate({ inputRange: [0, 1], outputRange: [1, 1.06] });
+          const sh = s.lift.interpolate({ inputRange: [0, 1], outputRange: [2, 7] });
+          return (
+            <Animated.View key={k} pointerEvents="none" style={{ position: 'absolute', left: -L / 2, top: -T / 2, width: L, height: T,
+              transform: [{ translateX: s.pos.x }, { translateY: s.pos.y }, { rotate: rot }, { scale }] }}>
+              {/* its shadow on the felt: its own shape, darker, lifting further away while it's held */}
+              <Animated.Image source={STICKS[k][0]} style={{ position: 'absolute', left: 0, top: 0, width: L, height: T, tintColor: '#000', opacity: 0.55, transform: [{ translateX: sh }, { translateY: sh }] }} />
+              <Image source={STICKS[k][0]} style={{ width: L, height: T }} />
+            </Animated.View>
+          );
+        })}
+      </View>
+      <Pressable onPress={withTap(onBack)} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Back to the Garden')}
+        style={[styles.back, { top: Math.max(insets.top, 12) + 8 }]}>
+        <View style={styles.backChevron} />
+      </Pressable>
+    </View>
+  );
+}

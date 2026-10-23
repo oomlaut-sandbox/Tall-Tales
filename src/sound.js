@@ -108,3 +108,19 @@ export function playPebble(volume = 1) {
     Promise.resolve(p.seekTo(0)).catch(() => {}).then(() => { try { p.play(); } catch (e) {} });
   } catch (e) {}
 }
+
+// The Garden's other sounds (driftwood, the pinwheel, eggs, the chalkboard), several recordings of each taken at
+// random. Part of the games, so they play even when the page-turn sound effects are off (never while recording).
+const GARDEN = {};
+const gardenPlayers = {};
+export function playGarden(kind, volume = 1) {
+  if (suspended || !GARDEN[kind]) return null;
+  try {
+    if (!gardenPlayers[kind]) gardenPlayers[kind] = GARDEN[kind].map((s) => createAudioPlayer(s));
+    const list = gardenPlayers[kind];
+    const p = list[Math.floor(Math.random() * list.length)];
+    p.volume = Math.max(0.1, Math.min(1, volume * 0.8));
+    Promise.resolve(p.seekTo(0)).catch(() => {}).then(() => { try { p.play(); } catch (e) {} });
+    return p;
+  } catch (e) { return null; }
+}
