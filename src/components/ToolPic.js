@@ -9,7 +9,7 @@ const TOOLS = {
   pen: [require('../../assets/tools/pen.png'), null, 98, 454],
   water: [require('../../assets/tools/water.png'), null, 67, 458],
   crayon: [require('../../assets/tools/crayon.png'), null, 79, 455],
-  smudge: [require('../../assets/tools/crayon.png'), null, 79, 455], // (the crayon's picture until the smudge tool's arrives)
+  smudge: [require('../../assets/tools/smudge.png'), null, 62, 432], // a paper blending stump
   roller: [require('../../assets/tools/roller.png'), null, 227, 447],
 };
 

@@ -8,7 +8,6 @@ import { Bar, BarMeta, Burger, WithBar } from '../components/Chrome';
 import { useT } from '../i18n';
 
 const BAND_FELT = require('../../assets/band-about.jpg');
-const SKIPPY = require('../../assets/skippy/glasses-book.png'); // Skippy with his glasses and a book (449 × 600)
 
 const VERSION = require('../../app.json').expo.version;
 
@@ -16,10 +15,7 @@ export default function About({ u, openMenu, onSecret }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
-  // one thin column of words (never stretched across a wide iPad), with Skippy standing under it at its right,
-  // with room all round him: he is part of the page, so the words never run behind him
-  const skW = Math.min(150, Math.round(winW * 0.32));
-  const skH = Math.round(skW * 600 / 449);
+  // one thin column of words (never stretched across a wide iPad)
   const phone = winW < 600;
   const textStyle = phone ? (winH < 740 ? { fontSize: 14.5, lineHeight: 20 } : { fontSize: 17, lineHeight: 24 }) : null;
   return (
@@ -44,11 +40,8 @@ export default function About({ u, openMenu, onSecret }) {
           {t('Every book can be read aloud by a warm narrator, with each word lighting up as it’s spoken. In Learn to Read mode, children tap any word to hear it sounded out, one part at a time. Parents can record themselves reading each page, so a favourite story can be heard in a familiar voice, any time. And families can make their own books, with their own pictures and words.')}
         </Text>
         <Text style={[styles.p, textStyle]}>{t('Oomlaut is always looking for new picture books. If you’ve written or illustrated a story, send it to us and join the Oomlaut author community. Visit oomlaut.com for more information.')}</Text>
-        <Text style={styles.version}>{t('Version {v}', { v: VERSION })}</Text>
-      {/* the store owner's way in: hold Skippy for five seconds (nothing happens on a tap) */}
-      <Pressable onLongPress={onSecret} delayLongPress={5000} style={{ alignSelf: 'flex-end', marginTop: 8, width: skW, height: skH }} accessible={false}>
-        <Image source={SKIPPY} resizeMode="contain" accessibilityIgnoresInvertColors style={{ width: skW, height: skH }} />
-      </Pressable>
+        {/* the store owner's way in: hold the version line for five seconds (nothing happens on a tap) */}
+        <Pressable onLongPress={onSecret} delayLongPress={5000} accessible={false}><Text style={styles.version}>{t('Version {v}', { v: VERSION })}</Text></Pressable>
       </ScrollView>
       </View>
     </WithBar>

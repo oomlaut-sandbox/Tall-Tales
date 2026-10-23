@@ -1134,7 +1134,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   };
   // the tools stand in a row on dark grey, as in Jörg's drawing; the one in your hand gets a fine box with its name above
   const TRAY_H = 158, BOX_TOP = 22, TOOL_GAP = 16;
-  const TRAY_NAMES = { eraser: 'Eraser', pencil: 'Pencil', pen: 'Fountain pen', water: 'Watercolour brush', smudge: 'Smudge', roller: 'Paint roller' };
+  const TRAY_NAMES = { eraser: 'Eraser', pencil: 'Pencil', pen: 'Fountain pen', water: 'Watercolour brush', smudge: 'Smudge tool', roller: 'Paint roller' };
   const trayEl = (w) => {
     const tw = Math.floor((w - 20) / TRAY.length), th = (TRAY_H - BOX_TOP - TOOL_GAP) * 1.5;
     return (
