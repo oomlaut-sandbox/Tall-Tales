@@ -538,6 +538,7 @@ const T = {
   'Ink': { de: 'Tinte', fr: 'Encre', es: 'Tinta', ja: 'インク' },
   'Watercolour': { de: 'Wasserfarbe', fr: 'Aquarelle', es: 'Acuarela', ja: 'すいさい' },
   'Pencil': { de: 'Bleistift', fr: 'Crayon', es: 'Lápiz', ja: 'えんぴつ' },
+  'Come explore the Garden': { de: 'Komm, entdecke den Garten', fr: 'Viens explorer le Jardin', es: 'Ven a explorar el Jardín', ja: 'おにわを たんけんしよう' },
   'Crayon': { de: 'Wachsmalstift', fr: 'Craie grasse', es: 'Cera', ja: 'クレヨン' },
   'Mix': { de: 'Mischen', fr: 'Mélanger', es: 'Mezclar', ja: 'まぜる' },
   'Mix colours': { de: 'Farben mischen', fr: 'Mélanger les couleurs', es: 'Mezclar colores', ja: 'いろを まぜる' },

@@ -174,6 +174,7 @@ function WhoReads({ onPress }) {
 
 export function Library({ narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
   const t = useT();
+  const gardenAsked = useRef(false);
   const controls = useControls(); // parental controls: My Notebook, Create a story and Select may be hidden
   const { width: winW } = useWindowDimensions();
   const [folderOpen, setFolderOpen] = useState(false); // My Folder, opened (the sheets)
@@ -232,7 +233,14 @@ export function Library({ narrator, toast, onProfiles, u, stories, openStory, op
       ))}>
       <Band color={colors.green} felt="library" title={selecting ? t('Select books') : t('My Library')}
         sub={selecting ? (picked.length ? t('{n} selected', { n: picked.length }) : t('Tap books to select them')) : t('Your stories, ready to read')} />
-      <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]}>
+      {/* pulled up past the corkboard at the very bottom: a speech bubble invites you on to the Garden (once per pull) */}
+      <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]} scrollEventThrottle={64}
+        onScroll={(e) => {
+          const { contentOffset: o, layoutMeasurement: l, contentSize: c } = e.nativeEvent;
+          const past = o.y + l.height - c.height;
+          if (past > 70 && !gardenAsked.current) { gardenAsked.current = true; toast && toast(t('Come explore the Garden'), 3500); }
+          else if (past < 0) gardenAsked.current = false;
+        }}>
         {/* My Notebook: always the first book on the shelf (notes, drawings and reading badges) */}
         {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
         {/* beside the notebook: who is reading (their felt character and name); tap it for Profiles */}
