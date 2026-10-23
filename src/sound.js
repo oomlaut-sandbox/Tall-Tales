@@ -114,9 +114,9 @@ export function playPebble(volume = 1) {
 const GARDEN = {
   stick: [require('../assets/sfx/garden/stick-down-1.mp3'), require('../assets/sfx/garden/stick-down-2.mp3'), require('../assets/sfx/garden/stick-down-3.mp3')],
   click: [require('../assets/sfx/garden/stick-click-1.mp3'), require('../assets/sfx/garden/stick-click-2.mp3'), require('../assets/sfx/garden/stick-click-3.mp3')],
-  // dominoes: until their own clacks are made, the stick sounds
-  domdown: [require('../assets/sfx/garden/stick-down-1.mp3'), require('../assets/sfx/garden/stick-down-2.mp3')],
-  domclick: [require('../assets/sfx/garden/stick-click-1.mp3'), require('../assets/sfx/garden/stick-click-2.mp3')],
+  // dominoes: set down on the felt, and clacked against another
+  domdown: [require('../assets/sfx/garden/domino-down-1.mp3'), require('../assets/sfx/garden/domino-down-2.mp3'), require('../assets/sfx/garden/domino-down-3.mp3')],
+  domclick: [require('../assets/sfx/garden/domino-click-1.mp3'), require('../assets/sfx/garden/domino-click-2.mp3'), require('../assets/sfx/garden/domino-click-3.mp3')],
   egg: [require('../assets/sfx/garden/egg-1.mp3'), require('../assets/sfx/garden/egg-2.mp3'), require('../assets/sfx/garden/egg-3.mp3')],
   cluck: [require('../assets/sfx/garden/cluck-1.mp3'), require('../assets/sfx/garden/cluck-2.mp3'), require('../assets/sfx/garden/cluck-3.mp3')],
   chalk: [require('../assets/sfx/garden/chalk-1.mp3'), require('../assets/sfx/garden/chalk-2.mp3'), require('../assets/sfx/garden/chalk-3.mp3')],
