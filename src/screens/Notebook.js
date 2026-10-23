@@ -1121,7 +1121,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       <View style={{ width: w, height: TRAY_H, overflow: 'hidden', flexDirection: 'row', justifyContent: 'space-between' }}>
         {TRAY.map(([k, name]) => (
           <Pressable key={k} onPress={() => pickTool(k)} accessibilityRole="button" accessibilityLabel={t(name)} accessibilityState={{ selected: onTool === k }}
-            style={{ width: tw, height: th, transform: [{ translateY: onTool === k ? 8 : 34 }] }}>
+            style={{ width: tw, height: th, transform: [{ translateY: onTool === k ? 2 : 40 }] }}>
             <ToolPic kind={k} width={tw} height={th} />
           </Pressable>
         ))}
