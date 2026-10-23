@@ -1,7 +1,7 @@
 // Before recording: who's reading? Up to three people can record a book in their own voice (Mom, Grandpa,
 // a child…). Pick who's reading now, or add a new reader; then Start recording.
 import React, { useEffect, useState } from 'react';
-import { Image, KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View, ScrollView } from 'react-native';
+import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View, ScrollView } from 'react-native';
 import { colors, fonts } from '../theme';
 import { useT } from '../i18n';
 import { withTap } from '../haptics';
@@ -10,7 +10,6 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import { MAX_READERS, addReader, getReaders, removeReader, setReaderPhoto } from '../recordings';
 import { VoiceFace } from './VoicePick';
 
-const TRASH = require('../../assets/icon-trash.png');
 
 // edit: opened from the scissors in 'Who reads this book?': the same box for changing photos or adding a reader,
 // with Done instead of Start recording
@@ -108,12 +107,12 @@ export default function ReaderPick({ initial, onCancel, onStart, edit = false, o
             const cur = adding ? { photo } : (list.find((x) => x.id === pick) || {});
             return (
               <View style={styles.photoRow}>
-                <View>
+                <View style={{ alignItems: 'center', gap: 10 }}>
                   <VoiceFace photo={cur.photo} person size={104} />{/* no photo yet: a head and shoulders */}
-                  {/* editing: a round red trash can at the photo's bottom left removes this reader (asks first) */}
+                  {/* editing: a thin red pill under the photo removes this reader (asks first) */}
                   {edit && !adding && pick ? (
-                    <Pressable onPress={withTap(() => setSure(true))} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Remove reader')} style={styles.removeDot}>
-                      <Image source={TRASH} style={{ width: 18, height: 18, tintColor: '#fff' }} resizeMode="contain" />
+                    <Pressable onPress={withTap(() => setSure(true))} hitSlop={8} accessibilityRole="button" style={styles.removePill}>
+                      <Text numberOfLines={1} style={styles.removeText}>{tr('Remove reader')}</Text>
                     </Pressable>
                   ) : null}
                 </View>
@@ -171,7 +170,8 @@ const styles = StyleSheet.create({
   photoRow: { flexDirection: 'row', alignItems: 'center', gap: 18, marginTop: 22 },
   photoBtn: { height: 32, borderRadius: 16, paddingHorizontal: 14, backgroundColor: '#3d3d40', alignItems: 'center', justifyContent: 'center' },
   photoText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 13 },
-  removeDot: { position: 'absolute', left: -2, bottom: -2, width: 38, height: 38, borderRadius: 19, backgroundColor: '#d32f2f', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#0b0b0b' },
+  removePill: { height: 26, borderRadius: 13, paddingHorizontal: 12, backgroundColor: '#b3261e', alignItems: 'center', justifyContent: 'center' },
+  removeText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 12 },
   sureBack: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 28 },
   sureBox: { width: '100%', maxWidth: 400, backgroundColor: '#000', borderRadius: 24, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26 },
   sureText: { color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24 },

@@ -113,6 +113,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   useEffect(() => { markReadToday(); }, []);
   useEffect(() => { if (pages[idx] && pages[idx].end) { markFinished(story, story.cover || (story.pages.find((pg) => pg.image) || {}).image); if (onFinished) onFinished(); } }, [idx]);
   const [size, setSize] = useState(null); // book area {w,h}
+  const [deskW, setDeskW] = useState(0); // the felt's width (the bulb sits halfway between its left edge and the book)
   // tells App once the book is laid out and drawn (the opening cover then steps aside, never before)
   const shownSent = useRef(false);
   useEffect(() => {
@@ -868,12 +869,13 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     });
   } else layers.push(...pageLayers());
 
+  const bulbL = deskW ? Math.max(2, (deskW - BL.bookW) / 4 - 10) : 12; // the bulb: halfway between the felt's left edge and the book
   return (
     <View style={[styles.screen, wide && { flexDirection: 'row' }]}>
       <Felt />
       {/* the black strip over the camera: along the top, or down the left side when sideways */}
       <View style={wide ? { width: BL.leftW, backgroundColor: colors.bar } : { height: topH, backgroundColor: colors.bar }}><Felt /></View>
-      <View style={styles.desk}>
+      <View style={styles.desk} onLayout={(e) => setDeskW(e.nativeEvent.layout.width)}>
         {/* the charcoal felt, as on the other screens */}
         <DeskFelt spot="reader1" />
       <Felt />
@@ -882,12 +884,12 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
         // tap it (it's small, so the finger gets a generous area) to hear what it means
         <Pressable onPress={() => toast(tr('This red dot means you’ve recorded this page in your own voice.'))} hitSlop={20}
           accessibilityRole="button" accessibilityLabel={tr('This page has a voice recording')}
-          style={[styles.recMark, IS_TABLET ? { left: 46 } : { right: 14 }]} />
+          style={[styles.recMark, IS_TABLET ? { left: bulbL + 32 } : { right: 14 }]} />
       ) : null}
       {/* Amber light: a very fine light bulb at the top left of the felt turns it on and off */}
       {!listen ? (
         <Pressable onPress={withTap(() => setPrefs((p) => ({ ...p, amber: !p.amber })))} hitSlop={14} accessibilityRole="switch" accessibilityState={{ checked: !!prefs.amber }}
-          accessibilityLabel={tr('Amber light')} style={styles.bulb}>
+          accessibilityLabel={tr('Amber light')} style={[styles.bulb, { left: bulbL }]}>
           <BulbIcon size={20} on={!!prefs.amber} />
         </Pressable>
       ) : null}
