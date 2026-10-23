@@ -7,6 +7,10 @@ if (typeof window !== 'undefined' && /voice-demo/.test(window.location.hash)) {
   const rec = { uri: 'demo.m4a', seconds: 5 };
   mem.recordings = JSON.stringify({ 'rough-lives:rl01': rec, 'rough-lives:rl01@ropa': rec, 'rough-lives:rl02@ropa': rec });
 }
+// (#garden: the Garden already unlocked, to show it)
+if (typeof window !== 'undefined' && /garden/.test(window.location.hash)) {
+  mem.controls = JSON.stringify({ ...require('./controls').DEFAULT_CONTROLS, garden: true });
+}
 async function rawLoad(name, fallback) {
   return name in mem ? JSON.parse(mem[name]) : fallback;
 }
