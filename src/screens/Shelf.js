@@ -32,6 +32,7 @@ const gridGap = (w) => { const n = COLS(w); return `${(100 - n * TILE[n]) / (n -
 
 import Folder from '../components/Folder';
 import Corkboard from '../components/Corkboard';
+const SELECT_ICON = require('../../assets/icon-select.png');
 const FOLDER = require('../../assets/folder.png'); // 560 × 564, Jörg's kraft folder
 const PENCIL = require('../../assets/pencil.png'); // 100 × 971
 const MUG = require('../../assets/mug.png'); // 400 × 516, hot chocolate from above
@@ -217,7 +218,10 @@ export function Library({ narrator, toast, onProfiles, u, stories, openStory, op
           <Burger u={u} onPress={openMenu} />
           <View style={{ flex: 1 }} />
           {/* Select: in the bottom right corner of the bar (not when the parental controls turn sharing off) */}
-          {controls.sharing ? <Pressable onPress={() => setSelecting(true)} hitSlop={10} style={styles.barBtn} accessibilityRole="button"><Text style={styles.barSmall}>{t('Select')}</Text></Pressable> : null}
+          {/* Select: an icon (a circle with a tick), so it fits the sideways bar in every language */}
+          {controls.sharing ? <Pressable onPress={() => setSelecting(true)} hitSlop={12} style={[styles.barBtn, { paddingHorizontal: 4 }]} accessibilityRole="button" accessibilityLabel={t('Select')}>
+            <Image source={SELECT_ICON} style={{ width: 24, height: 24, tintColor: colors.white }} resizeMode="contain" />
+          </Pressable> : null}
         </Bar>
       ))}>
       <Band color={colors.green} felt="library" title={selecting ? t('Select books') : t('My Library')}
@@ -254,7 +258,22 @@ export function Library({ narrator, toast, onProfiles, u, stories, openStory, op
             <>
               <Pressable onPress={() => setFolderOpen(true)} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={t('My Folder')}>
                 <View style={{ width: colW, height: colW, alignItems: 'center', justifyContent: 'center' }}>
-                  <Image source={FOLDER} style={{ width: colW * 1.04, height: colW * 1.04 * 564 / 560 }} resizeMode="contain" />
+                  {(() => {
+                    const fw = colW * 1.04, fh = fw * 564 / 560;
+                    const who = (activeProfile() || {}).name || '';
+                    return (
+                      <View style={{ width: fw, height: fh }}>
+                        <Image source={FOLDER} style={{ width: fw, height: fh }} resizeMode="contain" />
+                        {/* the folder's label, typed with the child's name */}
+                        {who ? (
+                          <View style={{ position: 'absolute', left: fw * 0.066, top: fh * 0.016, width: fw * 0.258, height: fh * 0.06, alignItems: 'center', justifyContent: 'center' }}>
+                            <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} allowFontScaling={false}
+                              style={{ fontFamily: 'SpecialElite_400Regular', fontSize: fh * 0.042, color: '#3b342b' }}>{who}</Text>
+                          </View>
+                        ) : null}
+                      </View>
+                    );
+                  })()}
                 </View>
                 <Text style={[styles.tileTitle, styles.tileOption]}>{t('My Folder')}</Text>
               </Pressable>

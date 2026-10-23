@@ -403,11 +403,14 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       const own = !other && story.narration ? (story.narration[voiceKey]?.[p.pid] || story.narration.lily?.[p.pid]) : null;
       const audio = own ? { uri: own.uri } : AUDIO[voiceKey]?.[sk]?.[p.pid] || AUDIO.lily?.[sk]?.[p.pid];
       const times = own ? own.words : (TIMINGS[AUDIO[voiceKey]?.[sk]?.[p.pid] ? voiceKey : 'lily']?.[sk]?.[p.pid] || {}).words;
-      if (audio && times && times.length === toks.length && playVoice(audio, {
+      // narration with word timings that don't match the words (the text changed since it was made) still plays in
+      // the narrator's voice, just without the words lighting up: never the phone's robotic voice when there is audio
+      const tm = times && times.length === toks.length ? times : [];
+      if (audio && playVoice(audio, {
         rate: speedOf(prefs) / DEFAULT_SPEED, // narration is already made at the default pace
         onTime: (t) => {
           let i = -1;
-          while (i + 1 < times.length && times[i + 1] <= t + 0.05) i++;
+          while (i + 1 < tm.length && tm[i + 1] <= t + 0.05) i++;
           setHl(i);
         },
         onDone: afterPage,

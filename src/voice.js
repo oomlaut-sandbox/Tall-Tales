@@ -55,8 +55,12 @@ export function playVoice(source, { onProgress, onTime, onDone, onFail, rate = 1
     try {
       if (player) { try { sub && sub.remove(); player.remove(); } catch (e) {} player = null; sub = null; clearInterval(ticker); ticker = null; }
       player = createAudioPlayer(typeof source === 'string' ? { uri: source } : source);
+      let begun = false; // it has really started playing (then no more nudging)
       sub = player.addListener('playbackStatusUpdate', (s) => {
         if (my !== session) return;
+        if (s.playing || (s.currentTime || 0) > from + 0.05) begun = true;
+        // loaded but not playing yet: play() before the file had loaded is ignored on some devices (iPad), so ask again
+        if (!begun && s.isLoaded && !s.playing && !s.didJustFinish) { try { player && player.play(); } catch (e) {} }
         if (s.duration > 0 && onProgress) { const e = to || s.duration; onProgress(Math.max(0, Math.min(1, (s.currentTime - from) / Math.max(0.1, e - from)))); }
         if (s.didJustFinish) {
           stopVoice();
@@ -83,17 +87,18 @@ export function playVoice(source, { onProgress, onTime, onDone, onFail, rate = 1
       // A file that is still loading is given time (up to about 3 seconds) instead of being restarted:
       // restarting a sound that was just about to begin is what made the narration stutter and then
       // switch to the phone's voice.
+      // It is only given up on after several seconds of nothing at all, and play() is asked again on every check
+      // (the narrator falling back to the phone's robotic voice was a sound that was ready but never told to go).
       const mine = player;
       let waited = 0;
       const check = () => {
         if (my !== session || !player || player !== mine) return;
-        let started = false, loaded = true;
-        try { started = player.playing || (player.currentTime || 0) > from + 0.05; } catch (e) {}
-        try { if (player.isLoaded === false) loaded = false; } catch (e) {}
+        let started = begun;
+        try { started = started || player.playing || (player.currentTime || 0) > from + 0.05; } catch (e) {}
         if (started) return;
         waited += 300;
-        if (!loaded && waited < 3000) { setTimeout(check, 300); return; } // still loading: wait
-        if (loaded && waited < 1200) { setTimeout(check, 300); return; } // loaded: a moment to begin
+        try { player.play(); } catch (e) {} // nudge it
+        if (waited < (tries < 2 ? 3000 : 4500)) { setTimeout(check, 300); return; }
         if (tries < 2) return start();
         stopVoice();
         (onFail || onDone) && (onFail || onDone)();
