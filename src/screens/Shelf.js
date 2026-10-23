@@ -34,8 +34,8 @@ import Folder from '../components/Folder';
 import Corkboard from '../components/Corkboard';
 const SELECT_ICON = require('../../assets/icon-select.png');
 const FOLDER = require('../../assets/folder.png'); // 560 × 564, Jörg's kraft folder
-const PENCIL = require('../../assets/pencil.png'); // 100 × 971
-const MUG = require('../../assets/mug.png'); // 400 × 516, hot chocolate from above
+const PENCIL = require('../../assets/pencil-shadow.png');
+const MUG = require('../../assets/mug-shadow.png'); // hot chocolate from above, already turned
 const LEANER = require('../../assets/store-lean.png'); // Skippy: Jörg's grey character in sunglasses, leaning on the featured book (698 × 700)
 
 function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, option, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
@@ -278,8 +278,10 @@ export function Library({ narrator, toast, onProfiles, u, stories, openStory, op
                 <Text style={[styles.tileTitle, styles.tileOption]}>{t('My Folder')}</Text>
               </Pressable>
               <View pointerEvents="none" style={{ width: tileWidth(winW), height: colW }}>
-                <Image source={PENCIL} resizeMode="contain" style={{ position: 'absolute', left: colW * 0.05, top: colW * 0.04, width: colW * 0.92 * 100 / 971, height: colW * 0.92, transform: [{ rotate: '4deg' }] }} />
-                <Image source={MUG} resizeMode="contain" style={{ position: 'absolute', left: colW * 0.3, top: colW * 0.14, width: colW * 0.6, height: colW * 0.6 * 516 / 400, transform: [{ rotate: '-47deg' }] }} />
+                {/* a pencil and a mug of hot chocolate (turned 47° anticlockwise), each with a deep soft shadow to the
+                    bottom right (drawn into the pictures: the pencil 969 tall in 1237, the mug 452 × 439 in 856 × 843) */}
+                {(() => { const k = (colW * 0.46) / 969; return <Image source={PENCIL} resizeMode="stretch" style={{ position: 'absolute', left: colW * 0.06 - 134 * k, top: colW * 0.27 - 134 * k, width: 419 * k, height: 1237 * k }} />; })()}
+                {(() => { const k = (colW * 0.4) / 400; return <Image source={MUG} resizeMode="stretch" style={{ position: 'absolute', left: colW * 0.6 - (856 * k) / 2, top: colW * 0.48 - (843 * k) / 2, width: 856 * k, height: 843 * k }} />; })()}
               </View>
               {/* the corkboard: always at the very bottom, as wide as two books */}
               <View style={{ width: '100%' }} />

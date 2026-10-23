@@ -141,12 +141,12 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
           <Pressable style={StyleSheet.absoluteFill} onPress={() => { stopVoice(); stopSpeech(); setOpen(null); }} accessibilityLabel={t('Close')} />
           {open === 'welcome' ? (
             <View style={[styles.paper, { width: big, padding: big * 0.08, paddingBottom: big * 0.1 }]}>
-              <Text style={[styles.hand, { fontSize: 30, marginBottom: 14 }]}>{name ? t('Hello, {name}!', { name }) : t('Hello!')}</Text>
+              <Text style={[styles.hand, { fontSize: 24, marginBottom: 14 }]}>{name ? t('Hello, {name}!', { name }) : t('Hello!')}</Text>
               <Text style={styles.letterText}>{t('This folder is yours. Sheets live here: things to keep, and little things to play with.')}</Text>
               <Text style={styles.letterText}>{t('The Abc sheet is a good place to start. Tap a letter and listen.')}</Text>
               <Text style={styles.letterText}>{t('When someone sends you a drawing or a note, it will be waiting here for you.')}</Text>
               <Text style={styles.letterText}>{t('Happy reading!')}</Text>
-              <Text style={[styles.hand, { fontSize: 24, marginTop: 10, alignSelf: 'flex-end' }]}>{t('Jörg and everyone at Oomlaut')}</Text>
+              <Text style={[styles.hand, { fontSize: 16, marginTop: 10, alignSelf: 'flex-end' }]}>{t('Jörg and everyone at Oomlaut')}</Text>
             </View>
           ) : open === 'abc' ? (
             <AbcSheet size={big} narrator={narrator} />
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
   cardShadow: { shadowColor: '#000', shadowOffset: { width: 2, height: 8 }, shadowOpacity: 0.55, shadowRadius: 10, elevation: 8 },
   cardLabel: { color: 'rgba(255,255,255,0.85)', fontFamily: fonts.ui, fontWeight: '600', fontSize: 14 },
   paper: { backgroundColor: '#fbf7ee', borderRadius: 3 },
-  hand: { fontFamily: 'DancingScript_700Bold', color: '#3a2f22' },
+  hand: { fontFamily: TYPE, color: '#3a2f22' },
   letterText: { fontFamily: TYPE, fontSize: 16, lineHeight: 25, color: '#3a3226', marginBottom: 10 },
   letter: { fontFamily: 'EBGaramond_700Bold', color: '#2f2418' },
   openBack: { backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 14 },

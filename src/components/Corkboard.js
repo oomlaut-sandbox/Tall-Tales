@@ -16,7 +16,7 @@ const CORK = require('../../assets/cork.jpg');
 const PIN_ICON = require('../../assets/icon-pin.png');
 const PIN_HEAD = require('../../assets/pin-head.png');
 const NOTE_YELLOW = '#f7e27a';
-const HAND = 'DancingScript_700Bold'; // handwriting on the sticky notes
+const HAND = 'SpecialElite_400Regular'; // the typewriter, like My Notebook
 
 function Pin({ p, W }) {
   const s = Math.round(W * (p.kind === 'note' ? 0.26 : 0.28));
@@ -24,7 +24,7 @@ function Pin({ p, W }) {
   return p.kind === 'note' ? (
     <View style={[styles.note, { width: s, height: s }]}>
       {head}
-      <Text numberOfLines={5} adjustsFontSizeToFit minimumFontScale={0.5} style={[styles.noteText, { fontSize: s * 0.14, lineHeight: s * 0.18 }]}>{p.text}</Text>
+      <Text numberOfLines={5} adjustsFontSizeToFit minimumFontScale={0.5} style={[styles.noteText, { fontSize: s * 0.11, lineHeight: s * 0.155 }]}>{p.text}</Text>
     </View>
   ) : (
     <View style={[styles.polaroid, { width: s, height: s * 1.12, padding: s * 0.06, paddingBottom: s * 0.18 }]}>
@@ -118,7 +118,7 @@ export default function Corkboard({ width, toast }) {
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.back}>
             <View style={[styles.note, { width: 260, height: 260, padding: 22 }]}>
               <TextInput value={writing} onChangeText={setWriting} autoFocus multiline maxLength={80} placeholder={t('Write a note')} placeholderTextColor="rgba(0,0,0,0.35)"
-                style={[styles.noteText, { flex: 1, alignSelf: 'stretch', fontSize: 30, lineHeight: 38, textAlignVertical: 'center' }]} />
+                style={[styles.noteText, { flex: 1, alignSelf: 'stretch', fontSize: 22, lineHeight: 32, textAlignVertical: 'center' }]} />
             </View>
             <View style={{ flexDirection: 'row', gap: 10, marginTop: 22 }}>
               <Pressable onPress={() => setWriting(null)} style={[styles.pill, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Cancel')}</Text></Pressable>
@@ -149,7 +149,7 @@ export default function Corkboard({ width, toast }) {
 const styles = StyleSheet.create({
   board: { borderRadius: 10, backgroundColor: '#b07a4f', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.6, shadowRadius: 13, elevation: 10 },
   pinBtn: { position: 'absolute', top: 10, right: 10, width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center' },
-  empty: { position: 'absolute', left: 0, right: 0, top: '44%', textAlign: 'center', color: 'rgba(60,35,15,0.6)', fontFamily: HAND, fontSize: 22 },
+  empty: { position: 'absolute', left: 0, right: 0, top: '44%', textAlign: 'center', color: 'rgba(60,35,15,0.6)', fontFamily: HAND, fontSize: 16 },
   note: { backgroundColor: NOTE_YELLOW, alignItems: 'center', justifyContent: 'center', padding: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 4 }, shadowOpacity: 0.35, shadowRadius: 4, elevation: 4 },
   noteText: { color: '#3b3214', fontFamily: HAND, textAlign: 'center' },
   polaroid: { backgroundColor: '#fbfaf6', shadowColor: '#000', shadowOffset: { width: 2, height: 4 }, shadowOpacity: 0.35, shadowRadius: 4, elevation: 4 },
