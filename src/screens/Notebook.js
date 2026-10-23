@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { colors, fonts } from '../theme';
-import { Bar, Burger, DogEar, Panel, barGeo } from '../components/Chrome';
+import { Bar, Burger, DogEar, DoneTick, Panel, barGeo } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, Felt, DESK_BG } from '../look';
@@ -483,7 +483,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         </>
       ) : null}
       <Pressable onPress={async () => { if (i === COVER_SPREAD && !intro) { closeRef.current(); return; } clearTimeout(timer.current); if (latest.current) await saveNotebook(latest.current); onDone(); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Close the notebook')}>
-        <View style={styles.finish}><Text style={styles.btn}>{t('Done')}</Text></View>
+        <DoneTick size={34} />
       </Pressable>
     </View>
   );

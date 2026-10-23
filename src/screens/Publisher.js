@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { BOOK_FONTS, bookFont, colors, fonts } from '../theme';
-import { Bar, Burger, DogEar, Panel, PageShape, Toast } from '../components/Chrome';
+import { Bar, Burger, CoverIcon, DogEar, DoneTick, Panel, PageShape, PagesIcon, Toast } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, DESK_BG } from '../look';
@@ -488,9 +488,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <View style={{ alignItems: 'center', gap: 18 }}>
               {/* the page count sits above Pages, with plenty of room between them */}
               <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ alignItems: 'center', gap: 18, opacity: barFade, marginBottom: 26 }}>
-              <Pressable onPress={() => openCover()} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><Text allowFontScaling={false} style={styles.btn}>{tr('Cover')}</Text></Pressable>
-              <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text allowFontScaling={false} style={styles.btn}>{tr('Pages')}</Text></Pressable>
-              <Pressable onPress={() => finish()} hitSlop={8} accessibilityLabel={tr('Finish and save the book')}><View style={styles.finish}><Text allowFontScaling={false} style={styles.btn}>{tr('Finish')}</Text></View></Pressable>
+              <Pressable onPress={() => openCover()} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><CoverIcon size={27} /></Pressable>
+              <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Pages')}><PagesIcon size={28} /></Pressable>
+              <Pressable onPress={() => finish()} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Finish and save the book')}><DoneTick size={34} /></Pressable>
               </Animated.View>
             </View>
           </Bar>
@@ -501,10 +501,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <Burger u={u} onPress={openMenu} />{/* the menu, house and note stay, even on the cover */}
         {/* Cover, Pages, Finish on the right (the page count floats on the page itself); they keep their size even
             with the phone's larger text setting, so they always fit beside the menu, house and note */}
-        <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ marginLeft: 'auto', flexShrink: 0, flexDirection: 'row', alignItems: 'center', gap: 12, opacity: barFade }}>
-        <Pressable onPress={() => openCover()} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><Text allowFontScaling={false} style={styles.btn}>{tr('Cover')}</Text></Pressable>
-        <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={8}><Text allowFontScaling={false} style={styles.btn}>{tr('Pages')}</Text></Pressable>
-        <Pressable onPress={() => finish()} hitSlop={8} accessibilityLabel={tr('Finish and save the book')}><View style={styles.finish}><Text allowFontScaling={false} style={styles.btn}>{tr('Finish')}</Text></View></Pressable>
+        <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ marginLeft: 'auto', flexShrink: 0, flexDirection: 'row', alignItems: 'center', gap: 22, opacity: barFade }}>
+        <Pressable onPress={() => openCover()} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><CoverIcon size={27} /></Pressable>
+        <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Pages')}><PagesIcon size={28} /></Pressable>
+        <Pressable onPress={() => finish()} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Finish and save the book')}><DoneTick size={34} /></Pressable>
         </Animated.View>
       </Bar>
       </View>

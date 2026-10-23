@@ -700,3 +700,37 @@ export function AlarmClockIcon({ size = 20, color = colors.white, weight }) {
     </View>
   );
 }
+
+// ---- Bar icons that replace words (they read the same in every language) ----
+// Done / Finish: a green circle with a white tick (the partner of the red Cancel circle)
+export function DoneTick({ size = 34 }) {
+  const w = Math.max(2.6, size * 0.095);
+  return (
+    <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: size * 0.42, height: size * 0.24, borderLeftWidth: w, borderBottomWidth: w, borderColor: colors.white, borderBottomLeftRadius: w / 2,
+        transform: [{ translateY: -size * 0.05 }, { rotate: '-45deg' }] }} />
+    </View>
+  );
+}
+// the book's cover: a closed book seen from the front, its spine on the left, a little picture on it
+export function CoverIcon({ size = 28, color = colors.white }) {
+  const w = Math.max(2, size * 0.085);
+  return (
+    <View style={{ width: size * 0.84, height: size, borderWidth: w, borderColor: color, borderRadius: size * 0.09 }}>
+      <View style={{ position: 'absolute', left: size * 0.13, top: 0, bottom: 0, width: w, backgroundColor: color }} />
+      <View style={{ position: 'absolute', left: size * 0.3, top: size * 0.2, width: size * 0.34, height: size * 0.3, borderRadius: size * 0.04, backgroundColor: color }} />
+    </View>
+  );
+}
+// the pages: a stack of pages, the front one whole and two edges peeking out behind it
+export function PagesIcon({ size = 28, color = colors.white }) {
+  const w = Math.max(2, size * 0.085);
+  const pw = size * 0.66, ph = size * 0.76;
+  return (
+    <View style={{ width: size, height: size }}>
+      <View style={{ position: 'absolute', left: 0, top: size * 0.24, width: pw, height: ph, borderLeftWidth: w, borderBottomWidth: w, borderColor: color, borderBottomLeftRadius: size * 0.08 }} />
+      <View style={{ position: 'absolute', left: size * 0.12, top: size * 0.12, width: pw, height: ph, borderLeftWidth: w, borderBottomWidth: w, borderColor: color, borderBottomLeftRadius: size * 0.08 }} />
+      <View style={{ position: 'absolute', left: size * 0.26, top: 0, width: pw, height: ph, borderWidth: w, borderColor: color, borderRadius: size * 0.08, backgroundColor: colors.bar }} />
+    </View>
+  );
+}
