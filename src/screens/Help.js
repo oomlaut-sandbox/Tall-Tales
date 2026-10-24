@@ -173,6 +173,8 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome }) {
   const stripW = Math.min(520, winW - 48) + 16, stripH = stripW * 366 / 1260;
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(null); // the open topic's title (when not searching)
+  // the overview: just the section headings at first; a tapped heading opens its topics (one section at a time)
+  const [openSec, setOpenSec] = useState(null);
   const found = useMemo(() => {
     const words = q.toLowerCase().split(/\s+/).filter(Boolean);
     if (!words.length) return HELP;
@@ -226,10 +228,17 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome }) {
             const head = h.section !== lastSection ? h.section : null;
             lastSection = h.section;
             const shown = searching || open === h.title;
+            const secOpen = searching || openSec === h.section;
             return (
               <View key={h.title}>
-                {head ? <Text style={styles.section}>{t(head)}</Text> : null}
-                <View style={styles.card}>
+                {head ? (searching ? <Text style={styles.section}>{t(head)}</Text> : (
+                  <Pressable onPress={() => { setOpenSec((o) => (o === h.section ? null : h.section)); setOpen(null); }} accessibilityRole="button" accessibilityState={{ expanded: secOpen }}
+                    style={[styles.secHead, !secOpen && { marginBottom: 0 }]}>
+                    <Text style={[styles.section, { flex: 1, marginTop: 0, marginBottom: 0 }]}>{t(head)}</Text>
+                    <Text style={styles.secChev}>{secOpen ? '−' : '+'}</Text>
+                  </Pressable>
+                )) : null}
+                {secOpen ? <View style={styles.card}>
                   <Pressable onPress={() => setOpen((o) => (o === h.title ? null : h.title))} accessibilityRole="button" accessibilityState={{ expanded: shown }} style={styles.cardHead}>
                     <Text style={styles.cardTitle}>{t(h.title)}</Text>
                     <Text style={styles.chev}>{shown ? '−' : '+'}</Text>
@@ -239,7 +248,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome }) {
                       {h.text.map((p, k) => <Text key={k} style={styles.p}>{t(p)}</Text>)}
                     </View>
                   ) : null}
-                </View>
+                </View> : null}
               </View>
             );
           })}
@@ -271,7 +280,10 @@ const styles = StyleSheet.create({
   aboutPill: { alignSelf: 'flex-start', backgroundColor: '#4b5330', // a dark, muted moss green, like the felt
     height: 44, borderRadius: 22, paddingHorizontal: 26, alignItems: 'center', justifyContent: 'center', marginTop: 10 },
   aboutText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
-  section: { ...sectionTitle, marginTop: 22, marginBottom: SECTION_GAP }, // the standard section heading (as My Books in the library)
+  section: { ...sectionTitle, marginTop: 22, marginBottom: SECTION_GAP },
+  // a section heading in the overview: the heading with a + / − at the far right; closed ones sit close together
+  secHead: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 22, marginBottom: SECTION_GAP },
+  secChev: { fontFamily: fonts.ui, fontSize: 30, lineHeight: 34, color: 'rgba(255,255,255,0.75)', width: 30, textAlign: 'center' }, // the standard section heading (as My Books in the library)
   card: { backgroundColor: '#3a3a3a', // dark grey, with white writing
     shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 3, borderRadius: 14, paddingHorizontal: 16, paddingVertical: 12 },
   cardHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, minHeight: 28 },
