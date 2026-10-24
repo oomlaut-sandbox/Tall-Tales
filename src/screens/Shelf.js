@@ -543,6 +543,14 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
       <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: dim }]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={() => close()} accessibilityLabel={t('Close')} />
       </Animated.View>
+      {/* a small light grey Close under the card, at its bottom right (on the felt) */}
+      {boxH ? (
+        <Animated.View style={{ position: 'absolute', left: boxX, width: boxW, top: boxY + boxH + 10, alignItems: 'flex-end', opacity: fade, zIndex: 2 }}>
+          <Pressable onPress={() => close()} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Close')}>
+            <Text style={styles.cardClose}>{t('Close')}</Text>
+          </Pressable>
+        </Animated.View>
+      ) : null}
       {/* the card (it also measures itself so it can sit in the middle) */}
       <View onLayout={(e) => setBoxH(e.nativeEvent.layout.height)}
         style={[styles.card, { left: boxX, top: boxY, width: boxW, maxHeight: areaH - boxY - 16 }]}>
@@ -625,6 +633,7 @@ const styles = StyleSheet.create({
   // a generous gap between the felt title band and the first row of books
   grid: { padding: 20, paddingTop: 42, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
   tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.72, shadowRadius: 13, elevation: 14 }, // a deep shadow, so the books stand up off the felt
+  cardClose: { fontFamily: fonts.ui, fontSize: 14, color: '#bdbdbd', paddingVertical: 4 }, // under the Book Store card
   section: { ...sectionTitle, width: '100%', marginTop: 30, marginBottom: SECTION_GAP - 22 }, // a clear break above each section // the shelf already leaves 22 under it // My Books, Let's Create! (the standard section heading)
   tileTitle: { fontFamily: 'EBGaramond_700Bold', fontSize: 19, lineHeight: 23, color: colors.white }, // book titles and details: the book serif
   tileOption: { fontFamily: fonts.uiBold, fontSize: 16, lineHeight: 23 },

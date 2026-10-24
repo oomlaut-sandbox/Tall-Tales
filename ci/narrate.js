@@ -24,11 +24,11 @@ const TRANSLATED = ['different', 'tips'];
 // The voices Jörg picked. `find` is what we look for by name. (Michael Caine was considered; Lily only for now.)
 const VOICES = [
   // id: ElevenLabs' standard voice ID, used if the key isn't allowed to look voices up.
-  // pace: how fast each voice speaks at the app's default speed (Lily a little slower; Gregory as he is).
+  // pace: how fast each voice speaks at the app's default speed (every narrator at 0.75, a calm bedtime pace — 24 Oct 2026).
   { key: 'lily', label: 'Lily', find: ['lily'], id: 'pFZP5JQG7iQjIQuC4Bku', pace: 0.75 },
-  { key: 'gregory', label: 'Gregory Grumble', find: ['gregory grumble', 'grumble'], pace: 1 },
+  { key: 'gregory', label: 'Gregory Grumble', find: ['gregory grumble', 'grumble'], pace: 0.75 },
   // Johnny Kid (Jörg, 24 Oct 2026): only Different for now (books: the only books this voice reads)
-  { key: 'johnny', label: 'Johnny Kid', find: ['johnny kid'], pace: 1, books: ['different'] },
+  { key: 'johnny', label: 'Johnny Kid', find: ['johnny kid'], pace: 0.75, books: ['different'] },
 ];
 const readsBook = (v, id) => !v.books || v.books.includes(id);
 
