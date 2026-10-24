@@ -286,7 +286,7 @@ function Who({ W, H, insets, voice, t, onKid, onGrown, onSkip }) {
       </Animated.View>
       <Text style={styles.whoTitle}>{t('Who’s here today?')}</Text>
       <View style={{ flexDirection: 'row', gap: 16, marginTop: 22 }}>
-        <Pressable onPress={withTap(onKid)} accessibilityRole="button" accessibilityLabel={t('I’m a kid')} style={[styles.choice, { width: bw, height: bh, borderRadius: bw * 0.09 }]}>
+        <Pressable onPress={withTap(onKid)} accessibilityRole="button" accessibilityLabel={t('I’m a kid')} style={[styles.choice, { width: bw, height: bh, shadowOpacity: 0 }]}>{/* (the felt patch has its own shadow) */}
           <Image source={GREEN_FELT} style={{ position: 'absolute', left: 0, top: 0, width: bw, height: bh }} resizeMode="stretch" />
           <Image source={KID_CHAR} style={{ width: bh * 0.46, height: bh * 0.46 }} resizeMode="contain" />
           <Text style={styles.choiceText}>{t('I’m a kid')}</Text>
