@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   section: { ...sectionTitle, flex: 1 },
   secChev: { fontFamily: fonts.ui, fontSize: 30, lineHeight: 34, color: 'rgba(255,255,255,0.75)', width: 30, textAlign: 'center' },
   caption: { alignSelf: 'center', marginTop: -36, marginBottom: 20, fontFamily: fonts.ui, fontSize: 13, lineHeight: 18, color: '#bdbdbd' }, // under the book picture
-  intro: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#cfcfcf' },
+  intro: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#cfcfcf', marginBottom: 12 }, // a clear gap before the ideas
   card: { backgroundColor: '#3a3a3a', borderRadius: 14, paddingHorizontal: 16, paddingVertical: 12, gap: 6, shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 3 },
   cardHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
   cardTitle: { flex: 1, fontFamily: fonts.uiBold, fontSize: 17, color: colors.white },
