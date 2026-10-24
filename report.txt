@@ -1,0 +1,16 @@
+OK en/k6
+OK en/p3
+OK en/p4
+OK de/k6
+OK de/p3
+OK de/p4
+OK fr/k6
+OK fr/p3
+OK fr/p4
+OK es/k6
+OK es/p3
+OK es/p4
+OK ja/k6
+OK ja/p3
+OK ja/p4
+made 15
