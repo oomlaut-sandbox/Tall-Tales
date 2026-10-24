@@ -1,4 +1,4 @@
-// "Create a story": add a picture and words page by page (Jörg's Publisher design).
+// "Make a book": add a picture and words page by page (Jörg's Publisher design).
 // Everything saves automatically. "Pages" opens a list to reorder or delete pages,
 // or to delete the whole story.
 import React, { useEffect, useRef, useState } from 'react';

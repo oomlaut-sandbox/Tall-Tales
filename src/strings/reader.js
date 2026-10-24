@@ -58,7 +58,7 @@ export default {
   '{n} selected': { de: '{n} ausgewählt', fr: '{n} choisi(s)', es: '{n} elegidos', ja: '{n}さつ えらんだよ' },
   'Tap books to select them': { de: 'Tippe Bücher an, um sie auszuwählen', fr: 'Touche des livres pour les choisir', es: 'Toca los libros para elegirlos', ja: 'ほんを タップして えらんでね' },
   'Your stories, ready to read': { de: 'Deine Geschichten, bereit zum Lesen', fr: 'Tes histoires, prêtes à lire', es: 'Tus cuentos, listos para leer', ja: 'よむ じゅんびが できた おはなし' },
-  'Create a story': { de: 'Geschichte erstellen', fr: 'Créer une histoire', es: 'Crear un cuento', ja: 'おはなしを つくる' },
+  'Make a book': { de: 'Buch machen', fr: 'Créer un livre', es: 'Hacer un libro', ja: 'えほんを つくる' },
   'Show removed books ({n})': { de: 'Entfernte Bücher zeigen ({n})', fr: 'Afficher les livres retirés ({n})', es: 'Mostrar libros quitados ({n})', ja: 'けした ほんを だす（{n}）' },
   'Delete “{title}”?': { de: '„{title}“ löschen?', fr: 'Supprimer « {title} » ?', es: '¿Borrar «{title}»?', ja: '「{title}」を けしますか？' },
   'Delete {n} books?': { de: '{n} Bücher löschen?', fr: 'Supprimer {n} livres ?', es: '¿Borrar {n} libros?', ja: '{n}さつの ほんを けしますか？' },
@@ -81,7 +81,7 @@ export default {
   'Close menu': { de: 'Menü schließen', fr: 'Fermer le menu', es: 'Cerrar el menú', ja: 'メニューを とじる' },
   'Closes the message': { de: 'Schließt die Nachricht', fr: 'Ferme le message', es: 'Cierra el mensaje', ja: 'メッセージを とじます' },
 
-  // ---- Create a Story ----
+  // ---- Make a Book ----
   'Books can have up to {n} pages. That’s a long story!': { de: 'Ein Buch kann bis zu {n} Seiten haben. Das ist eine lange Geschichte!', fr: 'Un livre peut avoir jusqu’à {n} pages. Quelle longue histoire !', es: 'Un libro puede tener hasta {n} páginas. ¡Qué cuento tan largo!', ja: 'ほんは {n}ページまで つくれるよ。ながい おはなしだね！' },
   'Portrait pages': { de: 'Hochformat-Seiten', fr: 'Pages en portrait', es: 'Páginas en vertical', ja: 'たての ページ' },
   'Landscape pages': { de: 'Querformat-Seiten', fr: 'Pages en paysage', es: 'Páginas en horizontal', ja: 'よこの ページ' },

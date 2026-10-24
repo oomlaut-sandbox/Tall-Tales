@@ -124,11 +124,11 @@ export default {
     ja: 'あなたの声が入ったページには、小さな赤い点がつきます。ろくおんはろくおんメニューにならんでいて、さいせいやさくじょができます。' },
 
   // ---- Making books ----
-  'Choose Create a Story from the menu (or the + tile in My Library).': {
-    de: 'Wähle im Menü Geschichte erstellen (oder das +-Feld in Meine Bibliothek).',
-    fr: 'Choisissez Créer une histoire dans le menu (ou la case + dans Ma bibliothèque).',
-    es: 'Elige Crear un cuento en el menú (o la casilla + en Mi biblioteca).',
-    ja: 'メニューから「お話をつくる」をえらびます(「わたしの本だな」の+でもできます)。' },
+  'Choose Make a Book from the menu (or the + tile in My Library).': {
+    de: 'Wähle im Menü Buch machen (oder das +-Feld in Meine Bibliothek).',
+    fr: 'Choisissez Créer un livre dans le menu (ou la case + dans Ma bibliothèque).',
+    es: 'Elige Hacer un libro en el menú (o la casilla + en Mi biblioteca).',
+    ja: 'メニューから「えほんを つくる」をえらびます(「わたしの本だな」の+でもできます)。' },
   'Tap the picture square to add a picture: choose one from your photos, or take a photo (of a drawing, say). Taking a photo asks a grown-up first.': {
     de: 'Tippe auf das Bildfeld, um ein Bild hinzuzufügen: Wähle eins aus deinen Fotos oder mach ein Foto (zum Beispiel von einer Zeichnung). Vor dem Fotografieren wird zuerst ein Erwachsener gefragt.',
     fr: 'Touchez le carré d’image pour ajouter une image : choisissez-en une dans vos photos, ou prenez une photo (d’un dessin, par exemple). Pour prendre une photo, l’application pose d’abord la question pour les grands.',
@@ -255,11 +255,11 @@ export default {
     fr: 'Langue : choisissez English, Deutsch, Français, Español ou 日本語 pour l’application. Les membres peuvent aussi lire les livres dans une autre langue que celle de l’application. Les langues figurent aussi en haut de la page d’accueil : touchez-en une pour changer.',
     es: 'Idioma: elige English, Deutsch, Français, Español o 日本語 para la app. Los miembros también pueden leer libros en un idioma distinto al de la app. Los idiomas aparecen también arriba en la página de inicio: toca uno para cambiar.',
     ja: 'ことば:アプリのことばを English、Deutsch、Français、Español、日本語 からえらべます。メンバーは、アプリとちがうことばで本をよむこともできます。ことばはスタートがめんの上にもならんでいて、タップするときりかわります。' },
-  'Parental controls: choose exactly what your child can see and do. Hide the Book Store, My Notebook, Create a Story or Ideas and Support; switch off recording, sharing and printing; keep the language fixed; and make every book play one way (for example, always Page by Page).': {
-    de: 'Kindersicherung: Lege genau fest, was dein Kind sehen und tun kann. Blende Buchladen, Mein Notizbuch, Geschichte erstellen oder Ideen und Hilfe aus; schalte Aufnehmen, Teilen und Drucken ab; leg die Sprache fest; und lass jedes Buch auf dieselbe Art vorlesen (zum Beispiel immer Seite für Seite).',
-    fr: 'Contrôle parental : choisissez exactement ce que votre enfant peut voir et faire. Masquez la Librairie, Mon carnet, Créer une histoire ou Idées et aide ; désactivez l’enregistrement, le partage et l’impression ; fixez la langue ; et faites lire chaque livre de la même façon (par exemple, toujours Page par page).',
-    es: 'Control parental: elige exactamente lo que tu hijo puede ver y hacer. Oculta la Librería, Mi cuaderno, Crear un cuento o Ideas y ayuda; desactiva grabar, compartir e imprimir; deja fijo el idioma; y haz que todos los libros se lean de una misma forma (por ejemplo, siempre Página por página).',
-    ja: '保護者のせってい:お子さまが見られるもの、できることをえらべます。「本やさん」「わたしのノート」「お話をつくる」「アイデアと サポート」をかくしたり、ろくおん・シェア・いんさつをオフにしたり、ことばをこていしたり、すべての本を同じよみかたにしたりできます(たとえば、いつも「1ページずつ」)。' },
+  'Parental controls: choose exactly what your child can see and do. Hide the Book Store, My Notebook, Make a Book or Ideas and Support; switch off recording, sharing and printing; keep the language fixed; and make every book play one way (for example, always Page by Page).': {
+    de: 'Kindersicherung: Lege genau fest, was dein Kind sehen und tun kann. Blende Buchladen, Mein Notizbuch, Buch machen oder Ideen und Hilfe aus; schalte Aufnehmen, Teilen und Drucken ab; leg die Sprache fest; und lass jedes Buch auf dieselbe Art vorlesen (zum Beispiel immer Seite für Seite).',
+    fr: 'Contrôle parental : choisissez exactement ce que votre enfant peut voir et faire. Masquez la Librairie, Mon carnet, Créer un livre ou Idées et aide ; désactivez l’enregistrement, le partage et l’impression ; fixez la langue ; et faites lire chaque livre de la même façon (par exemple, toujours Page par page).',
+    es: 'Control parental: elige exactamente lo que tu hijo puede ver y hacer. Oculta la Librería, Mi cuaderno, Hacer un libro o Ideas y ayuda; desactiva grabar, compartir e imprimir; deja fijo el idioma; y haz que todos los libros se lean de una misma forma (por ejemplo, siempre Página por página).',
+    ja: '保護者のせってい:お子さまが見られるもの、できることをえらべます。「本やさん」「わたしのノート」「えほんを つくる」「アイデアと サポート」をかくしたり、ろくおん・シェア・いんさつをオフにしたり、ことばをこていしたり、すべての本を同じよみかたにしたりできます(たとえば、いつも「1ページずつ」)。' },
   'Quick and Safe Kid is the recommended setup for a child reading alone: only My Library and My Notebook, every book read aloud a page at a time, and nothing to buy, share, print, record or change.': {
     de: 'Schnell und sicher ist die empfohlene Einstellung, wenn dein Kind allein liest: nur Meine Bibliothek und Mein Notizbuch, jedes Buch wird Seite für Seite vorgelesen, und nichts kann gekauft, geteilt, gedruckt, aufgenommen oder verändert werden.',
     fr: 'Simple et sûr est le réglage recommandé quand votre enfant lit seul : seulement Ma bibliothèque et Mon carnet, chaque livre lu à voix haute page par page, et rien à acheter, partager, imprimer, enregistrer ou modifier.',

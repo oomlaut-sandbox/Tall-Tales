@@ -1,4 +1,4 @@
-// Stories made with "Create a story", saved on the phone.
+// Stories made with "Make a book", saved on the phone.
 // Saves are queued so quick autosaves never overwrite each other.
 import { deleteFile, keepFile, loadJSON, saveJSON } from './storage';
 import { pruneRecordings } from './recordings';

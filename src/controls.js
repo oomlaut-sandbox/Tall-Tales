@@ -6,7 +6,7 @@ import { createContext, useContext } from 'react';
 export const DEFAULT_CONTROLS = {
   store: true,      // the Book Store (menu, start page, buying)
   notebook: true,   // My Notebook in My Library
-  create: true,     // Create a Story (menu, the + in My Library)
+  create: true,     // Make a Book (menu, the + in My Library)
   help: true,       // Help and About in the menu
   playback: true,   // the child may change how books play (the Playback menu)
   playMode: null,   // null: as chosen in the Playback menu; or always 'self' | 'learn' | 'auto' | 'page'

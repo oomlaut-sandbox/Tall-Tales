@@ -475,7 +475,7 @@ function Root() {
               if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else setTimeout(() => setPlayOpen(true), 300);
             }} /> : null}
             <Option glyph={<MusicIcon size={24} weight={3.4} /* the same shape as the reading bar's note */ />} title={t('Music and Sounds')} sub={t('Relaxing and gentle')} onPress={() => go('music')} />
-            {controls.create ? <Option glyph={<PlusIcon />} title={t('Create a Story')} sub={t('Make your own book')} onPress={() => openPublisher(null)} /> : null}
+            {controls.create ? <Option glyph={<PlusIcon />} title={t('Make a Book')} sub={t('Your pictures, your words')} onPress={() => openPublisher(null)} /> : null}
             {/* Help takes Profile's place (Profile is suspended for families; the store owner signs in from About: hold Skippy) */}
             {controls.help ? <Option glyph={<CircleIcon />} title={t('Ideas and Support')} sub={t('Find inspiration and help')} onPress={() => go('help')} /> : null}
             {/* (Profiles now live at the bottom of Settings and Profiles; children still switch from the start page) */}

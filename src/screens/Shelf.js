@@ -64,7 +64,7 @@ function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onP
       <View style={styles.tileShadow}>
       <View ref={coverRef} collapsable={false} style={{ aspectRatio: 1, backgroundColor: plain ? '#3a3a3a' : '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>{/* plain: a solid dark grey square (pictures to come) */}
         {coverArt ? <CoverArt cover={coverArt} /> : cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }} resizeMode="cover" /> : null}
-        {/* a small, thin grey + in the top right corner (Create a story, Playlists) */}
+        {/* a small, thin grey + in the top right corner (Make a book, Playlists) */}
         {plus ? (
           <View pointerEvents="none" style={{ position: 'absolute', top: 10, right: 10, width: 16, height: 16 }}>
             <View style={{ position: 'absolute', left: 0, right: 0, top: 7.25, height: 1.5, backgroundColor: '#8a8a8a' }} />
@@ -83,7 +83,7 @@ function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onP
         ) : null}
       </View>
       </View>
-      {title ? <Text style={[styles.tileTitle, (plus || glyph || option) && styles.tileOption]}>{title}</Text> : null}{/* 'Create a story' is an app option, so it's in Helvetica */}
+      {title ? <Text style={[styles.tileTitle, (plus || glyph || option) && styles.tileOption]}>{title}</Text> : null}{/* 'Make a book' is an app option, so it's in Helvetica */}
       {sub ? <Text style={styles.tileSub}>{sub}</Text> : null}
     </Pressable>
   );
@@ -177,7 +177,7 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
   const gardenAsked = useRef(false);
   const gardenPull = useRef(false);
   if (typeof window !== 'undefined' && window.location && /garden/.test(window.location.hash || '')) window.__openGarden = onGarden; // (web preview screenshots)
-  const controls = useControls(); // parental controls: My Notebook, Create a story and Select may be hidden
+  const controls = useControls(); // parental controls: My Notebook, Make a book and Select may be hidden
   const { width: winW, height: winH } = useWindowDimensions();
   const [folderOpen, setFolderOpen] = useState(false); // My Folder, opened (the sheets)
   const [selecting, setSelecting] = useState(false);
@@ -256,6 +256,8 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
         {/* beside the notebook: who is reading (their felt character and name); tap it for Profiles */}
         {!selecting && onNotebook && onProfiles ? <WhoReads onPress={onProfiles} /> : null}
         {!selecting && onNotebook ? <View style={{ width: '100%' }} /> : null}{/* the notebook has the top row to itself */}
+        {/* a title over the books */}
+        {!selecting ? <Text style={styles.section} accessibilityRole="header">{t('My Books')}</Text> : null}
         {/* (the parental controls can hide books rated for older children) */}
         {stories.filter((s) => ageAllowed(ageOf(null, s), controls.childAge)).map((s) => (
           // just the title under each cover (no author, pages or other details)
@@ -264,9 +266,10 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
             onPress={(rect) => (selecting ? toggle(s.id) : openStory(s, rect))}
             onLongPress={!selecting && s.mine ? () => onEdit(s) : undefined} />
         ))}
-        {/* Create a story always starts its own row, below the books */}
+        {/* Make a book always starts its own row, below the books */}
         {!selecting ? <View style={{ width: '100%' }} /> : null}
-        {!selecting && controls.create ? <Tile u={u} plus plain title={t('Create a story')} onPress={onCreate} /> : null}
+        {!selecting && (controls.create || onPlaylists) ? <Text style={styles.section} accessibilityRole="header">{t('Let’s Create!')}</Text> : null}
+        {!selecting && controls.create ? <Tile u={u} plus plain title={t('Make a book')} onPress={onCreate} /> : null}
         {/* Playlists (a picture of its own comes later) */}
         {!selecting && onPlaylists ? <Tile u={u} plus plain option title={t('Playlists')} onPress={onPlaylists} /> : null}
         {!selecting && removedCount ? (
@@ -617,6 +620,7 @@ const styles = StyleSheet.create({
   // a generous gap between the felt title band and the first row of books
   grid: { padding: 20, paddingTop: 42, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
   tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.72, shadowRadius: 13, elevation: 14 }, // a deep shadow, so the books stand up off the felt
+  section: { width: '100%', color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20, marginTop: 6, marginBottom: -4 }, // My Books, Let's Create! (about half the band's title)
   tileTitle: { fontFamily: 'EBGaramond_700Bold', fontSize: 19, lineHeight: 23, color: colors.white }, // book titles and details: the book serif
   tileOption: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, lineHeight: 23 },
   tileSub: { fontFamily: fonts.story, fontSize: 15, lineHeight: 19, color: '#d0d0d0' },

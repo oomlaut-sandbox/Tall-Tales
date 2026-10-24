@@ -31,7 +31,7 @@ export function Stitch({ inset = 5, radius = 0, color = 'rgba(255,255,255,0.5)',
   );
 }
 
-// Jörg's charcoal felt, being tried as the background (start page, My Library, Book Store, Create a Story).
+// Jörg's charcoal felt, being tried as the background (start page, My Library, Book Store, Make a Book).
 // To go back to the plain dark grey (colors.desk, #3b3b3b), stop passing it / remove the Image that uses it.
 // Phones only: the iPad (and other tablet-sized screens) keeps the 'classic' look with the plain dark grey,
 // because the felt photo is phone-shaped and looks blotchy when enlarged that much.

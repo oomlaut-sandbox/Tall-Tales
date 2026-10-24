@@ -1,7 +1,7 @@
 // Settings (the last item in the main menu, always behind the grown-up question):
 //   Language — the app's language, and (members) a different language for the books
 //   Parental controls — shape the app down to exactly the experience a parent wants: what shows (Book Store,
-//   My Notebook, Create a Story, Help), whether the child may change playback (or it always plays one way),
+//   My Notebook, Make a Book, Help), whether the child may change playback (or it always plays one way),
 //   recording, sharing and printing, and changing the language. "Lock everything" leaves only My Library.
 import React, { useEffect, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
@@ -102,7 +102,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
             <Text style={styles.p}>{t('Choose exactly what your child can see and do. Settings always asks the grown-up question first.')}</Text>
             <Toggle label={t('Show the Book Store')} value={controls.store} onChange={(v) => set({ store: v })} />
             <Toggle label={t('Show My Notebook')} value={controls.notebook} onChange={(v) => set({ notebook: v })} />
-            <Toggle label={t('Show Create a Story')} value={controls.create} onChange={(v) => set({ create: v })} />
+            <Toggle label={t('Show Make a Book')} value={controls.create} onChange={(v) => set({ create: v })} />
             <Toggle label={t('Ideas, Support and About')} value={controls.help} onChange={(v) => set({ help: v })} />
             <Toggle label={t('Recording own voice')} value={controls.recording} onChange={(v) => set({ recording: v })} />
             <Toggle label={t('Read in family voices when there are some')} value={controls.familyVoices !== false} onChange={(v) => set({ familyVoices: v })} />

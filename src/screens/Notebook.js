@@ -1,4 +1,4 @@
-// My Notebook: always first in My Library. A book editor of its own (built like Create a Story),
+// My Notebook: always first in My Library. A book editor of its own (built like Make a Book),
 // shaped like the leather notebook on the start page:
 //   - spread 1: the inside of the hard leather cover (top) and a white title page, "My Notes" (bottom)
 //   - spread 2: the badge board, over two white pages
@@ -126,7 +126,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const page = pageAt(i);
   const update = (patch) => setNb((n) => ({ ...n, pages: n.pages.map((p, k) => (k === i - FIRST_PAGE ? { ...p, ...patch } : p)) }));
 
-  // ---- the book's size, as in Create a Story ----
+  // ---- the book's size, as in Make a Book ----
   const BL = bookLayout(winW, winH, insets, u * 17);
   const wide = BL.wide, spare = BL.spare;
   const [desk, setDesk] = useState(null);

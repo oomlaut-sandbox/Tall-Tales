@@ -9,7 +9,7 @@ export const colors = {
   ink: '#111111',
   bar: '#000000',
   desk: '#3b3b3b', // the dark grey the book floats on in the reader. KEEP: start page, My Library, Book Store and
-  // Create a Story are trying Jörg's charcoal felt (DESK_FELT in look.js) over it; remove that to go back to this grey
+  // Make a Book are trying Jörg's charcoal felt (DESK_FELT in look.js) over it; remove that to go back to this grey
   earUnder: '#a3a3a3', // the page showing under the dog-ear in books (a little lighter than before)
   panel: '#1c1c1c',
   glass: 'rgba(0,0,0,0.86)', // black glass: the see-through black of every pop-up box
