@@ -1,28 +1,22 @@
-// Asking for an App Store rating, gently. Only at a happy moment: a book just finished (The End), read with a grown-up
-// around (not Listen Only, not at bedtime, not on a locked-down child setup), after a few books, and at most once
-// every four months. Apple's own rating box decides whether it actually shows (it shows at most three times a year).
+// Asking for an App Store rating, gently, and only of a grown-up: right after they've recorded several pages of a book
+// in their own voice (a happy moment, and the phone is surely in a grown-up's hands, which matters in the Kids
+// Category). At most once every four months; Apple's own rating box decides whether it shows (three times a year at most).
 import { loadJSON, saveJSON } from './storage';
 
 let StoreReview = null;
 try { StoreReview = require('expo-store-review'); } catch (e) {}
 
-const BOOKS_FIRST = 3; // books finished before the first ask
+const PAGES = 3; // pages recorded in one go before asking
 const GAP_DAYS = 120;
 
-export async function bookFinished({ listen = false, controls = {} } = {}) {
+export async function recordingDone(pages) {
   try {
-    const r = (await loadJSON('rating', null)) || { finished: 0, asked: 0 };
-    r.finished = (r.finished || 0) + 1;
-    await saveJSON('rating', r);
-    if (!StoreReview || listen) return;
-    const h = new Date().getHours();
-    if (h < 8 || h >= 19) return; // never at bedtime
-    if (controls.store === false || controls.playback === false) return; // a child's locked-down setup
-    if (r.finished < BOOKS_FIRST) return;
+    if (!StoreReview || pages < PAGES) return;
+    const r = (await loadJSON('rating', null)) || {};
     if (r.asked && Date.now() - r.asked < GAP_DAYS * 86400000) return;
     if (!(await StoreReview.isAvailableAsync())) return;
     r.asked = Date.now();
     await saveJSON('rating', r);
-    setTimeout(() => { StoreReview.requestReview().catch(() => {}); }, 2500); // after The End has settled
+    setTimeout(() => { StoreReview.requestReview().catch(() => {}); }, 1500);
   } catch (e) {}
 }

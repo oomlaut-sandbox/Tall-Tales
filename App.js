@@ -36,7 +36,6 @@ import { LangContext, deviceLang, translate } from './src/i18n';
 import { ControlsContext, DEFAULT_CONTROLS } from './src/controls';
 import Notebook, { NOTEBOOK_COVER, R_EDGE, R_SPINE } from './src/screens/Notebook';
 import { onNewBadge } from './src/badges';
-import { bookFinished } from './src/rating';
 import { SHOWN_BOOKS, STORIES, localizeStory } from './src/story';
 import { usePurchases } from './src/purchases';
 import { shareInvite } from './src/invite';
@@ -238,8 +237,6 @@ function Root() {
     const q = queueRef.current;
     // Listen Only, after the last book: the music fades away slowly
     const listening = q ? q.listen : (controls.playMode || prefs.mode) === 'listen';
-    // a happy moment to ask for a rating (rarely; never at bedtime or in a playlist)
-    if (!q) bookFinished({ listen: listening, controls });
     if (listening && (!q || (q.i + 1 >= q.ids.length && !q.loop))) fadeOutAmbient(30000);
     if (!q) return;
     clearTimeout(queueNext.current);

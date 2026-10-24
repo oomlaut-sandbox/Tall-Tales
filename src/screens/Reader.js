@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOOK_FONTS, colors, fonts } from '../theme';
 import { DESK_FELT, DeskFelt, Felt, IS_TABLET, DESK_BG } from '../look';
 import { tokenize, cleanWord, syllablesFor } from '../story';
+import { recordingDone } from '../rating';
 import { AMBER, Fade, PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
 import { FLAP_PERSPECTIVE, flapTables } from '../flapStrips';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
@@ -487,6 +488,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   useEffect(() => onRecordRequest(() => recToggle.current && recToggle.current()), []);
 
   // keep: recording carries on to the next page, so nothing may start reading in between
+  const recSession = useRef(0); // pages recorded since the grown-up pressed record
   const stopRec = async (save, keep = false) => {
     if (!st.current.recording) return;
     if (keep) { pendingRec.current = true; recordingSoon.current = true; }
@@ -506,12 +508,14 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
         if (voiceRef.current !== recReader.current) { setVoice(recReader.current); setBookVoice(story.id, recReader.current); } // the book now reads in this reader's voice
         setSavedPage({ n: page + 1, k: Date.now(), who: recReader.current }); // a green 'Page 2 saved' beside the recording box (no speech bubble)
         markFirst('firstRecording'); // a badge in My Notebook
+        recSession.current += 1;
         refreshRecPages();
       }
     } catch (e) {
       toast(tr('That recording couldn’t be saved.'));
     }
     suspendSounds(false);
+    if (!keep) { const n = recSession.current; recSession.current = 0; recordingDone(n); } // a grown-up just recorded a few pages: maybe ask for a rating
     recordingSoon.current = keep;
   };
 
