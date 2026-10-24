@@ -21,21 +21,21 @@ import LINES from '../welcome/lines.json';
 import TIMING from '../welcome/timing.json';
 import AUDIO from '../welcome/audio';
 
-const LETTERS = [ // the felt c o r o . from the start-page logo, dropped in one by one: [picture, x, width] (height 164)
-  [require('../../assets/welcome/letter-c.png'), 0, 153], [require('../../assets/welcome/letter-o.png'), 153, 155],
-  [require('../../assets/welcome/letter-r.png'), 308, 97], [require('../../assets/welcome/letter-o2.png'), 405, 151],
-  [require('../../assets/welcome/letter-dot.png'), 556, 76],
+const LETTERS = [ // Jörg's felt c o r o . dropped in one by one: [picture, x, width] (height 164)
+  [require('../../assets/welcome/letter-c.png'), 0, 147], [require('../../assets/welcome/letter-o.png'), 147, 155],
+  [require('../../assets/welcome/letter-r.png'), 302, 95], [require('../../assets/welcome/letter-o2.png'), 397, 150],
+  [require('../../assets/welcome/letter-dot.png'), 547, 70],
 ];
-const LETTERS_W = 632, LETTERS_H = 164;
+const LETTERS_W = 617, LETTERS_H = 164;
 const READER_LOGO = require('../../assets/logo-felt.png');
 const GREEN_FELT = require('../../assets/ideas-felt.png');
 const LEATHER = require('../../assets/leather.jpg');
 const NOTEBOOK = require('../../assets/leather-cover-round.png');
 const COVER = require('../../assets/books/different/d01.jpg'); // the cover the kids open: Different
-const CAT = require('../../assets/books/rough-lives/cat.jpg');
+const CAT = require('../../assets/welcome/cat.jpg'); // Jörg's felt cat, stretching
 const SUN = require('../../assets/nightlight-sun.png');
 const CORONA = require('../../assets/nightlight-corona.png');
-const SHELF = [require('../../assets/books/different/d01.jpg'), require('../../assets/books/rough-lives/cover.jpg'), require('../../assets/books/tips/cover.jpg')];
+const SHELF = [require('../../assets/books/different/d01.jpg'), require('../../assets/welcome/cat.jpg'), require('../../assets/welcome/horse.jpg')];
 const KID_CHAR = PROFILE_COLORS[0][1];
 const TAP_WORD = { en: 1, de: 1, fr: 1, es: 1, ja: 0 }; // the word to tap in "The cat sat on the mat."
 const INK = '#2b2a28';
@@ -57,7 +57,13 @@ function useVoice(lang, muted) {
       c.sub = p.addListener('playbackStatusUpdate', (s) => { if (s.didJustFinish && cur.current === c) { cur.current = null; try { c.sub.remove(); p.remove(); } catch (e) {} resolve(); } });
       cur.current = c;
       p.play();
-      setTimeout(() => { if (cur.current === c) stop(); }, 20000); // (never stuck)
+      // (never stuck: some players never say they've finished; stop a moment after the line's length)
+      const watch = setInterval(() => {
+        if (cur.current !== c) { clearInterval(watch); return; }
+        let d = 0; try { d = p.duration || 0; } catch (e) {}
+        const el = (Date.now() - c.t0) / 1000;
+        if ((d > 0 && el > d + 0.6) || el > 12) { clearInterval(watch); stop(); }
+      }, 200);
     } catch (e) { resolve(); }
   });
   const time = () => { const c = cur.current; try { return c ? c.p.currentTime || (Date.now() - c.t0) / 1000 : -1; } catch (e) { return -1; } };
