@@ -41,6 +41,8 @@ export const sectionTitle = { fontFamily: fonts.uiBold, fontSize: 28, lineHeight
 // a section's own box: black glass on the felt, rounded, with a faint light edge (Help, Ideas Room)
 export const sectionBox = { backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: 22, borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)', paddingHorizontal: 18, paddingVertical: 16,
   shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 6 };
+// the same heading a little smaller, inside the black glass boxes (Help, Ideas Room)
+export const boxTitle = { ...sectionTitle, fontSize: 23, lineHeight: 29 };
 export const SECTION_GAP = 26; // room between a section heading's words and what comes under it (same on every screen)
 
 

@@ -4,7 +4,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, fonts, sectionTitle, sectionBox, SECTION_GAP } from '../theme';
+import { colors, fonts, sectionTitle, boxTitle, sectionBox, SECTION_GAP } from '../theme';
 import { DESK_FELT, IS_TABLET, DESK_BG } from '../look';
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import { useLang, useT } from '../i18n';
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   aboutPill: { alignSelf: 'flex-start', backgroundColor: '#4b5330', // a dark, muted moss green, like the felt
     height: 44, borderRadius: 22, paddingHorizontal: 26, alignItems: 'center', justifyContent: 'center', marginTop: 10 },
   aboutText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
-  section: { ...sectionTitle },
+  section: { ...boxTitle },
   box: { ...sectionBox, gap: 10 },
   // a section heading in the overview: the heading with a + / − at the far right; closed ones sit close together
   secHead: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: SECTION_GAP - 10 },

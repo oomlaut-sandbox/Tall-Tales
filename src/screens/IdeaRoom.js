@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fonts, sectionTitle, sectionBox, SECTION_GAP } from '../theme';
+import { colors, fonts, sectionTitle, boxTitle, sectionBox, SECTION_GAP } from '../theme';
 import { DESK_FELT, IS_TABLET, DESK_BG } from '../look';
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import { IDEA_SECTIONS, IDEA_COUNT } from '../ideas';
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   // the standard section heading (as in the library and Help), with a + / − at the far right
   box: { ...sectionBox, gap: 10 }, // each section in its own black glass box
   secHead: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: SECTION_GAP - 10 },
-  section: { ...sectionTitle, flex: 1 },
+  section: { ...boxTitle, flex: 1 },
   secChev: { fontFamily: fonts.ui, fontSize: 30, lineHeight: 34, color: 'rgba(255,255,255,0.75)', width: 30, textAlign: 'center' },
   caption: { alignSelf: 'center', marginTop: -36, marginBottom: 20, fontFamily: fonts.ui, fontSize: 13, lineHeight: 18, color: '#bdbdbd' }, // under the book picture
   intro: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#cfcfcf', marginBottom: 12 }, // a clear gap before the ideas
