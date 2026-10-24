@@ -236,7 +236,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: DESK_BG },
   band: { paddingBottom: 6, paddingHorizontal: 24 }, // just the title, on the felt (no banner)
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, transform: [{ translateY: -3 }] },
+  title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 32, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 30, /* a little room under the title */ paddingBottom: 24, alignItems: 'center' }, // everything fits on one screen
   col: { width: '100%', maxWidth: 520, gap: 18 },
   p: { fontFamily: fonts.ui, fontSize: 16, lineHeight: 22, color: '#e6e6e6' },
@@ -246,25 +246,25 @@ const styles = StyleSheet.create({
   cell: { alignItems: 'center', gap: 4, paddingTop: 12, paddingBottom: 12, borderRadius: 16, borderWidth: 1, borderColor: 'transparent' },
   cellOn: { backgroundColor: 'rgba(0,0,0,0.35)', borderColor: 'transparent' }, // a large see-through black box (no outline)
   activeRing: { borderWidth: 3, borderColor: colors.white },
-  initial: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
-  name: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, color: colors.white, maxWidth: '100%', marginTop: 8 }, // clear of the character
+  initial: { color: colors.white, fontFamily: fonts.uiBold, textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
+  name: { fontFamily: fonts.uiBold, fontSize: 16, color: colors.white, maxWidth: '100%', marginTop: 8 }, // clear of the character
   age: { fontFamily: fonts.ui, fontSize: 13, color: '#bdbdbd' },
   addTile: { borderWidth: 2, borderColor: '#777', borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' },
-  plus: { color: '#aaa', fontFamily: fonts.ui, fontWeight: '300' },
+  plus: { color: '#aaa', fontFamily: fonts.uiMedium },
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 24, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
   pillFit: { flexShrink: 1, minWidth: 0, paddingHorizontal: 18 },
   sureBack: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 28 },
   sureBox: { width: '100%', maxWidth: 400, backgroundColor: '#000', borderRadius: 24, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26 },
   sureText: { color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24 },
-  pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  pillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
   scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 50, overflow: 'hidden' }, // within the page: the bar stays uncovered
   card: { backgroundColor: 'rgba(0,0,0,0.4)', /* see-through black, lighter than the playlist boxes */ borderRadius: 16, padding: 22, paddingTop: 24, paddingBottom: 28, gap: 14, width: '100%', maxWidth: 480, alignSelf: 'center' },
   input: { flex: 1, minWidth: 0, height: 48, borderRadius: 10, backgroundColor: '#d6d6d6', paddingHorizontal: 14, paddingVertical: 0, includeFontPadding: false, fontFamily: fonts.ui, fontSize: 20, color: '#222' }, // a fixed height and no padding top or bottom: iOS centres the words
-  section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 6 },
+  section: { fontFamily: fonts.uiBold, fontSize: 13, color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 6 },
   choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   choice: { paddingHorizontal: 14, height: 36, borderRadius: 18, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
   choiceOn: { backgroundColor: colors.green },
-  choiceText: { fontFamily: fonts.ui, fontSize: 15, color: '#dcdcdc', fontWeight: '600' },
+  choiceText: { fontFamily: fonts.uiSemiBold, fontSize: 15, color: '#dcdcdc' },
   swatchOn: { borderColor: 'transparent', backgroundColor: 'rgba(0,0,0,0.35)' }, // dark box, no outline
   swatch: { width: 60, height: 70, borderRadius: 13, borderWidth: 1, borderColor: 'transparent', alignItems: 'center', justifyContent: 'center' },
   buttonShadow: { shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.55, shadowRadius: 6, elevation: 6 },

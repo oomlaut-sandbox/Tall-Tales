@@ -1151,7 +1151,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
           recList.length ? recList.slice().sort((x, y) => readerIndex(x.reader) - readerIndex(y.reader) || x.page - y.page).map((r, k, arr) => (
             <React.Fragment key={`${r.reader}/${r.pid}`}>
             {/* each reader's pages together, under their name */}
-            {k === 0 || arr[k - 1].reader !== r.reader ? <Text style={[styles.help, { marginTop: k ? 10 : 0, fontWeight: '700', color: colors.white }]}>{readerName(r.reader)}</Text> : null}
+            {k === 0 || arr[k - 1].reader !== r.reader ? <Text style={[styles.help, { marginTop: k ? 10 : 0, fontFamily: fonts.uiBold, color: colors.white }]}>{readerName(r.reader)}</Text> : null}
             {/* the page and its length on their own line, the buttons underneath */}
             <View style={[styles.row, { flexDirection: 'column', alignItems: 'stretch', gap: 10 }]}>
               <Text style={styles.rowText}>{(() => {
@@ -1231,7 +1231,7 @@ function RecTimer({ start, style, onStop, running = true, saved, who }) {
 }
 
 const styles = StyleSheet.create({
-  alarmTime: { color: '#b0b0b0', fontFamily: fonts.ui, fontSize: 14, fontWeight: '400', letterSpacing: 0.3 },
+  alarmTime: { color: '#b0b0b0', fontFamily: fonts.uiRegular, fontSize: 14, letterSpacing: 0.3 },
   screen: { flex: 1, backgroundColor: DESK_BG },
   desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: DESK_BG },
   bookShadow: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
@@ -1240,7 +1240,7 @@ const styles = StyleSheet.create({
   bulb: { position: 'absolute', top: 8, left: 12, zIndex: 6 },
   recMark: { position: 'absolute', top: 12, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.highlight, opacity: 0.75, zIndex: 5 },
   mineDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.deepRed },
-  mineText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 12 },
+  mineText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 12 },
   sideBar: { backgroundColor: colors.bar, alignItems: 'flex-end', zIndex: 30 },
   bottomBar: { backgroundColor: colors.bar, justifyContent: 'flex-end', zIndex: 30 }, // the row of icons sits at the bottom (fixed), any spare height above it
   small: { transform: [{ scale: 0.86 }] },
@@ -1251,24 +1251,24 @@ const styles = StyleSheet.create({
   recBox: { backgroundColor: '#4a4a4a', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, flexDirection: 'row', alignItems: 'center', gap: 7 },
   recDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#e0262b' },
   recStop: { width: 9, height: 9, borderRadius: 1.5, backgroundColor: colors.white },
-  recBoxLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 14 },
-  recBoxTime: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14, fontVariant: ['tabular-nums'], minWidth: 34, textAlign: 'left' },
-  back: { color: '#bdbdbd', fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
+  recBoxLabel: { color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 14 },
+  recBoxTime: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 14, fontVariant: ['tabular-nums'], minWidth: 34, textAlign: 'left' },
+  back: { color: '#bdbdbd', fontFamily: fonts.uiBold, fontSize: 15 },
   backRow: { flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: 'flex-start', marginTop: 34 },
   backCircle: { width: 26, height: 26, borderRadius: 13, borderWidth: 1.5, borderColor: '#bdbdbd', alignItems: 'center', justifyContent: 'center' },
   backChevron: { width: 8, height: 8, borderLeftWidth: 1.75, borderBottomWidth: 1.75, borderColor: '#bdbdbd', transform: [{ translateX: 1.5 }, { rotate: '45deg' }] },
   setting: { gap: 8, paddingTop: 10, paddingBottom: 8 },
   printBtn: { alignItems: 'center', gap: 6 },
   printIc: { width: 64, height: 64, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
-  printLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
-  backlink: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, fontWeight: '700', paddingVertical: 6 },
+  printLabel: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 14 },
+  backlink: { color: '#d6d6d6', fontFamily: fonts.uiBold, fontSize: 15, paddingVertical: 6 },
   help: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#2a2a2a', padding: 12 },
-  rowText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  rowText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
   rowBtn: { backgroundColor: colors.tile, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 18 }, // pills
-  rowBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
+  rowBtnText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 14 },
   seg: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#333', paddingHorizontal: 8, paddingVertical: 10, borderRadius: 22 }, // pills
-  segText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
+  segText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 14 },
 });
 
 // Listen Only's choice: the screen dims, and a dark grey rounded square floats in the middle with the simple sun on
@@ -1301,7 +1301,7 @@ function ListenChoice({ area, center, onDay, onNight, onCancel, onGone, tr }) {
   const ink = 'rgba(255,255,255,0.88)';
   const M = side * 0.1; // the title's distance from the top = the names' distance from the bottom
   const ic = side * 0.16;
-  const word = { color: 'rgba(255,255,255,0.45)', fontFamily: fonts.ui, fontSize: 12, lineHeight: 18, fontWeight: '300', letterSpacing: 1.2 };
+  const word = { color: 'rgba(255,255,255,0.45)', fontFamily: fonts.uiMedium, fontSize: 12, lineHeight: 18, letterSpacing: 1.2 };
   return (
     <>
       <Animated.View style={{ position: 'absolute', ...area, zIndex: 45, backgroundColor: 'rgba(0,0,0,0.88)', opacity: dim }} onStartShouldSetResponder={() => true}
@@ -1310,7 +1310,7 @@ function ListenChoice({ area, center, onDay, onNight, onCancel, onGone, tr }) {
         <Animated.View pointerEvents={picked ? 'none' : 'auto'} style={{ alignItems: 'flex-end', opacity: pop, transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1] }) }] }}>
           <View onStartShouldSetResponder={() => true} style={{ width: side, height: side, borderRadius: 30, backgroundColor: '#2b2b2d', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.6)' }}>{/* (a touch on the box itself never cancels) */}
             {/* what this is: Listening Only mode (nothing plays until Daydream or Nightlight is chosen) */}
-            <Text style={{ color: 'rgba(255,255,255,0.92)', fontFamily: fonts.ui, fontSize: 15, lineHeight: 18, fontWeight: '500', letterSpacing: 0.3, textAlign: 'center', marginTop: M }}>{tr('Listening Only mode')}</Text>
+            <Text style={{ color: 'rgba(255,255,255,0.92)', fontFamily: fonts.uiMedium, fontSize: 15, lineHeight: 18, letterSpacing: 0.3, textAlign: 'center', marginTop: M }}>{tr('Listening Only mode')}</Text>
             {/* the dividing line and the two icons sit exactly in the middle of the box */}
             <View pointerEvents="none" style={{ position: 'absolute', left: side / 2 - 0.55, top: (side - side * 0.42) / 2, width: 1.1, height: side * 0.42, backgroundColor: ink }} />{/* the same fine stroke as the sun and the moon */}
             {[['day', tr('Daydream')], ['night', tr('Nightlight')]].map(([id, label], k) => (

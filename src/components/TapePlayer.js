@@ -144,5 +144,5 @@ const styles = StyleSheet.create({
   mark: { position: 'absolute', borderRadius: 3, backgroundColor: '#2a2a2d' },
   close: { fontFamily: fonts.ui, fontSize: 12.5, letterSpacing: 0.4, color: 'rgba(255,255,255,0.6)' }, // like Cancel under the Listening Only box
   window: { justifyContent: 'center' },
-  choice: { fontFamily: fonts.ui, fontWeight: '600', color: '#ffffff', textAlign: 'left' },
+  choice: { fontFamily: fonts.uiSemiBold, color: '#ffffff', textAlign: 'left' },
 });

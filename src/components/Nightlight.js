@@ -505,31 +505,31 @@ const styles = StyleSheet.create({
   abs: { position: 'absolute' },
   // Daydream's band at the bottom: black, see-through, over the video
   dayBand: { backgroundColor: 'rgba(0,0,0,0.55)', paddingTop: 22, paddingBottom: 30, paddingHorizontal: 24, alignItems: 'center' },
-  title: { color: 'rgba(255,255,255,0.82)', fontFamily: fonts.ui, fontSize: 17, fontWeight: '300', letterSpacing: 0.3, textAlign: 'center', marginTop: 6, maxWidth: 280 },
-  countdown: { color: 'rgba(244,226,207,0.7)', fontFamily: fonts.ui, fontSize: 22, fontWeight: '200', letterSpacing: 2, marginTop: 10, fontVariant: ['tabular-nums'] },
+  title: { color: 'rgba(255,255,255,0.82)', fontFamily: fonts.uiMedium, fontSize: 17, letterSpacing: 0.3, textAlign: 'center', marginTop: 6, maxWidth: 280 },
+  countdown: { color: 'rgba(244,226,207,0.7)', fontFamily: fonts.uiMedium, fontSize: 22, letterSpacing: 2, marginTop: 10, fontVariant: ['tabular-nums'] },
   // the time above the sun: thin, quiet, large
-  now: { color: 'rgba(244,226,207,0.78)', fontFamily: fonts.ui, fontSize: 30, fontWeight: '200', letterSpacing: 1.5, textAlign: 'center' },
+  now: { color: 'rgba(244,226,207,0.78)', fontFamily: fonts.uiMedium, fontSize: 30, letterSpacing: 1.5, textAlign: 'center' },
   small: { color: 'rgba(255,255,255,0.45)', fontFamily: fonts.ui, fontSize: 12, letterSpacing: 0.8, textTransform: 'uppercase', textAlign: 'center' },
   note: { color: 'rgba(255,255,255,0.45)', fontFamily: fonts.ui, fontSize: 12.5, textAlign: 'center', lineHeight: 17 },
-  alarm: { color: 'rgba(244,226,207,0.8)', fontFamily: fonts.ui, fontSize: 15, fontWeight: '300', letterSpacing: 0.5 },
+  alarm: { color: 'rgba(244,226,207,0.8)', fontFamily: fonts.uiMedium, fontSize: 15, letterSpacing: 0.5 },
   cornerL: { position: 'absolute', left: 22, bottom: 22, alignItems: 'center' },
-  wakeText: { color: 'rgba(244,226,207,0.8)', fontFamily: fonts.ui, fontSize: 15, fontWeight: '300', letterSpacing: 0.4 },
+  wakeText: { color: 'rgba(244,226,207,0.8)', fontFamily: fonts.uiMedium, fontSize: 15, letterSpacing: 0.4 },
   // Snooze: a big soft pill, easy to find half asleep
   snooze: { minWidth: 180, height: 56, paddingHorizontal: 36, borderRadius: 28, backgroundColor: CREAM, alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 30px rgba(255,180,110,0.45)' },
-  snoozeText: { color: '#1b1b1d', fontFamily: fonts.ui, fontSize: 19, fontWeight: '500', letterSpacing: 1.2 },
+  snoozeText: { color: '#1b1b1d', fontFamily: fonts.uiMedium, fontSize: 19, letterSpacing: 1.2 },
   // the alarm popup: dark grey, soft (neumorphic) shapes lit from the top left
   scrim: { backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 16 },
   popup: { width: '100%', maxWidth: 380, backgroundColor: BASE, borderRadius: 28, paddingHorizontal: 20, paddingTop: 16, paddingBottom: 18, alignItems: 'center', boxShadow: '0 24px 60px rgba(0,0,0,0.8)' },
   // the dial: one flat face, its edge just slightly rounded (a soft light rim at the top left, a soft dark one at the bottom right)
   wheel: { backgroundColor: BASE, alignItems: 'center', justifyContent: 'center', boxShadow: '-8px -8px 18px rgba(255,255,255,0.04), 12px 12px 26px rgba(0,0,0,0.8), inset 2px 2px 3px rgba(255,255,255,0.05), inset -3px -3px 5px rgba(0,0,0,0.45)' },
   dimple: { backgroundColor: '#19191b', boxShadow: 'inset 5px 5px 8px rgba(0,0,0,0.85), inset -3px -3px 6px rgba(255,255,255,0.06)' },
-  wheelTime: { color: CREAM, fontFamily: fonts.ui, fontSize: 17, fontWeight: '300', letterSpacing: 0.8 }, // small, so it keeps clear of the finger hole
-  popTitle: { flex: 1, color: '#a39f99', fontFamily: fonts.ui, fontWeight: '700', fontSize: 24 }, // like the other page titles, a light grey
-  wheelNum: { position: 'absolute', width: 30, textAlign: 'center', color: 'rgba(244,226,207,0.62)', fontFamily: fonts.ui, fontSize: 12, fontWeight: '400' },
+  wheelTime: { color: CREAM, fontFamily: fonts.uiMedium, fontSize: 17, letterSpacing: 0.8 }, // small, so it keeps clear of the finger hole
+  popTitle: { flex: 1, color: '#a39f99', fontFamily: fonts.uiBold, fontSize: 24 }, // like the other page titles, a light grey
+  wheelNum: { position: 'absolute', width: 30, textAlign: 'center', color: 'rgba(244,226,207,0.62)', fontFamily: fonts.uiRegular, fontSize: 12 },
   chip: { paddingHorizontal: 13, height: 34, borderRadius: 17, backgroundColor: BASE, alignItems: 'center', justifyContent: 'center', boxShadow: '-3px -3px 6px rgba(255,255,255,0.05), 3px 3px 7px rgba(0,0,0,0.6)' },
   // the grey display, an old LCD with black letters; and the small knob beside it (with a red line)
   lcd: { width: 232, height: 58, borderRadius: 8, backgroundColor: '#a6a6a6' /* a medium-light grey display */, paddingHorizontal: 14, justifyContent: 'center', boxShadow: 'inset 2px 3px 6px rgba(0,0,0,0.45), inset -1px -1px 2px rgba(255,255,255,0.3)' },
-  lcdLabel: { color: 'rgba(0,0,0,0.55)', fontFamily: fonts.ui, fontSize: 9.5, fontWeight: '700', letterSpacing: 1.2, textTransform: 'uppercase' },
+  lcdLabel: { color: 'rgba(0,0,0,0.55)', fontFamily: fonts.uiBold, fontSize: 9.5, letterSpacing: 1.2, textTransform: 'uppercase' },
   lcdText: { color: '#000', fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', fontSize: 15, fontWeight: '600', marginTop: 2, letterSpacing: 0 },
   smallKnob: { width: 46, height: 46, borderRadius: 23, backgroundColor: BASE, boxShadow: '-4px -4px 9px rgba(255,255,255,0.045), 5px 5px 11px rgba(0,0,0,0.8), inset 1px 1px 2px rgba(255,255,255,0.05), inset -2px -2px 3px rgba(0,0,0,0.4)' },
   chipOn: { backgroundColor: '#8f8578' }, // the chosen one: a dim warm grey, easy on the eyes at night
@@ -538,7 +538,7 @@ const styles = StyleSheet.create({
   switchOn: { backgroundColor: '#8f8578' },
   knob: { width: 22, height: 22, borderRadius: 11, backgroundColor: '#8a8a8e' },
   donePill: { marginTop: 4, paddingHorizontal: 32, height: 42, borderRadius: 21, borderWidth: 1, borderColor: 'rgba(244,226,207,0.5)', alignItems: 'center', justifyContent: 'center' },
-  donePillText: { color: CREAM, fontFamily: fonts.ui, fontSize: 15, fontWeight: '500', letterSpacing: 0.5 },
+  donePillText: { color: CREAM, fontFamily: fonts.uiMedium, fontSize: 15, letterSpacing: 0.5 },
 });
 
 // Daydream's alarm popup: the same object in a light, almost white grey (soft shadows lit from the top left);

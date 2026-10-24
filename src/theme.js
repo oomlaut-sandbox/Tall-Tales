@@ -22,8 +22,17 @@ export const colors = {
   muted: '#bdbdbd',
 };
 
+// Coro's type (Jörg, 24 Oct 2026): Plus Jakarta Sans everywhere in the app, each weight its own font
+// (a custom font can't be made bold with fontWeight, so a bold style uses uiBold, and so on)
+const HELVETICA = Platform.select({ ios: 'Helvetica Neue', android: 'sans-serif', default: '"Helvetica Neue", Helvetica, Arial, sans-serif' });
 export const fonts = {
-  ui: Platform.select({ ios: 'Helvetica Neue', android: 'sans-serif', default: '"Helvetica Neue", Helvetica, Arial, sans-serif' }),
+  ui: 'PlusJakartaSans_500Medium',
+  uiRegular: 'PlusJakartaSans_400Regular',
+  uiMedium: 'PlusJakartaSans_500Medium',
+  uiSemiBold: 'PlusJakartaSans_600SemiBold',
+  uiBold: 'PlusJakartaSans_700Bold',
+  uiExtraBold: 'PlusJakartaSans_800ExtraBold',
+  helvetica: HELVETICA,
   story: 'EBGaramond_400Regular',
 };
 
@@ -31,7 +40,8 @@ export const fonts = {
 // width: how wide the letters run (for fitting text); size: fine-tunes how big each font looks.
 // (A third, cursive font was tried and dropped; any saved "cursive" choice falls back to Serif.)
 export const BOOK_FONTS = {
-  sans: { label: 'Helvetica', family: fonts.ui, css: 'Helvetica, Arial, sans-serif', width: 0.52, size: 0.92 },
+  sans: { label: 'Helvetica', family: HELVETICA, css: 'Helvetica, Arial, sans-serif', width: 0.52, size: 0.92 },
+  coro: { label: 'Coro', family: 'PlusJakartaSans_500Medium', bold: 'PlusJakartaSans_700Bold', css: '"Plus Jakarta Sans", Helvetica, Arial, sans-serif', width: 0.54, size: 0.92 },
   serif: { label: 'Serif', family: 'EBGaramond_400Regular', bold: 'EBGaramond_700Bold', css: 'Story, Georgia, serif', width: 0.47, size: 1 },
   typewriter: { label: 'Typewriter', family: 'SpecialElite_400Regular', css: '"Special Elite", "Courier New", monospace', width: 0.58, size: 0.9 },
 };

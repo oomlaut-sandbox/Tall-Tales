@@ -75,7 +75,7 @@ function EmptyPicture({ side }) {
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       <Image source={POLAROID} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
       <View style={{ position: 'absolute', left: BLUE.l * side + m, top: BLUE.t * side + m, width: bw - 2 * m, height: bh - 2 * m, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ width: '100%', textAlign: 'center', color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: fs, lineHeight: fs * 1.24 }}
+        <Text style={{ width: '100%', textAlign: 'center', color: colors.white, fontFamily: fonts.uiBold, fontSize: fs, lineHeight: fs * 1.24 }}
           textBreakStrategy="balanced" lineBreakStrategyIOS="standard">{tr('Add Image')}</Text>
       </View>
     </View>
@@ -463,7 +463,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 <Pressable onPress={() => setImgAsk('page2')} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Add another image page')}
                   style={{ position: 'absolute', left: side * 0.07, bottom: side * 0.07, flexDirection: 'row', alignItems: 'center', gap: side * 0.02 }}>
                   {/* a small grey plus, then the words */}
-                  <Text style={{ fontFamily: fonts.ui, fontWeight: '300', fontSize: Math.max(18, Math.round(side * 0.07)), lineHeight: Math.max(18, Math.round(side * 0.07)) * 1.05, color: '#777' }}>+</Text>
+                  <Text style={{ fontFamily: fonts.uiMedium, fontSize: Math.max(18, Math.round(side * 0.07)), lineHeight: Math.max(18, Math.round(side * 0.07)) * 1.05, color: '#777' }}>+</Text>
                   <Text numberOfLines={2} style={{ fontFamily: fonts.ui, fontSize: Math.max(12, Math.round(side * 0.04)), lineHeight: Math.max(12, Math.round(side * 0.04)) * 1.25, color: '#555', maxWidth: side * 0.56, flexShrink: 1 }}>{tr('Add another image page')}{/* two lines when the words are long (never cut short with …) */}</Text>
                 </Pressable>
               ) : null}
@@ -656,7 +656,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               <View style={{ width: Math.min(winW - insets.left - insets.right - 2 * GAP, 560), gap: 8, marginBottom: 26 }}>{/* a little more room above the picture */}
                 {!kbUp ? <Text style={styles.coverHead}>{tr('Create a cover')}</Text> : null}
                 <CenteredField value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder={tr('Book title')}
-                  onFocus={() => setFieldOn(true)} onBlur={() => setFieldOn(false)} box={styles.fieldBox} text={[styles.fieldText, { fontWeight: '700' }]} />
+                  onFocus={() => setFieldOn(true)} onBlur={() => setFieldOn(false)} box={styles.fieldBox} text={[styles.fieldText, { fontFamily: fonts.uiBold }]} />
                 <View style={{ flexDirection: 'row', gap: 8 }}>
                   <CenteredField value={draft.writer || ''} onChangeText={(writer) => setDraft((d) => ({ ...d, writer }))} placeholder={tr('Written by')}
                     onFocus={() => setFieldOn(true)} onBlur={() => setFieldOn(false)} box={[styles.fieldBox, styles.fieldBoxSmall]} text={[styles.fieldText, { fontSize: 15 }]} />
@@ -823,7 +823,7 @@ const TITLE_YELLOW = '#c9a227';
 const styles = StyleSheet.create({
   editor: { alignItems: 'center' },
   editorHead: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 30, paddingBottom: 12 },
-  editorTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
+  editorTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 18 },
   coverSquare: { backgroundColor: '#7d7d7d', overflow: 'hidden', marginBottom: 14, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10 },
   toolOn: { backgroundColor: colors.green },
   swatches: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', gap: 8, marginTop: 22 },
@@ -834,8 +834,8 @@ const styles = StyleSheet.create({
   sizeBtn: { width: 44, height: 40, borderRadius: 20, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   coverHint: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 13, marginLeft: 4 },
   countBox: { position: 'absolute', zIndex: 6, backgroundColor: '#4a4a4a', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, alignItems: 'center', justifyContent: 'center' },
-  countText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '600', fontSize: 13, fontVariant: ['tabular-nums'] },
-  coverHead: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 17, marginBottom: 4 },
+  countText: { color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 13, fontVariant: ['tabular-nums'] },
+  coverHead: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 17, marginBottom: 4 },
   fieldBox: { backgroundColor: '#161616', height: 48, borderRadius: 14, paddingHorizontal: 14 },
   fieldBoxSmall: { flex: 1, minWidth: 0, height: 42 },
   fieldText: { color: colors.white, fontFamily: fonts.ui, fontSize: 17 },
@@ -850,50 +850,50 @@ const styles = StyleSheet.create({
   fontPillOn: { backgroundColor: colors.green },
   fontPillText: { color: colors.white, fontSize: 14 },
   donePill: { backgroundColor: colors.green, height: 40, borderRadius: 20, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
-  donePillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  donePillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
   editorPage: { flex: 1, marginBottom: 14, backgroundColor: colors.paper, padding: 24, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10 },
   editorInput: { flex: 1, fontSize: 24, lineHeight: 36, color: colors.ink, textAlign: 'center', textAlignVertical: 'top', padding: 0 },
   choiceBack: { backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', zIndex: 60, padding: 30 },
   choice: { width: '100%', maxWidth: 380, backgroundColor: colors.glass, borderRadius: 24, paddingHorizontal: 26, paddingTop: 30, paddingBottom: 32, gap: 16 },
-  choiceTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20, marginBottom: 10 },
+  choiceTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 20, marginBottom: 10 },
   choiceBtn: { backgroundColor: colors.tile, height: 50, borderRadius: 25, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
-  choiceBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
-  choiceLink: { color: '#d6d6d6', fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, textAlign: 'center', paddingVertical: 4 },
+  choiceBtnText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
+  choiceLink: { color: '#d6d6d6', fontFamily: fonts.uiBold, fontSize: 15, textAlign: 'center', paddingVertical: 4 },
   screen: { flex: 1, backgroundColor: DESK_BG },
   desk: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: DESK_BG },
   bookShadow: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
   spine: { position: 'absolute', left: 0, right: 0, top: 0, height: StyleSheet.hairlineWidth * 2, backgroundColor: '#4a4a4a' },
   help: { position: 'absolute', top: 14, right: 14, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', zIndex: 5 },
-  helpText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
+  helpText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 18 },
   page: { flex: 1, backgroundColor: colors.paper, overflow: 'hidden' },
   art: { backgroundColor: '#808080', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   fill: { position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' },
-  plus: { color: colors.white, fontWeight: '200', fontFamily: fonts.ui },
-  addImage: { color: colors.white, fontWeight: '700', fontSize: 22, fontFamily: fonts.ui, marginTop: 4 },
+  plus: { color: colors.white, fontFamily: fonts.uiMedium },
+  addImage: { color: colors.white, fontSize: 22, fontFamily: fonts.uiBold, marginTop: 4 },
   artBtns: { position: 'absolute', left: 12, bottom: 12, flexDirection: 'row', gap: 8 },
-  chip: { backgroundColor: 'rgba(0,0,0,0.6)', color: colors.white, fontWeight: '700', fontSize: 15, paddingHorizontal: 14, paddingVertical: 8, overflow: 'hidden', fontFamily: fonts.ui },
+  chip: { backgroundColor: 'rgba(0,0,0,0.6)', color: colors.white, fontSize: 15, paddingHorizontal: 14, paddingVertical: 8, overflow: 'hidden', fontFamily: fonts.uiBold },
   textBox: { justifyContent: 'flex-start' }, // the words (or 'To add text, tap here…') centred in the square
-  addText: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.ink, marginBottom: 6, textAlign: 'center' }, // always inside the words square
+  addText: { fontFamily: fonts.uiBold, fontSize: 22, color: colors.ink, marginBottom: 6, textAlign: 'center' }, // always inside the words square
   input: { fontFamily: fonts.story, fontSize: 21, lineHeight: 34, color: colors.ink, textAlign: 'center', textAlignVertical: 'center', padding: 0, minHeight: 68 },
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 17, padding: 0 }, // Helvetica, like the rest of the app's controls
+  title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 17, padding: 0 }, // Helvetica, like the rest of the app's controls
   sub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 12, marginTop: 2 },
-  btn: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, paddingHorizontal: 3 },
+  btn: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15, paddingHorizontal: 3 },
   finish: { backgroundColor: colors.green, paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' }, // a solid green pill
   prow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, backgroundColor: '#2a2a2a', padding: 12, borderWidth: 2, borderColor: 'transparent' },
   thumb: { width: 64, height: 64, backgroundColor: '#666', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  thumbNum: { color: colors.white, fontWeight: '700', fontFamily: fonts.ui },
-  prowTitle: { color: colors.white, fontWeight: '700', fontSize: 17, fontFamily: fonts.ui },
-  prowSub: { color: '#bbb', fontSize: 14, fontWeight: '400', fontFamily: fonts.ui },
+  thumbNum: { color: colors.white, fontFamily: fonts.uiBold },
+  prowTitle: { color: colors.white, fontSize: 17, fontFamily: fonts.uiBold },
+  prowSub: { color: '#bbb', fontSize: 14, fontFamily: fonts.uiRegular },
   pbtn: { width: 36, height: 36, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
-  pbtnText: { color: colors.white, fontWeight: '700', fontSize: 18 },
-  deleteLink: { color: '#ff6b6b', fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
+  pbtnText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 18 },
+  deleteLink: { color: '#ff6b6b', fontFamily: fonts.uiBold, fontSize: 15 },
   warn: { color: '#e6e6e6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 21 },
   layBtn: { alignItems: 'center', gap: 6 },
   layIc: { width: 64, height: 64, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
-  layLabel: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
+  layLabel: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 14 },
   pill: { flex: 1, backgroundColor: '#6b6b6b', borderRadius: 22, height: 44, paddingVertical: 0, justifyContent: 'center' }, // Share as PDF / Print: medium grey pills
   wide: { flex: 1, backgroundColor: colors.tile, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
   deletePill: { alignSelf: 'flex-start', height: 44, borderRadius: 22, paddingHorizontal: 26, backgroundColor: colors.deepRed, alignItems: 'center', justifyContent: 'center', marginTop: 44, marginBottom: 14 },
   stackPill: { width: 180, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' }, // the Pages box pills, stacked on the right
-  wideText: { color: colors.white, fontWeight: '700', fontSize: 15, fontFamily: fonts.ui },
+  wideText: { color: colors.white, fontSize: 15, fontFamily: fonts.uiBold },
 });

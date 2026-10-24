@@ -206,6 +206,6 @@ const styles = StyleSheet.create({
   endTitle: { textAlign: 'center' },
   endBtn: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   endIc: { width: 21, height: 21, tintColor: '#5c5c5c' },
-  endGlyph: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 18 },
-  endBtnText: { color: '#2e2e2e', fontFamily: fonts.ui, fontWeight: '500', fontSize: 16 },
+  endGlyph: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 18 },
+  endBtnText: { color: '#2e2e2e', fontFamily: fonts.uiMedium, fontSize: 16 },
 });

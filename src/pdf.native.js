@@ -8,10 +8,11 @@ import { Asset } from 'expo-asset';
 import { File, Paths } from 'expo-file-system';
 import { EBGaramond_400Regular } from '@expo-google-fonts/eb-garamond';
 import { SpecialElite_400Regular } from '@expo-google-fonts/special-elite';
+import { PlusJakartaSans_500Medium } from '@expo-google-fonts/plus-jakarta-sans';
 import { strokesToImage } from './components/Strokes';
 import { bookFont } from './theme';
 
-const FONT_FILES = { serif: EBGaramond_400Regular, typewriter: SpecialElite_400Regular };
+const FONT_FILES = { serif: EBGaramond_400Regular, typewriter: SpecialElite_400Regular, coro: PlusJakartaSans_500Medium };
 
 const SIZE = 576; // 8 × 8 inch pages (72 per inch), like a square picture book
 

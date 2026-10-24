@@ -190,7 +190,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
       {picking ? (
         <View style={[StyleSheet.absoluteFill, styles.openBack]}>
           <View style={[styles.sureBox, { maxWidth: 440, maxHeight: winH - 160 }]}>
-            <Text style={[styles.sureText, { fontWeight: '700' }]}>{t('Which page from My Notebook?')}</Text>
+            <Text style={[styles.sureText, { fontFamily: fonts.uiBold }]}>{t('Which page from My Notebook?')}</Text>
             {picking.length ? (
               <ScrollView style={{ marginTop: 16 }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
                 {picking.map((p, k) => (
@@ -213,9 +213,9 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
 }
 
 const styles = StyleSheet.create({
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 28 },
+  title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 28 },
   cardShadow: { shadowColor: '#000', shadowOffset: { width: 2, height: 8 }, shadowOpacity: 0.55, shadowRadius: 10, elevation: 8 },
-  cardLabel: { color: 'rgba(255,255,255,0.85)', fontFamily: fonts.ui, fontWeight: '600', fontSize: 14 },
+  cardLabel: { color: 'rgba(255,255,255,0.85)', fontFamily: fonts.uiSemiBold, fontSize: 14 },
   paper: { backgroundColor: '#fbf7ee', borderRadius: 3 },
   hand: { fontFamily: TYPE, color: '#3a2f22' },
   letterText: { fontFamily: TYPE, fontSize: 16, lineHeight: 25, color: '#3a3226', marginBottom: 10 },
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
   openBack: { backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 14 },
   sendPill: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 46, borderRadius: 23, paddingHorizontal: 22, backgroundColor: '#3a3a3a', marginTop: 36 },
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
-  pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  pillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
   closePill: { backgroundColor: colors.deepRed, marginTop: 22 }, // a dark red pill
   closeText: { color: '#8a8a8a', fontFamily: fonts.ui, fontSize: 15 },
   sureBox: { width: '100%', maxWidth: 400, backgroundColor: 'rgba(0,0,0,0.86)', borderRadius: 24, paddingHorizontal: 24, paddingTop: 26, paddingBottom: 22 },

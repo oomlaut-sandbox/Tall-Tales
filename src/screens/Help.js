@@ -252,7 +252,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome }) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: DESK_BG }, // the dark felt, as everywhere else
   band: { backgroundColor: colors.orange, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, transform: [{ translateY: -3 }] },
+  title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 32, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 34, paddingBottom: 40, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 12 },
   video: { aspectRatio: 16 / 9, backgroundColor: '#2b2b2b', borderRadius: 14, alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 8 },
@@ -265,17 +265,17 @@ const styles = StyleSheet.create({
   goCircle: { width: 21, height: 21, borderRadius: 10.5, borderWidth: 1.5, borderColor: colors.white, alignItems: 'center', justifyContent: 'center' },
   goChevron: { width: 6, height: 6, borderRightWidth: 1.6, borderTopWidth: 1.6, borderColor: colors.white, transform: [{ translateX: -1.3 }, { rotate: '45deg' }] },
   ideas: { borderRadius: 26, shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.45, shadowRadius: 8, elevation: 5 },
-  ideasTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 22, color: colors.white },
+  ideasTitle: { fontFamily: fonts.uiBold, fontSize: 22, color: colors.white },
   ideasText: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: colors.white, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 },
-  ideasGo: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, color: colors.white, marginTop: 4 },
+  ideasGo: { fontFamily: fonts.uiBold, fontSize: 15, color: colors.white, marginTop: 4 },
   aboutPill: { alignSelf: 'flex-start', backgroundColor: '#4b5330', // a dark, muted moss green, like the felt
     height: 44, borderRadius: 22, paddingHorizontal: 26, alignItems: 'center', justifyContent: 'center', marginTop: 10 },
-  aboutText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
-  section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14, marginBottom: 8 },
+  aboutText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
+  section: { fontFamily: fonts.uiBold, fontSize: 13, color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14, marginBottom: 8 },
   card: { backgroundColor: '#3a3a3a', // dark grey, with white writing
     shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 3, borderRadius: 14, paddingHorizontal: 16, paddingVertical: 12 },
   cardHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, minHeight: 28 },
-  cardTitle: { flex: 1, fontFamily: fonts.ui, fontWeight: '700', fontSize: 17, color: colors.white },
+  cardTitle: { flex: 1, fontFamily: fonts.uiBold, fontSize: 17, color: colors.white },
   chev: { fontFamily: fonts.ui, fontSize: 22, color: 'rgba(255,255,255,0.75)', width: 22, textAlign: 'center' },
   p: { fontFamily: fonts.ui, fontSize: 16, lineHeight: 23, color: colors.white },
 });

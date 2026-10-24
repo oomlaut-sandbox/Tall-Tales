@@ -120,11 +120,11 @@ export default function TrimEditor({ rec, title, onCancel, onSave }) {
 const styles = StyleSheet.create({
   back: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: 16 },
   box: { backgroundColor: '#2b2b2d', borderRadius: 28, paddingHorizontal: 28, paddingTop: 28, paddingBottom: 26, boxShadow: '0 20px 50px rgba(0,0,0,0.6)' },
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20 },
+  title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 20 },
   len: { color: 'rgba(255,255,255,0.55)', fontFamily: fonts.ui, fontSize: 13, fontVariant: ['tabular-nums'] },
   knob: { width: 14, height: 14, borderRadius: 7, backgroundColor: '#ffffff', marginTop: -2 },
   playBtn: { width: 52, height: 52, borderRadius: 26, backgroundColor: '#3d3d40', alignItems: 'center', justifyContent: 'center' },
   bar: { width: 5, height: 18, borderRadius: 1, backgroundColor: '#ffffff' },
   pill: { height: 46, borderRadius: 23, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
-  pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  pillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
 });

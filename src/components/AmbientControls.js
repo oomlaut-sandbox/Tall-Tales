@@ -114,13 +114,13 @@ const styles = StyleSheet.create({
   hint: { color: '#8a8a8a', fontFamily: fonts.ui, fontSize: 12, marginTop: -2 },
   help: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22 },
   small: { color: '#a9a9a9', fontFamily: fonts.ui, fontSize: 13, lineHeight: 18 },
-  group: { color: '#bdbdbd', fontFamily: fonts.ui, fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 18 }, // room between the sections, above each heading
+  group: { color: '#bdbdbd', fontFamily: fonts.uiBold, fontSize: 12, textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 18 }, // room between the sections, above each heading
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   section: { backgroundColor: '#383838', borderRadius: 12, padding: 14, paddingBottom: 16, gap: 8, marginTop: 8 }, // a slightly lighter box for each list
   chipIn: { backgroundColor: '#4a4a4a' },
   openBtn: { alignSelf: 'flex-start', backgroundColor: '#555555', height: 38, borderRadius: 19, paddingHorizontal: 14, maxWidth: '100%', alignItems: 'center', justifyContent: 'center', marginTop: 4 },
-  openText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 14 },
+  openText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 14 },
   chip: { paddingHorizontal: 12, height: 34, borderRadius: 17, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
   chipOn: { backgroundColor: colors.green },
-  chipText: { fontFamily: fonts.ui, fontSize: 14, color: '#dcdcdc', fontWeight: '600' },
+  chipText: { fontFamily: fonts.uiSemiBold, fontSize: 14, color: '#dcdcdc' },
 });

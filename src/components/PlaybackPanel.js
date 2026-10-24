@@ -71,6 +71,6 @@ export default function PlaybackPanel({ open, onClose, prefs, setPrefs, toast, b
 
 const styles = StyleSheet.create({
   setting: { gap: 8, paddingTop: 10, paddingBottom: 8 },
-  backlink: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, fontWeight: '700', paddingVertical: 6 },
+  backlink: { color: '#d6d6d6', fontFamily: fonts.uiBold, fontSize: 15, paddingVertical: 6 },
   help: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22 },
 });

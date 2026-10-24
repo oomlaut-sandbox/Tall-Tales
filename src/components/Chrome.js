@@ -480,7 +480,7 @@ export function ChevronIcon({ size = MENU_ICON, color = colors.white, weight = 2
 export function TextIcon({ size = MENU_ICON, color = colors.white, text }) {
   return (
     <View style={{ width: size + 8, height: size, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{ color, fontFamily: fonts.ui, fontWeight: '700', fontSize: size * 0.9, lineHeight: size * 1.05 }}>{text}</Text>
+      <Text style={{ color, fontFamily: fonts.uiBold, fontSize: size * 0.9, lineHeight: size * 1.05 }}>{text}</Text>
     </View>
   );
 }
@@ -578,7 +578,7 @@ export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLab
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text style={styles.optSub}>{leftLabel}</Text>
-        {showValue ? <Text style={[styles.optSub, { color: colors.white, fontWeight: '700' }]}>{format(value)}</Text> : null}
+        {showValue ? <Text style={[styles.optSub, { color: colors.white, fontFamily: fonts.uiBold }]}>{format(value)}</Text> : null}
         <Text style={styles.optSub}>{rightLabel}</Text>
       </View>
     </View>
@@ -648,11 +648,11 @@ export function BubbleHost({ defaultArea }) {
 const styles = StyleSheet.create({
   bar: { backgroundColor: colors.bar, flexDirection: 'row', alignItems: 'center', gap: 16, zIndex: 30 },
   barV: { flexDirection: 'column', justifyContent: 'space-between', gap: 10 },
-  metaTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  metaTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
   // In the reader, the book's title and page number use the book serif.
   metaTitleSerif: { fontFamily: fonts.story, fontWeight: '400', fontSize: 19 },
   metaSubSerif: { fontFamily: fonts.story, fontSize: 14 },
-  metaPage: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 13, letterSpacing: 0.2 },
+  metaPage: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 13, letterSpacing: 0.2 },
   metaSub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 13, marginTop: 2 },
   ctl: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   ear: { position: 'absolute', right: 0, bottom: 0, width: 48, height: 48, zIndex: 20 },
@@ -662,13 +662,13 @@ const styles = StyleSheet.create({
   closeBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   chev: { width: 22, height: 22, alignItems: 'center', justifyContent: 'center' },
   chevCorner: { width: 13, height: 13, borderRightWidth: 3, borderBottomWidth: 3, borderColor: colors.white, transform: [{ translateY: -3 }, { rotate: '45deg' }] }, // points down
-  panelTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 24, transform: [{ translateY: -3 }] }, // a nudge up, so it sits in the middle of the heading
+  panelTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 24, transform: [{ translateY: -3 }] }, // a nudge up, so it sits in the middle of the heading
   panelCols: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 22, rowGap: 16, paddingTop: 16, paddingBottom: 30 },
   panelList: { backgroundColor: 'transparent', paddingHorizontal: 22, paddingTop: 20, paddingBottom: 22, gap: 16 },
   opt: { flexDirection: 'row', alignItems: 'center', gap: 18 },
   optIc: { width: 54, height: 54, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
-  optGlyph: { color: colors.white, fontSize: 22, fontWeight: '700', fontFamily: fonts.ui },
-  optTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20, marginBottom: 3 },
+  optGlyph: { color: colors.white, fontSize: 22, fontFamily: fonts.uiBold },
+  optTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 20, marginBottom: 3 },
   optSub: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 14 },
   toastWrap: { position: 'absolute', left: 0, right: 0, top: 64, alignItems: 'center', zIndex: 60, paddingHorizontal: 24 },
   bubbleWrap: { width: '90%', maxWidth: 560, paddingBottom: 22, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.4, shadowRadius: 12, elevation: 10 },

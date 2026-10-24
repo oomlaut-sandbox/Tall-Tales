@@ -103,11 +103,11 @@ function Band({ color, felt, dark, title, sub, action, onAction }) {
       {/* the title alone (no subtitle), centred in the band, with Select / Cancel on the same line */}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: fg, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, transform: [{ translateY: -3 }] }}>{title}</Text>{/* nudged up a touch: the big title sat a little low next to Select */}
+          <Text style={{ color: fg, fontFamily: fonts.uiBold, fontSize: 32, transform: [{ translateY: -3 }] }}>{title}</Text>{/* nudged up a touch: the big title sat a little low next to Select */}
         </View>
         {action ? (
           <Pressable onPress={onAction} hitSlop={10} accessibilityRole="button">
-            <Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 17 }}>{action}</Text>
+            <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 17 }}>{action}</Text>
           </Pressable>
         ) : null}
       </View>
@@ -612,7 +612,7 @@ const styles = StyleSheet.create({
   tipTail: { marginLeft: 46, width: 0, height: 0, borderLeftWidth: 12, borderRightWidth: 12, borderTopWidth: 14, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: '#f4f1ea' },
   tipFoot: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: 14 },
   tipCoro: { width: 120, height: 116, marginTop: 6, marginRight: 10 },
-  tipTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 19, color: '#2b2b2b' },
+  tipTitle: { fontFamily: fonts.uiBold, fontSize: 19, color: '#2b2b2b' },
   tipText: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#2b2b2b' },
   tipCheckRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 2 },
   tipBox: { width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: '#7a7a7a', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.white },
@@ -620,14 +620,14 @@ const styles = StyleSheet.create({
   tipTick: { color: colors.white, fontWeight: '700', fontSize: 14, lineHeight: 16 },
   tipCheck: { fontFamily: fonts.ui, fontSize: 14, color: '#3a3a3a' },
   tipOk: { marginLeft: -4, backgroundColor: colors.green, borderRadius: 20, paddingHorizontal: 24, height: 40, alignItems: 'center', justifyContent: 'center' },
-  tipOkText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
+  tipOkText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 },
   screen: { flex: 1, backgroundColor: DESK_BG }, // same dark grey as reading
   // a generous gap between the felt title band and the first row of books
   grid: { padding: 20, paddingTop: 42, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
   tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.72, shadowRadius: 13, elevation: 14 }, // a deep shadow, so the books stand up off the felt
-  section: { width: '100%', color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20, marginTop: 6, marginBottom: -4 }, // My Books, Let's Create! (about half the band's title)
+  section: { width: '100%', color: colors.white, fontFamily: fonts.uiBold, fontSize: 20, marginTop: 6, marginBottom: -4 }, // My Books, Let's Create! (about half the band's title)
   tileTitle: { fontFamily: 'EBGaramond_700Bold', fontSize: 19, lineHeight: 23, color: colors.white }, // book titles and details: the book serif
-  tileOption: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, lineHeight: 23 },
+  tileOption: { fontFamily: fonts.uiBold, fontSize: 16, lineHeight: 23 },
   tileSub: { fontFamily: fonts.story, fontSize: 15, lineHeight: 19, color: '#d0d0d0' },
   check: { position: 'absolute', top: 8, left: 8, width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: colors.white, backgroundColor: 'rgba(0,0,0,0.25)', alignItems: 'center', justifyContent: 'center', zIndex: 2 },
   checkOn: { backgroundColor: colors.green, borderColor: colors.white }, // selected: the standard green
@@ -636,30 +636,30 @@ const styles = StyleSheet.create({
   confirm: { position: 'absolute', left: 16, right: 16, bottom: 150, backgroundColor: colors.glass, borderRadius: 20, padding: 18, gap: 14, zIndex: 40 },
   confirmText: { color: colors.white, fontFamily: fonts.ui, fontSize: 16, lineHeight: 22 },
   actBtn: { flex: 1, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
-  actText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  actText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
   cancelPill: { backgroundColor: '#d4312a', paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' },
-  whoName: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  whoName: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
   whoSub: { color: 'rgba(235,235,235,0.6)', fontFamily: fonts.ui, fontSize: 12, marginTop: 1 },
   barBtn: { paddingVertical: 10, paddingHorizontal: 6 },
-  barSmall: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 }, // Select / Cancel: the same size as Share, Edit and Delete, on the same line
+  barSmall: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }, // Select / Cancel: the same size as Share, Edit and Delete, on the same line
   barBtnOff: { opacity: 0.35 },
-  barBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
+  barBtnText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 },
   barHint: { flex: 1, textAlign: 'right', color: colors.muted, fontFamily: fonts.ui, fontSize: 12 },
   coverImg: { position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' },
   feature: { flexDirection: 'row', gap: 16, alignItems: 'center', paddingHorizontal: 20 },
-  kicker: { color: '#d0d0d0', fontFamily: fonts.ui, fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 },
-  featureTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 22 },
+  kicker: { color: '#d0d0d0', fontFamily: fonts.uiBold, fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 },
+  featureTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 22 },
   shelfGrid: { paddingHorizontal: 20, flexDirection: 'row', flexWrap: 'wrap', rowGap: 22 },
-  shelfTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 19, paddingHorizontal: 20 },
+  shelfTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 19, paddingHorizontal: 20 },
   badgeAt: { position: 'absolute', left: 6, bottom: 6 }, // bottom-left corner of the cover
   badgeShadow: { alignSelf: 'flex-start', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.35, shadowRadius: 3, elevation: 3 },
   badge: { paddingHorizontal: 8, paddingTop: 2, paddingBottom: 4, overflow: 'hidden' }, // a little more room below: the word sits centred
-  badgeText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 12 },
+  badgeText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 12 },
   card: { position: 'absolute', overflow: 'hidden' },
   cardTitle: { color: CARD_INK, fontFamily: 'EBGaramond_700Bold', fontSize: 30, lineHeight: 34 },
   sheetSub: { color: '#4a4a4a', fontFamily: fonts.story, fontSize: 18 },
   sheetText: { color: CARD_INK, fontFamily: fonts.story, fontSize: 18, lineHeight: 25 , marginBottom: 22 },
   sheetBtn: { backgroundColor: colors.green, height: 40, borderRadius: 20, paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center' }, // a small solid green pill
-  sheetBtnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  sheetBtnText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
   note: { width: '100%', backgroundColor: '#4a4a4a', padding: 16, fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, color: colors.white },
 });

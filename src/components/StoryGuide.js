@@ -69,16 +69,16 @@ export default function StoryGuide({ visible, onClose, area, onIdeas }) {
 const styles = StyleSheet.create({
   scrim: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.3)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, zIndex: 70 },
   card: { padding: 24, gap: 12, overflow: 'hidden', width: '100%' },
-  kicker: { color: colors.muted, fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', letterSpacing: 0.3 },
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 26 },
+  kicker: { color: colors.muted, fontFamily: fonts.uiBold, fontSize: 13, letterSpacing: 0.3 },
+  title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 26 },
   body: { color: '#e2e2e2', fontFamily: fonts.ui, fontSize: 17, lineHeight: 25 },
   dots: { flexDirection: 'row', gap: 6, marginTop: 4 },
   dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#555' },
   dotOn: { backgroundColor: colors.blue },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
-  skip: { color: colors.muted, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
+  skip: { color: colors.muted, fontFamily: fonts.uiBold, fontSize: 15 },
   btn: { backgroundColor: colors.tile, paddingHorizontal: 20, height: 44, borderRadius: 22, justifyContent: 'center', overflow: 'hidden' }, // pills
   btnMain: { backgroundColor: colors.blue }, // primary blue (the red is kept for recording)
-  link: { color: '#6fb1ff', fontWeight: '700', textDecorationLine: 'underline' },
-  btnText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 },
+  link: { color: '#6fb1ff', fontFamily: fonts.uiBold, textDecorationLine: 'underline' },
+  btnText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 },
 });

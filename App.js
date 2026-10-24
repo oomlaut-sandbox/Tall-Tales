@@ -10,7 +10,7 @@ import { SafeAreaInsetsContext, SafeAreaProvider, useSafeAreaInsets } from 'reac
 import { useFonts, EBGaramond_400Regular, EBGaramond_400Regular_Italic, EBGaramond_500Medium, EBGaramond_700Bold } from '@expo-google-fonts/eb-garamond';
 import { SpecialElite_400Regular } from '@expo-google-fonts/special-elite';
 import { DancingScript_700Bold } from '@expo-google-fonts/dancing-script';
-import { PlusJakartaSans_500Medium, PlusJakartaSans_600SemiBold, PlusJakartaSans_700Bold } from '@expo-google-fonts/plus-jakarta-sans';
+import { PlusJakartaSans_400Regular, PlusJakartaSans_500Medium, PlusJakartaSans_600SemiBold, PlusJakartaSans_700Bold, PlusJakartaSans_800ExtraBold } from '@expo-google-fonts/plus-jakarta-sans';
 import { colors, fonts, MAX_WIDTH } from './src/theme';
 import Start from './src/screens/Start';
 import { bookLayout, startRoom } from './src/components/BookFrame';
@@ -418,17 +418,17 @@ function Root() {
           <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setIncoming(null)}>
             <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 28 }}>
               <View style={{ width: '100%', maxWidth: 400, backgroundColor: 'rgba(0,0,0,0.86)', borderRadius: 24, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26 }}>
-                <Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20 }}>{t('{name} sent you a sheet', { name: incoming.from || t('Someone') })}</Text>
+                <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 20 }}>{t('{name} sent you a sheet', { name: incoming.from || t('Someone') })}</Text>
                 <Text style={{ color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, marginTop: 12 }}>{t('Put it in My Folder?')}</Text>
                 <View style={{ flexDirection: 'row', gap: 10, marginTop: 26, justifyContent: 'flex-end' }}>
-                  <Pressable onPress={() => setIncoming(null)} style={{ height: 44, borderRadius: 22, paddingHorizontal: 20, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 }}>{t('Not now')}</Text></Pressable>
+                  <Pressable onPress={() => setIncoming(null)} style={{ height: 44, borderRadius: 22, paddingHorizontal: 20, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 }}>{t('Not now')}</Text></Pressable>
                   <Pressable onPress={async () => {
                     const d = incoming; setIncoming(null);
                     try {
                       await addSheet({ kind: 'page', from: d.from || '', page: d.page }, d.photo ? sheetPhotoFile(d.photo) : null);
                       go('library'); toast(t('It’s in My Folder.'));
                     } catch (e) { toast(t('That file couldn’t be opened.')); }
-                  }} style={{ height: 44, borderRadius: 22, paddingHorizontal: 22, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 }}>{t('Add')}</Text></Pressable>
+                  }} style={{ height: 44, borderRadius: 22, paddingHorizontal: 22, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 }}>{t('Add')}</Text></Pressable>
                 </View>
               </View>
             </View>
@@ -440,17 +440,17 @@ function Root() {
             <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setIncoming(null)}>
               <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 28 }}>
                 <View style={{ width: '100%', maxWidth: 400, backgroundColor: '#000', borderRadius: 24, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26 }}>
-                  <Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20 }}>{t('{names} read “{title}” for you', { names, title })}</Text>
+                  <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 20 }}>{t('{names} read “{title}” for you', { names, title })}</Text>
                   <Text style={{ color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, marginTop: 12 }}>{t('Add their voice to this book on this phone? Pages they didn’t record are read by the narrator.')}</Text>
                   <View style={{ flexDirection: 'row', gap: 10, marginTop: 26, justifyContent: 'flex-end' }}>
-                    <Pressable onPress={() => setIncoming(null)} style={{ height: 44, borderRadius: 22, paddingHorizontal: 20, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 }}>{t('Not now')}</Text></Pressable>
+                    <Pressable onPress={() => setIncoming(null)} style={{ height: 44, borderRadius: 22, paddingHorizontal: 20, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 }}>{t('Not now')}</Text></Pressable>
                     <Pressable onPress={async () => {
                       const data = incoming; setIncoming(null);
                       const res = await importVoices(data);
                       if (res.ok) { go('library'); toast(t('{names}’s voice is ready in “{title}”.', { names, title }), 5000); }
                       else if (res.reason === 'full') toast(t('There’s room for three readers on this phone. Remove one first: tap the voice on the reading bar, then the scissors.'), 6000);
                       else toast(t('That file couldn’t be opened.'));
-                    }} style={{ height: 44, borderRadius: 22, paddingHorizontal: 22, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 }}>{t('Add')}</Text></Pressable>
+                    }} style={{ height: 44, borderRadius: 22, paddingHorizontal: 22, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 }}>{t('Add')}</Text></Pressable>
                   </View>
                 </View>
               </View>
@@ -516,7 +516,7 @@ const setNextScreen = (s) => { nextScreen = s; };
 const takeNextScreen = () => { const s = nextScreen; nextScreen = null; return s; };
 
 export default function App() {
-  const [loaded] = useFonts({ EBGaramond_400Regular, EBGaramond_400Regular_Italic, EBGaramond_500Medium, EBGaramond_700Bold, SpecialElite_400Regular, DancingScript_700Bold, PlusJakartaSans_500Medium, PlusJakartaSans_600SemiBold, PlusJakartaSans_700Bold });
+  const [loaded] = useFonts({ EBGaramond_400Regular, EBGaramond_400Regular_Italic, EBGaramond_500Medium, EBGaramond_700Bold, SpecialElite_400Regular, DancingScript_700Bold, PlusJakartaSans_400Regular, PlusJakartaSans_500Medium, PlusJakartaSans_600SemiBold, PlusJakartaSans_700Bold, PlusJakartaSans_800ExtraBold });
   const [pictureReady, setPictureReady] = useState(false);
   // the child whose things the app shows (Profiles): read before anything else; switching children starts
   // the app afresh with their notebook, badges, playlists and settings

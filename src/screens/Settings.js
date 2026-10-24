@@ -83,7 +83,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
             <Text style={[styles.cardTitle, { fontSize: 18 }]}>{t('Quick and Safe Kid')}</Text>
             <Text style={styles.small}>{t('Recommended for a child reading alone')}</Text>
             <Text style={styles.p}>{t('The simplest, most foolproof setup: only My Library and My Notebook. Every book reads itself aloud a page at a time, and your child turns the page when ready. Nothing can be bought, shared, printed, recorded or changed. With your child’s age set, only books rated for that age.')}</Text>
-            {quick ? <Text style={[styles.p, { color: colors.white, fontWeight: '700' }]}>{t('Quick and Safe Kid is on.')}</Text> : (
+            {quick ? <Text style={[styles.p, { color: colors.white, fontFamily: fonts.uiBold }]}>{t('Quick and Safe Kid is on.')}</Text> : (
               <Pressable onPress={() => setControls({ ...quickSafeControls(controls.childAge), ...night })} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button">
                 <Text style={styles.pillText}>{t('Use Quick and Safe Kid')}</Text>
               </Pressable>
@@ -178,21 +178,21 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: DESK_BG },
   band: { backgroundColor: '#4a4a4a', paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, transform: [{ translateY: -3 }] },
+  title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 32, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 24, paddingBottom: 40, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 12 },
-  section: { fontFamily: fonts.ui, fontSize: 13, fontWeight: '700', color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14 },
+  section: { fontFamily: fonts.uiBold, fontSize: 13, color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14 },
   card: { backgroundColor: '#3a3a3a', borderRadius: 14, padding: 16, gap: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 3 },
-  cardTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 16, color: colors.white },
+  cardTitle: { fontFamily: fonts.uiBold, fontSize: 16, color: colors.white },
   p: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#e6e6e6' },
   small: { fontFamily: fonts.ui, fontSize: 13, lineHeight: 18, color: '#bdbdbd' },
   link: { fontFamily: fonts.ui, fontSize: 14, color: colors.white, textDecorationLine: 'underline' },
   choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   choice: { paddingHorizontal: 14, height: 36, borderRadius: 18, backgroundColor: '#2a2a2a', alignItems: 'center', justifyContent: 'center' },
   choiceOn: { backgroundColor: colors.green },
-  choiceText: { fontFamily: fonts.ui, fontSize: 15, color: '#dcdcdc', fontWeight: '600' },
+  choiceText: { fontFamily: fonts.uiSemiBold, fontSize: 15, color: '#dcdcdc' },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, minHeight: 36 },
   rowText: { flex: 1, fontFamily: fonts.ui, fontSize: 16, color: colors.white },
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 24, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
-  pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  pillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
 });

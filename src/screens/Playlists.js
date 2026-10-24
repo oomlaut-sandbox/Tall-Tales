@@ -197,7 +197,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
                   </View>
                   <Pressable onPress={() => { setLists((l) => l.filter((p) => p.id !== pl.id)); setEdit(null); }} accessibilityRole="button"
                     style={{ alignSelf: 'flex-start', backgroundColor: colors.deepRed, height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', marginTop: 6 }}>
-                    <Text style={{ color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 }}>{t('Delete this playlist')}</Text>
+                    <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 }}>{t('Delete this playlist')}</Text>
                   </Pressable>
                 </>
               )}
@@ -214,32 +214,32 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: DESK_BG },
   band: { backgroundColor: BAND_COLOR, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 },
-  sheetTitle: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 20 },
+  sheetTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 20 },
   sheet: { width: '100%', maxWidth: 560, maxHeight: '100%', backgroundColor: '#2b2b2d', borderRadius: 24, overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.6)' }, // the edit box
-  title: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 32, transform: [{ translateY: -3 }] },
+  title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 32, transform: [{ translateY: -3 }] },
   body: { padding: 24, paddingTop: 24, paddingBottom: 140, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 14 },
   p: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#e6e6e6' },
   small: { fontFamily: fonts.ui, fontSize: 13, lineHeight: 18, color: '#bdbdbd' },
   editTab: { backgroundColor: '#e8a317', borderRadius: 14, paddingHorizontal: 14, paddingVertical: 6 }, // an orangey yellow tab
-  editTabText: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, color: '#1a1a1a' },
+  editTabText: { fontFamily: fonts.uiBold, fontSize: 15, color: '#1a1a1a' },
   donePill: { backgroundColor: colors.green, paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' },
-  donePillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15, paddingHorizontal: 3 },
+  donePillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15, paddingHorizontal: 3 },
   link: { fontFamily: fonts.ui, fontSize: 15, color: colors.white, textDecorationLine: 'underline' },
   card: { backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 14, padding: 16, gap: 12 },
-  cardTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 18, color: colors.white },
+  cardTitle: { fontFamily: fonts.uiBold, fontSize: 18, color: colors.white },
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
-  pillText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 },
+  pillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
   chip: { paddingHorizontal: 12, height: 30, borderRadius: 15, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
   chipOn: { backgroundColor: colors.blue },
-  chipText: { fontFamily: fonts.ui, fontSize: 13, color: '#dcdcdc', fontWeight: '600' },
+  chipText: { fontFamily: fonts.uiSemiBold, fontSize: 13, color: '#dcdcdc' },
   input: { height: 48, borderRadius: 10, backgroundColor: '#d6d6d6', paddingHorizontal: 14, paddingVertical: 0, includeFontPadding: false, fontFamily: fonts.ui, fontSize: 20, color: '#222' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 14 },
   bookName: { fontFamily: fonts.ui, fontSize: 13, color: colors.white },
   tick: { position: 'absolute', right: 4, top: 4, width: 26, height: 26, borderRadius: 13, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: colors.white },
-  tickText: { color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 13 },
+  tickText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 13 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#3a3a3a', borderRadius: 10, padding: 8 },
-  num: { width: 18, textAlign: 'center', fontFamily: fonts.ui, fontWeight: '700', color: '#bdbdbd' },
+  num: { width: 18, textAlign: 'center', fontFamily: fonts.uiBold, color: '#bdbdbd' },
   pbtn: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#2a2a2a', alignItems: 'center', justifyContent: 'center' },
-  pbtnText: { color: colors.white, fontFamily: fonts.ui, fontSize: 16, fontWeight: '700' },
+  pbtnText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
 });

@@ -17,7 +17,7 @@ export function VoiceFace({ photo, name, narrator = false, person = false, size 
       {photo ? <Image source={{ uri: photo }} style={{ width: size, height: size }} resizeMode="cover" />
         : person ? <View style={{ transform: [{ translateY: -size * 0.025 }] }}><PersonIcon size={size * 0.4} color="#8a8a8a" /></View>
         : narrator || !name ? <View style={{ transform: [{ translateY: size * 0.07 }] }}><BubbleIcon size={size * 0.5} color="#e0e0e0" /></View>
-        : <Text allowFontScaling={false} style={{ color: '#e0e0e0', fontFamily: fonts.ui, fontWeight: '700', fontSize: size * 0.44 }}>{name.trim().charAt(0).toUpperCase()}</Text>}
+        : <Text allowFontScaling={false} style={{ color: '#e0e0e0', fontFamily: fonts.uiBold, fontSize: size * 0.44 }}>{name.trim().charAt(0).toUpperCase()}</Text>}
     </View>
   );
 }
@@ -56,8 +56,8 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
 const styles = StyleSheet.create({
   box: { position: 'absolute', width: 250, backgroundColor: 'rgba(0,0,0,0.86)', /* see-through black, dark enough that the page's words don't show through */ borderRadius: 26, paddingHorizontal: 14, paddingTop: 18, paddingBottom: 14, gap: 6, boxShadow: '0 16px 40px rgba(0,0,0,0.6)' },
   edit: { position: 'absolute', top: 16, right: 18, padding: 2 },
-  title: { color: 'rgba(255,255,255,0.7)', fontFamily: fonts.ui, fontWeight: '700', fontSize: 14, marginLeft: 6, marginBottom: 6 },
+  title: { color: 'rgba(255,255,255,0.7)', fontFamily: fonts.uiBold, fontSize: 14, marginLeft: 6, marginBottom: 6 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 8, paddingVertical: 8, borderRadius: 18 },
   rowOn: { backgroundColor: colors.green },
-  name: { flex: 1, color: colors.white, fontFamily: fonts.ui, fontWeight: '700', fontSize: 17 },
+  name: { flex: 1, color: colors.white, fontFamily: fonts.uiBold, fontSize: 17 },
 });
