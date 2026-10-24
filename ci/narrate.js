@@ -138,6 +138,7 @@ const SAMPLE_LANGS = {
   fr: 'Laisse jouer ton imagination, avec Oumlaout Rideur.',
   es: 'Deja volar tu imaginación, con Umlaut Rider.',
   ja: 'ウームラウト・リーダーで、そうぞうの せかいで あそぼう。',
+  ar: 'أطلِقْ خيالَك مع كورو ريدر.',
 };
 async function makeSampleLangs(v, voiceId) {
   samples.langs = samples.langs || {};
@@ -157,7 +158,7 @@ async function makeSampleLangs(v, voiceId) {
 }
 // "The End", said by each narrator on the last page of every book: slow, steady and soft, for bedtime.
 // One clip per language, the same for every book. assets/narration/<voice>/the-end/<lang>.mp3
-const THE_END = { en: 'The End.', de: 'Ende.', fr: 'Fin.', es: 'Fin.', ja: 'おしまい。' };
+const THE_END = { en: 'The End.', de: 'Ende.', fr: 'Fin.', es: 'Fin.', ja: 'おしまい。', ar: 'النهاية.' };
 const END_SETTINGS = { stability: 0.9, similarity_boost: 0.8, style: 0, use_speaker_boost: false };
 async function makeTheEnd(v, voiceId) {
   samples.theEnd = samples.theEnd || {};

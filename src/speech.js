@@ -27,7 +27,7 @@ export function stopSpeech() {
 // Speak `text`; onWord(charIndex) is called as speech progresses (real boundaries when the
 // platform reports them, otherwise an estimate), onDone when finished or stopped.
 // lang: the book's language ('de', 'fr', 'es', 'ja'); the phone's own voice for that language is used
-const LOCALES = { en: 'en-US', de: 'de-DE', fr: 'fr-FR', es: 'es-ES', ja: 'ja-JP' };
+const LOCALES = { en: 'en-US', de: 'de-DE', fr: 'fr-FR', es: 'es-ES', ja: 'ja-JP', ar: 'ar-SA' };
 const voiceFor = (lang) => (!lang || lang === 'en' ? { language: 'en-US', voice: voiceId } : { language: LOCALES[lang] || lang });
 export function speakTracked(text, { rate = 0.92, onWord, onDone, lang } = {}) {
   stopSpeech();
