@@ -13,7 +13,7 @@ jobs:
   narrate:
     if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[narrate]')
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -24,6 +24,7 @@ jobs:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
         run: node ci/narrate.js
       - name: Save narration to main
+        if: always() # keep whatever was made, even if the run stops early
         run: |
           git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
           git add assets/narration src/narration

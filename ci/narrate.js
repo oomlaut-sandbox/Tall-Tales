@@ -26,9 +26,9 @@ const VOICES = [
   // id: ElevenLabs' standard voice ID, used if the key isn't allowed to look voices up.
   // pace: how fast each voice speaks at the app's default speed (every narrator at 0.75, a calm bedtime pace — 24 Oct 2026).
   { key: 'lily', label: 'Lily', find: ['lily'], id: 'pFZP5JQG7iQjIQuC4Bku', pace: 0.75 },
-  { key: 'gregory', label: 'Gregory Grumble', find: ['gregory grumble', 'grumble'], pace: 0.75 },
+  { key: 'gregory', label: 'Gregory Grumble', find: ['gregory grumble', 'grumble'], pace: 0.75, wordPace: 1 }, // (single tapped words keep the clips already made)
   // Johnny Kid (Jörg, 24 Oct 2026): only Different for now (books: the only books this voice reads)
-  { key: 'johnny', label: 'Johnny Kid', find: ['johnny kid'], pace: 0.75, books: ['different'] },
+  { key: 'johnny', label: 'Johnny Kid', find: ['johnny kid'], pace: 0.75, wordPace: 1, books: ['different'] },
 ];
 const readsBook = (v, id) => !v.books || v.books.includes(id);
 
@@ -225,7 +225,7 @@ async function makeWords(v, voiceId) {
   words[v.key].parts = {}; // Learn to Read says whole words only (no word parts)
   for (const kind of ['words']) {
     for (const [key, text] of want[kind]) {
-      const speed = kind === 'words' ? (v.pace || PACE) : 0.7;
+      const speed = kind === 'words' ? (v.wordPace || v.pace || PACE) : 0.7;
       const fp = crypto.createHash('sha1').update(`${MODEL}|${voiceId}|${speed}|${text}`).digest('hex').slice(0, 12);
       const file = path.join('assets/narration', v.key, kind, `${slug(key)}.mp3`);
       const have = words[v.key][kind][key];
@@ -251,7 +251,7 @@ async function makeWords(v, voiceId) {
           const w = helpers.cleanWord(raw);
           if (!w || w.length > 24) continue; // (a long unspaced Japanese phrase isn't a word to tap)
           const key = w.toLocaleLowerCase(lang);
-          const speed = v.pace || PACE;
+          const speed = v.wordPace || v.pace || PACE;
           const fp = crypto.createHash('sha1').update(`${MODEL}|${voiceId}|${speed}|${lang}|${w}`).digest('hex').slice(0, 12);
           const fname = `${crypto.createHash('sha1').update(key).digest('hex').slice(0, 10)}.mp3`;
           const file = path.join('assets/narration', v.key, `words-${lang}`, fname);
