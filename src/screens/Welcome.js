@@ -498,10 +498,13 @@ function GrownPath({ W, H, insets, voice, t, lang, sound, onSound, controls, set
   );
 }
 function P1Visual({ w }) {
+  const lw = w * 0.8, k = lw / LETTERS_W;
   return (
     <View style={{ alignItems: 'center' }}>
-      <Image source={READER_LOGO} style={{ ...FELT_SHADOW, width: w * 0.95, height: w * 0.95 * 434 / 1233 }} resizeMode="contain" />
-      <Image source={NOTEBOOK} style={{ width: w * 0.5, height: w * 0.5, marginTop: 6 }} resizeMode="contain" />
+      <View style={{ width: lw, height: LETTERS_H * k }}>
+        {LETTERS.map(([src, x, lw2], i) => <Image key={i} source={src} style={{ ...LETTER_SHADOW, position: 'absolute', left: x * k, top: 0, width: lw2 * k, height: LETTERS_H * k }} resizeMode="contain" />)}
+      </View>
+      <Image source={NOTEBOOK} style={{ width: w * 0.5, height: w * 0.5, marginTop: 14 }} resizeMode="contain" />
     </View>
   );
 }
@@ -650,7 +653,7 @@ function P8Visual({ w }) {
 const styles = StyleSheet.create({
   whoTitle: { color: INK, fontFamily: F.bold, fontSize: 30, textAlign: 'center' },
   choice: { alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 10, shadowOffset: { width: 0, height: 6 } },
-  choiceText: { color: CREAM, fontFamily: F.bold, fontSize: 20, marginTop: 8, textShadowColor: 'rgba(0,0,0,0.4)', textShadowRadius: 4, textShadowOffset: { width: 0, height: 1 } },
+  choiceText: { color: CREAM, fontFamily: F.bold, fontSize: 17, marginTop: 8, textShadowColor: 'rgba(0,0,0,0.4)', textShadowRadius: 4, textShadowOffset: { width: 0, height: 1 } },
   gTitle: { color: INK, fontFamily: F.bold, fontSize: 28, lineHeight: 34, marginTop: 18 },
   gBody: { color: 'rgba(43,42,40,0.75)', fontFamily: F.reg, fontSize: 16, lineHeight: 23, marginTop: 10 },
 });
