@@ -189,14 +189,14 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
   const toggle = (id) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
   const stop = () => { setSelecting(false); setPicked([]); setConfirm(false); };
   const mineCount = chosen.filter((s) => s.mine).length;
-  // the library's welcome: Coro's speech bubble, about four seconds after My Library first opens (once each time the app
+  // the library's welcome: Coro's speech bubble, about two seconds after My Library first opens (once each time the app
   // is opened), until "Don't show this again" is ticked. It stays until closed.
   const [tip, setTip] = useState(false);
   const [noMore, setNoMore] = useState(false);
   useEffect(() => {
     if (libTipSeen) return undefined;
     let live = true;
-    const id = setTimeout(() => loadJSON('tipLibrary', null).then((h) => { if (live && !(h && h.hide)) { libTipSeen = true; setTip(true); } }, () => {}), 4000);
+    const id = setTimeout(() => loadJSON('tipLibrary', null).then((h) => { if (live && !(h && h.hide)) { libTipSeen = true; setTip(true); } }, () => {}), 2000);
     return () => { live = false; clearTimeout(id); };
   }, []);
   const { width: tipW, height: tipH } = useWindowDimensions();
