@@ -1,0 +1,31 @@
+# Designs candidate voices for Coro with ElevenLabs Voice Design. Saves them to the voice-output branch.
+name: Voice design
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  design:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Generate
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: node ci/voice-design.js 2>&1 | tee /tmp/sfx.txt
+      - name: Save
+        if: always()
+        run: |
+          cp -r voice-out /tmp/voice-out 2>/dev/null || mkdir -p /tmp/voice-out
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          git checkout -q --orphan voice-output
+          git rm -rfq --cached . > /dev/null
+          rm -rf ./* .gitignore 2>/dev/null || true
+          cp -r /tmp/voice-out voices; cp /tmp/sfx.txt report.txt
+          git add -f voices report.txt
+          git commit -qm "Coro voice candidates"
+          git push -qf origin voice-output
