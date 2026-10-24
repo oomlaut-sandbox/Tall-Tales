@@ -27,7 +27,10 @@ const VOICES = [
   // pace: how fast each voice speaks at the app's default speed (Lily a little slower; Gregory as he is).
   { key: 'lily', label: 'Lily', find: ['lily'], id: 'pFZP5JQG7iQjIQuC4Bku', pace: 0.75 },
   { key: 'gregory', label: 'Gregory Grumble', find: ['gregory grumble', 'grumble'], pace: 1 },
+  // Johnny Kid (Jörg, 24 Oct 2026): only Different for now (books: the only books this voice reads)
+  { key: 'johnny', label: 'Johnny Kid', find: ['johnny kid'], pace: 1, books: ['different'] },
 ];
+const readsBook = (v, id) => !v.books || v.books.includes(id);
 
 // A short sample each voice says when it's tapped in Voices (spelled the way it should sound).
 const SAMPLE = 'Let your imagination play, with Oomlout Reader.';
@@ -204,7 +207,7 @@ async function makeLetters(v, voiceId) {
 async function makeWords(v, voiceId) {
   const stories = loadStories();
   const want = { words: new Map(), parts: new Map() };
-  for (const story of stories) {
+  for (const story of stories.filter((st) => readsBook(v, st.id))) {
     for (const page of story.pages) {
       for (const raw of (page.text || '').split(/\s+/)) {
         const w = helpers.cleanWord(raw);
@@ -238,7 +241,7 @@ async function makeWords(v, voiceId) {
   // Learn to Read in the translated books: every word in each language, said by the same voice in that language
   // (kept in words-<lang>/, named by a short hash so any script works as a file name)
   words[v.key].langs = words[v.key].langs || {};
-  for (const story of stories.filter((st) => TRANSLATED.includes(st.id) && st.langs)) {
+  for (const story of stories.filter((st) => TRANSLATED.includes(st.id) && st.langs && readsBook(v, st.id))) {
     for (const [lang, L] of Object.entries(story.langs)) {
       const mine = (words[v.key].langs[lang] = words[v.key].langs[lang] || {});
       let ln = 0, lk = 0;
@@ -280,7 +283,7 @@ async function makeWords(v, voiceId) {
     const voiceId = await findVoice(v);
     if (!voiceId) continue;
     data[v.key] = data[v.key] || {};
-    for (const story of stories) {
+    for (const story of stories.filter((st) => readsBook(v, st.id))) {
       data[v.key][story.id] = data[v.key][story.id] || {};
       for (const page of story.pages) {
         if (!page.text || !page.text.trim()) continue;
@@ -314,7 +317,7 @@ async function makeWords(v, voiceId) {
     }
     // The translated books (Different for now): the same voice reading each language's text, kept as
     // <story>@<lang> (e.g. different@de), with word timings like the English pages.
-    for (const story of stories.filter((st) => TRANSLATED.includes(st.id) && st.langs)) {
+    for (const story of stories.filter((st) => TRANSLATED.includes(st.id) && st.langs && readsBook(v, st.id))) {
       for (const [lang, L] of Object.entries(story.langs)) {
         const sk = `${story.id}@${lang}`;
         data[v.key][sk] = data[v.key][sk] || {};

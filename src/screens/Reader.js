@@ -45,6 +45,8 @@ export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : 
 // Book narrators (ElevenLabs). Fatima (voice key 'lily') is the default.
 // A tiny printed page: white sheet with the picture and words squares, upright or sideways.
 export const NARRATORS = [['lily', 'Fatima'], ['gregory', 'Henry']]; // add more voices here (and in ci/narrate.js)
+// narrators who read only certain books (picked in that book's 'Who reads this book?' box; the book remembers it)
+export const BOOK_NARRATORS = [['johnny', 'Johnny', ['different']]];
 export const narratorOf = (prefs) => (NARRATORS.some(([k]) => k === prefs.narrator) ? prefs.narrator : 'lily');
 const NARRATOR = 0.92; // the phone voice's normal pace
 const VOICE_RECORDING = {
@@ -188,10 +190,18 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   // who reads this book aloud: 'narrator' or one of the family's readers (each book remembers its own)
   const [voice, setVoice] = useState(prefs.voice === 'mine' ? 'me' : 'narrator');
   const voiceRef = useRef(voice); voiceRef.current = voice;
+  // a narrator only this book has (Johnny reads Different): kept as the book's voice 'narrator:johnny'
+  const bookNarrators = BOOK_NARRATORS.filter(([, , books]) => books.includes(story.id));
+  const [bookNarr, setBookNarr] = useState(null);
+  const bookNarrRef = useRef(null); bookNarrRef.current = bookNarr;
+  const nkOf = (pr) => bookNarrRef.current || narratorOf(pr); // whose narration plays
   const [readers, setReaders] = useState([]);
   useEffect(() => {
     getReaders().then(setReaders).catch(() => {});
-    getBookVoice(story.id).then((v) => { if (v) setVoice(v); }).catch(() => {});
+    getBookVoice(story.id).then((v) => {
+      if (v && v.startsWith('narrator:')) { const k = v.slice(9); if (bookNarrators.some(([b]) => b === k)) { setBookNarr(k); setVoice('narrator'); } return; }
+      if (v) setVoice(v);
+    }).catch(() => {});
   }, [story.id]);
   const recReader = useRef('me'); // who is recording now
   const [askReader, setAskReader] = useState(false); // the 'Who's reading?' box before recording
@@ -202,8 +212,8 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   const voiceOptions = [{ id: 'narrator', name: tr('Narrator'), narrator: true }, ...familyOptions]; // (the Play panel's list)
   const shownVoice = voiceOptions.some((o) => o.id === voice) ? voice : 'narrator';
   // the box from the face on the bar: every voice by name (Fatima, Henry, then the family: Me, Opa…)
-  const boxOptions = [...NARRATORS.map(([k, label]) => ({ id: `narrator:${k}`, name: label, narrator: true })), ...familyOptions];
-  const boxValue = shownVoice === 'narrator' ? `narrator:${narratorOf(prefs)}` : shownVoice;
+  const boxOptions = [...NARRATORS.map(([k, label]) => ({ id: `narrator:${k}`, name: label, narrator: true })), ...bookNarrators.map(([k, label]) => ({ id: `narrator:${k}`, name: label, narrator: true })), ...familyOptions];
+  const boxValue = shownVoice === 'narrator' ? `narrator:${bookNarr || narratorOf(prefs)}` : shownVoice;
   const showVoices = true; // the face is always on the bar: there are always the two narrators to choose from
   const [voiceBox, setVoiceBox] = useState(false);
   const [editReaders, setEditReaders] = useState(false); // the scissors: the 'Who's reading?' box for editing the readers // the 'Who reads this book?' box from the face on the bar
@@ -226,7 +236,12 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     const was = reading || between;
     stopReading();
     let id = id0;
-    if (id0.startsWith('narrator:')) { const k = id0.slice(9); id = 'narrator'; if (k !== narratorOf(prefs)) setPrefs((p) => ({ ...p, narrator: k })); }
+    if (id0.startsWith('narrator:')) {
+      const k = id0.slice(9); id = 'narrator';
+      if (bookNarrators.some(([b]) => b === k)) { setBookNarr(k); bookNarrRef.current = k; setVoice(id); setBookVoice(story.id, id0); if (was) restartInVoice.current = true; return; }
+      setBookNarr(null); bookNarrRef.current = null;
+      if (k !== narratorOf(prefs)) setPrefs((p) => ({ ...p, narrator: k }));
+    }
     setVoice(id); setBookVoice(story.id, id);
     if (was) restartInVoice.current = true;
   };
@@ -365,7 +380,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     // a moment after the page has landed. No clip yet: the phone's voice says it, slowly.
     if (p.end) {
       const lang = story.lang || 'en';
-      const vk = narratorOf(prefs);
+      const vk = nkOf(prefs);
       const clip = THE_END?.[vk]?.[lang] || THE_END?.lily?.[lang];
       setReading(true); setPaused(false); setBetween(false);
       const done = () => { usingVoice.current = false; setReading(false); };
@@ -394,7 +409,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     // otherwise the phone's own voice.
     const narrate = () => {
       checkVolume(tr('Your volume is turned down.'));
-      const voiceKey = narratorOf(prefs);
+      const voiceKey = nkOf(prefs);
       // books from the store bring their own narration (downloaded); the app's own books have it built in
       // a book shown in another language has no narration in that language yet: the phone reads it in that language
       // a translated book: its ElevenLabs narration in that language (kept as e.g. different@de), or, if there
@@ -570,7 +585,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       // Say the whole word once, clearly, in the chosen narrator's voice (the phone's voice if needed).
       // a translated book: the narrator says the word in that language (the phone's voice only if there's no clip)
       const foreign = story.lang && story.lang !== 'en';
-      const nk = narratorOf(prefsRef.current);
+      const nk = nkOf(prefsRef.current);
       const wordClip = foreign
         ? (WORDS_LANG[nk]?.[story.lang]?.[w.toLocaleLowerCase(story.lang)] || WORDS_LANG.lily?.[story.lang]?.[w.toLocaleLowerCase(story.lang)])
         : WORDS[nk]?.[w.toLowerCase()];
