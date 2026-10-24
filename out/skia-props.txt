@@ -1,0 +1,36 @@
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Shaders.d.ts:7:export interface ImageShaderProps extends TransformProps, Partial<RectCtor> {
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Shaders.d.ts-8-    tx: SkEnum<typeof TileMode>;
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Shaders.d.ts-9-    ty: SkEnum<typeof TileMode>;
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Shaders.d.ts-10-    fit: Fit;
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Shaders.d.ts-11-    rect?: SkRect;
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Shaders.d.ts-12-    image: SkImage | null;
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Shaders.d.ts-13-    sampling?: SamplingOptions;
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Shaders.d.ts-14-}
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Shaders.d.ts-15-export interface ColorProps {
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Shaders.d.ts-16-    color: Color;
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Shaders.d.ts-17-}
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Shaders.d.ts-18-export interface TurbulenceProps {
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Shaders.d.ts-19-    freqX: number;
+--
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Drawings.d.ts:50:export interface VerticesProps extends DrawingNodeProps {
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Drawings.d.ts-51-    colors?: string[];
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Drawings.d.ts-52-    vertices: SkPoint[];
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Drawings.d.ts-53-    textures?: SkPoint[];
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Drawings.d.ts-54-    mode: SkEnum<typeof VertexMode>;
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Drawings.d.ts-55-    blendMode?: SkEnum<typeof BlendMode>;
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Drawings.d.ts-56-    indices?: number[];
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Drawings.d.ts-57-}
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Drawings.d.ts-58-export interface ImageSVGProps extends DrawingNodeProps {
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Drawings.d.ts-59-    svg: SkSVG | null;
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Drawings.d.ts-60-    x?: number;
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Drawings.d.ts-61-    y?: number;
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Drawings.d.ts-62-    width?: number;
+node_modules/@shopify/react-native-skia/lib/typescript/src/dom/types/Common.d.ts:39:    matrix?: InputMatrix;
+node_modules/@shopify/react-native-skia/lib/typescript/src/skia/web/JsiSkPath.d.ts:17:    addPath(src: SkPath, matrix?: SkMatrix, extend?: boolean): this;
+node_modules/@shopify/react-native-skia/lib/typescript/src/skia/web/JsiSkPathBuilder.d.ts:30:    addPath(src: SkPath, matrix?: SkMatrix, extend?: boolean): this;
+node_modules/@shopify/react-native-skia/lib/typescript/src/skia/types/Matrix.d.ts:18:export type InputMatrix = SkMatrix | Matrix3 | Matrix4 | number[];
+node_modules/@shopify/react-native-skia/lib/typescript/src/skia/types/Skia.d.ts:54:    Matrix: (matrix?: readonly number[]) => SkMatrix;
+node_modules/@shopify/react-native-skia/lib/typescript/src/skia/types/Path/Path.d.ts:363:    addPath(src: SkPath, matrix?: SkMatrix, extend?: boolean): SkPath;
+node_modules/@shopify/react-native-skia/lib/typescript/src/skia/types/Path/PathBuilder.d.ts:146:    addPath(src: SkPath, matrix?: SkMatrix, extend?: boolean): SkPathBuilder;
+node_modules/@shopify/react-native-skia/lib/typescript/src/skia/types/Matrix4.d.ts:19:export type Matrix4 = readonly [
+node_modules/@shopify/react-native-skia/lib/typescript/src/skia/types/Matrix4.d.ts:42:export type Transforms3d = Transform3d[];

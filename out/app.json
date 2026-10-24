@@ -1,0 +1,111 @@
+{
+  "expo": {
+    "name": "Coro Reader",
+    "slug": "tall-tales",
+    "scheme": "oomlaut",
+    "version": "0.1.0",
+    "orientation": "default",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#3b3b3b",
+    "ios": {
+      "supportsTablet": true,
+      "usesAppleSignIn": true,
+      "bundleIdentifier": "com.oomlaut.reader",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Coro Reader records your voice so you can read stories aloud for your child.",
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleDocumentTypes": [
+          {
+            "CFBundleTypeName": "Coro Reader voices",
+            "CFBundleTypeRole": "Viewer",
+            "LSHandlerRank": "Owner",
+            "LSItemContentTypes": [
+              "com.oomlaut.voices"
+            ]
+          }
+        ],
+        "UTExportedTypeDeclarations": [
+          {
+            "UTTypeIdentifier": "com.oomlaut.voices",
+            "UTTypeDescription": "Coro Reader voices",
+            "UTTypeConformsTo": [
+              "public.data",
+              "public.content"
+            ],
+            "UTTypeTagSpecification": {
+              "public.filename-extension": [
+                "oomlaut"
+              ],
+              "public.mime-type": [
+                "application/x-oomlaut"
+              ]
+            }
+          }
+        ],
+        "LSSupportsOpeningDocumentsInPlace": false
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "splash": {
+        "backgroundColor": "#3b3b3b",
+        "dark": {
+          "backgroundColor": "#3b3b3b"
+        }
+      }
+    },
+    "android": {
+      "package": "com.oomlaut.reader",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Coro Reader records your voice so you can read stories aloud for your child."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Coro Reader uses your photos as pictures in the stories you make.",
+          "cameraPermission": "Coro Reader uses the camera to take photos, such as of your drawings, for the stories you make."
+        }
+      ],
+      "expo-apple-authentication",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#3b3b3b",
+          "dark": {
+            "backgroundColor": "#3b3b3b"
+          },
+          "resizeMode": "contain"
+        }
+      ],
+      "expo-video",
+      "expo-sharing",
+      "expo-asset"
+    ],
+    "web": {
+      "output": "single",
+      "bundler": "metro"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "c1175638-16e5-4be5-b443-b93246c7ec7f"
+      }
+    },
+    "owner": "oomlaut-code",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "backgroundColor": "#3b3b3b",
+      "resizeMode": "contain"
+    }
+  }
+}
