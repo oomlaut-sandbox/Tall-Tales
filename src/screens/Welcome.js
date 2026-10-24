@@ -31,7 +31,7 @@ const READER_LOGO = require('../../assets/logo-felt.png');
 const GREEN_FELT = require('../../assets/ideas-felt.png');
 const LEATHER = require('../../assets/leather.jpg');
 const NOTEBOOK = require('../../assets/leather-cover-round.png');
-const COVER = require('../../assets/books/rough-lives/cover.jpg');
+const COVER = require('../../assets/books/different/d01.jpg'); // the cover the kids open: Different
 const CAT = require('../../assets/books/rough-lives/cat.jpg');
 const SUN = require('../../assets/nightlight-sun.png');
 const CORONA = require('../../assets/nightlight-corona.png');
@@ -163,7 +163,7 @@ function CatPage({ w, lang, lit, onWord, tapWord = -1, pulse }) {
       <Image source={CAT} style={{ width: w, height: w }} resizeMode="cover" />
       <View style={{ height: w * 0.42, backgroundColor: '#d9d9d9', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: w * 0.06 }}>
         {words.map((wd, i) => (
-          <Pressable key={i} disabled={!onWord} onPress={() => onWord && onWord(i)} hitSlop={6}>
+          <Pressable key={i} disabled={!onWord} onPress={() => onWord && onWord(i)} hitSlop={6} accessibilityLabel={wd.replace(/[.,!?。]/g, '')}>
             <Text style={{ fontFamily: 'EBGaramond_400Regular', fontSize: fs, color: lit === i ? colors.highlight : INK, textDecorationLine: tapWord === i && pulse ? 'underline' : 'none', textDecorationColor: colors.highlight }}>{wd}{i < words.length - 1 ? ' ' : ''}</Text>
           </Pressable>
         ))}
@@ -262,7 +262,7 @@ function Who({ W, H, insets, voice, t, onKid, onGrown, onSkip }) {
   }, []);
   const lw = Math.min(W * 0.62, 380), k = lw / LETTERS_W;
   const cs = Math.min(W * 0.26, 140);
-  const bw = Math.min((W - 48 - 16) / 2, 220);
+  const bw = Math.min((W - 48 - 16) / 2, 220), bh = bw * 805 / 1100;
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: insets.top, paddingBottom: insets.bottom }}>
       <TopBar insets={insets} onSkip={onSkip} t={t} />
@@ -277,16 +277,16 @@ function Who({ W, H, insets, voice, t, onKid, onGrown, onSkip }) {
       </Animated.View>
       <Text style={styles.whoTitle}>{t('Who’s here today?')}</Text>
       <View style={{ flexDirection: 'row', gap: 16, marginTop: 22 }}>
-        <Pressable onPress={withTap(onKid)} accessibilityRole="button" accessibilityLabel={t('I’m a kid')} style={[styles.choice, { width: bw, height: bw * 0.92 }]}>
-          <Image source={GREEN_FELT} style={StyleSheet.absoluteFill} resizeMode="stretch" />
-          <Image source={KID_CHAR} style={{ width: bw * 0.42, height: bw * 0.42 }} resizeMode="contain" />
+        <Pressable onPress={withTap(onKid)} accessibilityRole="button" accessibilityLabel={t('I’m a kid')} style={[styles.choice, { width: bw, height: bh }]}>
+          <Image source={GREEN_FELT} style={{ position: 'absolute', left: 0, top: 0, width: bw, height: bh }} resizeMode="stretch" />
+          <Image source={KID_CHAR} style={{ width: bh * 0.46, height: bh * 0.46 }} resizeMode="contain" />
           <Text style={styles.choiceText}>{t('I’m a kid')}</Text>
         </Pressable>
-        <Pressable onPress={withTap(onGrown)} accessibilityRole="button" accessibilityLabel={t('I’m a grown-up')} style={[styles.choice, { width: bw, height: bw * 0.92, overflow: 'hidden', borderRadius: bw * 0.09 }]}>
-          <Image source={LEATHER} style={StyleSheet.absoluteFill} resizeMode="cover" />
-          <View style={[StyleSheet.absoluteFill, { borderRadius: bw * 0.09, borderWidth: 1.5, borderStyle: 'dashed', borderColor: 'rgba(255,235,210,0.45)', margin: 7 }]} />
-          <Glasses size={bw * 0.36} />
-          <Text style={[styles.choiceText, { marginTop: bw * 0.1 }]}>{t('I’m a grown-up')}</Text>
+        <Pressable onPress={withTap(onGrown)} accessibilityRole="button" accessibilityLabel={t('I’m a grown-up')} style={[styles.choice, { width: bw, height: bh, overflow: 'hidden', borderRadius: bw * 0.09 }]}>
+          <Image source={LEATHER} style={{ position: 'absolute', left: 0, top: 0, width: bw, height: bh }} resizeMode="cover" />
+          <View style={{ position: 'absolute', left: 7, top: 7, right: 7, bottom: 7, borderRadius: bw * 0.07, borderWidth: 1.5, borderStyle: 'dashed', borderColor: 'rgba(255,235,210,0.45)' }} />
+          <View style={{ height: bh * 0.46, justifyContent: 'center' }}><Glasses size={bw * 0.42} /></View>
+          <Text style={styles.choiceText}>{t('I’m a grown-up')}</Text>
         </Pressable>
       </View>
       {hint ? <View style={{ height: 1 }} /> : null}
@@ -406,7 +406,7 @@ function KidPath({ W, H, insets, voice, t, lang, name, muted, onMute, onDone }) 
               </View>
               {step !== 'k4' ? (
                 <Animated.View pointerEvents={step === 'k2' ? 'auto' : 'none'} style={{ position: 'absolute', left: 0, top: 0, width: pw, height: pw, opacity: coverOp, transformOrigin: 'left', transform: [{ perspective: 1600 }, { rotateY: rotY }] }}>
-                  <Pressable onPress={withTap(openBook)} accessibilityRole="button" style={{ flex: 1, shadowColor: '#000', shadowOpacity: 0.45, shadowRadius: 14, shadowOffset: { width: 0, height: 8 } }}>
+                  <Pressable onPress={withTap(openBook)} accessibilityRole="button" accessibilityLabel="Different" style={{ flex: 1, shadowColor: '#000', shadowOpacity: 0.45, shadowRadius: 14, shadowOffset: { width: 0, height: 8 } }}>
                     <Image source={COVER} style={{ width: pw, height: pw }} resizeMode="cover" />
                   </Pressable>
                 </Animated.View>
