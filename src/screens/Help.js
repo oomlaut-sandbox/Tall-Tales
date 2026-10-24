@@ -229,6 +229,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome }) {
             lastSection = h.section;
             const shown = searching || open === h.title;
             const secOpen = searching || openSec === h.section;
+            if (!secOpen && !head) return null; // a closed section: just its heading (no empty room for its topics)
             return (
               <View key={h.title}>
                 {head ? (searching ? <Text style={styles.section}>{t(head)}</Text> : (
