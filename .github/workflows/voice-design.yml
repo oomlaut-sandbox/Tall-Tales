@@ -2,6 +2,11 @@
 name: Voice design
 on:
   workflow_dispatch:
+    inputs:
+      save:
+        description: 'Keep this candidate (its generated_voice_id) as a voice'
+        required: false
+        default: ''
 permissions:
   contents: write
 jobs:
@@ -16,6 +21,7 @@ jobs:
       - name: Generate
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          SAVE: ${{ github.event.inputs.save }}
         run: node ci/voice-design.js 2>&1 | tee /tmp/sfx.txt
       - name: Save
         if: always()

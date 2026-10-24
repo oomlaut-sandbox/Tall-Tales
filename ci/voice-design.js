@@ -11,6 +11,19 @@ const SETS = [
 ];
 (async () => {
   fs.mkdirSync('voice-out', { recursive: true });
+  // SAVE=<generated_voice_id>: keep that candidate as a voice in the account (prints its voice_id)
+  if (process.env.SAVE) {
+    const res = await fetch('https://api.elevenlabs.io/v1/text-to-voice', {
+      method: 'POST', headers: { 'xi-api-key': KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ voice_name: process.env.SAVE_NAME || 'Coro', voice_description: SETS[2][1], generated_voice_id: process.env.SAVE }),
+    });
+    const t = await res.text();
+    if (!res.ok) { console.log(`FAIL save ${res.status} ${t.slice(0, 400)}`); return; }
+    const j = JSON.parse(t);
+    console.log(`SAVED voice_id ${j.voice_id}`);
+    fs.writeFileSync('voice-out/saved.json', JSON.stringify({ voice_id: j.voice_id, name: j.name }, null, 2));
+    return;
+  }
   const list = [];
   for (const [name, desc] of SETS) {
     const res = await fetch('https://api.elevenlabs.io/v1/text-to-voice/design?output_format=mp3_44100_128', {
