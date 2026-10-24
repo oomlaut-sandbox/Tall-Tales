@@ -1,0 +1,43 @@
+# Makes the welcome's spoken lines (Fatima and Coro) with ElevenLabs and commits them to main.
+name: Welcome audio
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Remake every line (1) instead of only new or changed ones'
+        required: false
+        default: ''
+permissions:
+  contents: write
+concurrency:
+  group: narration
+jobs:
+  audio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Generate
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          FORCE: ${{ github.event.inputs.force }}
+        run: node ci/welcome-audio.js 2>&1 | tee /tmp/welcome.txt
+      - name: Save to main
+        run: |
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          git add assets/welcome src/welcome
+          if git diff --cached --quiet; then echo "no new audio"; else git commit -qm "Welcome audio (ElevenLabs)"; git pull -q --rebase origin main && git push -q origin HEAD:main; fi
+      - name: Save report
+        if: always()
+        run: |
+          cp /tmp/welcome.txt /tmp/w.txt
+          git checkout -q --orphan welcome-output
+          git rm -rfq --cached . > /dev/null
+          rm -rf ./* .gitignore 2>/dev/null || true
+          cp /tmp/w.txt report.txt
+          git add -f report.txt
+          git commit -qm "Welcome audio report"
+          git push -qf origin welcome-output
