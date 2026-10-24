@@ -28,6 +28,7 @@ import Publisher, { draftFrom } from './src/screens/Publisher';
 import CoverTest from './src/screens/CoverTest';
 import Help from './src/screens/Help';
 import Welcome from './src/screens/Welcome';
+const WELCOME_ON = false; // the welcome intro: hidden from builds until it's finished (web preview #welcome still shows it)
 import IdeaRoom from './src/screens/IdeaRoom';
 import Settings from './src/screens/Settings';
 import MusicSounds from './src/screens/MusicSounds';
@@ -72,7 +73,8 @@ function Root() {
   const [welcome, setWelcome] = useState(false);
   useEffect(() => {
     if (Platform.OS === 'web' && typeof window !== 'undefined' && /welcome/.test(window.location.hash)) { setWelcome(true); return; }
-    loadJSONFor('app', 'welcome', null).then((w) => { if (!w) setWelcome(true); }, () => {});
+    // the intro is being worked on separately: off in the app until it's ready (WELCOME_ON = true brings it back)
+    if (WELCOME_ON) loadJSONFor('app', 'welcome', null).then((w) => { if (!w) setWelcome(true); }, () => {});
   }, []);
   const welcomeDone = () => { setWelcome(false); saveJSONFor('app', 'welcome', { done: Date.now() }); go('library'); };
   const [coverOpen, setCoverOpen] = useState(false); // the book's cover is shut each time the app opens
@@ -360,7 +362,7 @@ function Root() {
         {screen === 'settings' && <Settings u={u} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
           controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} onProfiles={() => go('profiles')} onPlaylists={() => go('playlists')} />}
         {screen === 'garden' && <Garden u={u} openMenu={openMenu} toast={toast} onHome={() => go('library')} />}
-        {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} onWelcome={() => setWelcome(true)} />}
+        {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} onWelcome={WELCOME_ON ? () => setWelcome(true) : null} />}
         {screen === 'ideas' && <IdeaRoom u={u} openMenu={openMenu} onMake={() => openPublisher(null)} onHelp={() => go('help')} />}
         {screen === 'covertest' && <CoverTest u={u} openMenu={openMenu} />}
         {screen === 'about' && <About u={u} openMenu={openMenu} onSecret={() => {
