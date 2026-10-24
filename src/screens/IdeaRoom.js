@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fonts, sectionTitle, SECTION_GAP } from '../theme';
+import { colors, fonts, sectionTitle, sectionBox, SECTION_GAP } from '../theme';
 import { DESK_FELT, IS_TABLET, DESK_BG } from '../look';
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import { IDEA_SECTIONS, IDEA_COUNT } from '../ideas';
@@ -41,7 +41,7 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
           </View>
           <Text style={[styles.caption, { width: spreadW }]}>{t('Example of a Coro Reader book. You make your own.')}</Text>
           {IDEA_SECTIONS.map((sec) => { const secOpen = openSec === sec.title; return (
-            <View key={sec.title} style={{ gap: 10 }}>
+            <View key={sec.title} style={styles.box}>
               <Pressable onPress={() => { setOpenSec(secOpen ? null : sec.title); setOpen(null); }} accessibilityRole="button" accessibilityState={{ expanded: secOpen }} style={[styles.secHead, !secOpen && { marginBottom: 0 }]}>
                 <Text style={styles.section}>{t(sec.title)}</Text>
                 <Text style={styles.secChev}>{secOpen ? '−' : '+'}</Text>
@@ -83,7 +83,8 @@ const styles = StyleSheet.create({
   spread: { flex: 1, borderWidth: 1, borderColor: '#3c3c3c', overflow: 'hidden' }, // square corners, a thin dark grey line
   lead: { fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, color: colors.white },
   // the standard section heading (as in the library and Help), with a + / − at the far right
-  secHead: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 8, marginBottom: SECTION_GAP - 10 },
+  box: { ...sectionBox, gap: 10 }, // each section in its own black glass box
+  secHead: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: SECTION_GAP - 10 },
   section: { ...sectionTitle, flex: 1 },
   secChev: { fontFamily: fonts.ui, fontSize: 30, lineHeight: 34, color: 'rgba(255,255,255,0.75)', width: 30, textAlign: 'center' },
   caption: { alignSelf: 'center', marginTop: -36, marginBottom: 20, fontFamily: fonts.ui, fontSize: 13, lineHeight: 18, color: '#bdbdbd' }, // under the book picture

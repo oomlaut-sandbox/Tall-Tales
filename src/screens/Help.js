@@ -4,7 +4,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, fonts, sectionTitle, SECTION_GAP } from '../theme';
+import { colors, fonts, sectionTitle, sectionBox, SECTION_GAP } from '../theme';
 import { DESK_FELT, IS_TABLET, DESK_BG } from '../look';
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import { useLang, useT } from '../i18n';
@@ -186,7 +186,6 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome }) {
     });
   }, [q, lang]);
   const searching = !!q.trim();
-  let lastSection = null;
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
@@ -224,32 +223,32 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome }) {
           {onWelcome ? <Pressable onPress={onWelcome} accessibilityRole="button" style={[styles.aboutPill, { marginTop: 10 }]}><Text style={styles.aboutText}>{t('Watch the welcome again')}</Text></Pressable> : null}
           <View style={{ height: 18 }} />
           {!found.length ? <Text style={[styles.p, { color: colors.white }]}>{t('Nothing found for “{q}”. Try another word.', { q: q.trim() })}</Text> : null}
-          {found.map((h) => {
-            const head = h.section !== lastSection ? h.section : null;
-            lastSection = h.section;
-            const shown = searching || open === h.title;
-            const secOpen = searching || openSec === h.section;
-            if (!secOpen && !head) return null; // a closed section: just its heading (no empty room for its topics)
+          {/* each section in its own black glass box: its heading, and its topics when it's open (searching opens all) */}
+          {found.reduce((secs, h) => { const last = secs[secs.length - 1]; if (last && last.section === h.section) last.items.push(h); else secs.push({ section: h.section, items: [h] }); return secs; }, []).map(({ section, items }) => {
+            const secOpen = searching || openSec === section;
             return (
-              <View key={h.title}>
-                {head ? (searching ? <Text style={styles.section}>{t(head)}</Text> : (
-                  <Pressable onPress={() => { setOpenSec((o) => (o === h.section ? null : h.section)); setOpen(null); }} accessibilityRole="button" accessibilityState={{ expanded: secOpen }}
-                    style={[styles.secHead, !secOpen && { marginBottom: 0 }]}>
-                    <Text style={[styles.section, { flex: 1, marginTop: 0, marginBottom: 0 }]}>{t(head)}</Text>
-                    <Text style={styles.secChev}>{secOpen ? '−' : '+'}</Text>
-                  </Pressable>
-                )) : null}
-                {secOpen ? <View style={styles.card}>
-                  <Pressable onPress={() => setOpen((o) => (o === h.title ? null : h.title))} accessibilityRole="button" accessibilityState={{ expanded: shown }} style={styles.cardHead}>
-                    <Text style={styles.cardTitle}>{t(h.title)}</Text>
-                    <Text style={styles.chev}>{shown ? '−' : '+'}</Text>
-                  </Pressable>
-                  {shown ? (
-                    <View style={{ gap: 10, paddingTop: 14 }}>{/* a clear gap under the topic's title */}
-                      {h.text.map((p, k) => <Text key={k} style={styles.p}>{t(p)}</Text>)}
+              <View key={section} style={styles.box}>
+                <Pressable disabled={searching} onPress={() => { setOpenSec((o) => (o === section ? null : section)); setOpen(null); }} accessibilityRole="button" accessibilityState={{ expanded: secOpen }}
+                  style={[styles.secHead, !secOpen && { marginBottom: 0 }]}>
+                  <Text style={[styles.section, { flex: 1 }]}>{t(section)}</Text>
+                  {!searching ? <Text style={styles.secChev}>{secOpen ? '−' : '+'}</Text> : null}
+                </Pressable>
+                {secOpen ? items.map((h) => {
+                  const shown = searching || open === h.title;
+                  return (
+                    <View key={h.title} style={styles.card}>
+                      <Pressable onPress={() => setOpen((o) => (o === h.title ? null : h.title))} accessibilityRole="button" accessibilityState={{ expanded: shown }} style={styles.cardHead}>
+                        <Text style={styles.cardTitle}>{t(h.title)}</Text>
+                        <Text style={styles.chev}>{shown ? '−' : '+'}</Text>
+                      </Pressable>
+                      {shown ? (
+                        <View style={{ gap: 10, paddingTop: 14 }}>{/* a clear gap under the topic's title */}
+                          {h.text.map((p, k) => <Text key={k} style={styles.p}>{t(p)}</Text>)}
+                        </View>
+                      ) : null}
                     </View>
-                  ) : null}
-                </View> : null}
+                  );
+                }) : null}
               </View>
             );
           })}
@@ -281,9 +280,10 @@ const styles = StyleSheet.create({
   aboutPill: { alignSelf: 'flex-start', backgroundColor: '#4b5330', // a dark, muted moss green, like the felt
     height: 44, borderRadius: 22, paddingHorizontal: 26, alignItems: 'center', justifyContent: 'center', marginTop: 10 },
   aboutText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
-  section: { ...sectionTitle, marginTop: 22, marginBottom: SECTION_GAP },
+  section: { ...sectionTitle },
+  box: { ...sectionBox, gap: 10 },
   // a section heading in the overview: the heading with a + / − at the far right; closed ones sit close together
-  secHead: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 22, marginBottom: SECTION_GAP },
+  secHead: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: SECTION_GAP - 10 },
   secChev: { fontFamily: fonts.ui, fontSize: 30, lineHeight: 34, color: 'rgba(255,255,255,0.75)', width: 30, textAlign: 'center' }, // the standard section heading (as My Books in the library)
   card: { backgroundColor: '#3a3a3a', // dark grey, with white writing
     shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 3, borderRadius: 14, paddingHorizontal: 16, paddingVertical: 12 },
