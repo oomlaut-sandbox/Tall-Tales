@@ -46,6 +46,7 @@ export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : 
 // A tiny printed page: white sheet with the picture and words squares, upright or sideways.
 export const NARRATORS = [['lily', 'Fatima'], ['gregory', 'Henry']]; // add more voices here (and in ci/narrate.js)
 // narrators who read only certain books (picked in that book's 'Who reads this book?' box; the book remembers it)
+const LISTEN_TIP_SEEN = {}; // Listen Only's 'how to close' bubble, shown once per launch for each scene
 export const BOOK_NARRATORS = [['johnny', 'James', ['different']]];
 export const narratorOf = (prefs) => (NARRATORS.some(([k]) => k === prefs.narrator) ? prefs.narrator : 'lily');
 const NARRATOR = 0.92; // the phone voice's normal pace
@@ -327,7 +328,11 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   // Listen Only shows a choice first (the screen dims, a small box: the sun for Daydream, the moon for the nightlight);
   // a playlist keeps the last choice for every book after the first
   const [scene, setScene] = useState(() => (autoStart && prefs.listenScene ? prefs.listenScene : 'choose'));
-  const pickScene = (sc) => { setScene(sc); setPrefs((p) => ({ ...p, listenScene: sc })); setTimeout(() => readPage(st.current.idx), 900); /* the story starts as the scene fades in */ };
+  const pickScene = (sc) => {
+    setScene(sc); setPrefs((p) => ({ ...p, listenScene: sc })); setTimeout(() => readPage(st.current.idx), 900); /* the story starts as the scene fades in */
+    // a speech bubble once it's showing: how to get out again (once per launch for each of Daydream and the nightlight)
+    if (toast && !LISTEN_TIP_SEEN[sc]) { LISTEN_TIP_SEEN[sc] = true; setTimeout(() => toast(tr(sc === 'day' ? 'Tap the sun icon to close Listen Only mode.' : 'Tap the moon icon to close Listen Only mode.'), 5000), 1600); }
+  };
   const nightEnabled = listen && controls.nightlight !== false; // Settings → Nightlight mode can switch the nightlight off
   const choosing = nightEnabled && scene === 'choose';
   const nightOn = nightEnabled && !choosing; // the nightlight or Daydream is showing (the lock and alarm are on the bar)
