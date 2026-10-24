@@ -98,11 +98,11 @@
  },
  "k6": {
   "who": "C",
-  "en": "At bedtime, books can read all by themselves. Slide the moon over the sun.",
-  "de": "Zur Schlafenszeit lesen Bücher ganz von allein. Schieb den Mond vor die Sonne.",
-  "fr": "Au coucher, les livres se lisent tout seuls. Fais glisser la lune devant le soleil.",
-  "es": "A la hora de dormir, los libros se leen solos. Desliza la luna delante del sol.",
-  "ja": "ねる じかんには、えほんが ひとりで よんでくれるよ。おつきさまを おひさまの まえに うごかしてね。"
+  "en": "When the day is done, the sun goes down. Slide the moon over the sun.",
+  "de": "Wenn der Tag vorbei ist, geht die Sonne unter. Schieb den Mond vor die Sonne.",
+  "fr": "Quand la journée est finie, le soleil se couche. Fais glisser la lune devant le soleil.",
+  "es": "Cuando termina el día, el sol se va a dormir. Desliza la luna delante del sol.",
+  "ja": "いちにちが おわると、おひさまが しずむよ。おつきさまを おひさまの まえに うごかしてね。"
  },
  "k6night": {
   "who": "C",
@@ -154,19 +154,19 @@
  },
  "p3": {
   "who": "F",
-  "en": "Read it once. They can hear you every night. Record yourself reading a book, page by page. Send it to family, and Grandma can read the bedtime story from anywhere.",
-  "de": "Einmal lesen. Jeden Abend hören. Nimm dich auf, wie du ein Buch Seite für Seite liest. Schick es an die Familie, und Oma liest die Gutenachtgeschichte von überall.",
-  "fr": "Lisez-le une fois. Ils vous entendront chaque soir. Enregistrez-vous en lisant un livre, page par page. Envoyez-le à la famille, et mamie peut lire l’histoire du soir de n’importe où.",
-  "es": "Léelo una vez. Te oirán cada noche. Grábate leyendo un libro, página a página. Envíalo a la familia, y la abuela puede leer el cuento de buenas noches desde cualquier lugar.",
-  "ja": "一度読めば、毎晩聞ける。絵本を一ページずつ読んで録音しましょう。家族に送れば、おばあちゃんがどこからでも、おやすみの絵本を読んであげられます。"
+  "en": "Read together, even from far away. Record yourself reading a book, page by page, and send it to family. Grandparents across the world can share a story too.",
+  "de": "Gemeinsam lesen, auch aus der Ferne. Nimm dich auf, wie du ein Buch Seite für Seite liest, und schick es an die Familie. So können auch Großeltern am anderen Ende der Welt eine Geschichte teilen.",
+  "fr": "Lire ensemble, même de loin. Enregistrez-vous en lisant un livre, page par page, et envoyez-le à la famille. Les grands-parents à l’autre bout du monde peuvent aussi partager une histoire.",
+  "es": "Leer juntos, incluso a distancia. Grábate leyendo un libro, página a página, y envíalo a la familia. Los abuelos al otro lado del mundo también pueden compartir un cuento.",
+  "ja": "離れていても、いっしょに読もう。絵本を一ページずつ読んで録音し、家族に送りましょう。遠くに住むおじいちゃんやおばあちゃんも、お話をいっしょに楽しめます。"
  },
  "p4": {
   "who": "F",
-  "en": "Bedtime, handled. Listen Only reads the book by itself while the screen fades to a sunset. Sleep timer, nature sounds, a gentle wake-up alarm, and Amber light for warm evening pages. Slide the moon yourself.",
-  "de": "Schlafenszeit, erledigt. Nur zuhören liest das Buch von selbst, während der Bildschirm zu einem Sonnenuntergang verblasst. Einschlaf-Timer, Naturklänge, ein sanfter Wecker und Bernsteinlicht für warme Seiten am Abend. Schieb den Mond doch selbst.",
-  "fr": "Le coucher, simplifié. Écouter seulement lit le livre tout seul pendant que l’écran se fond en coucher de soleil. Minuterie, sons de la nature, un réveil tout doux, et la lumière ambrée pour des pages chaudes le soir. Faites glisser la lune vous-même.",
-  "es": "La hora de dormir, resuelta. Solo escuchar lee el libro solo mientras la pantalla se funde en una puesta de sol. Temporizador, sonidos de la naturaleza, un despertador suave y luz ámbar para páginas cálidas por la noche. Desliza tú la luna.",
-  "ja": "おやすみの時間も、おまかせ。「きくだけ」では絵本がひとりでに読まれ、画面は夕日へと変わっていきます。おやすみタイマー、自然の音、やさしい目覚まし、夜のための「こはくいろの あかり」も。月を自分で動かしてみてください。"
+  "en": "A calm end to the day. When the reading is done, the screen fades to a soft sunset and the moon slowly covers the sun. Nature sounds, a sleep timer, a gentle wake-up alarm, and Amber light for warm evening pages. Slide the moon yourself.",
+  "de": "Ein ruhiges Ende des Tages. Wenn fertig gelesen ist, verblasst der Bildschirm zu einem sanften Sonnenuntergang, und der Mond schiebt sich langsam vor die Sonne. Naturklänge, ein Einschlaf-Timer, ein sanfter Wecker und Bernsteinlicht für warme Seiten am Abend. Schieb den Mond doch selbst.",
+  "fr": "Une fin de journée tout en douceur. Quand la lecture est finie, l’écran se fond en un doux coucher de soleil et la lune cache peu à peu le soleil. Sons de la nature, minuterie, un réveil tout doux, et la lumière ambrée pour des pages chaudes le soir. Faites glisser la lune vous-même.",
+  "es": "Un final tranquilo para el día. Cuando termina la lectura, la pantalla se funde en una suave puesta de sol y la luna va tapando el sol. Sonidos de la naturaleza, temporizador, un despertador suave y luz ámbar para páginas cálidas por la noche. Desliza tú la luna.",
+  "ja": "一日のおわりを、おだやかに。読みおわったら、画面はやさしい夕日になり、月がゆっくりと太陽をかくしていきます。自然の音、おやすみタイマー、やさしい目覚まし、夜のための「こはくいろの あかり」も。月を自分で動かしてみてください。"
  },
  "p5": {
   "who": "F",

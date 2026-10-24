@@ -84,7 +84,7 @@ function wordTimes(lang, words) {
 }
 const strip = (s) => s.replace(/\[[^\]]+\]\s*/g, ''); // (Coro's stage directions aren't shown)
 const sentences = (s) => s.match(/[^.!?。！？]+[.!?。！？]+\s*/g) || [s];
-const TITLE_SENTENCES = { p1: 1, p2: 3, p3: 2, p4: 1, p5: 1, p6: 1 };
+const TITLE_SENTENCES = { p1: 1, p2: 3, p3: 1, p4: 1, p5: 1, p6: 1 };
 
 // ---- Coro: the grey felt pebble with round glasses and a book under its arm, waving (no mouth, ever)
 const CORO = require('../../assets/welcome/coro-wave.png');
