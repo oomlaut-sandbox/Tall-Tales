@@ -209,6 +209,7 @@ const T = {
     es: 'Cada libro tiene una edad recomendada. Los libros para niños mayores se ocultan en Mi biblioteca y en la librería.',
     ja: '本にはそれぞれねんれいのめやすがあります。もっと大きいこどもむけの本は、本だなと本やさんにでません。' },
   'Ideas Room': { de: 'Ideenzimmer', fr: 'Salle des idées', es: 'Sala de ideas', ja: 'アイデアのへや' },
+  'Example of a Coro Reader book. You make your own.': { de: 'Beispiel für ein Coro-Reader-Buch. Ihr macht euer eigenes.', fr: 'Exemple de livre Coro Reader. Vous créez le vôtre.', es: 'Ejemplo de un libro de Coro Reader. Vosotros hacéis el vuestro.', ja: 'Coro Reader の本の例です。自分だけの本をつくりましょう。' },
   'Visit the Ideas Room': { de: 'Ins Ideenzimmer', fr: 'Entrer dans la salle des idées', es: 'Ir a la sala de ideas', ja: 'アイデアのへやへ' },
   'Many ideas for books you can make together: your photos and drawings, your words, your voice.': { de: 'Viele Ideen für Bücher, die ihr zusammen machen könnt: eure Fotos und Zeichnungen, eure Worte, eure Stimme.', fr: 'Plein d’idées de livres à faire ensemble : vos photos et dessins, vos mots, votre voix.', es: 'Muchas ideas de libros para hacer juntos: tus fotos y dibujos, tus palabras, tu voz.', ja: 'いっしょに つくれる 本の アイデアが たくさん：しゃしんや え、ことば、そして あなたの こえで。' },
   'Make a story': { de: 'Geschichte machen', fr: 'Créer un livre', es: 'Hacer un cuento', ja: 'えほんを つくる' },
