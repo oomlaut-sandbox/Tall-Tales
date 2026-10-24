@@ -38,6 +38,7 @@ export const fonts = {
 
 // the standard section heading on the felt (My Books, Let's Create!, the Help sections): 28pt Coro bold, white
 export const sectionTitle = { fontFamily: fonts.uiBold, fontSize: 28, lineHeight: 34, color: colors.white };
+export const SECTION_GAP = 26; // room between a section heading's words and what comes under it (same on every screen)
 
 
 // Fonts for the words in a book (Playback Options → Book font). Serif is the default.
