@@ -10,6 +10,7 @@ import { SafeAreaInsetsContext, SafeAreaProvider, useSafeAreaInsets } from 'reac
 import { useFonts, EBGaramond_400Regular, EBGaramond_400Regular_Italic, EBGaramond_500Medium, EBGaramond_700Bold } from '@expo-google-fonts/eb-garamond';
 import { SpecialElite_400Regular } from '@expo-google-fonts/special-elite';
 import { DancingScript_700Bold } from '@expo-google-fonts/dancing-script';
+import { PlusJakartaSans_500Medium, PlusJakartaSans_600SemiBold, PlusJakartaSans_700Bold } from '@expo-google-fonts/plus-jakarta-sans';
 import { colors, fonts, MAX_WIDTH } from './src/theme';
 import Start from './src/screens/Start';
 import { bookLayout, startRoom } from './src/components/BookFrame';
@@ -515,7 +516,7 @@ const setNextScreen = (s) => { nextScreen = s; };
 const takeNextScreen = () => { const s = nextScreen; nextScreen = null; return s; };
 
 export default function App() {
-  const [loaded] = useFonts({ EBGaramond_400Regular, EBGaramond_400Regular_Italic, EBGaramond_500Medium, EBGaramond_700Bold, SpecialElite_400Regular, DancingScript_700Bold });
+  const [loaded] = useFonts({ EBGaramond_400Regular, EBGaramond_400Regular_Italic, EBGaramond_500Medium, EBGaramond_700Bold, SpecialElite_400Regular, DancingScript_700Bold, PlusJakartaSans_500Medium, PlusJakartaSans_600SemiBold, PlusJakartaSans_700Bold });
   const [pictureReady, setPictureReady] = useState(false);
   // the child whose things the app shows (Profiles): read before anything else; switching children starts
   // the app afresh with their notebook, badges, playlists and settings

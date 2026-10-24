@@ -42,7 +42,9 @@ const CREAM = '#f4f0e8';
 // white felt on white paper: a soft shadow under it (on the web a drop-shadow that follows the letters)
 const FELT_SHADOW = Platform.OS === 'web' ? { filter: 'drop-shadow(0px 3px 5px rgba(0,0,0,0.35))' } : { shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 5, shadowOffset: { width: 0, height: 3 } };
 const LETTER_SHADOW = Platform.OS === 'web' ? { filter: 'drop-shadow(0px 2px 2px rgba(0,0,0,0.18))' } : { shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 2, shadowOffset: { width: 0, height: 2 } }; // (the coloured felt sits close to the paper)
-const PAPER = '#fbfaf7'; // the welcome is bright (Jörg, 24 Oct 2026)
+const PAPER = '#fbfaf7';
+// the welcome's type: Plus Jakarta Sans, a friendly round geometric sans (close to Circular); the story line stays in the book serif
+const F = { bold: 'PlusJakartaSans_700Bold', semi: 'PlusJakartaSans_600SemiBold', reg: 'PlusJakartaSans_500Medium' }; // the welcome is bright (Jörg, 24 Oct 2026)
 
 // ---- the voices: one line at a time; `say` resolves when the line has finished (or straight away when muted)
 function useVoice(lang, muted) {
@@ -191,7 +193,7 @@ function TopBar({ insets, onSkip, sound, onSound, t, dark }) {
           <Speaker on={sound} color={c} />
         </Pressable>
       ) : null}
-      {onSkip ? <Pressable onPress={withTap(onSkip)} hitSlop={12} accessibilityRole="button"><Text style={{ color: c, fontFamily: fonts.ui, fontSize: 15 }}>{t('Skip')}</Text></Pressable> : null}
+      {onSkip ? <Pressable onPress={withTap(onSkip)} hitSlop={12} accessibilityRole="button"><Text style={{ color: c, fontFamily: F.reg, fontSize: 15 }}>{t('Skip')}</Text></Pressable> : null}
     </View>
   );
 }
@@ -228,7 +230,7 @@ function Glasses({ size, color = CREAM }) {
 function Pill({ label, onPress, disabled, light }) {
   return (
     <Pressable onPress={withTap(onPress)} disabled={disabled} accessibilityRole="button" style={[{ height: 50, borderRadius: 25, paddingHorizontal: 30, alignItems: 'center', justifyContent: 'center', backgroundColor: light ? 'rgba(0,0,0,0.08)' : colors.green }, disabled && { opacity: 0.35 }]}>
-      <Text style={{ color: light ? INK : '#fff', fontFamily: fonts.ui, fontWeight: '700', fontSize: 17 }}>{label}</Text>
+      <Text style={{ color: light ? INK : '#fff', fontFamily: F.bold, fontSize: 17 }}>{label}</Text>
     </Pressable>
   );
 }
@@ -516,7 +518,7 @@ function P2Visual({ w, lang, voice, t }) {
   };
   const chip = (k, label) => (
     <Pressable key={k} onPress={withTap(() => { setMode(k); if (k === 'read') read(); })} style={{ height: 32, borderRadius: 16, paddingHorizontal: 12, justifyContent: 'center', backgroundColor: mode === k ? colors.green : 'rgba(0,0,0,0.07)' }}>
-      <Text style={{ color: mode === k ? '#fff' : INK, fontFamily: fonts.ui, fontSize: 13, fontWeight: '600' }}>{label}</Text>
+      <Text style={{ color: mode === k ? '#fff' : INK, fontFamily: F.semi, fontSize: 13 }}>{label}</Text>
     </Pressable>
   );
   return (
@@ -534,13 +536,13 @@ function P3Visual({ w, t }) {
   const row = (img, name, on) => (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, height: 44, borderRadius: 22, paddingHorizontal: 8, backgroundColor: on ? colors.green : 'transparent' }}>
       {img ? <Image source={img} style={{ width: 30, height: 30 }} resizeMode="contain" /> : <View style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#3d3d40' }} />}
-      <Text style={{ color: '#fff', fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 }}>{name}</Text>
+      <Text style={{ color: '#fff', fontFamily: F.bold, fontSize: 15 }}>{name}</Text>
     </View>
   );
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 22 }}>
       <View style={{ width: w * 0.58, backgroundColor: 'rgba(0,0,0,0.86)', borderRadius: 20, padding: 12, gap: 4 }}>
-        <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: fonts.ui, fontSize: 12, fontWeight: '600', marginBottom: 4, marginLeft: 6 }}>{t('Who reads this book?')}</Text>
+        <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: F.semi, fontSize: 12, marginBottom: 4, marginLeft: 6 }}>{t('Who reads this book?')}</Text>
         {row(null, 'Fatima')}{row(null, 'Henry')}{row(PROFILE_COLORS[3][1], t('Grandma'), true)}
       </View>
       <Animated.View style={{ width: 54, height: 54, borderRadius: 27, backgroundColor: colors.highlight, transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.12] }) }], opacity: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 0.8] }) }} />
@@ -556,7 +558,7 @@ function P4Visual({ w, t }) {
       <View style={{ width: s, height: s, borderRadius: 14, overflow: 'hidden', backgroundColor: '#000', alignItems: 'center', justifyContent: 'center' }}>
         <SunMoon size={s * 0.9} e={e} />
       </View>
-      <Text style={{ color: 'rgba(0,0,0,0.45)', fontFamily: fonts.ui, fontSize: 13, marginTop: 10 }}>{t('Slide the moon yourself.')}</Text>
+      <Text style={{ color: 'rgba(0,0,0,0.45)', fontFamily: F.reg, fontSize: 13, marginTop: 10 }}>{t('Slide the moon yourself.')}</Text>
     </View>
   );
 }
@@ -572,17 +574,17 @@ function P5Check({ t, lang, passed, onPass }) {
       {passed ? (
         <Animated.View style={{ alignItems: 'center', transform: [{ scale: star }] }}>
           <Text style={{ fontSize: 54, color: '#e8b64c' }}>★</Text>
-          <Text style={{ color: '#fff', fontFamily: fonts.ui, fontWeight: '700', fontSize: 17, marginTop: 4 }}>{t('Grown-up confirmed.')}</Text>
+          <Text style={{ color: '#fff', fontFamily: F.bold, fontSize: 17, marginTop: 4 }}>{t('Grown-up confirmed.')}</Text>
         </Animated.View>
       ) : (
         <>
-          <Text style={{ color: '#fff', fontFamily: fonts.ui, fontWeight: '700', fontSize: 19, textAlign: 'center' }}>{t('What is {a} times {b}?', { a: words[q.a], b: words[q.b] })}</Text>
+          <Text style={{ color: '#fff', fontFamily: F.bold, fontSize: 19, textAlign: 'center' }}>{t('What is {a} times {b}?', { a: words[q.a], b: words[q.b] })}</Text>
           <View style={{ flexDirection: 'row', gap: 10, marginTop: 16 }}>
             <TextInput value={ans} onChangeText={(v) => { setAns(v.replace(/[^0-9]/g, '')); setWrong(false); }} keyboardType="number-pad" maxLength={3} onSubmitEditing={check}
-              style={{ width: 110, height: 48, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.12)', color: '#fff', fontSize: 22, textAlign: 'center', fontFamily: fonts.ui, outlineWidth: 0 }} />
+              style={{ width: 110, height: 48, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.12)', color: '#fff', fontSize: 22, textAlign: 'center', fontFamily: F.reg, outlineWidth: 0 }} />
             <Pill label={t('Check')} onPress={check} disabled={!ans} />
           </View>
-          {wrong ? <Text style={{ color: '#ff9b9b', fontFamily: fonts.ui, marginTop: 10 }}>{t('That’s not quite right. Try again.')}</Text> : null}
+          {wrong ? <Text style={{ color: '#ff9b9b', fontFamily: F.reg, marginTop: 10 }}>{t('That’s not quite right. Try again.')}</Text> : null}
         </>
       )}
     </View>
@@ -602,17 +604,17 @@ function ProfileForm({ t, controls, setControls, kids, onSaved }) {
     else if (quick) await saveJSONFor(p.id, 'controls', { ...DEFAULT_CONTROLS, ...quickSafeControls(age) });
     onSaved(n); setName(''); setAge(null); setQuick(false); setColor(PROFILE_COLORS[(kids.length + 1) % PROFILE_COLORS.length][0]);
   };
-  const label = (s) => <Text style={{ color: 'rgba(0,0,0,0.5)', fontFamily: fonts.ui, fontSize: 13, fontWeight: '600', marginTop: 18, marginBottom: 8 }}>{s}</Text>;
+  const label = (s) => <Text style={{ color: 'rgba(0,0,0,0.5)', fontFamily: F.semi, fontSize: 13, marginTop: 18, marginBottom: 8 }}>{s}</Text>;
   return (
     <View style={{ marginTop: 6 }}>
-      {kids.map((k) => <Text key={k} style={{ color: colors.green, fontFamily: fonts.ui, fontSize: 15, marginTop: 6 }}>✓ {t('{name}’s shelf is ready.', { name: k })}</Text>)}
+      {kids.map((k) => <Text key={k} style={{ color: colors.green, fontFamily: F.reg, fontSize: 15, marginTop: 6 }}>✓ {t('{name}’s shelf is ready.', { name: k })}</Text>)}
       {label(t('First name or nickname'))}
-      <TextInput value={name} onChangeText={setName} maxLength={16} placeholder="" style={{ height: 48, borderRadius: 12, backgroundColor: 'rgba(0,0,0,0.06)', color: INK, fontSize: 18, paddingHorizontal: 14, fontFamily: fonts.ui, outlineWidth: 0 }} />
+      <TextInput value={name} onChangeText={setName} maxLength={16} placeholder="" style={{ height: 48, borderRadius: 12, backgroundColor: 'rgba(0,0,0,0.06)', color: INK, fontSize: 18, paddingHorizontal: 14, fontFamily: F.reg, outlineWidth: 0 }} />
       {label(t('Age'))}
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
         {[2, 3, 4, 5, 6, 7, 8, 9, 10].map((a) => (
           <Pressable key={a} onPress={() => setAge(a)} style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: age === a ? colors.green : 'rgba(0,0,0,0.06)' }}>
-            <Text style={{ color: age === a ? '#fff' : INK, fontFamily: fonts.ui, fontWeight: '700', fontSize: 16 }}>{a}</Text>
+            <Text style={{ color: age === a ? '#fff' : INK, fontFamily: F.bold, fontSize: 16 }}>{a}</Text>
           </Pressable>
         ))}
       </View>
@@ -629,8 +631,8 @@ function ProfileForm({ t, controls, setControls, kids, onSaved }) {
           <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: '#fff', alignSelf: quick ? 'flex-end' : 'flex-start' }} />
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: INK, fontFamily: fonts.ui, fontWeight: '700', fontSize: 15 }}>{t('Quick and Safe Kid')}</Text>
-          <Text style={{ color: 'rgba(0,0,0,0.55)', fontFamily: fonts.ui, fontSize: 13, lineHeight: 18, marginTop: 3 }}>{t('Only My Library and My Notebook, every book read aloud, nothing to buy, share or record. Recommended if they’ll read alone.')}</Text>
+          <Text style={{ color: INK, fontFamily: F.bold, fontSize: 15 }}>{t('Quick and Safe Kid')}</Text>
+          <Text style={{ color: 'rgba(0,0,0,0.55)', fontFamily: F.reg, fontSize: 13, lineHeight: 18, marginTop: 3 }}>{t('Only My Library and My Notebook, every book read aloud, nothing to buy, share or record. Recommended if they’ll read alone.')}</Text>
         </View>
       </Pressable>
       <View style={{ flexDirection: 'row', marginTop: 18 }}>
@@ -646,9 +648,9 @@ function P8Visual({ w }) {
 }
 
 const styles = StyleSheet.create({
-  whoTitle: { color: INK, fontFamily: 'EBGaramond_700Bold', fontSize: 30, textAlign: 'center' },
+  whoTitle: { color: INK, fontFamily: F.bold, fontSize: 30, textAlign: 'center' },
   choice: { alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 10, shadowOffset: { width: 0, height: 6 } },
-  choiceText: { color: CREAM, fontFamily: 'EBGaramond_700Bold', fontSize: 20, marginTop: 8, textShadowColor: 'rgba(0,0,0,0.4)', textShadowRadius: 4, textShadowOffset: { width: 0, height: 1 } },
-  gTitle: { color: INK, fontFamily: 'EBGaramond_700Bold', fontSize: 28, lineHeight: 34, marginTop: 18 },
-  gBody: { color: 'rgba(43,42,40,0.75)', fontFamily: fonts.ui, fontSize: 16, lineHeight: 23, marginTop: 10 },
+  choiceText: { color: CREAM, fontFamily: F.bold, fontSize: 20, marginTop: 8, textShadowColor: 'rgba(0,0,0,0.4)', textShadowRadius: 4, textShadowOffset: { width: 0, height: 1 } },
+  gTitle: { color: INK, fontFamily: F.bold, fontSize: 28, lineHeight: 34, marginTop: 18 },
+  gBody: { color: 'rgba(43,42,40,0.75)', fontFamily: F.reg, fontSize: 16, lineHeight: 23, marginTop: 10 },
 });
