@@ -26,6 +26,7 @@ import Reader from './src/screens/Reader';
 import Publisher, { draftFrom } from './src/screens/Publisher';
 import CoverTest from './src/screens/CoverTest';
 import Help from './src/screens/Help';
+import Welcome from './src/screens/Welcome';
 import IdeaRoom from './src/screens/IdeaRoom';
 import Settings from './src/screens/Settings';
 import MusicSounds from './src/screens/MusicSounds';
@@ -41,7 +42,7 @@ import { usePurchases } from './src/purchases';
 import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
-import { loadJSON, saveJSON } from './src/storage';
+import { loadJSON, loadJSONFor, saveJSON, saveJSONFor } from './src/storage';
 import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast, BubbleHost, setGoHome, HomeIcon } from './src/components/Chrome';
 import { setVolumeBubble } from './src/volume';
 import { DESK_FELT, DeskFelt, Felt, LookContext } from './src/look';
@@ -66,6 +67,13 @@ function Root() {
   // web preview only: #store-demo shows the Store Manager with sample books
   const storeDemo = Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash === '#store-demo';
   useEffect(() => { if (storeDemo) { setStoreAdmin(true); return undefined; } isStoreAdmin().then(setStoreAdmin); return onUserChange(() => isStoreAdmin().then(setStoreAdmin)); }, []);
+  // the welcome: the first time the app opens (kid or grown-up?), and again from Help. Web preview: #welcome shows it.
+  const [welcome, setWelcome] = useState(false);
+  useEffect(() => {
+    if (Platform.OS === 'web' && typeof window !== 'undefined' && /welcome/.test(window.location.hash)) { setWelcome(true); return; }
+    loadJSONFor('app', 'welcome', null).then((w) => { if (!w) setWelcome(true); }, () => {});
+  }, []);
+  const welcomeDone = () => { setWelcome(false); saveJSONFor('app', 'welcome', { done: Date.now() }); go('library'); };
   const [coverOpen, setCoverOpen] = useState(false); // the book's cover is shut each time the app opens
   const [peek, setPeek] = useState(null); // 'library' | 'store': drawn under the start screen as its book slides away
   // Phones and iPads can turn: the book goes side by side when sideways.
@@ -351,7 +359,7 @@ function Root() {
         {screen === 'settings' && <Settings u={u} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
           controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} onProfiles={() => go('profiles')} onPlaylists={() => go('playlists')} />}
         {screen === 'garden' && <Garden u={u} openMenu={openMenu} toast={toast} onHome={() => go('library')} />}
-        {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} />}
+        {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} onWelcome={() => setWelcome(true)} />}
         {screen === 'ideas' && <IdeaRoom u={u} openMenu={openMenu} onMake={() => openPublisher(null)} onHelp={() => go('help')} />}
         {screen === 'covertest' && <CoverTest u={u} openMenu={openMenu} />}
         {screen === 'about' && <About u={u} openMenu={openMenu} onSecret={() => {
@@ -449,6 +457,7 @@ function Root() {
           );
         })() : null}
         <ParentGate visible={profileGate} reason={t('Your profile is for grown-ups.')} onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
+        {welcome ? <Welcome controls={controls} setControls={setControls} onDone={welcomeDone} /> : null}
         <Toast message={message} ms={toastMs} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         {/* the Audio Player for music and nature sounds: in the middle of the screen over a dark layer until it's closed */}
         <TapePlayer area={{ left: 0, top: 0, right: drawerRight, bottom: drawerBottom }} onMenu={() => { setAmbientPlayer(false); go('music'); }} />{/* the black bar stays on top, uncovered */}

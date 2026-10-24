@@ -161,7 +161,7 @@ export const HELP = [
 
 const IDEAS_FELT = require('../../assets/ideas-felt.png');
 
-export default function Help({ u, openMenu, onAbout, onIdeas }) {
+export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome }) {
   const searchRef = useRef(null);
   const { width: winWf } = useWindowDimensions();
   const feltW = Math.min(520, winWf - 48); // the felt patch, as wide as the column
@@ -219,6 +219,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas }) {
           </Pressable>
           {/* About lives here now (it left the main menu) */}
           <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>{t('About Coro Reader')}</Text></Pressable>
+          {onWelcome ? <Pressable onPress={onWelcome} accessibilityRole="button" style={[styles.aboutPill, { marginTop: 10 }]}><Text style={styles.aboutText}>{t('Watch the welcome again')}</Text></Pressable> : null}
           <View style={{ height: 18 }} />
           {!found.length ? <Text style={[styles.p, { color: colors.white }]}>{t('Nothing found for “{q}”. Try another word.', { q: q.trim() })}</Text> : null}
           {found.map((h) => {
