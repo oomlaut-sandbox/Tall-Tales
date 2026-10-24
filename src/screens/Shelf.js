@@ -121,7 +121,8 @@ function Band({ color, felt, dark, title, sub, action, onAction }) {
 // My Notebook's cover: the brown leather of the notebook on the start page
 const CREATE_TILE = require('../../assets/tile-create.jpg'); // Jörg's blue felt book on grey paper (a small + sits in the corner)
 const PLAYLISTS_TILE = require('../../assets/tile-playlists.jpg'); // Jörg's stack of felt books, behind the Playlists sign
-const TIP_CHAR = require('../../assets/tip-headphones.png'); // the grey felt character with headphones, in the Audio Player tip
+const TIP_CORO = require('../../assets/welcome/coro-wave.png'); // Coro in the library's welcome bubble (a reading pose is coming from Jörg)
+let libTipSeen = false; // the library's welcome shows once each time the app is opened
 const NOTEBOOK_COVER = require('../../assets/leather-cover.jpg');
 
 // My Notebook on the shelf: a small copy of the leather notebook on the start page, with the same
@@ -188,13 +189,19 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
   const toggle = (id) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
   const stop = () => { setSelecting(false); setPicked([]); setConfirm(false); };
   const mineCount = chosen.filter((s) => s.mine).length;
-  // the Audio Player tip: shown when My Library opens, until "Don't show this message again" is ticked
+  // the library's welcome: Coro's speech bubble, about four seconds after My Library first opens (once each time the app
+  // is opened), until "Don't show this again" is ticked. It stays until closed.
   const [tip, setTip] = useState(false);
   const [noMore, setNoMore] = useState(false);
-  // (the Audio Player tip is retired: the music note on the bar speaks for itself)
+  useEffect(() => {
+    if (libTipSeen) return undefined;
+    let live = true;
+    const id = setTimeout(() => loadJSON('tipLibrary', null).then((h) => { if (live && !(h && h.hide)) { libTipSeen = true; setTip(true); } }, () => {}), 4000);
+    return () => { live = false; clearTimeout(id); };
+  }, []);
   const { width: tipW, height: tipH } = useWindowDimensions();
   const tipWide = tipW > tipH; // sideways: the bar runs down the right side
-  const closeTip = () => { setTip(false); if (noMore) saveJSON('tipAudioPlayer', { hide: true }); };
+  const closeTip = () => { setTip(false); if (noMore) saveJSON('tipLibrary', { hide: true }); };
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => (selecting ? (
         <Bar u={u} vertical={v}>
@@ -341,20 +348,18 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
       {tip && !selecting ? (
         <View style={styles.tipWrap} pointerEvents="box-none">
           <View style={styles.tipBubble}>
-            <Text style={styles.tipTitle}>{t('The Audio Player')}</Text>
-            <Text style={styles.tipText}>{t('Tap the music note on the black bar to open it, here, in the Book Store or while you read. Turn the knobs to choose a nature sound and some music, press Play, and slide to set the volume. Close it with the little line at the top right.')}</Text>
+            <Text style={styles.tipTitle}>{t('Everything in one place.')}</Text>
+            <Text style={styles.tipText}>{t('Welcome to your library. Make sure you use your profile. The books you make and the books you buy all live here. Use your Notebook to collect and share ideas.')}</Text>
             <Pressable onPress={() => setNoMore((x) => !x)} style={styles.tipCheckRow} accessibilityRole="checkbox" accessibilityState={{ checked: noMore }} hitSlop={6}>
               <View style={[styles.tipBox, noMore && styles.tipBoxOn]}>{noMore ? <Text style={styles.tipTick}>✓</Text> : null}</View>
-              <Text style={styles.tipCheck}>{t('Don’t show this message again')}</Text>
+              <Text style={styles.tipCheck}>{t('Don’t show this again')}</Text>
             </Pressable>
-            {/* OK on the left; the headphones character stands below it on the right, with lots of room around him */}
+            {/* Let's go! on the left; Coro (reading) on the right */}
             <View style={styles.tipFoot}>
-              <Pressable onPress={closeTip} style={styles.tipOk} accessibilityRole="button"><Text style={styles.tipOkText}>{t('OK')}</Text></Pressable>
-              <Image source={TIP_CHAR} style={styles.tipChar} resizeMode="contain" accessibilityIgnoresInvertColors />
+              <Pressable onPress={closeTip} style={styles.tipOk} accessibilityRole="button"><Text style={styles.tipOkText}>{t('Let’s go!')}</Text></Pressable>
+              <Image source={TIP_CORO} style={styles.tipCoro} resizeMode="contain" accessibilityIgnoresInvertColors />
             </View>
           </View>
-          {/* the tail points down at the music note on the bar (upright; sideways the bar is on the right, so no tail) */}
-          {!tipWide ? <View style={[styles.tipTail, { marginLeft: Math.max(12, u * 26 - 28) }]} /> : null}
         </View>
       ) : null}
     </WithBar>
@@ -606,7 +611,7 @@ const styles = StyleSheet.create({
   tipBubble: { width: '100%', maxWidth: 420, alignSelf: 'center', backgroundColor: '#f4f1ea', borderRadius: 22, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 24, gap: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 12, elevation: 10 },
   tipTail: { marginLeft: 46, width: 0, height: 0, borderLeftWidth: 12, borderRightWidth: 12, borderTopWidth: 14, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: '#f4f1ea' },
   tipFoot: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: 14 },
-  tipChar: { width: 116, height: 152, marginTop: 20, marginRight: 26, marginBottom: 24 }, // a bit bigger
+  tipCoro: { width: 120, height: 116, marginTop: 6, marginRight: 10 },
   tipTitle: { fontFamily: fonts.ui, fontWeight: '700', fontSize: 19, color: '#2b2b2b' },
   tipText: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#2b2b2b' },
   tipCheckRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 2 },
