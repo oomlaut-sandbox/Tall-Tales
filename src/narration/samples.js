@@ -14,6 +14,7 @@ export const THE_END = {
     fr: require("../../assets/narration/lily/the-end/fr.mp3"),
     es: require("../../assets/narration/lily/the-end/es.mp3"),
     ja: require("../../assets/narration/lily/the-end/ja.mp3"),
+    ar: require("../../assets/narration/lily/the-end/ar.mp3"),
   },
   gregory: {
     en: require("../../assets/narration/gregory/the-end/en.mp3"),
@@ -21,6 +22,7 @@ export const THE_END = {
     fr: require("../../assets/narration/gregory/the-end/fr.mp3"),
     es: require("../../assets/narration/gregory/the-end/es.mp3"),
     ja: require("../../assets/narration/gregory/the-end/ja.mp3"),
+    ar: require("../../assets/narration/gregory/the-end/ar.mp3"),
   },
   johnny: {
     en: require("../../assets/narration/johnny/the-end/en.mp3"),
@@ -28,6 +30,7 @@ export const THE_END = {
     fr: require("../../assets/narration/johnny/the-end/fr.mp3"),
     es: require("../../assets/narration/johnny/the-end/es.mp3"),
     ja: require("../../assets/narration/johnny/the-end/ja.mp3"),
+    ar: require("../../assets/narration/johnny/the-end/ar.mp3"),
   },
 };
 
@@ -38,18 +41,21 @@ export const SAMPLE_LANGS = {
     fr: require("../../assets/narration/lily/sample/fr.mp3"),
     es: require("../../assets/narration/lily/sample/es.mp3"),
     ja: require("../../assets/narration/lily/sample/ja.mp3"),
+    ar: require("../../assets/narration/lily/sample/ar.mp3"),
   },
   gregory: {
     de: require("../../assets/narration/gregory/sample/de.mp3"),
     fr: require("../../assets/narration/gregory/sample/fr.mp3"),
     es: require("../../assets/narration/gregory/sample/es.mp3"),
     ja: require("../../assets/narration/gregory/sample/ja.mp3"),
+    ar: require("../../assets/narration/gregory/sample/ar.mp3"),
   },
   johnny: {
     de: require("../../assets/narration/johnny/sample/de.mp3"),
     fr: require("../../assets/narration/johnny/sample/fr.mp3"),
     es: require("../../assets/narration/johnny/sample/es.mp3"),
     ja: require("../../assets/narration/johnny/sample/ja.mp3"),
+    ar: require("../../assets/narration/johnny/sample/ar.mp3"),
   },
 };
 

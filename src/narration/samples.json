@@ -11,21 +11,24 @@
    "de": "b5ef17ef6740",
    "fr": "e2fd9232e1e6",
    "es": "e2fd9232e1e6",
-   "ja": "8a24c263f098"
+   "ja": "8a24c263f098",
+   "ar": "62f23c113fe6"
   },
   "gregory": {
    "en": "3dbd04e3b3fb",
    "de": "9cf2d8e12f99",
    "fr": "0918c0b7bb24",
    "es": "0918c0b7bb24",
-   "ja": "865eadba41f2"
+   "ja": "865eadba41f2",
+   "ar": "33518acf2b37"
   },
   "johnny": {
    "en": "77d0ab8ea852",
    "de": "5f284b855e16",
    "fr": "0df8e312df61",
    "es": "0df8e312df61",
-   "ja": "7f644f364bf3"
+   "ja": "7f644f364bf3",
+   "ar": "bf780560d61b"
   }
  },
  "langs": {
@@ -33,19 +36,22 @@
    "de": "ae5a777f5186",
    "fr": "ecaccb526bec",
    "es": "378500d3281f",
-   "ja": "704155237ae1"
+   "ja": "704155237ae1",
+   "ar": "9b4d36b98ff0"
   },
   "gregory": {
    "de": "8264a31d3f1d",
    "fr": "7adf67708983",
    "es": "75fb236475b4",
-   "ja": "9653a6f3b123"
+   "ja": "9653a6f3b123",
+   "ar": "4e50cc5acfab"
   },
   "johnny": {
    "de": "99e981872eeb",
    "fr": "70dbc225e34d",
    "es": "8baa2326a3f9",
-   "ja": "a119b5d7608f"
+   "ja": "a119b5d7608f",
+   "ar": "f10e642897f4"
   }
  },
  "letters": {
