@@ -36,6 +36,10 @@ export const fonts = {
   story: 'EBGaramond_400Regular',
 };
 
+// the standard section heading on the felt (My Books, Let's Create!, the Help sections): 28pt Coro bold, white
+export const sectionTitle = { fontFamily: fonts.uiBold, fontSize: 28, lineHeight: 34, color: colors.white };
+
+
 // Fonts for the words in a book (Playback Options → Book font). Serif is the default.
 // width: how wide the letters run (for fitting text); size: fine-tunes how big each font looks.
 // (A third, cursive font was tried and dropped; any saved "cursive" choice falls back to Serif.)

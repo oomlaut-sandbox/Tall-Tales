@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { clearTileSpot, setTileSpot } from '../tileSpots';
 import { Animated, Easing, Image, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fonts } from '../theme';
+import { colors, fonts, sectionTitle } from '../theme';
 import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG } from '../look';
 import { Bar, BarMeta, Burger, DogEar, IDLE, Panel, PlaylistIcon, WithBar, slotStyle } from '../components/Chrome';
 import { activeProfile, feltFor, onProfiles as onProfilesChange } from '../profiles';
@@ -625,7 +625,7 @@ const styles = StyleSheet.create({
   // a generous gap between the felt title band and the first row of books
   grid: { padding: 20, paddingTop: 42, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
   tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.72, shadowRadius: 13, elevation: 14 }, // a deep shadow, so the books stand up off the felt
-  section: { width: '100%', color: colors.white, fontFamily: fonts.uiBold, fontSize: 20, marginTop: 6, marginBottom: -4 }, // My Books, Let's Create! (about half the band's title)
+  section: { ...sectionTitle, width: '100%', marginTop: 6, marginBottom: -4 }, // My Books, Let's Create! (the standard section heading)
   tileTitle: { fontFamily: 'EBGaramond_700Bold', fontSize: 19, lineHeight: 23, color: colors.white }, // book titles and details: the book serif
   tileOption: { fontFamily: fonts.uiBold, fontSize: 16, lineHeight: 23 },
   tileSub: { fontFamily: fonts.story, fontSize: 15, lineHeight: 19, color: '#d0d0d0' },
