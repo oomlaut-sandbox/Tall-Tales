@@ -41,6 +41,7 @@ const INK = '#2b2a28';
 const CREAM = '#f4f0e8';
 // white felt on white paper: a soft shadow under it (on the web a drop-shadow that follows the letters)
 const FELT_SHADOW = Platform.OS === 'web' ? { filter: 'drop-shadow(0px 3px 5px rgba(0,0,0,0.35))' } : { shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 5, shadowOffset: { width: 0, height: 3 } };
+const LETTER_SHADOW = Platform.OS === 'web' ? { filter: 'drop-shadow(0px 2px 2px rgba(0,0,0,0.18))' } : { shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 2, shadowOffset: { width: 0, height: 2 } }; // (the coloured felt sits close to the paper)
 const PAPER = '#fbfaf7'; // the welcome is bright (Jörg, 24 Oct 2026)
 
 // ---- the voices: one line at a time; `say` resolves when the line has finished (or straight away when muted)
@@ -276,7 +277,7 @@ function Who({ W, H, insets, voice, t, onKid, onGrown, onSkip }) {
       <TopBar insets={insets} onSkip={onSkip} t={t} />
       <View style={{ width: lw, height: LETTERS_H * k, marginBottom: H * 0.05 }}>
         {LETTERS.map(([src, x, w], i) => (
-          <Animated.Image key={i} source={src} style={{ ...FELT_SHADOW, position: 'absolute', left: x * k, top: 0, width: w * k, height: LETTERS_H * k, opacity: drops[i],
+          <Animated.Image key={i} source={src} style={{ ...LETTER_SHADOW, position: 'absolute', left: x * k, top: 0, width: w * k, height: LETTERS_H * k, opacity: drops[i],
             transform: [{ translateY: drops[i].interpolate({ inputRange: [0, 1], outputRange: [-H * 0.5, 0] }) }] }} resizeMode="contain" />
         ))}
       </View>
@@ -285,7 +286,7 @@ function Who({ W, H, insets, voice, t, onKid, onGrown, onSkip }) {
       </Animated.View>
       <Text style={styles.whoTitle}>{t('Who’s here today?')}</Text>
       <View style={{ flexDirection: 'row', gap: 16, marginTop: 22 }}>
-        <Pressable onPress={withTap(onKid)} accessibilityRole="button" accessibilityLabel={t('I’m a kid')} style={[styles.choice, { width: bw, height: bh }]}>
+        <Pressable onPress={withTap(onKid)} accessibilityRole="button" accessibilityLabel={t('I’m a kid')} style={[styles.choice, { width: bw, height: bh, borderRadius: bw * 0.09 }]}>
           <Image source={GREEN_FELT} style={{ position: 'absolute', left: 0, top: 0, width: bw, height: bh }} resizeMode="stretch" />
           <Image source={KID_CHAR} style={{ width: bh * 0.46, height: bh * 0.46 }} resizeMode="contain" />
           <Text style={styles.choiceText}>{t('I’m a kid')}</Text>
