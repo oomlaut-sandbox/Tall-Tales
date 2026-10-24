@@ -20,12 +20,12 @@ import LINES from '../welcome/lines.json';
 import TIMING from '../welcome/timing.json';
 import AUDIO from '../welcome/audio';
 
-const LETTERS = [ // Jörg's felt c o r o . dropped in one by one: [picture, x, width] (height 164)
-  [require('../../assets/welcome/letter-c.png'), 0, 147], [require('../../assets/welcome/letter-o.png'), 147, 155],
-  [require('../../assets/welcome/letter-r.png'), 302, 95], [require('../../assets/welcome/letter-o2.png'), 397, 150],
-  [require('../../assets/welcome/letter-dot.png'), 547, 70],
+const LETTERS = [ // Jörg's coloured felt c o r o . (cut from his photo), dropped in one by one: [picture, x, width] (height 304)
+  [require('../../assets/welcome/letter-c.png'), 1, 267], [require('../../assets/welcome/letter-o.png'), 262, 278],
+  [require('../../assets/welcome/letter-r.png'), 557, 171], [require('../../assets/welcome/letter-o2.png'), 723, 275],
+  [require('../../assets/welcome/letter-dot.png'), 986, 107],
 ];
-const LETTERS_W = 617, LETTERS_H = 164;
+const LETTERS_W = 1094, LETTERS_H = 304;
 const READER_LOGO = require('../../assets/logo-felt.png');
 const GREEN_FELT = require('../../assets/ideas-felt.png');
 const LEATHER = require('../../assets/leather.jpg');
