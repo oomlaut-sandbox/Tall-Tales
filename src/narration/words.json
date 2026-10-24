@@ -10100,5 +10100,560 @@
     }
    }
   }
+ },
+ "johnny": {
+  "words": {
+   "different": {
+    "fp": "5372963065b7",
+    "file": "different.mp3"
+   },
+   "written": {
+    "fp": "26cb98e8f990",
+    "file": "written.mp3"
+   },
+   "and": {
+    "fp": "91c568b38c44",
+    "file": "and.mp3"
+   },
+   "illustrated": {
+    "fp": "4b0b8a3ca06d",
+    "file": "illustrated.mp3"
+   },
+   "by": {
+    "fp": "9df7d012b7c4",
+    "file": "by.mp3"
+   },
+   "jörg": {
+    "fp": "10b7a7ce24dc",
+    "file": "j_f6rg.mp3"
+   },
+   "schmidt": {
+    "fp": "26357ba753e0",
+    "file": "schmidt.mp3"
+   },
+   "i": {
+    "fp": "62997e762f9f",
+    "file": "i.mp3"
+   },
+   "feel": {
+    "fp": "0b4290e53355",
+    "file": "feel.mp3"
+   },
+   "strange": {
+    "fp": "2fd8337e7607",
+    "file": "strange.mp3"
+   },
+   "odd": {
+    "fp": "1fb4d4fdde91",
+    "file": "odd.mp3"
+   },
+   "anxious": {
+    "fp": "03987baf9e0b",
+    "file": "anxious.mp3"
+   },
+   "weird": {
+    "fp": "9ac1b69fe225",
+    "file": "weird.mp3"
+   },
+   "out": {
+    "fp": "83f830ba61c5",
+    "file": "out.mp3"
+   },
+   "of": {
+    "fp": "5029ef6a802c",
+    "file": "of.mp3"
+   },
+   "place": {
+    "fp": "b73bffce2bc5",
+    "file": "place.mp3"
+   },
+   "freaky": {
+    "fp": "082409fbcb8d",
+    "file": "freaky.mp3"
+   },
+   "left": {
+    "fp": "e248de260be8",
+    "file": "left.mp3"
+   },
+   "behind": {
+    "fp": "eb6d7a2a48ac",
+    "file": "behind.mp3"
+   },
+   "ugly": {
+    "fp": "a7d13ec6d7c8",
+    "file": "ugly.mp3"
+   },
+   "incompatible": {
+    "fp": "1e9c3e880954",
+    "file": "incompatible.mp3"
+   },
+   "unique": {
+    "fp": "36c509250c5a",
+    "file": "unique.mp3"
+   },
+   "special": {
+    "fp": "d910ccab1201",
+    "file": "special.mp3"
+   },
+   "loved": {
+    "fp": "87332c192ecb",
+    "file": "loved.mp3"
+   },
+   "extraordinary": {
+    "fp": "18d8e9e7f741",
+    "file": "extraordinary.mp3"
+   }
+  },
+  "parts": {},
+  "langs": {
+   "de": {
+    "anders": {
+     "fp": "386a04f4c3f9",
+     "file": "dfdb739259.mp3"
+    },
+    "geschrieben": {
+     "fp": "6e34701d3bb8",
+     "file": "a046f97409.mp3"
+    },
+    "und": {
+     "fp": "3e4155f1d827",
+     "file": "b03a434858.mp3"
+    },
+    "illustriert": {
+     "fp": "42b176204b51",
+     "file": "58df33116d.mp3"
+    },
+    "von": {
+     "fp": "efda7c937b30",
+     "file": "445584edc4.mp3"
+    },
+    "jörg": {
+     "fp": "c3bbb29bb709",
+     "file": "e1cdcb82d4.mp3"
+    },
+    "schmidt": {
+     "fp": "170854b1a367",
+     "file": "ec3fdd57d0.mp3"
+    },
+    "ich": {
+     "fp": "2f9d41f87bfe",
+     "file": "ac97098edb.mp3"
+    },
+    "fühle": {
+     "fp": "ed1dceb17fe7",
+     "file": "67fd9986a4.mp3"
+    },
+    "mich": {
+     "fp": "d937b929332a",
+     "file": "20f7faca64.mp3"
+    },
+    "seltsam": {
+     "fp": "82fada5f36f2",
+     "file": "82978cdf0d.mp3"
+    },
+    "komisch": {
+     "fp": "7fee890a1f08",
+     "file": "be16b5e4fe.mp3"
+    },
+    "ängstlich": {
+     "fp": "f1aca53a72bf",
+     "file": "8ee108c06c.mp3"
+    },
+    "merkwürdig": {
+     "fp": "ddf0ca7fc6bd",
+     "file": "96165387fd.mp3"
+    },
+    "fehl": {
+     "fp": "f56c257813df",
+     "file": "16bd234348.mp3"
+    },
+    "am": {
+     "fp": "109de005f618",
+     "file": "96e8155732.mp3"
+    },
+    "platz": {
+     "fp": "71c5a75c86b3",
+     "file": "96e0f47c3b.mp3"
+    },
+    "schräg": {
+     "fp": "095abda682c7",
+     "file": "0d36e8c8b6.mp3"
+    },
+    "zurückgelassen": {
+     "fp": "19ccc5e184e2",
+     "file": "ae7ff35652.mp3"
+    },
+    "ausgeschlossen": {
+     "fp": "7a26e37917a1",
+     "file": "5586e74345.mp3"
+    },
+    "hässlich": {
+     "fp": "1ac26936835c",
+     "file": "9b1770cc37.mp3"
+    },
+    "unpassend": {
+     "fp": "ffe1c5471bbf",
+     "file": "1aab0d2e04.mp3"
+    },
+    "einzigartig": {
+     "fp": "d52b4fe3df1d",
+     "file": "9dfb3a858a.mp3"
+    },
+    "besonders": {
+     "fp": "a6d4aa569f96",
+     "file": "4e69dab510.mp3"
+    },
+    "geliebt": {
+     "fp": "3771446f7466",
+     "file": "7eb84e7848.mp3"
+    },
+    "außergewöhnlich": {
+     "fp": "aed5e75aad7b",
+     "file": "157372fc9b.mp3"
+    }
+   },
+   "fr": {
+    "différent": {
+     "fp": "baf761b92a11",
+     "file": "a4bef72d6c.mp3"
+    },
+    "écrit": {
+     "fp": "2f4544d39d00",
+     "file": "2a8c762194.mp3"
+    },
+    "et": {
+     "fp": "1ee4a168a1d6",
+     "file": "a5bc1d9b2a.mp3"
+    },
+    "illustré": {
+     "fp": "8847613d9a1f",
+     "file": "bbf465a6a8.mp3"
+    },
+    "par": {
+     "fp": "8aed1db58db8",
+     "file": "e79113f506.mp3"
+    },
+    "jörg": {
+     "fp": "72a67ada4651",
+     "file": "e1cdcb82d4.mp3"
+    },
+    "schmidt": {
+     "fp": "b34ffc3dee2a",
+     "file": "ec3fdd57d0.mp3"
+    },
+    "je": {
+     "fp": "f1b1bb033111",
+     "file": "68d2ad23b5.mp3"
+    },
+    "me": {
+     "fp": "cabf27dd4f51",
+     "file": "b1c1d8736f.mp3"
+    },
+    "sens": {
+     "fp": "5b5e23d604dc",
+     "file": "35b0472769.mp3"
+    },
+    "étrange": {
+     "fp": "7f2cebada8fd",
+     "file": "3417f4ab1f.mp3"
+    },
+    "bizarre": {
+     "fp": "8214fe4448b4",
+     "file": "6afeb9ac6b.mp3"
+    },
+    "anxieux": {
+     "fp": "fdfe6b98a4cc",
+     "file": "6931f93262.mp3"
+    },
+    "tout": {
+     "fp": "ae2a2b99f5f3",
+     "file": "0450a82763.mp3"
+    },
+    "drôle": {
+     "fp": "07ad76f4b1b8",
+     "file": "cb77c492f0.mp3"
+    },
+    "ne": {
+     "fp": "d1661cd6bbd2",
+     "file": "f60d2a2f79.mp3"
+    },
+    "pas": {
+     "fp": "8b62c6ac93a4",
+     "file": "19c2a0dbd8.mp3"
+    },
+    "à": {
+     "fp": "3c306e7f0bed",
+     "file": "c34f17a35b.mp3"
+    },
+    "ma": {
+     "fp": "e19d07d351ec",
+     "file": "1382244e17.mp3"
+    },
+    "place": {
+     "fp": "d5efedcecf0d",
+     "file": "9da8f1fa7d.mp3"
+    },
+    "loufoque": {
+     "fp": "6f64ec30f90d",
+     "file": "7ec8f2356c.mp3"
+    },
+    "laissé": {
+     "fp": "1d2e2cceef67",
+     "file": "5ae66fc3d2.mp3"
+    },
+    "derrière": {
+     "fp": "a6681166ac72",
+     "file": "274ca4ed28.mp3"
+    },
+    "mis": {
+     "fp": "079f0717ecb2",
+     "file": "520104c03e.mp3"
+    },
+    "l’écart": {
+     "fp": "3f4edaf84d0f",
+     "file": "efa547de4f.mp3"
+    },
+    "moche": {
+     "fp": "ca2780a3e115",
+     "file": "a0ffd4e952.mp3"
+    },
+    "incompatible": {
+     "fp": "28d7fd9f6088",
+     "file": "c8113f64eb.mp3"
+    },
+    "unique": {
+     "fp": "33573dad5365",
+     "file": "58037c0078.mp3"
+    },
+    "spécial": {
+     "fp": "76f1d517294a",
+     "file": "1b9ec52ffe.mp3"
+    },
+    "aimé": {
+     "fp": "041640af6fb2",
+     "file": "96198e73d1.mp3"
+    },
+    "extraordinaire": {
+     "fp": "78fff14dfd5d",
+     "file": "c2b7169a7e.mp3"
+    }
+   },
+   "es": {
+    "diferente": {
+     "fp": "1f3c1a4c3fd5",
+     "file": "6eff61f71f.mp3"
+    },
+    "escrito": {
+     "fp": "e207827a0749",
+     "file": "fd5e4edc5b.mp3"
+    },
+    "e": {
+     "fp": "8573712470ed",
+     "file": "58e6b3a414.mp3"
+    },
+    "ilustrado": {
+     "fp": "985f1965b7e2",
+     "file": "616ab9f48c.mp3"
+    },
+    "por": {
+     "fp": "ca07ef9f48d8",
+     "file": "0e4434960c.mp3"
+    },
+    "jörg": {
+     "fp": "4dfb8f612d86",
+     "file": "e1cdcb82d4.mp3"
+    },
+    "schmidt": {
+     "fp": "da555262e5df",
+     "file": "ec3fdd57d0.mp3"
+    },
+    "me": {
+     "fp": "bd28020d04e0",
+     "file": "b1c1d8736f.mp3"
+    },
+    "siento": {
+     "fp": "3f2f1b1fd2b4",
+     "file": "2ef577b634.mp3"
+    },
+    "extraño": {
+     "fp": "2e22cab718a1",
+     "file": "de7d2472f5.mp3"
+    },
+    "raro": {
+     "fp": "8076e125583b",
+     "file": "606458472e.mp3"
+    },
+    "ansioso": {
+     "fp": "a722f22d4e3b",
+     "file": "1e714c3675.mp3"
+    },
+    "como": {
+     "fp": "01dd2924dc7b",
+     "file": "ef70a17048.mp3"
+    },
+    "un": {
+     "fp": "37b8be817aeb",
+     "file": "dd3bc42b2c.mp3"
+    },
+    "bicho": {
+     "fp": "de17790e9809",
+     "file": "1ab0385998.mp3"
+    },
+    "fuera": {
+     "fp": "aa0da93ad828",
+     "file": "0f0308fa8c.mp3"
+    },
+    "de": {
+     "fp": "94d3be292bd1",
+     "file": "600ccd1b71.mp3"
+    },
+    "lugar": {
+     "fp": "c9c1045af3c4",
+     "file": "a51f574864.mp3"
+    },
+    "estrafalario": {
+     "fp": "d1aef5c5b545",
+     "file": "ef276d856c.mp3"
+    },
+    "rezagado": {
+     "fp": "c08a17c277e6",
+     "file": "a98cc04ab9.mp3"
+    },
+    "excluido": {
+     "fp": "ae87c92bc4e6",
+     "file": "874ae36305.mp3"
+    },
+    "feo": {
+     "fp": "78a982db3b6a",
+     "file": "723d1915db.mp3"
+    },
+    "incompatible": {
+     "fp": "ce17701c7ae0",
+     "file": "c8113f64eb.mp3"
+    },
+    "único": {
+     "fp": "f0c2287e3bf2",
+     "file": "e49037b12f.mp3"
+    },
+    "especial": {
+     "fp": "35b5b1ad2c03",
+     "file": "569b1c7e21.mp3"
+    },
+    "querido": {
+     "fp": "0f290cfac089",
+     "file": "201ea52a9f.mp3"
+    },
+    "extraordinario": {
+     "fp": "8438272150ba",
+     "file": "608a1622b1.mp3"
+    }
+   },
+   "ja": {
+    "ちがう": {
+     "fp": "720e96dc6cc9",
+     "file": "e2f071c6b2.mp3"
+    },
+    "さくえ": {
+     "fp": "5698245c40d1",
+     "file": "8599f23450.mp3"
+    },
+    "ヨルクシュミット": {
+     "fp": "538a6f229ffe",
+     "file": "fa666a09d1.mp3"
+    },
+    "みんなと": {
+     "fp": "94316edfcb25",
+     "file": "5679a47ef1.mp3"
+    },
+    "きもち": {
+     "fp": "1e66ddb66997",
+     "file": "6395a6c0ef.mp3"
+    },
+    "ふしぎな": {
+     "fp": "2f0bd2c37d9a",
+     "file": "a604cd6793.mp3"
+    },
+    "へんてこな": {
+     "fp": "d2047bf50791",
+     "file": "bbf14745c0.mp3"
+    },
+    "ふあんな": {
+     "fp": "000ab92a54e7",
+     "file": "4ef2143eac.mp3"
+    },
+    "みょうな": {
+     "fp": "f304ac689867",
+     "file": "54d15d22d7.mp3"
+    },
+    "いばしょが": {
+     "fp": "8e33e3aff535",
+     "file": "e9abe301cd.mp3"
+    },
+    "ない": {
+     "fp": "d78abb6cd1d9",
+     "file": "9fccc80054.mp3"
+    },
+    "おばけ": {
+     "fp": "1db4eadf8bba",
+     "file": "2490ced5ac.mp3"
+    },
+    "みたいな": {
+     "fp": "d721cd5e95cb",
+     "file": "650ae52070.mp3"
+    },
+    "おいていかれた": {
+     "fp": "8e142f5ce9d8",
+     "file": "a95c76d6b3.mp3"
+    },
+    "なかまはずれの": {
+     "fp": "29c76306c88f",
+     "file": "a55464503e.mp3"
+    },
+    "じぶんが": {
+     "fp": "569581a99c09",
+     "file": "b701b93567.mp3"
+    },
+    "みにくい": {
+     "fp": "62729f46d63d",
+     "file": "915fa54767.mp3"
+    },
+    "なにとも": {
+     "fp": "8158506e4789",
+     "file": "ba0ba0623d.mp3"
+    },
+    "あわない": {
+     "fp": "b47dcc183b34",
+     "file": "4747833564.mp3"
+    },
+    "せかいで": {
+     "fp": "94abee7727e6",
+     "file": "08214ddb9a.mp3"
+    },
+    "ひとつだけの": {
+     "fp": "d7bcfc7e1b9f",
+     "file": "70b9830c30.mp3"
+    },
+    "とくべつな": {
+     "fp": "6db3b6464e1e",
+     "file": "6f89bbf220.mp3"
+    },
+    "あいされて": {
+     "fp": "98c151f6238b",
+     "file": "01927ca1a1.mp3"
+    },
+    "いる": {
+     "fp": "02f981d698a5",
+     "file": "c7d693c51c.mp3"
+    },
+    "とびきり": {
+     "fp": "49bd5986f091",
+     "file": "d35c17cc7d.mp3"
+    },
+    "すてきな": {
+     "fp": "8f8f5d1d3271",
+     "file": "0576f70498.mp3"
+    }
+   }
+  }
  }
 }
