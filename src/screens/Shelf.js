@@ -107,7 +107,8 @@ function MakeBookSpread({ winW, onPress, t }) {
     return () => clearTimeout(tm);
   }, []);
   // hinged on its left edge (the spine)
-  const turn = (from, to) => ({ transformOrigin: 'left center', transform: [{ perspective: 1400 }, { rotateY: open.interpolate({ inputRange: [0, 1], outputRange: [from, to] }) }] });
+  // (move the middle to the hinge, turn, move back; the inside of the cover is its back, turned round once more)
+  const turn = (back) => ({ transform: [{ perspective: 1400 }, { translateX: -W / 2 }, { rotateY: open.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '-180deg'] }) }, { translateX: W / 2 }, ...(back ? [{ rotateY: '180deg' }] : [])] });
   const face = { position: 'absolute', left: 0, top: 0, width: W, height: W, backfaceVisibility: 'hidden' };
   return (
     <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={t('Make a book')} style={{ width: spreadW, height: W }}>
@@ -118,12 +119,12 @@ function MakeBookSpread({ winW, onPress, t }) {
       </View>
       {/* the cover, its hinge on the right page's left edge */}
       <View style={{ position: 'absolute', left: W + gap, top: 0, width: W, height: W }}>
-        <Animated.View style={[face, styles.makeCover, turn('0deg', '-180deg')]}>
+        <Animated.View style={[face, styles.makeCover, turn(false)]}>
           <View style={styles.makeSpine} />
           <View style={styles.makeFrame} />
         </Animated.View>
         {/* the inside of the cover: the left page once it's open */}
-        <Animated.View style={[face, styles.makeInside, turn('180deg', '0deg')]}>
+        <Animated.View style={[face, styles.makeInside, turn(true)]}>
           <Text style={styles.makeInsideText}>{t('Let’s make a book')}</Text>
         </Animated.View>
       </View>
