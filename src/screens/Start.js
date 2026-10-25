@@ -18,6 +18,7 @@ import { DESK_FELT, DeskFelt, Felt } from '../look';
 // To undo: set SHOW_DESK_LOGO to false (or remove these lines and assets/logo-felt.png).
 const SHOW_DESK_LOGO = true;
 const DESK_LOGO = require('../../assets/logo-felt.png'); // 1233 x 434
+const LOGO_K = 1.15; // the white coro. a little bigger now that Reader is gone (Jörg, 25 Oct 2026)
 import { Bar, Burger } from '../components/Chrome';
 import BookFrame, { Spine, bookLayout, startRoom } from '../components/BookFrame';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -161,14 +162,14 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
             {SHOW_DESK_LOGO ? (
               <View pointerEvents="none" style={[at1, { justifyContent: 'center', alignItems: 'center' }]}>
                 {(() => {
-                  if (!wide) return <Image source={DESK_LOGO} resizeMode="contain" style={{ width: side * 0.86, height: side * 0.86 * 434 / 1233 }} accessibilityLabel="Coro" />;
+                  if (!wide) return <Image source={DESK_LOGO} resizeMode="contain" style={{ width: side * 0.86 * LOGO_K, height: side * 0.86 * LOGO_K * 434 / 1233 }} accessibilityLabel="Coro" />;
                   // sideways: the logo keeps its left edge but is a little smaller, so the felt between it and the
                   // notebook is as wide as the felt on its left (the picture's letters run from 26 to 1218 of 1233)
                   const L = bookLayout(winW, winH, insets, u * 17, startRoom(winW, winH));
                   const m = Math.max(0, (winW - L.leftW - L.rightW - 2 * side) / 2); // the felt left of the book
                   const w0 = side * 0.86, a = m + (side - w0) / 2 + w0 * 26 / 1233; // felt left of the letters now
                   const vis = Math.max(side * 0.4, m + side - 2 * a); // the letters' width, equal felt each side
-                  const w = vis * 1233 / 1192; // the same size the old oomlaut logo had here, so the letters keep their height
+                  const w = vis * 1233 / 1192 * LOGO_K; // the size the old oomlaut logo had here, a little bigger (LOGO_K)
                   const cw = w * 601 / 1233; // coro's letters: 316 to 917 of 1233, centred in that room
                   return <Image source={DESK_LOGO} resizeMode="contain" style={{ position: 'absolute', left: a - m + (vis - cw) / 2 - w * 316 / 1233, width: w, height: w * 434 / 1233 }} accessibilityLabel="Coro" />;
                 })()}
