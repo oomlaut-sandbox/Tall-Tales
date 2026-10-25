@@ -97,7 +97,7 @@ const BAND_FELT = { library: require('../../assets/band-library.png'), store: re
 // Let's make a book: a bright blue hardcover on the felt. Two seconds after the library appears its cover swings open
 // to the left (a hardcover, hinged on its spine) and shows the two square pages: the inside of the cover on the
 // left, a white page on the right that says Tap to start. Tapping it (open or shut) opens the book maker.
-const MAKE_BLUE = '#1f6fd6', MAKE_INSIDE = '#d9e6f7';
+const MAKE_BLUE = '#4a72a8', MAKE_INSIDE = '#dfe6f0'; // the blue felt of the coro. logo's dot, a little brighter (Jörg, 25 Oct 2026)
 function MakeBookSpread({ winW, onPress, t }) {
   const n = COLS(winW), colW = ((winW - 40) * TILE[n]) / 100, gap = ((winW - 40) * ((100 - n * TILE[n]) / (n - 1))) / 100;
   const W = colW, spreadW = 2 * colW + gap;
@@ -696,7 +696,7 @@ const styles = StyleSheet.create({
   makeSpine: { position: 'absolute', left: 0, top: 0, bottom: 0, width: '9%', backgroundColor: 'rgba(0,0,0,0.18)' },
   makeFrame: { position: 'absolute', left: '17%', right: '8%', top: '8%', bottom: '8%', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.35)', borderRadius: 3 },
   makeInside: { backgroundColor: MAKE_INSIDE, alignItems: 'center', justifyContent: 'center', padding: 14 },
-  makeInsideText: { color: '#1d3f6e', fontFamily: fonts.uiBold, fontSize: 18, textAlign: 'center' },
+  makeInsideText: { color: '#2d4a70', fontFamily: fonts.uiBold, fontSize: 18, textAlign: 'center' },
   tileGlyph: { width: '42%', height: '42%', opacity: 0.85 }, // the line icon in the grey Make a book and Playlists tiles
   section: { ...sectionTitle, width: '100%', marginTop: 30, marginBottom: SECTION_GAP - 22 }, // a clear break above each section // the shelf already leaves 22 under it // My Books, Let's Create! (the standard section heading)
   tileTitle: { fontFamily: 'EBGaramond_700Bold', fontSize: 19, lineHeight: 23, color: colors.white }, // book titles and details: the book serif
