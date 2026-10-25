@@ -1,5 +1,6 @@
 // Help: a searchable walk-through of the app, in plain words. In the main menu above About.
 // (A short explainer video will live at the top of this page later.)
+import { TitleIcon } from '../titleIcons';
 import { HEADING_ICONS } from '../headingIcons';
 import React, { useMemo, useRef, useState } from 'react';
 import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
@@ -191,7 +192,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome }) {
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
-        <Text style={styles.title}>{t('Ideas and Support')}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="help" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Ideas and Support')}</Text></View>
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
         <View style={styles.col}>

@@ -1,5 +1,6 @@
 // Music and Sounds (main menu): nature sounds and gentle music that keep playing all through the app,
 // how loud, a sleep timer, and the little floating tape player.
+import { TitleIcon } from '../titleIcons';
 import React from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,7 +19,7 @@ export default function MusicSounds({ u, openMenu, prefs, setPrefs }) {
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
-        <Text style={styles.title}>{t('Music and Sounds')}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="music" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Music and Sounds')}</Text></View>
       </View>
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.col}>

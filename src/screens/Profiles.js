@@ -3,6 +3,7 @@
 // The books, the membership, parents' recordings, the language and the music are the family's.
 // Kids can switch between profiles by tapping (unless a grown-up has turned that off); adding, changing and
 // removing a profile is behind the grown-up question.
+import { TitleIcon } from '../titleIcons';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -114,7 +115,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]} onLayout={(e) => setBandH(e.nativeEvent.layout.height)}>
-        <Text style={styles.title}>{t('Profiles')}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="profiles" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Profiles')}</Text></View>
       </View>
       {form ? null : (
       <Animated.ScrollView style={{ opacity: pageFade }} contentContainerStyle={styles.body}>

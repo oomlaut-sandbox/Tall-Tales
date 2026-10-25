@@ -1,5 +1,6 @@
 // The parent's profile: sign in (Apple, or a code by email), your name, sign out, delete account.
 // Reached from the menu behind the parent gate.
+import { TitleIcon } from '../titleIcons';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -135,7 +136,7 @@ export default function Profile({ u, openMenu, toast }) {
         {/* Jörg's stitched orange felt, treated like the My Library and Book Store banners */}
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}{/* iPad: the classic solid orange */}
         {/* just the title, centred top to bottom in the band (like My Library and the Book Store) */}
-        <Text style={styles.title}>{t('Profile')}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="profile" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Profile')}</Text></View>
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
         <View style={styles.col}>

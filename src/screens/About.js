@@ -1,4 +1,5 @@
 // About Coro (from the Settings menu).
+import { TitleIcon } from '../titleIcons';
 import React from 'react';
 import { Pressable, Image, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,7 +24,7 @@ export default function About({ u, openMenu, onSecret }) {
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {/* Jörg's red felt, treated like the other banners (phones); iPad keeps the classic solid red */}
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
-        <Text style={styles.title}>Coro</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="about" /><Text style={[styles.title, { flexShrink: 1 }]}>Coro</Text></View>
         <Text style={styles.tagline}>{t('Books you make together.')}</Text>
       </View>
       <View style={{ flex: 1 }}>

@@ -3,6 +3,7 @@
 //   Parental controls — shape the app down to exactly the experience a parent wants: what shows (Book Store,
 //   My Notebook, Make a Book, Help), whether the child may change playback (or it always plays one way),
 //   recording, sharing and printing, and changing the language. "Lock everything" leaves only My Library.
+import { TitleIcon } from '../titleIcons';
 import React, { useEffect, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -56,7 +57,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
-        <Text style={styles.title}>{t('Settings')}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="settings" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Settings')}</Text></View>
       </View>
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.col}>

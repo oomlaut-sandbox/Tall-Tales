@@ -1,6 +1,7 @@
 // Playlists (main menu): line books up to be read one after another, in order or shuffled. Play reads
 // them all by themselves (Auto Play), one book after the next. Each child has their own playlists;
 // "Bedtime" is there from the start.
+import { TitleIcon } from '../titleIcons';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, LayoutAnimation, Platform, Pressable, ScrollView, UIManager, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -86,7 +87,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
         {/* Jörg's brown felt banner (phone); its soft bottom edge shows the desk, so the colour only fills the status bar strip */}
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: insets.top + 2, backgroundColor: BAND_COLOR }} /> : null}
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
-        <Text style={styles.title}>{t('Playlists')}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="playlists" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Playlists')}</Text></View>
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
         <View style={styles.col}>

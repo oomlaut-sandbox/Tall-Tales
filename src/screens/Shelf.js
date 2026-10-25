@@ -1,4 +1,5 @@
 // My Library and Book Store.
+import { TitleIcon, TITLE_ICONS } from '../titleIcons';
 import React, { useEffect, useRef, useState } from 'react';
 import { clearTileSpot, setTileSpot } from '../tileSpots';
 import { Animated, Easing, Image, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
@@ -93,7 +94,7 @@ function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onP
 
 const BAND_FELT = { library: require('../../assets/band-library.png'), store: require('../../assets/band-store.png') }; // Jörg's stitched felt strips, cut out along the felt's own bottom edge
 
-function Band({ color, felt, dark, title, sub, action, onAction }) {
+function Band({ color, felt, dark, title, sub, action, onAction, icon }) {
   const insets = useSafeAreaInsets();
   const fg = dark ? colors.ink : colors.white;
   return (
@@ -104,8 +105,9 @@ function Band({ color, felt, dark, title, sub, action, onAction }) {
       {felt && !IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT[felt]} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : <><Felt /><Stitch inset={7} /></>}
       {/* the title alone (no subtitle), centred in the band, with Select / Cancel on the same line */}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <View style={{ flex: 1 }}>
-          <Text style={{ color: fg, fontFamily: fonts.uiBold, fontSize: 32, transform: [{ translateY: -3 }] }}>{title}</Text>{/* nudged up a touch: the big title sat a little low next to Select */}
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+          {icon ? <TitleIcon kind={icon} color={dark ? colors.ink : undefined} /> : null}
+          <Text style={{ flexShrink: 1, color: fg, fontFamily: fonts.uiBold, fontSize: 32, transform: [{ translateY: -3 }] }}>{title}</Text>{/* nudged up a touch: the big title sat a little low next to Select */}
         </View>
         {action ? (
           <Pressable onPress={onAction} hitSlop={10} accessibilityRole="button">
@@ -242,7 +244,7 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
           </Pressable> : null}
         </Bar>
       ))}>
-      <Band color={colors.green} felt="library" title={selecting ? t('Select books') : t('My Library')}
+      <Band icon="library" color={colors.green} felt="library" title={selecting ? t('Select books') : t('My Library')}
         sub={selecting ? (picked.length ? t('{n} selected', { n: picked.length }) : t('Tap books to select them')) : t('Your stories, ready to read')} />
       {/* pulled up past the corkboard at the very bottom: a speech bubble invites you on to the Garden (once per pull),
           only once a grown-up has unlocked it in Settings → The Garden */}
@@ -267,9 +269,9 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
         {!selecting && onNotebook ? <View style={{ width: '100%' }} /> : null}{/* the notebook has the top row to itself */}
         {/* Let's Create! first: Coro is a book maker first (Jörg, 25 Oct 2026) */}
         {!selecting && (controls.create || onPlaylists) ? <Text style={styles.section} accessibilityRole="header">{t('Let’s Create!')}</Text> : null}
-        {!selecting && controls.create ? <Tile u={u} plus plain title={t('Make a book')} onPress={onCreate} /> : null}
+        {!selecting && controls.create ? <Tile u={u} plus plain title={t('Make a book')} onPress={onCreate} glyph={<Image source={TITLE_ICONS.make} style={styles.tileGlyph} accessibilityIgnoresInvertColors />} /> : null}
         {/* Playlists (a picture of its own comes later) */}
-        {!selecting && onPlaylists ? <Tile u={u} plus plain option title={t('Playlists')} onPress={onPlaylists} /> : null}
+        {!selecting && onPlaylists ? <Tile u={u} plus plain option title={t('Playlists')} onPress={onPlaylists} glyph={<Image source={TITLE_ICONS.playlists} style={styles.tileGlyph} accessibilityIgnoresInvertColors />} /> : null}
         {!selecting ? <View style={{ width: '100%' }} /> : null}{/* the books start their own row */}
         {/* a title over the books: the ones you made first, then the picture books */}
         {!selecting ? <Text style={styles.section} accessibilityRole="header">{t('My Books')}</Text> : null}
@@ -421,7 +423,7 @@ export function Store({ u, openStory, openMenu, toast }) {
   };
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /><View style={{ flex: 1 }} /></Bar>}>
-      <Band color={colors.blue} felt="store" title={t('Book Store')} sub={t('Discover and buy new books')} />
+      <Band icon="store" color={colors.blue} felt="store" title={t('Book Store')} sub={t('Discover and buy new books')} />
       <ScrollView contentContainerStyle={{ paddingTop: 46, paddingBottom: 24, gap: 30 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.white} />}>
         {/* laid out like My Library: whole covers in a grid, nothing cut off, no sideways scrolling */}
@@ -636,6 +638,7 @@ const styles = StyleSheet.create({
   grid: { padding: 20, paddingTop: 42, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
   tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.72, shadowRadius: 13, elevation: 14 }, // a deep shadow, so the books stand up off the felt
   cardClose: { fontFamily: fonts.ui, fontSize: 14, color: '#bdbdbd', paddingVertical: 4 }, // under the Book Store card
+  tileGlyph: { width: '42%', height: '42%', opacity: 0.85 }, // the line icon in the grey Make a book and Playlists tiles
   section: { ...sectionTitle, width: '100%', marginTop: 30, marginBottom: SECTION_GAP - 22 }, // a clear break above each section // the shelf already leaves 22 under it // My Books, Let's Create! (the standard section heading)
   tileTitle: { fontFamily: 'EBGaramond_700Bold', fontSize: 19, lineHeight: 23, color: colors.white }, // book titles and details: the book serif
   tileOption: { fontFamily: fonts.uiBold, fontSize: 16, lineHeight: 23 },
