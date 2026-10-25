@@ -1,9 +1,13 @@
 // Coro's prices (Jörg, 18 Oct 2026), in US dollars; Apple sets the matching price in other countries.
 // The real prices always come from the App Store once purchases are switched on; these are only shown
 // until then (and in the web preview).
-//   Membership: $4.99 a month, or $39.99 a year, both with a 7-day free trial. Unlocks every book.
+//   Membership (Coro Family): $4.99 a month, or $39.99 a year, both with a 7-day free trial. Unlimited books to make, and every book to read.
 //   Single books: $2.99 each, to keep (books marked 'paid' in the Store Manager; members get them too).
 //   Free: three books, marked 'free' in the Store Manager.
+// Coro is a book maker first (Jörg, 25 Oct 2026): making and sharing are free up to FREE_BOOKS made books;
+// the membership, Coro Family, is for making more (unlimited books, voices, the drawing set, a print PDF, and
+// every picture book too). Sharing, and adding a voice to a book someone sent, are always free.
+export const FREE_BOOKS = 3;
 export const PRICES = { monthly: '$4.99', yearly: '$39.99', book: '$2.99', trialDays: 7 };
 
 // The App Store product IDs (the same IDs go into App Store Connect and RevenueCat):

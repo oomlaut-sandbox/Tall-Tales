@@ -19,7 +19,7 @@ export default function Membership({ visible, onClose, toast }) {
     setBusy('join');
     try {
       const r = await joinMembership(plan);
-      if (r === 'done') { toast && toast(t('Welcome! Every book in the Book Store is yours to read.')); onClose(); }
+      if (r === 'done') { toast && toast(t('Welcome to Coro Family! Make as many books as you like.')); onClose(); }
     } catch (e) { toast && toast(t(e.message)); }
     setBusy(null);
   };
@@ -47,8 +47,8 @@ export default function Membership({ visible, onClose, toast }) {
       <View style={styles.card}>
         <ScrollView contentContainerStyle={{ gap: 14 }} bounces={false}>
           <Text style={styles.kicker}>{t('For grown-ups')}</Text>
-          <Text style={styles.title}>{t('Coro Membership')}</Text>
-          <Text style={styles.body}>{t('Every book in the Book Store, and every new book as it arrives. Read them aloud, record your own voice, keep reading together.')}</Text>
+          <Text style={styles.title}>{t('Coro Family')}</Text>
+          <Text style={styles.body}>{t('Make as many books as you like, with every page, voice and drawing tool. Share them with family, save a print-quality PDF, and read every picture book in the Book Store too.')}</Text>
           <View style={{ gap: 10 }}>
             <Plan id="yearly" title={t('Yearly')} price={planPrice(s, 'yearly')} per={t(' / year')} note={t('Best value: about a third off')} />
             <Plan id="monthly" title={t('Monthly')} price={planPrice(s, 'monthly')} per={t(' / month')} />

@@ -33,6 +33,8 @@ import IdeaRoom from './src/screens/IdeaRoom';
 import Settings from './src/screens/Settings';
 import MusicSounds from './src/screens/MusicSounds';
 import Membership from './src/components/Membership';
+import { purchasesReady, usePurchases } from './src/purchases';
+import { FREE_BOOKS } from './src/prices';
 import TapePlayer from './src/components/TapePlayer';
 import './src/myMusic'; // the family's own music joins the list at start
 import { LangContext, deviceLang, translate } from './src/i18n';
@@ -40,7 +42,6 @@ import { ControlsContext, DEFAULT_CONTROLS } from './src/controls';
 import Notebook, { NOTEBOOK_COVER, R_EDGE, R_SPINE } from './src/screens/Notebook';
 import { onNewBadge } from './src/badges';
 import { SHOWN_BOOKS, STORIES, localizeStory } from './src/story';
-import { usePurchases } from './src/purchases';
 import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
@@ -266,6 +267,13 @@ function Root() {
   useEffect(() => () => clearTimeout(queueNext.current), []);
   const look = 'classic'; // one look for now (the Looks setting was dropped)
   const openPublisher = (story) => { setDraft(draftFrom(story)); go('publisher'); };
+  // a new book: free up to FREE_BOOKS made books; after that it's Coro Family (asked of a grown-up). Only once
+  // purchases are switched on: until then everyone can keep making books.
+  const [moreGate, setMoreGate] = useState(false);
+  const newBook = () => {
+    if (purchasesReady && !purchases.member && userStories.length >= FREE_BOOKS) { setMoreGate(true); return; }
+    openPublisher(null);
+  };
 
   const barH = u * 17 + insets.bottom;
   // The permanent black bar over the front camera: across the top when upright, down the left
@@ -338,7 +346,7 @@ function Root() {
               });
             }}
             notebookHidden={!!flyer && !flyer.landed} onNotebookRect={(r) => setFlyer((f) => (f && !f.to && !f.hold && r ? { ...f, to: r } : f))}
-            onCreate={() => openPublisher(null)} onEdit={openPublisher} onPlaylists={() => go('playlists')}
+            onCreate={newBook} onEdit={openPublisher} onPlaylists={() => go('playlists')}
             removedCount={removed.length} onRestore={() => setRemovedSaved([])}
             onShare={(s) => shareInvite(s.title)} // an invitation to the app, not the book
             onDelete={async (list) => {
@@ -415,6 +423,7 @@ function Root() {
         })() : null}
         <ParentGate visible={settingsGate} reason={t('Changing settings is for grown-ups.')} onPass={() => { setSettingsGate(false); go('settings'); }} onCancel={() => setSettingsGate(false)} />
         <Membership visible={memberOpen} onClose={() => setMemberOpen(false)} toast={toast} />
+        <ParentGate visible={moreGate} reason={t('Making more than {n} books is part of Coro Family.', { n: FREE_BOOKS })} onPass={() => { setMoreGate(false); setMemberOpen(true); }} onCancel={() => setMoreGate(false)} />
         {incoming && incoming.kind === SHEET_KIND ? (
           // a sheet someone sent: into My Folder
           <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setIncoming(null)}>
@@ -471,7 +480,7 @@ function Root() {
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
           <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
             {/* Make a Book first: Coro is a book maker first (Jörg, 25 Oct 2026) */}
-            {controls.create ? <Option glyph={<PlusIcon />} title={t('Make a Book')} sub={t('Your pictures, your words')} onPress={() => openPublisher(null)} /> : null}
+            {controls.create ? <Option glyph={<PlusIcon />} title={t('Make a Book')} sub={t('Your pictures, your words')} onPress={newBook} /> : null}
             <Option glyph={<HomeIcon size={MENU_ICON + 2} color={colors.white} />} title={t('My Library')} sub={t('Find and read your favorite books')} onPress={() => go('library')} />
             {controls.store ? <Option glyph={<LibraryIcon size={MENU_ICON} />} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => go('store')} /> : null}
             {controls.playback && !controls.playMode ? <Option glyph={<PlayGlyph />} title={t('Reading Options')} sub={t('Modes, voices, fonts and sounds')} onPress={() => {
