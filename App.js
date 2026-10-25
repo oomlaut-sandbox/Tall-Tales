@@ -46,7 +46,7 @@ import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, loadJSONFor, saveJSON, saveJSONFor } from './src/storage';
-import { CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast, BubbleHost, setGoHome, HomeIcon } from './src/components/Chrome';
+import { BulbIcon, CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast, BubbleHost, setGoHome, HomeIcon } from './src/components/Chrome';
 import { setVolumeBubble } from './src/volume';
 import { DESK_FELT, DeskFelt, Felt, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
@@ -490,7 +490,7 @@ function Root() {
             }} /> : null}
             <Option glyph={<MusicIcon size={24} weight={3.4} /* the same shape as the reading bar's note */ />} title={t('Music and Sounds')} sub={t('Relaxing and gentle')} onPress={() => go('music')} />
             {/* Help takes Profile's place (Profile is suspended for families; the store owner signs in from About: hold Skippy) */}
-            {controls.help ? <Option glyph={<CircleIcon />} title={t('Ideas and Support')} sub={t('Find inspiration and help')} onPress={() => go('help')} /> : null}
+            {controls.help ? <Option glyph={<BulbIcon size={26} color={colors.white} weight={2} />} title={t('Ideas and Support')} sub={t('Find inspiration and help')} onPress={() => go('help')} /> : null}
             {/* (Profiles now live at the bottom of Settings and Profiles; children still switch from the start page) */}
             {/* Settings: always last, always behind the grown-up question */}
             <Option glyph={<PersonIcon />} title={t('Settings')} sub={t('Language, parental and profiles')} onPress={() => { setDrawer(false); setSettingsGate(true); }} />

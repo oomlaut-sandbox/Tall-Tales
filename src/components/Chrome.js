@@ -703,9 +703,10 @@ export function AlarmClockIcon({ size = 20, color = colors.white, weight }) {
 
 // A very fine light bulb (Amber light on the reader's felt): a round glass and, just under it, two thin lines for
 // the screw base. Lit: warm amber, with a soft glow.
-export function BulbIcon({ size = 22, on = false }) {
-  const w = Math.max(1.1, size * 0.055);
-  const col = on ? '#ffc96b' : 'rgba(255,255,255,0.6)';
+// (color, weight: the menu draws it in solid white with the menu's line, for Ideas and Support)
+export function BulbIcon({ size = 22, on = false, color, weight }) {
+  const w = weight || Math.max(1.1, size * 0.055);
+  const col = on ? '#ffc96b' : color || 'rgba(255,255,255,0.6)';
   // whole numbers, so the glass and the lines share one exact middle
   const d = 2 * Math.round(size * 0.3), cx = Math.round(size / 2), top = 1, lw = 2 * Math.round(d * 0.22);
   return (
