@@ -22,6 +22,56 @@ import { printStory, shareStoryPdf } from '../pdf';
 import { publishToStore } from '../storeAdmin';
 import { keepFile, loadJSON, saveJSON } from '../storage';
 import { DrawEditor } from './Notebook';
+import { HEADING_ICONS } from '../headingIcons';
+import { TITLE_ICONS } from '../titleIcons';
+
+// The first page of a new book (Jörg, 25 Oct 2026): what's it about? A few big choices, or your own words.
+// A choice (or the words) also names the book to start with; it can be changed on the cover.
+const ABOUT = [
+  ['me', 'Me', 'All About Me', () => TITLE_ICONS.settings],
+  ['family', 'My family', 'Our Family', () => HEADING_ICONS['Together with others']],
+  ['trip', 'A trip', 'Our Big Trip', () => HEADING_ICONS['Adventures and imagination']],
+  ['feeling', 'A feeling', 'How I Feel', () => HEADING_ICONS.Feelings],
+  ['pet', 'A pet', 'My Pet', () => HEADING_ICONS['Your favourite books']],
+  ['else', 'Something else', null, () => HEADING_ICONS['Making books']],
+];
+function AboutPage({ tr, insets, onNext, onSkip }) {
+  const [pick, setPick] = useState(null);
+  const [words, setWords] = useState('');
+  const inputRef = useRef(null);
+  const { width: winW } = useWindowDimensions();
+  const colW = Math.min(winW - insets.left - insets.right - 48, 520);
+  const chipW = (colW - 12) / 2;
+  const ready = pick && (pick !== 'else' || words.trim());
+  const go = () => {
+    const a = ABOUT.find(([k]) => k === pick);
+    const title = words.trim() ? words.trim().replace(/^./, (c) => c.toUpperCase()) : a && a[2] ? tr(a[2]) : '';
+    onNext({ about: pick, aboutWords: words.trim() || null, title });
+  };
+  return (
+    <ScrollView contentContainerStyle={{ alignItems: 'center', paddingTop: insets.top + 56, paddingBottom: 40, paddingHorizontal: 24 }} keyboardShouldPersistTaps="handled">
+      <View style={{ width: colW, gap: 18 }}>
+        <Text style={styles.aboutTitle}>{tr('What’s your book about?')}</Text>
+        <Text style={styles.aboutLead}>{tr('Pick one, or say it in your own words. You can change everything later.')}</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+          {ABOUT.map(([k, name, , icon]) => (
+            <Pressable key={k} onPress={() => { setPick(k); if (k === 'else') setTimeout(() => inputRef.current && inputRef.current.focus(), 50); }}
+              accessibilityRole="radio" accessibilityState={{ selected: pick === k }} style={[styles.aboutChip, { width: chipW }, pick === k && styles.aboutChipOn]}>
+              <Image source={icon()} style={{ width: 30, height: 30 }} accessibilityIgnoresInvertColors />
+              <Text style={styles.aboutChipText}>{tr(name)}</Text>
+            </Pressable>
+          ))}
+        </View>
+        <TextInput ref={inputRef} value={words} onChangeText={(v) => { setWords(v); if (v.trim() && !pick) setPick('else'); }} placeholder={tr('Or tell us: a book about…')} placeholderTextColor="#8a8a8a"
+          style={styles.aboutInput} returnKeyType="next" onSubmitEditing={() => ready && go()} accessibilityLabel={tr('What’s your book about?')} />
+        <Pressable onPress={go} disabled={!ready} accessibilityRole="button" style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 6 }, !ready && { opacity: 0.4 }]}>
+          <Text style={styles.choiceBtnText}>{tr('Next: the cover')}</Text>
+        </Pressable>
+        <Pressable onPress={onSkip} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'center' }}><Text style={styles.aboutSkip}>{tr('Skip')}</Text></Pressable>
+      </View>
+    </ScrollView>
+  );
+}
 import { strokesToImage } from '../components/Strokes';
 
 const MAX_PX = 1600;
@@ -211,7 +261,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   // 'Start writing' goes on to page 1. The cover stays one tap away: 'Cover' on the black bar.
   const isNew = (d) => !d.title.trim() && !d.cover && !d.pages.some((p) => p.text.trim() || p.uri || p.uri2);
   const [coverOpen, setCoverOpen] = useState(() => isNew(draft));
-  const [startMode, setStartMode] = useState(() => isNew(draft)); // the cover's button reads 'Start writing'
+  const [startMode, setStartMode] = useState(() => isNew(draft));
+  const [aboutOpen, setAboutOpen] = useState(() => isNew(draft)); // 'What's your book about?', before the cover // the cover's button reads 'Start writing'
   const coverFromNext = useRef(false); // opened from 'What's next?': Done goes back there
   const [fieldOn, setFieldOn] = useState(false); // typing in the title / names fields (the square steps aside)
   const [coverAsk, setCoverAsk] = useState(false); // 'Add the title as text?'
@@ -644,6 +695,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           </View>
         </KeyboardAvoidingView>
       ) : null}
+      {aboutOpen ? (
+        <View style={[StyleSheet.absoluteFill, { zIndex: 60, backgroundColor: colors.desk }]}>
+          <DeskFelt spot="publisher-about" overlay />
+          <AboutPage tr={tr} insets={insets} onSkip={() => setAboutOpen(false)}
+            onNext={({ about, aboutWords, title }) => { setDraft((d) => ({ ...d, about, aboutWords, title: d.title.trim() ? d.title : title })); setAboutOpen(false); }} />
+        </View>
+      ) : null}
       {coverOpen ? (
         // the Cover Editor stops at the black bar, which stays in view (its Pages and Finish fade out meanwhile)
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk, overflow: 'hidden' }, wide ? { right: BL.rightW } : { bottom: BL.barH }]}>
@@ -821,6 +879,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
 const TITLE_YELLOW = '#c9a227';
 
 const styles = StyleSheet.create({
+  aboutTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 30, lineHeight: 36 },
+  aboutLead: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 16, lineHeight: 22, marginTop: -6 },
+  aboutChip: { height: 64, borderRadius: 18, paddingHorizontal: 16, backgroundColor: 'rgba(0,0,0,0.5)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', flexDirection: 'row', alignItems: 'center', gap: 12 },
+  aboutChipOn: { backgroundColor: colors.green, borderColor: colors.green },
+  aboutChipText: { flexShrink: 1, color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 16 },
+  aboutInput: { backgroundColor: '#161616', height: 52, borderRadius: 14, paddingHorizontal: 16, color: colors.white, fontFamily: fonts.ui, fontSize: 17 },
+  aboutSkip: { color: '#bdbdbd', fontFamily: fonts.ui, fontSize: 15, paddingVertical: 6 },
   editor: { alignItems: 'center' },
   editorHead: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 30, paddingBottom: 12 },
   editorTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 18 },

@@ -94,6 +94,57 @@ function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onP
 
 const BAND_FELT = { library: require('../../assets/band-library.png'), store: require('../../assets/band-store.png') }; // Jörg's stitched felt strips, cut out along the felt's own bottom edge
 
+// Let's make a book: a bright blue hardcover on the felt. Two seconds after the library appears its cover swings open
+// to the left (a hardcover, hinged on its spine) and shows the two square pages: the inside of the cover on the
+// left, a white page on the right that says Tap to start. Tapping it (open or shut) opens the book maker.
+const MAKE_BLUE = '#1f6fd6', MAKE_INSIDE = '#d9e6f7';
+function MakeBookSpread({ winW, onPress, t }) {
+  const n = COLS(winW), colW = ((winW - 40) * TILE[n]) / 100, gap = ((winW - 40) * ((100 - n * TILE[n]) / (n - 1))) / 100;
+  const W = colW, spreadW = 2 * colW + gap;
+  const open = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const tm = setTimeout(() => Animated.timing(open, { toValue: 1, duration: 1100, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(), 2000);
+    return () => clearTimeout(tm);
+  }, []);
+  // hinged on its left edge: move the middle to the hinge, turn, move back
+  const turn = (from, to) => ({ transform: [{ perspective: 1400 }, { translateX: -W / 2 }, { rotateY: open.interpolate({ inputRange: [0, 1], outputRange: [from, to] }) }, { translateX: W / 2 }] });
+  const face = { position: 'absolute', left: 0, top: 0, width: W, height: W, backfaceVisibility: 'hidden' };
+  return (
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={t('Make a book')} style={{ width: spreadW, height: W }}>
+      {/* the right page, under the cover: white, Tap to start */}
+      <View style={[styles.makePage, { left: W + gap, width: W, height: W }]}>
+        <Image source={TITLE_ICONS.make} style={{ width: W * 0.3, height: W * 0.3, tintColor: '#3a3a3a' }} accessibilityIgnoresInvertColors />
+        <Text style={styles.makePageText}>{t('Tap to start')}</Text>
+      </View>
+      {/* the cover, its hinge on the right page's left edge */}
+      <View style={{ position: 'absolute', left: W + gap, top: 0, width: W, height: W }}>
+        <Animated.View style={[face, styles.makeCover, turn('0deg', '-180deg')]}>
+          <View style={styles.makeSpine} />
+          <View style={styles.makeFrame} />
+        </Animated.View>
+        {/* the inside of the cover: the left page once it's open */}
+        <Animated.View style={[face, styles.makeInside, turn('180deg', '0deg')]}>
+          <Text style={styles.makeInsideText}>{t('Let’s make a book')}</Text>
+        </Animated.View>
+      </View>
+    </Pressable>
+  );
+}
+// Playlists on the shelf: three little felt books stacked (blue, red, green), each a coloured square and a white one
+function PlaylistStack({ size }) {
+  const w = size * 0.56, h = w / 2;
+  return (
+    <View style={{ gap: h * 0.12, alignItems: 'center' }}>
+      {['#1f6fd6', '#d2453a', '#3a9a4a'].map((c, i) => (
+        <View key={c} style={{ width: w, height: h, flexDirection: 'row', borderRadius: 3, overflow: 'hidden', transform: [{ translateX: (i - 1) * w * 0.05 }], shadowColor: '#000', shadowOpacity: 0.4, shadowRadius: 3, shadowOffset: { width: 0, height: 2 } }}>
+          <View style={{ flex: 1, backgroundColor: c, borderWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(255,255,255,0.45)', margin: 0 }} />
+          <View style={{ flex: 1, backgroundColor: '#f3efe6', borderWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(0,0,0,0.18)' }} />
+        </View>
+      ))}
+    </View>
+  );
+}
+
 function Band({ color, felt, dark, title, sub, action, onAction, icon }) {
   const insets = useSafeAreaInsets();
   const fg = dark ? colors.ink : colors.white;
@@ -268,10 +319,8 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
         {!selecting && onNotebook && onProfiles ? <WhoReads onPress={onProfiles} /> : null}
         {!selecting && onNotebook ? <View style={{ width: '100%' }} /> : null}{/* the notebook has the top row to itself */}
         {/* Let's Create! first: Coro is a book maker first (Jörg, 25 Oct 2026) */}
-        {!selecting && (controls.create || onPlaylists) ? <Text style={styles.section} accessibilityRole="header">{t('Let’s Create!')}</Text> : null}
-        {!selecting && controls.create ? <Tile u={u} plus plain title={t('Make a book')} onPress={onCreate} glyph={<Image source={TITLE_ICONS.make} style={styles.tileGlyph} accessibilityIgnoresInvertColors />} /> : null}
-        {/* Playlists (a picture of its own comes later) */}
-        {!selecting && onPlaylists ? <Tile u={u} plus plain option title={t('Playlists')} onPress={onPlaylists} glyph={<Image source={TITLE_ICONS.playlists} style={styles.tileGlyph} accessibilityIgnoresInvertColors />} /> : null}
+        {!selecting && controls.create ? <Text style={styles.section} accessibilityRole="header">{t('Let’s make a book')}</Text> : null}
+        {!selecting && controls.create ? <MakeBookSpread winW={winW} onPress={onCreate} t={t} /> : null}
         {!selecting ? <View style={{ width: '100%' }} /> : null}{/* the books start their own row */}
         {/* a title over the books: the ones you made first, then the picture books */}
         {!selecting ? <Text style={styles.section} accessibilityRole="header">{t('My Books')}</Text> : null}
@@ -283,6 +332,8 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
             onPress={(rect) => (selecting ? toggle(s.id) : openStory(s, rect))}
             onLongPress={!selecting && s.mine ? () => onEdit(s) : undefined} />
         ))}
+        {/* Playlists, at the end of My Books: three little felt books stacked */}
+        {!selecting && onPlaylists ? <Tile u={u} plain option title={t('Playlists')} onPress={onPlaylists} glyph={<PlaylistStack size={((winW - 40) * TILE[COLS(winW)]) / 100} />} /> : null}
         {!selecting && removedCount ? (
           <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
             <Text style={styles.restore}>{t('Show removed books ({n})', { n: removedCount })}</Text>
@@ -638,6 +689,13 @@ const styles = StyleSheet.create({
   grid: { padding: 20, paddingTop: 42, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
   tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.72, shadowRadius: 13, elevation: 14 }, // a deep shadow, so the books stand up off the felt
   cardClose: { fontFamily: fonts.ui, fontSize: 14, color: '#bdbdbd', paddingVertical: 4 }, // under the Book Store card
+  makePage: { position: 'absolute', top: 0, backgroundColor: '#fbfaf7', alignItems: 'center', justifyContent: 'center', gap: 10, shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.6, shadowRadius: 12 },
+  makePageText: { color: '#3a3a3a', fontFamily: fonts.uiSemiBold, fontSize: 15 },
+  makeCover: { backgroundColor: MAKE_BLUE, borderTopRightRadius: 6, borderBottomRightRadius: 6, shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.6, shadowRadius: 12 },
+  makeSpine: { position: 'absolute', left: 0, top: 0, bottom: 0, width: '9%', backgroundColor: 'rgba(0,0,0,0.18)' },
+  makeFrame: { position: 'absolute', left: '17%', right: '8%', top: '8%', bottom: '8%', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.35)', borderRadius: 3 },
+  makeInside: { backgroundColor: MAKE_INSIDE, alignItems: 'center', justifyContent: 'center', padding: 14 },
+  makeInsideText: { color: '#1d3f6e', fontFamily: fonts.uiBold, fontSize: 18, textAlign: 'center' },
   tileGlyph: { width: '42%', height: '42%', opacity: 0.85 }, // the line icon in the grey Make a book and Playlists tiles
   section: { ...sectionTitle, width: '100%', marginTop: 30, marginBottom: SECTION_GAP - 22 }, // a clear break above each section // the shelf already leaves 22 under it // My Books, Let's Create! (the standard section heading)
   tileTitle: { fontFamily: 'EBGaramond_700Bold', fontSize: 19, lineHeight: 23, color: colors.white }, // book titles and details: the book serif
