@@ -24,6 +24,7 @@ import { EarArt } from '../components/Ear';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
 import ToolPic from '../components/ToolPic';
 import { STAMPS, stampWidth } from '../stamps';
+const SHOW_STAMPS = false; // the stamps are the felt mascot: away until Jörg's hand-drawn one arrives (drawings that have them still show them)
 import { BRUSHES, GREYS, PENS, PENS_BRIGHT, SHAPES, wheelColour, SIZES, makeFill, mixColours, near, shapePts, withMirrors } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
@@ -1345,11 +1346,11 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
           <Pressable onPress={() => setMixing((x) => !x)} style={[styles.toolWide, mixing && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mix colours')}><Text style={styles.toolText}>{t('Mix')}</Text></Pressable>
           <Pressable onPress={() => { setShapesOpen((x) => !x); if (shapesOpen) setShape(null); }} style={[styles.toolWide, (shapesOpen || shape) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Shapes')}><Text style={styles.toolText}>{t('Shapes')}</Text></Pressable>
           <Pressable onPress={() => setMirror((x) => !x)} style={[styles.toolWide, mirror && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mirror drawing')}><Text style={styles.toolText}>{t('Mirror')}</Text></Pressable>
-          <Pressable onPress={() => setStampsOpen((x) => !x)} style={[styles.toolWide, (stampsOpen || stamp) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Stamps')}><Text style={styles.toolText}>{t('Stamps')}</Text></Pressable>
+          {SHOW_STAMPS ? <Pressable onPress={() => setStampsOpen((x) => !x)} style={[styles.toolWide, (stampsOpen || stamp) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Stamps')}><Text style={styles.toolText}>{t('Stamps')}</Text></Pressable> : null}
           <Pressable onPress={() => setBehind((x) => !x)} style={[styles.toolWide, behind && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Colour behind the lines')}><Text style={styles.toolText}>{t('Behind the lines')}</Text></Pressable>
           <Pressable onPress={() => { setDropper(true); setMore(false); }} style={[styles.toolWide, dropper && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Pick up a colour from the page')}><Text style={styles.toolText}>{t('Pick up a colour')}</Text></Pressable>
         </View>
-        {stampsOpen ? (
+        {SHOW_STAMPS && stampsOpen ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
             {STAMPS.map(([k, src, aspect, name]) => {
               const d = Math.floor((w - 44 - 5 * 8) / 6);

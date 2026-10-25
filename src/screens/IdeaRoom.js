@@ -11,8 +11,7 @@ import { useT } from '../i18n';
 import { useControls } from '../controls';
 
 const BAND_FELT = require('../../assets/band-ideas.png'); // Jörg's moss green felt banner (cropped close under the stitching, with a soft felt edge)
-const SKIPPY = require('../../assets/ideas-skippy.png'); // Skippy, daydreaming against his book (at the end of the ideas)
-const SPREAD = require('../../assets/ideas-spread.jpg'); // an open book: Skippy writing, and 'Make a book for yourself…' (under the words at the top)
+const SPREAD = require('../../assets/ideas-spread.jpg'); // an open book: a page of Different, and 'Make a book for yourself…' (under the words at the top)
 
 export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
   const t = useT();
@@ -62,10 +61,7 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
               })}
             </View>
           ); })}
-          {/* the end of the ideas: Skippy daydreaming */}
-          <View style={{ alignItems: 'center', marginTop: 30 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            <Image source={SKIPPY} style={{ width: 150, height: 97, marginTop: 2 }} resizeMode="contain" accessibilityIgnoresInvertColors />
-          </View>
+          {/* (the end of the ideas had the felt mascot daydreaming: away until the new hand-drawn one arrives) */}
         </View>
       </ScrollView>
     </WithBar>

@@ -36,6 +36,7 @@ const SELECT_ICON = require('../../assets/icon-select.png');
 const FOLDER = require('../../assets/folder.png'); // 560 × 564, Jörg's kraft folder
 const PENCIL = require('../../assets/pencil-shadow.png');
 const MUG = require('../../assets/mug-shadow.png'); // hot chocolate from above, already turned
+const SHOW_MASCOT = false; // the felt mascot is off everywhere but the profile pictures (25 Oct 2026); a hand-drawn one is coming
 const LEANER = require('../../assets/store-lean.png'); // Skippy: Jörg's grey character in sunglasses, leaning on the featured book (700 × 696)
 
 function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, option, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
@@ -56,7 +57,8 @@ function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onP
     <Pressable onPress={press} onLongPress={onLongPress} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={label}
       onLayout={lean ? (e) => setLeanW(e.nativeEvent.layout.width) : undefined}>
       {/* the featured book: a grey character leans against its right side, his hand on its edge, feet on the felt */}
-      {lean && leanW ? (
+      {/* (the mascot is away until Jörg's new hand-drawn one arrives: SHOW_MASCOT brings this back) */}
+      {SHOW_MASCOT && lean && leanW ? (
         <Image source={LEANER} pointerEvents="none" resizeMode="contain" accessibilityIgnoresInvertColors
           style={{ position: 'absolute', zIndex: 2, width: leanW * 0.52 * 700 / 696, height: leanW * 0.52, left: leanW - leanW * 0.52 * 0.012, bottom: -leanW * 0.01 }} />
       ) : null}
@@ -354,10 +356,10 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
               <View style={[styles.tipBox, noMore && styles.tipBoxOn]}>{noMore ? <Text style={styles.tipTick}>✓</Text> : null}</View>
               <Text style={styles.tipCheck}>{t('Don’t show this again')}</Text>
             </Pressable>
-            {/* Let's go! on the left; Coro (reading) on the right */}
+            {/* Let's go! on the left; the mascot on the right once the new one is drawn */}
             <View style={styles.tipFoot}>
               <Pressable onPress={closeTip} style={styles.tipOk} accessibilityRole="button"><Text style={styles.tipOkText}>{t('Let’s go!')}</Text></Pressable>
-              <Image source={TIP_CORO} style={styles.tipCoro} resizeMode="contain" accessibilityIgnoresInvertColors />
+              {SHOW_MASCOT ? <Image source={TIP_CORO} style={styles.tipCoro} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
             </View>
           </View>
         </View>
