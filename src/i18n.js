@@ -240,6 +240,8 @@ const T = {
   "Green friend": { de: "Grüner Freund", fr: "Ami vert", es: "Amigo verde", ja: "みどりの ともだち", ar: "الصديق الأخضر" },
   "Orange friend": { de: "Oranger Freund", fr: "Ami orange", es: "Amigo naranja", ja: "オレンジの ともだち", ar: "الصديق البرتقالي" },
   "Red friend": { de: "Roter Freund", fr: "Ami rouge", es: "Amigo rojo", ja: "あかい ともだち", ar: "الصديق الأحمر" },
+  'Colour wheel': { de: 'Farbrad', fr: 'Roue des couleurs', es: 'Rueda de colores', ja: 'いろの わ', ar: 'عجلة الألوان' },
+  'Greys': { de: 'Grautöne', fr: 'Gris', es: 'Grises', ja: 'グレー', ar: 'الرماديات' },
   'Visit the Ideas Room': { de: 'Ins Ideenzimmer', fr: 'Entrer dans la salle des idées', es: 'Ir a la sala de ideas', ja: 'アイデアのへやへ', ar: "زر غرفة الأفكار" },
   'Many ideas for books you can make together: your photos and drawings, your words, your voice.': { de: 'Viele Ideen für Bücher, die ihr zusammen machen könnt: eure Fotos und Zeichnungen, eure Worte, eure Stimme.', fr: 'Plein d’idées de livres à faire ensemble : vos photos et dessins, vos mots, votre voix.', es: 'Muchas ideas de libros para hacer juntos: tus fotos y dibujos, tus palabras, tu voz.', ja: 'いっしょに つくれる 本の アイデアが たくさん：しゃしんや え、ことば、そして あなたの こえで。', ar: "أفكار كثيرة لكتب تصنعونها معًا: صوركم ورسوماتكم، وكلماتكم، وأصواتكم." },
   'Make a story': { de: 'Geschichte machen', fr: 'Créer un livre', es: 'Hacer un cuento', ja: 'えほんを つくる', ar: "اصنع قصة" },

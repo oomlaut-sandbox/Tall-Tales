@@ -34,10 +34,19 @@ export const PENS_BRIGHT = [
   ['#c2185b', 'Raspberry'], ['#ffb38a', 'Peach'], ['#8d5524', 'Brown'], ['#9e9e9e', 'Grey'],
 ];
 
-// Every colour (the + sheet's rainbow): twelve hues, each from pale to deep, then a row of greys
 const hsl = (h, s, l) => { const a = s * Math.min(l, 1 - l), f = (n) => { const k = (n + h / 30) % 12; return Math.round(255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)))); }; return '#' + [f(0), f(8), f(4)].map((v) => v.toString(16).padStart(2, '0')).join(''); };
-export const RAINBOW = [0.86, 0.72, 0.58, 0.45, 0.32, 0.2].map((l) => [0, 20, 35, 50, 75, 110, 150, 180, 205, 230, 265, 310].map((h) => hsl(h, l > 0.8 ? 0.7 : 0.62, l)))
-  .concat([[0.97, 0.88, 0.78, 0.66, 0.55, 0.45, 0.36, 0.28, 0.2, 0.13, 0.07, 0].map((l) => hsl(0, 0, l))]);
+
+// The paint wheel (assets/colour-wheel.png was made from this same rule, so what you tap is what you get): red at
+// the top, round through the colours; pale in the middle, the full colour two thirds out, deeper at the edge.
+// dx, dy: from the middle, in radii (so 1 is the edge)
+export function wheelColour(dx, dy) {
+  const t = Math.min(1, Math.hypot(dx, dy));
+  const a = ((Math.atan2(dy, dx) * 180) / Math.PI + 90 + 360) % 360;
+  const s = 0.3 + 0.38 * Math.min(1, t / 0.2);
+  const l = t < 0.12 ? 0.96 : t < 0.62 ? 0.96 - ((t - 0.12) / 0.5) * 0.44 : 0.52 - ((t - 0.62) / 0.38) * 0.3;
+  return hsl(a, s, l);
+}
+export const GREYS = ['#ffffff', '#d9d9d9', '#b0b0b0', '#868686', '#5c5c5c', '#333333', '#111111'];
 
 // Mixing colours like paint (the Mix button): blue and yellow make green, red and yellow orange, white makes it
 // paler. Each colour is treated as how much light the paint lets through, and mixing multiplies those (a weighted

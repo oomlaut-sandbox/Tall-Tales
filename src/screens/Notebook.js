@@ -24,7 +24,7 @@ import { EarArt } from '../components/Ear';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
 import ToolPic from '../components/ToolPic';
 import { STAMPS, stampWidth } from '../stamps';
-import { BRUSHES, PENS, PENS_BRIGHT, RAINBOW, SHAPES, SIZES, makeFill, mixColours, near, shapePts, withMirrors } from '../strokes';
+import { BRUSHES, GREYS, PENS, PENS_BRIGHT, SHAPES, wheelColour, SIZES, makeFill, mixColours, near, shapePts, withMirrors } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
 import { STORIES } from '../story';
@@ -939,6 +939,33 @@ function BucketIcon() {
   );
 }
 
+// The paint wheel: one smooth wheel of every colour (its picture made from wheelColour). Touch it to pick, drag to
+// try colours (the pen follows), let go to keep it. A white ring shows the spot.
+const WHEEL = require('../../assets/colour-wheel.png');
+function PaintWheel({ size, spot, onPick, label, onTouch }) {
+  const R = size / 2;
+  const at = (e, done) => {
+    const dx = (e.nativeEvent.locationX - R) / R, dy = (e.nativeEvent.locationY - R) / R;
+    const k = Math.hypot(dx, dy);
+    const sx = k > 1 ? dx / k : dx, sy = k > 1 ? dy / k : dy; // (dragged off the edge: the edge)
+    onPick(wheelColour(sx, sy), [sx, sy], done);
+  };
+  return (
+    <View style={{ alignSelf: 'center', width: size, height: size, marginVertical: 6 }} accessibilityRole="adjustable" accessibilityLabel={label}
+      onStartShouldSetResponder={() => true} onMoveShouldSetResponder={() => true} onResponderTerminationRequest={() => false}
+      onResponderGrant={(e) => { onTouch && onTouch(true); at(e, false); }} onResponderMove={(e) => at(e, false)}
+      onResponderRelease={(e) => { at(e, true); onTouch && onTouch(false); }} onResponderTerminate={() => onTouch && onTouch(false)}>
+      <View pointerEvents="none" style={{ width: size, height: size, borderRadius: R, shadowColor: '#000', shadowOpacity: 0.55, shadowRadius: 10, shadowOffset: { width: 0, height: 4 } }}>
+        <Image source={WHEEL} style={{ width: size, height: size }} />
+      </View>
+      {spot ? (
+        <View pointerEvents="none" style={{ position: 'absolute', left: R + spot[0] * R - 16, top: R + spot[1] * R - 16, width: 32, height: 32, borderRadius: 16, borderWidth: 4, borderColor: colors.white,
+          backgroundColor: wheelColour(spot[0], spot[1]), shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 4, shadowOffset: { width: 0, height: 1 } }} />
+      ) : null}
+    </View>
+  );
+}
+
 function UndoIcon({ flip }) {
   return (
     <View style={{ width: 22, height: 18, transform: flip ? [{ scaleX: -1 }] : undefined }}>
@@ -973,7 +1000,9 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const [stamp, setStamp] = useState(null); // a stamp in hand: put a finger down to place it, slide to move it, lift to stick it
   const [stampsOpen, setStampsOpen] = useState(false);
   const [behind, setBehind] = useState(false); // colouring in behind the lines: what's drawn goes underneath everything else
-  const [dropper, setDropper] = useState(false); // the eyedropper: the next tap on the page picks up the colour there // Mirror: everything drawn appears flipped on the other side too
+  const [dropper, setDropper] = useState(false);
+  const [onWheel, setOnWheel] = useState(false); // a finger on the paint wheel: the sheet holds still
+  const [wheelSpot, setWheelSpot] = useState(null); // where on the paint wheel the colour was picked (the white ring) // the eyedropper: the next tap on the page picks up the colour there // Mirror: everything drawn appears flipped on the other side too
   const [redo, setRedo] = useState([]); // strokes taken back with Undo, to put back with Redo
   const [recent, setRecent] = useState(['#1e2324', '#f1e8d8', '#2f4a4c', '#93a08f', '#b98a3e', '#9a4f36', '#4e3125']); // the seven colours in the pill: earthy to start (the bright ones are under +)
   const [more, setMore] = useState(false); // the + sheet: all the colours, Mix, Shapes, Mirror
@@ -1300,25 +1329,18 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
           </Pressable>
         </View>
         {/* everything below the title scrolls, so the sheet never covers the page's top */}
-        <ScrollView style={{ maxHeight: winH - insets.top - 140 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 6 }}>
+        <ScrollView scrollEnabled={!onWheel} style={{ maxHeight: winH - insets.top - 140 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 6 }}>
         <Text style={styles.sheetLabel}>{t('Bright colours')}</Text>
         {grid(PENS_BRIGHT)}
         <Text style={styles.sheetLabel}>{t('Earthy colours')}</Text>
         {grid(PENS)}
-        {/* every colour: twelve hues from pale to deep, and the greys (little round dots, so many fit) */}
+        {/* every colour: the paint wheel (pale in the middle, the full colour, deep at the edge; tap or drag), then the greys */}
         <Text style={styles.sheetLabel}>{t('Every colour')}</Text>
-        <View style={{ gap: 4 }}>
-          {RAINBOW.map((row, r) => (
-            <View key={r} style={{ flexDirection: 'row', gap: 4 }}>
-              {row.map((hex) => {
-                const on = !erase && !mixing && pen.toLowerCase() === hex.toLowerCase();
-                const d = Math.floor((w - 40 - 11 * 4) / 12);
-                return (
-                  <Pressable key={hex} onPress={() => pick(hex)} hitSlop={1} accessibilityRole="button" accessibilityLabel={t('Colour')}
-                    style={{ width: d, height: d, borderRadius: d / 2, backgroundColor: hex, borderWidth: on ? 3 : 0, borderColor: colors.white }} />
-                );
-              })}
-            </View>
+        <PaintWheel size={Math.min(w - 44, 300)} spot={wheelSpot} onPick={(hex, spot, done) => { setWheelSpot(spot); if (done) pick(hex); else { setPen(mixing ? mixColours(pen, hex) : hex); setErase(false); setBucket(false); } }} label={t('Colour wheel')} onTouch={setOnWheel} />
+        <Text style={styles.sheetLabel}>{t('Greys')}</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 8, rowGap: 10 }}>
+          {GREYS.map((hex) => swatch(hex, t('Grey'), Math.min(34, Math.floor((w - 44) / 8) - 8), () => { setWheelSpot(null); pick(hex); }, !erase && !mixing && pen.toLowerCase() === hex.toLowerCase()))}
+        </View>
           ))}
         </View>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 20 }}>
