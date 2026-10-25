@@ -265,22 +265,22 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
         {/* beside the notebook: who is reading (their felt character and name); tap it for Profiles */}
         {!selecting && onNotebook && onProfiles ? <WhoReads onPress={onProfiles} /> : null}
         {!selecting && onNotebook ? <View style={{ width: '100%' }} /> : null}{/* the notebook has the top row to itself */}
-        {/* a title over the books */}
+        {/* Let's Create! first: Coro is a book maker first (Jörg, 25 Oct 2026) */}
+        {!selecting && (controls.create || onPlaylists) ? <Text style={styles.section} accessibilityRole="header">{t('Let’s Create!')}</Text> : null}
+        {!selecting && controls.create ? <Tile u={u} plus plain title={t('Make a book')} onPress={onCreate} /> : null}
+        {/* Playlists (a picture of its own comes later) */}
+        {!selecting && onPlaylists ? <Tile u={u} plus plain option title={t('Playlists')} onPress={onPlaylists} /> : null}
+        {!selecting ? <View style={{ width: '100%' }} /> : null}{/* the books start their own row */}
+        {/* a title over the books: the ones you made first, then the picture books */}
         {!selecting ? <Text style={styles.section} accessibilityRole="header">{t('My Books')}</Text> : null}
         {/* (the parental controls can hide books rated for older children) */}
-        {stories.filter((s) => ageAllowed(ageOf(null, s), controls.childAge)).map((s) => (
+        {stories.filter((s) => ageAllowed(ageOf(null, s), controls.childAge)).sort((a, b) => (b.mine ? 1 : 0) - (a.mine ? 1 : 0)).map((s) => (
           // just the title under each cover (no author, pages or other details)
           <Tile key={s.id} spotId={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title}
             selecting={selecting} selected={picked.includes(s.id)}
             onPress={(rect) => (selecting ? toggle(s.id) : openStory(s, rect))}
             onLongPress={!selecting && s.mine ? () => onEdit(s) : undefined} />
         ))}
-        {/* Make a book always starts its own row, below the books */}
-        {!selecting ? <View style={{ width: '100%' }} /> : null}
-        {!selecting && (controls.create || onPlaylists) ? <Text style={styles.section} accessibilityRole="header">{t('Let’s Create!')}</Text> : null}
-        {!selecting && controls.create ? <Tile u={u} plus plain title={t('Make a book')} onPress={onCreate} /> : null}
-        {/* Playlists (a picture of its own comes later) */}
-        {!selecting && onPlaylists ? <Tile u={u} plus plain option title={t('Playlists')} onPress={onPlaylists} /> : null}
         {!selecting && removedCount ? (
           <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
             <Text style={styles.restore}>{t('Show removed books ({n})', { n: removedCount })}</Text>
@@ -340,7 +340,7 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
           </View>
         </View>
       ) : null}
-      <ParentGate visible={!!gate} reason={gate === 'share' ? t('Sharing sends an invitation to Coro Reader by message or email.') : t('Deleting books from the library.')}
+      <ParentGate visible={!!gate} reason={gate === 'share' ? t('Sharing sends an invitation to Coro by message or email.') : t('Deleting books from the library.')}
         onCancel={() => setGate(null)}
         onPass={() => {
           const g = gate; setGate(null);
@@ -351,7 +351,7 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
         <View style={styles.tipWrap} pointerEvents="box-none">
           <View style={styles.tipBubble}>
             <Text style={styles.tipTitle}>{t('Everything in one place.')}</Text>
-            <Text style={styles.tipText}>{t('Welcome to your library. Make sure you use your profile. The books you make and the books you buy all live here. Use your Notebook to collect and share ideas.')}</Text>
+            <Text style={styles.tipText}>{t('Welcome to your library. The books you make live here first, with a few picture books to read together. Make sure you use your profile. Use your Notebook to collect and share ideas.')}</Text>
             <Pressable onPress={() => setNoMore((x) => !x)} style={styles.tipCheckRow} accessibilityRole="checkbox" accessibilityState={{ checked: noMore }} hitSlop={6}>
               <View style={[styles.tipBox, noMore && styles.tipBoxOn]}>{noMore ? <Text style={styles.tipTick}>✓</Text> : null}</View>
               <Text style={styles.tipCheck}>{t('Don’t show this again')}</Text>

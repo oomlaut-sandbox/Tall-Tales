@@ -38,7 +38,7 @@ export default function MyMusicSheet({ visible, onClose, kind = 'music' }) {
     setMsg('');
     try {
       const perm = await AudioModule.requestRecordingPermissionsAsync();
-      if (!perm.granted) { setMsg(t('Coro Reader needs the microphone to record. You can allow it in Settings.')); return; }
+      if (!perm.granted) { setMsg(t('Coro needs the microphone to record. You can allow it in Settings.')); return; }
       stopPreview();
       holdAmbient(true); // the music mustn't be in the recording
       await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });

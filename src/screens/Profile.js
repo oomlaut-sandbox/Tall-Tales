@@ -70,7 +70,7 @@ export default function Profile({ u, openMenu, toast }) {
         <Pressable onPress={() => run(signOut)} style={styles.btn} accessibilityRole="button"><Text style={styles.btnText}>{t('Sign out')}</Text></Pressable>
         {confirmDelete ? (
           <View style={styles.warnBox}>
-            <Text style={styles.warn}>{t('Delete your Coro Reader account? You’ll be signed out and the account is removed for good. Books and recordings on this phone stay here.')}</Text>
+            <Text style={styles.warn}>{t('Delete your Coro account? You’ll be signed out and the account is removed for good. Books and recordings on this phone stay here.')}</Text>
             <View style={{ flexDirection: 'row', gap: 10 }}>
               <Pressable onPress={() => run(async () => { await deleteAccount(); setConfirmDelete(false); toast && toast(t('Your account was deleted.')); })} style={[styles.btn, { flex: 1, backgroundColor: colors.deepRed }]}>
                 <Text style={styles.btnText}>{t('Delete account')}</Text>
@@ -144,7 +144,7 @@ export default function Profile({ u, openMenu, toast }) {
         </View>
       </ScrollView>
       {/* for grown-ups: a speech bubble at the bottom (tap it to put it away) */}
-      {accountsReady && step === 'start' && !user && !loading && tip ? <Toast message={t('Parents, sign into your Coro Reader account.')} onDismiss={() => setTip(false)} /> : null}
+      {accountsReady && step === 'start' && !user && !loading && tip ? <Toast message={t('Parents, sign into your Coro account.')} onDismiss={() => setTip(false)} /> : null}
     </WithBar>
   );
 }

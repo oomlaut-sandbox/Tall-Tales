@@ -331,7 +331,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       let r;
       if (source === 'camera') {
         const perm = await ImagePicker.requestCameraPermissionsAsync();
-        if (!perm.granted) return toast(t('Coro Reader isn’t allowed to use the camera. You can turn it on in Settings.'));
+        if (!perm.granted) return toast(t('Coro isn’t allowed to use the camera. You can turn it on in Settings.'));
         r = await ImagePicker.launchCameraAsync(opts);
       } else r = await ImagePicker.launchImageLibraryAsync(opts);
       if (r.canceled || !r.assets || !r.assets[0]) return;
@@ -344,7 +344,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       if (page && page.uri) dropNotebookPicture(page.uri);
       update({ uri, w, h });
     } catch (e) {
-      toast(source === 'camera' ? t('Couldn’t open the camera.') : t('Couldn’t open your photos. Check that Coro Reader is allowed to use Photos in Settings.'));
+      toast(source === 'camera' ? t('Couldn’t open the camera.') : t('Couldn’t open your photos. Check that Coro is allowed to use Photos in Settings.'));
     }
   };
 

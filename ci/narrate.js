@@ -33,7 +33,7 @@ const VOICES = [
 const readsBook = (v, id) => !v.books || v.books.includes(id);
 
 // A short sample each voice says when it's tapped in Voices (spelled the way it should sound).
-const SAMPLE = 'Let your imagination play, with Oomlout Reader.';
+const SAMPLE = 'Let’s make a book together, with Coro.';
 const samplesPath = 'src/narration/samples.json';
 const samples = fs.existsSync(samplesPath) ? JSON.parse(fs.readFileSync(samplesPath, 'utf8')) : {};
 
@@ -132,13 +132,13 @@ async function makeSample(v, voiceId) {
   samples[v.key] = { fp };
   say(`${v.label}: sample made`);
 }
-// The sample in the other app languages (the name spelled so each language's voice says it "oom-lout reader").
+// The sample in the other app languages (25 Oct 2026: Coro, and making a book together).
 const SAMPLE_LANGS = {
-  de: 'Lass deine Fantasie spielen, mit Umlaut Reader.',
-  fr: 'Laisse jouer ton imagination, avec Oumlaout Rideur.',
-  es: 'Deja volar tu imaginación, con Umlaut Rider.',
-  ja: 'ウームラウト・リーダーで、そうぞうの せかいで あそぼう。',
-  ar: 'أطلِقْ خيالَك مع كورو ريدر.',
+  de: 'Lass uns zusammen ein Buch machen, mit Coro.',
+  fr: 'Faisons un livre ensemble, avec Coro.',
+  es: 'Hagamos un libro juntos, con Coro.',
+  ja: 'コロと いっしょに、えほんを つくろう。',
+  ar: 'هيّا نصنع كتابًا معًا، مع كورو.',
 };
 async function makeSampleLangs(v, voiceId) {
   samples.langs = samples.langs || {};

@@ -137,7 +137,7 @@ function Root() {
   const [playMenu, setPlayMenu] = useState(0);
   const [playOpen, setPlayOpen] = useState(false); // Playback Options away from a book
   const toastTimer = useRef(null);
-  // a book in someone's voice, sent as a file (Messages, Mail…) and opened in Coro Reader: "Add Opa's voice?"
+  // a book in someone's voice, sent as a file (Messages, Mail…) and opened in Coro: "Add Opa's voice?"
   const [incoming, setIncoming] = useState(null);
   useEffect(() => {
     const handle = async (url) => {
@@ -470,6 +470,8 @@ function Root() {
         {/* the main menu slides in over everything else on screen (pop-ups, pages boxes), except speech bubbles */}
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
           <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
+            {/* Make a Book first: Coro is a book maker first (Jörg, 25 Oct 2026) */}
+            {controls.create ? <Option glyph={<PlusIcon />} title={t('Make a Book')} sub={t('Your pictures, your words')} onPress={() => openPublisher(null)} /> : null}
             <Option glyph={<HomeIcon size={MENU_ICON + 2} color={colors.white} />} title={t('My Library')} sub={t('Find and read your favorite books')} onPress={() => go('library')} />
             {controls.store ? <Option glyph={<LibraryIcon size={MENU_ICON} />} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => go('store')} /> : null}
             {controls.playback && !controls.playMode ? <Option glyph={<PlayGlyph />} title={t('Reading Options')} sub={t('Modes, voices, fonts and sounds')} onPress={() => {
@@ -478,7 +480,6 @@ function Root() {
               if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else setTimeout(() => setPlayOpen(true), 300);
             }} /> : null}
             <Option glyph={<MusicIcon size={24} weight={3.4} /* the same shape as the reading bar's note */ />} title={t('Music and Sounds')} sub={t('Relaxing and gentle')} onPress={() => go('music')} />
-            {controls.create ? <Option glyph={<PlusIcon />} title={t('Make a Book')} sub={t('Your pictures, your words')} onPress={() => openPublisher(null)} /> : null}
             {/* Help takes Profile's place (Profile is suspended for families; the store owner signs in from About: hold Skippy) */}
             {controls.help ? <Option glyph={<CircleIcon />} title={t('Ideas and Support')} sub={t('Find inspiration and help')} onPress={() => go('help')} /> : null}
             {/* (Profiles now live at the bottom of Settings and Profiles; children still switch from the start page) */}

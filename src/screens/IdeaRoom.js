@@ -38,7 +38,7 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
           <View style={[styles.spreadShadow, { width: spreadW, height: Math.round(spreadW * 600 / 1200) }]}>
             <View style={styles.spread}><Image source={SPREAD} style={{ width: '100%', height: '100%' }} resizeMode="cover" accessibilityIgnoresInvertColors /></View>
           </View>
-          <Text style={[styles.caption, { width: spreadW }]}>{t('Example of a Coro Reader book. You make your own.')}</Text>
+          <Text style={[styles.caption, { width: spreadW }]}>{t('Example of a Coro book. You make your own.')}</Text>
           {IDEA_SECTIONS.map((sec) => { const secOpen = openSec === sec.title; return (
             <View key={sec.title} style={styles.box}>
               <Pressable onPress={() => { setOpenSec(secOpen ? null : sec.title); setOpen(null); }} accessibilityRole="button" accessibilityState={{ expanded: secOpen }} style={[styles.secHead, !secOpen && { marginBottom: 0 }]}>

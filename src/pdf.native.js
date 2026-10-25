@@ -90,7 +90,7 @@ export async function buildStoryHtml(story0, layout = 'stacked', fontKey = 'seri
   const pics2 = []; // the second picture of a page of two pictures (in place of the words)
   for (const p of story.pages) { pics.push(await imageData(p.image)); pics2.push(p.image2 && !(p.text || '').trim() ? await imageData(p.image2) : null); }
   const out = [];
-  out.push(`<div class="pg title"><h1>${esc(story.title)}</h1>${story.author ? `<div class="by">by ${esc(story.author)}</div>` : ''}<div class="made">Made with Coro Reader</div></div>`);
+  out.push(`<div class="pg title"><h1>${esc(story.title)}</h1>${story.author ? `<div class="by">by ${esc(story.author)}</div>` : ''}<div class="made">Made with Coro</div></div>`);
   story.pages.forEach((p, i) => {
     const pic = pics[i];
     if (layout === 'spreads') {

@@ -477,7 +477,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     setPanel(null);
     try {
       const perm = await AudioModule.requestRecordingPermissionsAsync();
-      if (!perm.granted) { recordingSoon.current = false; pendingRec.current = false; return toast(tr('Coro Reader needs the microphone to record. You can allow it in Settings.')); }
+      if (!perm.granted) { recordingSoon.current = false; pendingRec.current = false; return toast(tr('Coro needs the microphone to record. You can allow it in Settings.')); }
       await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
       audioModeChanged();
       await recorder.prepareToRecordAsync();
@@ -1154,7 +1154,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       <ParentGate visible={shareGate} reason={tr('Sharing opens your phone’s messages and email.')} onCancel={() => setShareGate(false)}
         onPass={() => {
           setShareGate(false);
-          // recorded in the family's voice: the recordings go along as a file (opened in Coro Reader); otherwise the invitation
+          // recorded in the family's voice: the recordings go along as a file (opened in Coro); otherwise the invitation
           shareBookWithVoices(story).then((sent) => { if (!sent) shareInvite(story.title); }).catch(() => shareInvite(story.title));
         }} />
       <ParentGate visible={!!printGate} reason={tr('Printing opens your phone’s print options.')} onPass={() => doPrint(printGate)} onCancel={() => setPrintGate(null)} />

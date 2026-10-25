@@ -83,7 +83,7 @@ export const HELP = [
   ] },
   { section: 'Your voice', title: 'Sharing a book in your voice', text: [
     'Share Book on the last page sends an invitation to the app. When the book has recordings, a file with your voice goes along with it.',
-    'Whoever gets it taps the file and opens it in Coro Reader to add your voice to the same book on their phone.',
+    'Whoever gets it taps the file and opens it in Coro to add your voice to the same book on their phone.',
   ] },
   { section: 'Making books', title: 'Making your own book', text: [
     'Choose Make a Book from the menu (or the + tile in My Library).',
@@ -155,7 +155,7 @@ export const HELP = [
     'Some things, like taking photos, printing, sharing and deleting, first ask a quick question only a grown-up can answer.',
   ] },
   { section: 'Grown-ups', title: 'Sending us your book', text: [
-    'Authors and illustrators young and old can send their books to the Coro Reader Book Store. Visit oomlaut.com for more information.',
+    'Authors and illustrators young and old can send their books to the Coro Book Store. Visit oomlaut.com for more information.',
   ] },
 ];
 
@@ -219,7 +219,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome }) {
               style={styles.search} allowFontScaling={false} multiline scrollEnabled={false} submitBehavior="blurAndSubmit" returnKeyType="search" accessibilityLabel={t('Search ideas and support')} />
           </Pressable>
           {/* About lives here now (it left the main menu) */}
-          <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>{t('About Coro Reader')}</Text></Pressable>
+          <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>{t('About Coro')}</Text></Pressable>
           {onWelcome ? <Pressable onPress={onWelcome} accessibilityRole="button" style={[styles.aboutPill, { marginTop: 10 }]}><Text style={styles.aboutText}>{t('Watch the welcome again')}</Text></Pressable> : null}
           <View style={{ height: 18 }} />
           {!found.length ? <Text style={[styles.p, { color: colors.white }]}>{t('Nothing found for “{q}”. Try another word.', { q: q.trim() })}</Text> : null}

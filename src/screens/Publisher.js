@@ -187,7 +187,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     let r;
     if (source === 'camera') {
       const perm = await ImagePicker.requestCameraPermissionsAsync();
-      if (!perm.granted) { toast(tr('Coro Reader isn’t allowed to use the camera. You can turn it on in Settings.')); return null; }
+      if (!perm.granted) { toast(tr('Coro isn’t allowed to use the camera. You can turn it on in Settings.')); return null; }
       r = await ImagePicker.launchCameraAsync(opts);
     } else {
       r = await ImagePicker.launchImageLibraryAsync(opts);
@@ -249,7 +249,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       setCover({ ...ph, title: cover ? cover.title || null : null });
       if (!(cover && cover.title)) setCoverAsk(true);
     } catch (e) {
-      toast(tr('Couldn’t open your photos. Check that Coro Reader is allowed to use Photos in Settings.'));
+      toast(tr('Couldn’t open your photos. Check that Coro is allowed to use Photos in Settings.'));
     }
   };
   const finishCover = () => {
@@ -328,7 +328,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       if (page.uri) dropPicture(page.uri);
       update(ph);
     } catch (e) {
-      toast(source === 'camera' ? tr('Couldn’t open the camera.') : tr('Couldn’t open your photos. Check that Coro Reader is allowed to use Photos in Settings.'));
+      toast(source === 'camera' ? tr('Couldn’t open the camera.') : tr('Couldn’t open your photos. Check that Coro is allowed to use Photos in Settings.'));
     }
   };
 

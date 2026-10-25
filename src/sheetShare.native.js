@@ -1,12 +1,12 @@
 // Sending a sheet to another Oomlaut family: one notebook page (its drawing, photo and notes) packed into a file
-// ("A sheet from Annika.oomlaut") and sent by text or email. Opened in Coro Reader, it goes into My Folder.
+// ("A sheet from Annika.oomlaut") and sent by text or email. Opened in Coro, it goes into My Folder.
 // The file: JSON { kind: 'oomlaut-sheet', v: 1, from, page: { kind, text, strokes, strokes2 }, photo?: base64 jpg }
 import { Share } from 'react-native';
 import { File, Paths } from 'expo-file-system';
 import { APP_LINK } from './invite';
 
 export const SHEET_KIND = 'oomlaut-sheet';
-const safe = (s) => String(s || '').replace(/[\\/:*?"<>|]+/g, ' ').trim().slice(0, 40) || 'Coro Reader';
+const safe = (s) => String(s || '').replace(/[\\/:*?"<>|]+/g, ' ').trim().slice(0, 40) || 'Coro';
 
 const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 export function fromBase64(s) {
