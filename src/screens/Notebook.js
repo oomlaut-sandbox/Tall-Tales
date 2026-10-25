@@ -1341,8 +1341,6 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 8, rowGap: 10 }}>
           {GREYS.map((hex) => swatch(hex, t('Grey'), Math.min(34, Math.floor((w - 44) / 8) - 8), () => { setWheelSpot(null); pick(hex); }, !erase && !mixing && pen.toLowerCase() === hex.toLowerCase()))}
         </View>
-          ))}
-        </View>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 20 }}>
           <Pressable onPress={() => setMixing((x) => !x)} style={[styles.toolWide, mixing && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mix colours')}><Text style={styles.toolText}>{t('Mix')}</Text></Pressable>
           <Pressable onPress={() => { setShapesOpen((x) => !x); if (shapesOpen) setShape(null); }} style={[styles.toolWide, (shapesOpen || shape) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Shapes')}><Text style={styles.toolText}>{t('Shapes')}</Text></Pressable>
