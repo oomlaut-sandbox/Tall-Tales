@@ -64,10 +64,10 @@ function AboutPage({ tr, insets, onNext, onSkip }) {
         </View>
         <TextInput ref={inputRef} value={words} onChangeText={(v) => { setWords(v); if (v.trim() && !pick) setPick('else'); }} placeholder={tr('Or tell us: a book about…')} placeholderTextColor="#8a8a8a"
           style={styles.aboutInput} returnKeyType="next" onSubmitEditing={() => ready && go()} accessibilityLabel={tr('What’s your book about?')} />
-        <Pressable onPress={go} disabled={!ready} accessibilityRole="button" style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 6 }, !ready && { opacity: 0.4 }]}>
-          <Text style={styles.choiceBtnText}>{tr('Next: the cover')}</Text>
+        <Pressable onPress={go} disabled={!ready} accessibilityRole="button" style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 34 }, !ready && { opacity: 0.4 }]}>{/* well apart from the choices */}
+          <Text style={styles.choiceBtnText}>{tr('Next, let’s make a cover')}</Text>
         </Pressable>
-        <Pressable onPress={onSkip} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'center' }}><Text style={styles.aboutSkip}>{tr('Skip')}</Text></Pressable>
+        <Pressable onPress={onSkip} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'center', marginTop: 6 }}><Text style={styles.aboutSkip}>{tr('Skip')}</Text></Pressable>
       </View>
     </ScrollView>
   );
