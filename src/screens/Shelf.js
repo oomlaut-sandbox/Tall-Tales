@@ -106,8 +106,8 @@ function MakeBookSpread({ winW, onPress, t }) {
     const tm = setTimeout(() => Animated.timing(open, { toValue: 1, duration: 1100, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(), 2000);
     return () => clearTimeout(tm);
   }, []);
-  // hinged on its left edge: move the middle to the hinge, turn, move back
-  const turn = (from, to) => ({ transform: [{ perspective: 1400 }, { translateX: -W / 2 }, { rotateY: open.interpolate({ inputRange: [0, 1], outputRange: [from, to] }) }, { translateX: W / 2 }] });
+  // hinged on its left edge (the spine)
+  const turn = (from, to) => ({ transformOrigin: 'left center', transform: [{ perspective: 1400 }, { rotateY: open.interpolate({ inputRange: [0, 1], outputRange: [from, to] }) }] });
   const face = { position: 'absolute', left: 0, top: 0, width: W, height: W, backfaceVisibility: 'hidden' };
   return (
     <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={t('Make a book')} style={{ width: spreadW, height: W }}>
