@@ -53,7 +53,7 @@ function AboutPage({ tr, insets, onNext, onSkip }) {
       <View style={{ width: colW, gap: 18 }}>
         <Text style={styles.aboutTitle}>{tr('What’s your book about?')}</Text>
         <Text style={styles.aboutLead}>{tr('Pick one, or say it in your own words. You can change everything later.')}</Text>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: 22 }}>{/* a clear gap under the words */}
           {ABOUT.map(([k, name, , icon]) => (
             <Pressable key={k} onPress={() => { setPick(k); if (k === 'else') setTimeout(() => inputRef.current && inputRef.current.focus(), 50); }}
               accessibilityRole="radio" accessibilityState={{ selected: pick === k }} style={[styles.aboutChip, { width: chipW }, pick === k && styles.aboutChipOn]}>

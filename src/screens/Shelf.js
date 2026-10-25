@@ -94,39 +94,42 @@ function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onP
 
 const BAND_FELT = { library: require('../../assets/band-library.png'), store: require('../../assets/band-store.png') }; // Jörg's stitched felt strips, cut out along the felt's own bottom edge
 
-// Let's make a book: a bright blue hardcover on the felt. Two seconds after the library appears its cover swings open
-// to the left (a hardcover, hinged on its spine) and shows the two square pages: the inside of the cover on the
-// left, a white page on the right that says Tap to start. Tapping it (open or shut) opens the book maker.
-const MAKE_BLUE = '#4a72a8', MAKE_INSIDE = '#dfe6f0'; // the blue felt of the coro. logo's dot, a little brighter (Jörg, 25 Oct 2026)
-function MakeBookSpread({ winW, onPress, t }) {
+// Let's make a book: a blue hardcover, centred on the felt. Once the library's welcome bubble is closed (a second
+// later; two if there was none) its cover swings open to the left on its spine while the book slides right, so the
+// open spread is centred too: the inside of the cover (the same blue) on the left, a white page with a + on the
+// right. Tapping it (open or shut) opens the book maker.
+const MAKE_BLUE = '#4a72a8'; // the blue felt of the coro. logo's dot, a little brighter (Jörg, 25 Oct 2026)
+function MakeBookSpread({ winW, onPress, t, go, wait = 1000 }) {
   const n = COLS(winW), colW = ((winW - 40) * TILE[n]) / 100, gap = ((winW - 40) * ((100 - n * TILE[n]) / (n - 1))) / 100;
   const W = colW, spreadW = 2 * colW + gap;
   const open = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    const tm = setTimeout(() => Animated.timing(open, { toValue: 1, duration: 1100, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(), 2000);
+    if (!go) return undefined;
+    const tm = setTimeout(() => Animated.timing(open, { toValue: 1, duration: 1200, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(), wait);
     return () => clearTimeout(tm);
-  }, []);
-  // hinged on its left edge (the spine)
-  // (move the middle to the hinge, turn, move back; the inside of the cover is its back, turned round once more)
+  }, [go]);
+  // the cover turns on its left edge (the spine): move the middle to the hinge, turn, move back; the inside is its back
   const turn = (back) => ({ transform: [{ perspective: 1400 }, { translateX: -W / 2 }, { rotateY: open.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '-180deg'] }) }, { translateX: W / 2 }, ...(back ? [{ rotateY: '180deg' }] : [])] });
   const face = { position: 'absolute', left: 0, top: 0, width: W, height: W, backfaceVisibility: 'hidden' };
+  // shut, the cover sits in the middle; open, the two pages (2W wide, the right one at W + gap) are in the middle
+  const slide = open.interpolate({ inputRange: [0, 1], outputRange: [-(W + gap) / 2, -gap / 2] });
+  const plus = Math.round(W * 0.26), bar = Math.max(3, Math.round(W * 0.03));
   return (
     <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={t('Make a book')} style={{ width: spreadW, height: W }}>
-      {/* the right page, under the cover: white, Tap to start */}
-      <View style={[styles.makePage, { left: W + gap, width: W, height: W }]}>
-        <Image source={TITLE_ICONS.make} style={{ width: W * 0.3, height: W * 0.3, tintColor: '#3a3a3a' }} accessibilityIgnoresInvertColors />
-        <Text style={styles.makePageText}>{t('Tap to start')}</Text>
-      </View>
-      {/* the cover, its hinge on the right page's left edge */}
-      <View style={{ position: 'absolute', left: W + gap, top: 0, width: W, height: W }}>
-        <Animated.View style={[face, styles.makeCover, turn(false)]}>
-          {/* (a solid cover for now: no spine shading or frame lines) */}
-        </Animated.View>
-        {/* the inside of the cover: the left page once it's open */}
-        <Animated.View style={[face, styles.makeInside, turn(true)]}>
-          <Text style={styles.makeInsideText}>{t('Let’s make a book')}</Text>
-        </Animated.View>
-      </View>
+      <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: spreadW, height: W, transform: [{ translateX: slide }] }}>
+        {/* the right page, under the cover: white, with a + */}
+        <View style={[styles.makePage, { left: W + gap, width: W, height: W }]}>
+          <View style={{ width: plus, height: plus, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ position: 'absolute', width: plus, height: bar, borderRadius: bar / 2, backgroundColor: '#4a4a4a' }} />
+            <View style={{ position: 'absolute', width: bar, height: plus, borderRadius: bar / 2, backgroundColor: '#4a4a4a' }} />
+          </View>
+        </View>
+        {/* the cover, hinged on the right page's left edge (square corners, solid blue inside and out) */}
+        <View style={{ position: 'absolute', left: W + gap, top: 0, width: W, height: W }}>
+          <Animated.View style={[face, styles.makeCover, turn(false)]} />
+          <Animated.View style={[face, styles.makeInside, turn(true)]} />
+        </View>
+      </Animated.View>
     </Pressable>
   );
 }
@@ -247,16 +250,17 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
   // the library's welcome: Coro's speech bubble, about two seconds after My Library first opens (once each time the app
   // is opened), until "Don't show this again" is ticked. It stays until closed.
   const [tip, setTip] = useState(false);
+  const [bookGo, setBookGo] = useState(libTipSeen); // the blue book opens once the welcome bubble is out of the way
   const [noMore, setNoMore] = useState(false);
   useEffect(() => {
     if (libTipSeen) return undefined;
     let live = true;
-    const id = setTimeout(() => loadJSON('tipLibrary', null).then((h) => { if (live && !(h && h.hide)) { libTipSeen = true; setTip(true); } }, () => {}), 2000);
+    const id = setTimeout(() => loadJSON('tipLibrary', null).then((h) => { if (live && !(h && h.hide)) { libTipSeen = true; setTip(true); } else if (live) setBookGo(true); }, () => setBookGo(true)), 2000);
     return () => { live = false; clearTimeout(id); };
   }, []);
   const { width: tipW, height: tipH } = useWindowDimensions();
   const tipWide = tipW > tipH; // sideways: the bar runs down the right side
-  const closeTip = () => { setTip(false); if (noMore) saveJSON('tipLibrary', { hide: true }); };
+  const closeTip = () => { setTip(false); setBookGo(true); if (noMore) saveJSON('tipLibrary', { hide: true }); };
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => (selecting ? (
         <Bar u={u} vertical={v}>
@@ -320,7 +324,7 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
         {!selecting && onNotebook ? <View style={{ width: '100%' }} /> : null}{/* the notebook has the top row to itself */}
         {/* Let's Create! first: Coro is a book maker first (Jörg, 25 Oct 2026) */}
         {!selecting && controls.create ? <Text style={styles.section} accessibilityRole="header">{t('Let’s make a book')}</Text> : null}
-        {!selecting && controls.create ? <MakeBookSpread winW={winW} onPress={onCreate} t={t} /> : null}
+        {!selecting && controls.create ? <MakeBookSpread winW={winW} onPress={onCreate} t={t} go={bookGo && !tip} wait={1000} /> : null}
         {!selecting ? <View style={{ width: '100%' }} /> : null}{/* the books start their own row */}
         {/* a title over the books: the ones you made first, then the picture books */}
         {!selecting ? <Text style={styles.section} accessibilityRole="header">{t('My Books')}</Text> : null}
@@ -689,13 +693,9 @@ const styles = StyleSheet.create({
   grid: { padding: 20, paddingTop: 42, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
   tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.72, shadowRadius: 13, elevation: 14 }, // a deep shadow, so the books stand up off the felt
   cardClose: { fontFamily: fonts.ui, fontSize: 14, color: '#bdbdbd', paddingVertical: 4 }, // under the Book Store card
-  makePage: { position: 'absolute', top: 0, backgroundColor: '#fbfaf7', alignItems: 'center', justifyContent: 'center', gap: 10, shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.6, shadowRadius: 12 },
-  makePageText: { color: '#3a3a3a', fontFamily: fonts.uiSemiBold, fontSize: 15 },
-  makeCover: { backgroundColor: MAKE_BLUE, borderTopRightRadius: 6, borderBottomRightRadius: 6, shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.6, shadowRadius: 12 },
-  makeSpine: { position: 'absolute', left: 0, top: 0, bottom: 0, width: '9%', backgroundColor: 'rgba(0,0,0,0.18)' },
-  makeFrame: { position: 'absolute', left: '17%', right: '8%', top: '8%', bottom: '8%', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.35)', borderRadius: 3 },
-  makeInside: { backgroundColor: MAKE_INSIDE, alignItems: 'center', justifyContent: 'center', padding: 14 },
-  makeInsideText: { color: '#2d4a70', fontFamily: fonts.uiBold, fontSize: 18, textAlign: 'center' },
+  makePage: { position: 'absolute', top: 0, backgroundColor: '#fbfaf7', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.6, shadowRadius: 12 },
+  makeCover: { backgroundColor: MAKE_BLUE, shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.6, shadowRadius: 12 },
+  makeInside: { backgroundColor: MAKE_BLUE },
   tileGlyph: { width: '42%', height: '42%', opacity: 0.85 }, // the line icon in the grey Make a book and Playlists tiles
   section: { ...sectionTitle, width: '100%', marginTop: 30, marginBottom: SECTION_GAP - 22 }, // a clear break above each section // the shelf already leaves 22 under it // My Books, Let's Create! (the standard section heading)
   tileTitle: { fontFamily: 'EBGaramond_700Bold', fontSize: 19, lineHeight: 23, color: colors.white }, // book titles and details: the book serif
