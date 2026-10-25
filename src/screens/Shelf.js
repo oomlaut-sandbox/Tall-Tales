@@ -120,8 +120,7 @@ function MakeBookSpread({ winW, onPress, t }) {
       {/* the cover, its hinge on the right page's left edge */}
       <View style={{ position: 'absolute', left: W + gap, top: 0, width: W, height: W }}>
         <Animated.View style={[face, styles.makeCover, turn(false)]}>
-          <View style={styles.makeSpine} />
-          <View style={styles.makeFrame} />
+          {/* (a solid cover for now: no spine shading or frame lines) */}
         </Animated.View>
         {/* the inside of the cover: the left page once it's open */}
         <Animated.View style={[face, styles.makeInside, turn(true)]}>
