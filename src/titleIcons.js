@@ -16,8 +16,8 @@ export const TITLE_ICONS = {
   make: require('../assets/title-icons/make-a-book.png'),
 };
 // the icon at a title's size (32 pt titles: a 30 pt icon), lifted to sit with the letters
-export function TitleIcon({ kind, size = 30, color }) {
+export function TitleIcon({ kind, size = 30, color, lift = -3 }) {
   const src = TITLE_ICONS[kind];
   if (!src) return null;
-  return <Image source={src} style={{ width: size, height: size, marginRight: 12, transform: [{ translateY: -3 }], ...(color ? { tintColor: color } : null) }} accessibilityIgnoresInvertColors />;
+  return <Image source={src} style={{ width: size, height: size, marginRight: 12, transform: [{ translateY: lift }], ...(color ? { tintColor: color } : null) }} accessibilityIgnoresInvertColors />;
 }

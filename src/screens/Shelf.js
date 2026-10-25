@@ -133,15 +133,23 @@ function MakeBookSpread({ winW, onPress, t, go, wait = 1000 }) {
     </Pressable>
   );
 }
-// Playlists on the shelf: three little felt books stacked (blue, red, green), each a coloured square and a white one
+// Playlists on the shelf: three little books stacked straight (blue, red, green; a coloured cover and a white page),
+// small and in the middle of the tile, each with a soft shadow on its spine and under it
 function PlaylistStack({ size }) {
-  const w = size * 0.56, h = w / 2;
+  const w = size * 0.4, h = w / 2, gap = h * 0.22;
   return (
-    <View style={{ gap: h * 0.12, alignItems: 'center' }}>
-      {['#1f6fd6', '#d2453a', '#3a9a4a'].map((c, i) => (
-        <View key={c} style={{ width: w, height: h, flexDirection: 'row', borderRadius: 3, overflow: 'hidden', transform: [{ translateX: (i - 1) * w * 0.05 }], shadowColor: '#000', shadowOpacity: 0.4, shadowRadius: 3, shadowOffset: { width: 0, height: 2 } }}>
-          <View style={{ flex: 1, backgroundColor: c, borderWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(255,255,255,0.45)', margin: 0 }} />
-          <View style={{ flex: 1, backgroundColor: '#f3efe6', borderWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(0,0,0,0.18)' }} />
+    <View style={{ gap, alignItems: 'center', justifyContent: 'center' }}>
+      {['#4a72a8', '#c9574a', '#5e9a5a'].map((c) => (
+        <View key={c} style={{ width: w, height: h, flexDirection: 'row', borderRadius: 2, backgroundColor: '#f3efe6', shadowColor: '#000', shadowOpacity: 0.55, shadowRadius: 4, shadowOffset: { width: 1, height: 3 }, elevation: 4 }}>
+          <View style={{ flex: 1, backgroundColor: c, borderTopLeftRadius: 2, borderBottomLeftRadius: 2 }}>
+            {/* the spine: a soft darker band down its left edge */}
+            <View style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '16%', backgroundColor: 'rgba(0,0,0,0.22)', borderTopLeftRadius: 2, borderBottomLeftRadius: 2 }} />
+            <View style={{ position: 'absolute', left: '16%', top: 0, bottom: 0, width: '6%', backgroundColor: 'rgba(0,0,0,0.08)' }} />
+          </View>
+          {/* where the cover meets the page: a faint fold shadow */}
+          <View style={{ flex: 1, borderTopRightRadius: 2, borderBottomRightRadius: 2 }}>
+            <View style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '10%', backgroundColor: 'rgba(0,0,0,0.08)' }} />
+          </View>
         </View>
       ))}
     </View>

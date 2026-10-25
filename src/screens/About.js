@@ -24,7 +24,7 @@ export default function About({ u, openMenu, onSecret }) {
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {/* Jörg's red felt, treated like the other banners (phones); iPad keeps the classic solid red */}
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="about" /><Text style={[styles.title, { flexShrink: 1 }]}>Coro</Text></View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="about" lift={2} /><Text style={[styles.title, { flexShrink: 1 }]}>Coro</Text></View>
         <Text style={styles.tagline}>{t('Books you make together.')}</Text>
       </View>
       <View style={{ flex: 1 }}>
@@ -53,5 +53,5 @@ const styles = StyleSheet.create({
   tagline: { color: colors.white, fontFamily: 'EBGaramond_400Regular_Italic', fontSize: 20, marginTop: 6 }, // the real italic (iPhone doesn't slant a font by itself)
   body: { paddingHorizontal: 24, paddingTop: 36, gap: 16 },
   p: { fontFamily: fonts.story, fontSize: 19, lineHeight: 28, color: colors.ink },
-  version: { fontFamily: fonts.ui, fontSize: 13, color: '#555', marginTop: 8 },
+  version: { fontFamily: fonts.ui, fontSize: 13, color: '#555', marginTop: 34 }, // well apart from the words above
 });
