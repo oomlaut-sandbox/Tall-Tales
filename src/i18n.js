@@ -267,6 +267,7 @@ const T = {
   "Let’s make a book": { de: "Lass uns ein Buch machen", fr: "Faisons un livre", es: "Hagamos un libro", ja: "えほんを つくろう", ar: "هيّا نصنع كتابًا" },
   "Tap to start": { de: "Tippen zum Starten", fr: "Touche pour commencer", es: "Toca para empezar", ja: "タップして はじめよう", ar: "اضغط لتبدأ" },
   'Next, let’s make a cover': { de: 'Weiter: Jetzt machen wir ein Cover', fr: 'Ensuite, faisons une couverture', es: 'Ahora, hagamos una portada', ja: 'つぎは ひょうしを つくろう', ar: 'التالي: هيّا نصنع غلافًا' },
+  'Dark blue': { de: 'Dunkelblau', fr: 'Bleu foncé', es: 'Azul oscuro', ja: 'こい あお', ar: 'أزرق داكن' },
   'Visit the Ideas Room': { de: 'Ins Ideenzimmer', fr: 'Entrer dans la salle des idées', es: 'Ir a la sala de ideas', ja: 'アイデアのへやへ', ar: "زر غرفة الأفكار" },
   'Many ideas for books you can make together: your photos and drawings, your words, your voice.': { de: 'Viele Ideen für Bücher, die ihr zusammen machen könnt: eure Fotos und Zeichnungen, eure Worte, eure Stimme.', fr: 'Plein d’idées de livres à faire ensemble : vos photos et dessins, vos mots, votre voix.', es: 'Muchas ideas de libros para hacer juntos: tus fotos y dibujos, tus palabras, tu voz.', ja: 'いっしょに つくれる 本の アイデアが たくさん：しゃしんや え、ことば、そして あなたの こえで。', ar: "أفكار كثيرة لكتب تصنعونها معًا: صوركم ورسوماتكم، وكلماتكم، وأصواتكم." },
   'Make a story': { de: 'Geschichte machen', fr: 'Créer un livre', es: 'Hacer un cuento', ja: 'えほんを つくる', ar: "اصنع قصة" },

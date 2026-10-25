@@ -315,7 +315,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const coverNo = () => { setCover({ ...cover, title: null }); setCoverAsk(false); }; // stay on the cover
   const coverYes = () => {
     setCoverAsk(false); setCoverTitling(true);
-    setCover({ ...cover, title: { text: draft.title.trim() || tr('My Story'), x: 0.5, y: 0.2, size: 0.11, color: TITLE_YELLOW } }); // yellow to start with
+    setCover({ ...cover, title: { text: draft.title.trim() || tr('My Story'), x: 0.5, y: 0.2, size: 0.11, color: TITLE_BLUE, font: 'coro' } }); // dark blue, in Coro, to start with
   };
   const setCoverTitle = (patch) => setDraft((d) => ({ ...d, cover: { ...d.cover, title: { ...d.cover.title, ...patch } } }));
   // dragging the title around the square
@@ -876,7 +876,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
 }
 
 // A new cover title starts out yellow (the palette's mustard).
-const TITLE_YELLOW = '#c9a227';
+const TITLE_BLUE = '#1f3a5f'; // a new title starts dark blue in the Coro font (Jörg, 25 Oct 2026)
 
 const styles = StyleSheet.create({
   aboutTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 30, lineHeight: 36 },

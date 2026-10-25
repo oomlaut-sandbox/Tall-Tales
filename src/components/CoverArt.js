@@ -9,7 +9,7 @@ export const COVER_FONT = 'EBGaramond_700Bold';
 // The cover title's colours: a small natural palette, plus white, greys and black.
 export const COVER_COLORS = [
   ['#ffffff', 'White'], ['#f4f1ea', 'Soft white'], ['#a8a39a', 'Stone grey'], ['#5b6670', 'Slate grey'], ['#36393b', 'Charcoal'], ['#1e1a17', 'Warm black'],
-  ['#2f5d3a', 'Forest green'], ['#c9a227', 'Mustard'], ['#c4683f', 'Terracotta'], ['#6b8cae', 'Dusty blue'], ['#6e3f63', 'Plum'], ['#7a5230', 'Warm brown'],
+  ['#2f5d3a', 'Forest green'], ['#c9a227', 'Mustard'], ['#c4683f', 'Terracotta'], ['#6b8cae', 'Dusty blue'], ['#1f3a5f', 'Dark blue'], ['#6e3f63', 'Plum'], ['#7a5230', 'Warm brown'],
 ];
 // the title's chosen font and colour (any of the reading fonts; bold where there is one).
 // Dark colours get a light glow instead of a dark shadow, so they still read on a dark picture.
