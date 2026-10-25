@@ -13,7 +13,7 @@ import { Animated, Easing, Image, KeyboardAvoidingView, PanResponder, Platform, 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
-import { colors, fonts } from '../theme';
+import { colors, fonts, MAX_WIDTH } from '../theme';
 import { Bar, Burger, DogEar, DoneTick, Panel, barGeo } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
@@ -1146,7 +1146,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   })).current;
   // the sizes of the tool in your hand, in a little dark pill in the page's bottom left corner
   const sizePopEl = () => {
-    if (!sizePop) return null;
+    if (!sizePop || more) return null;
     return (
       <Animated.View style={[styles.sizePop, { left: 10, bottom: 10, opacity: sizeFade }]}>
         {SIZES.map(([name, sz]) => (
@@ -1304,7 +1304,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
                 <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: BOX_TOP, bottom: -2, borderWidth: StyleSheet.hairlineWidth * 2, borderColor: 'rgba(255,255,255,0.4)' }} />
               </>
             ) : null}
-            <View style={{ position: 'absolute', left: 0, top: BOX_TOP + TOOL_GAP }}><ToolPic kind={k} width={tw} height={th} /></View>
+            <View style={{ position: 'absolute', left: 0, top: BOX_TOP + TOOL_GAP }}><ToolPic kind={k} width={tw} height={th} floor={TRAY_H - BOX_TOP - TOOL_GAP} /></View>
           </Pressable>
         ))}
       </View>
@@ -1379,10 +1379,11 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   if (wideScreen) {
     // sideways: a big page on the left (as tall as there's room for), the panel down the right
     return (
-      <View style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk }]}>
+      // (it stops at the menu bar down the right side, which stays in view)
+      <View style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk, right: Math.round((Math.min(winW, MAX_WIDTH) / 100) * 17 * 1.15) }]}>
         <DeskFelt spot="notebook3" overlay />
-        <View style={{ flex: 1, flexDirection: 'row', paddingLeft: insets.left + 24, paddingRight: insets.right + 24, paddingTop: Math.max(insets.top, 16) + 8, paddingBottom: Math.max(insets.bottom, 12) + 8, gap: 28 }}
-          onLayout={(e) => setArea({ w: e.nativeEvent.layout.width - insets.left - insets.right - 48, h: e.nativeEvent.layout.height - Math.max(insets.top, 16) - Math.max(insets.bottom, 12) - 16 })}>
+        <View style={{ flex: 1, flexDirection: 'row', paddingLeft: insets.left + 24, paddingRight: 24, paddingTop: Math.max(insets.top, 16) + 8, paddingBottom: Math.max(insets.bottom, 12) + 8, gap: 28 }}
+          onLayout={(e) => setArea({ w: e.nativeEvent.layout.width - insets.left - 48, h: e.nativeEvent.layout.height - Math.max(insets.top, 16) - Math.max(insets.bottom, 12) - 16 })}>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>{W ? paper : null}</View>
           <View style={{ width: TOOLS_W, justifyContent: 'space-between' }}>
             {headEl}
@@ -1393,7 +1394,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
             <View>{trayEl(TOOLS_W)}</View>
           </View>
         </View>
-        {more ? <View style={{ position: 'absolute', right: insets.right, bottom: 0 }}>{moreEl(TOOLS_W + 48)}</View> : null}
+        {more ? <View style={{ position: 'absolute', right: 0, bottom: 0 }}>{moreEl(TOOLS_W + 48)}</View> : null}
       </View>
     );
   }
