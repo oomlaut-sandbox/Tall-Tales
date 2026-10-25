@@ -23,6 +23,7 @@ import { StrokesView, colourAt } from '../components/Strokes';
 import { EarArt } from '../components/Ear';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
 import ToolPic from '../components/ToolPic';
+import { STAMPS, stampWidth } from '../stamps';
 import { BRUSHES, PENS, PENS_BRIGHT, RAINBOW, SHAPES, SIZES, makeFill, mixColours, near, shapePts, withMirrors } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
@@ -969,6 +970,9 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const [palette, setPalette] = useState('earthy'); // the earthy colours or the bright ones
   const [mixing, setMixing] = useState(false); // Mix: a tapped colour is mixed into the pen's colour, like paint
   const [mirror, setMirror] = useState(false);
+  const [stamp, setStamp] = useState(null); // a stamp in hand: put a finger down to place it, slide to move it, lift to stick it
+  const [stampsOpen, setStampsOpen] = useState(false);
+  const [behind, setBehind] = useState(false); // colouring in behind the lines: what's drawn goes underneath everything else
   const [dropper, setDropper] = useState(false); // the eyedropper: the next tap on the page picks up the colour there // Mirror: everything drawn appears flipped on the other side too
   const [redo, setRedo] = useState([]); // strokes taken back with Undo, to put back with Redo
   const [recent, setRecent] = useState(['#1e2324', '#f1e8d8', '#2f4a4c', '#93a08f', '#b98a3e', '#9a4f36', '#4e3125']); // the seven colours in the pill: earthy to start (the bright ones are under +)
@@ -988,7 +992,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   };
   const lastWater = useRef(null); // the last watercolour stroke and when it was finished (still wet for a while)
   const S = useRef({});
-  S.current = { strokes, pen, size, erase, bucket, tall, brush, shape, mirror, eraseSoft, smudgeK, dropper, photo };
+  S.current = { strokes, pen, size, erase, bucket, tall, brush, shape, mirror, eraseSoft, smudgeK, dropper, photo, behind, stamp };
   const toolsH = 16; // (portrait: the panel has its own room below the page) // (two rows of colours, the colour row; the brushes, the sizes and the shapes take a row each)
   const add = (st) => { setStrokes((s) => [...s, st]); setRedo([]); };
   const W = !area ? 0 : wideScreen ? Math.max(120, Math.floor(Math.min(area.h, area.w - TOOLS_W - 28)))
@@ -1039,10 +1043,15 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       }
       if (S.current.bucket) {
         const f = makeFill(withMirrors(S.current.strokes.filter((st) => !st.e && !st.sm)), x, y, S.current.tall ? 2 : 1, S.current.pen);
-        if (f) add(S.current.mirror ? { ...f, m: 1 } : f);
+        if (f) add({ ...f, ...(S.current.mirror ? { m: 1 } : null), ...(S.current.behind ? { bk: 1 } : null) });
         return;
       }
-      const m = S.current.mirror ? { m: 1 } : null;
+      const m = { ...(S.current.mirror ? { m: 1 } : null), ...(S.current.behind ? { bk: 1 } : null) }; // (mirror, and behind the lines)
+      if (S.current.stamp) { // a stamp appears under the finger (it can be slid into place before it sticks)
+        cur.current = { stp: S.current.stamp, p: [+x.toFixed(4), +y.toFixed(4)], w: stampWidth(S.current.size), ...m };
+        setLive({ ...cur.current });
+        return;
+      }
       if (S.current.shape) {
         cur.current = { c: S.current.pen, s: S.current.size, b: S.current.brush, z: 1, k: S.current.shape, o: [x, y], p: shapePts(S.current.shape, x, y, x, y), ...m };
         setLive({ ...cur.current });
@@ -1065,6 +1074,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       const c = cur.current;
       if (!c) return;
       if (c.z) { c.p = shapePts(c.k, c.o[0], c.o[1], x, y); showLive(); return; } // a shape grows with the drag
+      if (c.stp) { c.p = [+x.toFixed(4), +y.toFixed(4)]; showLive(); return; } // a stamp follows the finger
       const n = c.p.length;
       // steady the hand: each new point is pulled a little towards the last one, so wobbles smooth out into curves
       // (lightly: the line still keeps up with the finger)
@@ -1088,6 +1098,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
         return;
       }
       if (!c) return;
+      if (c.stp) { add(c); return; } // the stamp sticks where the finger lifted
       if (c.q && !c.q.some((v) => v > 0)) delete c.q;
       if (c.t && !c.t.some((v) => v < 0.95)) delete c.t; // held upright all the way: nothing to keep
       // watercolour over a wash that's still wet (painted in the last few seconds, where they overlap): it bleeds
@@ -1138,6 +1149,26 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     </View>
     {/* the sizes of the tool in your hand: a little dark pill in the bottom left corner of the page */}
     {sizePopEl()}
+    {/* a stamp in hand: its sizes, and ✕ to put it down (bottom left, like the sizes pill) */}
+    {stamp && !dropper && !sizePop ? (
+      <View style={[styles.sizePop, { left: 10, bottom: 10, paddingHorizontal: 10 }]}>
+        {SIZES.map(([name, sz]) => (
+          <Pressable key={name} onPress={() => setSize(sz)} hitSlop={6} accessibilityRole="button" accessibilityLabel={t('{name} pen', { name: t(name) })}
+            style={{ width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', backgroundColor: size === sz ? colors.green : 'transparent' }}>
+            <View style={{ width: 5 + sz * 280, height: 5 + sz * 280, borderRadius: 20, backgroundColor: colors.white }} />
+          </Pressable>
+        ))}
+        <Pressable onPress={() => setStamp(null)} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Put the stamp away')} style={{ paddingHorizontal: 10, height: 38, justifyContent: 'center' }}>
+          <Text style={{ color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 15 }}>✕</Text>
+        </Pressable>
+      </View>
+    ) : null}
+    {/* behind the lines: a small label at the top of the page, tap it to come back to the front */}
+    {behind && !dropper ? (
+      <Pressable onPress={() => setBehind(false)} accessibilityRole="button" accessibilityLabel={t('Draw on top again')} style={[styles.sizePop, { left: 10, top: 10, height: 36, paddingHorizontal: 14 }]}>
+        <Text style={{ color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 13 }}>{t('Behind the lines')}  ✕</Text>
+      </Pressable>
+    ) : null}
     {dropper ? (
       <View pointerEvents="none" style={[styles.sizePop, { left: 10, bottom: 10, paddingHorizontal: 16 }]}>
         <Text style={{ color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 14 }}>{t('Tap the page to pick up a colour')}</Text>
@@ -1192,7 +1223,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     <Pressable onPress={() => setMore(true)} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('More colours and tools')} style={styles.plusBtn}>
       <View style={{ position: 'absolute', width: 22, height: 3, borderRadius: 1.5, backgroundColor: colors.white }} />
       <View style={{ position: 'absolute', width: 3, height: 22, borderRadius: 1.5, backgroundColor: colors.white }} />
-      {mixing || mirror || shape || dropper ? <View style={{ position: 'absolute', top: 2, right: 2, width: 9, height: 9, borderRadius: 4.5, backgroundColor: colors.green }} /> : null}
+      {mixing || mirror || shape || dropper || behind || stamp ? <View style={{ position: 'absolute', top: 2, right: 2, width: 9, height: 9, borderRadius: 4.5, backgroundColor: colors.green }} /> : null}
     </Pressable>
   );
   const binEl = (
@@ -1222,7 +1253,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const onTool = erase ? 'eraser' : bucket ? 'roller' : Object.keys(BRUSH_OF).find((k) => BRUSH_OF[k] === brush) || 'pen';
   const pickTool = (k) => {
     if (k === onTool && k !== 'roller') { setSizePop((x) => (x ? null : k)); return; } // the one in your hand: its sizes
-    setSizePop(null);
+    setSizePop(null); setStamp(null);
     if (k === 'eraser') { setErase(true); setBucket(false); setShape(null); return; }
     if (k === 'roller') { setBucket(true); setErase(false); setShape(null); return; }
     setBrush(BRUSH_OF[k]); setErase(false); setBucket(false);
@@ -1268,6 +1299,8 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
             <View style={{ position: 'absolute', width: 20, height: 2.6, borderRadius: 1.3, backgroundColor: colors.white, transform: [{ rotate: '-45deg' }] }} />
           </Pressable>
         </View>
+        {/* everything below the title scrolls, so the sheet never covers the page's top */}
+        <ScrollView style={{ maxHeight: winH - insets.top - 140 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 6 }}>
         <Text style={styles.sheetLabel}>{t('Bright colours')}</Text>
         {grid(PENS_BRIGHT)}
         <Text style={styles.sheetLabel}>{t('Earthy colours')}</Text>
@@ -1292,17 +1325,33 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
           <Pressable onPress={() => setMixing((x) => !x)} style={[styles.toolWide, mixing && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mix colours')}><Text style={styles.toolText}>{t('Mix')}</Text></Pressable>
           <Pressable onPress={() => { setShapesOpen((x) => !x); if (shapesOpen) setShape(null); }} style={[styles.toolWide, (shapesOpen || shape) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Shapes')}><Text style={styles.toolText}>{t('Shapes')}</Text></Pressable>
           <Pressable onPress={() => setMirror((x) => !x)} style={[styles.toolWide, mirror && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mirror drawing')}><Text style={styles.toolText}>{t('Mirror')}</Text></Pressable>
+          <Pressable onPress={() => setStampsOpen((x) => !x)} style={[styles.toolWide, (stampsOpen || stamp) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Stamps')}><Text style={styles.toolText}>{t('Stamps')}</Text></Pressable>
+          <Pressable onPress={() => setBehind((x) => !x)} style={[styles.toolWide, behind && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Colour behind the lines')}><Text style={styles.toolText}>{t('Behind the lines')}</Text></Pressable>
           <Pressable onPress={() => { setDropper(true); setMore(false); }} style={[styles.toolWide, dropper && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Pick up a colour from the page')}><Text style={styles.toolText}>{t('Pick up a colour')}</Text></Pressable>
         </View>
+        {stampsOpen ? (
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
+            {STAMPS.map(([k, src, aspect, name]) => {
+              const d = Math.floor((w - 44 - 5 * 8) / 6);
+              return (
+                <Pressable key={k} onPress={() => { setStamp(k); setShape(null); setErase(false); setBucket(false); setDropper(false); setMore(false); }} accessibilityRole="button" accessibilityLabel={t(name)}
+                  style={{ width: d, height: d, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: stamp === k ? colors.green : 'rgba(255,255,255,0.08)' }}>
+                  <Image source={src} style={{ width: d * 0.82, height: d * 0.82 }} resizeMode="contain" />
+                </Pressable>
+              );
+            })}
+          </View>
+        ) : null}
         {shapesOpen ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
             {SHAPES.map(([k, glyph, name]) => (
-              <Pressable key={k} onPress={() => { setShape((x) => (x === k ? null : k)); setErase(false); setBucket(false); setMore(false); }} style={[styles.tool, shape === k && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t(name)}>
+              <Pressable key={k} onPress={() => { setShape((x) => (x === k ? null : k)); setStamp(null); setErase(false); setBucket(false); setMore(false); }} style={[styles.tool, shape === k && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t(name)}>
                 <Text style={[styles.toolText, { fontSize: 20, lineHeight: 24 }]}>{glyph}</Text>
               </Pressable>
             ))}
           </View>
         ) : null}
+        </ScrollView>
       </View>
     );
   };

@@ -56,6 +56,7 @@ export function mixColours(a, b, k = 0.35) {
 
 // Mirror drawing: a stroke kept with m: 1 is drawn twice, once as it was drawn and once flipped left to right.
 export function mirrored(st) {
+  if (st.stp) return { ...st, m: 0, p: [+(1 - st.p[0]).toFixed(4), st.p[1]], fx: st.fx ? 0 : 1 }; // a stamp: across, and facing the other way
   if (st.f) { const g = st.g || 160, f = st.f.slice(); for (let i = 0; i < f.length; i += 3) { const a = g - f[i + 2], b = g - f[i + 1]; f[i + 1] = a; f[i + 2] = b; } return { ...st, m: 0, f }; }
   const p = (st.p || []).slice(); for (let i = 0; i < p.length; i += 2) p[i] = +(1 - p[i]).toFixed(4);
   return { ...st, m: 0, p };
@@ -94,7 +95,7 @@ export function makeFill(strokes, x, y, aspect, colour) {
     for (let yy = y0; yy <= y1; yy++) for (let xx = x0; xx <= x1; xx++) if ((xx + 0.5 - cx) ** 2 + (yy + 0.5 - cy) ** 2 <= r2) wall[yy * cols + xx] = 1;
   };
   for (const st of strokes) {
-    if (st.f) continue; // other fills aren't walls: a new fill simply goes on top
+    if (st.f || st.stp) continue; // other fills (and stamps) aren't walls: a new fill simply goes on top
     const p = st.p || [];
     const r = (st.s || 0.01) * G / 2 + 1.1; // the line, plus a little to close small gaps
     for (let i = 0; i < p.length; i += 2) {
@@ -281,6 +282,7 @@ const uprightOf = (st) => { const m = mean(st.t); return m == null ? 1 : m; };
 // a light touch makes a lighter mark, pressing hard a deeper one (pencil, crayon, watercolour)
 const darkOf = (st, lo = 0.45) => { const q = pressOf(st); return q == null ? 1 : clamp(lo + q * (1.25 - lo), lo, 1.15); };
 function layersOf(st, w) {
+  if (st.stp) return []; // a stamp is a picture (drawn by the canvas itself), not paint
   if (st.sm) return []; // the smudge draws nothing of its own: it softens what's under it (see smudgeOutline)
   if (st.m) return [...layersOf({ ...st, m: 0 }, w), ...layersOf(mirrored(st), w)]; // mirror drawing: both sides
   // the eraser: a soft round line that rubs out what was drawn before it (down to the paper or the photo)
@@ -374,3 +376,7 @@ export function drawOrder(list) {
   flush();
   return out;
 }
+
+// Two layers: what was drawn "behind the lines" (bk: 1: colouring in underneath) and everything else on top. The
+// eraser and the smudge only work on the layer they were used on. Returns [behind, front] (either may be empty).
+export const byLayer = (list) => [(list || []).filter((st) => st.bk), (list || []).filter((st) => !st.bk)];

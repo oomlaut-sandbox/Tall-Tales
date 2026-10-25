@@ -4,10 +4,11 @@
 // faint grain lies over the whole page. (The web preview uses Strokes.js.)
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { AlphaType, BackdropBlur, BlendMode, BlurMask, BlurStyle, Canvas, ClipOp, ColorType, DiscretePathEffect, Group, ImageShader, PaintStyle, Path, Rect, Skia, StrokeCap, StrokeJoin, TileMode, useImage } from '@shopify/react-native-skia';
+import { AlphaType, BackdropBlur, BlendMode, BlurMask, BlurStyle, Canvas, ClipOp, ColorType, DiscretePathEffect, Group, Image as SkImage, ImageShader, PaintStyle, Path, Rect, Skia, StrokeCap, StrokeJoin, TileMode, useImage } from '@shopify/react-native-skia';
 import { Asset } from 'expo-asset';
 import { File, Paths } from 'expo-file-system';
-import { drawOrder, layersFor, mirrored, smudgeOf } from '../strokes';
+import { byLayer, drawOrder, layersFor, mirrored, smudgeOf } from '../strokes';
+import { STAMP, stampBox } from '../stamps';
 
 const GRAIN = require('../../assets/paper-grain.png'); // 512 × 512, repeats without seams
 const TOOTH = require('../../assets/paper-tooth.png');
@@ -59,7 +60,16 @@ function Smudge({ st, width }) {
   // blurs what has been drawn so far, only where the finger rubbed
   return <>{parts.map((P, i) => <BackdropBlur key={i} blur={P.blur} clip={P.path} />)}</>;
 }
+// a stamp: its picture in its box (flipped when it faces the other way; mirror drawing: on both sides)
+function StampPic({ st, width }) {
+  const img = useImage((STAMP[st.stp] || {}).src);
+  if (!img) return null;
+  const b = stampBox(st, width);
+  const pic = <SkImage image={img} x={b.x} y={b.y} width={b.w} height={b.h} fit="contain" />;
+  return st.fx ? <Group transform={[{ translateX: 2 * (b.x + b.w / 2) }, { scaleX: -1 }]}>{pic}</Group> : pic;
+}
 const One = React.memo(function One({ st, width }) {
+  if (st.stp) return st.m ? <><StampPic st={{ ...st, m: 0 }} width={width} /><StampPic st={mirrored(st)} width={width} /></> : <StampPic st={st} width={width} />;
   if (st.sm) return <Smudge st={st} width={width} />;
   const layers = useMemo(() => layersFor(st, width), [st, width]);
   return <>{layers.filter((L) => L.alpha).map((L, i) => <Layer key={i} L={L} color={st.c} />)}</>;
@@ -75,15 +85,18 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
     <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width, height }}>
       <Canvas style={{ width, height }}>
         {/* the drawing on its own layer: the eraser rubs down to the paper, and the tooth only marks what's drawn */}
-        <Group layer>
+        {/* behind the lines first, then everything else, each on its own layer (the eraser only rubs its own layer) */}
+        {byLayer(live ? [...(strokes || []), live] : strokes).map((part, n) => (part.length ? (
+        <Group key={n} layer>
           {/* fills under the lines, the eraser rubbing out what came before it (see drawOrder) */}
-          {runsOf(drawOrder(live ? [...(strokes || []), live] : strokes), width).map((r, i) => (r.tex > 0 ? (
+          {runsOf(drawOrder(part), width).map((r, i) => (r.tex > 0 ? (
             <Group key={i} layer>
               {r.list.map((st, j) => <One key={j} st={st} width={width} />)}
               {tooth ? <Rect x={0} y={0} width={width} height={height} blendMode="srcATop" opacity={TOOTH_OF[r.tex]}>{tex(tooth)}</Rect> : null}
             </Group>
           ) : r.list.map((st, j) => <One key={`${i}-${j}`} st={st} width={width} />)))}
         </Group>
+        ) : null))}
         {grain && !noPaper ? <Rect x={0} y={0} width={width} height={height} blendMode="multiply" opacity={0.6}>{tex(grain)}</Rect> : null}
       </Canvas>
     </View>
@@ -102,6 +115,29 @@ async function textures() {
   };
   texCache = { grain: await load(GRAIN), tooth: await load(TOOTH) };
   return texCache;
+}
+const stampCache = {};
+async function stampImage(k) {
+  if (k in stampCache) return stampCache[k];
+  try {
+    const a = Asset.fromModule((STAMP[k] || {}).src); await a.downloadAsync();
+    stampCache[k] = Skia.Image.MakeImageFromEncoded(Skia.Data.fromBytes(await new File(a.localUri || a.uri).bytes()));
+  } catch (e) { stampCache[k] = null; }
+  return stampCache[k];
+}
+// draws a stamp onto a canvas (for the exported picture and the eyedropper)
+async function drawStamp(canvas, st, px) {
+  for (const q of st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]) {
+    const img = await stampImage(q.stp);
+    if (!img) continue;
+    const b = stampBox(q, px);
+    canvas.save();
+    canvas.translate(b.x + b.w / 2, b.y + b.h / 2);
+    if (q.fx) canvas.scale(-1, 1);
+    const p = Skia.Paint(); p.setAntiAlias(true);
+    canvas.drawImageRect(img, Skia.XYWHRect(0, 0, img.width(), img.height()), Skia.XYWHRect(-b.w / 2, -b.h / 2, b.w, b.h), p);
+    canvas.restore();
+  }
 }
 const texPaint = (img, px, blend, alpha = 1) => {
   const k = (TILE * px) / 512;
@@ -129,10 +165,13 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
       }
     } catch (e) {}
   }
-  canvas.saveLayer(); // the drawing on its own layer, so the eraser rubs down to the paper, not through it
-  for (const r of runsOf(drawOrder(strokes), px)) {
+  for (const part of byLayer(strokes)) {
+  if (!part.length) continue;
+  canvas.saveLayer(); // the drawing on its own layer, so the eraser rubs down to the paper, not through it (behind the lines, then the rest)
+  for (const r of runsOf(drawOrder(part), px)) {
    if (r.tex > 0) canvas.saveLayer();
    for (const st of r.list) {
+    if (st.stp) { await drawStamp(canvas, st, px); continue; }
     if (st.sm) { // the smudge: blur what's there so far, inside where the finger rubbed
       for (const q of st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]) {
         for (const P of smudgePaths(q, px)) {
@@ -165,6 +204,7 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
    if (r.tex > 0) { if (T.tooth) canvas.drawRect(Skia.XYWHRect(0, 0, px, px), texPaint(T.tooth, px, BlendMode.SrcATop, TOOTH_OF[r.tex])); canvas.restore(); }
   }
   canvas.restore();
+  }
   if (T.grain && !photo) canvas.drawRect(Skia.XYWHRect(0, 0, px, px), texPaint(T.grain, px, BlendMode.Multiply, 0.6));
   surface.flush();
   const bytes = surface.makeImageSnapshot().encodeToBytes();
@@ -190,9 +230,11 @@ export async function colourAt(strokes, x, y, aspect = 1, photo = null) {
       }
     } catch (e) {}
   }
+  for (const part of byLayer(strokes)) {
   canvas.saveLayer();
-  for (const st of drawOrder(strokes)) {
+  for (const st of drawOrder(part)) {
     if (st.sm) continue;
+    if (st.stp) { await drawStamp(canvas, st, px); continue; }
     for (const L of layersFor(st, px)) {
       if (!L.alpha) continue;
       const path = Skia.Path.MakeFromSVGString(L.d);
@@ -208,6 +250,7 @@ export async function colourAt(strokes, x, y, aspect = 1, photo = null) {
     }
   }
   canvas.restore();
+  }
   surface.flush();
   const img = surface.makeImageSnapshot();
   const cx = Math.max(0, Math.min(px - 1, Math.round(x * px))), cy = Math.max(0, Math.min(ph - 1, Math.round(y * px)));

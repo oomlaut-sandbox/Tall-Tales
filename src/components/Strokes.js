@@ -2,7 +2,8 @@
 // Phones use Strokes.native.js.
 import React from 'react';
 import { View } from 'react-native';
-import { drawOrder, layersFor, smudgeOf } from '../strokes';
+import { byLayer, drawOrder, layersFor, mirrored, smudgeOf } from '../strokes';
+import { STAMP, stampBox } from '../stamps';
 
 const src = (m) => (typeof m === 'string' ? m : (m && (m.uri || m.default)) || '');
 const GRAIN = src(require('../../assets/paper-grain.png'));
@@ -12,12 +13,20 @@ const TILE = 0.7; // one repeat of the paper texture, in widths of the drawing (
 let uid = 0;
 // The paper: its tooth shows through what's drawn (lighter specks where the paper dips), a faint grain over all.
 export function StrokesView({ strokes, width, height, live, noPaper }) {
-  const all = drawOrder(live ? [...(strokes || []), live] : strokes || []);
   const h = React.createElement;
-  const id = React.useMemo(() => `s${++uid}`, []);
+  const id0 = React.useMemo(() => `s${++uid}`, []);
   const defs = [];
+  const groups = [];
+  // behind the lines first, then everything else, each built on its own (the eraser only rubs its own layer)
+  byLayer(live ? [...(strokes || []), live] : strokes || []).forEach((part, n) => {
+  const id = `${id0}-${n}`;
+  const all = drawOrder(part);
   let paths = [];
-  all.forEach((st, i) => (st.sm ? (() => { // the smudge: a blurred copy of everything so far, shown only where the finger rubbed
+  all.forEach((st, i) => (st.stp ? (st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]).forEach((q, j) => { // a stamp: its picture
+    const b = stampBox(q, width), cx = b.x + b.w / 2;
+    paths.push(h('image', { key: `${i}-st${j}`, href: src((STAMP[q.stp] || {}).src), x: b.x, y: b.y, width: b.w, height: b.h, preserveAspectRatio: 'xMidYMid meet',
+      transform: q.fx ? `translate(${2 * cx} 0) scale(-1 1)` : undefined }));
+  }) : st.sm ? (() => { // the smudge: a blurred copy of everything so far, shown only where the finger rubbed
     const S = smudgeOf(st, width), mid = `${id}-s${i}`, fid = `${id}-sb${i}`;
     defs.push(h('mask', { key: mid, id: mid, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width, height },
       h('path', { d: S.d, fill: 'none', stroke: 'white', strokeWidth: S.width * 1.2, strokeLinecap: 'round', strokeLinejoin: 'round', filter: `url(#${mid}-f)` })));
@@ -42,6 +51,9 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
       style: L.multiply ? { mixBlendMode: 'multiply' } : undefined, strokeDasharray: L.grain === 'crayon' ? '3 1.4' : L.grain ? '6 0.6' : undefined,
     }));
   })));
+  groups.push(h('g', { key: id }, paths));
+  });
+  const id = id0;
   const tile = TILE * width;
   defs.push(h('filter', { key: 'tooth', id: `${id}-tooth`, x: 0, y: 0, width, height, filterUnits: 'userSpaceOnUse' },
     h('feImage', { href: TOOTH, x: 0, y: 0, width: tile, height: tile, preserveAspectRatio: 'none', result: 't' }),
@@ -53,7 +65,7 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
   return (
     <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width, height }}>
       {h('svg', { width, height, viewBox: `0 0 ${width} ${height}`, style: { position: 'absolute', left: 0, top: 0 } }, h('defs', null, defs),
-        h('g', { filter: `url(#${id}-tooth)` }, h('g', null, paths)),
+        h('g', { filter: `url(#${id}-tooth)` }, h('g', null, groups)),
         noPaper ? null : h('rect', { x: 0, y: 0, width, height, fill: `url(#${id}-grain)`, style: { mixBlendMode: 'multiply', pointerEvents: 'none', opacity: 0.6 } }))}
     </View>
   );
@@ -65,9 +77,13 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
   out.width = px; out.height = px;
   const c = document.createElement('canvas'); // the drawing on its own sheet, so the eraser rubs down to the paper
   c.width = px; c.height = px;
+  const o = out.getContext('2d');
+  o.fillStyle = bg; o.fillRect(0, 0, px, px);
+  for (const part of byLayer(strokes)) { // behind the lines, then the rest, each on its own sheet
   const g = c.getContext('2d');
-  const list = drawOrder(strokes);
-  for (const st of list) {
+  g.clearRect(0, 0, px, px);
+  for (const st of drawOrder(part)) {
+    if (st.stp) { await drawStampWeb(g, st, px); continue; }
     for (const L of layersFor(st, px).filter((L2) => L2.alpha && !L2.inner)) {
       g.save();
       g.globalAlpha = L.alpha;
@@ -78,9 +94,8 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
       g.restore();
     }
   }
-  const o = out.getContext('2d');
-  o.fillStyle = bg; o.fillRect(0, 0, px, px);
   o.drawImage(c, 0, 0);
+  }
   return out.toDataURL('image/png');
 }
 
@@ -95,8 +110,11 @@ export async function colourAt(strokes, x, y, aspect = 1, photo = null) {
   }
   const d = document.createElement('canvas'); d.width = px; d.height = ph;
   const h = d.getContext('2d');
-  for (const st of drawOrder(strokes)) {
+  for (const part of byLayer(strokes)) {
+  h.clearRect(0, 0, px, ph);
+  for (const st of drawOrder(part)) {
     if (st.sm) continue;
+    if (st.stp) { await drawStampWeb(h, st, px); continue; }
     for (const L of layersFor(st, px).filter((L2) => L2.alpha && !L2.inner)) {
       h.save(); h.globalAlpha = L.alpha;
       h.globalCompositeOperation = L.erase ? 'destination-out' : L.multiply ? 'multiply' : 'source-over';
@@ -107,8 +125,25 @@ export async function colourAt(strokes, x, y, aspect = 1, photo = null) {
     }
   }
   g.drawImage(d, 0, 0);
+  }
   try {
     const v = g.getImageData(Math.max(0, Math.min(px - 1, Math.round(x * px))), Math.max(0, Math.min(ph - 1, Math.round(y * px))), 1, 1).data;
     return '#' + [v[0], v[1], v[2]].map((n) => n.toString(16).padStart(2, '0')).join('');
   } catch (e) { return null; }
+}
+
+// a stamp onto a canvas (web preview): its picture, loaded once
+const webStamps = {};
+function webStamp(k) {
+  if (!webStamps[k]) webStamps[k] = new Promise((res) => { const im = new window.Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src((STAMP[k] || {}).src); });
+  return webStamps[k];
+}
+export async function drawStampWeb(g, st, px) {
+  for (const q of st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]) {
+    const im = await webStamp(q.stp);
+    if (!im) continue;
+    const b = stampBox(q, px);
+    g.save(); g.translate(b.x + b.w / 2, b.y + b.h / 2); if (q.fx) g.scale(-1, 1);
+    g.drawImage(im, -b.w / 2, -b.h / 2, b.w, b.h); g.restore();
+  }
 }
