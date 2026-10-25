@@ -14,8 +14,9 @@ const timing = fs.existsSync('src/welcome/timing.json') ? JSON.parse(fs.readFile
 async function speak(who, text, lang, timed) {
   const coro = who === 'C';
   const voice = coro ? V.coro.id : V.narrator.id;
-  const model = coro ? 'eleven_v3' : 'eleven_multilingual_v2';
-  const settings = coro ? { stability: 0.5, similarity_boost: 0.8 } : { stability: 0.6, similarity_boost: 0.8, style: 0.1, use_speaker_boost: true, speed: 0.85 };
+  const own = coro && V.coro.id !== V.narrator.id; // Coro in a voice of its own (otherwise Fatima reads Coro's lines too)
+  const model = own ? (V.coro.model || 'eleven_v3') : 'eleven_multilingual_v2';
+  const settings = own ? { stability: 0.5, similarity_boost: 0.8 } : { stability: 0.6, similarity_boost: 0.8, style: 0.1, use_speaker_boost: true, speed: 0.85 };
   const url = `https://api.elevenlabs.io/v1/text-to-speech/${voice}${timed ? '/with-timestamps' : ''}?output_format=mp3_44100_128`;
   const res = await fetch(url, { method: 'POST', headers: { 'xi-api-key': KEY, 'Content-Type': 'application/json', Accept: timed ? 'application/json' : 'audio/mpeg' },
     body: JSON.stringify({ text, model_id: model, language_code: lang, voice_settings: settings }) });

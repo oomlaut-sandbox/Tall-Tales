@@ -1,5 +1,13 @@
 {
-  "_note": "Voices for the welcome (Jörg, 24 Oct 2026): Coro the grey felt mascot speaks in the designed voice 'Coro' (cosy 3); the grown-up narrator is Fatima (ElevenLabs Lily).",
-  "coro": { "label": "Coro", "id": "BOGE1TPnYXaR9bC8C26m", "model": "eleven_v3" },
-  "narrator": { "label": "Fatima", "elevenlabs": "Lily", "id": "pFZP5JQG7iQjIQuC4Bku" }
+  "_note": "Voices for the welcome (Jörg, 25 Oct 2026): for now every line is read by Fatima (ElevenLabs Lily), Coro's lines too, until Coro has a voice of its own.",
+  "coro": {
+    "label": "Fatima (for Coro, for now)",
+    "id": "pFZP5JQG7iQjIQuC4Bku",
+    "model": "eleven_multilingual_v2"
+  },
+  "narrator": {
+    "label": "Fatima",
+    "elevenlabs": "Lily",
+    "id": "pFZP5JQG7iQjIQuC4Bku"
+  }
 }
