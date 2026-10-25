@@ -518,7 +518,7 @@ const HOME_PICTURE = require('./assets/leather.jpg');
 // The start screen's pictures, drawn once (invisibly) while the app gets ready, so the closed notebook cover
 // is already in memory when the start screen first shows: no see-through frame before its strips appear.
 const WARM = [require('./assets/leather-cover-round.png'), require('./assets/leather-cover-wide-round.png'),
-  require('./assets/tile-library.png'), require('./assets/tile-store.png'), require('./assets/logo-felt.png')];
+  require('./assets/tile-library.png'), require('./assets/tile-store.png'), require('./assets/logo-felt-colour.png')];
 // Phones and tablets both turn: sideways, the book goes side by side with the menu bar on the right.
 if (Platform.OS !== 'web') ScreenOrientation.unlockAsync().catch(() => {});
 
