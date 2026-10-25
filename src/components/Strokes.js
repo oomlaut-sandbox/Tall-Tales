@@ -29,7 +29,8 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
       const mid = `${id}-m${i}`;
       defs.push(h('mask', { key: mid, id: mid, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width, height },
         h('rect', { x: 0, y: 0, width, height, fill: 'white' }),
-        h('path', { d: L.d, fill: 'none', stroke: 'black', strokeWidth: L.width, strokeLinecap: 'round', strokeLinejoin: 'round' })));
+        h('path', { d: L.d, fill: 'none', stroke: 'black', strokeOpacity: L.alpha, strokeWidth: L.width, strokeLinecap: 'round', strokeLinejoin: 'round', filter: L.blur ? `url(#${mid}-e)` : undefined })));
+      if (L.blur) defs.push(h('filter', { key: `${mid}-e`, id: `${mid}-e`, x: '-20%', y: '-20%', width: '140%', height: '140%' }, h('feGaussianBlur', { stdDeviation: L.blur })));
       paths = [h('g', { key: mid, mask: `url(#${mid})` }, paths)];
       return;
     }
@@ -81,4 +82,33 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
   o.fillStyle = bg; o.fillRect(0, 0, px, px);
   o.drawImage(c, 0, 0);
   return out.toDataURL('image/png');
+}
+
+// The eyedropper (web preview): the colour at (x, y) on a small picture of the page (the drawing over its photo)
+export async function colourAt(strokes, x, y, aspect = 1, photo = null) {
+  const px = 240, ph = Math.round(px * aspect);
+  const c = document.createElement('canvas'); c.width = px; c.height = ph;
+  const g = c.getContext('2d');
+  g.fillStyle = '#ffffff'; g.fillRect(0, 0, px, ph);
+  if (photo) {
+    await new Promise((res) => { const im = new window.Image(); im.crossOrigin = 'anonymous'; im.onload = () => { const k = Math.min(im.width / px, im.height / ph), sw = px * k, sh = ph * k; g.drawImage(im, (im.width - sw) / 2, (im.height - sh) / 2, sw, sh, 0, 0, px, ph); res(); }; im.onerror = res; im.src = photo; });
+  }
+  const d = document.createElement('canvas'); d.width = px; d.height = ph;
+  const h = d.getContext('2d');
+  for (const st of drawOrder(strokes)) {
+    if (st.sm) continue;
+    for (const L of layersFor(st, px).filter((L2) => L2.alpha && !L2.inner)) {
+      h.save(); h.globalAlpha = L.alpha;
+      h.globalCompositeOperation = L.erase ? 'destination-out' : L.multiply ? 'multiply' : 'source-over';
+      h.filter = L.blur ? `blur(${L.blur}px)` : 'none';
+      const p = new Path2D(L.d);
+      if (L.fill) { h.fillStyle = st.c; h.fill(p); } else { h.strokeStyle = L.erase ? '#000' : st.c; h.lineWidth = L.width; h.lineCap = 'round'; h.lineJoin = 'round'; h.stroke(p); }
+      h.restore();
+    }
+  }
+  g.drawImage(d, 0, 0);
+  try {
+    const v = g.getImageData(Math.max(0, Math.min(px - 1, Math.round(x * px))), Math.max(0, Math.min(ph - 1, Math.round(y * px))), 1, 1).data;
+    return '#' + [v[0], v[1], v[2]].map((n) => n.toString(16).padStart(2, '0')).join('');
+  } catch (e) { return null; }
 }

@@ -4,7 +4,7 @@
 // faint grain lies over the whole page. (The web preview uses Strokes.js.)
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { BackdropBlur, BlendMode, BlurMask, BlurStyle, Canvas, ClipOp, DiscretePathEffect, Group, ImageShader, PaintStyle, Path, Rect, Skia, StrokeCap, StrokeJoin, TileMode, useImage } from '@shopify/react-native-skia';
+import { AlphaType, BackdropBlur, BlendMode, BlurMask, BlurStyle, Canvas, ClipOp, ColorType, DiscretePathEffect, Group, ImageShader, PaintStyle, Path, Rect, Skia, StrokeCap, StrokeJoin, TileMode, useImage } from '@shopify/react-native-skia';
 import { Asset } from 'expo-asset';
 import { File, Paths } from 'expo-file-system';
 import { drawOrder, layersFor, mirrored, smudgeOf } from '../strokes';
@@ -21,7 +21,7 @@ const Layer = React.memo(function Layer({ L, color }) {
   const [gl, gd] = grainOf(L);
   return (
     <Path path={path} color={L.erase ? '#000000' : color} opacity={L.alpha} style={L.fill ? 'fill' : 'stroke'} strokeWidth={L.width || 0} strokeCap="round" strokeJoin="round"
-      blendMode={L.erase ? 'clear' : L.multiply ? 'multiply' : 'srcOver'}>
+      blendMode={L.erase ? 'dstOut' : L.multiply ? 'multiply' : 'srcOver'}>
       {L.blur ? <BlurMask blur={L.blur} style={L.inner ? 'inner' : 'normal'} /> : null}
       {L.grain ? <DiscretePathEffect length={gl} deviation={gd} /> : null}
     </Path>
@@ -157,7 +157,7 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
       if (!L.fill) { paint.setStrokeWidth(L.width); paint.setStrokeCap(StrokeCap.Round); paint.setStrokeJoin(StrokeJoin.Round); }
       if (L.blur) paint.setMaskFilter(Skia.MaskFilter.MakeBlur(L.inner ? BlurStyle.Inner : BlurStyle.Normal, L.blur, true));
       if (L.multiply) paint.setBlendMode(BlendMode.Multiply);
-      if (L.erase) paint.setBlendMode(BlendMode.Clear);
+      if (L.erase) paint.setBlendMode(BlendMode.DstOut);
       if (L.grain) { const [gl, gd] = grainOf(L); paint.setPathEffect(Skia.PathEffect.MakeDiscrete(gl * px / 400, gd * px / 400, 0)); }
       canvas.drawPath(path, paint);
     }
@@ -172,4 +172,46 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
   try { f.create(); } catch (e) {}
   f.write(bytes);
   return f.uri;
+}
+
+// The eyedropper: the colour at (x, y) (in widths of the drawing) as you see it: the drawing over its photo or the
+// white paper, worked out on a small picture of the page. aspect: the page's height in widths (2 for a tall page).
+export async function colourAt(strokes, x, y, aspect = 1, photo = null) {
+  const px = 240, ph = Math.round(px * aspect);
+  const surface = (Skia.Surface.MakeOffscreen && Skia.Surface.MakeOffscreen(px, ph)) || Skia.Surface.Make(px, ph);
+  const canvas = surface.getCanvas();
+  canvas.clear(Skia.Color('#ffffff'));
+  if (photo) {
+    try {
+      const img = Skia.Image.MakeImageFromEncoded(Skia.Data.fromBytes(await new File(photo).bytes()));
+      if (img) { // as the page shows it: filling the page, cropped from its middle
+        const w = img.width(), h = img.height(), k = Math.min(w / px, h / ph), sw = px * k, sh = ph * k;
+        canvas.drawImageRect(img, Skia.XYWHRect((w - sw) / 2, (h - sh) / 2, sw, sh), Skia.XYWHRect(0, 0, px, ph), Skia.Paint());
+      }
+    } catch (e) {}
+  }
+  canvas.saveLayer();
+  for (const st of drawOrder(strokes)) {
+    if (st.sm) continue;
+    for (const L of layersFor(st, px)) {
+      if (!L.alpha) continue;
+      const path = Skia.Path.MakeFromSVGString(L.d);
+      if (!path) continue;
+      const paint = Skia.Paint();
+      paint.setAntiAlias(true); paint.setColor(Skia.Color(st.c)); paint.setAlphaf(L.alpha);
+      paint.setStyle(L.fill ? PaintStyle.Fill : PaintStyle.Stroke);
+      if (!L.fill) { paint.setStrokeWidth(L.width); paint.setStrokeCap(StrokeCap.Round); paint.setStrokeJoin(StrokeJoin.Round); }
+      if (L.blur) paint.setMaskFilter(Skia.MaskFilter.MakeBlur(L.inner ? BlurStyle.Inner : BlurStyle.Normal, L.blur, true));
+      if (L.multiply) paint.setBlendMode(BlendMode.Multiply);
+      if (L.erase) paint.setBlendMode(BlendMode.DstOut);
+      canvas.drawPath(path, paint);
+    }
+  }
+  canvas.restore();
+  surface.flush();
+  const img = surface.makeImageSnapshot();
+  const cx = Math.max(0, Math.min(px - 1, Math.round(x * px))), cy = Math.max(0, Math.min(ph - 1, Math.round(y * px)));
+  const d = img.readPixels(cx, cy, { width: 1, height: 1, colorType: ColorType.RGBA_8888, alphaType: AlphaType.Unpremul });
+  if (!d || d.length < 3) return null;
+  return '#' + [d[0], d[1], d[2]].map((v) => v.toString(16).padStart(2, '0')).join('');
 }

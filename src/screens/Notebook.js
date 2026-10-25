@@ -19,11 +19,11 @@ import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, Felt, DESK_BG } from '../look';
 import ParentGate from '../components/ParentGate';
-import { StrokesView } from '../components/Strokes';
+import { StrokesView, colourAt } from '../components/Strokes';
 import { EarArt } from '../components/Ear';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
 import ToolPic from '../components/ToolPic';
-import { BRUSHES, PENS, PENS_BRIGHT, SHAPES, SIZES, makeFill, mixColours, near, shapePts, withMirrors } from '../strokes';
+import { BRUSHES, PENS, PENS_BRIGHT, RAINBOW, SHAPES, SIZES, makeFill, mixColours, near, shapePts, withMirrors } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
 import { STORIES } from '../story';
@@ -962,11 +962,14 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const [shapesOpen, setShapesOpen] = useState(false);
   const [size, setSize] = useState(SIZES[1][1]);
   const [erase, setErase] = useState(false);
+  const [eraseSoft, setEraseSoft] = useState(false); // the eraser: hard (takes it all) or soft (lightens)
+  const [smudgeK, setSmudgeK] = useState(1); // the smudge: gentle (0.5), as it was (1) or strong (1.8)
   const [bucket, setBucket] = useState(false); // the paint bucket: a tap fills the shape with the colour
   const [area, setArea] = useState(null);
   const [palette, setPalette] = useState('earthy'); // the earthy colours or the bright ones
   const [mixing, setMixing] = useState(false); // Mix: a tapped colour is mixed into the pen's colour, like paint
-  const [mirror, setMirror] = useState(false); // Mirror: everything drawn appears flipped on the other side too
+  const [mirror, setMirror] = useState(false);
+  const [dropper, setDropper] = useState(false); // the eyedropper: the next tap on the page picks up the colour there // Mirror: everything drawn appears flipped on the other side too
   const [redo, setRedo] = useState([]); // strokes taken back with Undo, to put back with Redo
   const [recent, setRecent] = useState(['#1e2324', '#f1e8d8', '#2f4a4c', '#93a08f', '#b98a3e', '#9a4f36', '#4e3125']); // the seven colours in the pill: earthy to start (the bright ones are under +)
   const [more, setMore] = useState(false); // the + sheet: all the colours, Mix, Shapes, Mirror
@@ -985,7 +988,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   };
   const lastWater = useRef(null); // the last watercolour stroke and when it was finished (still wet for a while)
   const S = useRef({});
-  S.current = { strokes, pen, size, erase, bucket, tall, brush, shape, mirror };
+  S.current = { strokes, pen, size, erase, bucket, tall, brush, shape, mirror, eraseSoft, smudgeK, dropper, photo };
   const toolsH = 16; // (portrait: the panel has its own room below the page) // (two rows of colours, the colour row; the brushes, the sizes and the shapes take a row each)
   const add = (st) => { setStrokes((s) => [...s, st]); setRedo([]); };
   const W = !area ? 0 : wideScreen ? Math.max(120, Math.floor(Math.min(area.h, area.w - TOOLS_W - 28)))
@@ -1001,9 +1004,24 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     frame.current = requestAnimationFrame(() => {
       frame.current = 0;
       const c = cur.current;
-      if (c) setLive({ ...c, p: [...c.p], q: c.q ? [...c.q] : undefined });
+      if (c) setLive({ ...c, p: [...c.p], q: c.q ? [...c.q] : undefined, t: c.t ? [...c.t] : undefined });
     });
   };
+  // Apple Pencil tilt: how upright it's held (1 upright, 0 flat on the page), from the pen's pointer events when the
+  // phone sends them (the touch itself only has the pressure); null for a finger
+  const tilt = useRef(null);
+  const uprightOf = (ne) => {
+    if (!ne || (ne.pointerType && ne.pointerType !== 'pen')) return null;
+    if (typeof ne.altitudeAngle === 'number' && ne.altitudeAngle > 0) return Math.max(0, Math.min(1, ne.altitudeAngle / (Math.PI / 2)));
+    const tx = ne.tiltX, ty = ne.tiltY;
+    if (typeof tx === 'number' && typeof ty === 'number' && (tx || ty)) {
+      const r = Math.PI / 180, k = Math.hypot(Math.tan(tx * r), Math.tan(ty * r));
+      return Math.max(0, Math.min(1, Math.atan(1 / (k || 1e-6)) / (Math.PI / 2)));
+    }
+    return null;
+  };
+  const onPen = (e) => { const u = uprightOf(e.nativeEvent); tilt.current = u; };
+  const tiltNow = (e) => { const u = uprightOf(e.nativeEvent); return u != null ? u : tilt.current; };
   const at = (e) => [e.nativeEvent.locationX / Wref.current, e.nativeEvent.locationY / Wref.current];
   const pad = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => true,
@@ -1012,6 +1030,13 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     onPanResponderGrant: (e) => {
       setSizePop(null); setMore(false); // drawing puts away the sizes and the + sheet
       const [x, y] = at(e);
+      if (S.current.dropper) { // the eyedropper: the colour under your finger becomes the pen's colour
+        colourAt(S.current.strokes, x, y, S.current.tall ? 2 : 1, S.current.photo).then((hex) => {
+          if (hex) { setPen(hex); setErase(false); setBucket(false); setRecent((r) => [hex, ...r.filter((h2) => h2.toLowerCase() !== hex.toLowerCase())].slice(0, 7)); }
+          setDropper(false);
+        }).catch(() => setDropper(false));
+        return;
+      }
       if (S.current.bucket) {
         const f = makeFill(withMirrors(S.current.strokes.filter((st) => !st.e && !st.sm)), x, y, S.current.tall ? 2 : 1, S.current.pen);
         if (f) add(S.current.mirror ? { ...f, m: 1 } : f);
@@ -1027,10 +1052,11 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       // Apple Pencil: how hard it presses (0 to 1) is kept for each point; a finger has none (speed sets the width)
       const force = e.nativeEvent.force || 0;
       cur.current = S.current.brush === 'smudge' && !S.current.erase
-        ? { sm: 1, c: '#000000', s: Math.max(0.03, S.current.size * 2.4), p: [+x.toFixed(4), +y.toFixed(4)], ...m } // a fingertip, rubbing
+        ? { sm: 1, c: '#000000', s: Math.max(0.03, S.current.size * 2.4), p: [+x.toFixed(4), +y.toFixed(4)], ...(S.current.smudgeK !== 1 ? { k: S.current.smudgeK } : null), ...m } // a fingertip, rubbing
         : S.current.erase
-        ? { e: 1, c: '#000000', s: Math.max(0.035, S.current.size * 2.2), p: [+x.toFixed(4), +y.toFixed(4)], ...m }
+        ? { e: 1, c: '#000000', s: Math.max(0.035, S.current.size * (S.current.eraseSoft ? 3 : 2.2)), p: [+x.toFixed(4), +y.toFixed(4)], ...(S.current.eraseSoft ? { k: 0.35 } : null), ...m }
         : { c: S.current.pen, s: S.current.size, b: S.current.brush, p: [+x.toFixed(4), +y.toFixed(4)], ...(force > 0 ? { q: [+force.toFixed(2)] } : null), ...m };
+      { const u = tiltNow(e); if (u != null && !cur.current.e && !cur.current.sm) cur.current.t = [+u.toFixed(2)]; }
       setLive({ ...cur.current });
     },
     onPanResponderMove: (e) => {
@@ -1046,6 +1072,8 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       if ((c.p[n - 2] - sx) ** 2 + (c.p[n - 1] - sy) ** 2 < 0.0035 ** 2) return;
       c.p.push(+sx.toFixed(4), +sy.toFixed(4));
       if (c.q) c.q.push(+(e.nativeEvent.force || 0).toFixed(2));
+      if (!c.t && !c.e && !c.sm) { const u0 = tiltNow(e); if (u0 != null) c.t = Array(c.p.length / 2 - 1).fill(+u0.toFixed(2)); } // (the pen's tilt can arrive just after the touch)
+      if (c.t) { const u = tiltNow(e); c.t.push(+(u != null ? u : c.t[c.t.length - 1]).toFixed(2)); }
       showLive();
     },
     onPanResponderRelease: () => {
@@ -1061,16 +1089,16 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       }
       if (!c) return;
       if (c.q && !c.q.some((v) => v > 0)) delete c.q;
+      if (c.t && !c.t.some((v) => v < 0.95)) delete c.t; // held upright all the way: nothing to keep
       // watercolour over a wash that's still wet (painted in the last few seconds, where they overlap): it bleeds
       // softly into it and the colours mix
       if (c.b === 'water' && !c.e) {
         const box = (st) => { let a = 9, b = 9, cc = -9, d = -9; const p = st.p || []; for (let i = 0; i < p.length; i += 2) { a = Math.min(a, p[i]); cc = Math.max(cc, p[i]); b = Math.min(b, p[i + 1]); d = Math.max(d, p[i + 1]); } const r = (st.s || 0.01) * 1.2; return [a - r, b - r, cc + r, d + r]; };
-        const L = lastWater.current;
-        if (L && Date.now() - L.t < 12000) {
-          const A = box(c), B = box(L.st);
-          if (A[0] < B[2] && B[0] < A[2] && A[1] < B[3] && B[1] < A[3]) c.wet = 1;
-        }
-        lastWater.current = { st: c, t: Date.now() };
+        // any wash painted in the last twelve seconds that this one touches is still wet
+        const now = Date.now(), A = box(c);
+        const wet = (lastWater.current || []).filter((L) => now - L.t < 12000);
+        if (wet.some((L) => { const B = box(L.st); return A[0] < B[2] && B[0] < A[2] && A[1] < B[3] && B[1] < A[3]; })) c.wet = 1;
+        lastWater.current = [...wet, { st: c, t: now }];
       }
       add(c);
     },
@@ -1086,12 +1114,23 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
             <View style={{ width: 5 + sz * 280, height: 5 + sz * 280, borderRadius: 20, backgroundColor: colors.white }} />
           </Pressable>
         ))}
+        {/* the eraser: hard or soft; the smudge: gentle, normal or strong */}
+        {sizePop === 'eraser' || sizePop === 'smudge' ? <View style={{ width: StyleSheet.hairlineWidth * 2, height: 28, backgroundColor: 'rgba(255,255,255,0.3)', marginHorizontal: 4 }} /> : null}
+        {(sizePop === 'eraser' ? [['Hard', false], ['Soft', true]] : sizePop === 'smudge' ? [['Gentle', 0.5], ['Normal', 1], ['Strong', 1.8]] : []).map(([name, v]) => {
+          const on = sizePop === 'eraser' ? eraseSoft === v : smudgeK === v;
+          return (
+            <Pressable key={name} onPress={() => { if (sizePop === 'eraser') setEraseSoft(v); else setSmudgeK(v); pickSize(size); }} hitSlop={6} accessibilityRole="button" accessibilityLabel={t(name)} accessibilityState={{ selected: on }}
+              style={{ height: 34, paddingHorizontal: 10, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? colors.green : 'transparent' }}>
+              <Text style={{ color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 13 }}>{t(name)}</Text>
+            </Pressable>
+          );
+        })}
       </Animated.View>
     );
   };
   const paper = (
     <View>
-    <View {...pad.panHandlers} style={[styles.drawPaper, { width: W, height: tall ? W * 2 : W }]}>
+    <View {...pad.panHandlers} onPointerDown={onPen} onPointerMove={onPen} style={[styles.drawPaper, { width: W, height: tall ? W * 2 : W }]}>
       {photo ? <Image source={{ uri: photo }} style={StyleSheet.absoluteFill} resizeMode="cover" pointerEvents="none" /> : null}
       <StrokesView strokes={strokes} live={live} width={W} height={tall ? W * 2 : W} noPaper={!!photo} />
       {/* Mirror: a faint line down the middle, where the two sides meet */}
@@ -1099,6 +1138,11 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     </View>
     {/* the sizes of the tool in your hand: a little dark pill in the bottom left corner of the page */}
     {sizePopEl()}
+    {dropper ? (
+      <View pointerEvents="none" style={[styles.sizePop, { left: 10, bottom: 10, paddingHorizontal: 16 }]}>
+        <Text style={{ color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 14 }}>{t('Tap the page to pick up a colour')}</Text>
+      </View>
+    ) : null}
     </View>
   );
   // ---- the panel, like Paper's: seven colours in a pill (the ones you used last), the tools in a tray, Clear as
@@ -1148,7 +1192,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     <Pressable onPress={() => setMore(true)} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('More colours and tools')} style={styles.plusBtn}>
       <View style={{ position: 'absolute', width: 22, height: 3, borderRadius: 1.5, backgroundColor: colors.white }} />
       <View style={{ position: 'absolute', width: 3, height: 22, borderRadius: 1.5, backgroundColor: colors.white }} />
-      {mixing || mirror || shape ? <View style={{ position: 'absolute', top: 2, right: 2, width: 9, height: 9, borderRadius: 4.5, backgroundColor: colors.green }} /> : null}
+      {mixing || mirror || shape || dropper ? <View style={{ position: 'absolute', top: 2, right: 2, width: 9, height: 9, borderRadius: 4.5, backgroundColor: colors.green }} /> : null}
     </Pressable>
   );
   const binEl = (
@@ -1228,10 +1272,27 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
         {grid(PENS_BRIGHT)}
         <Text style={styles.sheetLabel}>{t('Earthy colours')}</Text>
         {grid(PENS)}
+        {/* every colour: twelve hues from pale to deep, and the greys (little round dots, so many fit) */}
+        <Text style={styles.sheetLabel}>{t('Every colour')}</Text>
+        <View style={{ gap: 4 }}>
+          {RAINBOW.map((row, r) => (
+            <View key={r} style={{ flexDirection: 'row', gap: 4 }}>
+              {row.map((hex) => {
+                const on = !erase && !mixing && pen.toLowerCase() === hex.toLowerCase();
+                const d = Math.floor((w - 40 - 11 * 4) / 12);
+                return (
+                  <Pressable key={hex} onPress={() => pick(hex)} hitSlop={1} accessibilityRole="button" accessibilityLabel={t('Colour')}
+                    style={{ width: d, height: d, borderRadius: d / 2, backgroundColor: hex, borderWidth: on ? 3 : 0, borderColor: colors.white }} />
+                );
+              })}
+            </View>
+          ))}
+        </View>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 20 }}>
           <Pressable onPress={() => setMixing((x) => !x)} style={[styles.toolWide, mixing && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mix colours')}><Text style={styles.toolText}>{t('Mix')}</Text></Pressable>
           <Pressable onPress={() => { setShapesOpen((x) => !x); if (shapesOpen) setShape(null); }} style={[styles.toolWide, (shapesOpen || shape) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Shapes')}><Text style={styles.toolText}>{t('Shapes')}</Text></Pressable>
           <Pressable onPress={() => setMirror((x) => !x)} style={[styles.toolWide, mirror && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mirror drawing')}><Text style={styles.toolText}>{t('Mirror')}</Text></Pressable>
+          <Pressable onPress={() => { setDropper(true); setMore(false); }} style={[styles.toolWide, dropper && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Pick up a colour from the page')}><Text style={styles.toolText}>{t('Pick up a colour')}</Text></Pressable>
         </View>
         {shapesOpen ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
@@ -1357,7 +1418,7 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth * 2, borderColor: 'rgba(255,255,255,0.18)', shadowColor: '#fff', shadowOpacity: 0.22, shadowRadius: 8, shadowOffset: { width: 0, height: 0 } },
   pill: { height: 52, borderRadius: 26, backgroundColor: '#161616', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', paddingHorizontal: 6 },
   plusBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  sizePop: { position: 'absolute', zIndex: 5, width: 150, height: 54, borderRadius: 27, backgroundColor: '#111', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', paddingHorizontal: 6, shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 8, shadowOffset: { width: 0, height: 4 } },
+  sizePop: { position: 'absolute', zIndex: 5, minWidth: 150, height: 54, borderRadius: 27, backgroundColor: '#111', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', paddingHorizontal: 6, shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 8, shadowOffset: { width: 0, height: 4 } },
   sheet: { backgroundColor: colors.glass, borderTopLeftRadius: 22, borderTopRightRadius: 22, paddingHorizontal: 22, paddingTop: 20, shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 14, shadowOffset: { width: 0, height: -4 } },
   sheetLabel: { color: '#aaa', fontFamily: fonts.uiBold, fontSize: 13, letterSpacing: 0.5, marginTop: 16, marginBottom: 10, textTransform: 'uppercase' },
   swatchOn: { borderColor: colors.white, borderWidth: 3, transform: [{ scale: 1.15 }] },
