@@ -9,3 +9,5 @@ Jörg's hand-made felt mascot: a little felt book, tan cover on top, white felt 
 - coro-mascot/*.jpg: the photos as sent (standing on white, standing, lying, sleepy, the two of them), on dark
 - coro-mascot/*.png: cut out (no background), up to 900 px, for the app
 - coro-felt-wordmark-colour.jpg: the coloured felt coro. wordmark (terracotta, sage, blue-grey, sand, a blue dot) on dark
+- Use the mascot on dark backgrounds only (Jörg: it doesn't work on white). Not placed in the app yet: wait for Jörg.
+- None of the old grey mascot's traits carry over (the new Coro has its own embroidered smile).
