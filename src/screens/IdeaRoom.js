@@ -1,5 +1,6 @@
 // The Idea Room: ideas for every kind of book a family can make (Help → Idea Room, and the story guide's
 // last step). Sections of idea cards; tap a card to see how to make it. A button to start making one.
+import { HEADING_ICONS } from '../headingIcons';
 import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -42,6 +43,7 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
           {IDEA_SECTIONS.map((sec) => { const secOpen = openSec === sec.title; return (
             <View key={sec.title} style={styles.box}>
               <Pressable onPress={() => { setOpenSec(secOpen ? null : sec.title); setOpen(null); }} accessibilityRole="button" accessibilityState={{ expanded: secOpen }} style={[styles.secHead, !secOpen && { marginBottom: 0 }]}>
+                {HEADING_ICONS[sec.title] ? <Image source={HEADING_ICONS[sec.title]} style={styles.secIcon} accessibilityIgnoresInvertColors /> : null}
                 <Text style={styles.section}>{t(sec.title)}</Text>
                 <Text style={styles.secChev}>{secOpen ? '−' : '+'}</Text>
               </Pressable>
@@ -80,7 +82,8 @@ const styles = StyleSheet.create({
   lead: { fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, color: colors.white },
   // the standard section heading (as in the library and Help), with a + / − at the far right
   box: { ...sectionBox, gap: 10 }, // each section in its own black glass box
-  secHead: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: SECTION_GAP - 10 },
+  secIcon: { width: 28, height: 28 }, // the section's little line icon
+  secHead: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: SECTION_GAP - 10 },
   section: { ...boxTitle, flex: 1 },
   secChev: { fontFamily: fonts.ui, fontSize: 30, lineHeight: 34, color: 'rgba(255,255,255,0.75)', width: 30, textAlign: 'center' },
   caption: { alignSelf: 'center', marginTop: -36, marginBottom: 20, fontFamily: fonts.ui, fontSize: 13, lineHeight: 18, color: '#bdbdbd' }, // under the book picture

@@ -1,0 +1,24 @@
+// Little white line icons beside the section headings in Ideas and Support and the Ideas Room, drawn in the menu's
+// style (Jörg, 25 Oct 2026). Keyed by the section's English title; a section without one just has its heading.
+export const HEADING_ICONS = {
+  'Getting started': require('../assets/heading-icons/getting-started.png'),
+  'Reading': require('../assets/heading-icons/reading.png'),
+  'Music and sounds': require('../assets/heading-icons/music-and-sounds.png'),
+  'Bedtime': require('../assets/heading-icons/bedtime.png'),
+  'Your voice': require('../assets/heading-icons/your-voice.png'),
+  'Making books': require('../assets/heading-icons/making-books.png'),
+  'My Notebook': require('../assets/heading-icons/my-notebook.png'),
+  'Books': require('../assets/heading-icons/books.png'),
+  'Grown-ups': require('../assets/heading-icons/grown-ups.png'),
+  'Your favourite books': require('../assets/heading-icons/your-favourite-books.png'),
+  'Big moments and changes': require('../assets/heading-icons/big-moments-and-changes.png'),
+  'Everyday routines': require('../assets/heading-icons/everyday-routines.png'),
+  'Feelings': require('../assets/heading-icons/feelings.png'),
+  'Family and memories': require('../assets/heading-icons/family-and-memories.png'),
+  'Learning': require('../assets/heading-icons/learning.png'),
+  'Adventures and imagination': require('../assets/heading-icons/adventures-and-imagination.png'),
+  'Collections and projects': require('../assets/heading-icons/collections-and-projects.png'),
+  'Messages and keepsakes': require('../assets/heading-icons/messages-and-keepsakes.png'),
+  'Together with others': require('../assets/heading-icons/together-with-others.png'),
+  'Communication support': require('../assets/heading-icons/communication-support.png'),
+};
