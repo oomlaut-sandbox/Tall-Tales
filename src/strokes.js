@@ -249,9 +249,20 @@ export function inkD(st, w, taper = 1, swing = 1) {
 //   { d, fill: true } a filled shape, or { d, width } a line; alpha 0..1; blur in pixels; multiply: deepens
 //   where it crosses other colour; grain: a slightly rough, pencil-like edge; inner: the blur only inside the
 //   edge (a darker rim, like dried watercolour; drawn on the phone only)
+// each stroke's layers are worked out once per size and remembered (a finished stroke never changes): redrawing the
+// page while drawing then only works out the line being drawn, not every line already on the page (iPad Pro lag)
+const LAYERS = new WeakMap();
 export function layersFor(st, w) {
+  if (!st || typeof st !== 'object') return layersOf(st, w);
+  let m = LAYERS.get(st);
+  if (!m) { m = new Map(); LAYERS.set(st, m); }
+  let out = m.get(w);
+  if (!out) { out = layersOf(st, w); m.set(w, out); }
+  return out;
+}
+function layersOf(st, w) {
   if (st.sm) return []; // the smudge draws nothing of its own: it softens what's under it (see smudgeOutline)
-  if (st.m) return [...layersFor({ ...st, m: 0 }, w), ...layersFor(mirrored(st), w)]; // mirror drawing: both sides
+  if (st.m) return [...layersOf({ ...st, m: 0 }, w), ...layersOf(mirrored(st), w)]; // mirror drawing: both sides
   // the eraser: a soft round line that rubs out what was drawn before it (down to the paper or the photo)
   if (st.e) return [{ d: strokeD(st, w), width: Math.max(2, (st.s || 0.05) * w), alpha: 1, erase: true }];
   if (st.f) return [{ d: fillD(st, w), fill: true, alpha: 0.94 }];

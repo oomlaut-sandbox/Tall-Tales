@@ -15,7 +15,7 @@ export const TILE = 0.7; // one repeat of the paper texture, in widths of the dr
 
 const grainOf = (L) => (L.grain === 'crayon' ? [4, 1.5] : [2.5, 0.7]); // the rough edge: segment length, how far it wanders
 
-function Layer({ L, color }) {
+const Layer = React.memo(function Layer({ L, color }) {
   const path = useMemo(() => Skia.Path.MakeFromSVGString(L.d), [L.d]);
   if (!path) return null;
   const [gl, gd] = grainOf(L);
@@ -26,7 +26,7 @@ function Layer({ L, color }) {
       {L.grain ? <DiscretePathEffect length={gl} deviation={gd} /> : null}
     </Path>
   );
-}
+});
 // the strokes in drawing order, in runs: a run of textured strokes (pencil, crayon, watercolour) is drawn on its own
 // layer with the paper's tooth over it, so the ink of the fountain pen stays solid. tex: 0 none, 1 light, 2 strong
 const texOf = (st, w) => (st.e || st.sm ? -1 : Math.max(0, ...layersFor(st, w).map((L) => L.tex || 0)));
@@ -59,11 +59,11 @@ function Smudge({ st, width }) {
   // blurs what has been drawn so far, only where the finger rubbed
   return <>{parts.map((P, i) => <BackdropBlur key={i} blur={P.blur} clip={P.path} />)}</>;
 }
-function One({ st, width }) {
+const One = React.memo(function One({ st, width }) {
   if (st.sm) return <Smudge st={st} width={width} />;
   const layers = useMemo(() => layersFor(st, width), [st, width]);
   return <>{layers.filter((L) => L.alpha).map((L, i) => <Layer key={i} L={L} color={st.c} />)}</>;
-}
+});
 
 // noPaper: on a photo (no paper grain over the photo; the tooth still shows in what's drawn)
 export function StrokesView({ strokes, width, height, live, noPaper }) {

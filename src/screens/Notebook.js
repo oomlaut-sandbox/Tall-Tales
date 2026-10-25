@@ -993,6 +993,17 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const Wref = useRef(W);
   Wref.current = W;
   const cur = useRef(null);
+  // the line being drawn is shown at most once per screen frame: Apple Pencil sends up to 240 points a second,
+  // and redrawing for each one made drawing lag on iPad Pro (every point is still kept)
+  const frame = useRef(0);
+  const showLive = () => {
+    if (frame.current) return;
+    frame.current = requestAnimationFrame(() => {
+      frame.current = 0;
+      const c = cur.current;
+      if (c) setLive({ ...c, p: [...c.p], q: c.q ? [...c.q] : undefined });
+    });
+  };
   const at = (e) => [e.nativeEvent.locationX / Wref.current, e.nativeEvent.locationY / Wref.current];
   const pad = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => true,
@@ -1027,7 +1038,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       if (S.current.bucket) return;
       const c = cur.current;
       if (!c) return;
-      if (c.z) { c.p = shapePts(c.k, c.o[0], c.o[1], x, y); setLive({ ...c }); return; } // a shape grows with the drag
+      if (c.z) { c.p = shapePts(c.k, c.o[0], c.o[1], x, y); showLive(); return; } // a shape grows with the drag
       const n = c.p.length;
       // steady the hand: each new point is pulled a little towards the last one, so wobbles smooth out into curves
       // (lightly: the line still keeps up with the finger)
@@ -1035,10 +1046,11 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       if ((c.p[n - 2] - sx) ** 2 + (c.p[n - 1] - sy) ** 2 < 0.0035 ** 2) return;
       c.p.push(+sx.toFixed(4), +sy.toFixed(4));
       if (c.q) c.q.push(+(e.nativeEvent.force || 0).toFixed(2));
-      setLive({ ...c, p: [...c.p], q: c.q ? [...c.q] : undefined });
+      showLive();
     },
     onPanResponderRelease: () => {
       const c = cur.current;
+      if (frame.current) { cancelAnimationFrame(frame.current); frame.current = 0; }
       cur.current = null; setLive(null);
       if (c && c.z) { // a shape: kept only if it was dragged out to a size (the start point isn't needed any more)
         const { o, k, ...keep } = c;
