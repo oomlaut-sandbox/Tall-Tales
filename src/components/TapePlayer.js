@@ -38,7 +38,7 @@ const sizeFor = (winW, winH) => {
 const VMIN = 0.05;
 const X0 = 330, X1 = 1464, Y = 2003, THUMB_D = 194; // (the knob picture is 194 wide with its shadow, the knob itself 134)
 const SLOT = { x: 230, y: 1925, w: 1340, h: 160 }; // where a finger can take the slider
-const SOUND_DY = -535; // the sound's own slot: the same slot, 535 higher (under the sound's window)
+const SOUND_DY = -570; // the sound's own slot: the same slot, 570 higher (as far under the sound's window as the music's is under the music's)
 
 // a felt slider: tap the slot to jump there, drag the knob to slide (right is louder); it clicks softly every 5%
 function FeltSlider({ f, dy, value, onChange, thumb, label }) {
