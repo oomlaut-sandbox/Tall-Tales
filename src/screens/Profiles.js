@@ -16,7 +16,7 @@ import ParentGate from '../components/ParentGate';
 import { useT } from '../i18n';
 import { useControls, DEFAULT_CONTROLS } from '../controls';
 import { keepFile, liveUri, loadJSONFor, saveJSONFor } from '../storage';
-import { MAX_CLASS, PROFILE_COLORS, removeClasses, addClass, addProfile, canAdd, feltFor, getProfiles, inClass, onProfiles, removeClass, removeProfile, removeProfiles, renameClass, switchProfile, updateProfile } from '../profiles';
+import { MAX_CLASS, MORE_AVATARS, PROFILE_COLORS, removeClasses, addClass, addProfile, canAdd, feltFor, getProfiles, inClass, onProfiles, removeClass, removeProfile, removeProfiles, renameClass, switchProfile, updateProfile } from '../profiles';
 import { IDLE, slotStyle } from '../components/Chrome';
 const SELECT_ICON = require('../../assets/icon-select.png');
 const TRASH_ICON = require('../../assets/icon-trash.png');
@@ -420,7 +420,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
             <Pressable style={[styles.sureBox, { backgroundColor: 'rgba(0,0,0,0.86)', gap: 18 }]} onPress={() => {}}>
               <Text style={[styles.sureText, { fontFamily: fonts.uiBold, fontSize: 20 }]}>{t('More avatars')}</Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
-                {PROFILE_COLORS.map(([c]) => (
+                {MORE_AVATARS.map(([c]) => (
                   <Pressable key={c} onPress={() => { setForm((f) => ({ ...f, color: c })); setMoreAv(false); }} accessibilityRole="button" accessibilityLabel={c} style={[styles.swatch, form && form.color === c && styles.swatchOn]}>
                     <ProfileTile p={{ color: c }} size={40} grow={1} />
                   </Pressable>

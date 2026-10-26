@@ -28,7 +28,13 @@ export const PROFILE_COLORS = [ // in this order on the screen: rust, olive, mus
   ['orange', require('../assets/avatar-mustard.jpg')],
   ['grey', require('../assets/avatar-blue.jpg')],
 ];
-export const feltFor = (color) => (PROFILE_COLORS.find(([c]) => c === (color === 'pink' ? 'grey' : color)) || PROFILE_COLORS[0])[1]; // (red if unknown or brown, as before)
+// more avatars, in the Explore more avatars box (Jörg, 26 Oct 2026; more on the way)
+export const MORE_AVATARS = [
+  ['unicorn', require('../assets/avatar-unicorn.jpg')],
+  ['elephant', require('../assets/avatar-elephant.jpg')],
+  ['cat', require('../assets/avatar-cat.jpg')],
+];
+export const feltFor = (color) => ([...PROFILE_COLORS, ...MORE_AVATARS].find(([c]) => c === (color === 'pink' ? 'grey' : color)) || PROFILE_COLORS[0])[1]; // (red if unknown or brown, as before)
 
 let state = { list: [], active: 'main' };
 let seq = 0;
