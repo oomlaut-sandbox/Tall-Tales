@@ -29,7 +29,7 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
         {/* phone: the felt's soft bottom edge shows the desk through it, so the band's own colour only fills the status bar strip */}
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: insets.top + 2, backgroundColor: '#3e4a2c' }} /> : null}
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="ideas" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Ideas')}</Text></View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="help" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Ideas')}</Text></View>
       </View>
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.col}>
