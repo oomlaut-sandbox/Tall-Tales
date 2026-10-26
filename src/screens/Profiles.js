@@ -339,17 +339,19 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
                 {PROFILE_COLORS.map(([c, img]) => (
                   <Pressable key={c} onPress={() => setForm({ ...form, color: c })} accessibilityRole="radio" accessibilityLabel={c} accessibilityState={{ selected: form.color === c }}
                     style={[styles.swatch, form.color === c && styles.swatchOn]}>{/* the chosen one: boxed (like the reading child), not bigger */}
+                    {form.color === c ? <View pointerEvents="none" style={styles.glow} /> : null}
                     <ProfileTile p={{ color: c }} size={40} active={form.color === c} grow={1} />
                   </Pressable>
                 ))}
                 {/* the last choice: a circle with a person in it; tap it to choose a photo from the phone */}
                 <Pressable onPress={pickPhoto} accessibilityRole="radio" accessibilityLabel={t('Use a photo')} accessibilityState={{ selected: form.color === 'photo' }}
                   style={[styles.swatch, form.color === 'photo' && styles.swatchOn]}>
+                  {form.color === 'photo' ? <View pointerEvents="none" style={styles.glow} /> : null}
                   <ProfileTile p={{ color: 'photo', photo: form.photo }} size={40} grow={1} />
                 </Pressable>
               </View>
               {/* more characters to choose from (Jörg will send a large set) */}
-              <Pressable onPress={() => setMoreAv(true)} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'flex-start', marginTop: -4 }}>
+              <Pressable onPress={() => setMoreAv(true)} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'flex-end', marginTop: -4 }}>
                 <Text style={[styles.small, { color: '#d6d6d6', textDecorationLine: 'underline' }]}>{t('Explore more avatars')}</Text>
               </Pressable>
               <Text style={styles.section}>{t('Age')}</Text>
@@ -360,12 +362,12 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
                 {AGES.map((a) => <Choice key={a} label={String(a)} on={form.age === a} onPress={() => setForm({ ...form, age: a })} />)}
               </View>
               <Text style={styles.small}>{t('A grown-up sees every book. For a child, books rated for older children are hidden.')}</Text>
-              {/* Save and (for a profile that exists) a red Delete; Cancel on the same line, on the right */}
+              {/* (for a profile that exists) a red Delete on the left; Cancel, then Save in the bottom right corner (Jörg, 26 Oct 2026) */}
               {/* (they shrink to fit, so longer words in other languages never push one out of the box) */}
               <View style={{ flexDirection: 'row', gap: 8, marginTop: 6, alignItems: 'center' }}>
-                <Pressable onPress={saveForm} style={[styles.pill, styles.pillFit, { backgroundColor: colors.green }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Save')}</Text></Pressable>
                 {form.id ? <Pressable onPress={() => setSure(true)} style={[styles.pill, styles.pillFit, { backgroundColor: '#b3261e' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Delete')}</Text></Pressable> : null}
                 <Pressable onPress={() => setForm(null)} style={[styles.pill, styles.pillFit, { backgroundColor: '#4a4a4a', marginLeft: 'auto' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Cancel')}</Text></Pressable>
+                <Pressable onPress={saveForm} style={[styles.pill, styles.pillFit, { backgroundColor: colors.green }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Save')}</Text></Pressable>
               </View>
               {form.id ? (
                 sure ? (
@@ -425,13 +427,17 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
           <Pressable style={styles.sureBack} onPress={() => setMoreAv(false)}>
             <Pressable style={[styles.sureBox, { backgroundColor: 'rgba(0,0,0,0.86)', gap: 18 }]} onPress={() => {}}>
               <Text style={[styles.sureText, { fontFamily: fonts.uiBold, fontSize: 20 }]}>{t('More avatars')}</Text>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+              {/* the avatars scroll when there are more than fit (more are coming) */}
+              <ScrollView style={{ maxHeight: Math.max(220, winH * 0.5) }} contentContainerStyle={{ paddingVertical: 6 }} showsVerticalScrollIndicator>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
                 {MORE_AVATARS.map(([c]) => (
                   <Pressable key={c} onPress={() => { setForm((f) => ({ ...f, color: c })); setMoreAv(false); }} accessibilityRole="button" accessibilityLabel={c} style={[styles.swatch, form && form.color === c && styles.swatchOn]}>
+                    {form && form.color === c ? <View pointerEvents="none" style={styles.glow} /> : null}
                     <ProfileTile p={{ color: c }} size={40} grow={1} />
                   </Pressable>
                 ))}
               </View>
+              </ScrollView>
               <Text style={styles.small}>{t('Many more are on the way.')}</Text>
               <Pressable onPress={() => setMoreAv(false)} style={[styles.pill, { backgroundColor: '#3a3a3a', alignSelf: 'flex-end' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Close')}</Text></Pressable>
             </Pressable>
@@ -483,7 +489,8 @@ const styles = StyleSheet.create({
   choice: { paddingHorizontal: 14, height: 36, borderRadius: 18, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
   choiceOn: { backgroundColor: colors.green },
   choiceText: { fontFamily: fonts.uiSemiBold, fontSize: 15, color: '#dcdcdc' },
-  swatchOn: { borderColor: 'transparent', backgroundColor: '#000' }, // pure black box, no outline
+  swatchOn: { borderColor: 'transparent' }, // the chosen one: a soft white glow behind its circle (Jörg, 26 Oct 2026)
+  glow: { position: 'absolute', width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255,255,255,0.16)', shadowColor: '#fff', shadowOpacity: 0.7, shadowRadius: 12, shadowOffset: { width: 0, height: 0 } },
   swatch: { width: 60, height: 70, borderRadius: 13, borderWidth: 1, borderColor: 'transparent', alignItems: 'center', justifyContent: 'center' },
   buttonShadow: { shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.55, shadowRadius: 6, elevation: 6 },
 });
