@@ -39,10 +39,10 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
           </Pressable>
         ) : null}
         {options.map((o) => {
-          const on = o.id === value;
+          const on = o.id === value && !o.off; // (o.off: this voice isn't available for this book: grey, can't be picked)
           return (
-            <Pressable key={o.id} onPress={withTap(() => close(() => onPick(o.id)))} accessibilityRole="radio" accessibilityState={{ selected: on }}
-              style={[styles.row, on && styles.rowOn]}>
+            <Pressable key={o.id} disabled={!!o.off} onPress={withTap(() => close(() => onPick(o.id)))} accessibilityRole="radio" accessibilityState={{ selected: on, disabled: !!o.off }}
+              style={[styles.row, on && styles.rowOn, o.off && { opacity: 0.35 }]}>
               <VoiceFace photo={o.photo} name={o.name} narrator={o.narrator} size={44} />
               <Text numberOfLines={1} style={styles.name}>{o.name}</Text>
             </Pressable>

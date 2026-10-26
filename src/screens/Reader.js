@@ -233,7 +233,9 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   const voiceOptions = [{ id: 'narrator', name: tr('Narrator'), narrator: true }, ...familyOptions]; // (the Play panel's list)
   const shownVoice = voiceOptions.some((o) => o.id === voice) ? voice : 'narrator';
   // the box from the face on the bar: every voice by name (Fatima, Henry, then the family: Me, Opa…)
-  const boxOptions = [...NARRATORS.map(([k, label]) => ({ id: `narrator:${k}`, name: label, narrator: true })), ...bookNarrators.map(([k, label]) => ({ id: `narrator:${k}`, name: label, narrator: true })), ...familyOptions];
+  // a narrator with no audio for this book (every narrator, in a book made in Coro) is greyed out (Jörg, 26 Oct 2026)
+  const narrHas = (k) => !!((story.narration && story.narration[k]) || (AUDIO[k] && (AUDIO[k][story.id] || (story.lang && AUDIO[k][`${story.id}@${story.lang}`]))));
+  const boxOptions = [...NARRATORS.map(([k, label]) => ({ id: `narrator:${k}`, name: label, narrator: true, off: !narrHas(k) })), ...bookNarrators.map(([k, label]) => ({ id: `narrator:${k}`, name: label, narrator: true, off: !narrHas(k) })), ...familyOptions];
   const boxValue = shownVoice === 'narrator' ? `narrator:${bookNarr || narratorOf(prefs)}` : shownVoice;
   const showVoices = true; // the face is always on the bar: there are always the two narrators to choose from
   const [voiceBox, setVoiceBox] = useState(false);

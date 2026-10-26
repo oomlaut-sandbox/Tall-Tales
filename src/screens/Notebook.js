@@ -1,7 +1,8 @@
 // My Notebook: always first in My Library. A book editor of its own (built like Make a Book),
 // shaped like the leather notebook on the start page:
 //   - spread 1: the inside of the hard leather cover (top) and a white title page, "My Notes" (bottom)
-//   - spread 2: the badge board, over two white pages
+//   - spread 2: a blank page (top) and what the notebook is for (bottom)
+//   - spread 3: the badge board, over two white pages
 //   - then the child's pages: notes pages (a photo or a drawing, and typed notes) and sketch pages (two square pages to draw on)
 // Opened from My Library, the little notebook grows into place and its cover swings open like the one on
 // the start page. After that the white pages turn with the paper peel, like the books.
@@ -54,7 +55,7 @@ const TYPE = 'SpecialElite_400Regular'; // the notebook is written in the typewr
 export const NOTEBOOK_COVER = require('../../assets/leather-cover.jpg');
 const NOTEBOOK_COVER_WIDE = require('../../assets/leather-cover-wide.jpg'); // the same leather, turned so the plain edge is on the left
 export const R_SPINE = 0.012, R_EDGE = 0.102;
-const COVER_SPREAD = 0, BADGES = 1, FIRST_PAGE = 2; // spread numbers
+const COVER_SPREAD = 0, ABOUT = 1, BADGES = 2, FIRST_PAGE = 3; // spread numbers (ABOUT: what the notebook is for, before the badges: Jörg, 26 Oct 2026)
 const WHITE = '#f4f2ed'; // the notebook's white pages
 // the title on the first white page (a placeholder until Jörg's handwritten title arrives)
 const TITLE_FONT = 'DancingScript_700Bold';
@@ -425,6 +426,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         </View>
       );
     }
+    if (k === ABOUT) return <AboutSpread side={side} wide={wide} />;
     if (k === BADGES) return <BadgeSpread log={log} side={side} wide={wide} toast={toast} />;
     const pg = pageAt(k);
     if (!pg) return null;
@@ -472,14 +474,14 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     );
   };
 
-  const header = i === COVER_SPREAD ? t('My Notes') : i === BADGES ? t('Badges') : page && page.kind === 'sketch' ? t('Sketch') : t('Notes');
+  const header = i === COVER_SPREAD || i === ABOUT ? t('My Notes') : i === BADGES ? t('Badges') : page && page.kind === 'sketch' ? t('Sketch') : t('Notes');
   // the box that asks which pages: this page to start with (or every page from the badges or the cover)
   const openOut = (kind) => {
     const cur = Math.max(0, Math.min(pages.length - 1, i - FIRST_PAGE));
     setOutRange(i >= FIRST_PAGE ? { from: cur, to: cur } : { from: 0, to: pages.length - 1 });
     setOutAsk(kind);
   };
-  const pageCount = intro || i === COVER_SPREAD || i === BADGES ? null : (
+  const pageCount = intro || i === COVER_SPREAD || i === ABOUT || i === BADGES ? null : (
     <Pressable onPress={() => setPagesOpen(true)} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Pages')} style={styles.countBox}>
       <Animated.Text numberOfLines={1} style={[styles.countText, { opacity: savedFade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>{t('{a} of {b}', { a: i + 1, b: total })}</Animated.Text>
       <Animated.Text numberOfLines={1} style={[styles.countText, { position: 'absolute', opacity: savedFade }]}>{t('Saved')}</Animated.Text>
@@ -651,7 +653,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           </Pressable>
           {pages.map((p, k) => (
             <View key={p.pid} style={[styles.prow, i === k + FIRST_PAGE && { borderColor: colors.green }]}>
-              <Pressable onPress={() => { setI(k + FIRST_PAGE); setPagesOpen(false); }} style={[styles.thumb, { backgroundColor: WHITE }]} accessibilityLabel={t('Go to page {n}', { n: k + 3 })}>
+              <Pressable onPress={() => { setI(k + FIRST_PAGE); setPagesOpen(false); }} style={[styles.thumb, { backgroundColor: WHITE }]} accessibilityLabel={t('Go to page {n}', { n: k + FIRST_PAGE + 1 })}>
                 {p.uri ? <Image source={{ uri: p.uri }} style={styles.fill} resizeMode="cover" /> : null}
                 <StrokesView strokes={p.strokes} width={64} height={64} noPaper />
               </Pressable>
@@ -867,6 +869,24 @@ function scatter(items, side, region, seed, maxD) {
 // ---- The badge spread: the second spread of the notebook, over two white pages ----
 // Top page: the title and how much has been read, with the milestones and the streaks scattered around it.
 // Bottom page: the firsts and a patch for every book finished, scattered too.
+// what the notebook is for: a blank page, then a few words on the next one
+function AboutSpread({ side, wide }) {
+  const t = useT();
+  return (
+    <View style={[StyleSheet.absoluteFill, { flexDirection: wide ? 'row' : 'column' }]}>
+      <View style={{ width: side, height: side, backgroundColor: WHITE, overflow: 'hidden' }}>
+        <Fade edge={wide ? 'right' : 'bottom'} size={Math.round(side * 0.1)} max={0.2} />
+      </View>
+      <View style={{ width: side, height: side, backgroundColor: WHITE, overflow: 'hidden', justifyContent: 'center', paddingHorizontal: side * 0.12 }}>
+        <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.1)} max={0.2} />
+        <Spine wide={wide} />
+        <Text style={{ fontFamily: TYPE, fontSize: side * 0.06, color: '#2b2b2b', marginBottom: side * 0.04 }}>{t('My Notebook')}</Text>
+        <Text style={{ fontFamily: TYPE, fontSize: side * 0.038, lineHeight: side * 0.058, color: '#3a3a3a' }}>{t('This notebook is all yours. Jot down ideas for stories, add photos, and draw on the sketch pages. Collect badges as you read. Everything saves by itself, and you can print or share your pages any time.')}</Text>
+      </View>
+    </View>
+  );
+}
+
 function BadgeSpread({ log, side, wide, toast }) {
   const t = useT();
   const [note, setNote] = useState(null); // the tapped badge's words, shown under the second set of badges
