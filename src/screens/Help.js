@@ -161,14 +161,14 @@ const ALL_HELP = [
     'Authenticity is a top priority at Coro.',
     'Any use of AI in created content, such as the books in the Book Store, is clearly documented and described in each book’s Process description. Parents and kids have full transparency, so they can decide for themselves.',
   ] },
+  { section: 'Grown-ups', title: 'Sending us your book', store: true, text: [
+    'Authors and illustrators young and old can send their books to the Coro Book Store. Visit oomlaut.com for more information.',
+  ] },
   { section: 'Teachers and Educators', title: 'Classroom folders', text: [
     'A classroom folder holds up to 30 student profiles. Set it up in Settings, under Teachers and Educators: give your class a name, then add each student in Profiles.',
     'Students tap their name to start. Each one keeps their own notebook, badges and settings.',
     'Books are shared by the whole class, so students can make a book together, or each make their own.',
     'To end classroom mode, open Settings again. The students’ profiles stay.',
-  ] },
-  { section: 'Grown-ups', title: 'Sending us your book', store: true, text: [
-    'Authors and illustrators young and old can send their books to the Coro Book Store. Visit oomlaut.com for more information.',
   ] },
 ];
 // the Book Store's topics only while the store is on (see STORE_ON)
@@ -266,7 +266,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
           <Pressable onPress={onIdeas} accessibilityRole="button" style={[styles.ideas, { width: feltW, height: Math.round(feltW * 805 / 1100), borderRadius: feltW * 98 / 1100 /* the felt's own corners, so the shadow matches */ }]}>
             <Image source={IDEAS_FELT} style={{ position: 'absolute', left: 0, top: 0, width: feltW, height: Math.round(feltW * 805 / 1100) }} resizeMode="stretch" />
             <View style={{ flex: 1, gap: 6, justifyContent: 'center', paddingLeft: '12%', paddingRight: '8%', paddingVertical: '8%' }}>
-              <Text style={styles.ideasTitle}>{t('Ideas')}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="help" size={24} lift={0} /><Text style={styles.ideasTitle}>{t('Ideas')}</Text></View>
               <Text style={styles.ideasText}>{t('Many ideas for books you can make together: your photos and drawings, your words, your voice.')}</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 14 }}>
                 <Text style={styles.ideasGo}>{t('Visit Ideas')}</Text>
