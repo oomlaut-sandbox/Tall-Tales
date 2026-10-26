@@ -27,8 +27,10 @@ export async function refreshCatalog() {
   const cols = 'id,title,author,blurb,shelf_id,sort,access,price_label,product_id,featured,bundled,cover_path,content_path,page_count,age_range,updated_at';
   let [sh, bk] = await Promise.all([
     supabase.from('shelves').select('id,title,sort').order('sort'),
-    supabase.from('books').select(`${cols},cover_title,min_age,max_age`).order('sort'),
+    supabase.from('books').select(`${cols},cover_title,min_age,max_age,process`).order('sort'),
   ]);
+  // before the process column is added (docs/catalog-setup.sql), the same without it
+  if (bk.error) bk = await supabase.from('books').select(`${cols},cover_title,min_age,max_age`).order('sort');
   // before the Store Manager's setup has run there are no cover_title / age rating columns yet
   if (bk.error) bk = await supabase.from('books').select(`${cols},cover_title`).order('sort');
   if (bk.error) bk = await supabase.from('books').select(cols).order('sort');

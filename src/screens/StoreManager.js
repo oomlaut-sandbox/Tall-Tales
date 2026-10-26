@@ -30,6 +30,7 @@ const AGES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 function BookRow({ book, shelves, siblings, onChanged, toast }) {
   const [open, setOpen] = useState(false);
   const [blurb, setBlurb] = useState(book.blurb || '');
+  const [process, setProcess] = useState(book.process || '');
   const [confirmRemove, setConfirmRemove] = useState(false);
   const save = async (patch, note) => {
     try { await updateBook(book.id, patch); if (note) toast(note); onChanged(); } catch (e) { toast(`Couldn’t save. ${e.message}`); }
@@ -74,6 +75,10 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
           <Text style={styles.label}>Synopsis</Text>
           <TextInput value={blurb} onChangeText={setBlurb} onBlur={() => blurb !== (book.blurb || '') && save({ blurb: blurb.trim() || null }, 'Synopsis saved.')}
             multiline placeholder="A few sentences about the book" placeholderTextColor="#888" style={[styles.input, { minHeight: 90 }]} />
+          {/* how the book was made: shown on its card in the store, including any use of AI (full transparency) */}
+          <Text style={styles.label}>Process</Text>
+          <TextInput value={process} onChangeText={setProcess} onBlur={() => process !== (book.process || '') && save({ process: process.trim() || null }, 'Process saved.')}
+            multiline placeholder="How the book was made: who wrote and drew it, the tools used, and any use of AI" placeholderTextColor="#888" style={[styles.input, { minHeight: 90 }]} />
           <Text style={styles.label}>Who can read it</Text>
           <Choice options={[['free', 'Free'], ['member', 'Members'], ['paid', 'Members or $2.99']]} value={book.access || 'member'}
             onChange={(v) => save(v === 'paid' ? { access: v, price_label: book.price_label || '$2.99' } : { access: v }, v === 'free' ? 'Free for everyone.' : v === 'member' ? 'For members.' : 'For members, or $2.99 on its own.')} />

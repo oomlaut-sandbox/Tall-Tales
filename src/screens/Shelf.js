@@ -585,6 +585,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
   const cover = coverFor(book);
   // every square is a page (a screen is a picture page and a words page), so bundled books count both
   const blurb = (L && L.blurb) || book.blurb || (bundledStory(book.id) || {}).blurb; // the catalog's text, or the bundled book's own
+  const process = book.process || (bundledStory(book.id) || {}).process; // how it was made (any use of AI is described here)
   const pageCount = bundledStory(book.id) ? bundledStory(book.id).pages.length * 2 : book.page_count;
   const access = book.access === 'free' ? t('Free') : book.access === 'member' ? t('Members') : t('Members or {price}', { price: book.price_label || PRICES.book });
   const meta = [pageCount ? t('{n} pages', { n: pageCount }) : null, ageText(ageOf(book, bundledStory(book.id))) ? t('ages {n}', { n: ageText(ageOf(book, bundledStory(book.id))) }) : book.age_range ? t('ages {n}', { n: book.age_range }) : null, access].filter(Boolean).join(' · ');
@@ -607,6 +608,9 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
       {book.author ? <Text style={styles.sheetSub}>{t('by {name}', { name: book.author })}</Text> : null}
       <Text style={styles.sheetSub}>{meta}</Text>
       {blurb ? <Text style={[styles.sheetText, { marginTop: 6 }]}>{blurb}</Text> : null}
+      {/* Process: how the book was made, including any use of AI, so families can decide (Jörg, 26 Oct 2026) */}
+      {process ? <Text style={[styles.sheetSub, { marginTop: 8, fontFamily: fonts.uiBold }]}>{t('Process')}</Text> : null}
+      {process ? <Text style={styles.sheetText}>{process}</Text> : null}
       {!here ? <Text style={[styles.sheetText, { marginTop: 6 }]}>{t('Downloading new books arrives in the next update.')}</Text> : null}
       {/* a single book can also be read with the membership */}
       {action === 'buy' ? <Pressable onPress={onJoin} hitSlop={8} accessibilityRole="button"><Text style={[styles.sheetSub, { textDecorationLine: 'underline', marginBottom: 18 }]}>{t('Or read every book with the membership')}</Text></Pressable> : null}

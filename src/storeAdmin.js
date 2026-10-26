@@ -79,11 +79,13 @@ export async function startNarration(id) {
 }
 
 // Everything in the store, hidden books too (the owner sees all of it).
+const MANAGER_COLS = 'id,title,author,blurb,shelf_id,sort,access,featured,published,bundled,cover_path,cover_title,page_count,age_range,min_age,max_age,price_label,narration_status,narration_note,source_story';
 export async function loadAllForManager() {
-  const [sh, bk] = await Promise.all([
+  let [sh, bk] = await Promise.all([
     supabase.from('shelves').select('id,title,sort,published').order('sort'),
-    supabase.from('books').select('id,title,author,blurb,shelf_id,sort,access,featured,published,bundled,cover_path,cover_title,page_count,age_range,min_age,max_age,price_label,narration_status,narration_note,source_story').order('sort'),
+    supabase.from('books').select(`${MANAGER_COLS},process`).order('sort'),
   ]);
+  if (bk.error) bk = await supabase.from('books').select(MANAGER_COLS).order('sort'); // (no process column yet)
   if (sh.error || bk.error) throw new Error((sh.error || bk.error).message);
   return { shelves: sh.data, books: bk.data };
 }

@@ -69,3 +69,7 @@ insert into public.books (id, title, author, blurb, shelf_id, sort, access, feat
   ('falling', 'Falling', 'Jörg Schmidt', null, 'free', 20, 'free', false, true, true, 14, null),
   ('pip', 'Pip and the Pond of Stars', null, null, 'free', 30, 'free', false, true, true, 4, null)
 on conflict (id) do nothing;
+
+-- Each book's Process description (Jörg, 26 Oct 2026): how the book was made, including any use of AI, shown on
+-- its card in the Book Store. Safe to run again.
+alter table public.books add column if not exists process text;
