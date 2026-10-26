@@ -3,7 +3,7 @@
 // screen grabs). The notebook asks "Are you a kid or a grown-up?"; each then gets its own short journey here,
 // and ends on the start page (Make a book, Read a book). Every page has a small Skip beside Next.
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Easing, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_BG, DeskFelt } from '../look';
@@ -17,11 +17,24 @@ const PAGES = {
   grownup: ['grownHello', 'grownProfile'],
 };
 
-function Box({ title, text }) {
+// the little line icons beside each point (the heading icons, drawn dark on the light grey boxes)
+const ICONS = {
+  make: require('../../assets/heading-icons/making-books.png'),
+  share: require('../../assets/heading-icons/together-with-others.png'),
+  read: require('../../assets/heading-icons/reading.png'),
+  safe: require('../../assets/heading-icons/grown-ups.png'),
+  connect: require('../../assets/heading-icons/family-and-memories.png'),
+  decide: require('../../assets/title-icons/person.png'),
+};
+
+function Box({ title, text, icon }) {
   return (
-    <View style={styles.box}>
-      <Text style={styles.boxTitle}>{title}</Text>
-      <Text style={styles.boxText}>{text}</Text>
+    <View style={[styles.box, { flexDirection: 'row', gap: 16, alignItems: 'flex-start' }]}>
+      {icon ? <Image source={ICONS[icon]} style={{ width: 30, height: 30, tintColor: '#333', marginTop: 2 }} accessibilityIgnoresInvertColors /> : null}
+      <View style={{ flex: 1, gap: 6 }}>
+        <Text style={styles.boxTitle}>{title}</Text>
+        <Text style={styles.boxText}>{text}</Text>
+      </View>
     </View>
   );
 }
@@ -56,9 +69,9 @@ export default function Intro({ who, onDone }) {
     <>
       <Text style={styles.title}>{t('Let’s make books!')}</Text>
       <Text style={styles.lead}>{t('Coro is where you make your own books, and share them with the people you love.')}</Text>
-      <Box title={t('Make beautiful books')} text={t('Your words, your drawings, your photos and your own voice, on real-looking pages.')} />
-      <Box title={t('Share them easily')} text={t('Send your books to your family, and they can read them with you.')} />
-      <Box title={t('Read together')} text={t('Listen, read along or read by yourself.')} />
+      <Box icon="make" title={t('Make beautiful books')} text={t('Your words, your drawings, your photos and your own voice, on real-looking pages.')} />
+      <Box icon="share" title={t('Share them easily')} text={t('Send your books to your family, and they can read them with you.')} />
+      <Box icon="read" title={t('Read together')} text={t('Listen, read along or read by yourself.')} />
     </>
   );
   if (page === 'kidAge') body = (
@@ -74,9 +87,9 @@ export default function Intro({ who, onDone }) {
     <>
       <Text style={styles.title}>{t('Welcome to Coro')}</Text>
       <Text style={styles.lead}>{t('Books you make together, and a safe place to share them.')}</Text>
-      <Box title={t('Safe spaces')} text={t('Parental controls decide exactly what your child can see and do: what they read, what they can share, and what stays for grown-ups.')} />
-      <Box title={t('Meaningful connections')} text={t('Make books with your child, record your voice reading them, and share them with the family.')} />
-      <Box title={t('Grown-ups decide')} text={t('Buying, sharing and settings always ask a grown-up question first.')} />
+      <Box icon="safe" title={t('Safe spaces')} text={t('Parental controls decide exactly what your child can see and do: what they read, what they can share, and what stays for grown-ups.')} />
+      <Box icon="connect" title={t('Meaningful connections')} text={t('Make books with your child, record your voice reading them, and share them with the family.')} />
+      <Box icon="decide" title={t('Grown-ups decide')} text={t('Buying, sharing and settings always ask a grown-up question first.')} />
     </>
   );
   if (page === 'grownProfile') body = (
