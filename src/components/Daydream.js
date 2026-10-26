@@ -7,9 +7,9 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 
 // the backgrounds, in order: the first is the default; swipe left or right for the others (add more here)
 export const DAY_VIDEOS = [
-  // sunlight through the leaves (a seamless looping video); the pebbles sit underneath, so if the video can't play
-  // the pebbles show instead of black
-  { id: 'trees', src: require('../../assets/daydream/trees.mp4'), image: require('../../assets/daydream/pebbles.jpg') },
+  // sunlight through the leaves (a seamless looping video). Nothing sits underneath any more: the felt stones
+  // flashed up while the video loaded (Jörg, 26 Oct 2026), so it starts from dark instead
+  { id: 'trees', src: require('../../assets/daydream/trees.mp4') },
   // { id: 'pebbles', image: require('../../assets/daydream/pebbles.jpg') }, // Jörg's felt pebbles (a still picture, drifting very slowly)
 ];
 
