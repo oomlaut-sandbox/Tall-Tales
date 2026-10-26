@@ -1,0 +1,32 @@
+{
+  "_note": "Voiceovers for the two portrait videos (Jörg, 26 Oct 2026), read by Fatima (ElevenLabs Lily). Each line becomes one sentence group, with a short pause between.",
+  "voice": "pFZP5JQG7iQjIQuC4Bku",
+  "model": "eleven_multilingual_v2",
+  "videos": {
+    "coro-parents-60s": {
+      "speed": 0.95,
+      "pause": "0.7s",
+      "lines": [
+        "What if your child's stories became real books?",
+        "Coro is a book maker for families. Your photos, your child's drawings, your words, made into a beautiful picture book.",
+        "Then read it in your own voice. Every page plays back the way you read it.",
+        "Share it with grandparents, cousins and friends, and they can add their voices too.",
+        "When it's time to read, choose how it plays: touch a word to hear it, a page at a time, or listen with the lights down at bedtime.",
+        "Each child gets their own profile. Parental controls and a grown-up check keep buying, sharing and settings with you.",
+        "Need a spark? Ideas has sixty-four kinds of books to make together. And every Book Store book shows exactly how it was made.",
+        "Coro. Books you make together."
+      ]
+    },
+    "coro-kids-30s": {
+      "speed": 1.0,
+      "pause": "0.6s",
+      "lines": [
+        "Want to make your very own book?",
+        "Draw anything! Add photos of your pet, your family, your best day ever.",
+        "Then read it out loud. Your voice is in the book!",
+        "Send it to Grandma and Grandpa. They can read it with you.",
+        "Pick your Coro and start making. Coro!"
+      ]
+    }
+  }
+}

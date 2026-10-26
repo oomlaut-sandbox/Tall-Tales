@@ -1,0 +1,32 @@
+# Makes the promo videos' voiceovers (Fatima) and saves them on the promo-output branch (not in the app).
+name: Promo audio
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  audio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Generate
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: node ci/promo-audio.js 2>&1 | tee /tmp/promo.txt
+      - name: Save
+        if: always()
+        run: |
+          mkdir -p /tmp/keep && cp -r out/promo /tmp/keep/ 2>/dev/null || true
+          cp /tmp/promo.txt /tmp/keep/report.txt
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          git checkout -q --orphan promo-output
+          git rm -rfq --cached . > /dev/null
+          rm -rf ./* .gitignore .github 2>/dev/null || true
+          cp -r /tmp/keep/* .
+          git add -f .
+          git commit -qm "Promo voiceovers"
+          git push -qf origin promo-output
