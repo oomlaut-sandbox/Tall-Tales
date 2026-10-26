@@ -1335,13 +1335,14 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
         {grid(PENS_BRIGHT)}
         <Text style={styles.sheetLabel}>{t('Earthy colours')}</Text>
         {grid(PENS)}
-        {/* every colour: the paint wheel (pale in the middle, the full colour, deep at the edge; tap or drag), then the greys */}
-        <Text style={styles.sheetLabel}>{t('Every colour')}</Text>
-        <PaintWheel size={Math.min(w - 44, 300)} spot={wheelSpot} onPick={(hex, spot, done) => { setWheelSpot(spot); if (done) pick(hex); else { setPen(mixing ? mixColours(pen, hex) : hex); setErase(false); setBucket(false); } }} label={t('Colour wheel')} onTouch={setOnWheel} />
+        {/* the greys, right under the earthy colours (Jörg, 26 Oct 2026) */}
         <Text style={styles.sheetLabel}>{t('Greys')}</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 8, rowGap: 10 }}>
           {GREYS.map((hex) => swatch(hex, t('Grey'), Math.min(34, Math.floor((w - 44) / 8) - 8), () => { setWheelSpot(null); pick(hex); }, !erase && !mixing && pen.toLowerCase() === hex.toLowerCase()))}
         </View>
+        {/* every colour: the paint wheel (pale in the middle, the full colour, deep at the edge; tap or drag) */}
+        <Text style={styles.sheetLabel}>{t('Every colour')}</Text>
+        <PaintWheel size={Math.min(w - 44, 300)} spot={wheelSpot} onPick={(hex, spot, done) => { setWheelSpot(spot); if (done) pick(hex); else { setPen(mixing ? mixColours(pen, hex) : hex); setErase(false); setBucket(false); } }} label={t('Colour wheel')} onTouch={setOnWheel} />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 20 }}>
           <Pressable onPress={() => setMixing((x) => !x)} style={[styles.toolWide, mixing && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mix colours')}><Text style={styles.toolText}>{t('Mix')}</Text></Pressable>
           <Pressable onPress={() => { setShapesOpen((x) => !x); if (shapesOpen) setShape(null); }} style={[styles.toolWide, (shapesOpen || shape) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Shapes')}><Text style={styles.toolText}>{t('Shapes')}</Text></Pressable>
