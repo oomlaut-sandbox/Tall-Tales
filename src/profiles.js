@@ -28,6 +28,7 @@ export const PROFILE_COLORS = [ // in this order on the screen: red, green, yell
 export const feltFor = (color) => (PROFILE_COLORS.find(([c]) => c === (color === 'pink' ? 'grey' : color)) || PROFILE_COLORS[0])[1]; // (red if unknown or brown, as before)
 
 let state = { list: [], active: 'main' };
+let seq = 0;
 const listeners = new Set();
 const emit = () => listeners.forEach((fn) => { try { fn(state); } catch (e) {} });
 const save = () => saveJSON('profiles', state);
@@ -39,6 +40,10 @@ export const activeProfile = () => state.list.find((p) => p.id === state.active)
 export async function loadProfiles() {
   const s = await loadJSON('profiles', null);
   if (s && Array.isArray(s.list)) state = { classroom: s.classroom || null, classes: s.classes || [], list: s.list, active: s.list.some((p) => p.id === s.active) ? s.active : (s.list[0] ? s.list[0].id : 'main') };
+  // two profiles that got the same id (a class list added before ids had a running count): each gets its own
+  { const seen = new Set(); let fixed = false;
+    const list = state.list.map((p, k) => { if (!seen.has(p.id)) { seen.add(p.id); return p; } fixed = true; const id = `k${Date.now().toString(36)}d${k}`; seen.add(id); return { ...p, id }; });
+    if (fixed) { state = { ...state, list }; save(); } }
   // a classroom from before class folders: it becomes the first folder, with everyone in it
   if (state.classroom && !state.classes.length) state = { ...state, classes: [{ id: 'c1', name: state.classroom.name || '' }], list: state.list.map((p) => (p.cls ? p : { ...p, cls: 'c1' })) };
   setScope(state.active);
@@ -55,7 +60,8 @@ export function switchProfile(id) {
 // a new child: the first one keeps what's already on the phone; later ones start fresh, with their age set
 export async function addProfile({ name, color, age, photo, cls }) {
   if (!canAdd(cls)) return null;
-  const id = state.list.length === 0 ? 'main' : `k${Date.now().toString(36)}`;
+  // (a list of names is added within the same millisecond: a running count and a random part keep every id its own)
+  const id = state.list.length === 0 ? 'main' : `k${Date.now().toString(36)}${(seq += 1).toString(36)}${Math.random().toString(36).slice(2, 5)}`;
   const p = { id, name: (name || '').trim() || 'Reader', color: color || PROFILE_COLORS[state.list.length % PROFILE_COLORS.length][0], ...(photo ? { photo } : {}), ...(cls ? { cls } : {}) };
   if (id !== 'main') await saveJSONFor(id, 'controls', { ...DEFAULT_CONTROLS, childAge: age ?? null });
   state = { ...state, list: [...state.list, p], active: state.list.length === 0 ? id : state.active };
