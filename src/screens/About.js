@@ -12,7 +12,7 @@ const BAND_FELT = require('../../assets/band-about.jpg');
 
 const VERSION = require('../../app.json').expo.version;
 
-export default function About({ u, openMenu, onSecret }) {
+export default function About({ u, openMenu, onSecret, onBack }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
@@ -37,6 +37,13 @@ export default function About({ u, openMenu, onSecret }) {
           {t('Record yourselves reading each book and send it to grandparents, cousins and friends, who can add their own voices. A few beautiful picture books are here too, read by a warm narrator, with each word lighting up as it’s spoken.')}
         </Text>
         <Text style={[styles.p, textStyle]}>{t('Oomlaut is always looking for new picture books. If you’ve written or illustrated a story, send it to us and join the Oomlaut author community. Visit corobooks.com for more information.')}</Text>
+        {/* back to Support (About is opened from there), well clear of the words (Jörg, 26 Oct 2026) */}
+        {onBack ? (
+          <Pressable onPress={onBack} hitSlop={10} accessibilityRole="button" style={styles.backRow}>
+            <View style={styles.backCircle}><View style={styles.backChevron} /></View>
+            <Text style={styles.back}>{t('Back to Support')}</Text>
+          </Pressable>
+        ) : null}
         {/* the store owner's way in: hold the version line for five seconds (nothing happens on a tap) */}
         <Pressable onLongPress={onSecret} delayLongPress={5000} accessible={false}><Text style={styles.version}>{t('Version {v}', { v: VERSION })} · © 2026 Oomlaut Inc.</Text></Pressable>
       </ScrollView>
@@ -53,5 +60,9 @@ const styles = StyleSheet.create({
   tagline: { color: colors.white, fontFamily: 'EBGaramond_400Regular_Italic', fontSize: 20, marginTop: 6 }, // the real italic (iPhone doesn't slant a font by itself)
   body: { paddingHorizontal: 24, paddingTop: 36, gap: 16 },
   p: { fontFamily: fonts.story, fontSize: 19, lineHeight: 28, color: colors.ink },
+  backRow: { flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: 'flex-start', marginTop: 56 },
+  backCircle: { width: 26, height: 26, borderRadius: 13, borderWidth: 1.5, borderColor: '#d6d6d6', alignItems: 'center', justifyContent: 'center' },
+  backChevron: { width: 8, height: 8, borderLeftWidth: 1.75, borderBottomWidth: 1.75, borderColor: '#d6d6d6', transform: [{ translateX: 1.5 }, { rotate: '45deg' }] },
+  back: { fontFamily: fonts.uiBold, fontSize: 16, color: '#d6d6d6' },
   version: { fontFamily: fonts.ui, fontSize: 13, color: '#555', marginTop: 34 }, // well apart from the words above
 });

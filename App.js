@@ -391,7 +391,7 @@ function Root() {
           onIntro={() => { setIntroWho(null); setIntroAsk(true); setCoverOpen(false); setStartKey((n) => n + 1); go('start'); }} />}
         {screen === 'ideas' && <IdeaRoom u={u} openMenu={openMenu} onMake={() => openPublisher(null)} onHelp={() => go('help')} />}
         {screen === 'covertest' && <CoverTest u={u} openMenu={openMenu} />}
-        {screen === 'about' && <About u={u} openMenu={openMenu} onSecret={() => {
+        {screen === 'about' && <About u={u} openMenu={openMenu} onBack={() => go('help')} onSecret={() => {
           // the store owner: straight to the Store Manager when signed in, otherwise to the sign-in first
           if (storeAdmin) go('storeManager');
           else { go('profile'); toast('Sign in as the store owner to open the Store Manager.'); }
