@@ -322,6 +322,9 @@ export function Library({ onReadingOptions, onGarden, narrator, toast, onProfile
           if (onGarden && gardenPull.current && o.y + l.height - c.height > 70) { gardenPull.current = false; onGarden(); }
           else gardenPull.current = false;
         }}>
+        {/* who is reading (their character and name), at the top left above Let's make a book; tap it for Profiles */}
+        {!selecting && onProfiles ? <WhoReads onPress={onProfiles} /> : null}
+        {!selecting && onProfiles ? <View style={{ width: '100%', height: 0 }} /> : null}
         {/* Let's Create! first: Coro is a book maker first (Jörg, 25 Oct 2026) */}
         {/* Let's make a book: its title and the blue book together in a rounded black glass box */}
         {!selecting && controls.create ? (
@@ -354,8 +357,6 @@ export function Library({ onReadingOptions, onGarden, narrator, toast, onProfile
         {!selecting ? <View style={{ width: '100%', height: onReadingOptions ? 40 : 70 }} /> : null}
         {/* My Notebook (and who is reading), just above My Folder: Let's make a book and My Books come first (Jörg, 26 Oct 2026) */}
         {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
-        {/* beside the notebook: who is reading (their felt character and name); tap it for Profiles */}
-        {!selecting && onNotebook && onProfiles ? <WhoReads onPress={onProfiles} /> : null}
         {!selecting && onNotebook ? <View style={{ width: '100%', height: 18 }} /> : null}{/* the notebook has its row to itself */}
         {/* My Folder starts its own row: the folder (the size of a book), a pencil beside it, then a mug of hot chocolate */}
         {!selecting ? (() => {
