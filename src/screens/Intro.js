@@ -13,7 +13,7 @@ const AGES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 // the pages of each journey
 const PAGES = {
-  kid: ['kidHello', 'kidAge'],
+  kid: ['kidHello', 'kidMeet', 'kidAge'], // (Meet Coro: a simpler video page, Jörg 26 Oct 2026)
   grownup: ['grownHello', 'whatIs', 'grownProfile'], // (What is Coro?: the tutorial videos, Jörg 26 Oct 2026)
 };
 
@@ -96,6 +96,19 @@ export default function Intro({ who, onDone, onBack }) {
       <Box icon="safe" title={t('Safe spaces')} text={t('Parental controls decide exactly what your child can see and do: what they read, what they can share, and what stays for grown-ups.')} />
       <Box icon="connect" title={t('Meaningful connections')} text={t('Make books with your child, record your voice reading them, and share them with the family.')} />
       <Box icon="decide" title={t('Grown-ups decide')} text={t('Buying, sharing and settings always ask a grown-up question first.')} />
+    </>
+  );
+  if (page === 'kidMeet') body = (
+    <>
+      <Text style={styles.title}>{t('Meet Coro')}</Text>
+      <Text style={styles.lead}>{t('Let’s have a look at all the fun things you can do here.')}</Text>
+      <Pressable onPress={() => setSoon('Make your own picture book. It’s easy!')} accessibilityRole="button" style={[styles.box, { flexDirection: 'row', alignItems: 'center', gap: 16, paddingVertical: 18 }]}>
+        <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#333', alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: 0, height: 0, marginLeft: 4, borderTopWidth: 9, borderBottomWidth: 9, borderLeftWidth: 14, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: '#e6e6e6' }} />
+        </View>
+        <Text style={[styles.boxTitle, { flex: 1 }]}>{t('Make your own picture book. It’s easy!')}</Text>
+      </Pressable>
+      {soon ? <Text style={[styles.lead, { marginBottom: 0 }]}>{t('The video is coming soon.')}</Text> : null}
     </>
   );
   if (page === 'whatIs') body = (
