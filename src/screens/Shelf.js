@@ -702,7 +702,7 @@ const styles = StyleSheet.create({
   grid: { padding: 20, paddingTop: 42, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
   tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.72, shadowRadius: 13, elevation: 14 }, // a deep shadow, so the books stand up off the felt
   cardClose: { fontFamily: fonts.ui, fontSize: 14, color: '#bdbdbd', paddingVertical: 4 }, // under the Book Store card
-  makeBox: { ...sectionBox, width: '100%', paddingHorizontal: MAKE_BOX_PAD, paddingTop: 18, paddingBottom: 22, gap: 18, marginTop: 30, alignItems: 'center' }, // Let's make a book, in black glass
+  makeBox: { ...sectionBox, width: '100%', paddingHorizontal: MAKE_BOX_PAD, paddingTop: 18, paddingBottom: 40, gap: 18, marginTop: 30, alignItems: 'center' }, // Let's make a book, in black glass
   makePage: { position: 'absolute', top: 0, backgroundColor: '#fbfaf7', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.6, shadowRadius: 12 },
   makeCover: { backgroundColor: MAKE_BLUE, shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.6, shadowRadius: 12 },
   makeInside: { backgroundColor: MAKE_BLUE },
