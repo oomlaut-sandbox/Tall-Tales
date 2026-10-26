@@ -332,7 +332,7 @@ export function Library({ onReadingOptions, onGarden, narrator, toast, onProfile
         ) : null}
         {!selecting ? <View style={{ width: '100%' }} /> : null}{/* the books start their own row */}
         {/* a title over the books: the ones you made first, then the picture books */}
-        {!selecting ? <Text style={styles.section} accessibilityRole="header">{t('My Books')}</Text> : null}
+        {!selecting ? <Text style={[styles.section, { marginTop: 12 }]} accessibilityRole="header">{t('My Books')}</Text> : null}{/* a little closer to Let's make a book */}
         {/* (the parental controls can hide books rated for older children) */}
         {stories.filter((s) => ageAllowed(ageOf(null, s), controls.childAge)).sort((a, b) => (b.mine ? 1 : 0) - (a.mine ? 1 : 0)).map((s) => (
           // just the title under each cover (no author, pages or other details)
