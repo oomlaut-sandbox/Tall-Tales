@@ -800,7 +800,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             {(() => {
               // room for the tools under the square (hidden while typing) and, upright, for Done at the bottom
               // (the square keeps one fixed size whatever is showing: room is always kept for the tools box and Done)
-              const toolsH = kbUp ? 60 : TOOLBOX_H + 10;
+              const toolsH = kbUp ? 60 : TOOLBOX_H + 10 + 14 + 6; // (the box, its gap, the cover's own bottom margin, a little to spare)
               const doneH = kbUp || winW > winH ? 0 : 50;
               const fitH = coverArea ? coverArea.h - toolsH - doneH - 8 : winW;
               const W = Math.max(120, Math.floor(Math.min(winW - insets.left - insets.right - 2 * GAP, fitH)));
