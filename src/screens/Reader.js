@@ -1000,17 +1000,11 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
               ) : null}
               {controls.recording ? <View style={cs}><RecordButton k={ck} active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} /></View> : null}
             </View>
-            {v ? (
-              // sideways: one button that is Play, or Pause while it reads (the column is too short for both)
-              (reading && !paused) || between
-                ? <View style={cs}><PauseButton k={ck} onPress={onPause} disabled={recording} active /></View>
-                : <View style={[cs, { transform: [...(cs.transform || []), { translateX: -2 }] }]}><PlayButton k={ck} onPress={onPlay} active={false} disabled={recording} /></View>
-            ) : (
-              <>
-                <View style={cs}><PauseButton k={ck} onPress={onPause} disabled={recording} active={(reading && !paused) || between} /></View>
-                <View style={cs}><PlayButton k={ck} onPress={onPlay} active={(reading && !paused) || between} disabled={recording} /></View>
-              </>
-            )}
+            {/* one button that is Play, or Pause while it reads, upright and sideways alike (Jörg, 26 Oct 2026): it sits
+                where Play was, and Record and the voice face move up beside it */}
+            {(reading && !paused) || between
+              ? <View style={cs}><PauseButton k={ck} onPress={onPause} disabled={recording} active /></View>
+              : <View style={[cs, v && { transform: [...(cs.transform || []), { translateX: -2 }] }]}><PlayButton k={ck} onPress={onPlay} active={false} disabled={recording} /></View>}
           </View>
         ) : null;
         return v ? (

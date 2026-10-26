@@ -322,7 +322,7 @@ export function BarMusic({ u, vertical }) {
   return (
     <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')}
       style={slotStyle(u, vertical)}>
-      <MusicIcon size={u * 4.9} color={playing ? '#e0e0e0' : IDLE} />
+      <MusicIcon size={u * 4.9} color={playing ? '#5fb35f' : IDLE} />
     </Pressable>
   );
 }
