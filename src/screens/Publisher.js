@@ -35,6 +35,7 @@ const ABOUT = [
   ['pet', 'A pet', 'My Pet', () => HEADING_ICONS['Your favourite books']],
   ['else', 'Something else', null, () => HEADING_ICONS['Making books']],
 ];
+const CORO_LYING = require('../../assets/coro-lying.png'); // Jörg's Coro lying down, cut out (dark backgrounds only)
 function AboutPage({ tr, insets, onNext, onSkip }) {
   const [pick, setPick] = useState(null);
   const [words, setWords] = useState('');
@@ -49,6 +50,7 @@ function AboutPage({ tr, insets, onNext, onSkip }) {
     onNext({ about: pick, aboutWords: words.trim() || null, title });
   };
   return (
+    <>
     <ScrollView contentContainerStyle={{ alignItems: 'center', paddingTop: insets.top + 56, paddingBottom: 40, paddingHorizontal: 24 }} keyboardShouldPersistTaps="handled">
       <View style={{ width: colW, gap: 18 }}>
         <Text style={styles.aboutTitle}>{tr('What’s your book about?')}</Text>
@@ -70,6 +72,10 @@ function AboutPage({ tr, insets, onNext, onSkip }) {
         <Pressable onPress={onSkip} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'center', marginTop: 6 }}><Text style={styles.aboutSkip}>{tr('Skip')}</Text></Pressable>
       </View>
     </ScrollView>
+    {/* Coro lying in the bottom left corner, on the dark felt (Jörg, 26 Oct 2026) */}
+    <Image source={CORO_LYING} pointerEvents="none" accessibilityIgnoresInvertColors
+      style={{ position: 'absolute', left: 18 + insets.left, bottom: insets.bottom + 18, width: 110, height: 110 * 405 / 700 }} resizeMode="contain" />
+    </>
   );
 }
 import { strokesToImage } from '../components/Strokes';
