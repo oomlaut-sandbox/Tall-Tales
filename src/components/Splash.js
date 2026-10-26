@@ -3,7 +3,7 @@
 // it; when the clip ends, the circle closes to a point like the end of an old cartoon, and the felt fades away to
 // the start page. A tap skips it. (Jörg's quicker clip, about 3 seconds.)
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Platform, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { DeskFelt } from '../look';
 
@@ -19,6 +19,7 @@ export default function Splash({ onDone }) {
   const stage = useRef('in'); // 'in' → 'play' → 'out'
   const player = useVideoPlayer(CLIP, (p) => {
     p.loop = false;
+    if (Platform.OS === 'web') p.muted = true; // (browsers only start a film by itself without sound)
     try { p.audioMixingMode = 'mixWithOthers'; } catch (e) {}
     // (it waits: the clip starts only once the circle is full size)
   });
