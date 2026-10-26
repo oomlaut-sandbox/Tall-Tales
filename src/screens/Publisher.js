@@ -108,6 +108,7 @@ const HARDCOVERS = [
   ['brown', require('../../assets/hardcovers/brown.jpg'), 'Brown cloth'],
   ['green', require('../../assets/hardcovers/green.jpg'), 'Green cloth'],
   ['black', require('../../assets/hardcovers/black.jpg'), 'Black cloth'],
+  ['linen', require('../../assets/hardcovers/linen.jpg'), 'Linen'],
 ];
 const BLUE_CLOTH = require('../../assets/make-cover-cloth.jpg'); // the blue cloth book cover (as on Let's make a book)
 const BLUE = { l: 0.283, r: 0.711, t: 0.243, b: 0.684 };
