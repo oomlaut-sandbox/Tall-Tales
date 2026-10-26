@@ -17,7 +17,7 @@ import ReadingOptionsSection from '../components/ReadingOptionsSection';
 import { LANGS, useT } from '../i18n';
 import { lockedControls, quickSafeControls, DEFAULT_CONTROLS, STORE_ON } from '../controls';
 import { usePurchases } from '../purchases';
-import { MAX_CLASS, endClassroom, getProfiles, onProfiles as watchProfiles, setClassroom } from '../profiles';
+import { MAX_CLASS, PROFILE_COLORS, addProfile, endClassroom, getProfiles, onProfiles as watchProfiles, setClassroom } from '../profiles';
 import { hapticsOn, onHaptics, setHapticsOn, tap } from '../haptics';
 
 const MODES = [['self', 'Read Yourself'], ['learn', 'Learn to Read'], ['auto', 'Auto Play'], ['page', 'Page by Page Play'], ['listen', 'Listen Only']];
@@ -73,7 +73,22 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
   const [openSec, setOpenSec] = useState(null);
   const [room, setRoom] = useState(getProfiles().classroom || null); // the classroom folder, if there is one
   useEffect(() => watchProfiles((st) => setRoom(st.classroom || null)), []); // (not the onProfiles prop, which opens Profiles)
-  const [roomName, setRoomName] = useState(''); // the category that's open (one at a time)
+  const [roomName, setRoomName] = useState('');
+  const [names, setNames] = useState(''); // a pasted class list: one name per line (or separated by commas)
+  const [added, setAdded] = useState(null);
+  // make a profile for every name on the list, up to 30 in the class (names already there are skipped)
+  const importNames = async () => {
+    const have = new Set(getProfiles().list.map((p) => p.name.trim().toLowerCase()));
+    const list = [...new Set(names.split(/[\n,;\t]+/).map((n) => n.trim()).filter(Boolean))].filter((n) => !have.has(n.toLowerCase()));
+    let n = 0;
+    for (const name of list) {
+      const st = getProfiles();
+      if (st.list.length >= MAX_CLASS) break;
+      await addProfile({ name, color: PROFILE_COLORS[st.list.length % PROFILE_COLORS.length][0], age: null });
+      n += 1;
+    }
+    setNames(''); setAdded(n);
+  }; // the category that's open (one at a time)
   const [gardenBox, setGardenBox] = useState(null); // the Garden's felt card, once measured
   useEffect(() => onHaptics(setHap), []);
   const ps = usePurchases();
@@ -204,6 +219,15 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
                   <Pressable onPress={onProfiles} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button">
                     <Text style={styles.pillText}>{t('Open the classroom')}</Text>
                   </Pressable>
+                  {/* the class list: paste the names (from a spreadsheet or an email) and each one gets a profile */}
+                  <Text style={[styles.cardTitle, { marginTop: 8 }]}>{t('Add students from a list')}</Text>
+                  <Text style={styles.small}>{t('Paste your class list: one name per line, or separated by commas. Each name gets its own profile, up to {n} in the class.', { n: MAX_CLASS })}</Text>
+                  <TextInput value={names} onChangeText={(v) => { setNames(v); setAdded(null); }} multiline placeholder={t('Ava\nLeo\nMia')} placeholderTextColor="#8a8a8a"
+                    allowFontScaling={false} style={[styles.input, { height: 120, paddingTop: 10, textAlignVertical: 'top' }]} accessibilityLabel={t('Add students from a list')} />
+                  <Pressable onPress={importNames} disabled={!names.trim()} style={[styles.pill, { backgroundColor: colors.green }, !names.trim() && { opacity: 0.45 }]} accessibilityRole="button">
+                    <Text style={styles.pillText}>{t('Add these students')}</Text>
+                  </Pressable>
+                  {added != null ? <Text style={styles.small}>{added === 1 ? t('1 student added.') : t('{n} students added.', { n: added })}</Text> : null}
                   <Pressable onPress={endClassroom} style={[styles.pill, { backgroundColor: '#5f5f5f' }]} accessibilityRole="button">
                     <Text style={styles.pillText}>{t('End classroom mode')}</Text>
                   </Pressable>
