@@ -68,8 +68,11 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
   const [sure, setSure] = useState(false);
   const canSwitch = controls.profiles !== false;
   const { width: winW, height: winH } = useWindowDimensions();
-  const room = s.classroom; // a classroom folder: up to 30 students, four to a row
-  const side = room ? Math.min(100, Math.floor((Math.min(520, winW - 48) - 48) / 4)) : Math.min(112, Math.floor((Math.min(520, winW - 48) - 32) / 3));
+  const room = s.classroom; // (a classroom folder holds up to 30 students; still three to a row, the page scrolls)
+  // each child's box: a third of the row, much wider than the character (Jörg, 26 Oct 2026), so names and
+  // "Reading now" sit on one line; the character itself stays its size
+  const cellW = Math.floor((Math.min(520, winW - 48) - 2 * 10) / 3);
+  const side = Math.min(112, cellW);
 
   const openForm = (p) => {
     setSure(false);
@@ -132,16 +135,16 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
               return (
                 <Pressable key={p.id} disabled={!editing && !canSwitch && !on} onPress={() => (editing ? openForm(p) : on ? backToLibrary() : pick(p.id))}
                   onLayout={(e) => { const L = e.nativeEvent.layout; cells.current[p.id] = L; if (on && !picking.current) { boxXY.setValue({ x: L.x, y: L.y }); setBoxSize({ w: L.width, h: L.height }); placed.current = true; } }}
-                  accessibilityRole="button" accessibilityLabel={p.name} accessibilityState={{ selected: on }} style={[styles.cell, { width: side }]}>
+                  accessibilityRole="button" accessibilityLabel={p.name} accessibilityState={{ selected: on }} style={[styles.cell, { width: cellW }]}>
                   {/* the child reading now gets a box around them instead of growing */}
                   <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}><ProfileTile p={p} size={Math.round(side * 0.68)} active={on} grow={1} /></View>
                   <Text numberOfLines={1} style={styles.name}>{p.name}</Text>
-                  <Text style={styles.age}>{on ? t('Reading now') : ages[p.id] != null ? t('Age {n}', { n: ages[p.id] }) : ' '}</Text>
+                  <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={styles.age}>{on ? t('Reading now') : ages[p.id] != null ? t('Age {n}', { n: ages[p.id] }) : ' '}</Text>
                 </Pressable>
               );
             })}
             {s.list.length < maxProfiles() ? (
-              <Pressable onPress={() => setGate('add')} style={[styles.cell, { width: side }]} accessibilityRole="button" accessibilityLabel={room ? t('Add a student') : t('Add a profile')}>
+              <Pressable onPress={() => setGate('add')} style={[styles.cell, { width: cellW }]} accessibilityRole="button" accessibilityLabel={room ? t('Add a student') : t('Add a profile')}>
                 <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}>
                   <View style={[styles.addTile, { width: Math.round(side * 0.68), height: Math.round(side * 0.68), borderRadius: side }]}>{/* round, like the buttons */}
                     {/* a drawn plus (two thin bars), so it sits exactly in the middle of the circle */}
@@ -244,7 +247,7 @@ const styles = StyleSheet.create({
   p: { fontFamily: fonts.ui, fontSize: 16, lineHeight: 22, color: '#e6e6e6' },
   small: { fontFamily: fonts.ui, fontSize: 13, lineHeight: 18, color: '#bdbdbd' },
   link: { fontFamily: fonts.ui, fontSize: 14, color: '#ff9a8a', textDecorationLine: 'underline', marginTop: 4 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 16, rowGap: 10, marginTop: 6 }, // room under the words above
+  grid: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 10, rowGap: 10, marginTop: 6 }, // room under the words above
   cell: { alignItems: 'center', gap: 4, paddingTop: 12, paddingBottom: 12, borderRadius: 16, borderWidth: 1, borderColor: 'transparent' },
   cellOn: { backgroundColor: 'rgba(0,0,0,0.35)', borderColor: 'transparent' }, // a large see-through black box (no outline)
   activeRing: { borderWidth: 3, borderColor: colors.white },

@@ -176,7 +176,7 @@ export const HELP = ALL_HELP.filter((h) => STORE_ON || !h.store);
 
 const IDEAS_FELT = require('../../assets/ideas-felt.png');
 
-export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome }) {
+export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro }) {
   const searchRef = useRef(null);
   const { width: winWf } = useWindowDimensions();
   const feltW = Math.min(520, winWf - 48); // the felt patch, as wide as the column
@@ -210,6 +210,12 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome }) {
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
         <View style={styles.col}>
           {/* (a short video tour will go here later) */}
+          {/* the intro again, any time: the notebook asks "Are you a kid or a grown-up?" (Jörg, 26 Oct 2026) */}
+          {onIntro ? (
+            <Pressable onPress={onIntro} accessibilityRole="button" style={[styles.aboutPill, { marginTop: 0, marginBottom: 14 }]}>
+              <Text style={styles.aboutText}>{t('Start the intro again')}</Text>
+            </Pressable>
+          ) : null}
           {/* the search window: a white pill the width of the topics, with a soft inner shadow along its top edge */}
           <Pressable onPress={() => searchRef.current && searchRef.current.focus()} accessible={false} style={styles.searchWrap}>
             <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.22)', 'rgba(0,0,0,0.06)', 'rgba(0,0,0,0)']} locations={[0, 0.35, 1]} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 14 }} />
