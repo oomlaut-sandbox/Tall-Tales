@@ -60,7 +60,7 @@ function MenuItem({ u, icon, title, sub, onPress }) {
   );
 }
 
-export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClosed, onPeek, ask }) {
+export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClosed, onPeek, ask, onIntro }) {
   const t = useT();
   const { lang, setLang } = useContext(LangContext);
   const controls = useControls(); // parental controls: the Book Store and changing the language may be off
@@ -227,6 +227,13 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
         );
       }}
     </BookFrame>
+    {/* a very small "Intro" in the bottom left corner, just above the bar: the intro again, as for a first-time user */}
+    {onIntro && !ask ? (
+      <Pressable onPress={onIntro} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Intro')}
+        style={{ position: 'absolute', left: 16 + insets.left, bottom: (winW > winH * 1.1 ? 0 : u * 17 + insets.bottom) + 12, zIndex: 100 }}>
+        <Text style={{ fontFamily: fonts.ui, fontSize: 12, color: 'rgba(215,215,215,0.6)' }}>{t('Intro')}</Text>
+      </Pressable>
+    ) : null}
     {/* A thin see-through black strip across the top, above everything (the cover opens underneath it):
         the languages on the left (tap one to switch, unless the parental controls keep the language fixed).
         (Profiles lives in My Library now.) */}

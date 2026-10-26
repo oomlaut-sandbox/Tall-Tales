@@ -644,6 +644,7 @@ const T = {
   "Reading books": { de: "Bücher lesen", fr: "Lire des livres", es: "Leer libros", ja: "本を よむ", ar: "قراءة الكتب" },
   "For teachers": { de: "Für Lehrkräfte", fr: "Pour les enseignants", es: "Para docentes", ja: "せんせいへ", ar: "للمعلمين" },
   "“{name}” is coming soon.": { de: "„{name}“ kommt bald.", fr: "« {name} » arrive bientôt.", es: "«{name}» llegará pronto.", ja: "「{name}」は じゅんびちゅうです。", ar: "«{name}» قريبًا." },
+  'Intro': { de: 'Einführung', fr: 'Intro', es: 'Intro', ja: 'はじめに', ar: "المقدمة" },
   'Visit the Ideas Room in Ideas and Support': { de: 'Besuche das Ideenzimmer unter Ideen und Hilfe', fr: 'Va dans la Salle des idées, dans Idées et aide', es: 'Visita la Sala de ideas en Ideas y ayuda', ja: '「アイデアと サポート」の アイデアのへやへ', ar: "زُر «غرفة الأفكار» في «الأفكار والدعم»" },
   'Visit the Ideas Room in Ideas and Support.': { de: 'Besuche das Ideenzimmer unter Ideen und Hilfe.', fr: 'Va dans la Salle des idées, dans Idées et aide.', es: 'Visita la Sala de ideas en Ideas y ayuda.', ja: '「アイデアと サポート」の アイデアのへやへ どうぞ。', ar: "زُر «غرفة الأفكار» في «الأفكار والدعم»." },
   'Skip': { de: 'Überspringen', fr: 'Passer', es: 'Saltar', ja: 'スキップ', ar: "تخطٍّ" },

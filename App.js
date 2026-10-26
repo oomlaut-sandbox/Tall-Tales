@@ -326,7 +326,7 @@ function Root() {
         {screen === 'start' && (
           // while the menu page is being turned, My Library is drawn underneath and shows through
           <View style={peek ? [StyleSheet.absoluteFill, { zIndex: 10 }] : { flex: 1 }}>
-            <Start key={startKey} ask={introAsk} u={u} go={(t, rect) => { if (t === 'library' && rect) {
+            <Start key={startKey} ask={introAsk} onIntro={() => { setIntroWho(null); setIntroAsk(true); setCoverOpen(false); setStartKey((n) => n + 1); }} u={u} go={(t, rect) => { if (t === 'library' && rect) {
               // the flying notebook is drawn over the start page's one first; only once it's surely on screen
               // does the start page go, so there's never a frame without a notebook
               libFade.setValue(0); flyP.setValue(0); setFlyer({ from: rect });
