@@ -42,7 +42,8 @@ const corners = (side, wide, flipped) => (flipped ? (wide
   : { borderTopLeftRadius: side * R_SPINE, borderTopRightRadius: side * R_SPINE, borderBottomLeftRadius: side * R_EDGE, borderBottomRightRadius: side * R_EDGE });
 
 const TILE_LIBRARY = require('../../assets/tile-library.png');
-const TILE_STORE = require('../../assets/tile-store.png');
+const TILE_MAKE = require('../../assets/tile-store.png'); // the blue felt tile: Make a book (blue, like the book in My Library)
+const TILE_STORE = require('../../assets/tile-store-red.png'); // the Book Store moves to a red tile
 
 function MenuItem({ u, icon, title, sub, onPress }) {
   return (
@@ -185,7 +186,9 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
               <Spine wide={wide} />
               {/* the two items as one block, centred in the page */}
               <View style={{ gap: k * 8, transform: [{ translateX: k * 5 }] }}>{/* nudged a little to the right */}
-                <MenuItem u={k} icon={TILE_LIBRARY} title={t('My Library')} sub={t('Find and read your\nfavorite books')} onPress={() => goTo('library')} />
+                {/* Make a book first (Coro is a book maker first), then Read a book (My Library) */}
+                {controls.create ? <MenuItem u={k} icon={TILE_MAKE} title={t('Make a book')} sub={t('Share your words, your pictures, your voice.')} onPress={() => goTo('make')} /> : null}
+                <MenuItem u={k} icon={TILE_LIBRARY} title={t('Read a book')} sub={t('Collect, record and share your favorite stories.')} onPress={() => goTo('library')} />
                 {controls.store ? <MenuItem u={k} icon={TILE_STORE} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => goTo('store')} /> : null}
               </View>
             </View>

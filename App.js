@@ -318,6 +318,7 @@ function Root() {
               setTimeout(() => go(t), 90);
               return;
             }
+            if (t === 'make') { if (purchasesReady && !purchases.member && userStories.length >= FREE_BOOKS) { go('library'); setMoreGate(true); } else openPublisher(null); return; } // Make a book: straight to the book maker
             go(t); }} openMenu={coverOpen ? openMenu : () => toast(t('Start by opening your notebook.'))} onHome={coverOpen ? undefined : () => toast(t('Start by opening your notebook.'))} closed={!coverOpen} onOpened={() => setCoverOpen(true)} onClosed={() => setCoverOpen(false)} onPeek={(t) => setPeek(t || 'library')} />
           </View>
         )}
