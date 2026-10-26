@@ -222,7 +222,7 @@ function WhoReads({ onPress }) {
     <View style={{ width: tileWidth(winW) }}>{/* the box is as wide as a book */}
       <Pressable onPress={onPress} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Profiles')}
         style={{ alignSelf: 'stretch', flexDirection: 'row', alignItems: 'center', gap: p ? 12 : 9, backgroundColor: 'rgba(0,0,0,0.45)', borderRadius: 14, paddingVertical: 10, paddingLeft: p ? 12 : 16, paddingRight: 14 }}>{/* on a see-through black box with rounded corners */}
-        {p ? (p.color === 'photo' && p.photo ? <Image source={{ uri: liveUri(p.photo) }} style={{ width: 40, height: 40, borderRadius: 20, marginHorizontal: 4 }} resizeMode="cover" /> : <Image source={feltFor(p.color)} style={{ width: 48, height: 48 }} resizeMode="contain" />)
+        {p ? <View style={{ width: 40, height: 40, borderRadius: 20, overflow: 'hidden', marginHorizontal: 4, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.85)', backgroundColor: '#3a3a3a' }}><Image source={p.color === 'photo' && p.photo ? { uri: liveUri(p.photo) } : feltFor(p.color)} style={{ width: '100%', height: '100%' }} resizeMode="cover" /></View>
           : <View style={{ alignItems: 'center' }}>{/* a small person: only as tall as itself, so the word centres on it */}
               <View style={{ width: 9, height: 9, borderRadius: 5, backgroundColor: 'rgba(235,235,235,0.9)', marginBottom: 1.5 }} />
               <View style={{ width: 16, height: 7.5, borderTopLeftRadius: 8, borderTopRightRadius: 8, backgroundColor: 'rgba(235,235,235,0.9)' }} />

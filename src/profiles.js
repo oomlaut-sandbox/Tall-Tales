@@ -19,11 +19,14 @@ export const maxProfiles = () => (state.classroom ? MAX_CLASS : MAX_PROFILES);
 // Coro, 'orange' the yellow one, 'grey' the teal one, so children who already chose keep their place)
 // (the brown Coro is the mascot's own, so it isn't offered (Jörg, 26 Oct 2026); 'photo': the profile's own picture,
 // shown in a circle)
-export const PROFILE_COLORS = [ // in this order on the screen: red, green, yellow, teal, then a photo circle
-  ['red', require('../assets/profile-coro-red.png')],
-  ['green', require('../assets/profile-coro-green.png')],
-  ['orange', require('../assets/profile-coro-yellow.png')],
-  ['grey', require('../assets/profile-coro-teal.png')],
+// (Jörg, 26 Oct 2026: the avatars are his photos of the felt Coros, shown whole inside a white-edged circle, not cut
+// out. The keys stay the old colour names, so children who already chose keep their place: red is the rust Coro,
+// green the olive one, orange the mustard one, grey the blue one.)
+export const PROFILE_COLORS = [ // in this order on the screen: rust, olive, mustard, blue, then the photo circle
+  ['red', require('../assets/avatar-rust.jpg')],
+  ['green', require('../assets/avatar-olive.jpg')],
+  ['orange', require('../assets/avatar-mustard.jpg')],
+  ['grey', require('../assets/avatar-blue.jpg')],
 ];
 export const feltFor = (color) => (PROFILE_COLORS.find(([c]) => c === (color === 'pink' ? 'grey' : color)) || PROFILE_COLORS[0])[1]; // (red if unknown or brown, as before)
 

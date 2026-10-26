@@ -45,7 +45,12 @@ export function ProfileTile({ p, size, active, grow = 1.3 }) {
           {p.photo ? <Image source={{ uri: liveUri(p.photo) }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
             : <Image source={TITLE_ICONS.profile} style={{ width: size * 0.55, height: size * 0.55 }} resizeMode="contain" />}
         </View>
-      ) : <Image source={feltFor(p.color)} style={{ width: size * 1.3, height: size * 1.3 }} resizeMode="contain" />}
+      ) : (
+        // an avatar: the whole photo inside the same white-edged circle
+        <View style={{ width: size * 1.1, height: size * 1.1, borderRadius: size, overflow: 'hidden', backgroundColor: '#3a3a3a', borderWidth: 2, borderColor: 'rgba(255,255,255,0.85)' }}>
+          <Image source={feltFor(p.color)} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+        </View>
+      )}
     </Animated.View>
   );
 }
