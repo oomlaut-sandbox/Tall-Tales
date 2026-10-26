@@ -72,11 +72,7 @@ function AboutPage({ tr, insets, onNext, onSkip }) {
         <Pressable onPress={onSkip} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'center', marginTop: 6 }}><Text style={styles.aboutSkip}>{tr('Skip')}</Text></Pressable>
       </View>
     </ScrollView>
-    {/* Coro lying in the bottom left, in line with the choices above and well clear of the bottom (Jörg, 26 Oct 2026) */}
-    <View pointerEvents="none" style={{ position: 'absolute', left: (winW - colW) / 2, bottom: insets.bottom + 64, width: 110, height: 110 * 405 / 700,
-      shadowColor: '#000', shadowOffset: { width: 2, height: 6 }, shadowOpacity: 0.55, shadowRadius: 7, elevation: 8 }}>{/* a soft drop shadow, as for things lying on the felt */}
-      <Image source={CORO_LYING} accessibilityIgnoresInvertColors style={{ width: 110, height: 110 * 405 / 700 }} resizeMode="contain" />
-    </View>
+    {/* (Coro lying in the corner was tried here and taken away again: Jörg, 26 Oct 2026) */}
     </>
   );
 }
