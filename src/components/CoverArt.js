@@ -19,14 +19,13 @@ export const COVER_COLORS = [ // (many more, in rows from light to dark: Jörg, 
 export function coverTitleLook(t, byline) {
   const f = bookFont((t && t.font) || 'serif');
   const color = (t && t.color) || '#ffffff';
-  const dark = parseInt(color.slice(1, 3), 16) * 0.3 + parseInt(color.slice(3, 5), 16) * 0.59 + parseInt(color.slice(5, 7), 16) * 0.11 < 110;
   return { fontFamily: byline ? f.family : f.bold || f.family, fontWeight: !byline && !f.bold ? '700' : undefined, color,
-    textShadowColor: dark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.55)' };
+    textShadowColor: 'transparent' }; // no shadows on cover words (Jörg, 26 Oct 2026)
 }
 // the 'written by / illustrated by' line under a cover title (optional)
 export const bylineStyle = { fontFamily: 'EBGaramond_500Medium', marginTop: 2 };
 export const titleStyle = { fontFamily: COVER_FONT, color: '#ffffff', textAlign: 'center',
-  textShadowColor: 'rgba(0,0,0,0.55)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 };
+  textShadowColor: 'transparent', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 0 };
 
 // cover: { uri, title: { text, x, y, size } | null }; x and y are the title's centre as a share of the
 // square (0..1), size is the letter size as a share of the square's width.
@@ -37,12 +36,14 @@ export const bylineLook = (t) => ({ color: t.bColor || t.color, font: t.bFont ||
 // where the title and the author line go, for a square W wide
 export function coverBoxes(t, W) {
   const w = t.w || 1, align = t.align || 'center';
-  const title = { position: 'absolute', left: (t.x - w / 2) * W, width: w * W, top: t.y * W, transform: [{ translateY: -t.size * W * 0.65 }],
+  // the text boxes never run past the cover's edges (Jörg, 26 Oct 2026)
+  const inside = (cx, bw) => Math.min(Math.max((cx - bw / 2) * W, 0), (1 - bw) * W);
+  const title = { position: 'absolute', left: inside(t.x, w), width: w * W, top: t.y * W, transform: [{ translateY: -t.size * W * 0.65 }],
     alignItems: align === 'left' ? 'flex-start' : align === 'right' ? 'flex-end' : 'center' };
   const own = t.byline && t.bx != null;
   const bs = own ? t.bs || t.size * 0.42 : t.size * 0.42;
   const bw = t.bw || 1;
-  const byline = own ? { position: 'absolute', left: (t.bx - bw / 2) * W, width: bw * W, top: t.by * W, transform: [{ translateY: -bs * W * 0.65 }],
+  const byline = own ? { position: 'absolute', left: inside(t.bx, bw), width: bw * W, top: t.by * W, transform: [{ translateY: -bs * W * 0.65 }],
     alignItems: (t.balign || align) === 'left' ? 'flex-start' : (t.balign || align) === 'right' ? 'flex-end' : 'center' } : null;
   return { title, byline, bs, align, balign: t.balign || align };
 }
