@@ -14,7 +14,7 @@ const AGES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 // the pages of each journey
 const PAGES = {
   kid: ['kidHello', 'kidAge'],
-  grownup: ['grownHello', 'grownProfile'],
+  grownup: ['grownHello', 'whatIs', 'grownProfile'], // (What is Coro?: the tutorial videos, Jörg 26 Oct 2026)
 };
 
 // the little line icons beside each point (the heading icons, drawn dark on the light grey boxes)
@@ -47,7 +47,10 @@ function Chip({ label, on, onPress }) {
   );
 }
 
-export default function Intro({ who, onDone }) {
+// the tutorial videos on the What is Coro? page (the films themselves are still being made)
+const VIDEOS = ['Complete walk-through', 'Quick tour', 'Making and sharing books', 'Reading books', 'Parental controls', 'For teachers']; // (Parental controls: the same words as in Settings)
+
+export default function Intro({ who, onDone, onBack }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const pages = PAGES[who] || PAGES.kid;
@@ -62,6 +65,9 @@ export default function Intro({ who, onDone }) {
   }, [i]);
   const finish = () => onDone({ who, age, name: name.trim() });
   const next = () => (i < pages.length - 1 ? setI(i + 1) : finish());
+  // back: the page before, or (on the first page) the notebook's question again
+  const back = () => (i > 0 ? setI(i - 1) : onBack && onBack());
+  const [soon, setSoon] = useState(null); // a video tapped (they're on the way)
   const page = pages[i];
 
   let body = null;
@@ -92,6 +98,22 @@ export default function Intro({ who, onDone }) {
       <Box icon="decide" title={t('Grown-ups decide')} text={t('Buying, sharing and settings always ask a grown-up question first.')} />
     </>
   );
+  if (page === 'whatIs') body = (
+    <>
+      <Text style={styles.title}>{t('What is Coro?')}</Text>
+      <Text style={styles.lead}>{t('Watch a short video to see how it all works.')}</Text>
+      {VIDEOS.map((v) => (
+        <Pressable key={v} onPress={() => setSoon(v)} accessibilityRole="button" style={[styles.box, { flexDirection: 'row', alignItems: 'center', gap: 16, paddingVertical: 14 }]}>
+          {/* a play button */}
+          <View style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: '#333', alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ width: 0, height: 0, marginLeft: 3, borderTopWidth: 7, borderBottomWidth: 7, borderLeftWidth: 11, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: '#e6e6e6' }} />
+          </View>
+          <Text style={[styles.boxTitle, { flex: 1 }]}>{t(v)}</Text>
+        </Pressable>
+      ))}
+      {soon ? <Text style={[styles.lead, { marginBottom: 0 }]}>{t('“{name}” is coming soon.', { name: t(soon) })}</Text> : null}
+    </>
+  );
   if (page === 'grownProfile') body = (
     <>
       <Text style={styles.title}>{t('What age are your readers?')}</Text>
@@ -118,11 +140,17 @@ export default function Intro({ who, onDone }) {
         </Animated.View>
       </ScrollView>
       {/* Next, with a small Skip beside it; and how far along you are */}
+      {/* back in the bottom left corner, forward in the bottom right; how far along, and a small Skip, between them */}
       <View style={[styles.foot, { paddingBottom: insets.bottom + 22 }]}>
+        <Pressable onPress={back} disabled={i === 0 && !onBack} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Back')} style={[styles.arrow, i === 0 && !onBack && { opacity: 0.3 }]}>
+          <View style={[styles.chev, { transform: [{ translateX: 2 }, { rotate: '45deg' }], borderLeftWidth: 2.4, borderBottomWidth: 2.4 }]} />
+        </Pressable>
         <View style={styles.dots}>{pages.map((p, k) => <View key={p} style={[styles.dot, k === i && styles.dotOn]} />)}</View>
         <View style={{ flex: 1 }} />
         <Pressable onPress={finish} hitSlop={10} accessibilityRole="button"><Text style={styles.skip}>{t('Skip')}</Text></Pressable>
-        <Pressable onPress={next} accessibilityRole="button" style={styles.next}><Text style={styles.nextText}>{i < pages.length - 1 ? t('Next') : t('Let’s go!')}</Text></Pressable>
+        <Pressable onPress={next} hitSlop={10} accessibilityRole="button" accessibilityLabel={i < pages.length - 1 ? t('Next') : t('Let’s go!')} style={[styles.arrow, styles.arrowOn]}>
+          <View style={[styles.chev, { transform: [{ translateX: -2 }, { rotate: '45deg' }], borderRightWidth: 2.4, borderTopWidth: 2.4 }]} />
+        </Pressable>
       </View>
     </View>
   );
@@ -143,6 +171,9 @@ const styles = StyleSheet.create({
   chipOn: { backgroundColor: colors.green },
   chipText: { fontFamily: fonts.uiBold, fontSize: 17, color: '#222' },
   input: { height: 48, borderRadius: 12, backgroundColor: '#f2f2f2', paddingHorizontal: 14, paddingVertical: 0, includeFontPadding: false, fontFamily: fonts.ui, fontSize: 19, color: '#222' },
+  arrow: { width: 50, height: 50, borderRadius: 25, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.7)', alignItems: 'center', justifyContent: 'center' },
+  arrowOn: { backgroundColor: colors.green, borderColor: colors.green },
+  chev: { width: 13, height: 13, borderColor: colors.white },
   foot: { flexDirection: 'row', alignItems: 'center', gap: 22, paddingHorizontal: 24, paddingTop: 14 },
   dots: { flexDirection: 'row', gap: 8 },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.3)' },

@@ -491,7 +491,7 @@ function Root() {
           );
         })() : null}
         <ParentGate visible={profileGate} reason={t('Your profile is for grown-ups.')} onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
-        {introWho ? <Intro who={introWho} onDone={({ who, age, name }) => {
+        {introWho ? <Intro who={introWho} onBack={() => { setIntroWho(null); setCoverOpen(true); setStartKey((n) => n + 1); }} onDone={({ who, age, name }) => {
           // a kid's age goes into their parental controls; a grown-up's first profile is made with the name and age
           if (who === 'kid' && age != null) setControls({ ...controls, childAge: age });
           if (who === 'grownup' && (name || age != null)) addProfile({ name, age });
