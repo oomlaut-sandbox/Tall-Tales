@@ -100,6 +100,7 @@ export function draftFrom(story) {
 // The empty picture square: Jörg's light grey Polaroid with "Add Image" in white in the middle of its blue
 // square (measured from the picture: the blue runs 28.3%–71.1% across and 24.3%–68.4% down).
 const POLAROID = require('../../assets/polaroid.jpg');
+const BLUE_CLOTH = require('../../assets/make-cover-cloth.jpg'); // the blue cloth book cover (as on Let's make a book)
 const BLUE = { l: 0.283, r: 0.711, t: 0.243, b: 0.684 };
 // A text field whose words always sit in the middle, top to bottom: the box centres a one-line field that is exactly
 // one line tall (no padding, no lineHeight, not scaled with the phone's text size). A taller field put the words low on iOS.
@@ -122,12 +123,13 @@ export function CenteredField({ value, onChangeText, placeholder, onFocus, onBlu
 
 function EmptyPicture({ side, plain }) {
   const tr = useT();
-  // the cover editor: no Polaroid, just the light grey card with 'Add Image' in dark grey (Jörg, 26 Oct 2026)
+  // the cover editor: no Polaroid; the blue cloth book cover fills the square, 'Add Image' in white (Jörg, 26 Oct 2026)
   if (plain) {
     const f = Math.max(16, Math.round(side * 0.055));
     return (
-      <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#c9c8c6', alignItems: 'center', justifyContent: 'center', padding: side * 0.12 }]}>
-        <Text style={{ textAlign: 'center', color: '#4a4a4a', fontFamily: fonts.uiBold, fontSize: f, lineHeight: f * 1.24 }}>{tr('Add Image')}</Text>
+      <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#2f5f9e', alignItems: 'center', justifyContent: 'center', padding: side * 0.12 }]}>
+        <Image source={BLUE_CLOTH} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
+        <Text style={{ textAlign: 'center', color: colors.white, fontFamily: fonts.uiBold, fontSize: f, lineHeight: f * 1.24 }}>{tr('Add Image')}</Text>
       </View>
     );
   }
