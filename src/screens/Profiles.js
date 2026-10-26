@@ -316,7 +316,8 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
           <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20 }} keyboardShouldPersistTaps="handled">{/* in the middle of the screen above the bar (the bar stays uncovered) */}
             <View style={styles.card}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 44, paddingVertical: 10, paddingLeft: 10 }}>{/* plenty of room all round the character (it's drawn wider than its box) */}
-                <ProfileTile p={{ name: form.name || '?', color: form.color }} size={60} />
+                {/* the chosen character; with a photo, tap the circle to choose another photo */}
+                <Pressable onPress={form.color === 'photo' ? pickPhoto : undefined} disabled={form.color !== 'photo'} accessibilityRole="button" accessibilityLabel={t('Use a photo')}><ProfileTile p={{ name: form.name || '?', color: form.color, photo: form.photo }} size={60} /></Pressable>
                 <TextInput allowFontScaling={false} value={form.name} onChangeText={(name) => setForm({ ...form, name })} placeholder={t('Name')} placeholderTextColor="#8a8a8a"
                   style={styles.input} maxLength={20} autoCapitalize="words" autoCorrect={false} returnKeyType="done" accessibilityLabel={t('Name')} />
               </View>

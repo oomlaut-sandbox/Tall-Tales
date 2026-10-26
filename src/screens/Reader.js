@@ -941,7 +941,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
             style={size.w > size.h * 1.25 ? { top: size.h * 0.06, left: size.w * 0.52 } : { top: size.h * 0.5 + size.w * 0.07, left: size.w * 0.04 }} />
         ) : null}
         {/* the dog-ear hides while a page is turning, and comes back once the new page has landed */}
-        {idx < pages.length - 1 && !flipPair && !listen ? <View style={{ position: 'absolute', right: 0, bottom: 0, zIndex: 20 }}><DogEar u={u} under={prefs.amber ? AMBER.under : colors.earUnder} flap={prefs.amber ? AMBER.flap : undefined} onPress={() => flip(1)} /></View> : null}
+        {idx < pages.length - 1 && !flipPair && !listen ? <View style={{ position: 'absolute', right: 0, bottom: 0, zIndex: 20 }}><DogEar u={u} bare={idx > 0} under={prefs.amber ? AMBER.under : colors.earUnder} flap={prefs.amber ? AMBER.flap : undefined} onPress={() => flip(1)} /></View> : null}
       </View>
       </View>
       {/* Listen Only: the soft night level (nothing under it can be touched) */}

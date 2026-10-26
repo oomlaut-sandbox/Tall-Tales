@@ -108,7 +108,8 @@ export default function ReaderPick({ initial, onCancel, onStart, edit = false, o
             return (
               <View style={styles.photoRow}>
                 <View style={{ alignItems: 'center', gap: 10 }}>
-                  <VoiceFace photo={cur.photo} person size={104} />{/* no photo yet: a head and shoulders */}
+                  {/* tap the circle to choose a new photo (Jörg, 26 Oct 2026) */}
+                  <Pressable onPress={withTap(() => getPhoto('library'))} accessibilityRole="button" accessibilityLabel={tr('Choose a photo')}><VoiceFace photo={cur.photo} person size={104} /></Pressable>{/* no photo yet: a head and shoulders */}
                   {/* editing: a thin red pill under the photo removes this reader (asks first) */}
                   {edit && !adding && pick ? (
                     <Pressable onPress={withTap(() => setSure(true))} hitSlop={8} accessibilityRole="button" style={styles.removePill}>
