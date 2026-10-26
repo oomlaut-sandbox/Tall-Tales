@@ -12,3 +12,4 @@ Jörg's hand-made felt mascot: a little felt book, tan cover on top, white felt 
 - Use the mascot on dark backgrounds only (Jörg: it doesn't work on white). Not placed in the app yet: wait for Jörg.
 - None of the old grey mascot's traits carry over (the new Coro has its own embroidered smile).
 - coro-felt-wordmark-colour-on-cream.jpg: the coloured felt coro. (rust, olive, blue, mustard, a blue-grey dot) on cream felt, for light backgrounds (Jörg, 25 Oct 2026; for later)
+- coro-felt-wordmark-colour-cutout.png: the coloured felt coro. (on cream) cut out, for white backgrounds such as the promo videos (Jörg, 26 Oct 2026)
