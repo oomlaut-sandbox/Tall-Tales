@@ -1,0 +1,65 @@
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated rimraf@2.4.5: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated glob@6.0.4: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated uuid@7.0.3: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+npm warn deprecated uuid@8.3.2: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+npm warn deprecated uuid@8.3.2: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+
+Builds for @oomlaut-code/tall-tales:
+
+ID                       a3c934dd-a84e-44f9-992a-20d4f0137b67
+Platform                 iOS
+Status                   finished
+Profile                  production
+Distribution             store
+SDK Version              57.0.0
+Version                  0.1.0
+Build number             146
+Commit                   ebcb5a5d4990bab8f5667fc4b4d04ecbd71afd24
+Logs                     https://expo.dev/accounts/oomlaut-code/projects/tall-tales/builds/a3c934dd-a84e-44f9-992a-20d4f0137b67
+Application Archive URL  https://expo.dev/artifacts/eas/AP4Hgk5Pa45I5synZQ9SbKcD5wbNgzWHlhflBH647Vk.ipa
+Build Artifacts URL      null
+Fingerprint              47850ef05e3e4b5b91b0a5393ce32ece43687ec7
+Started at               10/26/2026, 9:45:59 AM
+Finished at              10/26/2026, 9:51:34 AM
+Started by               GitHub-builds
+
+———
+
+ID                       ab35cbb0-4cc4-4949-aaa0-71b9acfb894a
+Platform                 iOS
+Status                   finished
+Profile                  production
+Distribution             store
+SDK Version              57.0.0
+Version                  0.1.0
+Build number             145
+Commit                   06d06dcffef08739462f355862bcd571d71b4ba7
+Logs                     https://expo.dev/accounts/oomlaut-code/projects/tall-tales/builds/ab35cbb0-4cc4-4949-aaa0-71b9acfb894a
+Application Archive URL  https://expo.dev/artifacts/eas/WouwzG3guQ3oCWTSumZjzc32-PDHPIZR2WHfy5SAyE4.ipa
+Build Artifacts URL      null
+Fingerprint              47850ef05e3e4b5b91b0a5393ce32ece43687ec7
+Started at               10/26/2026, 6:43:05 AM
+Finished at              10/26/2026, 9:50:23 AM
+Started by               GitHub-builds
+
+———
+
+ID                       778ef606-dbef-4584-abad-765688a8faa2
+Platform                 iOS
+Status                   finished
+Profile                  production
+Distribution             store
+SDK Version              57.0.0
+Version                  0.1.0
+Build number             144
+Commit                   d11685e349eeb94beed35fe668892cf9faaab2a4
+Logs                     https://expo.dev/accounts/oomlaut-code/projects/tall-tales/builds/778ef606-dbef-4584-abad-765688a8faa2
+Application Archive URL  https://expo.dev/artifacts/eas/lHf7jM6sm0CfnI2KgXVpKOd_ib19Q5nSgfixFrlC5FA.ipa
+Build Artifacts URL      null
+Fingerprint              47850ef05e3e4b5b91b0a5393ce32ece43687ec7
+Started at               10/26/2026, 5:57:30 AM
+Finished at              10/26/2026, 9:10:10 AM
+Started by               GitHub-builds
