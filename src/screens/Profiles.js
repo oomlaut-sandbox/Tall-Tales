@@ -16,7 +16,7 @@ import ParentGate from '../components/ParentGate';
 import { useT } from '../i18n';
 import { useControls, DEFAULT_CONTROLS } from '../controls';
 import { keepFile, liveUri, loadJSONFor, saveJSONFor } from '../storage';
-import { MAX_CLASS, MORE_AVATARS, PROFILE_COLORS, removeClasses, addClass, addProfile, canAdd, feltFor, getProfiles, inClass, onProfiles, removeClass, removeProfile, removeProfiles, renameClass, switchProfile, updateProfile } from '../profiles';
+import { MAX_CLASS, MORE_AVATARS, PROFILE_COLORS, endClassroom, removeClasses, addClass, addProfile, canAdd, feltFor, getProfiles, inClass, onProfiles, removeClass, removeProfile, removeProfiles, renameClass, switchProfile, updateProfile } from '../profiles';
 import { IDLE, slotStyle } from '../components/Chrome';
 const SELECT_ICON = require('../../assets/icon-select.png');
 const TRASH_ICON = require('../../assets/icon-trash.png');
@@ -311,6 +311,12 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
             ) : null}
           </View>
           {!canSwitch ? <Text style={styles.small}>{t('A grown-up has turned off switching profiles.')}</Text> : null}
+          {/* back to the family's profiles: ends classroom mode (everyone's profile stays); a grown-up question first */}
+          {folders && !selecting ? (
+            <Pressable onPress={() => setGate('endclass')} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'flex-start' }}>
+              <Text style={[styles.small, { color: '#d6d6d6', textDecorationLine: 'underline' }]}>{t('End classroom mode')}</Text>
+            </Pressable>
+          ) : null}
           <Text style={styles.small}>{room ? t('Books are shared by the whole class, so students can make books together. Each student’s notebook, badges and settings are their own.') : t('Books, the membership, recordings, the language and the music are shared by the whole family.')}</Text>
         </View>
       </Animated.ScrollView>
@@ -433,7 +439,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
         </Modal>
       ) : null}
       <ParentGate visible={!!gate} reason={t('Changing profiles is for grown-ups.')}
-        onPass={() => { const g = gate; setGate(null); if (g === 'add') openForm(null); else if (g === 'select') { setEditing(false); setSelecting(true); } else if (g === 'class') setClassForm({ name: '' }); else setEditing(true); }} onCancel={() => setGate(null)} />
+        onPass={() => { const g = gate; setGate(null); if (g === 'add') openForm(null); else if (g === 'select') { setEditing(false); setSelecting(true); } else if (g === 'class') setClassForm({ name: '' }); else if (g === 'endclass') { endClassroom(); setOpenCls(null); } else setEditing(true); }} onCancel={() => setGate(null)} />
     </WithBar>
   );
 }
