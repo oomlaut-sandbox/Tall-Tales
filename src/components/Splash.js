@@ -1,5 +1,5 @@
 // The opening film (Jörg, 26 Oct 2026): Coro unfolds and winks, at the start of every session. A tap skips it;
-// when it ends it fades away to the start page. (Jörg will replace the clip with a faster one.)
+// when it ends it fades away to the start page. (Jörg's quicker clip, 4.4 seconds, 26 Oct 2026)
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
@@ -25,7 +25,7 @@ export default function Splash({ onDone }) {
     const subs = [];
     try { subs.push(player.addListener('playToEnd', finish)); } catch (e) {}
     try { subs.push(player.addListener('statusChange', ({ status }) => { if (status === 'readyToPlay') { try { player.play(); } catch (e) {} } if (status === 'error') finish(); })); } catch (e) {}
-    const safety = setTimeout(finish, 12000); // never stuck on it
+    const safety = setTimeout(finish, 7000); // never stuck on it
     return () => { clearTimeout(safety); subs.forEach((x) => { try { x.remove(); } catch (e) {} }); try { player.pause(); } catch (e) {} };
   }, [player]);
   if (gone) return null;
