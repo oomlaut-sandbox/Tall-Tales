@@ -20,7 +20,7 @@ import { MAX_CLASS, PROFILE_COLORS, addClass, addProfile, canAdd, feltFor, getPr
 import { IDLE, slotStyle } from '../components/Chrome';
 const SELECT_ICON = require('../../assets/icon-select.png');
 const TRASH_ICON = require('../../assets/icon-trash.png');
-const CLASS_BLUE = '#4a72a8'; // a class folder: a blue square for now (Jörg will send its icon)
+const CLASS_FOLDER = require('../../assets/class-folder.png'); // Jörg's blue paper folder (900 × 880); the class's name goes on its white tab label
 
 const AGES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
@@ -217,7 +217,12 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
               {classes.map((c) => (
                 <Pressable key={c.id} onPress={() => (editing ? setClassForm({ id: c.id, name: c.name }) : setOpenCls(c.id))} accessibilityRole="button" accessibilityLabel={c.name || t('Classroom')} style={[styles.cell, { width: cellW }]}>
                   <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}>
-                    <View style={{ width: Math.round(side * 0.72), height: Math.round(side * 0.72), backgroundColor: CLASS_BLUE, borderRadius: 6, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.45, shadowRadius: 6 }} />
+                    {(() => { const fw = Math.round(side * 0.92), fh = Math.round(fw * 880 / 900); return (
+                      <View style={{ width: fw, height: fh, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.45, shadowRadius: 6 }}>
+                        <Image source={CLASS_FOLDER} style={{ width: fw, height: fh }} resizeMode="contain" />
+                        {/* the class's name, small, on the folder's white tab label */}
+                        <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} style={{ position: 'absolute', left: fw * 0.065, width: fw * 0.23, top: fh * 0.012, height: fh * 0.052, fontFamily: fonts.uiSemiBold, fontSize: Math.max(7, fh * 0.04), lineHeight: fh * 0.052, color: '#444' }}>{c.name}</Text>
+                      </View>); })()}
                   </View>
                   <Text numberOfLines={1} style={styles.name}>{c.name || t('Classroom')}</Text>
                   <Text numberOfLines={1} style={styles.age}>{inClass(c.id).length === 1 ? t('1 student') : t('{n} students', { n: inClass(c.id).length })}</Text>
