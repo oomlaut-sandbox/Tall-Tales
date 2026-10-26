@@ -322,11 +322,6 @@ export function Library({ onReadingOptions, onGarden, narrator, toast, onProfile
           if (onGarden && gardenPull.current && o.y + l.height - c.height > 70) { gardenPull.current = false; onGarden(); }
           else gardenPull.current = false;
         }}>
-        {/* My Notebook: always the first book on the shelf (notes, drawings and reading badges) */}
-        {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
-        {/* beside the notebook: who is reading (their felt character and name); tap it for Profiles */}
-        {!selecting && onNotebook && onProfiles ? <WhoReads onPress={onProfiles} /> : null}
-        {!selecting && onNotebook ? <View style={{ width: '100%' }} /> : null}{/* the notebook has the top row to itself */}
         {/* Let's Create! first: Coro is a book maker first (Jörg, 25 Oct 2026) */}
         {/* Let's make a book: its title and the blue book together in a rounded black glass box */}
         {!selecting && controls.create ? (
@@ -353,11 +348,16 @@ export function Library({ onReadingOptions, onGarden, narrator, toast, onProfile
             <Text style={styles.restore}>{t('Show removed books ({n})', { n: removedCount })}</Text>
           </Pressable>
         ) : null}
-        {/* My Folder starts its own row: the folder (the size of a book), a pencil beside it, then a mug of hot chocolate */}
         {/* (a much bigger space after My Books: Jörg, 25 Oct 2026) */}
         {/* Reading Options under the books, in black glass (Jörg, 26 Oct 2026) */}
         {!selecting && onReadingOptions ? <ReadingOptionsSection {...onReadingOptions} style={{ width: '100%', marginTop: 40 }} /> : null}
         {!selecting ? <View style={{ width: '100%', height: onReadingOptions ? 40 : 70 }} /> : null}
+        {/* My Notebook (and who is reading), just above My Folder: Let's make a book and My Books come first (Jörg, 26 Oct 2026) */}
+        {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
+        {/* beside the notebook: who is reading (their felt character and name); tap it for Profiles */}
+        {!selecting && onNotebook && onProfiles ? <WhoReads onPress={onProfiles} /> : null}
+        {!selecting && onNotebook ? <View style={{ width: '100%', height: 18 }} /> : null}{/* the notebook has its row to itself */}
+        {/* My Folder starts its own row: the folder (the size of a book), a pencil beside it, then a mug of hot chocolate */}
         {!selecting ? (() => {
           const n = COLS(winW), colW = ((winW - 40) * TILE[n]) / 100, gap = ((winW - 40) * ((100 - n * TILE[n]) / (n - 1))) / 100;
           return (
@@ -712,7 +712,7 @@ const styles = StyleSheet.create({
   grid: { padding: 20, paddingTop: 42, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
   tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.72, shadowRadius: 13, elevation: 14 }, // a deep shadow, so the books stand up off the felt
   cardClose: { fontFamily: fonts.ui, fontSize: 14, color: '#bdbdbd', paddingVertical: 4 }, // under the Book Store card
-  makeBox: { ...sectionBox, width: '100%', paddingHorizontal: MAKE_BOX_PAD, paddingTop: 18, paddingBottom: 40, gap: 18, marginTop: 30, alignItems: 'center' }, // Let's make a book, in black glass
+  makeBox: { ...sectionBox, width: '100%', paddingHorizontal: MAKE_BOX_PAD, paddingTop: 18, paddingBottom: 40, gap: 18, marginTop: 4, alignItems: 'center' }, // Let's make a book, in black glass
   makePage: { position: 'absolute', top: 0, backgroundColor: '#fbfaf7', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.6, shadowRadius: 12 },
   makeCover: { backgroundColor: MAKE_BLUE, shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.6, shadowRadius: 12 },
   makeInside: { backgroundColor: MAKE_BLUE },

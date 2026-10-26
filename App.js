@@ -362,7 +362,11 @@ function Root() {
                 setTimeout(() => libFade.setValue(1), 160);
               });
             }}
-            notebookHidden={!!flyer && !flyer.landed} onNotebookRect={(r) => setFlyer((f) => (f && !f.to && !f.hold && r ? { ...f, to: r } : f))}
+            notebookHidden={!!flyer && !flyer.landed} onNotebookRect={(r) => {
+              // the notebook sits further down the shelf now: if its spot is off the screen, no flight, My Library just fades in
+              if (r && r.y + r.h > height - barH) { setFlyer((f) => (f && !f.to && !f.hold ? null : f)); Animated.timing(libFade, { toValue: 1, duration: 250, useNativeDriver: true }).start(); return; }
+              setFlyer((f) => (f && !f.to && !f.hold && r ? { ...f, to: r } : f));
+            }}
             onCreate={newBook} onEdit={openPublisher} onPlaylists={() => go('playlists')}
             removedCount={removed.length} onRestore={() => setRemovedSaved([])}
             onShare={(s) => shareInvite(s.title)} // an invitation to the app, not the book
