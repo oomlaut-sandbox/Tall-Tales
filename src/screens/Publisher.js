@@ -79,6 +79,7 @@ function AboutPage({ tr, insets, onNext, onSkip }) {
 import { strokesToImage } from '../components/Strokes';
 
 const MAX_PX = 1600;
+const TOOLBOX_H = 92; // the cover editor's black glass tools box (two rows of buttons)
 const MAX_PAGES = 40; // a soft limit, so books stay quick to open, print and share
 const FULL = 'Books can have up to {n} pages. That’s a long story!'; // shown with tr(FULL, { n: MAX_PAGES })
 
@@ -772,8 +773,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               onLayout={(e) => setCoverArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
             {(() => {
               // room for the tools under the square (hidden while typing) and, upright, for Done at the bottom
-              const toolsH = kbUp ? 60 : coverTitling ? 100 + (coverTool ? 96 : 0) : 0;
-              const doneH = kbUp || winW > winH ? 0 : 138;
+              // (the square keeps one fixed size whatever is showing: room is always kept for the tools box and Done)
+              const toolsH = kbUp ? 60 : TOOLBOX_H + 10;
+              const doneH = kbUp || winW > winH ? 0 : 50;
               const fitH = coverArea ? coverArea.h - toolsH - doneH - 8 : winW;
               const W = Math.max(120, Math.floor(Math.min(winW - insets.left - insets.right - 2 * GAP, fitH)));
               coverSize.current = W;
@@ -831,72 +833,62 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 </Pressable>
               </View>
             ) : null}
-            {coverTitling && cover && cover.title && !kbUp ? (
-              <View style={{ width: coverSize.current }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <Pressable onPress={() => (coverSel === 'byline' && cover.title.bx != null ? setCoverTitle({ bs: Math.max(0.025, (cover.title.bs || cover.title.size * 0.42) - 0.008) }) : setCoverTitle({ size: Math.max(0.05, cover.title.size - 0.015) }))} style={styles.sizeBtn} accessibilityLabel={tr('Smaller title')}><Text style={[styles.donePillText, { fontSize: 14 }]}>A</Text></Pressable>
-                  <Pressable onPress={() => (coverSel === 'byline' && cover.title.bx != null ? setCoverTitle({ bs: Math.min(0.12, (cover.title.bs || cover.title.size * 0.42) + 0.008) }) : setCoverTitle({ size: Math.min(0.24, cover.title.size + 0.015) }))} style={styles.sizeBtn} accessibilityLabel={tr('Bigger title')}><Text style={[styles.donePillText, { fontSize: 22 }]}>A</Text></Pressable>
-                  {/* colour: a solid circle in the title's colour (yellow to start with) */}
-                  <Pressable onPress={() => { setCoverTool((x) => (x === 'color' ? null : 'color')); }} style={[styles.sizeBtn, coverTool === 'color' && styles.toolOn]} accessibilityLabel={tr('Title colour')}>
-                    <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: (coverSel === 'byline' ? bylineLook(cover.title).color : cover.title.color) || '#ffffff', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.85)' }} />
-                  </Pressable>
-                  {/* font */}
-                  <Pressable onPress={() => { setCoverTool((x) => (x === 'font' ? null : 'font')); }} style={[styles.sizeBtn, coverTool === 'font' && styles.toolOn]} accessibilityLabel={tr('Title font')}>
-                    <Text style={[styles.donePillText, { fontSize: 16, fontFamily: bookFont(cover.title.font || 'serif').bold || bookFont(cover.title.font || 'serif').family }]}>Aa</Text>
-                  </Pressable>
-                </View>
-                  {/* the author / illustrator on the cover too: only if they want it (and gave a name); on the right edge, apart from the tools */}
-                  {creditsLine(draft.writer, draft.artist) ? (
-                    <Pressable onPress={() => { const T = cover.title; if (T.byline) { setCoverTitle({ byline: '', bx: null, by: null }); setCoverSel('title'); } else { setCoverTitle({ byline: creditsLine(draft.writer, draft.artist).replace(/\.$/, ''), bx: 0.5, by: 0.9, bs: T.size * 0.42 }); setCoverSel('byline'); } }}
-                      style={[styles.authorBtn, cover.title.byline ? { backgroundColor: colors.green } : null]} accessibilityRole="button" accessibilityState={{ selected: !!cover.title.byline }}>
-                      <Text style={[styles.donePillText, { fontSize: 14 }]}>{tr('Author')}</Text>
+            {/* all the title tools in one black glass box under the cover (Jörg, 26 Oct 2026) */}
+            {!kbUp ? (
+              <View style={[styles.toolBox, { width: coverSize.current }]}>
+              {coverTitling && cover && cover.title ? (() => {
+                const T = cover.title; const by = coverSel === 'byline' && T.bx != null;
+                const curColor = (by ? bylineLook(T).color : T.color) || '#ffffff';
+                const w = (by ? T.bw : T.w) || 1; const setW = (v) => setCoverTitle(by ? { bw: v } : { w: v });
+                const a = (by ? T.balign || T.align : T.align) || 'center'; const nextA = { left: 'center', center: 'right', right: 'left' }[a];
+                return (
+                  <>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <Pressable onPress={() => (by ? setCoverTitle({ bs: Math.max(0.025, (T.bs || T.size * 0.42) - 0.008) }) : setCoverTitle({ size: Math.max(0.05, T.size - 0.015) }))} style={styles.toolBtn} accessibilityLabel={tr('Smaller title')}><Text style={[styles.donePillText, { fontSize: 13 }]}>A</Text></Pressable>
+                    <Pressable onPress={() => (by ? setCoverTitle({ bs: Math.min(0.12, (T.bs || T.size * 0.42) + 0.008) }) : setCoverTitle({ size: Math.min(0.24, T.size + 0.015) }))} style={styles.toolBtn} accessibilityLabel={tr('Bigger title')}><Text style={[styles.donePillText, { fontSize: 20 }]}>A</Text></Pressable>
+                    {/* text colour: one button; the colours open in their own box */}
+                    <Pressable onPress={() => setCoverTool('color')} style={styles.toolBtn} accessibilityRole="button" accessibilityLabel={tr('Text Color')}>
+                      <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: curColor, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.85)' }} />
                     </Pressable>
-                  ) : null}
-                </View>
-                {/* the second row: which words the tools change (title or author), the box's width, and left / centre / right */}
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10 }}>
-                  {cover.title.byline && cover.title.bx != null ? [['title', tr('Title')], ['byline', tr('Author')]].map(([k, label]) => (
-                    <Pressable key={k} onPress={() => setCoverSel(k)} accessibilityRole="radio" accessibilityState={{ selected: coverSel === k }} style={[styles.fontChip, { height: 34 }, coverSel === k && { backgroundColor: colors.green }]}>
-                      <Text style={[styles.donePillText, { fontSize: 13 }]}>{label}</Text>
+                    <Pressable onPress={() => setCoverTool('font')} style={styles.toolBtn} accessibilityRole="button" accessibilityLabel={tr('Title font')}>
+                      <Text style={[styles.donePillText, { fontSize: 15, fontFamily: bookFont((by ? bylineLook(T).font : T.font) || 'serif').bold || bookFont((by ? bylineLook(T).font : T.font) || 'serif').family }]}>Aa</Text>
                     </Pressable>
-                  )) : null}
-                  <View style={{ flex: 1 }} />
-                  {/* the text box: narrower or wider (the words wrap inside it) */}
-                  {(() => { const by = coverSel === 'byline' && cover.title.bx != null; const cur = (by ? cover.title.bw : cover.title.w) || 1; const set = (v) => setCoverTitle(by ? { bw: v } : { w: v }); return (
-                    <>
-                      <Pressable onPress={() => set(Math.max(0.3, Math.round((cur - 0.1) * 100) / 100))} style={[styles.sizeBtn, { width: 40, height: 34 }]} accessibilityLabel={tr('Narrower text box')}>
-                        <Text style={[styles.donePillText, { fontSize: 14 }]}>{'›‹'}</Text>
+                    <View style={{ flex: 1 }} />
+                    {/* the author / illustrator on the cover too: only if they want it (and gave a name) */}
+                    {creditsLine(draft.writer, draft.artist) ? (
+                      <Pressable onPress={() => { if (T.byline) { setCoverTitle({ byline: '', bx: null, by: null }); setCoverSel('title'); } else { setCoverTitle({ byline: creditsLine(draft.writer, draft.artist).replace(/\.$/, ''), bx: 0.5, by: 0.9, bs: T.size * 0.42 }); setCoverSel('byline'); } }}
+                        style={[styles.toolChip, T.byline ? { backgroundColor: colors.green } : null]} accessibilityRole="button" accessibilityState={{ selected: !!T.byline }}>
+                        <Text numberOfLines={1} style={[styles.donePillText, { fontSize: 13 }]}>{tr('Add author')}</Text>
                       </Pressable>
-                      <Pressable onPress={() => set(Math.min(1, Math.round((cur + 0.1) * 100) / 100))} style={[styles.sizeBtn, { width: 40, height: 34 }]} accessibilityLabel={tr('Wider text box')}>
-                        <Text style={[styles.donePillText, { fontSize: 14 }]}>{'‹›'}</Text>
+                    ) : null}
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8 }}>
+                    {/* which words the tools change: the title or the author line */}
+                    {T.byline && T.bx != null ? [['title', tr('Title')], ['byline', tr('Author')]].map(([k, label]) => (
+                      <Pressable key={k} onPress={() => setCoverSel(k)} accessibilityRole="radio" accessibilityState={{ selected: coverSel === k }} style={[styles.toolChip, coverSel === k && { backgroundColor: colors.green }]}>
+                        <Text numberOfLines={1} style={[styles.donePillText, { fontSize: 13 }]}>{label}</Text>
                       </Pressable>
-                    </>
-                  ); })()}
-                  {/* left, centre, right: drawn as three short lines */}
-                  {(() => { const by = coverSel === 'byline' && cover.title.bx != null; const a = (by ? cover.title.balign || cover.title.align : cover.title.align) || 'center'; const next = { left: 'center', center: 'right', right: 'left' }[a]; return (
-                    <Pressable onPress={() => setCoverTitle(by ? { balign: next } : { align: next })} style={[styles.sizeBtn, { width: 40, height: 34, alignItems: a === 'left' ? 'flex-start' : a === 'right' ? 'flex-end' : 'center', paddingHorizontal: 10 }]} accessibilityLabel={tr('Text alignment')}>
+                    )) : null}
+                    <View style={{ flex: 1 }} />
+                    {/* the text box: narrower or wider (the words wrap inside it), then left / centre / right */}
+                    <Pressable onPress={() => setW(Math.max(0.3, Math.round((w - 0.1) * 100) / 100))} style={styles.toolBtn} accessibilityLabel={tr('Narrower text box')}><Text style={[styles.donePillText, { fontSize: 13 }]}>{'›‹'}</Text></Pressable>
+                    <Pressable onPress={() => setW(Math.min(1, Math.round((w + 0.1) * 100) / 100))} style={styles.toolBtn} accessibilityLabel={tr('Wider text box')}><Text style={[styles.donePillText, { fontSize: 13 }]}>{'‹›'}</Text></Pressable>
+                    <Pressable onPress={() => setCoverTitle(by ? { balign: nextA } : { align: nextA })} style={[styles.toolBtn, { alignItems: a === 'left' ? 'flex-start' : a === 'right' ? 'flex-end' : 'center', paddingHorizontal: 10 }]} accessibilityLabel={tr('Text alignment')}>
                       {[16, 10, 14].map((len, i) => <View key={i} style={{ width: len, height: 2, borderRadius: 1, backgroundColor: colors.white, marginVertical: 1.5 }} />)}
                     </Pressable>
-                  ); })()}
+                  </View>
+                  </>
+                ); })() : (
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={[styles.donePillText, { fontSize: 14, color: '#bdbdbd', fontFamily: fonts.ui, textAlign: 'center' }]}>{tr('The title and author tools appear here once your cover has a title.')}</Text>
                 </View>
-                {coverTool === 'color' ? (
-                  <View style={styles.swatches}>
-                    {COVER_COLORS.map(([hex, name]) => (
-                      <Pressable key={hex} onPress={() => setCoverTitle(coverSel === 'byline' && cover.title.bx != null ? { bColor: hex } : { color: hex })} accessibilityLabel={name}
-                        style={[styles.swatch, { backgroundColor: hex }, ((coverSel === 'byline' && cover.title.bx != null ? bylineLook(cover.title).color : cover.title.color) || '#ffffff') === hex && styles.swatchOn]} />
-                    ))}
-                  </View>
-                ) : null}
-                {coverTool === 'font' ? (
-                  <View style={[styles.swatches, { gap: 6 }]}>
-                    {Object.entries(BOOK_FONTS).map(([k, f]) => (
-                      <Pressable key={k} onPress={() => setCoverTitle(coverSel === 'byline' && cover.title.bx != null ? { bFont: k } : { font: k })} style={[styles.fontChip, ((coverSel === 'byline' && cover.title.bx != null ? bylineLook(cover.title).font : cover.title.font) || 'serif') === k && { backgroundColor: colors.green }]}>
-                        <Text style={[styles.donePillText, { fontFamily: f.bold || f.family, fontWeight: f.bold ? undefined : '700', fontSize: 15 }]}>{tr(f.label)}</Text>
-                      </Pressable>
-                    ))}
-                  </View>
-                ) : null}
+              )}
+              </View>
+            ) : null}
+            {/* Done (or Start writing) right under the box, lined up with the cover's right edge */}
+            {!kbUp && winW <= winH ? (
+              <View style={{ width: coverSize.current, alignItems: 'flex-end', marginTop: 10 }}>
+                <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { marginBottom: 0 }]}><Text style={styles.donePillText}>{startMode ? tr('Start writing') : tr('Done')}</Text></Pressable>
               </View>
             ) : null}
             </View>
@@ -906,7 +898,30 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           {coverTitling && coverTip && !kbUp ? <Toast message={tr('Tap the title or the author to type. Drag them anywhere on the cover.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 74 }} onDismiss={() => setCoverTip(false)} /> : null}
           {/* Done: bottom right, lined up with the cover's right edge */}
           {/* a new book: 'Start writing' goes on to page 1 (nobody is stuck on the cover) */}
-          {!kbUp ? <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { position: 'absolute', right: GAP + (wide ? 0 : insets.right), bottom: GAP + 40, marginBottom: 0 }]}>{/* as far from the bar as from the right edge */}<Text style={styles.donePillText}>{startMode ? tr('Start writing') : tr('Done')}</Text></Pressable> : null}
+          {!kbUp && winW > winH ? <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { position: 'absolute', right: GAP + (wide ? 0 : insets.right), bottom: GAP + 40, marginBottom: 0 }]}>{/* as far from the bar as from the right edge */}<Text style={styles.donePillText}>{startMode ? tr('Start writing') : tr('Done')}</Text></Pressable> : null}
+          {coverTool && cover && cover.title ? (() => {
+            const T = cover.title; const by = coverSel === 'byline' && T.bx != null;
+            const curColor = (by ? bylineLook(T).color : T.color) || '#ffffff';
+            const curFont = (by ? bylineLook(T).font : T.font) || 'serif';
+            return (
+              // Text Color (or the fonts): a black glass box of its own over the editor; tap outside or Done to close
+              <Pressable style={[StyleSheet.absoluteFill, styles.choiceBack, { zIndex: 70 }]} onPress={() => setCoverTool(null)}>
+                <Pressable onPress={() => {}} style={[styles.choice, { backgroundColor: 'rgba(0,0,0,0.88)', maxWidth: 380 }]}>
+                  <Text style={styles.choiceTitle}>{coverTool === 'color' ? tr('Text Color') : tr('Font')}</Text>
+                  <ScrollView style={{ maxHeight: winH * 0.5 }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', gap: coverTool === 'color' ? 10 : 8, justifyContent: 'center', paddingVertical: 6 }}>
+                    {coverTool === 'color' ? COVER_COLORS.map(([hex, name]) => (
+                      <Pressable key={hex} onPress={() => setCoverTitle(by ? { bColor: hex } : { color: hex })} accessibilityLabel={name} accessibilityState={{ selected: curColor === hex }}
+                        style={[styles.swatch, { width: 34, height: 34, borderRadius: 17, backgroundColor: hex }, curColor === hex && styles.swatchOn]} />
+                    )) : Object.entries(BOOK_FONTS).map(([k, f]) => (
+                      <Pressable key={k} onPress={() => setCoverTitle(by ? { bFont: k } : { font: k })} style={[styles.fontChip, curFont === k && { backgroundColor: colors.green }]}>
+                        <Text style={[styles.donePillText, { fontFamily: f.bold || f.family, fontWeight: f.bold ? undefined : '700', fontSize: 15 }]}>{tr(f.label)}</Text>
+                      </Pressable>
+                    ))}
+                  </ScrollView>
+                  <Pressable onPress={() => setCoverTool(null)} style={[styles.donePill, { alignSelf: 'flex-end', marginTop: 16, marginBottom: 0 }]} accessibilityRole="button"><Text style={styles.donePillText}>{tr('Done')}</Text></Pressable>
+                </Pressable>
+              </Pressable>
+            ); })() : null}
           {coverAsk ? (
             <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
               <View style={styles.choice}>
@@ -971,6 +986,9 @@ const styles = StyleSheet.create({
   editorTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 18 },
   coverSquare: { backgroundColor: '#7d7d7d', overflow: 'hidden', marginBottom: 14, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10 },
   toolOn: { backgroundColor: colors.green },
+  toolBox: { height: TOOLBOX_H, marginTop: 10, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.72)', paddingHorizontal: 10, paddingVertical: 8 }, // the black glass box
+  toolBtn: { width: 40, height: 34, borderRadius: 17, backgroundColor: '#4a4a4a', alignItems: 'center', justifyContent: 'center' },
+  toolChip: { height: 34, borderRadius: 17, paddingHorizontal: 12, backgroundColor: '#4a4a4a', alignItems: 'center', justifyContent: 'center', flexShrink: 1 },
   swatches: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', gap: 8, marginTop: 22 },
   swatch: { width: 30, height: 30, borderRadius: 15, borderWidth: 2, borderColor: 'rgba(255,255,255,0.35)' },
   swatchOn: { borderColor: colors.white, borderWidth: 3, transform: [{ scale: 1.12 }] },
