@@ -41,7 +41,7 @@ export default function StoryGuide({ visible, onClose, area, onIdeas }) {
                 {/* the last step points to the Idea Room for inspiration */}
                 {g.ideas ? (
                   <Text style={styles.body}>{tr('Need ideas or inspiration?')}{' '}
-                    {onIdeas ? <Text onPress={onIdeas} accessibilityRole="link" style={styles.link}>{tr('Visit the Ideas Room')}</Text> : tr('Visit the Ideas Room')}
+                    {onIdeas ? <Text onPress={onIdeas} accessibilityRole="link" style={styles.link}>{tr('Visit Ideas and Inspiration')}</Text> : tr('Visit Ideas and Inspiration')}
                   </Text>
                 ) : null}
               </View>
