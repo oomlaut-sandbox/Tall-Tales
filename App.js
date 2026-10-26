@@ -29,6 +29,7 @@ import CoverTest from './src/screens/CoverTest';
 import Help from './src/screens/Help';
 import Welcome from './src/screens/Welcome';
 import Intro from './src/screens/Intro';
+import Splash from './src/components/Splash';
 const INTRO_ON = true; // the new intro (Kid or Grown-up, Jörg 26 Oct 2026): on (Jörg, 26 Oct); shown once, on the first launch. The web preview shows it at #intro
 const WELCOME_ON = false; // the welcome intro: hidden from builds until it's finished (web preview #welcome still shows it)
 import IdeaRoom from './src/screens/IdeaRoom';
@@ -83,6 +84,7 @@ function Root() {
   const welcomeDone = () => { setWelcome(false); saveJSONFor('app', 'welcome', { done: Date.now() }); go('library'); };
   const [coverOpen, setCoverOpen] = useState(false); // the book's cover is shut each time the app opens
   // the intro: the notebook first asks "Are you a kid or a grown-up?", then that one's own short journey
+  const [splash, setSplash] = useState(!(Platform.OS === 'web' && typeof window !== 'undefined' && /nosplash|intro/.test(window.location.hash))); // the opening film, every session
   const [introAsk, setIntroAsk] = useState(false);
   const [introWho, setIntroWho] = useState(null);
   const [startKey, setStartKey] = useState(0);
@@ -491,6 +493,7 @@ function Root() {
           );
         })() : null}
         <ParentGate visible={profileGate} reason={t('Your profile is for grown-ups.')} onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
+        {splash ? <Splash onDone={() => setSplash(false)} /> : null}
         {introWho ? <Intro who={introWho} onBack={() => { setIntroWho(null); setCoverOpen(true); setStartKey((n) => n + 1); }} onDone={({ who, age, name }) => {
           // a kid's age goes into their parental controls; a grown-up's first profile is made with the name and age
           if (who === 'kid' && age != null) setControls({ ...controls, childAge: age });
