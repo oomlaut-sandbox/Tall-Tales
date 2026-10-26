@@ -676,6 +676,7 @@ const T = {
   "Red cloth": { de: "Rotes Leinen", fr: "Toile rouge", es: "Tela roja", ja: "あかい ぬの", ar: "قماش أحمر" },
   "Brown cloth": { de: "Braunes Leinen", fr: "Toile marron", es: "Tela marrón", ja: "ちゃいろの ぬの", ar: "قماش بني" },
   "Green cloth": { de: "Grünes Leinen", fr: "Toile verte", es: "Tela verde", ja: "みどりの ぬの", ar: "قماش أخضر" },
+  "Black cloth": { de: "Schwarzes Leinen", fr: "Toile noire", es: "Tela negra", ja: "くろい ぬの", ar: "قماش أسود" },
   'Visit the Ideas Room in Ideas and Support': { de: 'Besuche das Ideenzimmer unter Ideen und Hilfe', fr: 'Va dans la Salle des idées, dans Idées et aide', es: 'Visita la Sala de ideas en Ideas y ayuda', ja: '「アイデアと サポート」の アイデアのへやへ', ar: "زُر «غرفة الأفكار» في «الأفكار والدعم»" },
   'Visit the Ideas Room in Ideas and Support.': { de: 'Besuche das Ideenzimmer unter Ideen und Hilfe.', fr: 'Va dans la Salle des idées, dans Idées et aide.', es: 'Visita la Sala de ideas en Ideas y ayuda.', ja: '「アイデアと サポート」の アイデアのへやへ どうぞ。', ar: "زُر «غرفة الأفكار» في «الأفكار والدعم»." },
   'Skip': { de: 'Überspringen', fr: 'Passer', es: 'Saltar', ja: 'スキップ', ar: "تخطٍّ" },
