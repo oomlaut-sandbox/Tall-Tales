@@ -122,6 +122,14 @@ export function renameClass(id, name) {
   state = { ...state, classes: (state.classes || []).map((c) => (c.id === id ? { ...c, name: (name || '').trim() } : c)) };
   save(); emit();
 }
+// several class folders at once, with their students' profiles (Select on the bar, then the trash can)
+export function removeClasses(ids) {
+  const list = state.list.filter((p) => !ids.includes(p.cls));
+  const active = list.some((p) => p.id === state.active) ? state.active : (list[0] ? list[0].id : 'main');
+  state = { ...state, classes: (state.classes || []).filter((c) => !ids.includes(c.id)), list, active };
+  setScope(active);
+  save(); emit();
+}
 // an empty class folder can go
 export function removeClass(id) {
   if (inClass(id).length) return false;

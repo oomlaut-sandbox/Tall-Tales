@@ -16,7 +16,7 @@ import ParentGate from '../components/ParentGate';
 import { useT } from '../i18n';
 import { useControls, DEFAULT_CONTROLS } from '../controls';
 import { keepFile, liveUri, loadJSONFor, saveJSONFor } from '../storage';
-import { MAX_CLASS, PROFILE_COLORS, addClass, addProfile, canAdd, feltFor, getProfiles, inClass, onProfiles, removeClass, removeProfile, removeProfiles, renameClass, switchProfile, updateProfile } from '../profiles';
+import { MAX_CLASS, PROFILE_COLORS, removeClasses, addClass, addProfile, canAdd, feltFor, getProfiles, inClass, onProfiles, removeClass, removeProfile, removeProfiles, renameClass, switchProfile, updateProfile } from '../profiles';
 import { IDLE, slotStyle } from '../components/Chrome';
 const SELECT_ICON = require('../../assets/icon-select.png');
 const TRASH_ICON = require('../../assets/icon-trash.png');
@@ -181,7 +181,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
           <Burger u={u} onPress={openMenu} />
           <View style={{ flex: 1 }} />
           {/* Select: the circle with a tick, far right (like My Library), to delete several profiles at once */}
-          {!folders && shown.length && !form ? (
+          {(folders ? classes.length : shown.length) && !form ? (
             <Pressable onPress={() => setGate('select')} hitSlop={12} style={{ paddingVertical: 10, paddingHorizontal: 10 }} accessibilityRole="button" accessibilityLabel={t('Select')}>
               <Image source={SELECT_ICON} style={{ width: 29, height: 29, tintColor: colors.white }} resizeMode="contain" />
             </Pressable>
@@ -200,7 +200,8 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
               <Text style={styles.back}>{t('All classes')}</Text>
             </Pressable>
           ) : null}
-          <Text style={styles.p}>{folders
+          <Text style={styles.p}>{folders && selecting ? (picked.length ? t('{n} selected', { n: picked.length }) : t('Tap classes to select them.'))
+            : folders
             ? t('Each class has its own folder, with up to {n} students. Tap a class to open it.', { n: MAX_CLASS })
             : selecting ? (picked.length ? t('{n} selected', { n: picked.length }) : t('Tap profiles to select them.'))
             : shown.length
@@ -220,7 +221,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
             // the class folders: blue squares for now, with the class's name and how many students
             <View style={styles.grid}>
               {classes.map((c) => (
-                <Pressable key={c.id} onPress={() => (editing ? setClassForm({ id: c.id, name: c.name }) : setOpenCls(c.id))} accessibilityRole="button" accessibilityLabel={c.name || t('Classroom')} style={[styles.cell, { width: cellW }]}>
+                <Pressable key={c.id} onPress={() => (selecting ? togglePick(c.id) : editing ? setClassForm({ id: c.id, name: c.name }) : setOpenCls(c.id))} accessibilityRole="button" accessibilityLabel={c.name || t('Classroom')} style={[styles.cell, { width: cellW }]}>
                   <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}>
                     {(() => { const fw = Math.round(side * 0.92), fh = Math.round(fw * 880 / 900); return (
                       <View style={{ width: fw, height: fh, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.45, shadowRadius: 6 }}>
@@ -229,11 +230,12 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
                         <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} style={{ position: 'absolute', left: fw * 0.065, width: fw * 0.23, top: fh * 0.012, height: fh * 0.052, fontFamily: fonts.uiSemiBold, fontSize: Math.max(7, fh * 0.04), lineHeight: fh * 0.052, color: '#444' }}>{c.name}</Text>
                       </View>); })()}
                   </View>
+                  {selecting ? <View style={[styles.tick, { position: 'absolute', top: 8, right: 8 }, picked.includes(c.id) && styles.tickOn]}>{picked.includes(c.id) ? <View style={styles.tickMark} /> : null}</View> : null}
                   <Text numberOfLines={1} style={styles.name}>{c.name || t('Classroom')}</Text>
                   <Text numberOfLines={1} style={styles.age}>{inClass(c.id).length === 1 ? t('1 student') : t('{n} students', { n: inClass(c.id).length })}</Text>
                 </Pressable>
               ))}
-              <Pressable onPress={() => setGate('class')} style={[styles.cell, { width: cellW }]} accessibilityRole="button" accessibilityLabel={t('Add a class')}>
+              {selecting ? null : <Pressable onPress={() => setGate('class')} style={[styles.cell, { width: cellW }]} accessibilityRole="button" accessibilityLabel={t('Add a class')}>
                 <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}>
                   <View style={[styles.addTile, { width: Math.round(side * 0.72), height: Math.round(side * 0.72), borderRadius: 6 }]}>
                     <View style={{ position: 'absolute', width: side * 0.2, height: 2, backgroundColor: '#aaa' }} />
@@ -242,7 +244,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
                 </View>
                 <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} style={styles.name}>{t('Add a class')}</Text>
                 <Text style={styles.age}> </Text>
-              </Pressable>
+              </Pressable>}
             </View>
           ) : view === 'list' ? (
             // the list: everyone's name, A to Z
@@ -385,9 +387,9 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
         <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setSureMany(false)}>
           <View style={styles.sureBack}>
             <View style={styles.sureBox}>
-              <Text style={styles.sureText}>{picked.length === 1 ? t('Remove 1 profile? Their notebook and badges stay on this phone, but nobody will see them.') : t('Remove {n} profiles? Their notebooks and badges stay on this phone, but nobody will see them.', { n: picked.length })}</Text>
+              <Text style={styles.sureText}>{folders ? (picked.length === 1 ? t('Remove 1 class? Its students’ profiles go too. Their notebooks and badges stay on this phone, but nobody will see them.') : t('Remove {n} classes? Their students’ profiles go too. Their notebooks and badges stay on this phone, but nobody will see them.', { n: picked.length })) : picked.length === 1 ? t('Remove 1 profile? Their notebook and badges stay on this phone, but nobody will see them.') : t('Remove {n} profiles? Their notebooks and badges stay on this phone, but nobody will see them.', { n: picked.length })}</Text>
               <View style={{ flexDirection: 'row', gap: 10, marginTop: 26 }}>
-                <Pressable onPress={() => { setSureMany(false); removeProfiles(picked); stopSelect(); }} style={[styles.pill, styles.pillFit, { backgroundColor: '#b3261e', marginLeft: 'auto' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Remove')}</Text></Pressable>
+                <Pressable onPress={() => { setSureMany(false); if (folders) removeClasses(picked); else removeProfiles(picked); stopSelect(); }} style={[styles.pill, styles.pillFit, { backgroundColor: '#b3261e', marginLeft: 'auto' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Remove')}</Text></Pressable>
                 <Pressable onPress={() => setSureMany(false)} style={[styles.pill, styles.pillFit, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Keep')}</Text></Pressable>
               </View>
             </View>
