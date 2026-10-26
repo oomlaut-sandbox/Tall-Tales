@@ -205,7 +205,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="support" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Support')}</Text></View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="support" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Help')}</Text></View>
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
         <View style={styles.col}>

@@ -41,7 +41,7 @@ export default function About({ u, openMenu, onSecret, onBack }) {
         {onBack ? (
           <Pressable onPress={onBack} hitSlop={10} accessibilityRole="button" style={styles.backRow}>
             <View style={styles.backCircle}><View style={styles.backChevron} /></View>
-            <Text style={styles.back}>{t('Back to Support')}</Text>
+            <Text style={styles.back}>{t('Back to Help')}</Text>
           </Pressable>
         ) : null}
         {/* the store owner's way in: hold the version line for five seconds (nothing happens on a tap) */}
