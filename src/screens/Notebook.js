@@ -1322,7 +1322,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     return (
       <View style={[styles.sheet, { width: w, paddingBottom: insets.bottom + 18 }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <View accessibilityLabel={t('The colour you are drawing with')}>{swatch(pen, t('The colour you are drawing with'), 40, () => {}, false)}</View>
+          <View accessibilityLabel={t('The colour you are drawing with')}>{swatch(pen, t('The colour you are drawing with'), 80, () => {}, false)}</View>{/* twice the size (Jörg, 26 Oct 2026) */}
           <Text style={[styles.editorTitle, { flex: 1 }]}>{t('Colours')}</Text>
           <Pressable onPress={() => setMore(false)} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Close')} style={styles.plusBtn}>
             <View style={{ position: 'absolute', width: 20, height: 2.6, borderRadius: 1.3, backgroundColor: colors.white, transform: [{ rotate: '45deg' }] }} />
