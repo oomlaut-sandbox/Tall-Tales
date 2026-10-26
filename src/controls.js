@@ -3,6 +3,10 @@
 // Kept on the phone. Every screen reads them with useControls().
 import { createContext, useContext } from 'react';
 
+// The Book Store is kept but switched off for now (Jörg, 25 Oct 2026): Coro is a book maker first. While this is
+// false the store isn't shown anywhere (start page, menu, settings, help) and can't be reached.
+export const STORE_ON = false;
+
 export const DEFAULT_CONTROLS = {
   store: true,      // the Book Store (menu, start page, buying)
   notebook: true,   // My Notebook in My Library

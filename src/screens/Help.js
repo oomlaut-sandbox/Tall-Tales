@@ -2,6 +2,7 @@
 // (A short explainer video will live at the top of this page later.)
 import { TitleIcon } from '../titleIcons';
 import { HEADING_ICONS } from '../headingIcons';
+import { STORE_ON } from '../controls';
 import React, { useMemo, useRef, useState } from 'react';
 import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,10 +17,10 @@ const BAND_FELT = require('../../assets/band-profile.jpg'); // the yellow-orange
 const SEARCH_FELT = require('../../assets/search-felt.png'); // Jörg's grey stitched felt strip, cut out with a shadow
 
 // Each topic: a title, the section it belongs to, and its steps or paragraphs.
-export const HELP = [
+const ALL_HELP = [
   { section: 'Getting started', title: 'Opening the app', text: [
     'When the app opens you’ll see your leather notebook on the felt. Tap it, or swipe it up, to open it.',
-    'Inside are two choices: My Library (your books) and Book Store (new books). Tap one to go there.',
+    'Inside are two choices: Make a book and Read a book (My Library). Tap one to go there.',
     'The menu button (three lines) in the bottom bar takes you anywhere in the app.',
   ] },
   { section: 'Getting started', title: 'Profiles for each child', text: [
@@ -128,17 +129,17 @@ export const HELP = [
     'Badges you haven’t earned yet are grey. Tap any badge to see how to earn it.',
   ] },
   { section: 'Books', title: 'My Library', text: [
-    'All your books are here: the books that come with the app, books from the Book Store, and books you made.',
+    'All your books are here: the books you made, then the books that come with the app.',
     'Tap Select to choose books to share or delete. Books that came with the app can be brought back with “Show removed books”.',
   ] },
   { section: 'Books', title: 'My Folder and the corkboard', text: [
     'My Folder is in My Library, under your books. It holds a note from us, the Abc sheet (tap a letter to hear it) and sheets other families send you.',
     'The corkboard at the very bottom of My Library is for sticky notes and photos. Tap the pin to add one, and tap a note or photo to see it big or take it down.',
   ] },
-  { section: 'Books', title: 'The Book Store', text: [
+  { section: 'Books', title: 'The Book Store', store: true, text: [
     'The Book Store has new books to discover. Tap a cover to see what it’s about, then Read now.',
   ] },
-  { section: 'Books', title: 'Membership and buying books', text: [
+  { section: 'Books', title: 'Membership and buying books', store: true, text: [
     'Some books are free. The membership unlocks every book in the Book Store, and each new one as it arrives: $4.99 a month or $39.99 a year, and the first 7 days are free.',
     'Some books can also be bought on their own, to keep, for $2.99. Members can read those too.',
     'Buying is for grown-ups: the app asks a grown-up question first, and payment goes through your Apple ID. Cancel the membership any time in your App Store account settings. On a new phone, use Restore Purchases on the membership screen.',
@@ -146,7 +147,7 @@ export const HELP = [
   { section: 'Grown-ups', title: 'Settings and parental controls', text: [
     'Settings is the last item in the menu. It always asks the grown-up question first.',
     'Language: choose English, Deutsch, Français, Español or 日本語 for the app. Members can also read books in a different language from the app’s. The languages are also listed at the top of the start page: tap one to switch.',
-    'Parental controls: choose exactly what your child can see and do. Hide the Book Store, My Notebook, Make a Book or Ideas and Support; switch off recording, sharing and printing; keep the language fixed; and make every book play one way (for example, always Page by Page).',
+    'Parental controls: choose exactly what your child can see and do. Hide My Notebook, Make a Book or Ideas and Support; switch off recording, sharing and printing; keep the language fixed; and make every book play one way (for example, always Page by Page).',
     'Quick and Safe Kid is the recommended setup for a child reading alone: only My Library and My Notebook, every book read aloud a page at a time, and nothing to buy, share, print, record or change.',
     'Your child’s age: every book has an age rating, and books rated for older children are hidden.',
     'Lock everything leaves only My Library and its books, read the way you chose. Unlock everything brings it all back.',
@@ -156,10 +157,12 @@ export const HELP = [
   { section: 'Grown-ups', title: 'The grown-up check', text: [
     'Some things, like taking photos, printing, sharing and deleting, first ask a quick question only a grown-up can answer.',
   ] },
-  { section: 'Grown-ups', title: 'Sending us your book', text: [
+  { section: 'Grown-ups', title: 'Sending us your book', store: true, text: [
     'Authors and illustrators young and old can send their books to the Coro Book Store. Visit oomlaut.com for more information.',
   ] },
 ];
+// the Book Store's topics only while the store is on (see STORE_ON)
+export const HELP = ALL_HELP.filter((h) => STORE_ON || !h.store);
 
 const IDEAS_FELT = require('../../assets/ideas-felt.png');
 

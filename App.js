@@ -38,7 +38,7 @@ import { FREE_BOOKS } from './src/prices';
 import TapePlayer from './src/components/TapePlayer';
 import './src/myMusic'; // the family's own music joins the list at start
 import { LangContext, deviceLang, translate } from './src/i18n';
-import { ControlsContext, DEFAULT_CONTROLS } from './src/controls';
+import { ControlsContext, DEFAULT_CONTROLS, STORE_ON } from './src/controls';
 import Notebook, { NOTEBOOK_COVER, R_EDGE, R_SPINE } from './src/screens/Notebook';
 import { onNewBadge } from './src/badges';
 import { SHOWN_BOOKS, STORIES, localizeStory } from './src/story';
@@ -191,7 +191,7 @@ function Root() {
   // (anything the parental controls hide can't be reached either)
   const go = (s) => {
     if (s !== 'reader') setQueue(null); // leaving the reader ends a playlist
-    if ((s === 'store' && !controls.store) || (s === 'notebook' && !controls.notebook) || ((s === 'help' || s === 'about' || s === 'ideas') && !controls.help)) s = 'library';
+    if ((s === 'store' && (!STORE_ON || !controls.store)) || (s === 'notebook' && !controls.notebook) || ((s === 'help' || s === 'about' || s === 'ideas') && !controls.help)) s = 'library';
     stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen(s);
   };
   // the home button on every black bar: back to My Library
@@ -304,7 +304,7 @@ function Root() {
       <SafeAreaInsetsContext.Provider value={screenInsets}>
       <LookContext.Provider value={look}>
       <LangContext.Provider value={{ lang, setLang }}>
-      <ControlsContext.Provider value={controls}>
+      <ControlsContext.Provider value={STORE_ON ? controls : { ...controls, store: false }}>{/* (the Book Store is off for now: see STORE_ON) */}
       <View style={[styles.app, { width: W }]}>
         {/* the one felt underneath everything, locked to the screen */}
         <DeskFelt spot="root" overlay />
@@ -483,7 +483,7 @@ function Root() {
             {/* Make a Book first: Coro is a book maker first (Jörg, 25 Oct 2026) */}
             {controls.create ? <Option glyph={<PlusIcon />} title={t('Make a Book')} sub={t('Your pictures, your words')} onPress={newBook} /> : null}
             <Option glyph={<HomeIcon size={MENU_ICON + 2} color={colors.white} />} title={t('My Library')} sub={t('Find and read your favorite books')} onPress={() => go('library')} />
-            {controls.store ? <Option glyph={<LibraryIcon size={MENU_ICON} />} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => go('store')} /> : null}
+            {STORE_ON && controls.store ? <Option glyph={<LibraryIcon size={MENU_ICON} />} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => go('store')} /> : null}
             {controls.playback && !controls.playMode ? <Option glyph={<PlayGlyph />} title={t('Reading Options')} sub={t('Modes, voices, fonts and sounds')} onPress={() => {
               setDrawer(false);
               // in a book: the reader's own panel; anywhere else: the same choices in their own panel

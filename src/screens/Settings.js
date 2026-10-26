@@ -14,7 +14,7 @@ const IDEAS_FELT = require('../../assets/ideas-felt.png'); // the mossy green st
 const BAND_FELT = require('../../assets/band-settings.jpg'); // Jörg's grey stitched felt banner
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import { LANGS, useT } from '../i18n';
-import { lockedControls, quickSafeControls, DEFAULT_CONTROLS } from '../controls';
+import { lockedControls, quickSafeControls, DEFAULT_CONTROLS, STORE_ON } from '../controls';
 import { usePurchases } from '../purchases';
 import { hapticsOn, onHaptics, setHapticsOn, tap } from '../haptics';
 
@@ -97,11 +97,11 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
               <Choice label={t('Show every book')} on={controls.childAge == null} onPress={() => set({ childAge: null })} />
               {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((a) => <Choice key={a} label={String(a)} on={controls.childAge === a} onPress={() => set({ childAge: a })} />)}
             </View>
-            <Text style={styles.small}>{t('Each book has an age rating. Books rated for older children are hidden in My Library and the Book Store.')}</Text>
+            <Text style={styles.small}>{STORE_ON ? t('Each book has an age rating. Books rated for older children are hidden in My Library and the Book Store.') : t('Books rated for older children are hidden.')}</Text>
           </View>
           <View style={styles.card}>
             <Text style={styles.p}>{t('Choose exactly what your child can see and do. Settings always asks the grown-up question first.')}</Text>
-            <Toggle label={t('Show the Book Store')} value={controls.store} onChange={(v) => set({ store: v })} />
+            {STORE_ON ? <Toggle label={t('Show the Book Store')} value={controls.store} onChange={(v) => set({ store: v })} /> : null}
             <Toggle label={t('Show My Notebook')} value={controls.notebook} onChange={(v) => set({ notebook: v })} />
             <Toggle label={t('Show Make a Book')} value={controls.create} onChange={(v) => set({ create: v })} />
             <Toggle label={t('Ideas, Support and About')} value={controls.help} onChange={(v) => set({ help: v })} />

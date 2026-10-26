@@ -48,6 +48,21 @@ export default {
     fr: 'À l’ouverture de l’application, vous voyez votre carnet en cuir posé sur le feutre. Touchez-le, ou faites-le glisser vers le haut, pour l’ouvrir.',
     es: 'Al abrir la app verás tu cuaderno de cuero sobre el fieltro. Tócalo, o deslízalo hacia arriba, para abrirlo.',
     ja: 'アプリをひらくと、フェルトの上に革のノートがあります。タップするか、上にスワイプするとひらきます。', ar: "عندما يُفتح التطبيق سترى دفترك الجلدي على اللباد. اضغط عليه، أو اسحبه إلى الأعلى، لتفتحه." },
+  'Inside are two choices: Make a book and Read a book (My Library). Tap one to go there.': {
+    de: 'Darin gibt es zwei Möglichkeiten: Buch machen und Buch lesen (Meine Bibliothek). Tippe auf eine, um dorthin zu gehen.',
+    fr: 'À l’intérieur, deux choix : Créer un livre et Lire un livre (Ma bibliothèque). Touche l’un pour y aller.',
+    es: 'Dentro hay dos opciones: Hacer un libro y Leer un libro (Mi biblioteca). Toca una para ir allí.',
+    ja: 'なかには ふたつ あります。「えほんを つくる」と「えほんを よむ」(わたしの としょかん)。タップして いこう。', ar: "في الداخل خياران: «اصنع كتابًا» و«اقرأ كتابًا» (مكتبتي). اضغط على أحدهما للذهاب إليه." },
+  'All your books are here: the books you made, then the books that come with the app.': {
+    de: 'Hier sind alle deine Bücher: zuerst die, die du gemacht hast, dann die Bücher, die mit der App kommen.',
+    fr: 'Tous tes livres sont ici : ceux que tu as faits, puis ceux qui viennent avec l’app.',
+    es: 'Aquí están todos tus libros: los que hiciste tú y después los que vienen con la app.',
+    ja: 'きみの 本は ぜんぶ ここに あります。じぶんで つくった 本、それから アプリに はいっている 本。', ar: "كل كتبك هنا: الكتب التي صنعتها، ثم الكتب التي تأتي مع التطبيق." },
+  'Parental controls: choose exactly what your child can see and do. Hide My Notebook, Make a Book or Ideas and Support; switch off recording, sharing and printing; keep the language fixed; and make every book play one way (for example, always Page by Page).': {
+    de: 'Kindersicherung: Lege genau fest, was dein Kind sehen und tun kann. Blende Mein Notizbuch, Buch machen oder Ideen und Hilfe aus; schalte Aufnehmen, Teilen und Drucken ab; leg die Sprache fest; und lass jedes Buch auf dieselbe Art vorlesen (zum Beispiel immer Seite für Seite).',
+    fr: 'Contrôle parental : choisissez exactement ce que votre enfant peut voir et faire. Masquez Mon carnet, Créer un livre ou Idées et aide ; désactivez l’enregistrement, le partage et l’impression ; fixez la langue ; et faites lire chaque livre de la même façon (par exemple, toujours Page par page).',
+    es: 'Control parental: elige exactamente lo que tu hijo puede ver y hacer. Oculta Mi cuaderno, Hacer un libro o Ideas y ayuda; desactiva grabar, compartir e imprimir; deja fijo el idioma; y haz que todos los libros se lean de una misma forma (por ejemplo, siempre Página por página).',
+    ja: '保護者のせってい:お子さまが見られるもの、できることをえらべます。「わたしのノート」「えほんを つくる」「アイデアと サポート」をかくしたり、ろくおん・シェア・いんさつをオフにしたり、ことばをこていしたり、すべての本を同じよみかたにしたりできます(たとえば、いつも「1ページずつ」)。', ar: "الرقابة الأبوية: اختاروا بالضبط ما يمكن لطفلكم رؤيته وفعله. أخفوا «دفتري» أو «اصنع كتابًا» أو «أفكار ودعم»؛ وأوقفوا التسجيل والمشاركة والطباعة؛ وثبّتوا اللغة؛ واجعلوا كل كتاب يُشغَّل بطريقة واحدة (مثلًا: صفحة بصفحة دائمًا)." },
   'Inside are two choices: My Library (your books) and Book Store (new books). Tap one to go there.': {
     de: 'Darin gibt es zwei Möglichkeiten: Meine Bibliothek (deine Bücher) und Buchladen (neue Bücher). Tippe auf eine, um dorthin zu gehen.',
     fr: 'À l’intérieur, deux choix : Ma bibliothèque (vos livres) et Librairie (de nouveaux livres). Touchez-en un pour y aller.',
