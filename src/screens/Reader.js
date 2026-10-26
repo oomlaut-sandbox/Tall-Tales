@@ -5,7 +5,7 @@ const MOON_NUDGE = 0.4; // (in u) the crescent's optical nudge in its slot
 import { isRestricted, useControls } from '../controls';
 import { useLang, useT } from '../i18n';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, Image, PanResponder, Platform, Pressable, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, PanResponder, Platform, Pressable, ScrollView, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOOK_FONTS, colors, fonts } from '../theme';
@@ -1153,12 +1153,19 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
         }} />
       <ParentGate visible={!!printGate} reason={tr('Printing opens your phone’s print options.')} onPass={() => doPrint(printGate)} onCancel={() => setPrintGate(null)} />
 
-      <Panel open={panel === 'rec'} side="right" title={tr('Recording Options')} {...panelPos} onClose={() => { setPanel(null); recordingSoon.current = false; }}>
+      {/* Recording: a rounded black glass box over the bar, like the voices box (Jörg, 26 Oct 2026), in place of the
+          side menu; tap outside it to close */}
+      {panel === 'rec' ? (
+      <View style={[StyleSheet.absoluteFill, { zIndex: 90 }]}>
+      <Pressable style={StyleSheet.absoluteFill} onPress={() => { setPanel(null); recordingSoon.current = false; }} accessibilityLabel={tr('Close')} />
+      <View style={[styles.recPop, wide ? { right: BL.rightW + 10, bottom: Math.max(16, insets.bottom) } : { right: 12, bottom: barH + 10 }]}>
+        <Text style={styles.recPopTitle}>{tr('Recording Options')}</Text>
+        <ScrollView style={{ maxHeight: winH * 0.6 }} contentContainerStyle={{ gap: 8 }} bounces={false}>
         {recView === 'main' ? (
           <>
-            <Option glyph={<DotIcon />} title={tr('Start Recording')} sub={tr('Read this story in your own voice, starting on page {n}', { n: Math.min(idx + 1, n) })} disabled={idx >= n} onPress={askToRecord} />
-            <Option glyph={<ListIcon />} title={tr('Your Recordings')} sub={tr('Listen to or remove the pages you recorded')} onPress={openRecList} />
-            <Option glyph={<TextIcon text="?" />} title={tr('Help')} sub={tr('How recording works')} onPress={() => setRecView('help')} />
+            <RecRow glyph={<DotIcon />} title={tr('Start Recording')} sub={tr('Read this story in your own voice, starting on page {n}', { n: Math.min(idx + 1, n) })} disabled={idx >= n} onPress={askToRecord} />
+            <RecRow glyph={<ListIcon />} title={tr('Your Recordings')} sub={tr('Listen to or remove the pages you recorded')} onPress={openRecList} />
+            <RecRow glyph={<TextIcon text="?" />} title={tr('Help')} sub={tr('How recording works')} onPress={() => setRecView('help')} />
           </>
         ) : null}
         {recView === 'list' ? (
@@ -1202,8 +1209,24 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
             <Text style={styles.back}>{tr('Back')}</Text>
           </Pressable>
         ) : null}
-      </Panel>
+        </ScrollView>
+      </View>
+      </View>
+      ) : null}
     </View>
+  );
+}
+
+// a choice in the recording box: a small round icon, its name and a line under it (like the rows of the voices box)
+function RecRow({ glyph, title, sub, onPress, disabled }) {
+  return (
+    <Pressable onPress={withTap(onPress)} disabled={disabled} accessibilityRole="button" style={[styles.recRow, disabled && { opacity: 0.45 }]}>
+      <View style={styles.recRowIc}>{glyph}</View>
+      <View style={{ flex: 1, minWidth: 0 }}>
+        <Text style={styles.recRowTitle}>{title}</Text>
+        <Text style={styles.recRowSub}>{sub}</Text>
+      </View>
+    </Pressable>
   );
 }
 
@@ -1255,6 +1278,12 @@ const styles = StyleSheet.create({
   recMark: { position: 'absolute', top: 12, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.highlight, opacity: 0.75, zIndex: 5 },
   mineDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.deepRed },
   mineText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 12 },
+  recPop: { position: 'absolute', width: 300, maxWidth: '92%', backgroundColor: 'rgba(0,0,0,0.86)', borderRadius: 26, paddingHorizontal: 14, paddingTop: 18, paddingBottom: 14, gap: 6, boxShadow: '0 16px 40px rgba(0,0,0,0.6)' }, // as the voices box
+  recPopTitle: { color: 'rgba(255,255,255,0.7)', fontFamily: fonts.uiBold, fontSize: 14, marginLeft: 6, marginBottom: 6 },
+  recRow: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 8, paddingVertical: 8, borderRadius: 18 },
+  recRowIc: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  recRowTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 17 },
+  recRowSub: { color: '#bdbdbd', fontFamily: fonts.ui, fontSize: 13, lineHeight: 18 },
   sideBar: { backgroundColor: colors.bar, alignItems: 'flex-end', zIndex: 30 },
   bottomBar: { backgroundColor: colors.bar, justifyContent: 'flex-end', zIndex: 30 }, // the row of icons sits at the bottom (fixed), any spare height above it
   small: { transform: [{ scale: 0.86 }] },
