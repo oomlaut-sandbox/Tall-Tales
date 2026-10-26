@@ -353,7 +353,8 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
           </Pressable>
         ) : null}
         {/* My Folder starts its own row: the folder (the size of a book), a pencil beside it, then a mug of hot chocolate */}
-        {!selecting ? <View style={{ width: '100%' }} /> : null}
+        {/* (a much bigger space after My Books: Jörg, 25 Oct 2026) */}
+        {!selecting ? <View style={{ width: '100%', height: 70 }} /> : null}
         {!selecting ? (() => {
           const n = COLS(winW), colW = ((winW - 40) * TILE[n]) / 100, gap = ((winW - 40) * ((100 - n * TILE[n]) / (n - 1))) / 100;
           return (
