@@ -17,7 +17,7 @@ import ReadingOptionsSection from '../components/ReadingOptionsSection';
 import { LANGS, useT } from '../i18n';
 import { lockedControls, quickSafeControls, DEFAULT_CONTROLS, STORE_ON } from '../controls';
 import { usePurchases } from '../purchases';
-import { MAX_CLASS, endClassroom, getProfiles, onProfiles, setClassroom } from '../profiles';
+import { MAX_CLASS, endClassroom, getProfiles, onProfiles as watchProfiles, setClassroom } from '../profiles';
 import { hapticsOn, onHaptics, setHapticsOn, tap } from '../haptics';
 
 const MODES = [['self', 'Read Yourself'], ['learn', 'Learn to Read'], ['auto', 'Auto Play'], ['page', 'Page by Page Play'], ['listen', 'Listen Only']];
@@ -72,7 +72,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
   const [roView, setRoView] = useState('main'); // Reading Options: the choices, or the voices
   const [openSec, setOpenSec] = useState(null);
   const [room, setRoom] = useState(getProfiles().classroom || null); // the classroom folder, if there is one
-  useEffect(() => onProfiles((st) => setRoom(st.classroom || null)), []);
+  useEffect(() => watchProfiles((st) => setRoom(st.classroom || null)), []); // (not the onProfiles prop, which opens Profiles)
   const [roomName, setRoomName] = useState(''); // the category that's open (one at a time)
   const [gardenBox, setGardenBox] = useState(null); // the Garden's felt card, once measured
   useEffect(() => onHaptics(setHap), []);
