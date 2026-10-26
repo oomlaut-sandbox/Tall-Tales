@@ -99,6 +99,8 @@ const BAND_FELT = { library: require('../../assets/band-library.png'), store: re
 // later; two if there was none) its cover swings open to the left on its spine while the book slides right, so the
 // open spread is centred too: the inside of the cover (the same blue) on the left, a white page with a + on the
 // right. Tapping it (open or shut) opens the book maker.
+const MAKE_CLOTH = require('../../assets/make-cover-cloth.jpg'); // Jörg's blue cloth book cover (26 Oct 2026)
+const MAKE_CLOTH_IN = require('../../assets/make-cover-cloth-inside.jpg'); // the same, mirrored, for the inside
 const MAKE_BLUE = '#4a72a8'; // the blue felt of the coro. logo's dot, a little brighter (Jörg, 25 Oct 2026)
 const MAKE_BOX_PAD = 18;
 // inner: the room inside the black glass box (the book's two pages fit in it, still a gap between them)
@@ -129,8 +131,9 @@ function MakeBookSpread({ winW, inner, onPress, t, go, wait = 1000 }) {
         </View>
         {/* the cover, hinged on the right page's left edge (square corners, solid blue inside and out) */}
         <View style={{ position: 'absolute', left: W + gap, top: 0, width: W, height: W }}>
-          <Animated.View style={[face, styles.makeCover, turn(false)]} />
-          <Animated.View style={[face, styles.makeInside, turn(true)]} />
+          {/* Jörg's blue cloth hardcover (the spine on its left); open, its inside shows the same cloth, the spine now on the right */}
+          <Animated.View style={[face, styles.makeCover, turn(false)]}><Image source={MAKE_CLOTH} style={{ width: W, height: W }} resizeMode="cover" /></Animated.View>
+          <Animated.View style={[face, styles.makeInside, turn(true)]}><Image source={MAKE_CLOTH_IN} style={{ width: W, height: W }} resizeMode="cover" /></Animated.View>
         </View>
       </Animated.View>
     </Pressable>
