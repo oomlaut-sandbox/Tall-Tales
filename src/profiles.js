@@ -7,10 +7,10 @@ import { currentProfile, setScope } from './scope';
 import { DEFAULT_CONTROLS } from './controls';
 
 export const MAX_PROFILES = 6;
-// each child picks one of the felt Coros (kept under the colour names saved before: 'orange' is now the
-// yellow Coro, 'grey' the teal one, so children who already chose keep their place)
-export const PROFILE_COLORS = [ // in this order on the screen: blue, red, green, yellow, teal
-  ['blue', require('../assets/profile-coro-blue.png')],
+// each child picks one of the felt Coros (kept under the colour names saved before: 'blue' is now the brown
+// Coro, 'orange' the yellow one, 'grey' the teal one, so children who already chose keep their place)
+export const PROFILE_COLORS = [ // in this order on the screen: brown, red, green, yellow, teal (Jörg's photo, 26 Oct 2026)
+  ['blue', require('../assets/profile-coro-brown.png')],
   ['red', require('../assets/profile-coro-red.png')],
   ['green', require('../assets/profile-coro-green.png')],
   ['orange', require('../assets/profile-coro-yellow.png')],
