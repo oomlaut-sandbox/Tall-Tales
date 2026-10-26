@@ -2,6 +2,10 @@
 // (with exact word timings) will replace this per book later.
 import * as Speech from 'expo-speech';
 
+// The phone's own computer voice is never played (Jörg, 26 Oct 2026): Fatima's narration, or a family member's
+// recording, are the only voices. Where neither exists, the words still light up at reading pace, in silence.
+export const SYSTEM_VOICE = false;
+
 let voiceId;
 let session = 0;
 
@@ -43,6 +47,13 @@ export function speakTracked(text, { rate = 0.92, onWord, onDone, lang } = {}) {
     clearInterval(timer);
     if (my === session && onDone) onDone();
   };
+  if (!SYSTEM_VOICE) {
+    // silent: the estimate above lights the words; the page ends when they'd have been read
+    const ms = Math.max(1200, (text.length / cps) * 1000 + 400);
+    const end = setTimeout(finish, ms);
+    const stopEnd = () => clearTimeout(end);
+    return () => { stopEnd(); clearInterval(timer); stopSpeech(); };
+  }
   Speech.speak(text, {
     rate,
     pitch: 1.05,
@@ -71,6 +82,7 @@ export function speakQueue(items, onDone) {
     if (my !== session) return;
     if (i >= items.length) return onDone && onDone();
     const it = items[i++];
+    if (!SYSTEM_VOICE) { setTimeout(next, 300); return; } // (no computer voice: nothing is said)
     Speech.speak(it.text, { rate: it.rate ?? 0.8, ...voiceFor(it.lang), onDone: () => setTimeout(next, it.pause ?? 180), onError: next });
   };
   next();

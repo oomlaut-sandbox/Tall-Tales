@@ -104,7 +104,7 @@ export function Seg({ value, options, onChange, stacked }) {
   );
 }
 
-export default function Reader({ coverShut = false, onOpenCover, u, story, prefs, setPrefs, openMenu, goLibrary, onCover, toast, menuRequest, landscape, setToastSpot, autoStart, onFinished, onSettings, onPlaylists, onShown }) {
+export default function Reader({ coverShut = false, onOpenCover, u, story, prefs, setPrefs, openMenu, goLibrary, onCover, toast, menuRequest, landscape, setToastSpot, autoStart, startRecording, onFinished, onSettings, onPlaylists, onShown }) {
   const tr = useT(); // the reader's own panel, in the app's language
   const appLang = useLang();
   const controls = useControls(); // parental controls: recording, sharing and printing may be switched off
@@ -208,6 +208,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   const recReader = useRef('me'); // who is recording now
   const [askReader, setAskReader] = useState(false); // the 'Who's reading?' box before recording
   const askToRecord = () => { hushForRecording(); setPanel(null); setAskReader(true); };
+  useEffect(() => { if (!startRecording) return undefined; const tm = setTimeout(askToRecord, 900); return () => clearTimeout(tm); }, []); // straight from Finish: 'Who's reading?'
   useEffect(() => { refreshRecPages(); }, [refreshRecPages]);
   // Who can read this book: the narrator, and everyone in the family who recorded at least one of its pages
   const familyOptions = readers.filter((r) => recAll.some((x) => x.reader === r.id)).map((r) => ({ id: r.id, name: r.id === 'me' && r.name === 'Me' ? tr('Me') : r.name, photo: r.photo }));

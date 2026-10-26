@@ -260,6 +260,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
 
   // ---- The Cover Editor: a square like the words editor. Add a picture, then (if wanted) the title,
   // which can be typed, sized and dragged into place. ----
+  const [recordAsk, setRecordAsk] = useState(null); // after Finish: 'Now read it aloud' ({ list, id })
   const [titleBox, setTitleBox] = useState(false); // Finish with no title yet: 'Give your book a title'
   // The book maker always starts on the cover (title, names, cover picture) for a brand-new book;
   // 'Start writing' goes on to page 1. The cover stays one tap away: 'Cover' on the black bar.
@@ -467,6 +468,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       const list = await saveUserStory(latest.current);
       const hasPages = latest.current.pages.some((p) => p.text.trim() || p.uri || p.uri2);
       toast(hasPages ? tr('Saved to My Library.') : tr('Nothing to save yet, so no story was added.'));
+      // a book you make is read in a real voice, never the phone's: invite the author to record it now (Jörg, 26 Oct 2026)
+      if (hasPages && list.some((x) => x.id === latest.current.id)) { setRecordAsk({ list, id: latest.current.id }); return; }
       onDone(list);
     } catch (e) {
       toast(tr('Couldn’t save the story. Try again.'));
@@ -718,6 +721,17 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Pressable onPress={() => setTitleBox(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Keep working')}</Text></Pressable>
           </View>
         </KeyboardAvoidingView>
+      ) : null}
+      {recordAsk ? (
+        // Finished: the book is read aloud by someone, in a recording (Coro has no computer voice)
+        <View style={[StyleSheet.absoluteFill, styles.choiceBack, { zIndex: 80 }]}>
+          <View style={styles.choice}>
+            <Text style={styles.choiceTitle}>{tr('Now read it aloud')}</Text>
+            <Text style={[styles.choiceBtnText, { fontFamily: fonts.ui, textAlign: 'center', lineHeight: 22, marginBottom: 8 }]}>{tr('Books you make are read in a real voice: yours, or the voice of someone who loves the reader. Coro has no computer voice, so until someone records the pages, the book is silent. Record it now, one page at a time.')}</Text>
+            <Pressable onPress={() => { const r = recordAsk; setRecordAsk(null); onDone(r.list, r.id); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 6 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Record now')}</Text></Pressable>
+            <Pressable onPress={() => { const r = recordAsk; setRecordAsk(null); onDone(r.list); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Later')}</Text></Pressable>
+          </View>
+        </View>
       ) : null}
       {aboutOpen ? (
         // (it stops at the black bar, which stays in view, like the Cover Editor: Jörg, 26 Oct 2026)

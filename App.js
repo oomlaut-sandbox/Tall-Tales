@@ -222,6 +222,8 @@ function Root() {
   const coverLeaving = useRef(false); // the shut book is gliding back to the shelf (swipe up)
   // going anywhere else (the menu, the house…) while the book is shut: the shut book goes away at once
   useEffect(() => { if (screen !== 'reader' && closingBook && !coverLeaving.current) setClosingBook(null); }, [screen]);
+  const [recordOnOpen, setRecordOnOpen] = useState(false); // the book just made opens ready to be recorded
+  useEffect(() => { if (screen !== 'reader') setRecordOnOpen(false); }, [screen]);
   const lastOpen = useRef({ cover: null, rect: null }); // the book's cover and where its tile was in the library
   const openStory = (s0, rect) => {
     const s = s0 && s0.langs ? localizeStory(s0, readLang) : s0; // a translated book opens in the reading language
@@ -384,7 +386,7 @@ function Root() {
         )}
         {screen === 'notebook' && <Notebook u={u} from={nbFrom} openMenu={openMenu} toast={toast} onDone={() => go('library')} />}
         {screen === 'publisher' && draft && (
-          <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} onIdeas={() => go('ideas')} />
+          <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list, recId) => { setUserStories(list); const rs = recId && list.find((x) => x.id === recId); if (rs) { setRecordOnOpen(true); openStory(rs); return; } go('library'); }} onIdeas={() => go('ideas')} />
         )}
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} onReadingOptions={readingBox} />}
         {screen === 'music' && <MusicSounds u={u} openMenu={openMenu} prefs={prefs} setPrefs={setPrefs} />}
@@ -406,7 +408,7 @@ function Root() {
         {screen === 'profile' && <Profile u={u} openMenu={openMenu} toast={toast} />}
         {screen === 'reader' && story && (
           <Reader key={queue ? `${queue.key}:${queue.i}` : 'one'} u={u} story={story} setToastSpot={setToastSpot} prefs={readerPrefs}
-            autoStart={!!queue} onFinished={onBookFinished} onSettings={() => setSettingsGate(true)} onPlaylists={() => go('playlists')} setPrefs={setReaderPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} onCover={() => { stopSpeech(); stopVoice(); setClosingBook({ story, cover: lastOpen.current.cover || (story.cover && story.cover.uri ? { uri: story.cover.uri } : null), rect: lastOpen.current.rect }); }} toast={toast} menuRequest={playMenu} landscape={landscape} coverShut={!!closingBook} onOpenCover={() => setCoverOpenReq((n) => n + 1)} onShown={() => { if (openingRef.current) { clearTimeout(openingRef.current); openingRef.current = null; setOpening(null); } }} />
+            autoStart={!!queue} startRecording={recordOnOpen} onFinished={onBookFinished} onSettings={() => setSettingsGate(true)} onPlaylists={() => go('playlists')} setPrefs={setReaderPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} onCover={() => { stopSpeech(); stopVoice(); setClosingBook({ story, cover: lastOpen.current.cover || (story.cover && story.cover.uri ? { uri: story.cover.uri } : null), rect: lastOpen.current.rect }); }} toast={toast} menuRequest={playMenu} landscape={landscape} coverShut={!!closingBook} onOpenCover={() => setCoverOpenReq((n) => n + 1)} onShown={() => { if (openingRef.current) { clearTimeout(openingRef.current); openingRef.current = null; setOpening(null); } }} />
         )}
         {closingBook ? (
           <BookOpen closing openSignal={coverOpenReq} u={u} story={closingBook.story} cover={closingBook.cover} rect={closingBook.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'} amber={!!prefs.amber}
