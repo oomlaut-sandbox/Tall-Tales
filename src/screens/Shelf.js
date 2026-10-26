@@ -260,18 +260,8 @@ export function Library({ onReadingOptions, onGarden, narrator, toast, onProfile
   const [tip, setTip] = useState(false);
   const [bookGo, setBookGo] = useState(libTipSeen); // the blue book opens once the welcome bubble is out of the way
   const [noMore, setNoMore] = useState(false);
-  useEffect(() => {
-    if (libTipSeen) return undefined;
-    let live = true;
-    // (once the welcome bubble has been put away for good, the blue book opens straight away, half a second after the page loads)
-    let id = null;
-    loadJSON('tipLibrary', null).then((h) => {
-      if (!live) return;
-      if (h && h.hide) { setBookGo(true); return; }
-      id = setTimeout(() => { if (live) { libTipSeen = true; setTip(true); } }, 2000);
-    }, () => { if (live) setBookGo(true); });
-    return () => { live = false; clearTimeout(id); };
-  }, []);
+  // (the welcome bubble no longer shows in My Library: Jörg, 26 Oct 2026; the blue book simply opens)
+  useEffect(() => { setBookGo(true); }, []);
   const { width: tipW, height: tipH } = useWindowDimensions();
   const tipWide = tipW > tipH; // sideways: the bar runs down the right side
   const closeTip = () => { setTip(false); setBookGo(true); if (noMore) saveJSON('tipLibrary', { hide: true }); };

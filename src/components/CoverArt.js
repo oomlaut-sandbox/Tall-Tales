@@ -27,6 +27,22 @@ export const titleStyle = { fontFamily: COVER_FONT, color: '#ffffff', textAlign:
 
 // cover: { uri, title: { text, x, y, size } | null }; x and y are the title's centre as a share of the
 // square (0..1), size is the letter size as a share of the square's width.
+// (Jörg, 26 Oct 2026) the title's text box can be narrower (w, a share of the width; 1 = the whole width) and aligned
+// left, centre or right (align); the author line can be placed on its own (bx, by, bs: its centre and size), with
+// its own colour and font (bColor, bFont). Older covers without these keep the author line under the title.
+export const bylineLook = (t) => ({ color: t.bColor || t.color, font: t.bFont || t.font });
+// where the title and the author line go, for a square W wide
+export function coverBoxes(t, W) {
+  const w = t.w || 1, align = t.align || 'center';
+  const title = { position: 'absolute', left: (t.x - w / 2) * W, width: w * W, top: t.y * W, transform: [{ translateY: -t.size * W * 0.65 }],
+    alignItems: align === 'left' ? 'flex-start' : align === 'right' ? 'flex-end' : 'center' };
+  const own = t.byline && t.bx != null;
+  const bs = own ? t.bs || t.size * 0.42 : t.size * 0.42;
+  const bw = t.bw || 1;
+  const byline = own ? { position: 'absolute', left: (t.bx - bw / 2) * W, width: bw * W, top: t.by * W, transform: [{ translateY: -bs * W * 0.65 }],
+    alignItems: (t.balign || align) === 'left' ? 'flex-start' : (t.balign || align) === 'right' ? 'flex-end' : 'center' } : null;
+  return { title, byline, bs, align, balign: t.balign || align };
+}
 export default function CoverArt({ cover }) {
   const [w, setW] = useState(0);
   if (!cover || !cover.uri) return null;
@@ -34,12 +50,19 @@ export default function CoverArt({ cover }) {
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill} onLayout={(e) => setW(e.nativeEvent.layout.width)}>
       <Image source={{ uri: cover.uri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
-      {t && t.text && w ? (
-        <View style={{ position: 'absolute', left: 0, right: 0, top: t.y * w, alignItems: 'center', transform: [{ translateX: (t.x - 0.5) * w }, { translateY: -t.size * w * 0.65 }] }}>
-          <Text style={[titleStyle, coverTitleLook(t), { fontSize: t.size * w, lineHeight: t.size * w * 1.2, paddingHorizontal: w * 0.04 }]}>{t.text}</Text>
-          {t.byline ? <Text style={[titleStyle, bylineStyle, coverTitleLook(t, true), { fontSize: t.size * w * 0.42, lineHeight: t.size * w * 0.6, paddingHorizontal: w * 0.12 }]}>{t.byline}</Text> : null}
-        </View>
-      ) : null}
+      {t && t.text && w ? (() => {
+        const B = coverBoxes(t, w);
+        const by = <Text style={[titleStyle, bylineStyle, coverTitleLook(bylineLook(t), true), { fontSize: B.bs * w, lineHeight: B.bs * w * 1.4, paddingHorizontal: w * 0.04, textAlign: B.balign }]}>{t.byline}</Text>;
+        return (
+          <>
+            <View style={B.title}>
+              <Text style={[titleStyle, coverTitleLook(t), { fontSize: t.size * w, lineHeight: t.size * w * 1.2, paddingHorizontal: w * 0.04, textAlign: B.align }]}>{t.text}</Text>
+              {t.byline && !B.byline ? by : null}
+            </View>
+            {B.byline ? <View style={B.byline}>{by}</View> : null}
+          </>
+        );
+      })() : null}
     </View>
   );
 }
