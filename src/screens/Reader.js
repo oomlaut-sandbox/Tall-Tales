@@ -408,7 +408,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     if (p.end) {
       const lang = story.lang || 'en';
       const vk = nkOf(prefs);
-      const clip = THE_END?.[vk]?.[lang] || THE_END?.lily?.[lang];
+      const clip = story.mine ? null : THE_END?.[vk]?.[lang] || THE_END?.lily?.[lang]; // (a book made in Coro: no narrator says it either: Jörg, 26 Oct 2026)
       setReading(true); setPaused(false); setBetween(false);
       const done = () => { usingVoice.current = false; setReading(false); };
       clearTimeout(autoTimer.current);
