@@ -330,7 +330,7 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
         {/* Let's make a book: its title and the blue book together in a rounded black glass box */}
         {!selecting && controls.create ? (
           <View style={styles.makeBox}>
-            <Text style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('Let’s make a book')}</Text>
+            <Text style={[styles.section, { marginTop: 0, paddingLeft: ((winW - 40) * ((100 - COLS(winW) * TILE[COLS(winW)]) / (COLS(winW) - 1))) / 200 }]} accessibilityRole="header">{t('Let’s make a book')}</Text>{/* (in line with the left page once the book is open: half the gap in) */}
             <MakeBookSpread winW={winW} inner={winW - 40 - 2 * MAKE_BOX_PAD - 2} onPress={onCreate} t={t} go={bookGo && !tip} wait={1000} />
           </View>
         ) : null}
