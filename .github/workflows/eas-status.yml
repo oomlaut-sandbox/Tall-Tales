@@ -14,6 +14,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Install
+        run: npm ci --no-audit --no-fund
       - name: Read
         run: |
           mkdir -p /tmp/o
