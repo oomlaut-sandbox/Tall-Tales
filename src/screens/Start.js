@@ -60,7 +60,7 @@ function MenuItem({ u, icon, title, sub, onPress }) {
   );
 }
 
-export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClosed, onPeek }) {
+export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClosed, onPeek, ask }) {
   const t = useT();
   const { lang, setLang } = useContext(LangContext);
   const controls = useControls(); // parental controls: the Book Store and changing the language may be off
@@ -185,9 +185,22 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
               <Spine wide={wide} />
               {/* the two items as one block, centred in the page */}
               <View style={{ gap: k * 8, transform: [{ translateX: k * 5 }] }}>{/* nudged a little to the right */}
-                {/* Make a book first (Coro is a book maker first), then Read a book (My Library) */}
+{ask ? (
+                  // the intro's first question (while the intro is on): who's here? Each answer has its own short journey
+                  <View style={{ gap: k * 7, width: k * 76 }}>
+                    <Text style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.min(20, k * 7.4), lineHeight: Math.min(25, k * 9.2), color: colors.ink }}>{t('Are you a kid or a grown-up?')}</Text>
+                    {[['kid', t('Kid')], ['grownup', t('Grown-up')]].map(([w, label]) => (
+                      <Pressable key={w} onPress={() => goTo('intro-' + w)} accessibilityRole="button"
+                        style={{ height: k * 15, borderRadius: k * 7.5, borderWidth: 1.5, borderColor: colors.ink, alignItems: 'center', justifyContent: 'center' }}>
+                        <Text style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.min(18, k * 6.6), color: colors.ink }}>{label}</Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                ) : (<>
+                                {/* Make a book first (Coro is a book maker first), then Read a book (My Library) */}
                 {controls.create ? <MenuItem u={k} icon={TILE_MAKE} title={t('Make a book')} sub={t('Share your words, your pictures, your voice.')} onPress={() => goTo('make')} /> : null}
                 <MenuItem u={k} icon={TILE_LIBRARY} title={t('Read a book')} sub={t('Collect, record and share your favorite stories.')} onPress={() => goTo('library')} />
+                </>)}
               </View>
             </View>
             {/* where the open cover lands: a still felt-coloured shape with the cover's shadow, growing in as it

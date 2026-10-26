@@ -1,14 +1,15 @@
 // A simple grown-up check before anything leaves the app (Apple's Kids category requires one).
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Image, Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
 
-import { NUMBER_WORDS, useLang, useT } from '../i18n';
+import { LANGS, LangContext, NUMBER_WORDS, useLang, useT } from '../i18n';
 
 const GROWNUP = require('../../assets/icon-grownup.png');
 
 export default function ParentGate({ visible, reason, onPass, onCancel }) {
   const t = useT();
+  const { lang, setLang } = useContext(LangContext);
   const words = NUMBER_WORDS[useLang()] || NUMBER_WORDS.en;
   const [q, setQ] = useState({ a: 7, b: 8 });
   const [answer, setAnswer] = useState('');
@@ -69,6 +70,15 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
         ) : input}
         {wrong ? <Text style={styles.wrong}>{t('That’s not quite right. Try again.')}</Text> : null}
         {flat ? null : <View style={styles.row}>{cancelBtn}{goBtn}</View>}
+        {/* the languages, as on the start page: a grown-up who can't read the question can always switch (it's
+            never locked out by the wrong language, whatever the parental controls say) */}
+        <View style={[styles.langs, flat && { marginTop: 0 }]}>
+          {LANGS.map(([k, name]) => (
+            <Pressable key={k} onPress={() => setLang(k)} hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }} accessibilityRole="button" accessibilityLabel={name} accessibilityState={{ selected: lang === k }}>
+              <Text style={[styles.lang, { color: lang === k ? 'rgba(235,235,235,0.9)' : 'rgba(215,215,215,0.55)' }]}>{name}</Text>
+            </Pressable>
+          ))}
+        </View>
       </View>
     </View>
   );
@@ -88,4 +98,6 @@ const styles = StyleSheet.create({
   cardWide: { width: 460, borderRadius: 20 },
   btnFlat: { flex: 0, flexGrow: 0, flexShrink: 0, width: 128, height: 40, paddingHorizontal: 12 }, // a set width: on iPad 'auto' shrank them to dots
   btnText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 },
+  langs: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 12, rowGap: 6, marginTop: 10 },
+  lang: { fontFamily: fonts.ui, fontSize: 12 },
 });

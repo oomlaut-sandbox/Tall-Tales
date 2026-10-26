@@ -28,6 +28,8 @@ import Publisher, { draftFrom } from './src/screens/Publisher';
 import CoverTest from './src/screens/CoverTest';
 import Help from './src/screens/Help';
 import Welcome from './src/screens/Welcome';
+import Intro from './src/screens/Intro';
+const INTRO_ON = false; // the new intro (Kid or Grown-up, Jörg 26 Oct 2026): off in builds until it's ready; the web preview shows it at #intro
 const WELCOME_ON = false; // the welcome intro: hidden from builds until it's finished (web preview #welcome still shows it)
 import IdeaRoom from './src/screens/IdeaRoom';
 import Settings from './src/screens/Settings';
@@ -57,7 +59,7 @@ import Playlists from './src/screens/Playlists';
 import { playOrder } from './src/playlists';
 import { fadeOutAmbient, getAmbient, onAmbient, setAmbientPlayer } from './src/ambient';
 import { ageAllowed, ageOf } from './src/catalog';
-import { loadProfiles, onProfiles, switchProfile } from './src/profiles';
+import { addProfile, loadProfiles, onProfiles, switchProfile } from './src/profiles';
 import { playSound, setEffects, setEffectsVolume } from './src/sound';
 import { stopSpeech } from './src/speech';
 import { stopVoice } from './src/voice';
@@ -80,6 +82,14 @@ function Root() {
   }, []);
   const welcomeDone = () => { setWelcome(false); saveJSONFor('app', 'welcome', { done: Date.now() }); go('library'); };
   const [coverOpen, setCoverOpen] = useState(false); // the book's cover is shut each time the app opens
+  // the intro: the notebook first asks "Are you a kid or a grown-up?", then that one's own short journey
+  const [introAsk, setIntroAsk] = useState(false);
+  const [introWho, setIntroWho] = useState(null);
+  const [startKey, setStartKey] = useState(0);
+  useEffect(() => {
+    if (Platform.OS === 'web' && typeof window !== 'undefined' && /intro/.test(window.location.hash)) { setIntroAsk(true); return; }
+    if (INTRO_ON) loadJSONFor('app', 'intro', null).then((w) => { if (!w) setIntroAsk(true); }, () => {});
+  }, []);
   const [peek, setPeek] = useState(null); // 'library' | 'store': drawn under the start screen as its book slides away
   // Phones and iPads can turn: the book goes side by side when sideways.
   const landscape = false; // (the old sideways layout with the bar down the side stays off)
@@ -314,13 +324,14 @@ function Root() {
         {screen === 'start' && (
           // while the menu page is being turned, My Library is drawn underneath and shows through
           <View style={peek ? [StyleSheet.absoluteFill, { zIndex: 10 }] : { flex: 1 }}>
-            <Start u={u} go={(t, rect) => { if (t === 'library' && rect) {
+            <Start key={startKey} ask={introAsk} u={u} go={(t, rect) => { if (t === 'library' && rect) {
               // the flying notebook is drawn over the start page's one first; only once it's surely on screen
               // does the start page go, so there's never a frame without a notebook
               libFade.setValue(0); flyP.setValue(0); setFlyer({ from: rect });
               setTimeout(() => go(t), 90);
               return;
             }
+            if (t.startsWith('intro-')) { setIntroWho(t.slice(6)); return; } // the intro's answer: its journey takes over
             if (t === 'make') { if (purchasesReady && !purchases.member && userStories.length >= FREE_BOOKS) { go('library'); setMoreGate(true); } else openPublisher(null); return; } // Make a book: straight to the book maker
             go(t); }} openMenu={coverOpen ? openMenu : () => toast(t('Start by opening your notebook.'))} onHome={coverOpen ? undefined : () => toast(t('Start by opening your notebook.'))} closed={!coverOpen} onOpened={() => setCoverOpen(true)} onClosed={() => setCoverOpen(false)} onPeek={(t) => setPeek(t || 'library')} />
           </View>
@@ -473,6 +484,13 @@ function Root() {
           );
         })() : null}
         <ParentGate visible={profileGate} reason={t('Your profile is for grown-ups.')} onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
+        {introWho ? <Intro who={introWho} onDone={({ who, age, name }) => {
+          // a kid's age goes into their parental controls; a grown-up's first profile is made with the name and age
+          if (who === 'kid' && age != null) setControls({ ...controls, childAge: age });
+          if (who === 'grownup' && (name || age != null)) addProfile({ name, age });
+          saveJSONFor('app', 'intro', { done: Date.now(), who });
+          setIntroAsk(false); setIntroWho(null); setCoverOpen(true); setStartKey((n) => n + 1); // back to the start page, the notebook open
+        }} /> : null}
         {welcome ? <Welcome controls={controls} setControls={setControls} onDone={welcomeDone} /> : null}
         <Toast message={message} ms={toastMs} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         {/* the Audio Player for music and nature sounds: in the middle of the screen over a dark layer until it's closed */}
