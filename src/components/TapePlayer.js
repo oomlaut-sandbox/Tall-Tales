@@ -5,13 +5,14 @@
 //   the two windows: the sound (top) and the music (bottom); tap a knob to click through the choices, which
 //     show in white in the window ("Select sound" / "Select music" until one is chosen). The knobs stay still;
 //     only the line on each face turns a notch per click.
-//   the slider at the bottom: the volume (drag its felt knob, or tap the slot)
+//   two sliders: under the sound, the sound's volume; at the bottom, the music's (drag the felt knob, or tap the slot)
+//   (Jörg, 26 Oct 2026: the music window and knob moved down to make room for the sound's own slider)
 //   the felt line at the top right: closes the player (its only way out)
 // (recording your voice is on the reading bar's red button)
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { fonts } from '../theme';
-import { MUSIC, SOUNDS, TRACKS, getAmbient, onAmbient, pauseAmbient, playAmbient, setAmbientPlayer, setAmbientVolume, stepAmbient } from '../ambient';
+import { MUSIC, SOUNDS, TRACKS, getAmbient, onAmbient, pauseAmbient, playAmbient, setAmbientPlayer, setAmbientVolume, setSoundVolume, stepAmbient } from '../ambient';
 import { useT } from '../i18n';
 import { thunk, tick, withTap } from '../haptics';
 
@@ -37,6 +38,36 @@ const sizeFor = (winW, winH) => {
 const VMIN = 0.05;
 const X0 = 330, X1 = 1464, Y = 2003, THUMB_D = 194; // (the knob picture is 194 wide with its shadow, the knob itself 134)
 const SLOT = { x: 230, y: 1925, w: 1340, h: 160 }; // where a finger can take the slider
+const SOUND_DY = -535; // the sound's own slot: the same slot, 535 higher (under the sound's window)
+
+// a felt slider: tap the slot to jump there, drag the knob to slide (right is louder); it clicks softly every 5%
+function FeltSlider({ f, dy, value, onChange, thumb, label }) {
+  const fRef = useRef(f);
+  fRef.current = f;
+  const cb = useRef(onChange);
+  cb.current = onChange;
+  const q = useRef(null);
+  const send = (v) => { const n = Math.round(v * 20); if (q.current !== null && n !== q.current) tick(); q.current = n; cb.current(v); };
+  const x0 = useRef(0);
+  const at = (x) => VMIN + (1 - VMIN) * Math.max(0, Math.min(1, (x / fRef.current + SLOT.x - X0) / (X1 - X0)));
+  const pan = useRef(PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onPanResponderTerminationRequest: () => false,
+    onPanResponderGrant: (e) => { x0.current = e.nativeEvent.locationX; send(at(x0.current)); },
+    onPanResponderMove: (_, g) => send(at(x0.current + g.dx)),
+  })).current;
+  const v = Math.max(VMIN, Math.min(1, value));
+  const tx = X0 + (X1 - X0) * (v - VMIN) / (1 - VMIN);
+  const box = (x, y, w, h) => ({ position: 'absolute', left: x * f, top: y * f, width: w * f, height: h * f });
+  return (
+    <View {...pan.panHandlers} style={box(SLOT.x, SLOT.y + dy, SLOT.w, SLOT.h)} accessibilityRole="adjustable" accessibilityLabel={label}
+      accessibilityValue={{ min: 0, max: 100, now: Math.round(v * 100) }}
+      accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+      onAccessibilityAction={(e) => onChange(v + (e.nativeEvent.actionName === 'increment' ? 0.1 : -0.1))}>
+      <Image pointerEvents="none" source={thumb} style={box(tx - SLOT.x - THUMB_D / 2, Y - SLOT.y - THUMB_D / 2 + 4, THUMB_D, THUMB_D)} />
+    </View>
+  );
+}
 
 export default function TapePlayer({ onMenu, area }) {
   const t = useT();
@@ -48,9 +79,6 @@ export default function TapePlayer({ onMenu, area }) {
   useEffect(() => onAmbient(setS), []);
   // it fades in with its dark layer
   const fade = useRef(new Animated.Value(0)).current;
-  // the volume knob clicks softly every 5%
-  const volQ = useRef(null);
-  const setVolTick = (v) => { const q = Math.round(v * 20); if (volQ.current !== null && q !== volQ.current) tick(); volQ.current = q; setAmbientVolume(v); };
   useEffect(() => { if (s.showPlayer) { fade.setValue(0); Animated.timing(fade, { toValue: 1, duration: 200, useNativeDriver: true }).start(); } }, [s.showPlayer]);
   // the knobs' lines turn a notch for every click (all the way round over the choices and "off")
   const notch = (list, id) => (list.findIndex((x) => x.id === id) + 1) * (300 / list.length);
@@ -58,22 +86,6 @@ export default function TapePlayer({ onMenu, area }) {
   const k2 = useRef(new Animated.Value(notch(MUSIC, s.music))).current;
   useEffect(() => { Animated.spring(k1, { toValue: notch(SOUNDS, s.sound), useNativeDriver: true, friction: 6 }).start(); }, [s.sound]);
   useEffect(() => { Animated.spring(k2, { toValue: notch(MUSIC, s.music), useNativeDriver: true, friction: 6 }).start(); }, [s.music]);
-  // the volume slider: tap the slot to jump there, drag the knob to slide (right is louder)
-  const fRef = useRef(f);
-  fRef.current = f;
-  const vx0 = useRef(0);
-  const volAt = (x) => { // x: from the left of the slider's touch area
-    const k = fRef.current;
-    return VMIN + (1 - VMIN) * Math.max(0, Math.min(1, (x / k + SLOT.x - X0) / (X1 - X0)));
-  };
-  const volSlide = useRef(PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onPanResponderTerminationRequest: () => false,
-    onPanResponderGrant: (e) => { vx0.current = e.nativeEvent.locationX; setVolTick(volAt(vx0.current)); },
-    onPanResponderMove: (_, g) => setVolTick(volAt(vx0.current + g.dx)),
-  })).current;
-  const vol = Math.max(VMIN, Math.min(1, s.volume));
-  const thumbX = X0 + (X1 - X0) * (vol - VMIN) / (1 - VMIN);
   const turn = (v) => ({ transform: [{ rotate: v.interpolate({ inputRange: [0, 360], outputRange: ['0deg', '360deg'] }) }] });
   if (!s.showPlayer) return null;
   const name = (id) => { const x = TRACKS.find((tr) => tr.id === id); return x ? (x.mine ? x.name : t(x.name)) : null; };
@@ -111,20 +123,16 @@ export default function TapePlayer({ onMenu, area }) {
         <Pressable onPress={withTap(pauseAmbient)} style={at(1360, 562, 230, 250)} accessibilityRole="button" accessibilityLabel={t('Pause')} />
         {/* (the night felt's windows sit a little lower; its names start a little further in) */}
         {windowText(s.night ? [282, 1070, 1082, 172] : [268, 1067, 1082, 150], name(s.sound) || t('Select sound'), !s.sound)}
-        {windowText(s.night ? [276, 1441, 1082, 174] : [268, 1437, 1076, 150], name(s.music) || t('Select music'), !s.music)}
+        {windowText(s.night ? [276, 1641, 1082, 174] : [268, 1637, 1076, 150], name(s.music) || t('Select music'), !s.music)}
         {/* the knobs stay put; tap one to click to the next choice */}
         <Pressable onPress={withTap(() => stepAmbient('sound'), thunk)} style={at(1386, 1010, 250, 260)} accessibilityRole="button" accessibilityLabel={name(s.sound) || t('Select sound')} />
-        <Pressable onPress={withTap(() => stepAmbient('music'), thunk)} style={at(1386, 1380, 250, 260)} accessibilityRole="button" accessibilityLabel={name(s.music) || t('Select music')} />
+        <Pressable onPress={withTap(() => stepAmbient('music'), thunk)} style={at(1386, 1580, 250, 260)} accessibilityRole="button" accessibilityLabel={name(s.music) || t('Select music')} />
         {/* the knobs' lines turn with each click (at night: on the brown felt's knobs, in cream) */}
         {s.night ? mark(1512, 1145, k1) : mark(1506, 1127, k1)}
-        {s.night ? mark(1512, 1507, k2) : mark(1506, 1500, k2)}
-        {/* the volume: the felt knob slides left (quieter) and right (louder) in the stitched slot */}
-        <View {...volSlide.panHandlers} style={at(SLOT.x, SLOT.y, SLOT.w, SLOT.h)} accessibilityRole="adjustable" accessibilityLabel={t('Volume')}
-          accessibilityValue={{ min: 0, max: 100, now: Math.round(vol * 100) }}
-          accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
-          onAccessibilityAction={(e) => setAmbientVolume(vol + (e.nativeEvent.actionName === 'increment' ? 0.1 : -0.1))}>
-          <Image pointerEvents="none" source={s.night ? THUMB_NIGHT : THUMB} style={at(thumbX - SLOT.x - THUMB_D / 2, Y - SLOT.y - THUMB_D / 2 + 4, THUMB_D, THUMB_D)} />
-        </View>
+        {s.night ? mark(1512, 1707, k2) : mark(1506, 1700, k2)}
+        {/* the volumes: the sound's under its window, the music's at the bottom (felt knobs in stitched slots) */}
+        <FeltSlider f={f} dy={SOUND_DY} value={s.soundVolume != null ? s.soundVolume : s.volume} onChange={setSoundVolume} thumb={s.night ? THUMB_NIGHT : THUMB} label={t('Sound volume')} />
+        <FeltSlider f={f} dy={0} value={s.volume} onChange={setAmbientVolume} thumb={s.night ? THUMB_NIGHT : THUMB} label={t('Music volume')} />
       </View>
     </View>
     {/* a small Close under the player's bottom right corner (day and night), floating: the player stays centred */}

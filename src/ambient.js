@@ -30,12 +30,12 @@ export const SLEEP_TIMES = [0, 15, 30, 60]; // minutes (0: keep playing)
 // sound / music: the chosen one on each channel (null: off); playing: sounding now; volume 0..1;
 // showPlayer: the floating tape player; sleep: minutes until it fades out; pos: where the player was left;
 // recording: a voice is being recorded (the player's little red light)
-let state = { sound: null, music: null, playing: false, volume: 0.4, rate: 1, showPlayer: false, sleep: 0, sleepAt: null, pos: null, recording: false };
+let state = { sound: null, music: null, playing: false, volume: 0.4, soundVolume: null, rate: 1, showPlayer: false, sleep: 0, sleepAt: null, pos: null, recording: false };
 const listeners = new Set();
 const set = (patch) => {
   state = { ...state, ...patch };
   listeners.forEach((fn) => { try { fn(state); } catch (e) {} });
-  saveJSON('ambient2', { sound: state.sound, music: state.music, volume: state.volume, rate: state.rate, showPlayer: state.showPlayer, pos: state.pos }).catch(() => {});
+  saveJSON('ambient2', { sound: state.sound, music: state.music, volume: state.volume, soundVolume: state.soundVolume, rate: state.rate, showPlayer: state.showPlayer, pos: state.pos }).catch(() => {});
 };
 export const getAmbient = () => state;
 export function onAmbient(fn) { listeners.add(fn); return () => listeners.delete(fn); }
@@ -47,6 +47,10 @@ loadJSON('ambient2', null).then((s) => {
   if (state.sound && !String(state.sound).startsWith('my-') && !TRACKS.some((x) => x.id === state.sound)) state.sound = null; // (the family's own sounds load a moment later)
   if (state.music && !String(state.music).startsWith('my-') && !TRACKS.some((x) => x.id === state.music)) state.music = null; // (the family's own music loads a moment later)
   listeners.forEach((fn) => fn(state)); }).catch(() => {});
+
+// each channel's own volume (Jörg, 26 Oct 2026): the music's is the bottom slider, the sound's the one under the sound
+// (until it's been moved, the sound plays at the music's volume, as before)
+const volFor = (kind) => (kind === 'sound' && state.soundVolume != null ? state.soundVolume : state.volume);
 
 // one player per channel
 const ch = { sound: { player: null, id: null, fade: null }, music: { player: null, id: null, fade: null } };
@@ -71,10 +75,10 @@ async function sync(kind) {
   const my = (c.seq = (c.seq || 0) + 1); // quick taps: only the latest call counts (no doubled or stuttering sound)
   const want = state.playing && !held ? state[kind] : null;
   if (!want) {
-    if (c.player) { const p = c.player; ramp(c, state.volume, 0, 500, () => { try { p.pause(); } catch (e) {} if (c.player === p && !(state.playing && state[kind])) release(c); }); }
+    if (c.player) { const p = c.player; ramp(c, volFor(kind), 0, 500, () => { try { p.pause(); } catch (e) {} if (c.player === p && !(state.playing && state[kind])) release(c); }); }
     return;
   }
-  if (c.id === want && c.player) { try { c.player.play(); ramp(c, 0, state.volume, 800); } catch (e) {} return; }
+  if (c.id === want && c.player) { try { c.player.play(); ramp(c, 0, volFor(kind), 800); } catch (e) {} return; }
   const t = TRACKS.find((x) => x.id === want);
   if (!t) return;
   try {
@@ -88,7 +92,7 @@ async function sync(kind) {
     p.volume = 0;
     applyRate(p);
     p.play();
-    ramp(c, 0, state.volume, 1200); // fades in
+    ramp(c, 0, volFor(kind), 1200); // fades in
     // a freshly made player may not be ready yet, and then the first play() does nothing (it used to take a
     // second tap): play again as soon as it has loaded, and check once more shortly after
     const still = () => c.player === p && state.playing && !held && state[kind] === want;
@@ -117,7 +121,7 @@ export function toggleAmbient() { if (state.playing) pauseAmbient(); else playAm
 // bedtime: the music fades away slowly and stops (after the last book in Listen Only)
 export function fadeOutAmbient(ms = 20000) {
   if (!state.playing) return;
-  for (const c of Object.values(ch)) { const p = c.player; ramp(c, state.volume, 0, ms, () => { try { p && p.pause(); } catch (e) {} }); }
+  for (const [kind, c] of Object.entries(ch)) { const p = c.player; ramp(c, volFor(kind), 0, ms, () => { try { p && p.pause(); } catch (e) {} }); }
   setTimeout(() => set({ playing: false }), ms);
 }
 export function stopAmbient() { set({ playing: false, sound: null, music: null }); clearTimeout(sleepTimer); syncAll(); }
@@ -140,10 +144,15 @@ export function setAmbientRate(r) {
   set({ rate: Math.max(0.5, Math.min(1, Math.round(r * 100) / 100)) });
   for (const c of Object.values(ch)) applyRate(c.player);
 }
-export function setAmbientVolume(v) {
+export function setAmbientVolume(v) { // the music (and the sound too, until its own slider has been moved)
   const vol = Math.max(0, Math.min(1, v));
   set({ volume: vol });
-  for (const c of Object.values(ch)) try { if (c.player && !c.fade) c.player.volume = vol; } catch (e) {}
+  for (const [kind, c] of Object.entries(ch)) try { if (c.player && !c.fade) c.player.volume = volFor(kind); } catch (e) {}
+}
+export function setSoundVolume(v) { // the sound's own slider
+  const vol = Math.max(0, Math.min(1, v));
+  set({ soundVolume: vol });
+  try { if (ch.sound.player && !ch.sound.fade) ch.sound.player.volume = vol; } catch (e) {}
 }
 // the family's own music (added on the Music and Sounds page): it joins the list like any other piece
 export function addTrack(tr) {
@@ -166,7 +175,7 @@ function armSleep(min) {
   if (!min || !state.playing) { if (state.sleepAt) set({ sleepAt: null }); return; }
   set({ sleepAt: Date.now() + min * 60000 });
   sleepTimer = setTimeout(() => {
-    for (const c of Object.values(ch)) { const p = c.player; ramp(c, state.volume, 0, 20000, () => { try { p && p.pause(); } catch (e) {} }); }
+    for (const [kind, c] of Object.entries(ch)) { const p = c.player; ramp(c, volFor(kind), 0, 20000, () => { try { p && p.pause(); } catch (e) {} }); }
     setTimeout(() => set({ playing: false, sleepAt: null }), 20000);
   }, min * 60000);
 }
