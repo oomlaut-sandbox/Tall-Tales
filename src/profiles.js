@@ -37,6 +37,7 @@ export const MORE_AVATARS = [
   ['bee', require('../assets/avatar-bee.jpg')],
   ['hamster', require('../assets/avatar-hamster.jpg')],
   ['wolf', require('../assets/avatar-wolf.jpg')],
+  ['worms', require('../assets/avatar-worms.jpg')],
 ];
 export const feltFor = (color) => ([...PROFILE_COLORS, ...MORE_AVATARS].find(([c]) => c === (color === 'pink' ? 'grey' : color)) || PROFILE_COLORS[0])[1]; // (red if unknown or brown, as before)
 
