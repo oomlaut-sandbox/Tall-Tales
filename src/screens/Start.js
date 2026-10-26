@@ -43,7 +43,6 @@ const corners = (side, wide, flipped) => (flipped ? (wide
 
 const TILE_LIBRARY = require('../../assets/tile-library.png');
 const TILE_MAKE = require('../../assets/tile-store.png'); // the blue felt tile: Make a book (blue, like the book in My Library)
-const TILE_STORE = require('../../assets/tile-store-red.png'); // the Book Store moves to a red tile
 
 function MenuItem({ u, icon, title, sub, onPress }) {
   return (
@@ -145,8 +144,6 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
     <BookFrame bare deskImage={DESK_FELT} barMin={u * 17} reserve={startRoom(winW, winH)} bar={(L) => <Bar u={u} vertical={L.wide}><Burger u={u} onPress={openMenu} onHome={onHome} /></Bar>}>
       {({ side, wide }) => {
         const k = side / 100; // sizes inside the book scale with the squares
-        const three = controls.create && controls.store; // Make a book, Read a book and the Book Store: a little smaller, so all three fit on the page
-        const km = three ? k * 0.78 : k;
         geo.current = { side, wide };
         // where the two squares sit: picture first (top, or left when sideways), then the words
         const at1 = { position: 'absolute', left: 0, top: 0, width: side, height: side };
@@ -187,11 +184,10 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
               <View pointerEvents="none" style={[StyleSheet.absoluteFill, round, { overflow: 'hidden' }]}><Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.17)} max={0.32} /></View>
               <Spine wide={wide} />
               {/* the two items as one block, centred in the page */}
-              <View style={{ gap: k * (three ? 5 : 8), transform: [{ translateX: k * 5 }] }}>{/* nudged a little to the right */}
+              <View style={{ gap: k * 8, transform: [{ translateX: k * 5 }] }}>{/* nudged a little to the right */}
                 {/* Make a book first (Coro is a book maker first), then Read a book (My Library) */}
-                {controls.create ? <MenuItem u={km} icon={TILE_MAKE} title={t('Make a book')} sub={t('Share your words, your pictures, your voice.')} onPress={() => goTo('make')} /> : null}
-                <MenuItem u={km} icon={TILE_LIBRARY} title={t('Read a book')} sub={t('Collect, record and share your favorite stories.')} onPress={() => goTo('library')} />
-                {controls.store ? <MenuItem u={km} icon={TILE_STORE} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => goTo('store')} /> : null}
+                {controls.create ? <MenuItem u={k} icon={TILE_MAKE} title={t('Make a book')} sub={t('Share your words, your pictures, your voice.')} onPress={() => goTo('make')} /> : null}
+                <MenuItem u={k} icon={TILE_LIBRARY} title={t('Read a book')} sub={t('Collect, record and share your favorite stories.')} onPress={() => goTo('library')} />
               </View>
             </View>
             {/* where the open cover lands: a still felt-coloured shape with the cover's shadow, growing in as it
