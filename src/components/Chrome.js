@@ -737,16 +737,16 @@ export function DoneTick({ size = 34 }) {
 export function CoverIcon({ size = 28, color = colors.white }) {
   const w = Math.max(1.6, size * 0.07); // the same thin stroke as the house and the note
   return (
-    <View style={{ width: size * 0.84, height: size, borderWidth: w, borderColor: color, borderRadius: size * 0.09 }}>
+    // a square book (Coro's pages are square), its spine down the left; nothing inside (Jörg, 26 Oct 2026)
+    <View style={{ width: size * 0.92, height: size * 0.92, borderWidth: w, borderColor: color, borderRadius: size * 0.09 }}>
       <View style={{ position: 'absolute', left: size * 0.13, top: 0, bottom: 0, width: w, backgroundColor: color }} />
-      <View style={{ position: 'absolute', left: size * 0.3, top: size * 0.2, width: size * 0.34, height: size * 0.3, borderRadius: size * 0.04, backgroundColor: color }} />
     </View>
   );
 }
 // the pages: a stack of pages, the front one whole and two edges peeking out behind it
 export function PagesIcon({ size = 28, color = colors.white }) {
   const w = Math.max(1.6, size * 0.07); // the same thin stroke as the house and the note
-  const pw = size * 0.66, ph = size * 0.76;
+  const pw = size * 0.74, ph = size * 0.74; // square pages (Jörg, 26 Oct 2026)
   return (
     <View style={{ width: size, height: size }}>
       <View style={{ position: 'absolute', left: 0, top: size * 0.24, width: pw, height: ph, borderLeftWidth: w, borderBottomWidth: w, borderColor: color, borderBottomLeftRadius: size * 0.08 }} />
