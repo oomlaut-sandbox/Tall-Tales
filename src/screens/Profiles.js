@@ -16,7 +16,11 @@ import ParentGate from '../components/ParentGate';
 import { useT } from '../i18n';
 import { useControls, DEFAULT_CONTROLS } from '../controls';
 import { keepFile, liveUri, loadJSONFor, saveJSONFor } from '../storage';
-import { maxProfiles, PROFILE_COLORS, addProfile, feltFor, getProfiles, onProfiles, removeProfile, switchProfile, updateProfile } from '../profiles';
+import { MAX_CLASS, PROFILE_COLORS, addClass, addProfile, canAdd, feltFor, getProfiles, inClass, onProfiles, removeClass, removeProfile, removeProfiles, renameClass, switchProfile, updateProfile } from '../profiles';
+import { IDLE, slotStyle } from '../components/Chrome';
+const SELECT_ICON = require('../../assets/icon-select.png');
+const TRASH_ICON = require('../../assets/icon-trash.png');
+const CLASS_BLUE = '#4a72a8'; // a class folder: a blue square for now (Jörg will send its icon)
 
 const AGES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
@@ -75,7 +79,20 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
   const [sure, setSure] = useState(false);
   const canSwitch = controls.profiles !== false;
   const { width: winW, height: winH } = useWindowDimensions();
-  const room = s.classroom; // (a classroom folder holds up to 30 students; still three to a row, the page scrolls)
+  const room = s.classroom; // classroom mode: class folders, each with up to 30 students
+  const classes = s.classes || [];
+  const [openCls, setOpenCls] = useState(null); // the class folder that's open (classroom mode)
+  const cls = room ? (classes.find((c) => c.id === openCls) || null) : null;
+  const folders = !!room && !cls; // the classes themselves, as folders
+  const shown = room ? (cls ? inClass(cls.id) : []) : s.list;
+  const [view, setView] = useState('grid'); // 'grid' | 'list' (the names, A to Z)
+  const [selecting, setSelecting] = useState(false); // Select on the bar: tap profiles, then the trash can
+  const [picked, setPicked] = useState([]);
+  const [sureMany, setSureMany] = useState(false);
+  const [classForm, setClassForm] = useState(null); // { id?, name }: a new class, or one being renamed
+  const [moreAv, setMoreAv] = useState(false); // Explore more avatars
+  const stopSelect = () => { setSelecting(false); setPicked([]); };
+  const togglePick = (id) => setPicked((l) => (l.includes(id) ? l.filter((x) => x !== id) : [...l, id]));
   // each child's box: a third of the row, much wider than the character (Jörg, 26 Oct 2026), so names and
   // "Reading now" sit on one line; the character itself stays its size
   const cellW = Math.floor((Math.min(520, winW - 48) - 2 * 10) / 3);
@@ -84,7 +101,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
   const openForm = (p) => {
     setSure(false);
     setForm(p ? { id: p.id, name: p.name, color: p.color, photo: p.photo || null, age: ages[p.id] ?? null }
-      : { name: '', color: PROFILE_COLORS[s.list.length % PROFILE_COLORS.length][0], age: null });
+      : { name: '', color: PROFILE_COLORS[s.list.length % PROFILE_COLORS.length][0], age: null, cls: cls ? cls.id : undefined });
   };
   // a photo for the profile: from the phone's photos, a small square from its middle, kept with the app
   const pickPhoto = async () => {
@@ -112,7 +129,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
       }
     } else {
       const first = s.list.length === 0;
-      await addProfile({ name: f.name, color: f.color, age: f.age, photo: f.photo || null });
+      await addProfile({ name: f.name, color: f.color, age: f.age, photo: f.photo || null, cls: f.cls });
       if (first) setControls({ ...controls, childAge: f.age }); // the first child keeps the settings already here
     }
     setForm(null);
@@ -124,9 +141,9 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
     picking.current = true;
     Animated.timing(pageFade, { toValue: 0, duration: 220, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => { picking.current = false; onBack(); });
   };
-  const pick = (id) => {
+  const pick = (id, glide = true) => {
     if (picking.current) return;
-    const L = cells.current[id];
+    const L = glide ? cells.current[id] : null;
     picking.current = true;
     // fade the page away first; then switch (the app starts afresh for that child, straight into My Library)
     const go = () => {
@@ -139,33 +156,121 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
     Animated.timing(boxXY, { toValue: { x: L.x, y: L.y }, duration: 300, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(() => setTimeout(go, 120));
   };
   return (
-    <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
+    <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => (selecting ? (
+        // selecting: the trash can (for the profiles ticked), and a red × to stop, where Select was
+        <Bar u={u} vertical={v}>
+          <Burger u={u} onPress={openMenu} />
+          <Pressable onPress={() => setSureMany(true)} disabled={!picked.length} hitSlop={8} style={slotStyle(u, v)} accessibilityRole="button" accessibilityLabel={t('Delete')} accessibilityState={{ disabled: !picked.length }}>
+            <Image source={TRASH_ICON} style={{ width: u * 5.2, height: u * 5.2, tintColor: picked.length ? '#ff6b6b' : IDLE }} resizeMode="contain" />
+          </Pressable>
+          <View style={{ flex: 1 }} />
+          <Pressable onPress={stopSelect} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Cancel')} style={{ paddingHorizontal: 4 }}>
+            <View style={{ width: 29, height: 29, borderRadius: 14.5, backgroundColor: colors.deepRed, alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ position: 'absolute', width: 12, height: 2, borderRadius: 1, backgroundColor: colors.white, transform: [{ rotate: '45deg' }] }} />
+              <View style={{ position: 'absolute', width: 12, height: 2, borderRadius: 1, backgroundColor: colors.white, transform: [{ rotate: '-45deg' }] }} />
+            </View>
+          </Pressable>
+        </Bar>
+      ) : (
+        <Bar u={u} vertical={v}>
+          <Burger u={u} onPress={openMenu} />
+          <View style={{ flex: 1 }} />
+          {/* Select: the circle with a tick, far right (like My Library), to delete several profiles at once */}
+          {!folders && shown.length && !form ? (
+            <Pressable onPress={() => setGate('select')} hitSlop={12} style={{ paddingVertical: 10, paddingHorizontal: 10 }} accessibilityRole="button" accessibilityLabel={t('Select')}>
+              <Image source={SELECT_ICON} style={{ width: 29, height: 29, tintColor: colors.white }} resizeMode="contain" />
+            </Pressable>
+          ) : null}
+        </Bar>
+      ))}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]} onLayout={(e) => setBandH(e.nativeEvent.layout.height)}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="profiles" /><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.title, { flexShrink: 1 }]}>{room ? (room.name || t('Classroom')) : t('Profiles')}</Text></View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="profiles" /><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.title, { flexShrink: 1 }]}>{room ? (cls ? (cls.name || t('Classroom')) : t('Classes')) : t('Profiles')}</Text></View>
       </View>
       {form ? null : (
       <Animated.ScrollView style={{ opacity: pageFade }} contentContainerStyle={styles.body}>
         <View style={styles.col}>
-          <Text style={styles.p}>{s.list.length
+          {room && cls ? (
+            <Pressable onPress={() => { stopSelect(); setOpenCls(null); }} hitSlop={10} accessibilityRole="button" style={{ flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: 'flex-start' }}>
+              <View style={styles.backCircle}><View style={styles.backChevron} /></View>
+              <Text style={styles.back}>{t('All classes')}</Text>
+            </Pressable>
+          ) : null}
+          <Text style={styles.p}>{folders
+            ? t('Each class has its own folder, with up to {n} students. Tap a class to open it.', { n: MAX_CLASS })
+            : selecting ? (picked.length ? t('{n} selected', { n: picked.length }) : t('Tap profiles to select them.'))
+            : shown.length
             ? (editing ? t('Tap a profile to change its name, character or age.') : t('Who is reading? Tap your name.'))
             : t('Give each reader their own notebook, badges, playlists and settings: children and grown-ups. A child’s age decides which books they see.')}</Text>
+          {/* Grid or List (the names, A to Z) */}
+          {!folders && shown.length ? (
+            <View style={{ flexDirection: 'row', gap: 8, alignSelf: 'flex-end', marginTop: -6 }}>
+              {[['grid', t('Grid')], ['list', t('List')]].map(([k, label]) => (
+                <Pressable key={k} onPress={() => setView(k)} accessibilityRole="button" accessibilityState={{ selected: view === k }} style={[styles.choice, view === k && styles.choiceOn]}>
+                  <Text style={styles.choiceText}>{label}</Text>
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
+          {folders ? (
+            // the class folders: blue squares for now, with the class's name and how many students
+            <View style={styles.grid}>
+              {classes.map((c) => (
+                <Pressable key={c.id} onPress={() => (editing ? setClassForm({ id: c.id, name: c.name }) : setOpenCls(c.id))} accessibilityRole="button" accessibilityLabel={c.name || t('Classroom')} style={[styles.cell, { width: cellW }]}>
+                  <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}>
+                    <View style={{ width: Math.round(side * 0.72), height: Math.round(side * 0.72), backgroundColor: CLASS_BLUE, borderRadius: 6, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.45, shadowRadius: 6 }} />
+                  </View>
+                  <Text numberOfLines={1} style={styles.name}>{c.name || t('Classroom')}</Text>
+                  <Text numberOfLines={1} style={styles.age}>{inClass(c.id).length === 1 ? t('1 student') : t('{n} students', { n: inClass(c.id).length })}</Text>
+                </Pressable>
+              ))}
+              <Pressable onPress={() => setGate('class')} style={[styles.cell, { width: cellW }]} accessibilityRole="button" accessibilityLabel={t('Add a class')}>
+                <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={[styles.addTile, { width: Math.round(side * 0.72), height: Math.round(side * 0.72), borderRadius: 6 }]}>
+                    <View style={{ position: 'absolute', width: side * 0.2, height: 2, backgroundColor: '#aaa' }} />
+                    <View style={{ position: 'absolute', width: 2, height: side * 0.2, backgroundColor: '#aaa' }} />
+                  </View>
+                </View>
+                <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} style={styles.name}>{t('Add a class')}</Text>
+                <Text style={styles.age}> </Text>
+              </Pressable>
+            </View>
+          ) : view === 'list' ? (
+            // the list: everyone's name, A to Z
+            <View style={{ gap: 6 }}>
+              {[...shown].sort((x, y) => x.name.localeCompare(y.name)).map((p) => {
+                const on = p.id === s.active, sel = picked.includes(p.id);
+                return (
+                  <Pressable key={p.id} disabled={!selecting && !editing && !canSwitch && !on}
+                    onPress={() => (selecting ? togglePick(p.id) : editing ? openForm(p) : on ? backToLibrary() : pick(p.id, false))}
+                    accessibilityRole="button" accessibilityLabel={p.name} accessibilityState={{ selected: selecting ? sel : on }}
+                    style={[styles.row, (on && !selecting) && { backgroundColor: '#000' }]}>
+                    <View style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center' }}><ProfileTile p={p} size={30} grow={1} /></View>
+                    <Text numberOfLines={1} style={[styles.name, { flex: 1, marginTop: 0, fontSize: 17 }]}>{p.name}</Text>
+                    <Text style={styles.age}>{on ? t('Reading now') : ages[p.id] != null ? t('Age {n}', { n: ages[p.id] }) : ''}</Text>
+                    {selecting ? <View style={[styles.tick, sel && styles.tickOn]}>{sel ? <View style={styles.tickMark} /> : null}</View> : null}
+                  </Pressable>
+                );
+              })}
+            </View>
+          ) : (
           <View style={styles.grid}>
             {/* the selection box: one box that glides from child to child */}
-            {boxSize && s.list.length ? <Animated.View pointerEvents="none" style={[styles.cellOn, { position: 'absolute', left: 0, top: 0, width: boxSize.w, height: boxSize.h, borderRadius: 16, borderWidth: 1, transform: boxXY.getTranslateTransform() }]} /> : null}
-            {s.list.map((p) => {
-              const on = p.id === s.active;
+            {boxSize && shown.some((p) => p.id === s.active) && !selecting ? <Animated.View pointerEvents="none" style={[styles.cellOn, { position: 'absolute', left: 0, top: 0, width: boxSize.w, height: boxSize.h, borderRadius: 16, borderWidth: 1, transform: boxXY.getTranslateTransform() }]} /> : null}
+            {shown.map((p) => {
+              const on = p.id === s.active, sel = picked.includes(p.id);
               return (
-                <Pressable key={p.id} disabled={!editing && !canSwitch && !on} onPress={() => (editing ? openForm(p) : on ? backToLibrary() : pick(p.id))}
+                <Pressable key={p.id} disabled={!selecting && !editing && !canSwitch && !on} onPress={() => (selecting ? togglePick(p.id) : editing ? openForm(p) : on ? backToLibrary() : pick(p.id))}
                   onLayout={(e) => { const L = e.nativeEvent.layout; cells.current[p.id] = L; if (on && !picking.current) { boxXY.setValue({ x: L.x, y: L.y }); setBoxSize({ w: L.width, h: L.height }); placed.current = true; } }}
                   accessibilityRole="button" accessibilityLabel={p.name} accessibilityState={{ selected: on }} style={[styles.cell, { width: cellW }]}>
                   {/* the child reading now gets a box around them instead of growing */}
                   <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}><ProfileTile p={p} size={Math.round(side * 0.68)} active={on} grow={1} /></View>
+                  {selecting ? <View style={[styles.tick, { position: 'absolute', top: 8, right: 8 }, sel && styles.tickOn]}>{sel ? <View style={styles.tickMark} /> : null}</View> : null}
                   <Text numberOfLines={1} style={styles.name}>{p.name}</Text>
                   <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={styles.age}>{on ? t('Reading now') : ages[p.id] != null ? t('Age {n}', { n: ages[p.id] }) : ' '}</Text>
                 </Pressable>
               );
             })}
-            {s.list.length < maxProfiles() ? (
+            {!selecting && canAdd(cls ? cls.id : undefined) ? (
               <Pressable onPress={() => setGate('add')} style={[styles.cell, { width: cellW }]} accessibilityRole="button" accessibilityLabel={room ? t('Add a student') : t('Add a profile')}>
                 <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}>
                   <View style={[styles.addTile, { width: Math.round(side * 0.68), height: Math.round(side * 0.68), borderRadius: side }]}>{/* round, like the buttons */}
@@ -179,11 +284,12 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
               </Pressable>
             ) : null}
           </View>
+          )}
           {/* Edit profiles on the left; My Library (back to the books) on the right, level with it */}
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 22 }}>
-            {s.list.length ? (
+            {(shown.length || folders) && !selecting ? (
               <Pressable onPress={() => (editing ? setEditing(false) : setGate('edit'))} style={[styles.pill, { backgroundColor: editing ? colors.green : '#3a3a3a' }]} accessibilityRole="button">{/* well clear of the children above */}
-                <Text style={styles.pillText}>{editing ? t('Done editing') : t('Edit profiles')}</Text>
+                <Text style={styles.pillText}>{editing ? t('Done editing') : folders ? t('Edit classes') : t('Edit profiles')}</Text>
               </Pressable>
             ) : <View />}
             {onBack && !editing ? (
@@ -223,6 +329,10 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
                   <ProfileTile p={{ color: 'photo', photo: form.photo }} size={40} grow={1} />
                 </Pressable>
               </View>
+              {/* more characters to choose from (Jörg will send a large set) */}
+              <Pressable onPress={() => setMoreAv(true)} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'flex-start', marginTop: -4 }}>
+                <Text style={[styles.small, { color: '#d6d6d6', textDecorationLine: 'underline' }]}>{t('Explore more avatars')}</Text>
+              </Pressable>
               <Text style={styles.section}>{t('Age')}</Text>
               <View style={styles.choices}>
                 <Choice label={t('Grown-up')} on={form.age == null} onPress={() => setForm({ ...form, age: null })} />{/* (grown-ups have profiles too: they see every book) */}
@@ -259,8 +369,58 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
         </View>
       ) : null}
 
+      {/* delete the profiles ticked: are you sure? */}
+      {sureMany ? (
+        <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setSureMany(false)}>
+          <View style={styles.sureBack}>
+            <View style={styles.sureBox}>
+              <Text style={styles.sureText}>{picked.length === 1 ? t('Remove 1 profile? Their notebook and badges stay on this phone, but nobody will see them.') : t('Remove {n} profiles? Their notebooks and badges stay on this phone, but nobody will see them.', { n: picked.length })}</Text>
+              <View style={{ flexDirection: 'row', gap: 10, marginTop: 26 }}>
+                <Pressable onPress={() => { setSureMany(false); removeProfiles(picked); stopSelect(); }} style={[styles.pill, styles.pillFit, { backgroundColor: '#b3261e', marginLeft: 'auto' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Remove')}</Text></Pressable>
+                <Pressable onPress={() => setSureMany(false)} style={[styles.pill, styles.pillFit, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Keep')}</Text></Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      ) : null}
+      {/* a new class folder (or renaming one; an empty class can be removed) */}
+      {classForm ? (
+        <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setClassForm(null)}>
+          <View style={styles.sureBack}>
+            <View style={[styles.sureBox, { gap: 16 }]}>
+              <Text style={[styles.sureText, { fontFamily: fonts.uiBold }]}>{classForm.id ? t('Class name') : t('Add a class')}</Text>
+              <TextInput allowFontScaling={false} value={classForm.name} onChangeText={(name) => setClassForm({ ...classForm, name })} placeholder={t('Class name, like Room 4')} placeholderTextColor="#8a8a8a"
+                style={[styles.input, { flex: 0 }]} maxLength={30} autoFocus accessibilityLabel={t('Class name')} />
+              <View style={{ flexDirection: 'row', gap: 10, marginTop: 6 }}>
+                <Pressable onPress={() => { if (classForm.id) renameClass(classForm.id, classForm.name); else setOpenCls(addClass(classForm.name)); setClassForm(null); }} style={[styles.pill, styles.pillFit, { backgroundColor: colors.green }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Save')}</Text></Pressable>
+                {classForm.id && !inClass(classForm.id).length ? <Pressable onPress={() => { removeClass(classForm.id); setClassForm(null); }} style={[styles.pill, styles.pillFit, { backgroundColor: '#b3261e' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Remove')}</Text></Pressable> : null}
+                <Pressable onPress={() => setClassForm(null)} style={[styles.pill, styles.pillFit, { backgroundColor: '#3a3a3a', marginLeft: 'auto' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Cancel')}</Text></Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      ) : null}
+      {/* Explore more avatars: a black glass box (the large set arrives soon) */}
+      {moreAv ? (
+        <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setMoreAv(false)}>
+          <Pressable style={styles.sureBack} onPress={() => setMoreAv(false)}>
+            <Pressable style={[styles.sureBox, { backgroundColor: 'rgba(0,0,0,0.86)', gap: 18 }]} onPress={() => {}}>
+              <Text style={[styles.sureText, { fontFamily: fonts.uiBold, fontSize: 20 }]}>{t('More avatars')}</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+                {PROFILE_COLORS.map(([c]) => (
+                  <Pressable key={c} onPress={() => { setForm((f) => ({ ...f, color: c })); setMoreAv(false); }} accessibilityRole="button" accessibilityLabel={c} style={[styles.swatch, form && form.color === c && styles.swatchOn]}>
+                    <ProfileTile p={{ color: c }} size={40} grow={1} />
+                  </Pressable>
+                ))}
+              </View>
+              <Text style={styles.small}>{t('Many more are on the way.')}</Text>
+              <Pressable onPress={() => setMoreAv(false)} style={[styles.pill, { backgroundColor: '#3a3a3a', alignSelf: 'flex-end' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Close')}</Text></Pressable>
+            </Pressable>
+          </Pressable>
+        </Modal>
+      ) : null}
       <ParentGate visible={!!gate} reason={t('Changing profiles is for grown-ups.')}
-        onPass={() => { const g = gate; setGate(null); if (g === 'add') openForm(null); else setEditing(true); }} onCancel={() => setGate(null)} />
+        onPass={() => { const g = gate; setGate(null); if (g === 'add') openForm(null); else if (g === 'select') { setEditing(false); setSelecting(true); } else if (g === 'class') setClassForm({ name: '' }); else setEditing(true); }} onCancel={() => setGate(null)} />
     </WithBar>
   );
 }
@@ -294,6 +454,13 @@ const styles = StyleSheet.create({
   input: { flex: 1, minWidth: 0, height: 48, borderRadius: 10, backgroundColor: '#d6d6d6', paddingHorizontal: 14, paddingVertical: 0, includeFontPadding: false, fontFamily: fonts.ui, fontSize: 20, color: '#222' }, // a fixed height and no padding top or bottom: iOS centres the words
   section: { fontFamily: fonts.uiBold, fontSize: 13, color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 6 },
   choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 14, backgroundColor: 'rgba(0,0,0,0.35)' },
+  tick: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: 'rgba(255,255,255,0.8)', alignItems: 'center', justifyContent: 'center' },
+  tickOn: { backgroundColor: colors.green, borderColor: colors.green },
+  tickMark: { width: 11, height: 6, borderLeftWidth: 2.2, borderBottomWidth: 2.2, borderColor: colors.white, transform: [{ translateY: -1 }, { rotate: '-45deg' }] },
+  backCircle: { width: 26, height: 26, borderRadius: 13, borderWidth: 1.5, borderColor: '#d6d6d6', alignItems: 'center', justifyContent: 'center' },
+  backChevron: { width: 8, height: 8, borderLeftWidth: 1.75, borderBottomWidth: 1.75, borderColor: '#d6d6d6', transform: [{ translateX: 1.5 }, { rotate: '45deg' }] },
+  back: { fontFamily: fonts.uiBold, fontSize: 16, color: '#d6d6d6' },
   choice: { paddingHorizontal: 14, height: 36, borderRadius: 18, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
   choiceOn: { backgroundColor: colors.green },
   choiceText: { fontFamily: fonts.uiSemiBold, fontSize: 15, color: '#dcdcdc' },

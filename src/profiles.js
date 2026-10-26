@@ -10,6 +10,10 @@ export const MAX_PROFILES = 6;
 // Teachers and Educators (Jörg, 26 Oct 2026): a classroom folder holds up to 30 students' profiles. Books are shared
 // by the whole class (to make books together); each student's notebook, badges and settings stay their own.
 export const MAX_CLASS = 30;
+// (Jörg, 26 Oct 2026: a teacher can have several class folders, each with up to 30 students. A profile in a class
+// carries the class's id as 'cls'.)
+export const inClass = (cls) => state.list.filter((p) => p.cls === cls);
+export const canAdd = (cls) => (state.classroom ? inClass(cls).length < MAX_CLASS : state.list.length < MAX_PROFILES);
 export const maxProfiles = () => (state.classroom ? MAX_CLASS : MAX_PROFILES);
 // each child picks one of the felt Coros (kept under the colour names saved before: 'blue' is now the brown
 // Coro, 'orange' the yellow one, 'grey' the teal one, so children who already chose keep their place)
@@ -34,7 +38,9 @@ export const activeProfile = () => state.list.find((p) => p.id === state.active)
 // at launch, before anything else is read: the child whose things the app shows
 export async function loadProfiles() {
   const s = await loadJSON('profiles', null);
-  if (s && Array.isArray(s.list)) state = { classroom: s.classroom || null, list: s.list, active: s.list.some((p) => p.id === s.active) ? s.active : (s.list[0] ? s.list[0].id : 'main') };
+  if (s && Array.isArray(s.list)) state = { classroom: s.classroom || null, classes: s.classes || [], list: s.list, active: s.list.some((p) => p.id === s.active) ? s.active : (s.list[0] ? s.list[0].id : 'main') };
+  // a classroom from before class folders: it becomes the first folder, with everyone in it
+  if (state.classroom && !state.classes.length) state = { ...state, classes: [{ id: 'c1', name: state.classroom.name || '' }], list: state.list.map((p) => (p.cls ? p : { ...p, cls: 'c1' })) };
   setScope(state.active);
   return state;
 }
@@ -47,10 +53,10 @@ export function switchProfile(id) {
 }
 
 // a new child: the first one keeps what's already on the phone; later ones start fresh, with their age set
-export async function addProfile({ name, color, age, photo }) {
-  if (state.list.length >= maxProfiles()) return null;
+export async function addProfile({ name, color, age, photo, cls }) {
+  if (!canAdd(cls)) return null;
   const id = state.list.length === 0 ? 'main' : `k${Date.now().toString(36)}`;
-  const p = { id, name: (name || '').trim() || 'Reader', color: color || PROFILE_COLORS[state.list.length % PROFILE_COLORS.length][0], ...(photo ? { photo } : {}) };
+  const p = { id, name: (name || '').trim() || 'Reader', color: color || PROFILE_COLORS[state.list.length % PROFILE_COLORS.length][0], ...(photo ? { photo } : {}), ...(cls ? { cls } : {}) };
   if (id !== 'main') await saveJSONFor(id, 'controls', { ...DEFAULT_CONTROLS, childAge: age ?? null });
   state = { ...state, list: [...state.list, p], active: state.list.length === 0 ? id : state.active };
   setScope(state.active);
@@ -73,14 +79,46 @@ export function removeProfile(id) {
   save(); emit();
 }
 
+// several at once (Select on the bar, then the trash can)
+export function removeProfiles(ids) {
+  const list = state.list.filter((p) => !ids.includes(p.id));
+  const active = ids.includes(state.active) ? (list[0] ? list[0].id : 'main') : state.active;
+  state = { ...state, list, active };
+  setScope(active);
+  save(); emit();
+}
+
 export const profileIsActive = (id) => currentProfile() === id;
 
 // the classroom folder: set it up with the class's name (or change the name), or end it (the students' profiles
 // stay; no new ones past the family's six)
 export const classroom = () => state.classroom || null;
 export function setClassroom(name) {
-  state = { ...state, classroom: { name: (name || '').trim() } };
+  const n = (name || '').trim();
+  let classes = state.classes || [];
+  let list = state.list;
+  // the first class folder: everyone already here goes into it
+  if (!classes.length) { classes = [{ id: 'c1', name: n }]; list = list.map((p) => (p.cls ? p : { ...p, cls: 'c1' })); }
+  state = { ...state, classroom: { name: n }, classes, list };
   save(); emit();
+}
+export const getClasses = () => state.classes || [];
+export function addClass(name) {
+  const id = `c${Date.now().toString(36)}`;
+  state = { ...state, classes: [...(state.classes || []), { id, name: (name || '').trim() }] };
+  save(); emit();
+  return id;
+}
+export function renameClass(id, name) {
+  state = { ...state, classes: (state.classes || []).map((c) => (c.id === id ? { ...c, name: (name || '').trim() } : c)) };
+  save(); emit();
+}
+// an empty class folder can go
+export function removeClass(id) {
+  if (inClass(id).length) return false;
+  state = { ...state, classes: (state.classes || []).filter((c) => c.id !== id) };
+  save(); emit();
+  return true;
 }
 export function endClassroom() {
   state = { ...state, classroom: null };

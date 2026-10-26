@@ -17,7 +17,7 @@ import ReadingOptionsSection from '../components/ReadingOptionsSection';
 import { LANGS, useT } from '../i18n';
 import { lockedControls, quickSafeControls, DEFAULT_CONTROLS, STORE_ON } from '../controls';
 import { usePurchases } from '../purchases';
-import { MAX_CLASS, PROFILE_COLORS, addProfile, endClassroom, getProfiles, onProfiles as watchProfiles, setClassroom } from '../profiles';
+import { MAX_CLASS, PROFILE_COLORS, addProfile, canAdd, endClassroom, inClass, getProfiles, onProfiles as watchProfiles, setClassroom } from '../profiles';
 import { hapticsOn, onHaptics, setHapticsOn, tap } from '../haptics';
 
 const MODES = [['self', 'Read Yourself'], ['learn', 'Learn to Read'], ['auto', 'Auto Play'], ['page', 'Page by Page Play'], ['listen', 'Listen Only']];
@@ -76,15 +76,18 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
   const [roomName, setRoomName] = useState('');
   const [names, setNames] = useState(''); // a pasted class list: one name per line (or separated by commas)
   const [added, setAdded] = useState(null);
+  const [importTo, setImportTo] = useState(null); // which class the list goes into (the first, until another is chosen)
   // make a profile for every name on the list, up to 30 in the class (names already there are skipped)
   const importNames = async () => {
-    const have = new Set(getProfiles().list.map((p) => p.name.trim().toLowerCase()));
+    const cl = getProfiles().classes || [];
+    const to = (cl.find((c) => c.id === importTo) || cl[0] || {}).id;
+    const have = new Set((to ? inClass(to) : getProfiles().list).map((p) => p.name.trim().toLowerCase()));
     const list = [...new Set(names.split(/[\n,;\t]+/).map((n) => n.trim()).filter(Boolean))].filter((n) => !have.has(n.toLowerCase()));
     let n = 0;
     for (const name of list) {
       const st = getProfiles();
-      if (st.list.length >= MAX_CLASS) break;
-      await addProfile({ name, color: PROFILE_COLORS[st.list.length % PROFILE_COLORS.length][0], age: null });
+      if (!canAdd(to)) break;
+      await addProfile({ name, color: PROFILE_COLORS[st.list.length % PROFILE_COLORS.length][0], age: null, cls: to });
       n += 1;
     }
     setNames(''); setAdded(n);
@@ -215,7 +218,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
               <Text style={styles.p}>{t('Set up a classroom folder with up to {n} student profiles. Students can make books together or on their own: books are shared by the class, and each student keeps their own notebook, badges and settings.', { n: MAX_CLASS })}</Text>
               {room ? (
                 <>
-                  <Text style={styles.cardTitle}>{t('Classroom: {name}', { name: room.name || t('Classroom') })}</Text>
+                  <Text style={styles.cardTitle}>{(getProfiles().classes || []).length === 1 ? t('Classroom: {name}', { name: room.name || t('Classroom') }) : t('{n} classes', { n: (getProfiles().classes || []).length })}</Text>
                   <Pressable onPress={onProfiles} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button">
                     <Text style={styles.pillText}>{t('Open the classroom')}</Text>
                   </Pressable>
@@ -224,6 +227,12 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
                   <Text style={styles.small}>{t('Paste your class list: one name per line, or separated by commas. Each name gets its own profile, up to {n} in the class.', { n: MAX_CLASS })}</Text>
                   <TextInput value={names} onChangeText={(v) => { setNames(v); setAdded(null); }} multiline placeholder={t('Ava\nLeo\nMia')} placeholderTextColor="#8a8a8a"
                     allowFontScaling={false} style={[styles.input, { height: 120, paddingTop: 10, textAlignVertical: 'top' }]} accessibilityLabel={t('Add students from a list')} />
+                  {/* with several classes: which one the names go into */}
+                  {(getProfiles().classes || []).length > 1 ? (
+                    <View style={styles.choices}>
+                      {(getProfiles().classes || []).map((c, k) => <Choice key={c.id} label={c.name || t('Classroom')} on={importTo ? importTo === c.id : k === 0} onPress={() => setImportTo(c.id)} />)}
+                    </View>
+                  ) : null}
                   <Pressable onPress={importNames} disabled={!names.trim()} style={[styles.pill, { backgroundColor: colors.green }, !names.trim() && { opacity: 0.45 }]} accessibilityRole="button">
                     <Text style={styles.pillText}>{t('Add these students')}</Text>
                   </Pressable>
