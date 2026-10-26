@@ -29,7 +29,7 @@ import CoverTest from './src/screens/CoverTest';
 import Help from './src/screens/Help';
 import Welcome from './src/screens/Welcome';
 import Intro from './src/screens/Intro';
-const INTRO_ON = false; // the new intro (Kid or Grown-up, Jörg 26 Oct 2026): off in builds until it's ready; the web preview shows it at #intro
+const INTRO_ON = true; // the new intro (Kid or Grown-up, Jörg 26 Oct 2026): on (Jörg, 26 Oct); shown once, on the first launch. The web preview shows it at #intro
 const WELCOME_ON = false; // the welcome intro: hidden from builds until it's finished (web preview #welcome still shows it)
 import IdeaRoom from './src/screens/IdeaRoom';
 import Settings from './src/screens/Settings';
