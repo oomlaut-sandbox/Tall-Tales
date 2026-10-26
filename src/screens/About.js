@@ -61,8 +61,8 @@ const styles = StyleSheet.create({
   body: { paddingHorizontal: 24, paddingTop: 36, gap: 16 },
   p: { fontFamily: fonts.story, fontSize: 19, lineHeight: 28, color: colors.ink },
   backRow: { flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: 'flex-start', marginTop: 56 },
-  backCircle: { width: 26, height: 26, borderRadius: 13, borderWidth: 1.5, borderColor: '#d6d6d6', alignItems: 'center', justifyContent: 'center' },
-  backChevron: { width: 8, height: 8, borderLeftWidth: 1.75, borderBottomWidth: 1.75, borderColor: '#d6d6d6', transform: [{ translateX: 1.5 }, { rotate: '45deg' }] },
-  back: { fontFamily: fonts.uiBold, fontSize: 16, color: '#d6d6d6' },
+  backCircle: { width: 26, height: 26, borderRadius: 13, borderWidth: 1.5, borderColor: '#444', alignItems: 'center', justifyContent: 'center' },
+  backChevron: { width: 8, height: 8, borderLeftWidth: 1.75, borderBottomWidth: 1.75, borderColor: '#444', transform: [{ translateX: 1.5 }, { rotate: '45deg' }] },
+  back: { fontFamily: fonts.uiBold, fontSize: 16, color: '#444' }, // dark, on the light grey page
   version: { fontFamily: fonts.ui, fontSize: 13, color: '#555', marginTop: 34 }, // well apart from the words above
 });
