@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { clearTileSpot, setTileSpot } from '../tileSpots';
 import { Animated, Easing, Image, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fonts, sectionTitle, SECTION_GAP } from '../theme';
+import { colors, fonts, sectionBox, sectionTitle, SECTION_GAP } from '../theme';
 import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG } from '../look';
 import { Bar, BarMeta, Burger, DogEar, IDLE, Panel, PlaylistIcon, WithBar, slotStyle } from '../components/Chrome';
 import { activeProfile, feltFor, onProfiles as onProfilesChange } from '../profiles';
@@ -99,9 +99,11 @@ const BAND_FELT = { library: require('../../assets/band-library.png'), store: re
 // open spread is centred too: the inside of the cover (the same blue) on the left, a white page with a + on the
 // right. Tapping it (open or shut) opens the book maker.
 const MAKE_BLUE = '#4a72a8'; // the blue felt of the coro. logo's dot, a little brighter (Jörg, 25 Oct 2026)
-function MakeBookSpread({ winW, onPress, t, go, wait = 1000 }) {
+const MAKE_BOX_PAD = 18;
+// inner: the room inside the black glass box (the book's two pages fit in it, still a gap between them)
+function MakeBookSpread({ winW, inner, onPress, t, go, wait = 1000 }) {
   const n = COLS(winW), colW = ((winW - 40) * TILE[n]) / 100, gap = ((winW - 40) * ((100 - n * TILE[n]) / (n - 1))) / 100;
-  const W = colW, spreadW = 2 * colW + gap;
+  const W = Math.min(colW, inner ? (inner - gap) / 2 : colW), spreadW = inner || 2 * colW + gap;
   const open = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (!go) return undefined;
@@ -325,8 +327,13 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
         {!selecting && onNotebook && onProfiles ? <WhoReads onPress={onProfiles} /> : null}
         {!selecting && onNotebook ? <View style={{ width: '100%' }} /> : null}{/* the notebook has the top row to itself */}
         {/* Let's Create! first: Coro is a book maker first (Jörg, 25 Oct 2026) */}
-        {!selecting && controls.create ? <Text style={styles.section} accessibilityRole="header">{t('Let’s make a book')}</Text> : null}
-        {!selecting && controls.create ? <MakeBookSpread winW={winW} onPress={onCreate} t={t} go={bookGo && !tip} wait={1000} /> : null}
+        {/* Let's make a book: its title and the blue book together in a rounded black glass box */}
+        {!selecting && controls.create ? (
+          <View style={styles.makeBox}>
+            <Text style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('Let’s make a book')}</Text>
+            <MakeBookSpread winW={winW} inner={winW - 40 - 2 * MAKE_BOX_PAD - 2} onPress={onCreate} t={t} go={bookGo && !tip} wait={1000} />
+          </View>
+        ) : null}
         {!selecting ? <View style={{ width: '100%' }} /> : null}{/* the books start their own row */}
         {/* a title over the books: the ones you made first, then the picture books */}
         {!selecting ? <Text style={styles.section} accessibilityRole="header">{t('My Books')}</Text> : null}
@@ -695,6 +702,7 @@ const styles = StyleSheet.create({
   grid: { padding: 20, paddingTop: 42, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
   tileShadow: { backgroundColor: '#828282', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.72, shadowRadius: 13, elevation: 14 }, // a deep shadow, so the books stand up off the felt
   cardClose: { fontFamily: fonts.ui, fontSize: 14, color: '#bdbdbd', paddingVertical: 4 }, // under the Book Store card
+  makeBox: { ...sectionBox, width: '100%', paddingHorizontal: MAKE_BOX_PAD, paddingTop: 18, paddingBottom: 22, gap: 18, marginTop: 30, alignItems: 'center' }, // Let's make a book, in black glass
   makePage: { position: 'absolute', top: 0, backgroundColor: '#fbfaf7', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.6, shadowRadius: 12 },
   makeCover: { backgroundColor: MAKE_BLUE, shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.6, shadowRadius: 12 },
   makeInside: { backgroundColor: MAKE_BLUE },
