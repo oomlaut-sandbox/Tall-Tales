@@ -95,7 +95,7 @@ export function Seg({ value, options, onChange, stacked }) {
   return (
     <View style={stacked ? { gap: 8 } : { flexDirection: 'row', gap: 8 }}>
       {options.map(([v, l, family]) => (
-        <Pressable key={v} onPress={() => onChange(v)} style={[styles.seg, stacked && { flex: 0, paddingVertical: 12 }, value === v && { backgroundColor: colors.green }]}>
+        <Pressable key={v} onPress={() => onChange(v)} style={[styles.seg, stacked && { flexGrow: 0, flexShrink: 0, flexBasis: 'auto', paddingVertical: 12 }, value === v && { backgroundColor: colors.green }]}>
           <Text style={[styles.segText, family && { fontFamily: family, fontWeight: '400', fontSize: 17 }]}>{l}</Text>
         </Pressable>
       ))}
