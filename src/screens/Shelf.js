@@ -263,7 +263,13 @@ export function Library({ onReadingOptions, onGarden, narrator, toast, onProfile
   useEffect(() => {
     if (libTipSeen) return undefined;
     let live = true;
-    const id = setTimeout(() => loadJSON('tipLibrary', null).then((h) => { if (live && !(h && h.hide)) { libTipSeen = true; setTip(true); } else if (live) setBookGo(true); }, () => setBookGo(true)), 2000);
+    // (once the welcome bubble has been put away for good, the blue book opens straight away, half a second after the page loads)
+    let id = null;
+    loadJSON('tipLibrary', null).then((h) => {
+      if (!live) return;
+      if (h && h.hide) { setBookGo(true); return; }
+      id = setTimeout(() => { if (live) { libTipSeen = true; setTip(true); } }, 2000);
+    }, () => { if (live) setBookGo(true); });
     return () => { live = false; clearTimeout(id); };
   }, []);
   const { width: tipW, height: tipH } = useWindowDimensions();
@@ -333,7 +339,7 @@ export function Library({ onReadingOptions, onGarden, narrator, toast, onProfile
         {!selecting && controls.create ? (
           <View style={styles.makeBox}>
             <Text style={[styles.section, { marginTop: 0, paddingLeft: ((winW - 40) * ((100 - COLS(winW) * TILE[COLS(winW)]) / (COLS(winW) - 1))) / 200 }]} accessibilityRole="header">{t('Let’s make a book')}</Text>{/* (in line with the left page once the book is open: half the gap in) */}
-            <MakeBookSpread winW={winW} inner={winW - 40 - 2 * MAKE_BOX_PAD - 2} onPress={onCreate} t={t} go={bookGo && !tip} wait={1000} />
+            <MakeBookSpread winW={winW} inner={winW - 40 - 2 * MAKE_BOX_PAD - 2} onPress={onCreate} t={t} go={bookGo && !tip} wait={500} />
           </View>
         ) : null}
         {!selecting ? <View style={{ width: '100%' }} /> : null}{/* the books start their own row */}
