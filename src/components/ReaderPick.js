@@ -168,8 +168,8 @@ const styles = StyleSheet.create({
   chipText: { color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 15 },
   field: { backgroundColor: '#161616', height: 52, borderRadius: 14, paddingHorizontal: 16, justifyContent: 'center', marginTop: 20 },
   input: { alignSelf: 'stretch', height: 22, color: colors.white, fontFamily: fonts.ui, fontSize: 17, paddingVertical: 0, paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 }, // exactly one line tall; the box centres it
-  photoRow: { flexDirection: 'row', alignItems: 'center', gap: 18, marginTop: 22 },
-  photoBtn: { height: 32, borderRadius: 16, paddingHorizontal: 14, backgroundColor: '#3d3d40', alignItems: 'center', justifyContent: 'center' },
+  photoRow: { flexDirection: 'row', alignItems: 'center', gap: 18, marginTop: 22, marginBottom: 6, padding: 16, borderRadius: 20, backgroundColor: '#2a2a2d' }, // the reader's photo and its buttons in a grey rounded box of their own (Jörg, 26 Oct 2026)
+  photoBtn: { height: 32, borderRadius: 16, paddingHorizontal: 14, backgroundColor: '#4a4a4f', alignItems: 'center', justifyContent: 'center' },
   photoText: { color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 13 },
   removePill: { height: 26, borderRadius: 13, paddingHorizontal: 12, backgroundColor: '#b3261e', alignItems: 'center', justifyContent: 'center' },
   removeText: { color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 12 },
