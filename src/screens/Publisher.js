@@ -864,7 +864,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             ) : null}
             {/* all the title tools in one black glass box under the cover (Jörg, 26 Oct 2026) */}
             {!kbUp ? (
-              <View style={[coverTitling && cover && cover.title ? styles.toolBox : { height: TOOLBOX_H, marginTop: 10 }, { width: coverSize.current }]}>{/* (no title yet: no box, just its room, so the cover never moves) */}
+              <View style={[coverTitling && cover && cover.title ? styles.toolBox : { height: 38, marginTop: 0 } /* (no title yet: Start writing sits halfway between the book and where it would be: Jörg, 26 Oct 2026) */, { width: coverSize.current }]}>{/* (no title yet: no box, just its room, so the cover never moves) */}
               {coverTitling && cover && cover.title ? (() => {
                 const T = cover.title; const by = coverSel === 'byline' && T.bx != null;
                 const curColor = (by ? bylineLook(T).color : T.color) || '#ffffff';
