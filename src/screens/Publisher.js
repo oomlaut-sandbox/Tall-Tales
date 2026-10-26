@@ -308,6 +308,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     Animated.timing(coverFade, { toValue: coverOpen ? 0 : 1, duration: coverOpen ? 450 : 600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start();
   }, [coverOpen]);
   const [coverTip, setCoverTip] = useState(false); // the 'Tap the title…' bubble
+  const [toolsTip, setToolsTip] = useState(true); // no title yet: a speech bubble says where the tools will be
   useEffect(() => {
     if (!(coverOpen && coverTitling)) { setCoverTip(false); return undefined; }
     setCoverTip(true); // stays until the title is first touched, or for 8 seconds
@@ -862,7 +863,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             ) : null}
             {/* all the title tools in one black glass box under the cover (Jörg, 26 Oct 2026) */}
             {!kbUp ? (
-              <View style={[styles.toolBox, { width: coverSize.current }]}>
+              <View style={[coverTitling && cover && cover.title ? styles.toolBox : { height: TOOLBOX_H, marginTop: 10 }, { width: coverSize.current }]}>{/* (no title yet: no box, just its room, so the cover never moves) */}
               {coverTitling && cover && cover.title ? (() => {
                 const T = cover.title; const by = coverSel === 'byline' && T.bx != null;
                 const curColor = (by ? bylineLook(T).color : T.color) || '#ffffff';
@@ -905,11 +906,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                     </Pressable>
                   </View>
                   </>
-                ); })() : (
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                  <Text style={[styles.donePillText, { fontSize: 14, color: '#bdbdbd', fontFamily: fonts.ui, textAlign: 'center' }]}>{tr('The title and author tools appear here once your cover has a title.')}</Text>
-                </View>
-              )}
+                ); })() : null}
               </View>
             ) : null}
             {/* Done (or Start writing) right under the box, lined up with the cover's right edge */}
@@ -922,6 +919,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             )}
           </View>
           {/* the hint is a speech bubble near the bottom that goes away after a while (tap it to close it sooner) */}
+          {!coverTitling && toolsTip && !kbUp && !imgAsk && !hardAsk ? <Toast message={tr('The title and author tools appear here once your cover has a title.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 74 }} onDismiss={() => setToolsTip(false)} /> : null}
           {coverTitling && coverTip && !kbUp ? <Toast message={tr('Tap the title or the author to type. Drag them anywhere on the cover.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 74 }} onDismiss={() => setCoverTip(false)} /> : null}
           {/* Done: bottom right, lined up with the cover's right edge */}
           {/* a new book: 'Start writing' goes on to page 1 (nobody is stuck on the cover) */}
