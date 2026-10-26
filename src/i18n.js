@@ -209,7 +209,6 @@ const T = {
     fr: 'Chaque livre a une indication d’âge. Les livres pour les enfants plus âgés sont masqués dans Ma bibliothèque et la librairie.',
     es: 'Cada libro tiene una edad recomendada. Los libros para niños mayores se ocultan en Mi biblioteca y en la librería.',
     ja: '本にはそれぞれねんれいのめやすがあります。もっと大きいこどもむけの本は、本だなと本やさんにでません。', ar: "لكل كتاب تصنيف عمري. الكتب المصنّفة لأطفال أكبر سنًا تُخفى في مكتبتي ومتجر الكتب." },
-  'Ideas and Inspiration': { de: 'Ideen und Inspiration', fr: 'Idées et inspiration', es: 'Ideas e inspiración', ja: 'アイデアと ひらめき', ar: "أفكار وإلهام" },
   'Example of a Coro book. You make your own.': { de: 'Beispiel für ein Coro-Buch. Ihr macht euer eigenes.', fr: 'Exemple de livre Coro. Vous créez le vôtre.', es: 'Ejemplo de un libro de Coro. Vosotros hacéis el vuestro.', ja: 'Coro の本の例です。自分だけの本をつくりましょう。', ar: "مثال على كتاب من Coro. اصنع كتابك بنفسك." },
   'Tap the sun icon to close Listen Only mode.': { de: 'Tippe auf die Sonne, um „Nur zuhören“ zu beenden.', fr: 'Touche le soleil pour quitter « Écouter seulement ».', es: 'Toca el sol para salir de «Solo escuchar».', ja: 'おひさまの アイコンを タップすると「きくだけ」モードが おわるよ。', ar: 'اضغط على أيقونة الشمس لإغلاق وضع الاستماع فقط.' },
   'Tap the moon icon to close Listen Only mode.': { de: 'Tippe auf den Mond, um „Nur zuhören“ zu beenden.', fr: 'Touche la lune pour quitter « Écouter seulement ».', es: 'Toca la luna para salir de «Solo escuchar».', ja: 'おつきさまの アイコンを タップすると「きくだけ」モードが おわるよ。', ar: 'اضغط على أيقونة القمر لإغلاق وضع الاستماع فقط.' },
@@ -325,7 +324,7 @@ const T = {
   'Process': { de: 'Entstehung', fr: 'Processus', es: 'Proceso', ja: 'せいさくの ようす', ar: "طريقة الصنع" },
   'Sound volume': { de: 'Lautstärke der Klänge', fr: 'Volume des sons', es: 'Volumen de los sonidos', ja: 'おとの おおきさ', ar: "مستوى صوت الأصوات" },
   'Music volume': { de: 'Lautstärke der Musik', fr: 'Volume de la musique', es: 'Volumen de la música', ja: 'おんがくの おおきさ', ar: "مستوى صوت الموسيقى" },
-  'Visit Ideas and Inspiration': { de: 'Zu Ideen und Inspiration', fr: 'Aller à Idées et inspiration', es: 'Ir a Ideas e inspiración', ja: '「アイデアと ひらめき」へ', ar: "زر «أفكار وإلهام»" },
+  'Visit Ideas': { de: 'Zu den Ideen', fr: 'Voir les idées', es: 'Ver las ideas', ja: 'アイデアへ', ar: "زر «أفكار»" },
   'Many ideas for books you can make together: your photos and drawings, your words, your voice.': { de: 'Viele Ideen für Bücher, die ihr zusammen machen könnt: eure Fotos und Zeichnungen, eure Worte, eure Stimme.', fr: 'Plein d’idées de livres à faire ensemble : vos photos et dessins, vos mots, votre voix.', es: 'Muchas ideas de libros para hacer juntos: tus fotos y dibujos, tus palabras, tu voz.', ja: 'いっしょに つくれる 本の アイデアが たくさん：しゃしんや え、ことば、そして あなたの こえで。', ar: "أفكار كثيرة لكتب تصنعونها معًا: صوركم ورسوماتكم، وكلماتكم، وأصواتكم." },
   'Make a story': { de: 'Geschichte machen', fr: 'Créer un livre', es: 'Hacer un cuento', ja: 'えほんを つくる', ar: "اصنع قصة" },
   // ---- My Notebook ----
