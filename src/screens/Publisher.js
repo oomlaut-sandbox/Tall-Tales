@@ -1,6 +1,7 @@
 // "Make a book": add a picture and words page by page (Jörg's Publisher design).
 // Everything saves automatically. "Pages" opens a list to reorder or delete pages,
 // or to delete the whole story.
+import { Asset } from 'expo-asset';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Keyboard, KeyboardAvoidingView, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -100,6 +101,8 @@ export function draftFrom(story) {
 // The empty picture square: Jörg's light grey Polaroid with "Add Image" in white in the middle of its blue
 // square (measured from the picture: the blue runs 28.3%–71.1% across and 24.3%–68.4% down).
 const POLAROID = require('../../assets/polaroid.jpg');
+// the hardcover looks for a text only cover: [key, picture, name] (Jörg will send the pictures)
+const HARDCOVERS = [];
 const BLUE_CLOTH = require('../../assets/make-cover-cloth.jpg'); // the blue cloth book cover (as on Let's make a book)
 const BLUE = { l: 0.283, r: 0.711, t: 0.243, b: 0.684 };
 // A text field whose words always sit in the middle, top to bottom: the box centres a one-line field that is exactly
@@ -305,6 +308,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     const t = setTimeout(() => setCoverTip(false), 8000);
     return () => clearTimeout(t);
   }, [coverOpen, coverTitling]);
+  const [hardAsk, setHardAsk] = useState(false); // Text only cover: choose a hardcover
   const [coverTool, setCoverTool] = useState(null); // 'color' | 'font' palette open under the tools
   // which words the tools change: the title or the author line (tap one on the cover to choose it)
   const [coverSel, setCoverSel] = useState('title');
@@ -421,6 +425,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   };
 
 
+  // a hardcover look as the cover picture (Text only cover: the title goes on top as usual)
+  const applyHardcover = async (src) => {
+    try { const a = Asset.fromModule(src); await a.downloadAsync(); pickCover('library', { uri: a.localUri || a.uri, w: a.width || 1600, h: a.height || 1600 }); } catch (e) {}
+  };
   const removeImage = () => {
     if (page.uri) dropPicture(page.uri);
     update({ uri: null, w: 1, h: 1 });
@@ -792,7 +800,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               coverSize.current = W;
               const t = cover && cover.title;
               return (
-                <View style={[styles.coverSquare, { width: W, height: W }]}>
+                <View style={[styles.coverShadow, { width: W, height: W }]}>{/* the drop shadow sits outside the clipped square (iOS hides a shadow on a view that clips) */}
+                <View style={[styles.coverSquare, { width: W, height: W, marginBottom: 0 }]}>
                   {cover && cover.uri ? (
                     <Pressable onPress={() => setImgAsk('cover')} style={StyleSheet.absoluteFill} accessibilityLabel={tr('Change the cover picture')}>
                       <Image source={{ uri: cover.uri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
@@ -832,6 +841,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                     ) : null}
                     </>
                   ); })() : null}
+                </View>
                 </View>
               );
             })()}
@@ -966,9 +976,29 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             {/* a photo of a drawing, say; the camera only opens after the grown-up check */}
             <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setCamGate(t); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Take a photo')}</Text></Pressable>
             <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setDrawFor(t); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Make a drawing')}</Text></Pressable>
+            {/* the cover only: just the title on a hardcover (cloth, leather…) of their choice */}
+            {imgAsk === 'cover' ? <Pressable onPress={() => { setImgAsk(null); setHardAsk(true); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Text only cover')}</Text></Pressable> : null}
             <Pressable onPress={() => setImgAsk(null)} style={[styles.choiceBtn, { marginTop: 14 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Cancel')}</Text></Pressable>
           </View>
         </View>
+      ) : null}
+      {hardAsk ? (
+        // Text only cover: a large black glass box of hardcover looks to choose from (Jörg's pictures are on the way)
+        <Pressable style={[StyleSheet.absoluteFill, styles.choiceBack]} onPress={() => setHardAsk(false)}>
+          <Pressable onPress={() => {}} style={[styles.choice, { backgroundColor: 'rgba(0,0,0,0.88)', maxWidth: 520, width: '100%' }]}>
+            <Text style={styles.choiceTitle}>{tr('Choose a hardcover')}</Text>
+            <ScrollView style={{ maxHeight: winH * 0.55 }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'center', paddingVertical: 6 }}>
+              {HARDCOVERS.length ? HARDCOVERS.map(([k, src, label]) => (
+                <Pressable key={k} onPress={() => { setHardAsk(false); applyHardcover(src); }} accessibilityRole="button" accessibilityLabel={tr(label)} style={{ alignItems: 'center', gap: 6 }}>
+                  <Image source={src} style={{ width: 120, height: 120, borderRadius: 4 }} resizeMode="cover" />
+                  <Text style={[styles.choiceBtnText, { fontSize: 13 }]}>{tr(label)}</Text>
+                </Pressable>
+              )) : [0, 1, 2, 3].map((n) => <View key={n} style={{ width: 120, height: 120, borderRadius: 6, backgroundColor: '#2e2e30' }} />)}
+            </ScrollView>
+            {!HARDCOVERS.length ? <Text style={[styles.choiceBtnText, { fontSize: 14, color: '#bdbdbd', textAlign: 'center', marginTop: 10 }]}>{tr('The hardcovers are coming soon.')}</Text> : null}
+            <Pressable onPress={() => setHardAsk(false)} style={[styles.choiceBtn, { marginTop: 16 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Cancel')}</Text></Pressable>
+          </Pressable>
+        </Pressable>
       ) : null}
       {drawFor ? (
         <DrawEditor insets={insets} title={drawFor === 'cover' ? tr('Drawing · Cover') : tr('Drawing · Page {n}', { n: i + 1 })}
@@ -995,6 +1025,7 @@ const styles = StyleSheet.create({
   editor: { alignItems: 'center' },
   editorHead: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 30, paddingBottom: 12 },
   editorTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 18 },
+  coverShadow: { marginBottom: 14, backgroundColor: '#2f5f9e', shadowColor: '#000', shadowOffset: { width: 3, height: 8 }, shadowOpacity: 0.55, shadowRadius: 14, elevation: 10 },
   coverSquare: { backgroundColor: '#7d7d7d', overflow: 'hidden', marginBottom: 14, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10 },
   toolOn: { backgroundColor: colors.green },
   toolBox: { height: TOOLBOX_H, marginTop: 10, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.72)', paddingHorizontal: 10, paddingVertical: 8 }, // the black glass box
