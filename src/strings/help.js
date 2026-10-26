@@ -304,11 +304,11 @@ export default {
     fr: 'Certaines actions, comme prendre des photos, imprimer, partager ou supprimer, posent d’abord une petite question à laquelle seul un adulte sait répondre.',
     es: 'Algunas cosas, como hacer fotos, imprimir, compartir y borrar, hacen primero una pregunta rápida que solo un adulto puede responder.',
     ja: 'しゃしんをとる、いんさつ、シェア、さくじょなどのときは、さきにおとなだけがこたえられるかんたんなしつもんがでます。', ar: "بعض الأمور، مثل التقاط الصور والطباعة والمشاركة والحذف، تطرح أولًا سؤالًا سريعًا لا يجيب عنه إلا شخص كبير." },
-  'Authors and illustrators young and old can send their books to the Coro Book Store. Visit oomlaut.com for more information.': {
-    de: 'Autorinnen, Autoren, Illustratorinnen und Illustratoren, ob jung oder alt, können ihre Bücher an den Coro-Buchladen schicken. Mehr dazu auf oomlaut.com.',
-    fr: 'Auteurs et illustrateurs, petits et grands, peuvent envoyer leurs livres à la Librairie Coro. Plus d’informations sur oomlaut.com.',
-    es: 'Autores e ilustradores, pequeños y mayores, pueden enviar sus libros a la Librería de Coro. Más información en oomlaut.com.',
-    ja: 'おとなもこどもも、作家やえかきさんは、自分の本を Coro の「本やさん」におくれます。くわしくは oomlaut.com へ。', ar: "يمكن للمؤلفين والرسامين، صغارًا وكبارًا، إرسال كتبهم إلى متجر كتب Coro. زوروا oomlaut.com لمزيد من المعلومات." },
+  'Authors and illustrators young and old can send their books to the Coro Book Store. Visit corobooks.com for more information.': {
+    de: 'Autorinnen, Autoren, Illustratorinnen und Illustratoren, ob jung oder alt, können ihre Bücher an den Coro-Buchladen schicken. Mehr dazu auf corobooks.com.',
+    fr: 'Auteurs et illustrateurs, petits et grands, peuvent envoyer leurs livres à la Librairie Coro. Plus d’informations sur corobooks.com.',
+    es: 'Autores e ilustradores, pequeños y mayores, pueden enviar sus libros a la Librería de Coro. Más información en corobooks.com.',
+    ja: 'おとなもこどもも、作家やえかきさんは、自分の本を Coro の「本やさん」におくれます。くわしくは corobooks.com へ。', ar: "يمكن للمؤلفين والرسامين، صغارًا وكبارًا، إرسال كتبهم إلى متجر كتب Coro. زوروا corobooks.com لمزيد من المعلومات." },
 
   // ---- search ----
   'Nothing found for “{q}”. Try another word.': {

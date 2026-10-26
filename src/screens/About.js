@@ -36,7 +36,7 @@ export default function About({ u, openMenu, onSecret }) {
         <Text style={[styles.p, textStyle]}>
           {t('Record yourselves reading each book and send it to grandparents, cousins and friends, who can add their own voices. A few beautiful picture books are here too, read by a warm narrator, with each word lighting up as it’s spoken.')}
         </Text>
-        <Text style={[styles.p, textStyle]}>{t('Oomlaut is always looking for new picture books. If you’ve written or illustrated a story, send it to us and join the Oomlaut author community. Visit oomlaut.com for more information.')}</Text>
+        <Text style={[styles.p, textStyle]}>{t('Oomlaut is always looking for new picture books. If you’ve written or illustrated a story, send it to us and join the Oomlaut author community. Visit corobooks.com for more information.')}</Text>
         {/* the store owner's way in: hold the version line for five seconds (nothing happens on a tap) */}
         <Pressable onLongPress={onSecret} delayLongPress={5000} accessible={false}><Text style={styles.version}>{t('Version {v}', { v: VERSION })} · © 2026 Oomlaut Inc.</Text></Pressable>
       </ScrollView>

@@ -162,7 +162,7 @@ const ALL_HELP = [
     'Any use of AI in created content, such as the books in the Book Store, is clearly documented and described in each book’s Process description. Parents and kids have full transparency, so they can decide for themselves.',
   ] },
   { section: 'Grown-ups', title: 'Sending us your book', store: true, text: [
-    'Authors and illustrators young and old can send their books to the Coro Book Store. Visit oomlaut.com for more information.',
+    'Authors and illustrators young and old can send their books to the Coro Book Store. Visit corobooks.com for more information.',
   ] },
   { section: 'Teachers and Educators', title: 'Classroom folders', text: [
     'A classroom folder holds up to 30 student profiles. Set it up in Settings, under Teachers and Educators: give your class a name, then add each student in Profiles.',
