@@ -18,8 +18,8 @@
       ]
     },
     "coro-kids-30s": {
-      "speed": 1.0,
-      "pause": "0.6s",
+      "speed": 0.85,
+      "pause": "1.8s",
       "lines": [
         "Want to make your very own book?",
         "Draw anything! Add photos of your pet, your family, your best day ever.",
