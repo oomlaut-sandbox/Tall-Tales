@@ -208,7 +208,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
             ? (editing ? t('Tap a profile to change its name, character or age.') : t('Who is reading? Tap your name.'))
             : t('Give each reader their own notebook, badges, playlists and settings: children and grown-ups. A child’s age decides which books they see.')}</Text>
           {/* Grid or List (the names, A to Z) */}
-          {!folders && shown.length ? (
+          {room && !folders && shown.length ? (
             <View style={{ flexDirection: 'row', gap: 8, alignSelf: 'flex-end', marginTop: -6 }}>
               {[['grid', t('Grid')], ['list', t('List')]].map(([k, label]) => (
                 <Pressable key={k} onPress={() => setView(k)} accessibilityRole="button" accessibilityState={{ selected: view === k }} style={[styles.choice, view === k && styles.choiceOn]}>
@@ -246,7 +246,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
                 <Text style={styles.age}> </Text>
               </Pressable>}
             </View>
-          ) : view === 'list' ? (
+          ) : room && view === 'list' ? (
             // the list: everyone's name, A to Z
             <View style={{ gap: 6 }}>
               {[...shown].sort((x, y) => x.name.localeCompare(y.name)).map((p) => {

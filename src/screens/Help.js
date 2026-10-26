@@ -3,6 +3,7 @@
 import { TitleIcon } from '../titleIcons';
 import { HEADING_ICONS } from '../headingIcons';
 import { STORE_ON } from '../controls';
+import { VIDEOS } from './Intro';
 import React, { useMemo, useRef, useState } from 'react';
 import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -177,6 +178,7 @@ export const HELP = ALL_HELP.filter((h) => STORE_ON || !h.store);
 const IDEAS_FELT = require('../../assets/ideas-felt.png');
 
 export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro }) {
+  const [soonVid, setSoonVid] = React.useState(null); // a video tapped (they're on the way)
   const searchRef = useRef(null);
   const { width: winWf } = useWindowDimensions();
   const feltW = Math.min(520, winWf - 48); // the felt patch, as wide as the column
@@ -255,6 +257,25 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
             );
           })}
           <View style={{ height: 18 }} />
+          {/* Videos: the same tutorial films as the intro's What is Coro? page, well apart from the sections above and the
+              Ideas patch below (Jörg, 26 Oct 2026) */}
+          <View style={{ height: 30 }} />
+          <View style={styles.box}>
+            <View style={[styles.secHead, { marginBottom: 6 }]}>
+              <Image source={HEADING_ICONS['Reading']} style={styles.secIcon} accessibilityIgnoresInvertColors />
+              <Text style={[styles.section, { flex: 1 }]}>{t('Videos')}</Text>
+            </View>
+            {VIDEOS.map((v) => (
+              <Pressable key={v} onPress={() => setSoonVid(v)} accessibilityRole="button" style={[styles.card, { flexDirection: 'row', alignItems: 'center', gap: 14 }]}>
+                <View style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#d6d6d6', alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={{ width: 0, height: 0, marginLeft: 3, borderTopWidth: 6, borderBottomWidth: 6, borderLeftWidth: 10, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: '#333' }} />
+                </View>
+                <Text style={[styles.cardTitle, { flex: 1 }]}>{t(v)}</Text>
+              </Pressable>
+            ))}
+            {soonVid ? <Text style={[styles.p, { color: '#cfcfcf', fontSize: 14 }]}>{t('“{name}” is coming soon.', { name: t(soonVid) })}</Text> : null}
+          </View>
+          <View style={{ height: 30 }} />
           {/* the Idea Room, at the bottom now (Ideas has its own place in the menu: Jörg, 26 Oct 2026) */}
           {/* in Jörg's green felt patch, the words inside its stitching */}
           <Pressable onPress={onIdeas} accessibilityRole="button" style={[styles.ideas, { width: feltW, height: Math.round(feltW * 805 / 1100), borderRadius: feltW * 98 / 1100 /* the felt's own corners, so the shadow matches */ }]}>

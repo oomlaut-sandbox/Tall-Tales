@@ -48,7 +48,7 @@ function Chip({ label, on, onPress }) {
 }
 
 // the tutorial videos on the What is Coro? page (the films themselves are still being made)
-const VIDEOS = ['Complete walk-through', 'Quick tour', 'Making and sharing books', 'Reading books', 'Parental controls', 'For teachers']; // (Parental controls: the same words as in Settings)
+export const VIDEOS = ['Complete walk-through', 'Quick tour', 'Making and sharing books', 'Reading books', 'Parental controls', 'For teachers']; // (Parental controls: the same words as in Settings)
 
 export default function Intro({ who, onDone, onBack }) {
   const t = useT();

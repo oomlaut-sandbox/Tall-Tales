@@ -652,6 +652,7 @@ const T = {
   'Answers to all your questions': { de: 'Antworten auf all deine Fragen', fr: 'Des réponses à toutes vos questions', es: 'Respuestas a todas tus preguntas', ja: 'すべての しつもんに こたえます', ar: "إجابات عن كل أسئلتك" },
   'Back to Help': { de: 'Zurück zur Hilfe', fr: 'Retour à l’aide', es: 'Volver a Ayuda', ja: 'ヘルプに もどる', ar: "العودة إلى المساعدة" },
   'Replay intro': { de: 'Einführung wiederholen', fr: 'Revoir l’intro', es: 'Repetir la intro', ja: 'はじめから もういちど', ar: "إعادة المقدمة" },
+  'Videos': { de: 'Videos', fr: 'Vidéos', es: 'Vídeos', ja: 'どうが', ar: "مقاطع الفيديو" },
   'Visit the Ideas Room in Ideas and Support': { de: 'Besuche das Ideenzimmer unter Ideen und Hilfe', fr: 'Va dans la Salle des idées, dans Idées et aide', es: 'Visita la Sala de ideas en Ideas y ayuda', ja: '「アイデアと サポート」の アイデアのへやへ', ar: "زُر «غرفة الأفكار» في «الأفكار والدعم»" },
   'Visit the Ideas Room in Ideas and Support.': { de: 'Besuche das Ideenzimmer unter Ideen und Hilfe.', fr: 'Va dans la Salle des idées, dans Idées et aide.', es: 'Visita la Sala de ideas en Ideas y ayuda.', ja: '「アイデアと サポート」の アイデアのへやへ どうぞ。', ar: "زُر «غرفة الأفكار» في «الأفكار والدعم»." },
   'Skip': { de: 'Überspringen', fr: 'Passer', es: 'Saltar', ja: 'スキップ', ar: "تخطٍّ" },
