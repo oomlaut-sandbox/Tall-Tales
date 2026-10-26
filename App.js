@@ -283,6 +283,8 @@ function Root() {
   const [moreGate, setMoreGate] = useState(false);
   // Reading Options (modes, voices, fonts and sounds), from My Library, the Book Store and Settings
   const readingOptions = controls.playback && !controls.playMode ? () => setPlayOpen(true) : null;
+  // the collapsible Reading Options box under the books: what it needs to show the choices in place
+  const readingBox = controls.playback && !controls.playMode ? { prefs, setPrefs, toast, onPlaylists: () => go('playlists') } : null;
   const newBook = () => {
     if (purchasesReady && !purchases.member && userStories.length >= FREE_BOOKS) { setMoreGate(true); return; }
     openPublisher(null);
@@ -345,7 +347,7 @@ function Root() {
         ) : null}
         {(screen === 'library' || (screen === 'start' && peek === 'library')) && (
           <Animated.View style={{ flex: 1, opacity: screen === 'library' ? libFade : 1 }}>
-          <Library onReadingOptions={readingOptions} onGarden={controls.garden ? () => go('garden') : undefined} u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
+          <Library onReadingOptions={readingBox} onGarden={controls.garden ? () => go('garden') : undefined} u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
             onNotebook={(rect) => {
               // the notebook stays where it is while the shelf dissolves away to plain felt; then the notebook
               // screen takes over (its own notebook is already in the same spot) and the held one is taken away
@@ -378,7 +380,7 @@ function Root() {
         {screen === 'publisher' && draft && (
           <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} onIdeas={() => go('ideas')} />
         )}
-        {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} onReadingOptions={readingOptions} />}
+        {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} onReadingOptions={readingBox} />}
         {screen === 'music' && <MusicSounds u={u} openMenu={openMenu} prefs={prefs} setPrefs={setPrefs} />}
         {screen === 'profiles' && <Profiles u={u} openMenu={openMenu} setControls={setControls} onPicked={(id) => { setNextScreen('library'); switchProfile(id); }} onBack={() => go('library')} />}
         {screen === 'playlists' && <Playlists u={u} openMenu={openMenu} shelf={childShelf} onPlay={playPlaylist} onDone={() => go('library')} />}

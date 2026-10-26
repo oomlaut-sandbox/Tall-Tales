@@ -13,7 +13,7 @@ import { DESK_FELT, DESK_BG, IS_TABLET } from '../look';
 const IDEAS_FELT = require('../../assets/ideas-felt.png'); // the mossy green stitched felt (Ideas and Support), 1100 × 805
 const BAND_FELT = require('../../assets/band-settings.jpg'); // Jörg's grey stitched felt banner
 import { Bar, Burger, MusicIcon, Option, PlayGlyph, WithBar } from '../components/Chrome';
-import { ReadingOptionsContent } from '../components/PlaybackPanel';
+import ReadingOptionsSection from '../components/ReadingOptionsSection';
 import { LANGS, useT } from '../i18n';
 import { lockedControls, quickSafeControls, DEFAULT_CONTROLS, STORE_ON } from '../controls';
 import { usePurchases } from '../purchases';
@@ -159,17 +159,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
                 <Text style={[styles.small, { color: '#eef0e2' }]}>{t('Once it’s unlocked, your child finds the way in by scrolling past the corkboard at the bottom of My Library. We won’t tell them.')}</Text>
               </View>
           </Section>
-          <Section id="reading" icon={SET_ICONS.reading} title={t('Reading Options')} open={openSec} setOpen={setOpenSec}>
-            {/* the Reading Options themselves, right here (the same choices as the panel from My Library) */}
-            <View style={{ gap: 16, paddingTop: 6 }}>
-              <ReadingOptionsContent prefs={prefs} setPrefs={setPrefs} toast={toast} onPlaylists={onPlaylists} view={roView} setView={setRoView} />
-              {/* haptic feedback: small clicks you feel on the dials, knobs, sliders and buttons (for the whole phone) */}
-              <View style={{ gap: 8, paddingTop: 10 }}>
-                <Text style={styles.help}>{t('Haptic feedback')}</Text>
-                <Toggle label={t('Feel a soft click on dials, knobs and buttons')} value={hap} onChange={setHapticsOn} />
-              </View>
-            </View>
-          </Section>
+          <ReadingOptionsSection prefs={prefs} setPrefs={setPrefs} toast={toast} onPlaylists={onPlaylists} open={openSec === 'reading'} onToggle={() => setOpenSec((o) => (o === 'reading' ? null : 'reading'))} />
           <Section id="music" icon={SET_ICONS.music} title={t('Music and Sounds')} open={openSec} setOpen={setOpenSec}>
             {onMusic ? <View style={styles.card}><Option glyph={<MusicIcon size={24} weight={3.4} />} title={t('Music and Sounds')} sub={t('Relaxing and gentle')} onPress={onMusic} /></View> : null}
           </Section>
