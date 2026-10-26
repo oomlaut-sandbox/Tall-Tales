@@ -834,7 +834,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 </View>
                   {/* the author / illustrator on the cover too: only if they want it (and gave a name); on the right edge, apart from the tools */}
                   {creditsLine(draft.writer, draft.artist) ? (
-                    <Pressable onPress={() => { const T = cover.title; if (T.byline) { setCoverTitle({ byline: '', bx: null, by: null }); setCoverSel('title'); } else { setCoverTitle({ byline: creditsLine(draft.writer, draft.artist).replace(/\.$/, ''), bx: 0.5, by: 0.9, bs: T.size * 0.42 }); // (it starts near the bottom, clear of a title of any length) setCoverSel('byline'); } }}
+                    <Pressable onPress={() => { const T = cover.title; if (T.byline) { setCoverTitle({ byline: '', bx: null, by: null }); setCoverSel('title'); } else { setCoverTitle({ byline: creditsLine(draft.writer, draft.artist).replace(/\.$/, ''), bx: 0.5, by: 0.9, bs: T.size * 0.42 }); setCoverSel('byline'); } }}
                       style={[styles.authorBtn, cover.title.byline ? { backgroundColor: colors.green } : null]} accessibilityRole="button" accessibilityState={{ selected: !!cover.title.byline }}>
                       <Text style={[styles.donePillText, { fontSize: 14 }]}>{tr('Author')}</Text>
                     </Pressable>
