@@ -47,7 +47,8 @@ export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : 
 export const NARRATORS = [['lily', 'Fatima'], ['gregory', 'Henry']]; // add more voices here (and in ci/narrate.js)
 // narrators who read only certain books (picked in that book's 'Who reads this book?' box; the book remembers it)
 const LISTEN_TIP_SEEN = {}; // Listen Only's 'how to close' bubble, shown once per launch for each scene
-export const BOOK_NARRATORS = [['johnny', 'James', ['different']]];
+// James (voice files under 'johnny') reads Different: off for now (Jörg, 26 Oct 2026). Back: [['johnny', 'James', ['different']]]
+export const BOOK_NARRATORS = [];
 export const narratorOf = (prefs) => (NARRATORS.some(([k]) => k === prefs.narrator) ? prefs.narrator : 'lily');
 const NARRATOR = 0.92; // the phone voice's normal pace
 const VOICE_RECORDING = {
