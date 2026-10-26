@@ -149,7 +149,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
                     <View style={{ position: 'absolute', width: 2, height: side * 0.2, backgroundColor: '#aaa' }} />
                   </View>
                 </View>
-                <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75} style={styles.name}>{room ? t('Add a student') : t('Add a profile')}</Text>
+                <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} style={styles.name}>{room ? t('Add a student') : t('Add a profile')}</Text>
                 <Text style={styles.age}> </Text>
               </Pressable>
             ) : null}

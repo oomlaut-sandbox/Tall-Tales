@@ -157,6 +157,10 @@ const ALL_HELP = [
   { section: 'Grown-ups', title: 'The grown-up check', text: [
     'Some things, like taking photos, printing, sharing and deleting, first ask a quick question only a grown-up can answer.',
   ] },
+  { section: 'Grown-ups', title: 'AI and authenticity', text: [
+    'Authenticity is a top priority at Coro.',
+    'Any use of AI in created content, such as the books in the Book Store, is clearly documented and described in each book’s Process description. Parents and kids have full transparency, so they can decide for themselves.',
+  ] },
   { section: 'Teachers and Educators', title: 'Classroom folders', text: [
     'A classroom folder holds up to 30 student profiles. Set it up in Settings, under Teachers and Educators: give your class a name, then add each student in Profiles.',
     'Students tap their name to start. Each one keeps their own notebook, badges and settings.',
