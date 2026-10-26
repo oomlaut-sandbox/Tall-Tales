@@ -13,3 +13,6 @@ Jörg's hand-made felt mascot: a little felt book, tan cover on top, white felt 
 - None of the old grey mascot's traits carry over (the new Coro has its own embroidered smile).
 - coro-felt-wordmark-colour-on-cream.jpg: the coloured felt coro. (rust, olive, blue, mustard, a blue-grey dot) on cream felt, for light backgrounds (Jörg, 25 Oct 2026; for later)
 - coro-felt-wordmark-colour-cutout.png: the coloured felt coro. (on cream) cut out, for white backgrounds such as the promo videos (Jörg, 26 Oct 2026)
+
+## Slogan (locked in, Jörg 26 Oct 2026)
+**Books you make together.** Use it as written (with the full stop) wherever Coro signs off: About, the App Store, the videos' end card, corobooks.com.
