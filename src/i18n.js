@@ -614,6 +614,7 @@ const T = {
   'Add these students': { de: 'Diese Schüler hinzufügen', fr: 'Ajouter ces élèves', es: 'Añadir estos alumnos', ja: 'この せいとを ふやす', ar: "أضف هؤلاء الطلاب" },
   '1 student added.': { de: '1 Schüler hinzugefügt.', fr: '1 élève ajouté.', es: '1 alumno añadido.', ja: '1人 ふやしました。', ar: "أُضيف طالب واحد." },
   '{n} students added.': { de: '{n} Schüler hinzugefügt.', fr: '{n} élèves ajoutés.', es: '{n} alumnos añadidos.', ja: '{n}人 ふやしました。', ar: "أُضيف {n} طالبًا." },
+  'Use a photo': { de: 'Ein Foto verwenden', fr: 'Utiliser une photo', es: 'Usar una foto', ja: 'しゃしんを つかう', ar: "استخدم صورة" },
   'Visit the Ideas Room in Ideas and Support': { de: 'Besuche das Ideenzimmer unter Ideen und Hilfe', fr: 'Va dans la Salle des idées, dans Idées et aide', es: 'Visita la Sala de ideas en Ideas y ayuda', ja: '「アイデアと サポート」の アイデアのへやへ', ar: "زُر «غرفة الأفكار» في «الأفكار والدعم»" },
   'Visit the Ideas Room in Ideas and Support.': { de: 'Besuche das Ideenzimmer unter Ideen und Hilfe.', fr: 'Va dans la Salle des idées, dans Idées et aide.', es: 'Visita la Sala de ideas en Ideas y ayuda.', ja: '「アイデアと サポート」の アイデアのへやへ どうぞ。', ar: "زُر «غرفة الأفكار» في «الأفكار والدعم»." },
   'Skip': { de: 'Überspringen', fr: 'Passer', es: 'Saltar', ja: 'スキップ', ar: "تخطٍّ" },

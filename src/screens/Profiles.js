@@ -3,7 +3,9 @@
 // The books, the membership, parents' recordings, the language and the music are the family's.
 // Kids can switch between profiles by tapping (unless a grown-up has turned that off); adding, changing and
 // removing a profile is behind the grown-up question.
-import { TitleIcon } from '../titleIcons';
+import { TITLE_ICONS, TitleIcon } from '../titleIcons';
+import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,7 +15,7 @@ import { Bar, Burger, WithBar, barGeo } from '../components/Chrome';
 import ParentGate from '../components/ParentGate';
 import { useT } from '../i18n';
 import { useControls, DEFAULT_CONTROLS } from '../controls';
-import { loadJSONFor, saveJSONFor } from '../storage';
+import { keepFile, liveUri, loadJSONFor, saveJSONFor } from '../storage';
 import { maxProfiles, PROFILE_COLORS, addProfile, feltFor, getProfiles, onProfiles, removeProfile, switchProfile, updateProfile } from '../profiles';
 
 const AGES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -33,8 +35,13 @@ export function ProfileTile({ p, size, active, grow = 1.3 }) {
   useEffect(() => { Animated.spring(k, { toValue: active ? grow : 1, friction: 6, useNativeDriver: true }).start(); }, [active]);
   return (
     <Animated.View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center', transform: [{ scale: k }] }}>
-      {/* the child's felt character (it stands on the bottom of its picture) */}
-      <Image source={feltFor(p.color)} style={{ width: size * 1.3, height: size * 1.3 }} resizeMode="contain" />
+      {/* the child's felt character (it stands on the bottom of its picture), or their own photo in a circle */}
+      {p.color === 'photo' ? (
+        <View style={{ width: size * 1.1, height: size * 1.1, borderRadius: size, overflow: 'hidden', backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: 'rgba(255,255,255,0.85)' }}>
+          {p.photo ? <Image source={{ uri: liveUri(p.photo) }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+            : <Image source={TITLE_ICONS.profile} style={{ width: size * 0.55, height: size * 0.55 }} resizeMode="contain" />}
+        </View>
+      ) : <Image source={feltFor(p.color)} style={{ width: size * 1.3, height: size * 1.3 }} resizeMode="contain" />}
     </Animated.View>
   );
 }
@@ -76,13 +83,28 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
 
   const openForm = (p) => {
     setSure(false);
-    setForm(p ? { id: p.id, name: p.name, color: p.color, age: ages[p.id] ?? null }
+    setForm(p ? { id: p.id, name: p.name, color: p.color, photo: p.photo || null, age: ages[p.id] ?? null }
       : { name: '', color: PROFILE_COLORS[s.list.length % PROFILE_COLORS.length][0], age: null });
+  };
+  // a photo for the profile: from the phone's photos, a small square from its middle, kept with the app
+  const pickPhoto = async () => {
+    try {
+      const r = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'images', quality: 1, allowsEditing: false });
+      if (r.canceled || !r.assets || !r.assets[0]) { if (form.photo) setForm((f) => ({ ...f, color: 'photo' })); return; }
+      let uri = r.assets[0].uri;
+      try {
+        const a0 = r.assets[0], w = a0.width || 0, h = a0.height || 0, sd = Math.min(w, h);
+        const acts = sd ? [{ crop: { originX: Math.round((w - sd) / 2), originY: Math.round((h - sd) / 2), width: sd, height: sd } }, { resize: { width: Math.min(400, sd) } }] : [{ resize: { width: 400 } }];
+        uri = (await ImageManipulator.manipulateAsync(uri, acts, { compress: 0.85, format: ImageManipulator.SaveFormat.JPEG })).uri;
+      } catch (e) {}
+      try { uri = await keepFile(uri, 'profiles', `p-${Date.now().toString(36)}.jpg`); } catch (e) {}
+      setForm((f) => ({ ...f, color: 'photo', photo: uri }));
+    } catch (e) {}
   };
   const saveForm = async () => {
     const f = form;
     if (f.id) {
-      updateProfile(f.id, { name: f.name, color: f.color });
+      updateProfile(f.id, { name: f.name, color: f.color, photo: f.photo || null });
       if (f.id === s.active) setControls({ ...controls, childAge: f.age });
       else {
         const c = await loadJSONFor(f.id, 'controls', null);
@@ -90,7 +112,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
       }
     } else {
       const first = s.list.length === 0;
-      await addProfile({ name: f.name, color: f.color, age: f.age });
+      await addProfile({ name: f.name, color: f.color, age: f.age, photo: f.photo || null });
       if (first) setControls({ ...controls, childAge: f.age }); // the first child keeps the settings already here
     }
     setForm(null);
@@ -195,6 +217,11 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
                     <ProfileTile p={{ color: c }} size={40} active={form.color === c} grow={1} />
                   </Pressable>
                 ))}
+                {/* the last choice: a circle with a person in it; tap it to choose a photo from the phone */}
+                <Pressable onPress={pickPhoto} accessibilityRole="radio" accessibilityLabel={t('Use a photo')} accessibilityState={{ selected: form.color === 'photo' }}
+                  style={[styles.swatch, form.color === 'photo' && styles.swatchOn]}>
+                  <ProfileTile p={{ color: 'photo', photo: form.photo }} size={40} grow={1} />
+                </Pressable>
               </View>
               <Text style={styles.section}>{t('Age')}</Text>
               <View style={styles.choices}>
@@ -249,7 +276,7 @@ const styles = StyleSheet.create({
   link: { fontFamily: fonts.ui, fontSize: 14, color: '#ff9a8a', textDecorationLine: 'underline', marginTop: 4 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 10, rowGap: 10, marginTop: 6 }, // room under the words above
   cell: { alignItems: 'center', gap: 4, paddingTop: 12, paddingBottom: 12, borderRadius: 16, borderWidth: 1, borderColor: 'transparent' },
-  cellOn: { backgroundColor: 'rgba(0,0,0,0.35)', borderColor: 'transparent' }, // a large see-through black box (no outline)
+  cellOn: { backgroundColor: '#000', borderColor: 'transparent' }, // a pure black box (no outline) (Jörg, 26 Oct 2026)
   activeRing: { borderWidth: 3, borderColor: colors.white },
   initial: { color: colors.white, fontFamily: fonts.uiBold, textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
   name: { fontFamily: fonts.uiBold, fontSize: 16, color: colors.white, maxWidth: '100%', marginTop: 8 }, // clear of the character
@@ -270,7 +297,7 @@ const styles = StyleSheet.create({
   choice: { paddingHorizontal: 14, height: 36, borderRadius: 18, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
   choiceOn: { backgroundColor: colors.green },
   choiceText: { fontFamily: fonts.uiSemiBold, fontSize: 15, color: '#dcdcdc' },
-  swatchOn: { borderColor: 'transparent', backgroundColor: 'rgba(0,0,0,0.35)' }, // dark box, no outline
+  swatchOn: { borderColor: 'transparent', backgroundColor: '#000' }, // pure black box, no outline
   swatch: { width: 60, height: 70, borderRadius: 13, borderWidth: 1, borderColor: 'transparent', alignItems: 'center', justifyContent: 'center' },
   buttonShadow: { shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.55, shadowRadius: 6, elevation: 6 },
 });

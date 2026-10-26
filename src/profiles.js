@@ -13,14 +13,15 @@ export const MAX_CLASS = 30;
 export const maxProfiles = () => (state.classroom ? MAX_CLASS : MAX_PROFILES);
 // each child picks one of the felt Coros (kept under the colour names saved before: 'blue' is now the brown
 // Coro, 'orange' the yellow one, 'grey' the teal one, so children who already chose keep their place)
-export const PROFILE_COLORS = [ // in this order on the screen: brown, red, green, yellow, teal (Jörg's photo, 26 Oct 2026)
-  ['blue', require('../assets/profile-coro-brown.png')],
+// (the brown Coro is the mascot's own, so it isn't offered (Jörg, 26 Oct 2026); 'photo': the profile's own picture,
+// shown in a circle)
+export const PROFILE_COLORS = [ // in this order on the screen: red, green, yellow, teal, then a photo circle
   ['red', require('../assets/profile-coro-red.png')],
   ['green', require('../assets/profile-coro-green.png')],
   ['orange', require('../assets/profile-coro-yellow.png')],
   ['grey', require('../assets/profile-coro-teal.png')],
 ];
-export const feltFor = (color) => (PROFILE_COLORS.find(([c]) => c === (color === 'pink' ? 'grey' : color)) || PROFILE_COLORS[1])[1]; // (red if unknown, as before)
+export const feltFor = (color) => (PROFILE_COLORS.find(([c]) => c === (color === 'pink' ? 'grey' : color)) || PROFILE_COLORS[0])[1]; // (red if unknown or brown, as before)
 
 let state = { list: [], active: 'main' };
 const listeners = new Set();
@@ -46,10 +47,10 @@ export function switchProfile(id) {
 }
 
 // a new child: the first one keeps what's already on the phone; later ones start fresh, with their age set
-export async function addProfile({ name, color, age }) {
+export async function addProfile({ name, color, age, photo }) {
   if (state.list.length >= maxProfiles()) return null;
   const id = state.list.length === 0 ? 'main' : `k${Date.now().toString(36)}`;
-  const p = { id, name: (name || '').trim() || 'Reader', color: color || PROFILE_COLORS[state.list.length % PROFILE_COLORS.length][0] };
+  const p = { id, name: (name || '').trim() || 'Reader', color: color || PROFILE_COLORS[state.list.length % PROFILE_COLORS.length][0], ...(photo ? { photo } : {}) };
   if (id !== 'main') await saveJSONFor(id, 'controls', { ...DEFAULT_CONTROLS, childAge: age ?? null });
   state = { ...state, list: [...state.list, p], active: state.list.length === 0 ? id : state.active };
   setScope(state.active);

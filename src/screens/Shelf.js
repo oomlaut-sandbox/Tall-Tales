@@ -12,7 +12,7 @@ import { activeProfile, feltFor, onProfiles as onProfilesChange } from '../profi
 const SHARE_ICON = require('../../assets/icon-envelope.png');
 const EDIT_ICON = require('../../assets/icon-scissors.png');
 const TRASH_ICON = require('../../assets/icon-trash.png');
-import { loadJSON, saveJSON } from '../storage';
+import { liveUri, loadJSON, saveJSON } from '../storage';
 import { ageAllowed, ageOf, ageText, bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
 import Membership from '../components/Membership';
@@ -222,7 +222,7 @@ function WhoReads({ onPress }) {
     <View style={{ width: tileWidth(winW) }}>{/* the box is as wide as a book */}
       <Pressable onPress={onPress} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Profiles')}
         style={{ alignSelf: 'stretch', flexDirection: 'row', alignItems: 'center', gap: p ? 12 : 9, backgroundColor: 'rgba(0,0,0,0.45)', borderRadius: 14, paddingVertical: 10, paddingLeft: p ? 12 : 16, paddingRight: 14 }}>{/* on a see-through black box with rounded corners */}
-        {p ? <Image source={feltFor(p.color)} style={{ width: 48, height: 48 }} resizeMode="contain" />
+        {p ? (p.color === 'photo' && p.photo ? <Image source={{ uri: liveUri(p.photo) }} style={{ width: 40, height: 40, borderRadius: 20, marginHorizontal: 4 }} resizeMode="cover" /> : <Image source={feltFor(p.color)} style={{ width: 48, height: 48 }} resizeMode="contain" />)
           : <View style={{ alignItems: 'center' }}>{/* a small person: only as tall as itself, so the word centres on it */}
               <View style={{ width: 9, height: 9, borderRadius: 5, backgroundColor: 'rgba(235,235,235,0.9)', marginBottom: 1.5 }} />
               <View style={{ width: 16, height: 7.5, borderTopLeftRadius: 8, borderTopRightRadius: 8, backgroundColor: 'rgba(235,235,235,0.9)' }} />
