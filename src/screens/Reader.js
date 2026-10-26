@@ -70,6 +70,7 @@ import { audioModeChanged, fadeStopVoice, pauseVoice, playClips, playVoice, resu
 import * as WORDCLIPS from '../narration/words';
 const WORDS = WORDCLIPS.WORDS || {};
 const WORDS_LANG = WORDCLIPS.WORDS_LANG || {}; // (made by the next narration run)
+import { loadJSON, saveJSON } from '../storage';
 import { getBookVoice, getReaders, getRecording, listRecordings, pageKey, removeRecording, saveRecording, setBookVoice, setTrim } from '../recordings';
 import ReaderPick from '../components/ReaderPick';
 import VoicePick, { VoiceFace } from '../components/VoicePick';
@@ -207,7 +208,24 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   }, [story.id]);
   const recReader = useRef('me'); // who is recording now
   const [askReader, setAskReader] = useState(false); // the 'Who's reading?' box before recording
-  const askToRecord = () => { hushForRecording(); setPanel(null); setAskReader(true); };
+  const askToRecord = () => { hushForRecording(); setPanel(null); setRecTip(false); setAskReader(true); };
+  // A book with no audio at all (made in Coro, or an older one nobody has recorded): the first time it opens, a
+  // speech bubble over the record button says so (once per book) (Jörg, 26 Oct 2026)
+  const [recTip, setRecTip] = useState(false);
+  useEffect(() => {
+    const narrated = (story.narration && Object.keys(story.narration).length) || Object.values(AUDIO).some((v) => v && v[story.id]);
+    if (narrated || startRecording || listen) return undefined;
+    let off = false;
+    const tm = setTimeout(async () => {
+      const seen = (await loadJSON('recTipSeen', {}).catch(() => ({}))) || {};
+      if (off || seen[story.id]) return;
+      const l = await listRecordings(story).catch(() => []);
+      if (off || (l && l.length)) return;
+      setRecTip(true); saveJSON('recTipSeen', { ...seen, [story.id]: Date.now() }).catch(() => {});
+    }, 2200);
+    return () => { off = true; clearTimeout(tm); };
+  }, [story.id]);
+  useEffect(() => { if (!recTip) return undefined; const tm = setTimeout(() => setRecTip(false), 12000); return () => clearTimeout(tm); }, [recTip]);
   useEffect(() => { if (!startRecording) return undefined; const tm = setTimeout(askToRecord, 900); return () => clearTimeout(tm); }, []); // straight from Finish: 'Who's reading?'
   useEffect(() => { refreshRecPages(); }, [refreshRecPages]);
   // Who can read this book: the narrator, and everyone in the family who recorded at least one of its pages
@@ -1033,6 +1051,16 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
         );
       })()}
 
+      {recTip ? (
+        // the record tip: a black speech bubble just above the red record button (tap to close)
+        <Pressable onPress={() => setRecTip(false)} accessibilityRole="button" accessibilityLabel={tr('Close')}
+          style={{ position: 'absolute', zIndex: 60, maxWidth: 300, right: wide ? BL.rightW + 12 : 12, bottom: wide ? 90 : barH + 12 }}>
+          <View style={{ backgroundColor: 'rgba(0,0,0,0.9)', borderRadius: 18, paddingHorizontal: 18, paddingVertical: 14 }}>
+            <Text style={{ color: colors.white, fontFamily: fonts.ui, fontSize: 16, lineHeight: 22 }}>{tr('Record yourself reading this Coro book and share it or enjoy it on your own. Books made in-app do not come with automatic narrator options.')}</Text>
+          </View>
+          {!wide ? <View style={{ position: 'absolute', bottom: -9, right: 55, width: 0, height: 0, borderLeftWidth: 10, borderRightWidth: 10, borderTopWidth: 10, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: 'rgba(0,0,0,0.9)' }} /> : null}
+        </Pressable>
+      ) : null}
       {/* The peeling page is drawn over the whole screen, so it can lift past the book's edges. */}
       {flipPair && size && flipT && peel ? (
         <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 40 }]}>

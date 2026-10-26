@@ -42,13 +42,10 @@ export const MORE_AVATARS = [
   ['coro-green', require('../assets/avatar-coro-green.jpg')],
   ['coro-red', require('../assets/avatar-coro-red.jpg')],
   ['coro-headphones', require('../assets/avatar-coro-headphones.jpg')],
-  ['coro-guitar', require('../assets/avatar-coro-guitar.jpg')],
   ['coro-writing', require('../assets/avatar-coro-writing.jpg')],
-  ['coro-leaning', require('../assets/avatar-coro-leaning.jpg')],
   ['coro-blue', require('../assets/avatar-coro-blue.jpg')],
   ['coro-reading', require('../assets/avatar-coro-reading.jpg')],
   ['coro-cheer', require('../assets/avatar-coro-cheer.jpg')],
-  ['coro-wave', require('../assets/avatar-coro-wave.jpg')],
   ['robot', require('../assets/avatar-robot.jpg')],
 ];
 export const feltFor = (color) => ([...PROFILE_COLORS, ...MORE_AVATARS].find(([c]) => c === (color === 'pink' ? 'grey' : color)) || PROFILE_COLORS[0])[1]; // (red if unknown or brown, as before)
