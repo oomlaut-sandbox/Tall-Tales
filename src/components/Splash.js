@@ -1,13 +1,14 @@
 // The opening film (Jörg, 26 Oct 2026): Coro unfolds and winks, at the start of every session. A tap skips it;
 // when it ends it fades away to the start page. (Jörg's quicker clip, played 1.5 times as fast: about 3 seconds, 26 Oct 2026)
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet } from 'react-native';
+import { Animated, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 
 const CLIP = require('../../assets/splash/coro-splash.mp4');
 const BG = '#c9c7c4'; // the light grey felt the clip is filmed on (no dark flash before the first frame)
 
 export default function Splash({ onDone }) {
+  const { width: W, height: H } = useWindowDimensions();
   const fade = useRef(new Animated.Value(1)).current;
   const [gone, setGone] = useState(false);
   const leaving = useRef(false);
@@ -31,7 +32,7 @@ export default function Splash({ onDone }) {
   if (gone) return null;
   return (
     <Animated.View style={[StyleSheet.absoluteFill, { zIndex: 500, backgroundColor: BG, opacity: fade }]}>
-      <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} allowsFullscreen={false} allowsPictureInPicture={false} />
+      <VideoView player={player} style={StyleSheet.absoluteFill} contentFit={W > H ? 'contain' : 'cover'} /* sideways: the whole upright clip, on its own grey felt colour */ nativeControls={false} allowsFullscreen={false} allowsPictureInPicture={false} />
       <Pressable style={StyleSheet.absoluteFill} onPress={finish} accessibilityRole="button" accessibilityLabel="Skip" />
     </Animated.View>
   );
