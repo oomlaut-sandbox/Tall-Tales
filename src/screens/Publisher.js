@@ -102,7 +102,12 @@ export function draftFrom(story) {
 // square (measured from the picture: the blue runs 28.3%–71.1% across and 24.3%–68.4% down).
 const POLAROID = require('../../assets/polaroid.jpg');
 // the hardcover looks for a text only cover: [key, picture, name] (Jörg will send the pictures)
-const HARDCOVERS = [];
+const HARDCOVERS = [
+  ['blue', require('../../assets/hardcovers/blue.jpg'), 'Blue cloth'],
+  ['red', require('../../assets/hardcovers/red.jpg'), 'Red cloth'],
+  ['brown', require('../../assets/hardcovers/brown.jpg'), 'Brown cloth'],
+  ['green', require('../../assets/hardcovers/green.jpg'), 'Green cloth'],
+];
 const BLUE_CLOTH = require('../../assets/make-cover-cloth.jpg'); // the blue cloth book cover (as on Let's make a book)
 const BLUE = { l: 0.283, r: 0.711, t: 0.243, b: 0.684 };
 // A text field whose words always sit in the middle, top to bottom: the box centres a one-line field that is exactly

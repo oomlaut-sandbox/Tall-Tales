@@ -13,6 +13,7 @@ const BG = '#3b3b3b'; // under the felt: the same grey as the phone's own launch
 export default function Splash({ onDone }) {
   const { width: W, height: H } = useWindowDimensions();
   const D = Math.round(Math.min(W, H) * 0.5); // the circle's full size
+  const VH = D / 0.6; // the clip's height inside it (Coro fills the middle 60% of it)
   const grow = useRef(new Animated.Value(0)).current; // 0: nothing, 1: full size
   const fade = useRef(new Animated.Value(1)).current; // the whole thing, felt and all
   const [gone, setGone] = useState(false);
@@ -55,8 +56,9 @@ export default function Splash({ onDone }) {
       <DeskFelt spot="splash" overlay />
       <Animated.View style={{ width: D, height: D, borderRadius: D / 2, backgroundColor: '#c9c7c4', transform: [{ scale: grow }],
         shadowColor: '#000', shadowOpacity: 0.45, shadowRadius: 18, shadowOffset: { width: 0, height: 8 } }}>
-        <View style={{ flex: 1, borderRadius: D / 2, overflow: 'hidden' }}>
-          <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} allowsFullscreen={false} allowsPictureInPicture={false} />
+        <View style={{ flex: 1, borderRadius: D / 2, overflow: 'hidden', backgroundColor: '#c8c3be' }}>
+          {/* the upright clip, sized so all of Coro fits in the circle (a little of the felt shows at the sides) */}
+          <VideoView player={player} style={{ position: 'absolute', width: VH * 720 / 1280, height: VH, left: (D - VH * 720 / 1280) / 2, top: D / 2 - 0.53 * VH }} contentFit="cover" nativeControls={false} allowsFullscreen={false} allowsPictureInPicture={false} />
         </View>
       </Animated.View>
       <Pressable style={StyleSheet.absoluteFill} onPress={close} accessibilityRole="button" accessibilityLabel="Skip" />
