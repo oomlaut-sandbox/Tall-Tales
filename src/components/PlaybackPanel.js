@@ -36,6 +36,8 @@ export function ReadingOptionsContent({ prefs, setPrefs, toast, onPlaylists, onC
             onPress={() => { setPrefs((p) => ({ ...p, mode: id })); toast(tr('{mode} is on.', { mode: tr(t) })); }} />
         ))}
         <Option glyph={<BubbleIcon />} title={tr('Voices')} sub={tr('Narrator: {name}', { name: (NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1] })} onPress={() => setView('voices')} />
+        {/* what the voices can do: narration and translations for store books; your own books, your own voice */}
+        <Text style={styles.note}>{tr('Advanced voiceover narration and translations work only in Coro books from the Book Store. Books you make yourself use a built-in computer voice: they are meant to be narrated in a recording of the author, or of someone they love, like a parent or grandparent.')}</Text>
         {onPlaylists ? <Option glyph={<PlaylistIcon />} title={tr('Playlists')} sub={tr('Books read one after another')} onPress={() => { close(); onPlaylists(); }} /> : null}
         <View style={styles.setting}>
           <Text style={styles.help}>{tr('Playback speed')}</Text>
@@ -83,5 +85,6 @@ export default function PlaybackPanel({ open, onClose, prefs, setPrefs, toast, b
 const styles = StyleSheet.create({
   setting: { gap: 8, paddingTop: 10, paddingBottom: 8 },
   backlink: { color: '#d6d6d6', fontFamily: fonts.uiBold, fontSize: 15, paddingVertical: 6 },
+  note: { color: '#a9a9a9', fontFamily: fonts.ui, fontSize: 13, lineHeight: 18, marginTop: -6, paddingLeft: 2 },
   help: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22 },
 });

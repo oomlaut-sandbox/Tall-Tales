@@ -24,7 +24,7 @@ const ALL_HELP = [
     'The menu button (three lines) in the bottom bar takes you anywhere in the app.',
   ] },
   { section: 'Getting started', title: 'Profiles for each child', text: [
-    'Each child can have their own profile, with their own notebook, badges, playlists and settings. Grown-ups add and change them at the bottom of Settings. A child can switch by tapping their picture beside My Notebook in My Library.',
+    'Everyone can have their own profile, children and grown-ups, with their own notebook, badges, playlists and settings. Grown-ups add and change them in Settings, under Profiles. To switch, tap your picture beside My Notebook in My Library.',
   ] },
   { section: 'Reading', title: 'Reading a book', text: [
     'Open My Library and tap a book. Its cover opens and the first page appears.',
@@ -156,6 +156,12 @@ const ALL_HELP = [
   ] },
   { section: 'Grown-ups', title: 'The grown-up check', text: [
     'Some things, like taking photos, printing, sharing and deleting, first ask a quick question only a grown-up can answer.',
+  ] },
+  { section: 'Teachers and Educators', title: 'Classroom folders', text: [
+    'A classroom folder holds up to 30 student profiles. Set it up in Settings, under Teachers and Educators: give your class a name, then add each student in Profiles.',
+    'Students tap their name to start. Each one keeps their own notebook, badges and settings.',
+    'Books are shared by the whole class, so students can make a book together, or each make their own.',
+    'To end classroom mode, open Settings again. The students’ profiles stay.',
   ] },
   { section: 'Grown-ups', title: 'Sending us your book', store: true, text: [
     'Authors and illustrators young and old can send their books to the Coro Book Store. Visit oomlaut.com for more information.',

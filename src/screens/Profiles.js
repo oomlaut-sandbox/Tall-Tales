@@ -14,7 +14,7 @@ import ParentGate from '../components/ParentGate';
 import { useT } from '../i18n';
 import { useControls, DEFAULT_CONTROLS } from '../controls';
 import { loadJSONFor, saveJSONFor } from '../storage';
-import { MAX_PROFILES, PROFILE_COLORS, addProfile, feltFor, getProfiles, onProfiles, removeProfile, switchProfile, updateProfile } from '../profiles';
+import { maxProfiles, PROFILE_COLORS, addProfile, feltFor, getProfiles, onProfiles, removeProfile, switchProfile, updateProfile } from '../profiles';
 
 const AGES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
@@ -68,7 +68,8 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
   const [sure, setSure] = useState(false);
   const canSwitch = controls.profiles !== false;
   const { width: winW, height: winH } = useWindowDimensions();
-  const side = Math.min(112, Math.floor((Math.min(520, winW - 48) - 32) / 3));
+  const room = s.classroom; // a classroom folder: up to 30 students, four to a row
+  const side = room ? Math.min(100, Math.floor((Math.min(520, winW - 48) - 48) / 4)) : Math.min(112, Math.floor((Math.min(520, winW - 48) - 32) / 3));
 
   const openForm = (p) => {
     setSure(false);
@@ -115,14 +116,14 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]} onLayout={(e) => setBandH(e.nativeEvent.layout.height)}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="profiles" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Profiles')}</Text></View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="profiles" /><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[styles.title, { flexShrink: 1 }]}>{room ? (room.name || t('Classroom')) : t('Profiles')}</Text></View>
       </View>
       {form ? null : (
       <Animated.ScrollView style={{ opacity: pageFade }} contentContainerStyle={styles.body}>
         <View style={styles.col}>
           <Text style={styles.p}>{s.list.length
-            ? (editing ? t('Tap a child to change their name, character or age.') : t('Who is reading? Tap your name.'))
-            : t('Give each child their own notebook, badges, playlists and settings. Their age decides which books they see.')}</Text>
+            ? (editing ? t('Tap a profile to change its name, character or age.') : t('Who is reading? Tap your name.'))
+            : t('Give each reader their own notebook, badges, playlists and settings: children and grown-ups. A child’s age decides which books they see.')}</Text>
           <View style={styles.grid}>
             {/* the selection box: one box that glides from child to child */}
             {boxSize && s.list.length ? <Animated.View pointerEvents="none" style={[styles.cellOn, { position: 'absolute', left: 0, top: 0, width: boxSize.w, height: boxSize.h, borderRadius: 16, borderWidth: 1, transform: boxXY.getTranslateTransform() }]} /> : null}
@@ -139,8 +140,8 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
                 </Pressable>
               );
             })}
-            {s.list.length < MAX_PROFILES ? (
-              <Pressable onPress={() => setGate('add')} style={[styles.cell, { width: side }]} accessibilityRole="button" accessibilityLabel={t('Add a child')}>
+            {s.list.length < maxProfiles() ? (
+              <Pressable onPress={() => setGate('add')} style={[styles.cell, { width: side }]} accessibilityRole="button" accessibilityLabel={room ? t('Add a student') : t('Add a profile')}>
                 <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}>
                   <View style={[styles.addTile, { width: Math.round(side * 0.68), height: Math.round(side * 0.68), borderRadius: side }]}>{/* round, like the buttons */}
                     {/* a drawn plus (two thin bars), so it sits exactly in the middle of the circle */}
@@ -148,7 +149,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
                     <View style={{ position: 'absolute', width: 2, height: side * 0.2, backgroundColor: '#aaa' }} />
                   </View>
                 </View>
-                <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75} style={styles.name}>{t('Add a child')}</Text>
+                <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75} style={styles.name}>{room ? t('Add a student') : t('Add a profile')}</Text>
                 <Text style={styles.age}> </Text>
               </Pressable>
             ) : null}
@@ -167,7 +168,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
             ) : null}
           </View>
           {!canSwitch ? <Text style={styles.small}>{t('A grown-up has turned off switching profiles.')}</Text> : null}
-          <Text style={styles.small}>{t('Books, the membership, recordings, the language and the music are shared by the whole family.')}</Text>
+          <Text style={styles.small}>{room ? t('Books are shared by the whole class, so students can make books together. Each student’s notebook, badges and settings are their own.') : t('Books, the membership, recordings, the language and the music are shared by the whole family.')}</Text>
         </View>
       </Animated.ScrollView>
       )}
@@ -194,12 +195,12 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
               </View>
               <Text style={styles.section}>{t('Age')}</Text>
               <View style={styles.choices}>
-                <Choice label={t('Show every book')} on={form.age == null} onPress={() => setForm({ ...form, age: null })} />
+                <Choice label={t('Grown-up')} on={form.age == null} onPress={() => setForm({ ...form, age: null })} />{/* (grown-ups have profiles too: they see every book) */}
               </View>
               <View style={styles.choices}>
                 {AGES.map((a) => <Choice key={a} label={String(a)} on={form.age === a} onPress={() => setForm({ ...form, age: a })} />)}
               </View>
-              <Text style={styles.small}>{t('Books rated for older children are hidden.')}</Text>
+              <Text style={styles.small}>{t('A grown-up sees every book. For a child, books rated for older children are hidden.')}</Text>
               {/* Save and (for a profile that exists) a red Delete; Cancel on the same line, on the right */}
               {/* (they shrink to fit, so longer words in other languages never push one out of the box) */}
               <View style={{ flexDirection: 'row', gap: 8, marginTop: 6, alignItems: 'center' }}>

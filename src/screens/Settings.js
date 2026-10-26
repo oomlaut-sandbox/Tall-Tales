@@ -5,7 +5,7 @@
 //   recording, sharing and printing, and changing the language. "Lock everything" leaves only My Library.
 import { TitleIcon } from '../titleIcons';
 import React, { useEffect, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { boxTitle, colors, fonts, sectionBox } from '../theme';
 import { DESK_FELT, DESK_BG, IS_TABLET } from '../look';
@@ -17,6 +17,7 @@ import ReadingOptionsSection from '../components/ReadingOptionsSection';
 import { LANGS, useT } from '../i18n';
 import { lockedControls, quickSafeControls, DEFAULT_CONTROLS, STORE_ON } from '../controls';
 import { usePurchases } from '../purchases';
+import { MAX_CLASS, endClassroom, getProfiles, onProfiles, setClassroom } from '../profiles';
 import { hapticsOn, onHaptics, setHapticsOn, tap } from '../haptics';
 
 const MODES = [['self', 'Read Yourself'], ['learn', 'Learn to Read'], ['auto', 'Auto Play'], ['page', 'Page by Page Play'], ['listen', 'Listen Only']];
@@ -46,6 +47,7 @@ const SET_ICONS = {
   music: require('../../assets/heading-icons/music-and-sounds.png'),
   profiles: require('../../assets/heading-icons/profiles.png'),
   languages: require('../../assets/heading-icons/languages.png'),
+  teachers: require('../../assets/heading-icons/learning.png'),
 };
 
 // a category: its heading with a + / − on the right, and its cards when it's open
@@ -68,7 +70,10 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
   const insets = useSafeAreaInsets();
   const [hap, setHap] = useState(hapticsOn());
   const [roView, setRoView] = useState('main'); // Reading Options: the choices, or the voices
-  const [openSec, setOpenSec] = useState(null); // the category that's open (one at a time)
+  const [openSec, setOpenSec] = useState(null);
+  const [room, setRoom] = useState(getProfiles().classroom || null); // the classroom folder, if there is one
+  useEffect(() => onProfiles((st) => setRoom(st.classroom || null)), []);
+  const [roomName, setRoomName] = useState(''); // the category that's open (one at a time)
   const [gardenBox, setGardenBox] = useState(null); // the Garden's felt card, once measured
   useEffect(() => onHaptics(setHap), []);
   const ps = usePurchases();
@@ -166,7 +171,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
           <Section id="profiles" icon={SET_ICONS.profiles} title={t('Profiles')} open={openSec} setOpen={setOpenSec}>
               {/* Profiles: one for each child (their own notebook, badges, playlists and settings) */}
               <View style={styles.card}>
-                <Text style={styles.small}>{t('Each child can have their own profile, with their own notebook, badges, playlists and settings.')}</Text>
+                <Text style={styles.small}>{t('Everyone can have their own profile, children and grown-ups, with their own notebook, badges, playlists and settings.')}</Text>
                 <Pressable onPress={onProfiles} style={[styles.pill, { backgroundColor: '#5f5f5f' }]} accessibilityRole="button">
                   <Text style={styles.pillText}>{t('Manage profiles')}</Text>
                 </Pressable>
@@ -188,6 +193,33 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
                 <Text style={styles.small}>{t('Members can read books in another language than the app’s: a German book in an English app, for example. Each book can be read in the languages it has been translated into.')}</Text>
                 {!ps.member ? <Pressable onPress={onJoin} hitSlop={8}><Text style={styles.link}>{t('Join the membership to choose')}</Text></Pressable> : null}
               </View>
+          </Section>
+          {/* Teachers and Educators: a classroom folder of up to 30 students (Jörg, 26 Oct 2026) */}
+          <Section id="teachers" icon={SET_ICONS.teachers} title={t('Teachers and Educators')} open={openSec} setOpen={setOpenSec}>
+            <View style={styles.card}>
+              <Text style={styles.p}>{t('Set up a classroom folder with up to {n} student profiles. Students can make books together or on their own: books are shared by the class, and each student keeps their own notebook, badges and settings.', { n: MAX_CLASS })}</Text>
+              {room ? (
+                <>
+                  <Text style={styles.cardTitle}>{t('Classroom: {name}', { name: room.name || t('Classroom') })}</Text>
+                  <Pressable onPress={onProfiles} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button">
+                    <Text style={styles.pillText}>{t('Open the classroom')}</Text>
+                  </Pressable>
+                  <Pressable onPress={endClassroom} style={[styles.pill, { backgroundColor: '#5f5f5f' }]} accessibilityRole="button">
+                    <Text style={styles.pillText}>{t('End classroom mode')}</Text>
+                  </Pressable>
+                  <Text style={styles.small}>{t('The students’ profiles stay. Without a classroom, up to six profiles can be added.')}</Text>
+                </>
+              ) : (
+                <>
+                  <TextInput value={roomName} onChangeText={setRoomName} placeholder={t('Class name, like Room 4')} placeholderTextColor="#8a8a8a" maxLength={30}
+                    allowFontScaling={false} style={styles.input} accessibilityLabel={t('Class name, like Room 4')} />
+                  <Pressable onPress={() => { setClassroom(roomName); setRoomName(''); }} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button">
+                    <Text style={styles.pillText}>{t('Set up a classroom')}</Text>
+                  </Pressable>
+                  <Text style={styles.small}>{t('Then add each student in Profiles. Students tap their name to start.')}</Text>
+                </>
+              )}
+            </View>
           </Section>
           <Pressable onPress={onDone} style={[styles.pill, { alignSelf: 'flex-end', backgroundColor: colors.green, marginTop: 8 }]} accessibilityRole="button">
             <Text style={styles.pillText}>{t('Done')}</Text>
@@ -223,6 +255,7 @@ const styles = StyleSheet.create({
   choiceText: { fontFamily: fonts.uiSemiBold, fontSize: 15, color: '#dcdcdc' },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, minHeight: 36 },
   rowText: { flex: 1, fontFamily: fonts.ui, fontSize: 16, color: colors.white },
+  input: { height: 46, borderRadius: 10, backgroundColor: '#d6d6d6', paddingHorizontal: 14, paddingVertical: 0, includeFontPadding: false, fontFamily: fonts.ui, fontSize: 17, color: '#222' },
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 24, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
   pillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
 });

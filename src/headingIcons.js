@@ -10,6 +10,7 @@ export const HEADING_ICONS = {
   'My Notebook': require('../assets/heading-icons/my-notebook.png'),
   'Books': require('../assets/heading-icons/books.png'),
   'Grown-ups': require('../assets/heading-icons/grown-ups.png'),
+  'Teachers and Educators': require('../assets/heading-icons/learning.png'),
   'Your favourite books': require('../assets/heading-icons/your-favourite-books.png'),
   'Big moments and changes': require('../assets/heading-icons/big-moments-and-changes.png'),
   'Everyday routines': require('../assets/heading-icons/everyday-routines.png'),
