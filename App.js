@@ -383,7 +383,7 @@ function Root() {
         {screen === 'profiles' && <Profiles u={u} openMenu={openMenu} setControls={setControls} onPicked={(id) => { setNextScreen('library'); switchProfile(id); }} onBack={() => go('library')} />}
         {screen === 'playlists' && <Playlists u={u} openMenu={openMenu} shelf={childShelf} onPlay={playPlaylist} onDone={() => go('library')} />}
         {screen === 'settings' && <Settings u={u} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
-          controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} onProfiles={() => go('profiles')} onPlaylists={() => go('playlists')} onReadingOptions={readingOptions} onMusic={() => go('music')} />}
+          controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} onProfiles={() => go('profiles')} onPlaylists={() => go('playlists')} onReadingOptions={readingOptions} onMusic={() => go('music')} prefs={prefs} setPrefs={setPrefs} toast={toast} />}
         {screen === 'garden' && <Garden u={u} openMenu={openMenu} toast={toast} onHome={() => go('library')} />}
         {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} onWelcome={WELCOME_ON ? () => setWelcome(true) : null} />}
         {screen === 'ideas' && <IdeaRoom u={u} openMenu={openMenu} onMake={() => openPublisher(null)} onHelp={() => go('help')} />}

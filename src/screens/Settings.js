@@ -13,6 +13,7 @@ import { DESK_FELT, DESK_BG, IS_TABLET } from '../look';
 const IDEAS_FELT = require('../../assets/ideas-felt.png'); // the mossy green stitched felt (Ideas and Support), 1100 × 805
 const BAND_FELT = require('../../assets/band-settings.jpg'); // Jörg's grey stitched felt banner
 import { Bar, Burger, MusicIcon, Option, PlayGlyph, WithBar } from '../components/Chrome';
+import { ReadingOptionsContent } from '../components/PlaybackPanel';
 import { LANGS, useT } from '../i18n';
 import { lockedControls, quickSafeControls, DEFAULT_CONTROLS, STORE_ON } from '../controls';
 import { usePurchases } from '../purchases';
@@ -62,10 +63,11 @@ function Section({ id, icon, title, open, setOpen, children }) {
   );
 }
 
-export default function Settings({ u, openMenu, lang, setLang, bookLang, setBookLang, controls, setControls, mode, onDone, onJoin, onProfiles, onPlaylists, onReadingOptions, onMusic }) {
+export default function Settings({ u, openMenu, lang, setLang, bookLang, setBookLang, controls, setControls, mode, onDone, onJoin, onProfiles, onPlaylists, onReadingOptions, onMusic, prefs, setPrefs, toast }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const [hap, setHap] = useState(hapticsOn());
+  const [roView, setRoView] = useState('main'); // Reading Options: the choices, or the voices
   const [openSec, setOpenSec] = useState(null); // the category that's open (one at a time)
   const [gardenBox, setGardenBox] = useState(null); // the Garden's felt card, once measured
   useEffect(() => onHaptics(setHap), []);
@@ -158,20 +160,15 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
               </View>
           </Section>
           <Section id="reading" icon={SET_ICONS.reading} title={t('Reading Options')} open={openSec} setOpen={setOpenSec}>
-            {onReadingOptions ? <View style={styles.card}><Option glyph={<PlayGlyph />} title={t('Reading Options')} sub={t('Modes, voices, fonts and sounds')} onPress={onReadingOptions} /></View> : null}
+            {/* the Reading Options themselves, right here (the same choices as the panel from My Library) */}
+            <View style={{ gap: 16, paddingTop: 6 }}>
+              <ReadingOptionsContent prefs={prefs} setPrefs={setPrefs} toast={toast} onPlaylists={onPlaylists} view={roView} setView={setRoView} />
               {/* haptic feedback: small clicks you feel on the dials, knobs, sliders and buttons (for the whole phone) */}
-              <Text style={styles.sub}>{t('Haptic feedback')}</Text>
-              <View style={styles.card}>
+              <View style={{ gap: 8, paddingTop: 10 }}>
+                <Text style={styles.help}>{t('Haptic feedback')}</Text>
                 <Toggle label={t('Feel a soft click on dials, knobs and buttons')} value={hap} onChange={setHapticsOn} />
               </View>
-              {/* Playlists: books that play one after another (bedtime, a car ride…) */}
-              <Text style={styles.sub}>{t('Playlists')}</Text>
-              <View style={styles.card}>
-                <Text style={styles.small}>{t('Books read one after another')}</Text>
-                <Pressable onPress={onPlaylists} style={[styles.pill, { backgroundColor: '#5f5f5f' }]} accessibilityRole="button">
-                  <Text style={styles.pillText}>{t('Open playlists')}</Text>
-                </Pressable>
-              </View>
+            </View>
           </Section>
           <Section id="music" icon={SET_ICONS.music} title={t('Music and Sounds')} open={openSec} setOpen={setOpenSec}>
             {onMusic ? <View style={styles.card}><Option glyph={<MusicIcon size={24} weight={3.4} />} title={t('Music and Sounds')} sub={t('Relaxing and gentle')} onPress={onMusic} /></View> : null}
@@ -218,6 +215,7 @@ const styles = StyleSheet.create({
   body: { padding: 24, paddingTop: 24, paddingBottom: 40, alignItems: 'center' },
   col: { width: '100%', maxWidth: 520, gap: 12 },
   section: { fontFamily: fonts.uiBold, fontSize: 13, color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 14 },
+  help: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22 }, // as in the Reading Options panel
   sub: { fontFamily: fonts.uiBold, fontSize: 13, color: '#d0d0d0', textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 10 }, // a heading inside a category
   box: { ...sectionBox, gap: 12 },
   secHead: { flexDirection: 'row', alignItems: 'center', gap: 14 },
