@@ -515,7 +515,7 @@ function Root() {
             {/* Reading Options and Music and Sounds live in Settings now (and Reading Options under the books in My Library
                 and the Book Store); Ideas has its own place; Support is the help pages (Jörg, 26 Oct 2026) */}
             {controls.help ? <Option glyph={<BulbIcon size={26} color={colors.white} weight={2} />} title={t('Ideas')} sub={t('Books you can make together')} onPress={() => go('ideas')} /> : null}
-            {controls.help ? <Option glyph={<Image source={TITLE_ICONS.support} style={{ width: 26, height: 26 }} />} title={t('Support')} sub={t('Help and answers')} onPress={() => go('help')} /> : null}
+            {controls.help ? <Option glyph={<Image source={TITLE_ICONS.support} style={{ width: 26, height: 26 }} />} title={t('Help')} sub={t('Answers to all your questions')} onPress={() => go('help')} /> : null}
             {/* (Profiles now live at the bottom of Settings and Profiles; children still switch from the start page) */}
             {/* Settings: always last, always behind the grown-up question */}
             <Option glyph={<PersonIcon />} title={t('Settings')} sub={t('Language, parental and profiles')} onPress={() => { setDrawer(false); setSettingsGate(true); }} />

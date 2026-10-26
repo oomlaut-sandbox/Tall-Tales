@@ -227,10 +227,10 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
         );
       }}
     </BookFrame>
-    {/* a very small "Intro" in the bottom left corner, just above the bar: the intro again, as for a first-time user */}
+    {/* a very small "Intro" in the bottom right corner, just above the bar: the intro again, as for a first-time user */}
     {onIntro && !ask ? (
       <Pressable onPress={onIntro} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Intro')}
-        style={{ position: 'absolute', left: 16 + insets.left, bottom: (winW > winH * 1.1 ? 0 : u * 17 + insets.bottom) + 12, zIndex: 100 }}>
+        style={{ position: 'absolute', right: 16 + insets.right + (winW > winH * 1.1 ? Math.round(u * 17 * 1.15) : 0), bottom: (winW > winH * 1.1 ? 0 : u * 17 + insets.bottom) + 12, zIndex: 100 }}>
         <Text style={{ fontFamily: fonts.ui, fontSize: 12, color: 'rgba(215,215,215,0.6)' }}>{t('Intro')}</Text>
       </Pressable>
     ) : null}
