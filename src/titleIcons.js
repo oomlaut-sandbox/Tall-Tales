@@ -6,6 +6,7 @@ export const TITLE_ICONS = {
   library: require('../assets/title-icons/home.png'),
   store: require('../assets/title-icons/store.png'),
   help: require('../assets/title-icons/bulb.png'),
+  support: require('../assets/title-icons/support.png'), // a question mark in a circle (Support)
   ideas: require('../assets/title-icons/ideas-room.png'),
   music: require('../assets/title-icons/music.png'),
   playlists: require('../assets/title-icons/playlist.png'),

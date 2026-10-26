@@ -34,7 +34,7 @@ const ALL_HELP = [
   ] },
   { section: 'Reading', title: 'Hearing the story read aloud', text: [
     'Tap the play button in the bottom bar and the narrator reads the page. Each word lights up as it’s spoken.',
-    'Open Reading Options from the menu to choose how the book plays: Page by Page, the whole book, Learn to Read or Read Yourself.',
+    'Open Reading Options (under your books in My Library, or in Settings) to choose how the book plays: Page by Page, the whole book, Learn to Read or Read Yourself.',
     'Under Voices you can choose Fatima or Henry. Tap a voice to hear a short sample.',
   ] },
   { section: 'Reading', title: 'Learn to Read', text: [
@@ -53,7 +53,7 @@ const ALL_HELP = [
     'The sounds keep playing while you browse and read.',
   ] },
   { section: 'Music and sounds', title: 'The Music and Sounds page', text: [
-    'Choose Music and Sounds from the menu. Tap a sound or a piece of music to hear it, and tap it again to turn it off. A sound and a piece of music can play together.',
+    'Choose Music and Sounds in Settings. Tap a sound or a piece of music to hear it, and tap it again to turn it off. A sound and a piece of music can play together.',
     'You can also set the volume, the playback speed, and a sleep timer that slowly fades the sound away.',
   ] },
   { section: 'Music and sounds', title: 'Your own music', text: [
@@ -195,27 +195,13 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome }) {
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="help" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Ideas and Support')}</Text></View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="support" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Support')}</Text></View>
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
         <View style={styles.col}>
           {/* (a short video tour will go here later) */}
-          {/* the Idea Room, at the very top: ideas for every kind of book a family can make */}
-          {/* in Jörg's green felt patch, the words inside its stitching */}
-          <Pressable onPress={onIdeas} accessibilityRole="button" style={[styles.ideas, { width: feltW, height: Math.round(feltW * 805 / 1100), borderRadius: feltW * 98 / 1100 /* the felt's own corners, so the shadow matches */ }]}>
-            <Image source={IDEAS_FELT} style={{ position: 'absolute', left: 0, top: 0, width: feltW, height: Math.round(feltW * 805 / 1100) }} resizeMode="stretch" />
-            <View style={{ flex: 1, gap: 6, justifyContent: 'center', paddingLeft: '12%', paddingRight: '8%', paddingVertical: '8%' }}>
-              <Text style={styles.ideasTitle}>{t('Ideas Room')}</Text>
-              <Text style={styles.ideasText}>{t('Many ideas for books you can make together: your photos and drawings, your words, your voice.')}</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 14 }}>
-                <Text style={styles.ideasGo}>{t('Visit the Ideas Room')}</Text>
-                {/* a small arrow in a circle, like the Back buttons */}
-                <View style={styles.goCircle}><View style={styles.goChevron} /></View>
-              </View>
-            </View>
-          </Pressable>
           {/* the search window: a white pill the width of the topics, with a soft inner shadow along its top edge */}
-          <Pressable onPress={() => searchRef.current && searchRef.current.focus()} accessible={false} style={[styles.searchWrap, { marginTop: 14 }]}>
+          <Pressable onPress={() => searchRef.current && searchRef.current.focus()} accessible={false} style={styles.searchWrap}>
             <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.22)', 'rgba(0,0,0,0.06)', 'rgba(0,0,0,0)']} locations={[0, 0.35, 1]} style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 14 }} />
             <LinearGradient pointerEvents="none" start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['rgba(0,0,0,0.08)', 'rgba(0,0,0,0)']} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 16 }} />
             {/* a text box (multiline, one line only) with its line placed exactly in the middle by padding: the
@@ -258,6 +244,21 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome }) {
               </View>
             );
           })}
+          <View style={{ height: 18 }} />
+          {/* the Idea Room, at the bottom now (Ideas has its own place in the menu: Jörg, 26 Oct 2026) */}
+          {/* in Jörg's green felt patch, the words inside its stitching */}
+          <Pressable onPress={onIdeas} accessibilityRole="button" style={[styles.ideas, { width: feltW, height: Math.round(feltW * 805 / 1100), borderRadius: feltW * 98 / 1100 /* the felt's own corners, so the shadow matches */ }]}>
+            <Image source={IDEAS_FELT} style={{ position: 'absolute', left: 0, top: 0, width: feltW, height: Math.round(feltW * 805 / 1100) }} resizeMode="stretch" />
+            <View style={{ flex: 1, gap: 6, justifyContent: 'center', paddingLeft: '12%', paddingRight: '8%', paddingVertical: '8%' }}>
+              <Text style={styles.ideasTitle}>{t('Ideas Room')}</Text>
+              <Text style={styles.ideasText}>{t('Many ideas for books you can make together: your photos and drawings, your words, your voice.')}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 14 }}>
+                <Text style={styles.ideasGo}>{t('Visit the Ideas Room')}</Text>
+                {/* a small arrow in a circle, like the Back buttons */}
+                <View style={styles.goCircle}><View style={styles.goChevron} /></View>
+              </View>
+            </View>
+          </Pressable>
         </View>
       </ScrollView>
     </WithBar>

@@ -46,6 +46,7 @@ import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, loadJSONFor, saveJSON, saveJSONFor } from './src/storage';
+import { TITLE_ICONS } from './src/titleIcons';
 import { BulbIcon, CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast, BubbleHost, setGoHome, HomeIcon } from './src/components/Chrome';
 import { setVolumeBubble } from './src/volume';
 import { DESK_FELT, DeskFelt, Felt, LookContext } from './src/look';
@@ -270,6 +271,8 @@ function Root() {
   // a new book: free up to FREE_BOOKS made books; after that it's Coro Family (asked of a grown-up). Only once
   // purchases are switched on: until then everyone can keep making books.
   const [moreGate, setMoreGate] = useState(false);
+  // Reading Options (modes, voices, fonts and sounds), from My Library, the Book Store and Settings
+  const readingOptions = controls.playback && !controls.playMode ? () => setPlayOpen(true) : null;
   const newBook = () => {
     if (purchasesReady && !purchases.member && userStories.length >= FREE_BOOKS) { setMoreGate(true); return; }
     openPublisher(null);
@@ -331,7 +334,7 @@ function Root() {
         ) : null}
         {(screen === 'library' || (screen === 'start' && peek === 'library')) && (
           <Animated.View style={{ flex: 1, opacity: screen === 'library' ? libFade : 1 }}>
-          <Library onGarden={controls.garden ? () => go('garden') : undefined} u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
+          <Library onReadingOptions={readingOptions} onGarden={controls.garden ? () => go('garden') : undefined} u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
             onNotebook={(rect) => {
               // the notebook stays where it is while the shelf dissolves away to plain felt; then the notebook
               // screen takes over (its own notebook is already in the same spot) and the held one is taken away
@@ -364,12 +367,12 @@ function Root() {
         {screen === 'publisher' && draft && (
           <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list) => { setUserStories(list); go('library'); }} onIdeas={() => go('ideas')} />
         )}
-        {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} />}
+        {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} onReadingOptions={readingOptions} />}
         {screen === 'music' && <MusicSounds u={u} openMenu={openMenu} prefs={prefs} setPrefs={setPrefs} />}
         {screen === 'profiles' && <Profiles u={u} openMenu={openMenu} setControls={setControls} onPicked={(id) => { setNextScreen('library'); switchProfile(id); }} onBack={() => go('library')} />}
         {screen === 'playlists' && <Playlists u={u} openMenu={openMenu} shelf={childShelf} onPlay={playPlaylist} onDone={() => go('library')} />}
         {screen === 'settings' && <Settings u={u} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
-          controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} onProfiles={() => go('profiles')} onPlaylists={() => go('playlists')} />}
+          controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} onProfiles={() => go('profiles')} onPlaylists={() => go('playlists')} onReadingOptions={readingOptions} onMusic={() => go('music')} />}
         {screen === 'garden' && <Garden u={u} openMenu={openMenu} toast={toast} onHome={() => go('library')} />}
         {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} onWelcome={WELCOME_ON ? () => setWelcome(true) : null} />}
         {screen === 'ideas' && <IdeaRoom u={u} openMenu={openMenu} onMake={() => openPublisher(null)} onHelp={() => go('help')} />}
@@ -484,14 +487,10 @@ function Root() {
             {controls.create ? <Option glyph={<PlusIcon />} title={t('Make a Book')} sub={t('Your pictures, your words')} onPress={newBook} /> : null}
             <Option glyph={<HomeIcon size={MENU_ICON + 2} color={colors.white} />} title={t('My Library')} sub={t('Find and read your favorite books')} onPress={() => go('library')} />
             {STORE_ON && controls.store ? <Option glyph={<LibraryIcon size={MENU_ICON} />} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => go('store')} /> : null}
-            {controls.playback && !controls.playMode ? <Option glyph={<PlayGlyph />} title={t('Reading Options')} sub={t('Modes, voices, fonts and sounds')} onPress={() => {
-              setDrawer(false);
-              // in a book: the reader's own panel; anywhere else: the same choices in their own panel
-              if (screen === 'reader') setTimeout(() => setPlayMenu((x) => x + 1), 300); /* the menu goes back into the bar first */ else setTimeout(() => setPlayOpen(true), 300);
-            }} /> : null}
-            <Option glyph={<MusicIcon size={24} weight={3.4} /* the same shape as the reading bar's note */ />} title={t('Music and Sounds')} sub={t('Relaxing and gentle')} onPress={() => go('music')} />
-            {/* Help takes Profile's place (Profile is suspended for families; the store owner signs in from About: hold Skippy) */}
-            {controls.help ? <Option glyph={<BulbIcon size={26} color={colors.white} weight={2} />} title={t('Ideas and Support')} sub={t('Find inspiration and help')} onPress={() => go('help')} /> : null}
+            {/* Reading Options and Music and Sounds live in Settings now (and Reading Options under the books in My Library
+                and the Book Store); Ideas has its own place; Support is the help pages (Jörg, 26 Oct 2026) */}
+            {controls.help ? <Option glyph={<BulbIcon size={26} color={colors.white} weight={2} />} title={t('Ideas')} sub={t('Books you can make together')} onPress={() => go('ideas')} /> : null}
+            {controls.help ? <Option glyph={<Image source={TITLE_ICONS.support} style={{ width: 26, height: 26 }} />} title={t('Support')} sub={t('Help and answers')} onPress={() => go('help')} /> : null}
             {/* (Profiles now live at the bottom of Settings and Profiles; children still switch from the start page) */}
             {/* Settings: always last, always behind the grown-up question */}
             <Option glyph={<PersonIcon />} title={t('Settings')} sub={t('Language, parental and profiles')} onPress={() => { setDrawer(false); setSettingsGate(true); }} />

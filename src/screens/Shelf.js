@@ -6,7 +6,7 @@ import { Animated, Easing, Image, Platform, Pressable, RefreshControl, ScrollVie
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, sectionBox, sectionTitle, SECTION_GAP } from '../theme';
 import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG } from '../look';
-import { Bar, BarMeta, Burger, DogEar, IDLE, Panel, PlaylistIcon, WithBar, slotStyle } from '../components/Chrome';
+import { Bar, BarMeta, Burger, DogEar, IDLE, Option, Panel, PlayGlyph, PlaylistIcon, WithBar, slotStyle } from '../components/Chrome';
 import { activeProfile, feltFor, onProfiles as onProfilesChange } from '../profiles';
 const SHARE_ICON = require('../../assets/icon-envelope.png');
 const EDIT_ICON = require('../../assets/icon-scissors.png');
@@ -180,6 +180,15 @@ function Band({ color, felt, dark, title, sub, action, onAction, icon }) {
 // Select mode: tap books to pick them, then Share (one book, as a PDF) or Delete.
 // Your own stories are deleted for good; the built-in books are only removed from the shelf
 // and can be brought back with "Show removed books".
+// Reading Options, under the books (My Library and the Book Store): the menu's row in a black glass box
+function ReadingOptionsBox({ onPress, t, style }) {
+  return (
+    <View style={[{ ...sectionBox, paddingVertical: 18 }, style]}>
+      <Option glyph={<PlayGlyph />} title={t('Reading Options')} sub={t('Modes, voices, fonts and sounds')} onPress={onPress} />
+    </View>
+  );
+}
+
 // My Notebook's cover: the brown leather of the notebook on the start page
 const CREATE_TILE = require('../../assets/tile-create.jpg'); // Jörg's blue felt book on grey paper (a small + sits in the corner)
 const PLAYLISTS_TILE = require('../../assets/tile-playlists.jpg'); // Jörg's stack of felt books, behind the Playlists sign
@@ -235,7 +244,7 @@ function WhoReads({ onPress }) {
   );
 }
 
-export function Library({ onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
+export function Library({ onReadingOptions, onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
   const t = useT();
   const gardenAsked = useRef(false);
   const gardenPull = useRef(false);
@@ -354,7 +363,9 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
         ) : null}
         {/* My Folder starts its own row: the folder (the size of a book), a pencil beside it, then a mug of hot chocolate */}
         {/* (a much bigger space after My Books: Jörg, 25 Oct 2026) */}
-        {!selecting ? <View style={{ width: '100%', height: 70 }} /> : null}
+        {/* Reading Options under the books, in black glass (Jörg, 26 Oct 2026) */}
+        {!selecting && onReadingOptions ? <ReadingOptionsBox t={t} onPress={onReadingOptions} style={{ width: '100%', marginTop: 40 }} /> : null}
+        {!selecting ? <View style={{ width: '100%', height: onReadingOptions ? 40 : 70 }} /> : null}
         {!selecting ? (() => {
           const n = COLS(winW), colW = ((winW - 40) * TILE[n]) / 100, gap = ((winW - 40) * ((100 - n * TILE[n]) / (n - 1))) / 100;
           return (
@@ -436,7 +447,7 @@ export function Library({ onGarden, narrator, toast, onProfiles, u, stories, ope
 }
 
 // The Book Store: shelves of books from the catalog you curate in Supabase (see src/catalog.js).
-export function Store({ u, openStory, openMenu, toast }) {
+export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
   const t = useT();
   const controls = useControls();
   const { width: winW, height: winH } = useWindowDimensions();
@@ -505,6 +516,8 @@ export function Store({ u, openStory, openMenu, toast }) {
             </View>
           </View>
         ))}
+        {/* Reading Options under the books, in black glass (as in My Library) */}
+        {onReadingOptions ? <ReadingOptionsBox t={t} onPress={onReadingOptions} style={{ marginHorizontal: 20, marginTop: 10 }} /> : null}
       </ScrollView>
       {open ? (
         <BookCard key={open.book.id} u={u} book={open.book} rect={open.rect} sideways={sideways}

@@ -7,12 +7,12 @@ import { TitleIcon } from '../titleIcons';
 import React, { useEffect, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fonts } from '../theme';
+import { colors, fonts, sectionBox } from '../theme';
 import { DESK_FELT, DESK_BG, IS_TABLET } from '../look';
 
 const IDEAS_FELT = require('../../assets/ideas-felt.png'); // the mossy green stitched felt (Ideas and Support), 1100 × 805
 const BAND_FELT = require('../../assets/band-settings.jpg'); // Jörg's grey stitched felt banner
-import { Bar, Burger, WithBar } from '../components/Chrome';
+import { Bar, Burger, MusicIcon, Option, PlayGlyph, WithBar } from '../components/Chrome';
 import { LANGS, useT } from '../i18n';
 import { lockedControls, quickSafeControls, DEFAULT_CONTROLS, STORE_ON } from '../controls';
 import { usePurchases } from '../purchases';
@@ -38,7 +38,7 @@ function Toggle({ label, value, onChange }) {
   );
 }
 
-export default function Settings({ u, openMenu, lang, setLang, bookLang, setBookLang, controls, setControls, mode, onDone, onJoin, onProfiles, onPlaylists }) {
+export default function Settings({ u, openMenu, lang, setLang, bookLang, setBookLang, controls, setControls, mode, onDone, onJoin, onProfiles, onPlaylists, onReadingOptions, onMusic }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const [hap, setHap] = useState(hapticsOn());
@@ -61,6 +61,11 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
       </View>
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.col}>
+          {/* Reading Options and Music and Sounds, first (they left the main menu: Jörg, 26 Oct 2026) */}
+          <View style={{ ...sectionBox, gap: 18, paddingVertical: 18 }}>
+            {onReadingOptions ? <Option glyph={<PlayGlyph />} title={t('Reading Options')} sub={t('Modes, voices, fonts and sounds')} onPress={onReadingOptions} /> : null}
+            {onMusic ? <Option glyph={<MusicIcon size={24} weight={3.4} />} title={t('Music and Sounds')} sub={t('Relaxing and gentle')} onPress={onMusic} /> : null}
+          </View>
           <Text style={styles.section}>{t('Language')}</Text>
           <View style={styles.card}>
             <Text style={styles.p}>{t('The app speaks this language.')}</Text>
