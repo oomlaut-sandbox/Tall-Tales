@@ -328,7 +328,7 @@ function Root() {
         {screen === 'start' && (
           // while the menu page is being turned, My Library is drawn underneath and shows through
           <View style={peek ? [StyleSheet.absoluteFill, { zIndex: 10 }] : { flex: 1 }}>
-            <Start key={startKey} ask={introAsk} onIntro={() => { setIntroWho(null); setIntroAsk(true); setCoverOpen(false); setStartKey((n) => n + 1); }} u={u} go={(t, rect) => { if (t === 'library' && rect) {
+            <Start key={startKey} ask={introAsk} onIntro={() => { setSplash(true); setIntroWho(null); setIntroAsk(true); setCoverOpen(false); setStartKey((n) => n + 1); }} u={u} go={(t, rect) => { if (t === 'library' && rect) {
               // the flying notebook is drawn over the start page's one first; only once it's surely on screen
               // does the start page go, so there's never a frame without a notebook
               libFade.setValue(0); flyP.setValue(0); setFlyer({ from: rect });
@@ -394,7 +394,7 @@ function Root() {
           controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} onProfiles={() => go('profiles')} onPlaylists={() => go('playlists')} onReadingOptions={readingOptions} onMusic={() => go('music')} prefs={prefs} setPrefs={setPrefs} toast={toast} />}
         {screen === 'garden' && <Garden u={u} openMenu={openMenu} toast={toast} onHome={() => go('library')} />}
         {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} onWelcome={WELCOME_ON ? () => setWelcome(true) : null}
-          onIntro={() => { setIntroWho(null); setIntroAsk(true); setCoverOpen(false); setStartKey((n) => n + 1); go('start'); }} />}
+          onIntro={() => { setSplash(true); setIntroWho(null); setIntroAsk(true); setCoverOpen(false); setStartKey((n) => n + 1); go('start'); }} />}
         {screen === 'ideas' && <IdeaRoom u={u} openMenu={openMenu} onMake={() => openPublisher(null)} onHelp={() => go('help')} />}
         {screen === 'covertest' && <CoverTest u={u} openMenu={openMenu} />}
         {screen === 'about' && <About u={u} openMenu={openMenu} onBack={() => go('help')} onSecret={() => {

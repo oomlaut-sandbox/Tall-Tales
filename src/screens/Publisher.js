@@ -700,7 +700,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         </KeyboardAvoidingView>
       ) : null}
       {aboutOpen ? (
-        <View style={[StyleSheet.absoluteFill, { zIndex: 60, backgroundColor: colors.desk }]}>
+        // (it stops at the black bar, which stays in view, like the Cover Editor: Jörg, 26 Oct 2026)
+        <View style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk, overflow: 'hidden' }, wide ? { right: BL.rightW } : { bottom: BL.barH }]}>
           <DeskFelt spot="publisher-about" overlay />
           <AboutPage tr={tr} insets={insets} onSkip={() => setAboutOpen(false)}
             onNext={({ about, aboutWords, title }) => { setDraft((d) => ({ ...d, about, aboutWords, title: d.title.trim() ? d.title : title })); setAboutOpen(false); }} />
