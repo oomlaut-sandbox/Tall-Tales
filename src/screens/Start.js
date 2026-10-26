@@ -114,7 +114,8 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
     setTimeout(() => {
       if (target === 'library' && pageRef.current && pageRef.current.measureInWindow) pageRef.current.measureInWindow((x, y, w, h) => go(target, w ? { x, y, w, h } : null));
       else go(target);
-    }, 470); // three-quarters of the way through the 650ms close: the cover is all but shut
+    }, target === 'make' ? 720 : 470); // three-quarters of the way through the 650ms close: the cover is all but shut
+    // (Make a book waits until the notebook has closed completely, then the book maker loads: Jörg, 26 Oct 2026)
   };
   // Dragging: the cover follows the finger the whole way (up / to the left opens it, down / to the
   // right closes it); let go past halfway and it falls open, otherwise it settles back shut.
