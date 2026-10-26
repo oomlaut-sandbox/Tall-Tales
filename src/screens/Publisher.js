@@ -120,8 +120,17 @@ export function CenteredField({ value, onChangeText, placeholder, onFocus, onBlu
   );
 }
 
-function EmptyPicture({ side }) {
+function EmptyPicture({ side, plain }) {
   const tr = useT();
+  // the cover editor: no Polaroid, just the light grey card with 'Add Image' in dark grey (Jörg, 26 Oct 2026)
+  if (plain) {
+    const f = Math.max(16, Math.round(side * 0.055));
+    return (
+      <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#c9c8c6', alignItems: 'center', justifyContent: 'center', padding: side * 0.12 }]}>
+        <Text style={{ textAlign: 'center', color: '#4a4a4a', fontFamily: fonts.uiBold, fontSize: f, lineHeight: f * 1.24 }}>{tr('Add Image')}</Text>
+      </View>
+    );
+  }
   // the words sit well inside the blue (a good margin all round), wrap onto more lines when they're long
   // (in any language), and are always centred across and top to bottom
   const fs = Math.max(14, Math.round(side * 0.048));
@@ -788,7 +797,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                     </Pressable>
                   ) : (
                     <Pressable onPress={() => setImgAsk('cover')} style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]} accessibilityRole="button">
-                      <EmptyPicture side={W} />
+                      <EmptyPicture side={W} plain />
                     </Pressable>
                   )}
                   {/* the title: type in it, drag it anywhere on the cover */}
