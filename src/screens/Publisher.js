@@ -2,6 +2,7 @@
 // Everything saves automatically. "Pages" opens a list to reorder or delete pages,
 // or to delete the whole story.
 import { Asset } from 'expo-asset';
+import PhotoEditor from '../components/PhotoEditor';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Keyboard, KeyboardAvoidingView, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -93,7 +94,7 @@ export function draftFrom(story) {
     title: story.title,
     writer: story.writer || '',
     artist: story.artist || '',
-    pages: story.pages.filter((p) => !p.titlePage).map((p) => ({ pid: p.pid, text: p.text, uri: p.image ? p.image.uri : null, w: p.w, h: p.h, uri2: p.image2 ? p.image2.uri : null, w2: p.w2 || 1, h2: p.h2 || 1 })),
+    pages: story.pages.filter((p) => !p.titlePage).map((p) => ({ pid: p.pid, text: p.text, uri: p.image ? p.image.uri : null, w: p.w, h: p.h, uri2: p.image2 ? p.image2.uri : null, w2: p.w2 || 1, h2: p.h2 || 1, src: p.src || null, edit: p.edit || null, src2: p.src2 || null, edit2: p.edit2 || null })),
     cover: story.cover || null,
   };
 }
@@ -331,6 +332,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       const ph = given || await choosePhoto(source);
       if (!ph) return;
       if (cover && cover.uri) dropPicture(cover.uri);
+      if (cover && cover.src && cover.src !== cover.uri) dropPicture(cover.src);
       setCover({ ...ph, title: cover ? cover.title || null : null });
       if (!(cover && cover.title)) setCoverAsk(true);
     } catch (e) {
@@ -422,11 +424,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       if (!ph) return;
       if (target === 'page2') {
         if (page.uri2) dropPicture(page.uri2);
-        update({ uri2: ph.uri, w2: ph.w, h2: ph.h });
+        if (page.src2 && page.src2 !== page.uri2) dropPicture(page.src2);
+        update({ uri2: ph.uri, w2: ph.w, h2: ph.h, src2: null, edit2: null });
         return;
       }
       if (page.uri) dropPicture(page.uri);
-      update(ph);
+      if (page.src && page.src !== page.uri) dropPicture(page.src);
+      update({ ...ph, src: null, edit: null });
     } catch (e) {
       toast(source === 'camera' ? tr('Couldn’t open the camera.') : tr('Couldn’t open your photos. Check that Coro is allowed to use Photos in Settings.'));
     }
@@ -439,11 +443,30 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   };
   const removeImage = () => {
     if (page.uri) dropPicture(page.uri);
-    update({ uri: null, w: 1, h: 1 });
+    if (page.src && page.src !== page.uri) dropPicture(page.src);
+    update({ uri: null, w: 1, h: 1, src: null, edit: null });
   };
   const removeImage2 = () => {
     if (page.uri2) dropPicture(page.uri2);
-    update({ uri2: null, w2: 1, h2: 1 });
+    if (page.src2 && page.src2 !== page.uri2) dropPicture(page.src2);
+    update({ uri2: null, w2: 1, h2: 1, src2: null, edit2: null });
+  };
+  // ---- Edit photo: crop, layout and look (the original is kept as src; the page shows the finished picture) ----
+  const [photoEdit, setPhotoEdit] = useState(null); // 'page' | 'page2' | 'cover'
+  const photoOf = (t) => (t === 'cover' ? (cover && cover.uri ? { src: cover.src || cover.uri, uri: cover.uri, edit: cover.edit } : null)
+    : t === 'page2' ? (page.uri2 ? { src: page.src2 || page.uri2, uri: page.uri2, edit: page.edit2 } : null)
+    : (page.uri ? { src: page.src || page.uri, uri: page.uri, edit: page.edit } : null));
+  const photoDone = async (t, out, edit) => {
+    setPhotoEdit(null);
+    const cur = photoOf(t);
+    if (!cur) return;
+    let made = null;
+    if (out) { try { made = { uri: await keepPicture(draft.id, out.uri), w: out.w, h: out.h }; } catch (e) {} }
+    if (made && cur.uri !== cur.src) dropPicture(cur.uri); // the last edit's picture (never the original)
+    const pic = made || { uri: cur.uri };
+    if (t === 'cover') setCover({ ...cover, uri: pic.uri, w: pic.w || cover.w, h: pic.h || cover.h, src: cur.src, edit });
+    else if (t === 'page2') update({ uri2: pic.uri, w2: pic.w || page.w2, h2: pic.h || page.h2, src2: cur.src, edit2: edit });
+    else update({ uri: pic.uri, w: pic.w || page.w, h: pic.h || page.h, src: cur.src, edit });
   };
 
   const next = () => {
@@ -538,6 +561,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               <Image source={{ uri: page.uri }} style={styles.fill} resizeMode="cover" />
               <View style={styles.artBtns}>
                 <Text style={styles.chip}>{tr('Change image')}</Text>
+                <Pressable onPress={() => setPhotoEdit('page')} hitSlop={6} accessibilityLabel={tr('Edit photo')}><Text style={styles.chip}>{tr('Edit')}</Text></Pressable>
                 <Pressable onPress={removeImage} hitSlop={6} accessibilityLabel={tr('Remove image')}><Text style={styles.chip}>{tr('Remove')}</Text></Pressable>
               </View>
             </>
@@ -554,6 +578,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           {page.uri2 ? (
             <View style={[styles.artBtns, { bottom: 12 }]}>
               <Text style={styles.chip}>{tr('Change image')}</Text>
+              <Pressable onPress={() => setPhotoEdit('page2')} hitSlop={6} accessibilityLabel={tr('Edit photo')}><Text style={styles.chip}>{tr('Edit')}</Text></Pressable>
               <Pressable onPress={removeImage2} hitSlop={6} accessibilityLabel={tr('Remove the second image')}><Text style={styles.chip}>{tr('Remove')}</Text></Pressable>
             </View>
           ) : (
@@ -976,7 +1001,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       {imgAsk ? (
         <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
-            <Text style={styles.choiceTitle}>{tr('Add a picture')}</Text>
+            <Text style={styles.choiceTitle}>{photoOf(imgAsk) ? tr('Picture') : tr('Add a picture')}</Text>
+            {photoOf(imgAsk) ? <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setPhotoEdit(t); }} style={[styles.choiceBtn, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Edit photo')}</Text></Pressable> : null}
             <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); placeImage(t, 'library'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Choose a picture')}</Text></Pressable>
             {/* a photo of a drawing, say; the camera only opens after the grown-up check */}
             <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setCamGate(t); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Take a photo')}</Text></Pressable>
@@ -1004,6 +1030,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Pressable onPress={() => setHardAsk(false)} style={[styles.choiceBtn, { marginTop: 16 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Cancel')}</Text></Pressable>
           </Pressable>
         </Pressable>
+      ) : null}
+      {photoEdit && photoOf(photoEdit) ? (
+        <PhotoEditor src={{ uri: photoOf(photoEdit).src }} edit={photoOf(photoEdit).edit} tr={tr} insets={insets}
+          onCancel={() => setPhotoEdit(null)} onDone={(out, edit) => photoDone(photoEdit, out, edit)} />
       ) : null}
       {drawFor ? (
         <DrawEditor insets={insets} title={drawFor === 'cover' ? tr('Drawing · Cover') : tr('Drawing · Page {n}', { n: i + 1 })}

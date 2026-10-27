@@ -25,7 +25,7 @@ export function creditsLine(writer, artist) {
 }
 
 function fromSaved(s) {
-  const bodyPages = s.pages.map((p, i) => ({ pid: p.pid || `i${i}`, text: p.text || '', image: p.uri ? { uri: p.uri } : null, w: p.w || 1, h: p.h || 1, image2: p.uri2 && !(p.text || '').trim() ? { uri: p.uri2 } : null, w2: p.w2 || 1, h2: p.h2 || 1 }));
+  const bodyPages = s.pages.map((p, i) => ({ src: p.src || null, edit: p.edit || null, src2: p.src2 || null, edit2: p.edit2 || null, pid: p.pid || `i${i}`, text: p.text || '', image: p.uri ? { uri: p.uri } : null, w: p.w || 1, h: p.h || 1, image2: p.uri2 && !(p.text || '').trim() ? { uri: p.uri2 } : null, w2: p.w2 || 1, h2: p.h2 || 1, src: p.src || null, edit: p.edit || null, src2: (!p.text.trim() && p.src2) || null, edit2: p.edit2 || null }));
   const credits = creditsLine(s.writer, s.artist);
   const coverImg = s.cover && s.cover.uri ? { uri: s.cover.uri } : (bodyPages[0] && bodyPages[0].image) || null;
   // Every book opens like 'Different': the cover, a blank back of the cover, and a title page with the credits.
@@ -75,7 +75,7 @@ export function deleteUserStory(id) {
   return serial(async () => {
     const list = await loadJSON('stories', []);
     const s = list.find((x) => x.id === id);
-    if (s) { s.pages.forEach((p) => p.uri && deleteFile(p.uri)); if (s.cover && s.cover.uri) deleteFile(s.cover.uri); }
+    if (s) { s.pages.forEach((p) => [p.uri, p.uri2, p.src, p.src2].forEach((x) => x && deleteFile(x))); if (s.cover) [s.cover.uri, s.cover.src].forEach((x) => x && deleteFile(x)); }
     const next = list.filter((x) => x.id !== id);
     await saveJSON('stories', next);
     await pruneRecordings(id, []);
