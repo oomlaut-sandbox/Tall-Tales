@@ -39,19 +39,25 @@
       "done": true
     },
     "intro-kids-make-a-book": {
-      "speed": 0.88,
-      "pause": "1.2s",
+      "speed": 0.92,
+      "pause": "1.0s",
       "lines": [
-        "Hi! I'm Coro. Let's make a book together!",
-        "Tap Make a book, and your notebook opens.",
-        "Draw a picture. Any picture! Swirly, spotty, silly. It's all perfect.",
+        "Hi there! I'm Coro. Let's make a book together!",
+        "Tap Make a book, and your notebook opens up.",
+        "Now draw a picture. Any picture you like! Swirly, spotty, silly... it's all perfect!",
         "Then write what happens. Just a few words is plenty.",
-        "Want more? Add another page.",
-        "Give your book a name, and put your name on the cover. You're the author!",
-        "Last, read it out loud with someone you love, and record it.",
-        "Ta-da! Your very own book.",
+        "Want more? Add another page!",
+        "Give your book a name, and put your own name on the cover. You're the author!",
+        "Last of all, read it out loud with someone you love, and record it.",
+        "Ta-da! Your very own book!",
         "Coro. Books you make together."
-      ]
+      ],
+      "settings": {
+        "stability": 0.3,
+        "similarity_boost": 0.8,
+        "style": 0.55,
+        "use_speaker_boost": true
+      }
     },
     "intro-1-complete-walk-through": {
       "speed": 0.95,
@@ -66,7 +72,8 @@
         "Each reader gets their own profile and shelf.",
         "Buying, sharing and settings ask a grown-up first, so little hands can explore freely.",
         "Coro. Books you make together."
-      ]
+      ],
+      "done": true
     },
     "intro-2-quick-tour": {
       "speed": 0.95,
@@ -78,7 +85,8 @@
         "Find new Coro books in the Book Store.",
         "And share them with the people you love.",
         "Coro. Books you make together."
-      ]
+      ],
+      "done": true
     },
     "intro-3-making-and-sharing": {
       "speed": 0.95,
@@ -93,7 +101,8 @@
         "Your book is now told in your voice.",
         "Share it with grandparents, cousins, friends. They can listen anywhere.",
         "Coro. Books you make together."
-      ]
+      ],
+      "done": true
     },
     "intro-4-reading-books": {
       "speed": 0.95,
@@ -107,7 +116,8 @@
         "Reading Options let you change the text size, font and more.",
         "Make a playlist, and books play one after another.",
         "Coro. Books you make together."
-      ]
+      ],
+      "done": true
     },
     "intro-5-parental-controls": {
       "speed": 0.95,
@@ -119,7 +129,8 @@
         "You decide what gets shared, and with whom.",
         "So your child can explore freely, and you can relax.",
         "Coro. Books you make together."
-      ]
+      ],
+      "done": true
     },
     "intro-6-for-teachers": {
       "speed": 0.95,
@@ -133,7 +144,8 @@
         "At the end of the year, select and remove profiles or whole classes in a few taps.",
         "Make books together as a class, and share them with families.",
         "Coro. Books you make together."
-      ]
+      ],
+      "done": true
     }
   }
 }
