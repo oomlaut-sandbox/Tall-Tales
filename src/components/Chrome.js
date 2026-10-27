@@ -594,7 +594,7 @@ let bubbleNow = null, bubbleSeq = 0;
 const bubbleSubs = new Set();
 const tellBubble = () => bubbleSubs.forEach((f) => f(bubbleNow));
 
-export function Toast({ message, area, onDismiss, center, ms = BUBBLE_MS }) {
+export function Toast({ message, area, onDismiss, center, ms = BUBBLE_MS, button }) { // button: a green pill that closes it (then ms 0: it stays until then)
   const dismiss = useRef(onDismiss);
   dismiss.current = onDismiss;
   const mine = useRef(null);
@@ -603,7 +603,7 @@ export function Toast({ message, area, onDismiss, center, ms = BUBBLE_MS }) {
     if (!message) return undefined;
     const id = ++bubbleSeq;
     mine.current = id;
-    bubbleNow = { id, message, area, center, ms, onDismiss: () => dismiss.current && dismiss.current() };
+    bubbleNow = { id, message, area, center, ms, button, onDismiss: () => dismiss.current && dismiss.current() };
     tellBubble();
     return () => { if (bubbleNow && bubbleNow.id === id) { bubbleNow = null; tellBubble(); } };
   }, [message, areaKey, center]);
@@ -622,7 +622,7 @@ export function BubbleHost({ defaultArea }) {
   };
   // 3 seconds after each new bubble, it closes by itself (a tap closes it sooner)
   useEffect(() => {
-    if (!b) return undefined;
+    if (!b || b.ms === 0) return undefined; // (ms 0: stays until it's closed)
     const t = setTimeout(() => { if (bubbleNow && bubbleNow.id === b.id) close(); }, b.ms || BUBBLE_MS);
     return () => clearTimeout(t);
   }, [b && b.id]);
@@ -639,6 +639,11 @@ export function BubbleHost({ defaultArea }) {
         <View style={styles.bubble}>
           {/* a ● in the message is drawn in the record button's red */}
           <Text style={styles.toast}>{String(message).split('●').map((part, i) => (i ? [<Text key={i} style={{ color: colors.highlight }}>●</Text>, part] : part))}</Text>
+          {b.button ? (
+            <Pressable onPress={close} accessibilityRole="button" style={{ alignSelf: 'center', marginTop: 14, height: 40, borderRadius: 20, paddingHorizontal: 22, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{b.button}</Text>
+            </Pressable>
+          ) : null}
         </View>
         <View style={styles.bubbleTail} />
       </Pressable>
