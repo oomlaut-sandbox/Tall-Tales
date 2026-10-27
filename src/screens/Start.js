@@ -169,7 +169,7 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
                     <View style={{ width: side }}>
                       <Image source={DESK_LOGO} resizeMode="contain" style={{ alignSelf: 'center', width: side * 0.86 * LOGO_K, height: side * 0.86 * LOGO_K * 434 / 1233 }} accessibilityLabel="Coro" />
                       {/* lined up with the left edge of the c (at 211 of the picture's 1233) */}
-                      <Text style={[styles.slogan, { position: 'absolute', fontSize: Math.round(side * 0.055), top: side * 0.86 * LOGO_K * 434 / 1233 - side * 0.03 /* a little more room under coro. (and coro. stays exactly where it was) */, left: (side - side * 0.86 * LOGO_K) / 2 + side * 0.86 * LOGO_K * 211 / 1233 }]}>{t('Books you make together.')}</Text>
+                      <Text style={[styles.slogan, { position: 'absolute', fontSize: Math.round(side * 0.055), top: side * 0.86 * LOGO_K * 434 / 1233 - side * 0.03 /* a little more room under coro. (and coro. stays exactly where it was) */, left: (side - side * 0.86 * LOGO_K) / 2 + side * 0.86 * LOGO_K * 211 / 1233 + side * 0.015 /* nudged a touch right */ }]}>{t('Books you make together.')}</Text>
                     </View>
                   );
                   // sideways: the logo keeps its left edge but is a little smaller, so the felt between it and the
@@ -183,7 +183,7 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
                   return (
                     <>
                       <Image source={DESK_LOGO} resizeMode="contain" style={{ position: 'absolute', left: a - m + (vis - cw) / 2 - w * 316 / 1233, width: w, height: w * 434 / 1233 }} accessibilityLabel="Coro" />
-                      <Text style={[styles.slogan, { position: 'absolute', left: a - m + (vis - cw) / 2 - w * 316 / 1233 + w * 211 / 1233, textAlign: 'left', top: side / 2 + w * 434 / 1233 / 2 - side * 0.02, fontSize: Math.round(side * 0.055) }]}>{t('Books you make together.')}</Text>
+                      <Text style={[styles.slogan, { position: 'absolute', left: a - m + (vis - cw) / 2 - w * 316 / 1233 + w * 211 / 1233 + side * 0.015, textAlign: 'left', top: side / 2 + w * 434 / 1233 / 2 - side * 0.02, fontSize: Math.round(side * 0.055) }]}>{t('Books you make together.')}</Text>
                     </>
                   );
                 })()}
