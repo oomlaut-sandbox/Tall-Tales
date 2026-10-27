@@ -179,6 +179,7 @@ function Root() {
   }), [toast]);
 
   // From the start page to My Library: the closed notebook flies onto the shelf as the library fades in.
+  const [toBooks, setToBooks] = useState(0); // Read a book on the start page: My Library opens scrolled down to My Books
   const [flyer, setFlyer] = useState(null); // { from, to } screen rectangles
   const libFade = useRef(new Animated.Value(1)).current;
   const flyP = useRef(new Animated.Value(0)).current;
@@ -330,7 +331,7 @@ function Root() {
         {screen === 'start' && (
           // while the menu page is being turned, My Library is drawn underneath and shows through
           <View style={peek ? [StyleSheet.absoluteFill, { zIndex: 10 }] : { flex: 1 }}>
-            <Start key={startKey} ask={introAsk} onIntro={() => { setSplash(true); setIntroWho(null); setIntroAsk(true); setCoverOpen(false); setStartKey((n) => n + 1); }} u={u} go={(t, rect) => { if (t === 'library' && rect) {
+            <Start key={startKey} ask={introAsk} onIntro={() => { setSplash(true); setIntroWho(null); setIntroAsk(true); setCoverOpen(false); setStartKey((n) => n + 1); }} u={u} go={(t, rect) => { if (t === 'library') setToBooks((n) => n + 1); /* Read a book: My Library opens at My Books (Jörg, 27 Oct 2026) */ if (t === 'library' && rect) {
               // the flying notebook is drawn over the start page's one first; only once it's surely on screen
               // does the start page go, so there's never a frame without a notebook
               libFade.setValue(0); flyP.setValue(0); setFlyer({ from: rect });
@@ -351,7 +352,7 @@ function Root() {
         ) : null}
         {(screen === 'library' || (screen === 'start' && peek === 'library')) && (
           <Animated.View style={{ flex: 1, opacity: screen === 'library' ? libFade : 1 }}>
-          <Library onReadingOptions={readingBox} onGarden={controls.garden ? () => go('garden') : undefined} u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
+          <Library toBooks={toBooks} onReadingOptions={readingBox} onGarden={controls.garden ? () => go('garden') : undefined} u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
             onNotebook={(rect) => {
               // the notebook stays where it is while the shelf dissolves away to plain felt; then the notebook
               // screen takes over (its own notebook is already in the same spot) and the held one is taken away

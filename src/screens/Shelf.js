@@ -245,8 +245,18 @@ function WhoReads({ onPress }) {
   );
 }
 
-export function Library({ onReadingOptions, onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
+export function Library({ toBooks, onReadingOptions, onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
   const t = useT();
+  // Read a book (from the start page): open scrolled down so My Books is at the top, just under the band
+  const scrollRef = useRef(null);
+  const booksY = useRef(null);
+  const booksDone = useRef(0);
+  const toMyBooks = () => {
+    if (!toBooks || booksDone.current === toBooks || booksY.current == null || !scrollRef.current) return;
+    booksDone.current = toBooks;
+    scrollRef.current.scrollTo({ y: Math.max(0, booksY.current - 24), animated: false });
+  };
+  useEffect(() => { toMyBooks(); }, [toBooks]);
   const gardenAsked = useRef(false);
   const gardenPull = useRef(false);
   if (typeof window !== 'undefined' && window.location && /garden/.test(window.location.hash || '')) window.__openGarden = onGarden; // (web preview screenshots)
@@ -313,7 +323,7 @@ export function Library({ onReadingOptions, onGarden, narrator, toast, onProfile
         sub={selecting ? (picked.length ? t('{n} selected', { n: picked.length }) : t('Tap books to select them')) : t('Your stories, ready to read')} />
       {/* pulled up past the corkboard at the very bottom: a speech bubble invites you on to the Garden (once per pull),
           only once a grown-up has unlocked it in Settings → The Garden */}
-      <ScrollView contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]} scrollEventThrottle={64}
+      <ScrollView ref={scrollRef} contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]} scrollEventThrottle={64}
         onScroll={(e) => {
           const { contentOffset: o, layoutMeasurement: l, contentSize: c } = e.nativeEvent;
           const past = o.y + l.height - c.height;
@@ -340,7 +350,7 @@ export function Library({ onReadingOptions, onGarden, narrator, toast, onProfile
         ) : null}
         {!selecting ? <View style={{ width: '100%' }} /> : null}{/* the books start their own row */}
         {/* a title over the books: the ones you made first, then the picture books */}
-        {!selecting ? <Text style={[styles.section, { marginTop: 2 }]} accessibilityRole="header">{t('My Books')}</Text> : null}{/* a little closer to Let's make a book */}
+        {!selecting ? <Text onLayout={(e) => { booksY.current = e.nativeEvent.layout.y; toMyBooks(); }} style={[styles.section, { marginTop: 2 }]} accessibilityRole="header">{t('My Books')}</Text> : null}{/* a little closer to Let's make a book */}
         {/* (the parental controls can hide books rated for older children) */}
         {stories.filter((s) => ageAllowed(ageOf(null, s), controls.childAge)).sort((a, b) => (b.mine ? 1 : 0) - (a.mine ? 1 : 0)).map((s) => (
           // just the title under each cover (no author, pages or other details)
