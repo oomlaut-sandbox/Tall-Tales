@@ -289,7 +289,7 @@ export function Library({ toBooks, onReadingOptions, onGarden, narrator, toast, 
           {/* the menu, house and note stay where they always are; then share (envelope), edit (scissors) and delete
               (trash can) in the next slots, greyed out when they can't be used */}
           <View style={{ flexDirection: v ? 'column' : 'row', alignItems: 'center', alignSelf: 'stretch' }}>{/* no gap: the slots run on from the menu's */}
-          <Burger u={u} onPress={openMenu} />
+          <Burger u={u} home={false} onPress={openMenu} />{/* (no house: this is home: Jörg, 27 Oct 2026) */}
           {[
             [SHARE_ICON, t('Share'), chosen.length === 1, () => setGate('share'), '#ffffff'],
             [EDIT_ICON, t('Edit'), chosen.length === 1 && chosen[0].mine, () => { const b = chosen[0]; stop(); onEdit(b); }, '#ffffff'],
@@ -312,7 +312,7 @@ export function Library({ toBooks, onReadingOptions, onGarden, narrator, toast, 
         </Bar>
       ) : (
         <Bar u={u} vertical={v}>
-          <Burger u={u} onPress={openMenu} />
+          <Burger u={u} home={false} onPress={openMenu} />
           <View style={{ flex: 1 }} />
           {/* Select: in the bottom right corner of the bar (not when the parental controls turn sharing off) */}
           {/* Select: an icon (a circle with a tick), so it fits the sideways bar in every language */}
