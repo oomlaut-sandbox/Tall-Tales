@@ -1093,7 +1093,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       ) : null}
       {trimRec ? <TrimEditor rec={trimRec} title={tr('Page {n}', { n: trimRec.page + 1 })} onCancel={() => setTrimRec(null)}
         onSave={async (start, end) => { await setTrim(story.id, trimRec.pid, start, end, trimRec.reader || 'me'); setTrimRec(null); openRecList(); }} /> : null}
-      {voiceBox ? <VoicePick options={boxOptions} value={boxValue} tr={tr} onPick={pickVoice} onClose={() => setVoiceBox(false)} onEdit={controls.recording ? () => setEditReaders(true) : null}
+      {voiceBox ? <VoicePick options={boxOptions} value={boxValue} tr={tr} onPick={pickVoice} speed={speedOf(prefs)} onSpeed={(v) => setPrefs((p) => ({ ...p, rate: v }))} onClose={() => setVoiceBox(false)} onEdit={controls.recording ? () => setEditReaders(true) : null}
         anchor={wide ? { right: BL.rightW + 10, bottom: Math.max(16, insets.bottom) } : { right: 12, bottom: barH + 10 }} /> : null}
       {editReaders ? <ReaderPick edit initial={voiceOptions.some((o) => o.id === voice) && voice !== 'narrator' ? voice : null} onCancel={() => { setEditReaders(false); getReaders().then(setReaders); refreshRecPages(); }}
         onDone={() => { setEditReaders(false); getReaders().then(setReaders); refreshRecPages(); }} /> : null}

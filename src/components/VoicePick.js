@@ -2,10 +2,10 @@
 // recorded it: their photo, or the first letter of their name). Tapping it opens a rounded box listing the
 // narrators and everyone who recorded this book; pick one and the book reads in that voice. Works with the grown-up controls locked (nothing here
 // records, deletes or changes anything else). Pages a reader didn't record are read by the narrator.
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme';
-import { BubbleIcon, PersonIcon } from './Chrome';
+import { BubbleIcon, PersonIcon, Slider } from './Chrome';
 import { withTap } from '../haptics';
 
 const SCISSORS = require('../../assets/icon-scissors.png');
@@ -24,7 +24,8 @@ export function VoiceFace({ photo, name, narrator = false, person = false, size 
 
 // the box: anchored just above the bar (upright) or beside it (sideways)
 // onEdit: the scissors in the top-right corner (edit the readers: photos, a new reader); left out when locked
-export default function VoicePick({ options, value, onPick, onClose, tr, anchor, onEdit }) {
+export default function VoicePick({ options, value, onPick, onClose, tr, anchor, onEdit, speed, onSpeed }) { // speed / onSpeed: the reading speed slider under the voices (Jörg, 27 Oct 2026)
+  const [sp, setSp] = useState(null);
   const a = useRef(new Animated.Value(0)).current;
   useEffect(() => { Animated.timing(a, { toValue: 1, duration: 180, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(); }, []);
   const close = (then) => Animated.timing(a, { toValue: 0, duration: 140, easing: Easing.in(Easing.quad), useNativeDriver: true }).start(() => { onClose(); then && then(); });
@@ -48,6 +49,13 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
             </Pressable>
           );
         })}
+        {onSpeed ? (
+          <View style={{ marginTop: 10, paddingHorizontal: 6 }}>
+            <Text style={[styles.title, { marginLeft: 0, marginBottom: 2 }]}>{tr('Reading speed')}</Text>
+            <Slider value={sp ?? speed} min={0.5} max={1.5} step={0.05} leftLabel={tr('Slower')} rightLabel={tr('Faster')} accessibilityLabel={tr('Reading speed')}
+              format={(v) => `${v.toFixed(2).replace(/0$/, '')}×`} onChange={setSp} onDone={(v) => { setSp(null); onSpeed(Math.round(v * 100) / 100); }} />
+          </View>
+        ) : null}
       </Animated.View>
     </View>
   );
