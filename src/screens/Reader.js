@@ -1075,17 +1075,20 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
         // (the triangle's far point is 16k from its slot's middle)
         const ck = 0.65;
         const cs = { ...slotStyle(u, v) };
+        // the voice face: it opens the voice box, which also holds the reading modes, so it stays on the bar in every
+        // mode (Read Yourself and Listen Only hide Play and Record, but never the way back: Jörg, 27 Oct 2026)
+        const faceEl = (
+          <View style={[cs, !v && { transform: [{ translateX: -u * 1.8 + 2 }] }]}>{/* upright: a little to the left, clear of the red button */}
+            <Pressable onPress={withTap(() => setVoiceBox(true))} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Who reads this book?')}>
+              {(() => { const f = familyOptions.find((o) => o.id === shownVoice); return <VoiceFace photo={f && f.photo} name={f && f.name} narrator={!f} size={u * 7} />; })()}
+            </Pressable>
+          </View>
+        );
         const ctlEls = showControls ? (
           <View style={v ? { alignItems: 'center', marginBottom: sideTop(u, winH) + 16 * ck - G.step / 2 } : { flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch', marginRight: -(G.step / 2 - 16 * ck) }}>
             {/* who reads (the face) and Record */}
             <View style={{ flexDirection: v ? 'column' : 'row', alignSelf: v ? 'stretch' : 'auto' }}>
-              {showVoices ? (
-                <View style={[cs, !v && { transform: [{ translateX: -u * 1.8 + 2 }] }]}>{/* upright: a little to the left, clear of the red button */}
-                  <Pressable onPress={withTap(() => setVoiceBox(true))} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Who reads this book?')}>
-                    {(() => { const f = familyOptions.find((o) => o.id === shownVoice); return <VoiceFace photo={f && f.photo} name={f && f.name} narrator={!f} size={u * 7} />; })()}
-                  </Pressable>
-                </View>
-              ) : null}
+              {showVoices ? faceEl : null}
               {controls.recording ? <View style={cs}><RecordButton k={ck} active={recording} onPress={() => (recording ? stopRec(true) : (hushForRecording(), setRecView('main'), setPanel('rec')))} /></View> : null}
             </View>
             {/* one button that is Play, or Pause while it reads, upright and sideways alike (Jörg, 26 Oct 2026): it sits
@@ -1094,7 +1097,9 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
               ? <View style={cs}><PauseButton k={ck} onPress={onPause} disabled={recording} active /></View>
               : <View style={[cs, v && { transform: [...(cs.transform || []), { translateX: -2 }] }]}><PlayButton k={ck} onPress={onPlay} active={false} disabled={recording} /></View>}
           </View>
-        ) : null;
+        ) : (!nightOn ? (
+          <View style={v ? { alignItems: 'center', marginBottom: sideTop(u, winH) + 16 * ck - G.step / 2 } : { flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch', marginRight: -(G.step / 2 - 16 * ck) }}>{faceEl}</View>
+        ) : null);
         return v ? (
           <View style={[styles.sideBar, { width: BL.rightW, paddingTop: sideTop(u, winH) }]}>
             <Felt />
