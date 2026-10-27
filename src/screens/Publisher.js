@@ -463,7 +463,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   // a hardcover look as the cover picture (Text only cover: the title goes on top as usual)
   const applyHardcover = async (src) => {
     // (copied into the book's own folder, so it's still there after the app is updated)
-    try { const a = Asset.fromModule(src); await a.downloadAsync(); let uri = a.localUri || a.uri; try { uri = await keepPicture(draft.id, uri); } catch (e) {} pickCover('library', { uri, w: a.width || 1600, h: a.height || 1600, hard: true }); // hard: a cloth hardcover (its spine turns to the top when the book is upright) } catch (e) {}
+    // hard: a cloth hardcover (its spine turns to the top when the book is upright)
+    try { const a = Asset.fromModule(src); await a.downloadAsync(); let uri = a.localUri || a.uri; try { uri = await keepPicture(draft.id, uri); } catch (e) {} pickCover('library', { uri, w: a.width || 1600, h: a.height || 1600, hard: true }); } catch (e) {}
   };
   const removeImage = () => {
     if (page.uri) dropPicture(page.uri);
