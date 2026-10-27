@@ -9,7 +9,7 @@ export const COVER_FONT = 'EBGaramond_700Bold';
 // The cover title's colours: a small natural palette, plus white, greys and black.
 export const COVER_COLORS = [ // (many more, in rows from light to dark: Jörg, 26 Oct 2026)
   ['#ffffff', 'White'], ['#f4f1ea', 'Soft white'], ['#d9d4c7', 'Linen'], ['#a8a39a', 'Stone grey'], ['#5b6670', 'Slate grey'], ['#36393b', 'Charcoal'], ['#1e1a17', 'Warm black'], ['#000000', 'Black'],
-  ['#f6d6d0', 'Blush'], ['#f2a7a0', 'Coral pink'], ['#e0564f', 'Poppy red'], ['#b3261e', 'Red'], ['#7f1d1d', 'Cherry'], ['#e6739f', 'Pink'], ['#b8467a', 'Raspberry'], ['#6e3f63', 'Plum'],
+  ['#f6d6d0', 'Blush'], ['#f2a7a0', 'Coral pink'], ['#e0564f', 'Poppy red'], ['#b3261e', 'Red'], ['#7a1414', 'Dark red'], ['#7f1d1d', 'Cherry'], ['#e6739f', 'Pink'], ['#b8467a', 'Raspberry'], ['#6e3f63', 'Plum'],
   ['#fbe7a1', 'Butter'], ['#f5c542', 'Sunshine'], ['#c9a227', 'Mustard'], ['#f29e4c', 'Tangerine'], ['#c4683f', 'Terracotta'], ['#a4532b', 'Rust'], ['#7a5230', 'Warm brown'], ['#4a3222', 'Cocoa'],
   ['#d7ebc7', 'Mint'], ['#8fbf6a', 'Leaf green'], ['#5a8a3c', 'Grass green'], ['#2f5d3a', 'Forest green'], ['#7fc8c0', 'Seafoam'], ['#2e8b84', 'Teal'], ['#cfe3f2', 'Sky'], ['#6b8cae', 'Dusty blue'],
   ['#3a7bd5', 'Bright blue'], ['#1f3a5f', 'Dark blue'], ['#14213d', 'Navy'], ['#c9b8e8', 'Lilac'], ['#8a6fc4', 'Lavender'], ['#4b2e83', 'Purple'],

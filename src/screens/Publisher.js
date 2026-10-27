@@ -377,7 +377,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const coverNo = () => { setCover({ ...cover, title: null }); setCoverAsk(false); }; // stay on the cover
   const coverYes = () => {
     setCoverAsk(false); setCoverTitling(true);
-    setCover({ ...cover, title: { text: draft.title.trim() || tr('My Story'), x: 0.5, y: 0.2, size: 0.11, color: '#ffffff', font: 'serif' } }); // white, in the serif, to start with (Jörg, 26 Oct 2026)
+    setCover({ ...cover, title: { text: draft.title.trim() || tr('My Story'), x: 0.5, y: 0.2, size: 0.11, color: '#7a1414', font: 'serif' } }); // dark red, in the serif, to start with (Jörg, 27 Oct 2026; was white)
   };
   const setCoverTitle = (patch) => setDraft((d) => ({ ...d, cover: { ...d.cover, title: { ...d.cover.title, ...patch } } }));
   // dragging the title around the square
