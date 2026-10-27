@@ -50,7 +50,7 @@ import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, loadJSONFor, saveJSON, saveJSONFor } from './src/storage';
 import { TITLE_ICONS } from './src/titleIcons';
-import { BulbIcon, CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast, BubbleHost, setGoHome, HomeIcon } from './src/components/Chrome';
+import { BulbIcon, CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast, BubbleHost, setGoHome, HomeIcon, BackRing } from './src/components/Chrome';
 import { setVolumeBubble } from './src/volume';
 import { DESK_FELT, DESK_IPAD_NOW, DeskFelt, Felt, IS_TABLET, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
@@ -229,7 +229,7 @@ function Root() {
     }
     backing.current = true; go(e.screen); backing.current = false;
   };
-  const BACK_ON = ['publisher', 'library', 'store', 'music', 'profiles', 'profile', 'playlists', 'settings', 'help', 'ideas', 'about']; // the screens with a banner
+  const BACK_ON = ['library', 'store', 'music', 'profiles', 'profile', 'playlists', 'settings', 'help', 'ideas', 'about']; // the screens with a banner
   // the home button on every black bar: back to My Library
   useEffect(() => { setGoHome(() => go('library')); });
   // "Your volume is turned down" (the phone's volume all the way down when something starts to play)
@@ -409,7 +409,7 @@ function Root() {
         )}
         {screen === 'notebook' && <Notebook u={u} from={nbFrom} openMenu={openMenu} toast={toast} onDone={() => go('library')} />}
         {screen === 'publisher' && draft && (
-          <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list, recId) => { setUserStories(list); const rs = recId && list.find((x) => x.id === recId); if (rs) { setRecordOnOpen(true); openStory(rs); return; } go('library'); }} onIdeas={() => go('ideas')} />
+          <Publisher key={draft.id} onBack={hist.current.length > 0 ? goBack : undefined} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list, recId) => { setUserStories(list); const rs = recId && list.find((x) => x.id === recId); if (rs) { setRecordOnOpen(true); openStory(rs); return; } go('library'); }} onIdeas={() => go('ideas')} />
         )}
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} onReadingOptions={readingBox} />}
         {screen === 'music' && <MusicSounds u={u} openMenu={openMenu} prefs={prefs} setPrefs={setPrefs} />}
@@ -529,10 +529,7 @@ function Root() {
         {welcome ? <Welcome controls={controls} setControls={setControls} onDone={welcomeDone} /> : null}
         {/* Back: a small arrow in the top right corner of the banner */}{/* (My Library: no house beside the title, Jörg 27 Oct 2026) */}
         {BACK_ON.includes(screen) && hist.current.length > 0 && !introWho && !welcome && !flyer ? (
-          <Pressable onPress={goBack} hitSlop={14} accessibilityRole="button" accessibilityLabel={t('Back')}
-            style={{ position: 'absolute', zIndex: 60, top: screenInsets.top + (screen === 'publisher' ? 10 : 28) /* the book maker has no banner: in its top right corner */, right: 22 + (sideways ? drawerRight : 0), width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(0,0,0,0.32)', borderWidth: 1.5, borderColor: '#ffffff' /* a thin white ring (Jörg, 27 Oct 2026) */, alignItems: 'center', justifyContent: 'center' }}>
-            <View style={{ width: 12, height: 12, borderColor: '#ffffff', borderLeftWidth: 2.6, borderBottomWidth: 2.6, transform: [{ translateX: 2 }, { rotate: '45deg' }] }} />
-          </Pressable>
+          <BackRing onPress={goBack} label={t('Back')} style={{ position: 'absolute', zIndex: 60, top: screenInsets.top + 28, right: 22 + (sideways ? drawerRight : 0) }} />
         ) : null}
         <Toast message={message} ms={toastMs} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         {/* the Audio Player for music and nature sounds: in the middle of the screen over a dark layer until it's closed */}

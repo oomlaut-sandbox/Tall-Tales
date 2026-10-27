@@ -448,6 +448,16 @@ export function BubbleIcon({ size = MENU_ICON, color = colors.white }) {
     </View>
   );
 }
+// Back: a small round arrow with a thin white ring (top right of the banners, and of the book maker's page)
+export function BackRing({ onPress, style, label = 'Back' }) {
+  return (
+    <Pressable onPress={onPress} hitSlop={14} accessibilityRole="button" accessibilityLabel={label}
+      style={[{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(0,0,0,0.32)', borderWidth: 1.5, borderColor: '#ffffff', alignItems: 'center', justifyContent: 'center' }, style]}>
+      <View style={{ width: 12, height: 12, borderColor: '#ffffff', borderLeftWidth: 2.6, borderBottomWidth: 2.6, transform: [{ translateX: 2 }, { rotate: '45deg' }] }} />
+    </Pressable>
+  );
+}
+
 export function PlusIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>

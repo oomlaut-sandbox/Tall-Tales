@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { BOOK_FONTS, bookFont, colors, fonts } from '../theme';
-import { Bar, Burger, CoverIcon, DogEar, DoneTick, Panel, PageShape, PagesIcon, Toast } from '../components/Chrome';
+import { BackRing, Bar, Burger, CoverIcon, DogEar, DoneTick, Panel, PageShape, PagesIcon, Toast } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, DESK_BG } from '../look';
@@ -162,7 +162,7 @@ function EmptyPicture({ side, plain }) {
   );
 }
 
-export default function Publisher({ u, initial, fontKey, openMenu, toast, onChange, onDone, storeAdmin, onIdeas }) {
+export default function Publisher({ onBack, u, initial, fontKey, openMenu, toast, onChange, onDone, storeAdmin, onIdeas }) {
   const tr = useT(); // everything a child or parent reads here, in the app's language (the store owner's Publish stays English)
   const insets = useSafeAreaInsets();
   const [draft, setDraft] = useState(initial);
@@ -634,7 +634,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <Animated.Text numberOfLines={1} style={[styles.countText, { opacity: savedFade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>{tr('Page {a} of {b}', { a: i + 1, b: draft.pages.length })}</Animated.Text>
           <Animated.Text numberOfLines={1} style={[styles.countText, { position: 'absolute', opacity: savedFade }]}>{tr('Saved')}</Animated.Text>
         </View>
-        <Pressable onPress={() => setGuide(true)} style={[styles.help, { top: 10, right: 10 }]} hitSlop={8} accessibilityLabel={tr('How to make a story')}>
+        {/* Back, in the top right corner (the ? moves over beside it) (Jörg, 27 Oct 2026) */}
+        {onBack ? <BackRing onPress={onBack} label={tr('Back')} style={{ position: 'absolute', zIndex: 6, top: 10, right: 10 }} /> : null}
+        <Pressable onPress={() => setGuide(true)} style={[styles.help, { top: onBack ? 11 : 10, right: onBack ? 58 : 10 }]} hitSlop={8} accessibilityLabel={tr('How to make a story')}>
           <Text style={styles.helpText}>?</Text>
         </Pressable>
       </View>
