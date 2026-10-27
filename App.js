@@ -229,7 +229,7 @@ function Root() {
     }
     backing.current = true; go(e.screen); backing.current = false;
   };
-  const BACK_ON = ['library', 'store', 'music', 'profiles', 'profile', 'playlists', 'settings', 'help', 'ideas', 'about']; // the screens with a banner
+  const BACK_ON = ['publisher', 'library', 'store', 'music', 'profiles', 'profile', 'playlists', 'settings', 'help', 'ideas', 'about']; // the screens with a banner
   // the home button on every black bar: back to My Library
   useEffect(() => { setGoHome(() => go('library')); });
   // "Your volume is turned down" (the phone's volume all the way down when something starts to play)
@@ -530,7 +530,7 @@ function Root() {
         {/* Back: a small arrow in the top right corner of the banner */}{/* (My Library: no house beside the title, Jörg 27 Oct 2026) */}
         {BACK_ON.includes(screen) && hist.current.length > 0 && !introWho && !welcome && !flyer ? (
           <Pressable onPress={goBack} hitSlop={14} accessibilityRole="button" accessibilityLabel={t('Back')}
-            style={{ position: 'absolute', zIndex: 60, top: screenInsets.top + 28, right: 22 + (sideways ? drawerRight : 0), width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(0,0,0,0.32)', alignItems: 'center', justifyContent: 'center' }}>
+            style={{ position: 'absolute', zIndex: 60, top: screenInsets.top + (screen === 'publisher' ? 10 : 28) /* the book maker has no banner: in its top right corner */, right: 22 + (sideways ? drawerRight : 0), width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(0,0,0,0.32)', borderWidth: 1.5, borderColor: '#ffffff' /* a thin white ring (Jörg, 27 Oct 2026) */, alignItems: 'center', justifyContent: 'center' }}>
             <View style={{ width: 12, height: 12, borderColor: '#ffffff', borderLeftWidth: 2.6, borderBottomWidth: 2.6, transform: [{ translateX: 2 }, { rotate: '45deg' }] }} />
           </Pressable>
         ) : null}
