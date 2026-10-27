@@ -64,7 +64,7 @@ import { addProfile, loadProfiles, onProfiles, switchProfile } from './src/profi
 import { playSound, setEffects, setEffectsVolume } from './src/sound';
 import { stopSpeech } from './src/speech';
 import { stopVoice } from './src/voice';
-import { clearBack, markBack, markBackInto } from './src/nav';
+import { clearBack, hasStep, markBack, markBackInto, onStepsChange, takeStep, useBackStep } from './src/nav';
 
 function Root() {
   const { width, height } = useWindowDimensions();
@@ -216,7 +216,11 @@ function Root() {
   // the same book open on the same page, the book maker on the same book and page
   const hist = useRef([]);
   const backing = useRef(false);
+  const [, stepBump] = useState(0);
+  useEffect(() => onStepsChange(() => stepBump((n) => n + 1)), []);
+  useBackStep(drawer, () => setDrawer(false)); // the menu open: Back closes it
   const goBack = () => {
+    if (takeStep()) return; // the last step inside this screen first
     let e = hist.current.pop();
     while (e && e.screen === screen) e = hist.current.pop();
     if (!e) return;
@@ -229,7 +233,7 @@ function Root() {
     }
     backing.current = true; go(e.screen); backing.current = false;
   };
-  const BACK_ON = ['library', 'store', 'music', 'profiles', 'profile', 'playlists', 'settings', 'help', 'ideas', 'about']; // the screens with a banner
+  const canBack = () => hasStep() || hist.current.some((e) => e.screen !== screen);
   // the home button on every black bar: back to My Library
   useEffect(() => { setGoHome(() => go('library')); });
   // "Your volume is turned down" (the phone's volume all the way down when something starts to play)
@@ -409,7 +413,7 @@ function Root() {
         )}
         {screen === 'notebook' && <Notebook u={u} from={nbFrom} openMenu={openMenu} toast={toast} onDone={() => go('library')} />}
         {screen === 'publisher' && draft && (
-          <Publisher key={draft.id} onBack={hist.current.length > 0 ? goBack : undefined} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list, recId) => { setUserStories(list); const rs = recId && list.find((x) => x.id === recId); if (rs) { setRecordOnOpen(true); openStory(rs); return; } go('library'); }} onIdeas={() => go('ideas')} />
+          <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list, recId) => { setUserStories(list); const rs = recId && list.find((x) => x.id === recId); if (rs) { setRecordOnOpen(true); openStory(rs); return; } go('library'); }} onIdeas={() => go('ideas')} />
         )}
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} onReadingOptions={readingBox} />}
         {screen === 'music' && <MusicSounds u={u} openMenu={openMenu} prefs={prefs} setPrefs={setPrefs} />}
@@ -528,8 +532,10 @@ function Root() {
         }} /> : null}
         {welcome ? <Welcome controls={controls} setControls={setControls} onDone={welcomeDone} /> : null}
         {/* Back: a small arrow in the top right corner of the banner */}{/* (My Library: no house beside the title, Jörg 27 Oct 2026) */}
-        {BACK_ON.includes(screen) && hist.current.length > 0 && !introWho && !welcome && !flyer ? (
-          <BackRing onPress={goBack} label={t('Back')} style={{ position: 'absolute', zIndex: 60, top: screenInsets.top + 28, right: 22 + (sideways ? drawerRight : 0) }} />
+        {/* Back: on every page, always the same size and in the same spot, top right (Jörg, 27 Oct 2026). It goes
+            back one step: whatever is open on top first, then the step before in this screen, then the screen before */}
+        {!splash && !introWho && !welcome && !flyer && !opening && !closingBook ? (
+          <BackRing onPress={goBack} label={t('Back')} style={{ position: 'absolute', zIndex: 200, top: screenInsets.top + 10, right: 12 + (sideways ? drawerRight : 0), opacity: canBack() ? 1 : 0.35 }} />
         ) : null}
         <Toast message={message} ms={toastMs} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         {/* the Audio Player for music and nature sounds: in the middle of the screen over a dark layer until it's closed */}

@@ -1,7 +1,7 @@
 // "Make a book": add a picture and words page by page (Jörg's Publisher design).
 // Everything saves automatically. "Pages" opens a list to reorder or delete pages,
 // or to delete the whole story.
-import { rememberPage, startPage } from '../nav';
+import { rememberPage, startPage, useBackStep } from '../nav';
 import { Asset } from 'expo-asset';
 import PhotoEditor from '../components/PhotoEditor';
 import TourVideo from '../components/TourVideo';
@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { BOOK_FONTS, bookFont, colors, fonts } from '../theme';
-import { BackRing, Bar, Burger, CoverIcon, DogEar, DoneTick, Panel, PageShape, PagesIcon, Toast } from '../components/Chrome';
+import { Bar, Burger, CoverIcon, DogEar, DoneTick, Panel, PageShape, PagesIcon, Toast } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, DESK_BG } from '../look';
@@ -162,7 +162,7 @@ function EmptyPicture({ side, plain }) {
   );
 }
 
-export default function Publisher({ onBack, u, initial, fontKey, openMenu, toast, onChange, onDone, storeAdmin, onIdeas }) {
+export default function Publisher({ u, initial, fontKey, openMenu, toast, onChange, onDone, storeAdmin, onIdeas }) {
   const tr = useT(); // everything a child or parent reads here, in the app's language (the store owner's Publish stays English)
   const insets = useSafeAreaInsets();
   const [draft, setDraft] = useState(initial);
@@ -480,6 +480,20 @@ export default function Publisher({ onBack, u, initial, fontKey, openMenu, toast
   };
   // ---- Edit photo: crop, layout and look (the original is kept as src; the page shows the finished picture) ----
   const [photoEdit, setPhotoEdit] = useState(null); // 'page' | 'page2' | 'cover'
+  // Back, step by step (Jörg, 27 Oct 2026): 'What's your book about?' <- the cover <- page 1 <- page 2 ...,
+  // and whatever is open on top (the words editor, Edit photo, Pages, 'What's next?', the guide) closes first
+  const startedNew = useRef(isNew(initial));
+  useBackStep(!aboutOpen && !coverOpen && i > 0, () => setI((k) => Math.max(0, k - 1)));
+  useBackStep(!aboutOpen && !coverOpen && i === 0 && startedNew.current, () => { setStartMode(true); setCoverOpen(true); });
+  useBackStep(coverOpen && !aboutOpen, () => {
+    if (startMode && startedNew.current) { Keyboard.dismiss(); setFieldOn(false); setAboutOpen(true); return; }
+    finishCover();
+  });
+  useBackStep(editing, () => { Keyboard.dismiss(); setEditing(false); });
+  useBackStep(!!photoEdit, () => setPhotoEdit(null));
+  useBackStep(pagesOpen, () => setPagesOpen(false));
+  useBackStep(pageDone, () => setPageDone(false));
+  useBackStep(guide, () => closeGuide());
   const photoOf = (t) => (t === 'cover' ? (cover && cover.uri ? { src: cover.src || cover.uri, uri: cover.uri, edit: cover.edit } : null)
     : t === 'page2' ? (page.uri2 ? { src: page.src2 || page.uri2, uri: page.uri2, edit: page.edit2 } : null)
     : (page.uri ? { src: page.src || page.uri, uri: page.uri, edit: page.edit } : null));
@@ -634,9 +648,7 @@ export default function Publisher({ onBack, u, initial, fontKey, openMenu, toast
           <Animated.Text numberOfLines={1} style={[styles.countText, { opacity: savedFade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>{tr('Page {a} of {b}', { a: i + 1, b: draft.pages.length })}</Animated.Text>
           <Animated.Text numberOfLines={1} style={[styles.countText, { position: 'absolute', opacity: savedFade }]}>{tr('Saved')}</Animated.Text>
         </View>
-        {/* Back, in the top right corner (the ? moves over beside it) (Jörg, 27 Oct 2026) */}
-        {onBack ? <BackRing onPress={onBack} label={tr('Back')} style={{ position: 'absolute', zIndex: 6, top: 10, right: 10, backgroundColor: 'rgba(0,0,0,0.6)' }} /> : null}
-        <Pressable onPress={() => setGuide(true)} style={[styles.help, { top: onBack ? 11 : 10, right: onBack ? 58 : 10 }]} hitSlop={8} accessibilityLabel={tr('How to make a story')}>
+        <Pressable onPress={() => setGuide(true)} style={[styles.help, { top: 10, right: 10 }]} hitSlop={8} accessibilityLabel={tr('How to make a story')}>
           <Text style={styles.helpText}>?</Text>
         </Pressable>
       </View>

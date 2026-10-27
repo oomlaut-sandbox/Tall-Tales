@@ -63,7 +63,7 @@ const VOICE_RECORDING = {
 };
 import { checkVolume } from '../volume';
 import { playSound, playSwitch, setEffects, setEffectsVolume, suspendSounds } from '../sound';
-import { rememberPage, startPage } from '../nav';
+import { rememberPage, startPage, useBackStep } from '../nav';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { shareInvite } from '../invite';
 import { shareBookWithVoices } from '../voiceShare';
@@ -246,6 +246,10 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   const showVoices = true; // the face is always on the bar: there are always the two narrators to choose from
   const [voiceBox, setVoiceBox] = useState(false);
   const [editReaders, setEditReaders] = useState(false); // the scissors: the 'Who's reading?' box for editing the readers // the 'Who reads this book?' box from the face on the bar
+  // Back closes what's open on top of the book first (Jörg, 27 Oct 2026)
+  useBackStep(!!panel, () => { setPanel(null); setPlayView('main'); });
+  useBackStep(voiceBox, () => setVoiceBox(false));
+  useBackStep(editReaders, () => setEditReaders(false));
   // a book the family recorded opens in their voice (the grown-up setting, on unless switched off), unless a voice
   // was already chosen for this book; the reader with the most recorded pages reads
   const voiceAuto = useRef(false);
