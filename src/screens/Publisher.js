@@ -324,10 +324,11 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const [coverTip, setCoverTip] = useState(false); // the 'Tap the title…' bubble
   const [drawTip, setDrawTip] = useState(false); // a new book: 'Pssst…' about photographing paper drawings (once per launch)
   const drawTipShown = useRef(false);
+  const tourAsked = useRef(false);
   useEffect(() => {
-    if (!aboutOpen) return undefined;
+    if (!aboutOpen || tourAsked.current) return undefined; // (once: not again when Back returns here)
     let on = true;
-    const tm = setTimeout(() => { loadJSON('tourAsk', {}).then((x) => { if (on && !(x && x.off)) setTourAsk(true); }).catch(() => {}); }, 1000);
+    const tm = setTimeout(() => { loadJSON('tourAsk', {}).then((x) => { if (on && !(x && x.off)) { tourAsked.current = true; setTourAsk(true); } }).catch(() => {}); }, 1000);
     return () => { on = false; clearTimeout(tm); setTourAsk(false); };
   }, [aboutOpen]);
   useEffect(() => {
@@ -496,6 +497,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   useBackStep(guide, () => closeGuide());
   useBackStep(tourAsk && aboutOpen, () => closeTour(false)); // the 'quick peek?' bubble: like No thanks
   useBackStep(tourPlay, () => setTourPlay(false));
+  useBackStep(drawTip, () => setDrawTip(false)); // the 'Pssst' hint: like Got it!
+  useBackStep(coverTip, () => setCoverTip(false));
   const photoOf = (t) => (t === 'cover' ? (cover && cover.uri ? { src: cover.src || cover.uri, uri: cover.uri, edit: cover.edit } : null)
     : t === 'page2' ? (page.uri2 ? { src: page.src2 || page.uri2, uri: page.uri2, edit: page.edit2 } : null)
     : (page.uri ? { src: page.src || page.uri, uri: page.uri, edit: page.edit } : null));
