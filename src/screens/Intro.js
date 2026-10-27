@@ -14,7 +14,7 @@ const AGES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 // the pages of each journey
 const PAGES = {
-  kid: ['kidHello', 'kidMeet', 'kidAge'], // (Meet Coro: a simpler video page, Jörg 26 Oct 2026)
+  kid: ['kidMeet', 'kidHello', 'kidAge'], // (the video first, before anyone can skip past it: Jörg, 27 Oct 2026) // (Meet Coro: a simpler video page, Jörg 26 Oct 2026)
   grownup: ['grownHello', 'whatIs', 'access', 'grownProfile'], // (access: Made for every reader, Jörg 27 Oct 2026) // (What is Coro?: the tutorial videos, Jörg 26 Oct 2026)
 };
 
@@ -170,9 +170,11 @@ export default function Intro({ who, onDone, onBack }) {
         <Pressable onPress={back} disabled={i === 0 && !onBack} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Back')} style={[styles.arrow, i === 0 && !onBack && { opacity: 0.3 }]}>
           <View style={[styles.chev, { transform: [{ translateX: 2 }, { rotate: '45deg' }], borderLeftWidth: 2.4, borderBottomWidth: 2.4 }]} />
         </Pressable>
-        <View style={styles.dots}>{pages.map((p, k) => <View key={p} style={[styles.dot, k === i && styles.dotOn]} />)}</View>
-        <View style={{ flex: 1 }} />
-        <Pressable onPress={finish} hitSlop={10} accessibilityRole="button"><Text style={styles.skip}>{t('Skip')}</Text></Pressable>
+        {/* between the arrows: how far along, and 'Skip intro', centred and well away from the Next arrow */}
+        <View style={{ flex: 1, alignItems: 'center', gap: 10 }}>
+          <View style={styles.dots}>{pages.map((p, k) => <View key={p} style={[styles.dot, k === i && styles.dotOn]} />)}</View>
+          <Pressable onPress={finish} hitSlop={10} accessibilityRole="button"><Text style={styles.skip}>{t('Skip intro')}</Text></Pressable>
+        </View>
         <Pressable onPress={next} hitSlop={10} accessibilityRole="button" accessibilityLabel={i < pages.length - 1 ? t('Next') : t('Let’s go!')} style={[styles.arrow, styles.arrowOn]}>
           <View style={[styles.chev, { transform: [{ translateX: -2 }, { rotate: '45deg' }], borderRightWidth: 2.4, borderTopWidth: 2.4 }]} />
         </Pressable>
