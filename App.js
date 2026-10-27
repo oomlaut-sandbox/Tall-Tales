@@ -225,6 +225,7 @@ function Root() {
     while (e && e.screen === screen) e = hist.current.pop();
     if (!e) return;
     clearBack(); markBack(e.screen);
+    if (e.screen === 'start') { setCoverOpen(true); setStartKey((n) => n + 1); } // the start page as it was: the notebook open
     if (e.screen === 'reader') { if (!e.story) { go('library'); return; } markBackInto('reader', e.story.id); setStory(e.story); }
     if (e.screen === 'publisher') {
       if (!e.draft) { go('library'); return; }

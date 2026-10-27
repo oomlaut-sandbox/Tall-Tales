@@ -494,6 +494,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   useBackStep(pagesOpen, () => setPagesOpen(false));
   useBackStep(pageDone, () => setPageDone(false));
   useBackStep(guide, () => closeGuide());
+  useBackStep(tourAsk && aboutOpen, () => closeTour(false)); // the 'quick peek?' bubble: like No thanks
+  useBackStep(tourPlay, () => setTourPlay(false));
   const photoOf = (t) => (t === 'cover' ? (cover && cover.uri ? { src: cover.src || cover.uri, uri: cover.uri, edit: cover.edit } : null)
     : t === 'page2' ? (page.uri2 ? { src: page.src2 || page.uri2, uri: page.uri2, edit: page.edit2 } : null)
     : (page.uri ? { src: page.src || page.uri, uri: page.uri, edit: page.edit } : null));
