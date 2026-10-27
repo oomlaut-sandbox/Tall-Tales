@@ -4,6 +4,7 @@
 //   My Notebook, Make a Book, Help), whether the child may change playback (or it always plays one way),
 //   recording, sharing and printing, and changing the language. "Lock everything" leaves only My Library.
 import { TitleIcon } from '../titleIcons';
+import { useScrollMemory } from '../nav';
 import React, { useEffect, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -66,6 +67,7 @@ function Section({ id, icon, title, open, setOpen, children }) {
 }
 
 export default function Settings({ u, openMenu, lang, setLang, bookLang, setBookLang, controls, setControls, mode, onDone, onJoin, onProfiles, onPlaylists, onReadingOptions, onMusic, prefs, setPrefs, toast }) {
+  const keep = useScrollMemory('settings'); // Back returns to this spot
   const t = useT();
   const insets = useSafeAreaInsets();
   const [hap, setHap] = useState(hapticsOn());
@@ -109,7 +111,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
         {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: IS_TABLET ? 0 : insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="settings" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Settings')}</Text></View>
       </View>
-      <ScrollView contentContainerStyle={styles.body}>
+      <ScrollView {...keep} contentContainerStyle={styles.body}>
         <View style={styles.col}>
           {/* five categories, each in its own black glass box that opens when tapped (like Ideas and Support):
               Parental Controls, Reading Options, Music and Sounds, Profiles, Languages (Jörg, 26 Oct 2026) */}

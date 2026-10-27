@@ -1,5 +1,6 @@
 // About Coro (from the Settings menu).
 import { TitleIcon } from '../titleIcons';
+import { useScrollMemory } from '../nav';
 import React from 'react';
 import { Pressable, Image, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +14,7 @@ const BAND_FELT = require('../../assets/band-about.jpg');
 const VERSION = require('../../app.json').expo.version;
 
 export default function About({ u, openMenu, onSecret, onBack }) {
+  const keep = useScrollMemory('about'); // Back returns to this spot
   const t = useT();
   const insets = useSafeAreaInsets();
   const { width: winW, height: winH } = useWindowDimensions();
@@ -28,7 +30,7 @@ export default function About({ u, openMenu, onSecret, onBack }) {
         <Text style={styles.tagline}>{t('Books you make together.')}</Text>
       </View>
       <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={[styles.body, { maxWidth: 520 }, { paddingBottom: 24 }, phone && winH < 740 && { paddingTop: 22, gap: 12 }]}>
+      <ScrollView {...keep} contentContainerStyle={[styles.body, { maxWidth: 520 }, { paddingBottom: 24 }, phone && winH < 740 && { paddingTop: 22, gap: 12 }]}>
         {/* a book maker first (Jörg, 25 Oct 2026): making together, sharing, and a few picture books */}
         <Text style={[styles.p, textStyle]}>
           {t('Coro is for making books together: your photos, your drawings, your words and your voices, in a real picture book you can keep, share with family and read at bedtime.')}

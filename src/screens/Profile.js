@@ -1,6 +1,7 @@
 // The parent's profile: sign in (Apple, or a code by email), your name, sign out, delete account.
 // Reached from the menu behind the parent gate.
 import { TitleIcon } from '../titleIcons';
+import { useScrollMemory } from '../nav';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -26,6 +27,7 @@ const nice = (e) => {
 };
 
 export default function Profile({ u, openMenu, toast }) {
+  const keep = useScrollMemory('profile'); // Back returns to this spot
   const t = useT();
   const insets = useSafeAreaInsets();
   const [user, setUser] = useState(null);
@@ -138,7 +140,7 @@ export default function Profile({ u, openMenu, toast }) {
         {/* just the title, centred top to bottom in the band (like My Library and the Book Store) */}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="profile" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Profile')}</Text></View>
       </View>
-      <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
+      <ScrollView {...keep} contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
         <View style={styles.col}>
           {body}
           {err ? <Text style={styles.err}>{t(err)}</Text> : null}

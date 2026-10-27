@@ -1,6 +1,7 @@
 // My Library and Book Store.
 import { TitleIcon, TITLE_ICONS } from '../titleIcons';
 import React, { useEffect, useRef, useState } from 'react';
+import { useScrollMemory } from '../nav';
 import { clearTileSpot, setTileSpot } from '../tileSpots';
 import { Animated, Easing, Image, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -248,7 +249,8 @@ function WhoReads({ onPress }) {
 export function Library({ toBooks, onReadingOptions, onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
   const t = useT();
   // Read a book (from the start page): open scrolled down so My Books is at the top, just under the band
-  const scrollRef = useRef(null);
+  const keep = useScrollMemory('library'); // Back returns to this spot
+  const scrollRef = keep.ref;
   const booksY = useRef(null);
   const booksDone = useRef(0);
   const toMyBooks = () => {
@@ -323,8 +325,9 @@ export function Library({ toBooks, onReadingOptions, onGarden, narrator, toast, 
         sub={selecting ? (picked.length ? t('{n} selected', { n: picked.length }) : t('Tap books to select them')) : t('Your stories, ready to read')} />
       {/* pulled up past the corkboard at the very bottom: a speech bubble invites you on to the Garden (once per pull),
           only once a grown-up has unlocked it in Settings → The Garden */}
-      <ScrollView ref={scrollRef} contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]} scrollEventThrottle={64}
+      <ScrollView ref={scrollRef} onContentSizeChange={keep.onContentSizeChange} contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]} scrollEventThrottle={64}
         onScroll={(e) => {
+          keep.onScroll(e);
           const { contentOffset: o, layoutMeasurement: l, contentSize: c } = e.nativeEvent;
           const past = o.y + l.height - c.height;
           if (past > 70 && !gardenAsked.current && onGarden) { gardenAsked.current = true; toast && toast(t('Come explore the Garden'), 3500); }
@@ -456,6 +459,7 @@ export function Library({ toBooks, onReadingOptions, onGarden, narrator, toast, 
 
 // The Book Store: shelves of books from the catalog you curate in Supabase (see src/catalog.js).
 export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
+  const storeKeep = useScrollMemory('store'); // Back returns to this spot
   const t = useT();
   const controls = useControls();
   const { width: winW, height: winH } = useWindowDimensions();
@@ -508,7 +512,7 @@ export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /><View style={{ flex: 1 }} /></Bar>}>
       <Band icon="store" color={colors.blue} felt="store" title={t('Book Store')} sub={t('Discover and buy new books')} />
-      <ScrollView contentContainerStyle={{ paddingTop: 46, paddingBottom: 24, gap: 30 }}
+      <ScrollView {...storeKeep} contentContainerStyle={{ paddingTop: 46, paddingBottom: 24, gap: 30 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.white} />}>
         {/* laid out like My Library: whole covers in a grid, nothing cut off, no sideways scrolling */}
         {[...(featured ? [{ id: 'featured', title: t('Featured'), books: [featured] }] : []), ...rows].map((sh) => (

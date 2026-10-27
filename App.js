@@ -64,6 +64,7 @@ import { addProfile, loadProfiles, onProfiles, switchProfile } from './src/profi
 import { playSound, setEffects, setEffectsVolume } from './src/sound';
 import { stopSpeech } from './src/speech';
 import { stopVoice } from './src/voice';
+import { clearBack, markBack, markBackInto } from './src/nav';
 
 function Root() {
   const { width, height } = useWindowDimensions();
@@ -206,8 +207,29 @@ function Root() {
   const go = (s) => {
     if (s !== 'reader') setQueue(null); // leaving the reader ends a playlist
     if ((s === 'store' && (!STORE_ON || !controls.store)) || (s === 'notebook' && !controls.notebook) || ((s === 'help' || s === 'about' || s === 'ideas') && !controls.help)) s = 'library';
+    // the back button's list of where you've been (each with the book that was open, in the reader or the book maker)
+    if (!backing.current) { clearBack(); if (s !== screen) { hist.current.push({ screen, story, draft }); if (hist.current.length > 40) hist.current.shift(); } }
+    if (s !== 'library') setToBooks(0); // (only Read a book on the start page opens My Library at My Books)
     stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen(s);
   };
+  // Back (Jörg, 27 Oct 2026): to exactly what was on screen before: the same screen scrolled to the same spot,
+  // the same book open on the same page, the book maker on the same book and page
+  const hist = useRef([]);
+  const backing = useRef(false);
+  const goBack = () => {
+    let e = hist.current.pop();
+    while (e && e.screen === screen) e = hist.current.pop();
+    if (!e) return;
+    clearBack(); markBack(e.screen);
+    if (e.screen === 'reader') { if (!e.story) { go('library'); return; } markBackInto('reader', e.story.id); setStory(e.story); }
+    if (e.screen === 'publisher') {
+      if (!e.draft) { go('library'); return; }
+      const fresh = userStories.find((x) => x.id === e.draft.id); // what was saved since, if anything
+      markBackInto('maker', e.draft.id); setDraft(fresh ? draftFrom(fresh) : e.draft);
+    }
+    backing.current = true; go(e.screen); backing.current = false;
+  };
+  const BACK_ON = ['library', 'store', 'music', 'profiles', 'profile', 'playlists', 'settings', 'help', 'ideas', 'about']; // the screens with a banner
   // the home button on every black bar: back to My Library
   useEffect(() => { setGoHome(() => go('library')); });
   // "Your volume is turned down" (the phone's volume all the way down when something starts to play)
@@ -505,6 +527,13 @@ function Root() {
           setIntroAsk(false); setIntroWho(null); setCoverOpen(true); setStartKey((n) => n + 1); // back to the start page, the notebook open
         }} /> : null}
         {welcome ? <Welcome controls={controls} setControls={setControls} onDone={welcomeDone} /> : null}
+        {/* Back: a small arrow in the top right corner of the banner */}
+        {BACK_ON.includes(screen) && hist.current.length > 0 && !introWho && !welcome && !flyer ? (
+          <Pressable onPress={goBack} hitSlop={14} accessibilityRole="button" accessibilityLabel={t('Back')}
+            style={{ position: 'absolute', zIndex: 60, top: screenInsets.top + 28, right: 22 + (sideways ? drawerRight : 0), width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(0,0,0,0.32)', alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ width: 12, height: 12, borderColor: '#ffffff', borderLeftWidth: 2.6, borderBottomWidth: 2.6, transform: [{ translateX: 2 }, { rotate: '45deg' }] }} />
+          </Pressable>
+        ) : null}
         <Toast message={message} ms={toastMs} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         {/* the Audio Player for music and nature sounds: in the middle of the screen over a dark layer until it's closed */}
         <TapePlayer area={{ left: 0, top: 0, right: drawerRight, bottom: drawerBottom }} onMenu={() => { setAmbientPlayer(false); go('music'); }} />{/* the black bar stays on top, uncovered */}

@@ -1,6 +1,7 @@
 // The Idea Room: ideas for every kind of book a family can make (Help → Idea Room, and the story guide's
 // last step). Sections of idea cards; tap a card to see how to make it. A button to start making one.
 import { TitleIcon } from '../titleIcons';
+import { useScrollMemory } from '../nav';
 import { HEADING_ICONS } from '../headingIcons';
 import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
@@ -16,6 +17,7 @@ const BAND_FELT = require('../../assets/band-ideas.png'); // Jörg's moss green 
 const SPREAD = require('../../assets/ideas-spread.jpg'); // an open book: Jörg's felt cat stretching, and 'Make a book for yourself…' (under the words at the top)
 
 export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
+  const keep = useScrollMemory('ideas'); // Back returns to this spot
   const t = useT();
   const insets = useSafeAreaInsets();
   const controls = useControls();
@@ -31,7 +33,7 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
         {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: IS_TABLET ? 0 : insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="help" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Ideas')}</Text></View>
       </View>
-      <ScrollView contentContainerStyle={styles.body}>
+      <ScrollView {...keep} contentContainerStyle={styles.body}>
         <View style={styles.col}>
           {/* the title and words across the full width, then the book spread underneath with lots of room */}
           <Text style={styles.heading}>{t('Create and share stories')}</Text>

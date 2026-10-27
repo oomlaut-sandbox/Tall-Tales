@@ -1,6 +1,7 @@
 // "Make a book": add a picture and words page by page (Jörg's Publisher design).
 // Everything saves automatically. "Pages" opens a list to reorder or delete pages,
 // or to delete the whole story.
+import { rememberPage, startPage } from '../nav';
 import { Asset } from 'expo-asset';
 import PhotoEditor from '../components/PhotoEditor';
 import TourVideo from '../components/TourVideo';
@@ -165,7 +166,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const tr = useT(); // everything a child or parent reads here, in the app's language (the store owner's Publish stays English)
   const insets = useSafeAreaInsets();
   const [draft, setDraft] = useState(initial);
-  const [i, setI] = useState(0);
+  const [i, setI] = useState(() => Math.max(0, Math.min(startPage('maker', initial && initial.id), ((initial && initial.pages) || []).length - 1))); // (Back: the page that was open)
+  useEffect(() => { rememberPage('maker', draft && draft.id, i); }, [i, draft && draft.id]);
   const [pagesOpen, setPagesOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [pdfChoice, setPdfChoice] = useState(null); // 'share' | 'print' | null: choosing a layout

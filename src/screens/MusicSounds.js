@@ -1,6 +1,7 @@
 // Music and Sounds (main menu): nature sounds and gentle music that keep playing all through the app,
 // how loud, a sleep timer, and the little floating tape player.
 import { TitleIcon } from '../titleIcons';
+import { useScrollMemory } from '../nav';
 import React from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +14,7 @@ import { useT } from '../i18n';
 const BAND_FELT = require('../../assets/band-about.jpg'); // the red felt banner
 
 export default function MusicSounds({ u, openMenu, prefs, setPrefs }) {
+  const keep = useScrollMemory('music'); // Back returns to this spot
   const t = useT();
   const insets = useSafeAreaInsets();
   return (
@@ -21,7 +23,7 @@ export default function MusicSounds({ u, openMenu, prefs, setPrefs }) {
         {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: IS_TABLET ? 0 : insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="music" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Music and Sounds')}</Text></View>
       </View>
-      <ScrollView contentContainerStyle={styles.body}>
+      <ScrollView {...keep} contentContainerStyle={styles.body}>
         <View style={styles.col}>
           <View style={styles.card}><AmbientControls prefs={prefs} setPrefs={setPrefs} /></View>
         </View>

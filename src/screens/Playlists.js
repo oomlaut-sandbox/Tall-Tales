@@ -2,6 +2,7 @@
 // them all by themselves (Auto Play), one book after the next. Each child has their own playlists;
 // "Bedtime" is there from the start.
 import { TitleIcon } from '../titleIcons';
+import { useScrollMemory } from '../nav';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, LayoutAnimation, Platform, Pressable, ScrollView, UIManager, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -56,6 +57,7 @@ const BAND_COLOR = '#7a5534'; // its colour (iPad, and the status bar strip)
 const ENVELOPE = require('../../assets/icon-envelope.png'); // share
 
 export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
+  const keep = useScrollMemory('playlists'); // Back returns to this spot
   const { width: winW } = useWindowDimensions();
   const tapeW = Math.round(Math.min(520, winW - 48) * 0.575); // the cassette itself is about half the column (the rest is its shadow)
   const t = useT();
@@ -89,7 +91,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
         {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: IS_TABLET ? 0 : insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="playlists" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Playlists')}</Text></View>
       </View>
-      <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
+      <ScrollView {...keep} contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
         <View style={styles.col}>
           {(
             <>

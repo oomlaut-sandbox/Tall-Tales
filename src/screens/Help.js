@@ -1,6 +1,7 @@
 // Help: a searchable walk-through of the app, in plain words. In the main menu above About.
 // (A short explainer video will live at the top of this page later.)
 import { TitleIcon } from '../titleIcons';
+import { useScrollMemory } from '../nav';
 import { HEADING_ICONS } from '../headingIcons';
 import { STORE_ON } from '../controls';
 import { VIDEOS } from './Intro';
@@ -201,6 +202,7 @@ export const HELP = ALL_HELP.filter((h) => STORE_ON || !h.store);
 const IDEAS_FELT = require('../../assets/ideas-felt.png');
 
 export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro }) {
+  const keep = useScrollMemory('help'); // Back returns to this spot
   const [soonVid, setSoonVid] = React.useState(null); // a video tapped (they're on the way)
   const searchRef = useRef(null);
   const { width: winWf } = useWindowDimensions();
@@ -232,7 +234,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
         {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: IS_TABLET ? 0 : insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="support" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Help')}</Text></View>
       </View>
-      <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
+      <ScrollView {...keep} contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
         <View style={styles.col}>
           {/* (a short video tour will go here later) */}
           {/* the search window: a white pill the width of the topics, with a soft inner shadow along its top edge */}

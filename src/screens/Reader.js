@@ -63,6 +63,7 @@ const VOICE_RECORDING = {
 };
 import { checkVolume } from '../volume';
 import { playSound, playSwitch, setEffects, setEffectsVolume, suspendSounds } from '../sound';
+import { rememberPage, startPage } from '../nav';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { shareInvite } from '../invite';
 import { shareBookWithVoices } from '../voiceShare';
@@ -112,7 +113,8 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   const controls = useControls(); // parental controls: recording, sharing and printing may be switched off
   const insets = useSafeAreaInsets();
   const pages = useMemo(() => [...story.pages, { end: true }], [story]);
-  const [idx, setIdx] = useState(0);
+  const [idx, setIdx] = useState(() => Math.min(startPage('reader', story.id), story.pages.length - 1)); // (Back: the page that was open)
+  useEffect(() => { rememberPage('reader', story.id, idx); }, [idx, story.id]);
   // While recording (and a little after, for 'Saved your voice…'), speech bubbles sit in the middle of the
   // picture page (top, or left when sideways) so they don't cover the words being read.
   const bookRef = useRef(null);
