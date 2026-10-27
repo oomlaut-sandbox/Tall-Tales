@@ -308,25 +308,25 @@ function layersOf(st, w) {
     // body, the pigment gathering at its rim as it dries, a faint bloom where the water spread. Crossing strokes
     // deepen (multiply). Wet into wet (painted over a wash that hadn't dried yet): no rim, it runs into the colour under it.
     // (Apple Pencil: a light touch is a pale wash, pressing harder loads more pigment)
-    const B = (k, wob = 0) => inkD({ ...st, s: (st.s || 0.01) * k }, w, 2.6, 1.6, 0, wob);
-    const dk = darkOf(st, 0.55);
+    // (calmer, Jörg 27 Oct 2026: the width follows the hand less wildly, shorter points at the ends, an even body
+    // with more colour, a gentle edge; it still deepens where strokes cross)
+    const B = (k, wob = 0) => inkD({ ...st, s: (st.s || 0.01) * k }, w, 1.5, 0.75, 0, wob);
+    const dk = darkOf(st, 0.6);
     if (st.wet) return [
-      { d: B(2.3, 0.35), fill: true, alpha: (light ? 0.3 : 0.12) * dk, blur: lw * 0.6, multiply: !light, tex: 2 }, // the bleed: it runs out into the wet wash
-      { d: B(1.6, 0.18), fill: true, alpha: (light ? 0.55 : 0.3) * dk, blur: Math.max(1, lw * 0.2), multiply: !light, tex: 2 }, // the body
+      { d: B(1.9, 0.15), fill: true, alpha: (light ? 0.3 : 0.12) * dk, blur: lw * 0.4, multiply: !light, tex: 2 }, // the bleed into the wet wash
+      { d: B(1.4, 0.06), fill: true, alpha: (light ? 0.6 : 0.42) * dk, blur: Math.max(1, lw * 0.15), multiply: !light, tex: 2 }, // the body
     ];
-    const body = B(1.45, 0.14);
+    const body = B(1.35, 0.06);
     return [
-      { d: B(1.95, 0.32), fill: true, alpha: (light ? 0.3 : 0.08) * dk, blur: lw * 0.3, multiply: !light, tex: 2 }, // the bloom: an uneven halo where the water spread
-      { d: body, fill: true, alpha: (light ? 0.55 : 0.28) * dk, blur: Math.max(0.6, lw * 0.05), multiply: !light, tex: 2 }, // the body, grainy where the pigment settles in the paper
-      { d: B(0.7, 0.25), fill: true, alpha: light ? 0 : 0.1 * dk, blur: Math.max(1, lw * 0.25), multiply: !light, tex: 2 }, // pooled pigment down the middle, deeper where you slowed
-      { d: body, fill: true, alpha: light ? 0 : 0.42 * dk, blur: Math.max(1, lw * 0.14), multiply: !light, inner: true, tex: 2 }, // the rim, where it dried
+      { d: B(1.6, 0.12), fill: true, alpha: (light ? 0.25 : 0.07) * dk, blur: lw * 0.22, multiply: !light, tex: 2 }, // a faint soft edge
+      { d: body, fill: true, alpha: (light ? 0.6 : 0.42) * dk, blur: Math.max(0.6, lw * 0.04), multiply: !light, tex: 2 }, // the body
+      { d: body, fill: true, alpha: light ? 0 : 0.28 * dk, blur: Math.max(1, lw * 0.12), multiply: !light, inner: true, tex: 2 }, // a light rim, where it dried
     ];
   }
-  // pencil: a fine, smooth graphite line (thinner when fast, a short taper), the paper's tooth showing in it.
-  // Pressed lightly it's faint, hard it's dark; tilted, the side of the lead shades a broad, soft, grainy band.
+  // pencil (Jörg, 27 Oct 2026): a plain, smooth, fine line of even width, like a sharp pencil or a fineliner.
+  // No speed swing, no taper, no grain. Apple Pencil: pressing harder makes it a little darker, that's all.
   if (b === 'pencil') {
-    const up = uprightOf(st), side = 1 - up;
-    return [{ d: inkD({ ...st, s: (st.s || 0.01) * 0.55 }, w, 1.4, 0.6, 4), fill: true, alpha: clamp(0.8 * darkOf(st, 0.35) * (1 - side * 0.55), 0.12, 0.95), tex: side > 0.3 ? 2 : 1 }];
+    return [{ d: strokeD(st, w), width: Math.max(1.2, lw * 0.45), alpha: clamp(0.92 * darkOf(st, 0.6), 0.5, 1) }];
   }
   // crayon: waxy and smooth-edged, the paper's tooth breaking it up; two soft passes that deepen where they cross
   if (b === 'crayon') {
