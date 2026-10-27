@@ -328,7 +328,9 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   // a photo for the picture square (from the phone, or the camera after the grown-up check)
   const choosePhoto = async (source) => {
     try {
-      const opts = { mediaTypes: 'images', quality: 0.9, allowsEditing: true, aspect: [1, 1] };
+      // the library opens Apple's quick photo picker (no crop step: that older screen loaded the whole library slowly,
+    // and Edit photo does the cropping now); the camera keeps its square crop (Jörg, 27 Oct 2026)
+    const opts = source === 'camera' ? { mediaTypes: 'images', quality: 0.9, allowsEditing: true, aspect: [1, 1] } : { mediaTypes: 'images', quality: 1, allowsEditing: false };
       let r;
       if (source === 'camera') {
         const perm = await ImagePicker.requestCameraPermissionsAsync();

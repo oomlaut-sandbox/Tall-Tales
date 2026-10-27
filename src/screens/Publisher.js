@@ -260,7 +260,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   // Choose a square photo, keep a copy in the story's folder: { uri, w, h }, or null if cancelled.
   // source: 'library' (the phone's photos) or 'camera' (take a photo, e.g. of a drawing; only after the grown-up check)
   const choosePhoto = async (source = 'library') => {
-    const opts = { mediaTypes: 'images', quality: 0.9, allowsEditing: true, aspect: [1, 1] };
+    // the library opens Apple's quick photo picker (no crop step: that older screen loaded the whole library slowly,
+    // and Edit photo does the cropping now); the camera keeps its square crop (Jörg, 27 Oct 2026)
+    const opts = source === 'camera' ? { mediaTypes: 'images', quality: 0.9, allowsEditing: true, aspect: [1, 1] } : { mediaTypes: 'images', quality: 1, allowsEditing: false };
     let r;
     if (source === 'camera') {
       const perm = await ImagePicker.requestCameraPermissionsAsync();
