@@ -1,4 +1,5 @@
 // Shared pieces of Jörg's design: black control bar, hamburger, dog-ear corner, slide-in panels.
+import { isRestricted, useControls } from '../controls';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, ScrollView, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -24,8 +25,10 @@ export function slotStyle(u, vertical, nudge = true) {
 
 // The menu button. On the black bars it brings the house and the music note with it, in their fixed slots.
 // home / music: false to leave them out; vertical: which way the bar runs (else the bar says)
-export function Burger({ onPress, u, home = true, music = true, onHome, vertical: v }) {
+export function Burger({ onPress, u, home = true, music = true, onHome, vertical: v, lock = true }) {
   const tr = useT();
+  const ctl = useControls();
+  const lockOn = lock && isRestricted(ctl) && !!goSettings;
   const ctx = useContext(BarDir);
   const vertical = v != null ? v : ctx;
   const G = barGeo(u);
@@ -37,7 +40,7 @@ export function Burger({ onPress, u, home = true, music = true, onHome, vertical
       <View style={{ height: G.t, backgroundColor: colors.white, marginTop: G.gap }} />
     </Pressable>
   );
-  if (!home && !music) return menu;
+  if (!home && !music && !lockOn) return menu;
   // from the menu's middle to the first slot's middle is one step
   // (plus a touch, so the gap from the menu to the house looks the same as from the house to the note)
   const lead = G.step / 2 - (vertical ? mh : G.mw) / 2 + (vertical ? u * 0.22 : u * 1.02);
@@ -46,7 +49,12 @@ export function Burger({ onPress, u, home = true, music = true, onHome, vertical
       {menu}
       <View style={vertical ? { height: lead } : { width: lead }} />
       {home ? <HomeButton u={u} vertical={vertical} onPress={onHome} /> : null}
-      {music ? <BarMusic u={u} vertical={vertical} /> : null}{/* always there, so the Audio Player is one tap away (lit while music plays) */}
+      {music ? <BarMusic u={u} vertical={vertical} /> : null}
+      {lockOn ? (
+        <Pressable onPress={withTap(() => goSettings && goSettings())} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Settings')} style={slotStyle(u, vertical, false)}>
+          <LockIcon size={u * 5.2} weight={Math.max(2.5, u * 0.7)} />
+        </Pressable>
+      ) : null}{/* always there, so the Audio Player is one tap away (lit while music plays) */}
     </View>
   );
 }
@@ -79,6 +87,10 @@ export function Bar({ u, children, vertical, top }) {
 // App.js tells it how to get there.
 let goHome = null;
 export function setGoHome(fn) { goHome = fn; }
+// the lock on every black bar while the parental controls limit things (Quick and Safe Kid): it opens Settings,
+// behind the grown-up question, so a parent can always find the way to turn it off (Jörg, 27 Oct 2026)
+let goSettings = null;
+export function setGoSettings(fn) { goSettings = fn; }
 // the house: one closed outline (a pentagon: roof and walls in a single even stroke)
 const HOME_ART = require('../../assets/icon-home.png');
 const HOME_NUDGE = 0, HOME_NUDGE_V = 0; // (in u) the house's small optical nudge in its slot

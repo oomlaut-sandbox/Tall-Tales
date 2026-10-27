@@ -1099,7 +1099,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
           <View style={[styles.sideBar, { width: BL.rightW, paddingTop: sideTop(u, winH) }]}>
             <Felt />
             <View style={{ width: BL.rightW, alignItems: 'center', flex: 1 }}>
-              <Burger u={u} vertical onPress={openMenu} />
+              <Burger u={u} vertical lock={false} onPress={openMenu} />
               {extras}
               <View style={{ flex: 1 }} />
               {ctlEls}
@@ -1110,7 +1110,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
           <View style={[styles.bottomBar, { height: barH, paddingBottom: insets.bottom }]}>
             <Felt />
             <View style={{ height: G.row, flexDirection: 'row', alignItems: 'center', paddingHorizontal: G.edge }}>
-              <Burger u={u} vertical={false} onPress={openMenu} />
+              <Burger u={u} vertical={false} lock={false} onPress={openMenu} />
               {extras}
               <View style={{ flex: 1 }} />
               {ctlEls}

@@ -50,7 +50,7 @@ import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, loadJSONFor, saveJSON, saveJSONFor } from './src/storage';
 import { TITLE_ICONS } from './src/titleIcons';
-import { BulbIcon, CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast, BubbleHost, setGoHome, HomeIcon, BackRing } from './src/components/Chrome';
+import { BulbIcon, CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast, BubbleHost, setGoHome, setGoSettings, HomeIcon, BackRing } from './src/components/Chrome';
 import { setVolumeBubble } from './src/volume';
 import { DESK_FELT, DESK_IPAD_NOW, DeskFelt, Felt, IS_TABLET, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
@@ -237,6 +237,7 @@ function Root() {
   const canBack = () => hasStep() || hist.current.some((e) => e.screen !== screen);
   // the home button on every black bar: back to My Library
   useEffect(() => { setGoHome(() => go('library')); });
+  useEffect(() => { setGoSettings(() => { setDrawer(false); setSettingsGate(true); }); }); // the bar's lock (kid mode): Settings, behind the grown-up question
   // "Your volume is turned down" (the phone's volume all the way down when something starts to play)
   useEffect(() => { setVolumeBubble((m) => toast(t(m))); });
   // A book with a title page opens onto its title page with a blank white page above it (the
