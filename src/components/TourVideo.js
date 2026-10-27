@@ -7,8 +7,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { colors, fonts } from '../theme';
 
-const CLIP = require('../../assets/tour.mp4'); // 540 x 1090 (the status bar trimmed off), 17 seconds
-const AR = 540 / 1090;
+const CLIP = require('../../assets/tour.mp4'); // 540 x 1174, 17 seconds (the status bar blacked out, where the island sits)
+const AR = 540 / 1174;
 
 export default function TourVideo({ onClose, tr }) {
   const insets = useSafeAreaInsets();
@@ -44,7 +44,7 @@ export default function TourVideo({ onClose, tr }) {
           <View style={{ width: sw, height: sh, borderRadius: r - bez, overflow: 'hidden', backgroundColor: '#000' }}>
             <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} allowsFullscreen={false} allowsPictureInPicture={false} />
           </View>
-          <View pointerEvents="none" style={{ position: 'absolute', top: bez + sh * 0.018, width: sw * 0.3, height: sw * 0.085, borderRadius: sw * 0.05, backgroundColor: '#000' }} />
+          <View pointerEvents="none" style={{ position: 'absolute', top: bez + sh * 0.012, width: sw * 0.3, height: sw * 0.085, borderRadius: sw * 0.05, backgroundColor: '#000' }} />
         </View>
         <Animated.View style={{ height: 44, marginTop: 26, opacity: btn }} pointerEvents={ended ? 'auto' : 'none'}>
           <Pressable onPress={close} hitSlop={8} accessibilityRole="button" style={styles.got}>
