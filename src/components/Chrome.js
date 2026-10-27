@@ -274,7 +274,7 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children, portr
           pointerEvents={open ? 'auto' : 'none'}
           style={[styles.panel, wide ? { width: panelW, maxWidth: panelW, top: wideTop, right: 0 } : { bottom: 0, left: 0 }, !wide && portraitWidth ? { width: portraitWidth, maxWidth: 520 } : null,
             { maxHeight: floating ? maxHeight - 24 : maxHeight, transform: [wide ? { translateX: shift } : { translateY: shift }] },
-            floating ? [{ borderRadius: 26, overflow: 'hidden', backgroundColor: 'rgba(12,12,12,0.97)' }, wide ? { right: 12 } : { bottom: 12, left: '3%', width: '94%' }] : null]}
+            floating ? [{ borderRadius: 26, overflow: 'hidden', backgroundColor: '#0c0c0c' }, wide ? { right: 12 } : { bottom: 12, left: '3%', width: '94%' }] : null]}
         >
           {floating ? null : <Felt />}
           <View style={[styles.panelHead, wide && { paddingTop: 14, paddingBottom: 12 }, compact && { paddingTop: 16, paddingBottom: 12 }, floating && { backgroundColor: 'transparent' }]}>
