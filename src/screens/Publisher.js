@@ -3,6 +3,7 @@
 // or to delete the whole story.
 import { Asset } from 'expo-asset';
 import PhotoEditor from '../components/PhotoEditor';
+import TourVideo from '../components/TourVideo';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Keyboard, KeyboardAvoidingView, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -227,11 +228,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const [guide, setGuide] = useState(false);
   // (the guide no longer opens by itself: the 'Want a quick little tour?' bubble offers it: Jörg, 27 Oct 2026)
   const [tourAsk, setTourAsk] = useState(false);
+  const [tourPlay, setTourPlay] = useState(false);
   const [tourOff, setTourOff] = useState(false); // 'Please don't show this again' ticked
   const closeTour = (take) => {
     setTourAsk(false);
     if (tourOff) saveJSON('tourAsk', { off: true });
-    if (take) setGuide(true);
+    if (take) setTourPlay(true); // the tour film (Jörg's screen recording)
   };
   const closeGuide = () => { setGuide(false); saveJSON('guide', { seen: true }); };
   const timer = useRef(null);
@@ -815,6 +817,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             onNext={({ about, aboutWords, title }) => { setDraft((d) => ({ ...d, about, aboutWords, title: d.title.trim() ? d.title : title })); setAboutOpen(false); }} />
         </View>
       ) : null}
+      {tourPlay ? <TourVideo tr={tr} onClose={() => setTourPlay(false)} /> : null}
       {tourAsk && aboutOpen ? (
         // 'Want a quick little tour?': a large white bubble over What's your book about? (Jörg, 27 Oct 2026)
         <View style={[StyleSheet.absoluteFill, { zIndex: 65, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }]}>
