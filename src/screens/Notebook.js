@@ -1055,7 +1055,11 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   // after a size is picked the pill stays a moment, then dissolves
   const sizeFade = useRef(new Animated.Value(1)).current;
   const sizeTimer = useRef(null);
-  useEffect(() => { clearTimeout(sizeTimer.current); sizeFade.stopAnimation(); sizeFade.setValue(1); }, [sizePop]);
+  const sizeAuto = useRef(false); // the sizes came up by themselves (a new tool): they fade away again after a moment
+  const fadeSizes = (ms) => { clearTimeout(sizeTimer.current); sizeTimer.current = setTimeout(() => {
+    Animated.timing(sizeFade, { toValue: 0, duration: 450, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(({ finished }) => { if (finished) setSizePop(null); });
+  }, ms); };
+  useEffect(() => { clearTimeout(sizeTimer.current); sizeFade.stopAnimation(); sizeFade.setValue(1); if (sizePop && sizeAuto.current) { sizeAuto.current = false; fadeSizes(2500); } }, [sizePop]);
   useEffect(() => () => clearTimeout(sizeTimer.current), []);
   const pickSize = (sz) => {
     setSize(sz);
@@ -1390,9 +1394,10 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const pickTool = (k) => {
     if (k === onTool && k !== 'roller') { setSizePop((x) => (x ? null : k)); return; } // the one in your hand: its sizes
     setSizePop(null); setStamp(null);
-    if (k === 'eraser') { setErase(true); setBucket(false); setShape(null); return; }
+    if (k === 'eraser') { setErase(true); setBucket(false); setShape(null); sizeAuto.current = true; setSizePop(k); return; }
     if (k === 'roller') { setBucket(true); setErase(false); setShape(null); return; }
     setBrush(BRUSH_OF[k]); setErase(false); setBucket(false);
+    sizeAuto.current = true; setSizePop(k); // a new tool: its sizes pop up for a moment (Jörg, 27 Oct 2026)
   };
   // the tools stand in a row on dark grey, as in Jörg's drawing; the one in your hand gets a fine box with its name above
   const TRAY_H = 158, BOX_TOP = 22, TOOL_GAP = 16;
