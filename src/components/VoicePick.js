@@ -69,7 +69,7 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
 }
 
 const styles = StyleSheet.create({
-  box: { position: 'absolute', width: 250, backgroundColor: 'rgba(0,0,0,0.86)', /* see-through black, dark enough that the page's words don't show through */ borderRadius: 26, boxShadow: '0 16px 40px rgba(0,0,0,0.6)' },
+  box: { position: 'absolute', width: 250, backgroundColor: '#000000', /* solid black, nothing shows through (Jörg, 27 Oct 2026) */ borderRadius: 26, boxShadow: '0 16px 40px rgba(0,0,0,0.6)' },
   extra: { marginTop: 16, paddingTop: 24, paddingHorizontal: 6, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: 'rgba(255,255,255,0.18)', gap: 6 },
   editText: { color: 'rgba(255,255,255,0.7)', fontFamily: fonts.uiBold, fontSize: 14 },
   edit: { position: 'absolute', top: 22, right: 20, padding: 2 },
