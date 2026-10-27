@@ -994,6 +994,14 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
           accessibilityRole="button" accessibilityLabel={tr('This page has a voice recording')}
           style={[styles.recMark, IS_TABLET ? { left: bulbL + 32 } : { right: 14 }]} />
       ) : null}
+      {/* sideways: Edit this book (white scissors) in the felt's bottom right corner, between the book and the bar,
+          mirroring the bulb (the bar has no room for it there: Jörg, 27 Oct 2026) */}
+      {wide && onEdit && !nightOn ? (
+        <Pressable onPress={withTap(() => { stopReading(); onEdit(); })} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Edit this book')}
+          style={{ position: 'absolute', zIndex: 6, right: bulbL, bottom: 10 + insets.bottom }}>
+          <Image source={SCISSORS} style={{ width: 22, height: 22, tintColor: '#ffffff' }} resizeMode="contain" />
+        </Pressable>
+      ) : null}
       {/* Amber light: a very fine light bulb at the top left of the felt turns it on and off */}
       {!listen ? (
         <Pressable onPress={withTap(() => setPrefs((p) => ({ ...p, amber: !p.amber })))} hitSlop={14} accessibilityRole="switch" accessibilityState={{ checked: !!prefs.amber }}
@@ -1040,7 +1048,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
                 {dayOn ? <SolidSun size={u * 5.3} color="#e0e0e0" /> : <View style={{ transform: [v ? { translateY: 0 } : { translateX: u * MOON_NUDGE }] }}><MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : IDLE} /></View>}
               </Pressable>
             ) : null}
-            {onEdit && !nightOn ? (
+            {onEdit && !nightOn && !v ? ( /* (sideways: on the felt instead, bottom right) */
               <Pressable onPress={withTap(() => { stopReading(); onEdit(); })} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Edit this book')} style={S}>
                 <Image source={SCISSORS} style={{ width: u * 4.8, height: u * 4.8, tintColor: IDLE }} resizeMode="contain" />
               </Pressable>
