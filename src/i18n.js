@@ -696,6 +696,7 @@ const T = {
   "Sepia": { de: "Sepia", fr: "Sépia", es: "Sepia", ja: "セピア", ar: "بني داكن" },
   "Warm": { de: "Warm", fr: "Chaud", es: "Cálido", ja: "あたたかい", ar: "دافئ" },
   "Cool": { de: "Kühl", fr: "Froid", es: "Frío", ja: "すずしい", ar: "بارد" },
+  "Books you make together": { de: "Bücher, die ihr zusammen macht", fr: "Des livres que l’on fait ensemble", es: "Libros que hacéis juntos", ja: "いっしょに つくる えほん", ar: "كتب تصنعونها معًا" },
   'Visit the Ideas Room in Ideas and Support': { de: 'Besuche das Ideenzimmer unter Ideen und Hilfe', fr: 'Va dans la Salle des idées, dans Idées et aide', es: 'Visita la Sala de ideas en Ideas y ayuda', ja: '「アイデアと サポート」の アイデアのへやへ', ar: "زُر «غرفة الأفكار» في «الأفكار والدعم»" },
   'Visit the Ideas Room in Ideas and Support.': { de: 'Besuche das Ideenzimmer unter Ideen und Hilfe.', fr: 'Va dans la Salle des idées, dans Idées et aide.', es: 'Visita la Sala de ideas en Ideas y ayuda.', ja: '「アイデアと サポート」の アイデアのへやへ どうぞ。', ar: "زُر «غرفة الأفكار» في «الأفكار والدعم»." },
   'Skip': { de: 'Überspringen', fr: 'Passer', es: 'Saltar', ja: 'スキップ', ar: "تخطٍّ" },
