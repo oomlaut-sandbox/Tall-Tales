@@ -8,6 +8,7 @@ import NOTEBOOK_T from './strings/notebook';
 import HELP_T from './strings/help';
 import IDEAS_T from './strings/ideas';
 import WELCOME_T from './strings/welcome';
+import A11Y_T from './strings/a11y';
 
 export const LANGS = [
   ['en', 'English'],
@@ -903,7 +904,7 @@ export const NUMBER_WORDS = {
 };
 
 // more translations, kept in their own files by area (reading and recording, notebook, Help, the Idea Room)
-Object.assign(T, READER_T, NOTEBOOK_T, HELP_T, IDEAS_T, WELCOME_T);
+Object.assign(T, READER_T, NOTEBOOK_T, HELP_T, IDEAS_T, WELCOME_T, A11Y_T);
 
 export function translate(lang, s, vars) {
   const row = T[s];
