@@ -18,7 +18,7 @@ import { DESK_FELT, DeskFelt, Felt } from '../look';
 // To undo: set SHOW_DESK_LOGO to false (or remove these lines and assets/logo-felt.png).
 const SHOW_DESK_LOGO = true;
 // the coloured felt coro. (Jörg, 25 Oct 2026), a quarter bigger than the white one it replaces; the white one stays in assets/logo-felt.png
-const DESK_LOGO = require('../../assets/logo-felt-colour.png'); // 1233 x 434, the letters centred where the white ones were
+const DESK_LOGO = require('../../assets/logo-felt-colour.png'); // 2466 x 868 (the shape of 1233 x 434), the letters centred where the white ones were (Jörg's new felt letters, 27 Oct 2026)
 const LOGO_K = 1.15; // the white coro. a little bigger now that Reader is gone (Jörg, 25 Oct 2026)
 import { Bar, Burger } from '../components/Chrome';
 import BookFrame, { Spine, bookLayout, startRoom } from '../components/BookFrame';
