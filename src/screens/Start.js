@@ -180,10 +180,11 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
                   const vis = Math.max(side * 0.4, m + side - 2 * a); // the letters' width, equal felt each side
                   const w = vis * 1233 / 1192 * LOGO_K; // the size the old oomlaut logo had here, a little bigger (LOGO_K)
                   const cw = w * 601 / 1233; // coro's letters: 316 to 917 of 1233, centred in that room
+                  const sx = a - m + (vis - cw) / 2 - w * 316 / 1233 + w * 211 / 1233 + side * 0.015; // where the slogan starts
                   return (
                     <>
                       <Image source={DESK_LOGO} resizeMode="contain" style={{ position: 'absolute', left: a - m + (vis - cw) / 2 - w * 316 / 1233, width: w, height: w * 434 / 1233 }} accessibilityLabel="Coro" />
-                      <Text style={[styles.slogan, { position: 'absolute', left: a - m + (vis - cw) / 2 - w * 316 / 1233 + w * 211 / 1233 + side * 0.015, textAlign: 'left', top: side / 2 + w * 434 / 1233 / 2 - side * 0.02, fontSize: Math.round(side * 0.055) }]}>{t('Books you make together')}</Text>
+                      <Text style={[styles.slogan, { position: 'absolute', left: sx, maxWidth: side - sx - side * 0.04 /* never runs under the notebook: if it would, it breaks onto a second line (iPad mini, Jörg, 27 Oct 2026) */, textAlign: 'left', top: side / 2 + w * 434 / 1233 / 2 - side * 0.02, fontSize: Math.round(side * 0.055) }]}>{t('Books you make together')}</Text>
                     </>
                   );
                 })()}
