@@ -50,6 +50,20 @@ const feltSpots = {}; // where each felt area was last time (so it's right from 
 // exactly where it is, so until then the one underneath shows through and nothing ever jumps.
 // overlay: a full-screen layer on top (starts at the screen's corner, so it can show straight away).
 export const DESK_BG = DESK_FELT ? 'transparent' : '#3b3b3b';
+// iPad: the felt tile laid edge to edge, 420 points a side (the phone's scale), each one turned or mirrored
+// a different way so the pattern never visibly repeats (a mirrored join always lines up)
+const TILE_PT = 420;
+const FLIPS = [[1, 1], [-1, 1], [1, -1], [-1, -1], [-1, 1], [1, 1], [-1, -1], [1, -1], [1, -1]];
+function TileFelt({ left, top, w, h }) {
+  const cols = Math.ceil(w / TILE_PT) + 1, rows = Math.ceil(h / TILE_PT) + 1;
+  const out = [];
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+    const [sx, sy] = FLIPS[(r * 5 + c * 3) % FLIPS.length];
+    out.push(<Image key={r + '-' + c} source={DESK_TILE} resizeMode="cover" fadeDuration={0}
+      style={{ position: 'absolute', left: left + c * TILE_PT, top: top + r * TILE_PT, width: TILE_PT, height: TILE_PT, transform: [{ scaleX: sx }, { scaleY: sy }] }} />);
+  }
+  return <>{out}</>;
+}
 export function DeskFelt({ spot = 'any', overlay }) {
   const win = useWindowDimensions();
   const ref = React.useRef(null);
@@ -66,7 +80,7 @@ export function DeskFelt({ spot = 'any', overlay }) {
   return (
     <View ref={ref} collapsable={false} onLayout={measure} pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]}>
       {IS_TABLET
-        ? <Image source={DESK_TILE} resizeMode="repeat" style={{ position: 'absolute', left: -o.x, top: -o.y, width: win.width, height: win.height }} />
+        ? <TileFelt left={-o.x} top={-o.y} w={win.width} h={win.height} />
         : <Image source={DESK_FELT} resizeMode="cover" style={{ position: 'absolute', left: -o.x, top: -o.y, width: win.width, height: win.height }} />}
     </View>
   );
