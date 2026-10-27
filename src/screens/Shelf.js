@@ -186,6 +186,7 @@ function Band({ color, felt, dark, title, sub, action, onAction, icon }) {
 // and can be brought back with "Show removed books".
 // My Notebook's cover: the brown leather of the notebook on the start page
 const CREATE_TILE = require('../../assets/tile-create.jpg'); // Jörg's blue felt book on grey paper (a small + sits in the corner)
+const PLAYLISTS_FELT = require('../../assets/tile-playlists-felt.jpg'); // five felt books, stacked (the Playlists tile)
 const PLAYLISTS_TILE = require('../../assets/tile-playlists.jpg'); // Jörg's stack of felt books, behind the Playlists sign
 const TIP_CORO = require('../../assets/welcome/coro-wave.png'); // Coro in the library's welcome bubble (a reading pose is coming from Jörg)
 let libTipSeen = false; // the library's welcome shows once each time the app is opened
@@ -344,7 +345,7 @@ export function Library({ onReadingOptions, onGarden, narrator, toast, onProfile
             onLongPress={!selecting && s.mine ? () => onEdit(s) : undefined} />
         ))}
         {/* Playlists, at the end of My Books: three little felt books stacked */}
-        {!selecting && onPlaylists ? <Tile u={u} plain option title={t('Playlists')} onPress={onPlaylists} glyph={<PlaylistStack size={((winW - 40) * TILE[COLS(winW)]) / 100} />} /> : null}
+        {!selecting && onPlaylists ? <Tile u={u} option title={t('Playlists')} onPress={onPlaylists} cover={PLAYLISTS_FELT} /> : null}{/* Jörg's photo of five stacked felt books (27 Oct 2026) */}
         {!selecting && removedCount ? (
           <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
             <Text style={styles.restore}>{t('Show removed books ({n})', { n: removedCount })}</Text>
