@@ -4,7 +4,7 @@ import React from 'react';
 import { Pressable, Image, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
-import { IS_TABLET } from '../look';
+import { IS_TABLET, BandFill } from '../look';
 import { Bar, BarMeta, Burger, WithBar } from '../components/Chrome';
 import { useT } from '../i18n';
 
@@ -23,7 +23,7 @@ export default function About({ u, openMenu, onSecret, onBack }) {
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {/* Jörg's red felt, treated like the other banners (phones); iPad keeps the classic solid red */}
-        {!IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : null}
+        {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="about" lift={2} /><Text style={[styles.title, { flexShrink: 1 }]}>Coro</Text></View>
         <Text style={styles.tagline}>{t('Books you make together.')}</Text>
       </View>

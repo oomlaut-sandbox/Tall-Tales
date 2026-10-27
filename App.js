@@ -52,7 +52,7 @@ import { loadJSON, loadJSONFor, saveJSON, saveJSONFor } from './src/storage';
 import { TITLE_ICONS } from './src/titleIcons';
 import { BulbIcon, CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast, BubbleHost, setGoHome, HomeIcon } from './src/components/Chrome';
 import { setVolumeBubble } from './src/volume';
-import { DESK_FELT, DeskFelt, Felt, LookContext } from './src/look';
+import { DESK_FELT, DESK_TILE, DeskFelt, Felt, IS_TABLET, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
 import Profiles from './src/screens/Profiles';
 import PlaybackPanel from './src/components/PlaybackPanel';
@@ -576,7 +576,7 @@ export default function App() {
     const finish = () => { if (!done) { done = true; setPictureReady(true); } };
     finishRef.current = finish;
     // the leather and the charcoal felt are ready before the first screen, so the book's slide-in isn't lost to a slow first frame
-    Asset.loadAsync([HOME_PICTURE, ...WARM, ...(DESK_FELT ? [DESK_FELT] : [])]).then(() => { assetsIn.current = true; check(); }, finish);
+    Asset.loadAsync([HOME_PICTURE, ...WARM, ...(IS_TABLET ? [DESK_TILE] : DESK_FELT ? [DESK_FELT] : [])]).then(() => { assetsIn.current = true; check(); }, finish);
     const t = setTimeout(finish, 1800); // never wait longer than this
     return () => clearTimeout(t);
   }, []);

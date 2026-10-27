@@ -37,7 +37,10 @@ export function Stitch({ inset = 5, radius = 0, color = 'rgba(255,255,255,0.5)',
 // because the felt photo is phone-shaped and looks blotchy when enlarged that much.
 const { width: W0, height: H0 } = Dimensions.get('screen');
 export const IS_TABLET = Platform.isPad || Math.min(W0, H0) >= 600;
-export const DESK_FELT = IS_TABLET ? null : require('../assets/desk-felt.jpg');
+export const DESK_FELT = require('../assets/desk-felt.jpg'); // (on iPad it's drawn as a seamless tile instead: DESK_TILE)
+// iPad (Jörg, 27 Oct 2026): the felt is back, as a seamless tile cut from the same photo, repeated at the phone's
+// scale, so it stays sharp and even however big the screen is. Phones are unchanged.
+export const DESK_TILE = require('../assets/desk-felt-tile.jpg');
 
 // The felt background, locked in place. Every screen draws the same picture at the same size and in the
 // same spot on the screen (the whole window), and only shows the part that falls inside its own area, so
@@ -62,7 +65,24 @@ export function DeskFelt({ spot = 'any', overlay }) {
   const o = at || { x: 0, y: 0 };
   return (
     <View ref={ref} collapsable={false} onLayout={measure} pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]}>
-      <Image source={DESK_FELT} resizeMode="cover" style={{ position: 'absolute', left: -o.x, top: -o.y, width: win.width, height: win.height }} />
+      {IS_TABLET
+        ? <Image source={DESK_TILE} resizeMode="repeat" style={{ position: 'absolute', left: -o.x, top: -o.y, width: win.width, height: win.height }} />
+        : <Image source={DESK_FELT} resizeMode="cover" style={{ position: 'absolute', left: -o.x, top: -o.y, width: win.width, height: win.height }} />}
+    </View>
+  );
+}
+
+// A title band's felt picture. Phone: stretched across, as before. iPad: the band's own picture kept at its own
+// shape and repeated across the wide screen, every other copy mirrored so the joins don't show (Jörg, 27 Oct 2026).
+export function BandFill({ source }) {
+  const [box, setBox] = React.useState(null);
+  if (!IS_TABLET) return <Image source={source} resizeMode="stretch" style={{ width: '100%', height: '100%' }} />;
+  const r = (Image.resolveAssetSource && Image.resolveAssetSource(source)) || { width: 1400, height: 344 };
+  const w1 = box ? box.h * (r.width || 1400) / (r.height || 344) : 0;
+  const n = box && w1 ? Math.ceil(box.w / w1) + 1 : 0;
+  return (
+    <View style={{ width: '100%', height: '100%', flexDirection: 'row', overflow: 'hidden' }} onLayout={(e) => setBox({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
+      {Array.from({ length: n }, (_, k) => <Image key={k} source={source} resizeMode="stretch" style={{ width: w1, height: '100%', transform: k % 2 ? [{ scaleX: -1 }] : [] }} />)}
     </View>
   );
 }

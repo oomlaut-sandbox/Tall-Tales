@@ -5,7 +5,7 @@ import { clearTileSpot, setTileSpot } from '../tileSpots';
 import { Animated, Easing, Image, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, sectionBox, sectionTitle, SECTION_GAP } from '../theme';
-import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG } from '../look';
+import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG, BandFill } from '../look';
 import ReadingOptionsSection from '../components/ReadingOptionsSection';
 import { Bar, BarMeta, Burger, DogEar, IDLE, Option, Panel, PlayGlyph, PlaylistIcon, WithBar, slotStyle } from '../components/Chrome';
 import { activeProfile, feltFor, onProfiles as onProfilesChange } from '../profiles';
@@ -160,11 +160,11 @@ function Band({ color, felt, dark, title, sub, action, onAction, icon }) {
   const insets = useSafeAreaInsets();
   const fg = dark ? colors.ink : colors.white;
   return (
-    <View style={{ backgroundColor: felt && !IS_TABLET ? 'transparent' : color, paddingTop: insets.top + 30, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 }}>{/* the title block centred top to bottom in the coloured band */}
+    <View style={{ backgroundColor: felt ? 'transparent' : color, paddingTop: insets.top + 30, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 }}>{/* the title block centred top to bottom in the coloured band */}
       {/* iPad keeps the classic solid colour banners */}
       {/* phone: the felt's real bottom edge lets the desk show through, so the colour only fills the status bar strip */}
-      {felt && !IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: insets.top + 2, backgroundColor: color }} /> : null}
-      {felt && !IS_TABLET ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><Image source={BAND_FELT[felt]} resizeMode="stretch" style={{ width: '100%', height: '100%' }} /></View> : <><Felt /><Stitch inset={7} /></>}
+      {felt ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: insets.top + 2, backgroundColor: color }} /> : null}
+      {felt ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT[felt]} /></View> : <><Felt /><Stitch inset={7} /></>}
       {/* the title alone (no subtitle), centred in the band, with Select / Cancel on the same line */}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
