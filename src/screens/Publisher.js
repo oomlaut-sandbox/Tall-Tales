@@ -821,7 +821,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <View style={{ width: '100%', maxWidth: 460 }}>
             <View style={{ backgroundColor: colors.white, borderRadius: 26, padding: 24 }}>
               <Text style={{ color: '#1f1f1f', fontFamily: 'EBGaramond_500Medium', fontSize: 23, lineHeight: 30 }}>{tr('Ooooh, this is exciting. Do you know what a Coro book looks like? Want a quick little tour?')}</Text>
-              <Image source={TOUR_SPREAD} resizeMode="contain" style={{ width: '100%', height: undefined, aspectRatio: 900 / 449, marginTop: 16, borderRadius: 4 }} accessibilityIgnoresInvertColors />
+              <View style={{ width: '100%', aspectRatio: 900 / 449, marginTop: 16, borderRadius: 4, overflow: 'hidden' }}><Image source={TOUR_SPREAD} resizeMode="cover" style={StyleSheet.absoluteFill} accessibilityIgnoresInvertColors /></View>
               <Pressable onPress={() => setTourOff((x) => !x)} accessibilityRole="checkbox" accessibilityState={{ checked: tourOff }} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 16 }}>
                 <View style={{ width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: '#555', backgroundColor: tourOff ? '#1f1f1f' : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
                   {tourOff ? <Text style={{ color: colors.white, fontSize: 14, lineHeight: 16, fontFamily: fonts.uiBold }}>✓</Text> : null}
