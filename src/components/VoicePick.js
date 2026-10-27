@@ -33,7 +33,7 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
     <View style={[StyleSheet.absoluteFill, { zIndex: 90 }]}>
       <Pressable style={StyleSheet.absoluteFill} onPress={() => close()} accessibilityRole="button" accessibilityLabel={tr('Close')} />
       <Animated.View style={[styles.box, anchor, { opacity: a, transform: [{ scale: a.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] }) }] }]}>
-        <Text style={styles.title}>{tr('Who reads this book?')}</Text>
+        <Text style={[styles.title, { marginBottom: 16 }]}>{tr('Who reads this book?')}</Text>
         {onEdit ? (
           <Pressable onPress={withTap(() => close(onEdit))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Edit readers')} style={styles.edit}>
             <Image source={SCISSORS} style={{ width: 18, height: 18, tintColor: '#9a9a9a' }} resizeMode="contain" />
@@ -50,8 +50,8 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
           );
         })}
         {onSpeed ? (
-          <View style={{ marginTop: 10, paddingHorizontal: 6 }}>
-            <Text style={[styles.title, { marginLeft: 0, marginBottom: 2 }]}>{tr('Reading speed')}</Text>
+          <View style={{ marginTop: 30, marginBottom: 14, paddingTop: 24, paddingHorizontal: 6, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: 'rgba(255,255,255,0.18)' }}>{/* well apart from the voices (Jörg, 27 Oct 2026) */}
+            <Text style={[styles.title, { marginLeft: 0, marginBottom: 8 }]}>{tr('Reading speed')}</Text>
             <Slider value={sp ?? speed} min={0.5} max={1.5} step={0.05} leftLabel={tr('Slower')} rightLabel={tr('Faster')} accessibilityLabel={tr('Reading speed')}
               format={(v) => `${v.toFixed(2).replace(/0$/, '')}×`} onChange={setSp} onDone={(v) => { setSp(null); onSpeed(Math.round(v * 100) / 100); }} />
           </View>
@@ -62,7 +62,7 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
 }
 
 const styles = StyleSheet.create({
-  box: { position: 'absolute', width: 250, backgroundColor: 'rgba(0,0,0,0.86)', /* see-through black, dark enough that the page's words don't show through */ borderRadius: 26, paddingHorizontal: 14, paddingTop: 18, paddingBottom: 14, gap: 6, boxShadow: '0 16px 40px rgba(0,0,0,0.6)' },
+  box: { position: 'absolute', width: 250, backgroundColor: 'rgba(0,0,0,0.86)', /* see-through black, dark enough that the page's words don't show through */ borderRadius: 26, paddingHorizontal: 14, paddingTop: 24, paddingBottom: 20, gap: 6, boxShadow: '0 16px 40px rgba(0,0,0,0.6)' },
   edit: { position: 'absolute', top: 16, right: 18, padding: 2 },
   title: { color: 'rgba(255,255,255,0.7)', fontFamily: fonts.uiBold, fontSize: 14, marginLeft: 6, marginBottom: 6 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 8, paddingVertical: 8, borderRadius: 18 },
