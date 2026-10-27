@@ -878,6 +878,13 @@ function scatter(items, side, region, seed, maxD) {
 // ---- The badge spread: the second spread of the notebook, over two white pages ----
 // Top page: the title and how much has been read, with the milestones and the streaks scattered around it.
 // Bottom page: the firsts and a patch for every book finished, scattered too.
+// the drawing's zoom in percent (follows the pinch without redrawing the page)
+function ZoomLabel({ v }) {
+  const [z, setZ] = useState(1);
+  useEffect(() => { const id = v.addListener(({ value }) => setZ(value)); return () => v.removeListener(id); }, [v]);
+  return <Text style={{ position: 'absolute', right: 2, bottom: -24, color: '#bdbdbd', fontFamily: fonts.uiSemiBold, fontSize: 12 }} accessibilityLabel={`${Math.round(z * 100)}%`}>{Math.round(z * 100)}%</Text>;
+}
+
 // what the notebook is for: a blank page, then a few words on the next one
 function AboutSpread({ side, wide }) {
   const t = useT();
@@ -1266,6 +1273,8 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     </View>
     {drawHint ? <Toast message={t('Hint: Nothing beats drawing on paper. Phones especially are tough to draw on. So have fun here, but remember you can always take a picture of your work on paper and import it.')} ms={0} center
       check={t('Don’t show this message again')} button={t('Got it!')} onDismiss={(ticked) => { setDrawHint(false); if (ticked) saveJSON('drawHint', { off: true }); }} /> : null}
+    {/* the zoom now, in percent: a small label under the page, on the right (Jörg, 27 Oct 2026) */}
+    <ZoomLabel v={zS} />
     {/* zoomed in: Fit shows the whole page again */}
     {zoomed ? (
       <Pressable onPress={fit} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Show the whole page')} style={[styles.sizePop, { right: 10, top: 10, height: 36, paddingHorizontal: 16, minWidth: 0 }]}>
