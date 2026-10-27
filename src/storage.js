@@ -16,6 +16,10 @@ if (typeof window !== 'undefined' && /my-book/.test(window.location.hash)) {
   mem[keyFor('main', 'stories')] = JSON.stringify([{ id: 'demo-mine', title: 'Our Trip to Oma’s', writer: 'Mia', artist: 'Mia', cover: null,
     pages: [{ pid: 'd1', text: 'We took the train to Oma’s house.', uri: null, w: 1, h: 1 }, { pid: 'd2', text: 'She made pancakes as big as plates!', uri: null, w: 1, h: 1 }] }]);
 }
+// (#kid-mode: Quick and Safe Kid already on, to show the lock on the bars)
+if (typeof window !== 'undefined' && /kid-mode/.test(window.location.hash)) {
+  mem.controls = JSON.stringify(require('./controls').quickSafeControls(6));
+}
 async function rawLoad(name, fallback) {
   return name in mem ? JSON.parse(mem[name]) : fallback;
 }
