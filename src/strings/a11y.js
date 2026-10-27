@@ -1,5 +1,8 @@
 // Translations for accessibility (VoiceOver names and the like). Merged into the main table in src/i18n.js.
 export default {
+  "Fit": { de: "Einpassen", fr: "Ajuster", es: "Ajustar", ja: "ぜんたい", ar: "ملاءمة" },
+  "Show the whole page": { de: "Die ganze Seite zeigen", fr: "Voir toute la page", es: "Ver toda la página", ja: "ページ ぜんたいを みる", ar: "عرض الصفحة كاملة" },
+  "Pinch with two fingers to zoom in for small details.": { de: "Mit zwei Fingern auseinanderziehen, um für kleine Details hineinzuzoomen.", fr: "Écarte deux doigts pour zoomer sur les petits détails.", es: "Separa dos dedos para acercar y dibujar detalles pequeños.", ja: "2ほんの ゆびを ひろげると、こまかい ところを おおきく できます。", ar: "باعد بإصبعين للتكبير ورسم التفاصيل الصغيرة." },
   "Rust friend": { de: "Rostroter Freund", fr: "Ami rouille", es: "Amigo óxido", ja: "さびいろの ともだち", ar: "الصديق الصدئ" },
   "Olive friend": { de: "Olivgrüner Freund", fr: "Ami olive", es: "Amigo oliva", ja: "オリーブいろの ともだち", ar: "الصديق الزيتوني" },
   "Mustard friend": { de: "Senfgelber Freund", fr: "Ami moutarde", es: "Amigo mostaza", ja: "からしいろの ともだち", ar: "الصديق الخردلي" },

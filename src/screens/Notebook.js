@@ -1059,6 +1059,23 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     : Math.max(120, Math.floor(Math.min(winW - 2 * GAP, tall ? (area.h - toolsH) / 2 : area.h - toolsH)));
   const Wref = useRef(W);
   Wref.current = W;
+  // ---- Pinch to zoom (like other drawing apps, Jörg 27 Oct 2026): two fingers zoom in and move the page around;
+  // one finger (or the Pencil) still draws. Pinch out past the edges and it springs back; 'Fit' shows the whole page.
+  const zS = useRef(new Animated.Value(1)).current, zX = useRef(new Animated.Value(0)).current, zY = useRef(new Animated.Value(0)).current;
+  const Z = useRef({ s: 1, x: 0, y: 0 }); // the zoom now (scale, and the page's shift from the middle, in screen points)
+  const pinch = useRef(null); // while two fingers are down: { d0, m0x, m0y, s0, x0, y0 }
+  const [zoomed, setZoomed] = useState(false);
+  const setZ = (s2, x2, y2) => {
+    const Wn = Wref.current, Hn = S.current.tall ? Wn * 2 : Wn;
+    const sc = Math.max(1, Math.min(6, s2));
+    const mx = (sc - 1) * Wn / 2, my = (sc - 1) * Hn / 2; // never further than the page's own edges
+    Z.current = { s: sc, x: Math.max(-mx, Math.min(mx, x2)), y: Math.max(-my, Math.min(my, y2)) };
+    zS.setValue(Z.current.s); zX.setValue(Z.current.x); zY.setValue(Z.current.y);
+  };
+  const fit = () => {
+    Z.current = { s: 1, x: 0, y: 0 }; setZoomed(false);
+    Animated.parallel([zS, zX, zY].map((v, k) => Animated.timing(v, { toValue: k ? 0 : 1, duration: 220, useNativeDriver: true }))).start();
+  };
   const cur = useRef(null);
   // the line being drawn is shown at most once per screen frame: Apple Pencil sends up to 240 points a second,
   // and redrawing for each one made drawing lag on iPad Pro (every point is still kept)
@@ -1129,6 +1146,27 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       setLive({ ...cur.current });
     },
     onPanResponderMove: (e) => {
+      const ts = e.nativeEvent.touches || [];
+      if (ts.length >= 2 || pinch.current) {
+        if (ts.length >= 2) {
+          const d = Math.hypot(ts[0].pageX - ts[1].pageX, ts[0].pageY - ts[1].pageY) || 1;
+          const mx = (ts[0].pageX + ts[1].pageX) / 2, my = (ts[0].pageY + ts[1].pageY) / 2;
+          if (!pinch.current) {
+            // a second finger: whatever the first one had just started isn't a line (a long line is kept)
+            const c = cur.current;
+            if (c && !(c.p && c.p.length > 24)) { cur.current = null; setLive(null); }
+            else if (c) { cur.current = null; setLive(null); add(c); }
+            pinch.current = { d0: d, m0x: mx, m0y: my, ...Z.current };
+            return;
+          }
+          const P = pinch.current;
+          const s2 = Math.max(0.8, Math.min(6, P.s * d / P.d0));
+          // the spot between the fingers stays under the fingers while zooming, and follows them when they move
+          const k = s2 / P.s;
+          setZ(s2, P.x * k + (mx - P.m0x), P.y * k + (my - P.m0y));
+        }
+        return;
+      }
       const [x, y] = at(e);
       if (S.current.bucket) return;
       const c = cur.current;
@@ -1139,7 +1177,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       // steady the hand: each new point is pulled a little towards the last one, so wobbles smooth out into curves
       // (lightly: the line still keeps up with the finger)
       const sx = c.p[n - 2] + (x - c.p[n - 2]) * 0.55, sy = c.p[n - 1] + (y - c.p[n - 1]) * 0.55;
-      if ((c.p[n - 2] - sx) ** 2 + (c.p[n - 1] - sy) ** 2 < 0.0035 ** 2) return;
+      if ((c.p[n - 2] - sx) ** 2 + (c.p[n - 1] - sy) ** 2 < (0.0035 / Z.current.s) ** 2) return; // (finer points when zoomed in)
       c.p.push(+sx.toFixed(4), +sy.toFixed(4));
       if (c.q) c.q.push(+(e.nativeEvent.force || 0).toFixed(2));
       if (!c.t && !c.e && !c.sm) { const u0 = tiltNow(e); if (u0 != null) c.t = Array(c.p.length / 2 - 1).fill(+u0.toFixed(2)); } // (the pen's tilt can arrive just after the touch)
@@ -1147,6 +1185,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       showLive();
     },
     onPanResponderRelease: () => {
+      if (pinch.current) { pinch.current = null; if (Z.current.s < 1.05) fit(); else setZoomed(true); return; }
       const c = cur.current;
       if (frame.current) { cancelAnimationFrame(frame.current); frame.current = 0; }
       cur.current = null; setLive(null);
@@ -1201,12 +1240,22 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   };
   const paper = (
     <View>
+    <View style={{ width: W, height: tall ? W * 2 : W, overflow: 'hidden' }}>
+    <Animated.View style={{ transform: [{ translateX: zX }, { translateY: zY }, { scale: zS }] }}>
     <View {...pad.panHandlers} onPointerDown={onPen} onPointerMove={onPen} style={[styles.drawPaper, { width: W, height: tall ? W * 2 : W }]}>
       {photo ? <Image source={{ uri: photo }} style={StyleSheet.absoluteFill} resizeMode="cover" pointerEvents="none" /> : null}
       <StrokesView strokes={strokes} live={live} width={W} height={tall ? W * 2 : W} noPaper={!!photo} />
       {/* Mirror: a faint line down the middle, where the two sides meet */}
       {mirror ? <View pointerEvents="none" style={{ position: 'absolute', left: W / 2 - 0.5, top: 0, bottom: 0, borderLeftWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(0,0,0,0.22)' }} /> : null}
     </View>
+    </Animated.View>
+    </View>
+    {/* zoomed in: Fit shows the whole page again */}
+    {zoomed ? (
+      <Pressable onPress={fit} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Show the whole page')} style={[styles.sizePop, { right: 10, top: 10, height: 36, paddingHorizontal: 14 }]}>
+        <Text style={{ color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 13 }}>{t('Fit')}</Text>
+      </Pressable>
+    ) : null}
     {/* the sizes of the tool in your hand: a little dark pill in the bottom left corner of the page */}
     {sizePopEl()}
     {/* a stamp in hand: its sizes, and ✕ to put it down (bottom left, like the sizes pill) */}
