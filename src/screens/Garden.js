@@ -56,7 +56,7 @@ export default function Garden({ u, openMenu, toast, onHome }) {
   };
   // a couple of seconds in: a word that the Garden is a beta (the same speech bubble as the library's)
   useEffect(() => {
-    const id = setTimeout(() => toast && toast(t('Welcome to the garden, a relaxing space where you can enjoy simple games and puzzles. Check back later for more. And remember, nothing beats going outside in nature. For real, go outside. (If you’re looking for your way back to the library, tap on the gate.)'), 0) // (stays until it's tapped closed: Jörg, 27 Oct 2026), 2200);
+    const id = setTimeout(() => toast && toast(t('Welcome to the garden, a relaxing space where you can enjoy simple games and puzzles. Check back later for more. And remember, nothing beats going outside in nature. For real, go outside. (If you’re looking for your way back to the library, tap on the gate.)'), 0) /* (stays until it's tapped closed: Jörg, 27 Oct 2026) */, 2200);
     return () => clearTimeout(id);
   }, []);
   // birdsong by day; at night the crickets take over (one fades out as the other comes up). Both start silent and
