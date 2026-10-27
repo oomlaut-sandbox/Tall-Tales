@@ -50,7 +50,7 @@ import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, loadJSONFor, saveJSON, saveJSONFor } from './src/storage';
 import { TITLE_ICONS } from './src/titleIcons';
-import { BulbIcon, CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast, BubbleHost, setGoHome, HomeIcon } from './src/components/Chrome';
+import { BulbIcon, CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, PencilIcon, StoreIcon, Toast, BubbleHost, setGoHome, HomeIcon } from './src/components/Chrome';
 import { setVolumeBubble } from './src/volume';
 import { DESK_FELT, DESK_IPAD_NOW, DeskFelt, Felt, IS_TABLET, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
@@ -543,6 +543,8 @@ function Root() {
         {/* the main menu slides in over everything else on screen (pop-ups, pages boxes), except speech bubbles */}
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
           <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
+            {/* reading a book you made: edit it, straight from the menu (Jörg, 27 Oct 2026) */}
+            {screen === 'reader' && story && story.mine && controls.create ? <Option glyph={<PencilIcon />} title={t('Edit this book')} sub={t('Change its pictures, words and pages')} onPress={() => { setDrawer(false); openPublisher(userStories.find((x) => x.id === story.id) || story); }} /> : null}
             {/* Make a Book first: Coro is a book maker first (Jörg, 25 Oct 2026) */}
             {controls.create ? <Option glyph={<PlusIcon />} title={t('Make a Book')} sub={t('Your pictures, your words')} onPress={newBook} /> : null}
             <Option glyph={<HomeIcon size={MENU_ICON + 2} color={colors.white} />} title={t('My Library')} sub={t('Find and read your favorite books')} onPress={() => go('library')} />

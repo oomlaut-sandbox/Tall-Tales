@@ -66,4 +66,6 @@ export default {
   'Wolf': { de: 'Wolf', fr: 'Loup', es: 'Lobo', ja: 'おおかみ', ar: 'ذئب' },
   'Worms': { de: 'Würmer', fr: 'Vers de terre', es: 'Gusanos', ja: 'みみず', ar: 'ديدان' },
   'Robot': { de: 'Roboter', fr: 'Robot', es: 'Robot', ja: 'ロボット', ar: 'روبوت' },
+  "Edit this book": { de: "Dieses Buch bearbeiten", fr: "Modifier ce livre", es: "Editar este libro", ja: "この 本を なおす", ar: "تعديل هذا الكتاب" },
+  "Change its pictures, words and pages": { de: "Bilder, Worte und Seiten ändern", fr: "Changer ses images, ses mots et ses pages", es: "Cambiar sus dibujos, palabras y páginas", ja: "え、ことば、ページを かえる", ar: "غيّر صوره وكلماته وصفحاته" },
 };
