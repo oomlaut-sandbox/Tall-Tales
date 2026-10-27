@@ -35,7 +35,7 @@ export default function TourVideo({ onClose, tr }) {
   const pw = sw + 2 * bez, ph = sh + 2 * bez;
   const r = pw * 0.15; // iPhone-like round corners
   return (
-    <Animated.View style={[StyleSheet.absoluteFill, { zIndex: 95, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.45)', opacity: a }]}>
+    <Animated.View style={[StyleSheet.absoluteFill, { zIndex: 95, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.55)', opacity: a }]}>
       <Pressable style={StyleSheet.absoluteFill} onPress={ended ? close : undefined} accessible={false} />
       <Animated.View style={[styles.glass, { transform: [{ scale: a.interpolate({ inputRange: [0, 1], outputRange: [0.96, 1] }) }] }]}>
         {/* the phone: a black body with a thin lighter edge, the screen inside, and the island at the top */}
@@ -57,7 +57,7 @@ export default function TourVideo({ onClose, tr }) {
 }
 
 const styles = StyleSheet.create({
-  glass: { backgroundColor: 'rgba(12,12,12,0.86)', borderRadius: 28, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 28, alignItems: 'center', boxShadow: '0 16px 40px rgba(0,0,0,0.6)' },
+  glass: { backgroundColor: 'rgba(12,12,12,0.9)', borderRadius: 28, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 28, alignItems: 'center', boxShadow: '0 16px 40px rgba(0,0,0,0.6)' },
   got: { height: 44, borderRadius: 22, paddingHorizontal: 30, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' },
   gotText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
 });
