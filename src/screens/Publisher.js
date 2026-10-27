@@ -312,6 +312,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     Animated.timing(coverFade, { toValue: coverOpen ? 0 : 1, duration: coverOpen ? 450 : 600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start();
   }, [coverOpen]);
   const [coverTip, setCoverTip] = useState(false); // the 'Tap the title…' bubble
+  const [drawTip, setDrawTip] = useState(true); // a new book: 'Pssst…' about photographing paper drawings (once per launch)
   const [toolsTip, setToolsTip] = useState(true); // no title yet: a speech bubble says where the tools will be
   useEffect(() => {
     if (!(coverOpen && coverTitling)) { setCoverTip(false); return undefined; }
@@ -948,6 +949,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           </View>
           {/* the hint is a speech bubble near the bottom that goes away after a while (tap it to close it sooner) */}
           {/* (no bubble before there's a title: Jörg, 26 Oct 2026) */}
+          {/* a new book, on its cover: a hint about paper drawings (Jörg, 27 Oct 2026) */}
+          {startMode && drawTip && !aboutOpen && !kbUp && !imgAsk && !hardAsk && !coverTitling ? <Toast message={tr('Pssst. Here’s a hint. Taking pictures of your paper drawings is a fun way to build a Coro book.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 150 }} ms={9000} onDismiss={() => setDrawTip(false)} /> : null}
           {coverTitling && coverTip && !kbUp ? <Toast message={tr('Tap the title or the author to type. Drag them anywhere on the cover.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 74 }} onDismiss={() => setCoverTip(false)} /> : null}
           {/* Done: bottom right, lined up with the cover's right edge */}
           {/* a new book: 'Start writing' goes on to page 1 (nobody is stuck on the cover) */}
