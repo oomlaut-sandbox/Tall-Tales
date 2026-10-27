@@ -604,7 +604,7 @@ let bubbleNow = null, bubbleSeq = 0;
 const bubbleSubs = new Set();
 const tellBubble = () => bubbleSubs.forEach((f) => f(bubbleNow));
 
-export function Toast({ message, area, onDismiss, center, ms = BUBBLE_MS, button }) { // button: a green pill that closes it (then ms 0: it stays until then)
+export function Toast({ message, area, onDismiss, center, ms = BUBBLE_MS, button, check }) { // check: a 'don't show again' box (onDismiss gets whether it was ticked) // button: a green pill that closes it (then ms 0: it stays until then)
   const dismiss = useRef(onDismiss);
   dismiss.current = onDismiss;
   const mine = useRef(null);
@@ -613,7 +613,7 @@ export function Toast({ message, area, onDismiss, center, ms = BUBBLE_MS, button
     if (!message) return undefined;
     const id = ++bubbleSeq;
     mine.current = id;
-    bubbleNow = { id, message, area, center, ms, button, onDismiss: () => dismiss.current && dismiss.current() };
+    bubbleNow = { id, message, area, center, ms, button, check, onDismiss: (ticked) => dismiss.current && dismiss.current(ticked) };
     tellBubble();
     return () => { if (bubbleNow && bubbleNow.id === id) { bubbleNow = null; tellBubble(); } };
   }, [message, areaKey, center]);
@@ -623,12 +623,14 @@ export function Toast({ message, area, onDismiss, center, ms = BUBBLE_MS, button
 export function BubbleHost({ defaultArea }) {
   const tr = useT();
   const [b, setB] = useState(bubbleNow);
+  const [ticked, setTicked] = useState(false);
+  useEffect(() => { setTicked(false); }, [b && b.id]);
   useEffect(() => { bubbleSubs.add(setB); setB(bubbleNow); return () => { bubbleSubs.delete(setB); }; }, []);
   const close = () => {
     const cur = bubbleNow;
     if (!cur) return;
     bubbleNow = null; tellBubble();
-    cur.onDismiss && cur.onDismiss();
+    cur.onDismiss && cur.onDismiss(ticked);
   };
   // 3 seconds after each new bubble, it closes by itself (a tap closes it sooner)
   useEffect(() => {
@@ -649,6 +651,14 @@ export function BubbleHost({ defaultArea }) {
         <View style={styles.bubble}>
           {/* a ● in the message is drawn in the record button's red */}
           <Text style={styles.toast}>{String(message).split('●').map((part, i) => (i ? [<Text key={i} style={{ color: colors.highlight }}>●</Text>, part] : part))}</Text>
+          {b.check ? (
+            <Pressable onPress={() => setTicked((x) => !x)} accessibilityRole="checkbox" accessibilityState={{ checked: ticked }} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 20 }}>
+              <View style={{ width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: '#555', backgroundColor: ticked ? '#1f1f1f' : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
+                {ticked ? <Text style={{ color: colors.white, fontSize: 14, lineHeight: 16, fontFamily: fonts.uiBold }}>✓</Text> : null}
+              </View>
+              <Text style={{ color: '#3a3a3a', fontFamily: fonts.ui, fontSize: 15 }}>{b.check}</Text>
+            </Pressable>
+          ) : null}
           {b.button ? (
             <Pressable onPress={close} accessibilityRole="button" style={{ alignSelf: 'center', marginTop: 24, height: 40, borderRadius: 20, paddingHorizontal: 22, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }}>
               <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{b.button}</Text>

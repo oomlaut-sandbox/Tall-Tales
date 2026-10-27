@@ -15,7 +15,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { colors, fonts, MAX_WIDTH } from '../theme';
-import { Bar, Burger, DogEar, DoneTick, Panel, barGeo } from '../components/Chrome';
+import { Bar, Burger, DogEar, DoneTick, Panel, Toast, barGeo } from '../components/Chrome';
+import { loadJSON, saveJSON } from '../storage';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, Felt, DESK_BG } from '../look';
@@ -1064,6 +1065,13 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const zS = useRef(new Animated.Value(1)).current, zX = useRef(new Animated.Value(0)).current, zY = useRef(new Animated.Value(0)).current;
   const Z = useRef({ s: 1, x: 0, y: 0 }); // the zoom now (scale, and the page's shift from the middle, in screen points)
   const pinch = useRef(null); // while two fingers are down: { d0, m0x, m0y, s0, x0, y0 }
+  // the drawing hint (Jörg, 27 Oct 2026): a second after the drawing opens, until 'Don't show this again'
+  const [drawHint, setDrawHint] = useState(false);
+  useEffect(() => {
+    let on = true;
+    const tm = setTimeout(() => { loadJSON('drawHint', {}).then((x) => { if (on && !(x && x.off)) setDrawHint(true); }).catch(() => {}); }, 1000);
+    return () => { on = false; clearTimeout(tm); };
+  }, []);
   const [zoomed, setZoomed] = useState(false);
   const setZ = (s2, x2, y2) => {
     const Wn = Wref.current, Hn = S.current.tall ? Wn * 2 : Wn;
@@ -1250,6 +1258,8 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     </View>
     </Animated.View>
     </View>
+    {drawHint ? <Toast message={t('Hint: Nothing beats drawing on paper. Phones especially are tough to draw on. So have fun here, but remember you can always take a picture of your work on paper and import it.')} ms={0} center
+      check={t('Don’t show this message again')} button={t('Got it!')} onDismiss={(ticked) => { setDrawHint(false); if (ticked) saveJSON('drawHint', { off: true }); }} /> : null}
     {/* zoomed in: Fit shows the whole page again */}
     {zoomed ? (
       <Pressable onPress={fit} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Show the whole page')} style={[styles.sizePop, { right: 10, top: 10, height: 36, paddingHorizontal: 14 }]}>
