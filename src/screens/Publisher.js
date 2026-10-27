@@ -1040,7 +1040,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           {/* the hint is a speech bubble near the bottom that goes away after a while (tap it to close it sooner) */}
           {/* (no bubble before there's a title: Jörg, 26 Oct 2026) */}
           {/* a new book, on its cover: a hint about paper drawings (Jörg, 27 Oct 2026) */}
-          {drawTip && !kbUp && !imgAsk && !hardAsk ? <Toast message={tr('Pssst. Here’s a hint. Taking pictures of your paper drawings is a fun way to build a Coro book.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 150 }} ms={0} button={tr('Got it!')} onDismiss={() => setDrawTip(false)} /> : null}
+          {drawTip && !kbUp && !imgAsk && !hardAsk ? <Toast message={tr('Pssst, here’s a hint. Taking pictures of your paper drawings is a fun way to build a Coro book.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 150 }} ms={0} button={tr('Got it!')} onDismiss={() => setDrawTip(false)} /> : null}
           {coverTitling && coverTip && !kbUp ? <Toast message={tr('Tap the title or the author to type. Drag them anywhere on the cover.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 74 }} onDismiss={() => setCoverTip(false)} /> : null}
           {/* Done: bottom right, lined up with the cover's right edge */}
           {/* a new book: 'Start writing' goes on to page 1 (nobody is stuck on the cover) */}
