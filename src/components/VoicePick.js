@@ -8,7 +8,6 @@ import { colors, fonts } from '../theme';
 import { BubbleIcon, PersonIcon, Slider } from './Chrome';
 import { withTap } from '../haptics';
 
-const SCISSORS = require('../../assets/icon-scissors.png');
 
 // the face: a dark circle with the reader's photo (or the first letter of their name), or the narrator's speech bubble
 export function VoiceFace({ photo, name, narrator = false, person = false, size = 36 }) {
@@ -37,7 +36,7 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
         <Text style={[styles.title, { marginBottom: 16 }]}>{tr('Who reads this book?')}</Text>
         {onEdit ? (
           <Pressable onPress={withTap(() => close(onEdit))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Edit readers')} style={styles.edit}>
-            <Image source={SCISSORS} style={{ width: 18, height: 18, tintColor: '#9a9a9a' }} resizeMode="contain" />
+            <Text style={styles.editText}>{tr('Edit')}</Text>{/* the word, not scissors (scissors on the bar edit the book: Jörg, 27 Oct 2026) */}
           </Pressable>
         ) : null}
         {options.map((o) => {
@@ -72,7 +71,8 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
 const styles = StyleSheet.create({
   box: { position: 'absolute', width: 250, backgroundColor: 'rgba(0,0,0,0.86)', /* see-through black, dark enough that the page's words don't show through */ borderRadius: 26, boxShadow: '0 16px 40px rgba(0,0,0,0.6)' },
   extra: { marginTop: 16, paddingTop: 24, paddingHorizontal: 6, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: 'rgba(255,255,255,0.18)', gap: 6 },
-  edit: { position: 'absolute', top: 16, right: 18, padding: 2 },
+  editText: { color: 'rgba(255,255,255,0.7)', fontFamily: fonts.uiBold, fontSize: 14 },
+  edit: { position: 'absolute', top: 22, right: 20, padding: 2 },
   title: { color: 'rgba(255,255,255,0.7)', fontFamily: fonts.uiBold, fontSize: 14, marginLeft: 6, marginBottom: 6 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 8, paddingVertical: 8, borderRadius: 18 },
   rowOn: { backgroundColor: colors.green },
