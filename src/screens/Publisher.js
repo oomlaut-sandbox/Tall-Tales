@@ -846,8 +846,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <View style={[StyleSheet.absoluteFill, { zIndex: 65, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }]}>
           <View style={{ width: '100%', maxWidth: 460 }}>
             <View style={{ backgroundColor: colors.white, borderRadius: 26, paddingHorizontal: 26, paddingTop: 30, paddingBottom: 30 }}>
-              <Text style={{ color: '#1f1f1f', fontFamily: 'EBGaramond_700Bold', fontSize: 27, lineHeight: 33, marginTop: 6 }} accessibilityRole="header">{tr('Before we get started…')}</Text>
-              <Text style={{ color: '#1f1f1f', fontFamily: 'EBGaramond_500Medium', fontSize: 22, lineHeight: 29, marginTop: 8, marginBottom: 10 }}>{tr('Do you know what a Coro book looks and feels like? Want a quick tour?')}</Text>
+              <Text style={{ color: '#1f1f1f', fontFamily: 'EBGaramond_500Medium', fontSize: 23, lineHeight: 30, marginTop: 10, marginBottom: 10 }}>{tr('Do you know what a Coro book looks and feels like? Want a quick tour?')}</Text>
               <View style={{ marginTop: 16, marginBottom: 10, borderRadius: 4, backgroundColor: '#fff', shadowColor: '#000', shadowOpacity: 0.22, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 4 }}><Image source={TOUR_SPREAD} resizeMode="contain" style={{ width: Math.min(460, winW - 40) - 48, height: (Math.min(460, winW - 40) - 48) * 449 / 900, borderRadius: 4 }} accessibilityIgnoresInvertColors /></View>
               <Pressable onPress={() => setTourOff((x) => !x)} accessibilityRole="checkbox" accessibilityState={{ checked: tourOff }} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 26 }}>
                 <View style={{ width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: '#555', backgroundColor: tourOff ? '#1f1f1f' : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
