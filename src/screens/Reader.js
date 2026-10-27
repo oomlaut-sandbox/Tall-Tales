@@ -71,6 +71,7 @@ import * as WORDCLIPS from '../narration/words';
 const WORDS = WORDCLIPS.WORDS || {};
 const WORDS_LANG = WORDCLIPS.WORDS_LANG || {}; // (made by the next narration run)
 import { loadJSON, saveJSON } from '../storage';
+import { announce } from '../a11y';
 import { getBookVoice, getReaders, getRecording, listRecordings, pageKey, removeRecording, saveRecording, setBookVoice, setTrim } from '../recordings';
 import ReaderPick from '../components/ReaderPick';
 import VoicePick, { VoiceFace } from '../components/VoicePick';
@@ -117,6 +118,8 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   const bookRef = useRef(null);
   // badges (My Notebook): a day with reading, and a book read all the way to The End
   useEffect(() => { markReadToday(); }, []);
+  // VoiceOver: the words on the page that just turned are read out (Jörg, 27 Oct 2026)
+  useEffect(() => { const pg = pages[idx]; if (!pg) return; announce(pg.end ? tr('The End') : pg.titlePage ? (story.title || '') : (pg.text || '')); }, [idx]);
   useEffect(() => { if (pages[idx] && pages[idx].end) { markFinished(story, story.cover || (story.pages.find((pg) => pg.image) || {}).image); if (onFinished) onFinished(); } }, [idx]);
   const [size, setSize] = useState(null); // book area {w,h}
   const [deskW, setDeskW] = useState(0); // the felt's width (the bulb sits halfway between its left edge and the book)

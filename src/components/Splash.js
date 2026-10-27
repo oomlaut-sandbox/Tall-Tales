@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
+import { reduceMotion } from '../a11y';
 
 const CLIP = require('../../assets/splash/coro-splash.mp4');
 const BG = '#c9c7c4'; // the light grey felt the clip is filmed on (no dark flash before the first frame)
@@ -26,6 +27,7 @@ export default function Splash({ onDone }) {
     const subs = [];
     try { subs.push(player.addListener('playToEnd', finish)); } catch (e) {}
     try { subs.push(player.addListener('statusChange', ({ status }) => { if (status === 'readyToPlay') { try { player.play(); } catch (e) {} } if (status === 'error') finish(); })); } catch (e) {}
+    if (reduceMotion()) { const q = setTimeout(finish, 250); return () => clearTimeout(q); } // Reduce Motion: no film by itself, straight to the start page
     const safety = setTimeout(finish, 7000); // never stuck on it
     return () => { clearTimeout(safety); subs.forEach((x) => { try { x.remove(); } catch (e) {} }); try { player.pause(); } catch (e) {} };
   }, [player]);

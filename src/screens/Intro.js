@@ -8,13 +8,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_BG, DeskFelt } from '../look';
 import { useT } from '../i18n';
+import { useReduceMotion } from '../a11y';
 
 const AGES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 // the pages of each journey
 const PAGES = {
   kid: ['kidHello', 'kidMeet', 'kidAge'], // (Meet Coro: a simpler video page, Jörg 26 Oct 2026)
-  grownup: ['grownHello', 'whatIs', 'grownProfile'], // (What is Coro?: the tutorial videos, Jörg 26 Oct 2026)
+  grownup: ['grownHello', 'whatIs', 'access', 'grownProfile'], // (access: Made for every reader, Jörg 27 Oct 2026) // (What is Coro?: the tutorial videos, Jörg 26 Oct 2026)
 };
 
 // the little line icons beside each point (the heading icons, drawn dark on the light grey boxes)
@@ -59,9 +60,10 @@ export default function Intro({ who, onDone, onBack }) {
   const [name, setName] = useState('');
   // each page slides in from the right, like turning a page
   const slide = useRef(new Animated.Value(0)).current;
+  const still = useReduceMotion(); // Reduce Motion: the page fades in, without sliding
   useEffect(() => {
     slide.setValue(1);
-    Animated.timing(slide, { toValue: 0, duration: 380, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+    Animated.timing(slide, { toValue: 0, duration: still ? 250 : 380, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
   }, [i]);
   const finish = () => onDone({ who, age, name: name.trim() });
   const next = () => (i < pages.length - 1 ? setI(i + 1) : finish());
@@ -127,6 +129,16 @@ export default function Intro({ who, onDone, onBack }) {
       {soon ? <Text style={[styles.lead, { marginBottom: 0 }]}>{t('“{name}” is coming soon.', { name: t(soon) })}</Text> : null}
     </>
   );
+  if (page === 'access') body = (
+    <>
+      <Text style={styles.title} accessibilityRole="header">{t('Made for every reader')}</Text>
+      <Text style={styles.lead}>{t('Coro works with the accessibility settings on your iPhone and iPad, and has a few of its own.')}</Text>
+      <Box icon="read" title={t('Listen, or read along')} text={t('Books can read themselves aloud, in a narrator’s voice or a family member’s. Words light up as they’re read, and any word can be tapped to hear it.')} />
+      <Box icon="make" title={t('Text that’s easy to read')} text={t('Make the words bigger and choose a clear font in Reading Options. Menus and settings follow Larger Text on your device.')} />
+      <Box icon="connect" title={t('VoiceOver')} text={t('Every button has a spoken name, and the words on each page are read out as it turns.')} />
+      <Box icon="safe" title={t('Calm on the eyes')} text={t('With Reduce Motion on, Coro swaps sliding and bouncing for gentle fades. At bedtime, the nightlight dims the screen.')} />
+    </>
+  );
   if (page === 'grownProfile') body = (
     <>
       <Text style={styles.title}>{t('What age are your readers?')}</Text>
@@ -148,7 +160,7 @@ export default function Intro({ who, onDone, onBack }) {
     <View style={[StyleSheet.absoluteFill, styles.screen]}>
       <DeskFelt spot="intro" />
       <ScrollView contentContainerStyle={[styles.body, { paddingTop: insets.top + 48, paddingBottom: 30 }]} keyboardShouldPersistTaps="handled">
-        <Animated.View style={[styles.col, { opacity: slide.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }), transform: [{ translateX: slide.interpolate({ inputRange: [0, 1], outputRange: [0, 60] }) }] }]}>
+        <Animated.View style={[styles.col, { opacity: slide.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }), transform: [{ translateX: slide.interpolate({ inputRange: [0, 1], outputRange: [0, still ? 0 : 60] }) }] }]}>
           {body}
         </Animated.View>
       </ScrollView>
