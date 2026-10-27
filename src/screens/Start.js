@@ -274,7 +274,7 @@ function UserIcon({ color, size = 11 }) {
 }
 
 const styles = StyleSheet.create({
-  slogan: { color: '#ffffff', fontFamily: 'PlusJakartaSans_700Bold_Italic', textAlign: 'left' }, // under the logo (Jörg, 26 Oct 2026)
+  slogan: { color: '#ffffff', fontFamily: 'PlusJakartaSans_700Bold', textAlign: 'left' } /* (not italic: Jörg, 27 Oct 2026) */, // under the logo (Jörg, 26 Oct 2026)
   corner: { fontFamily: fonts.ui, fontSize: 12 },
   page: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
 });
