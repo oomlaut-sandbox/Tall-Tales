@@ -26,6 +26,9 @@ const ICONS = {
   safe: require('../../assets/heading-icons/grown-ups.png'),
   connect: require('../../assets/heading-icons/family-and-memories.png'),
   decide: require('../../assets/title-icons/person.png'),
+  text: require('../../assets/heading-icons/learning.png'), // an A in a box (text size and fonts)
+  speak: require('../../assets/heading-icons/communication-support.png'), // a speech bubble (VoiceOver)
+  calm: require('../../assets/heading-icons/bedtime.png'), // the moon (Reduce Motion and the nightlight)
 };
 
 function Box({ title, text, icon }) {
@@ -134,9 +137,9 @@ export default function Intro({ who, onDone, onBack }) {
       <Text style={styles.title} accessibilityRole="header">{t('Made for every reader')}</Text>
       <Text style={styles.lead}>{t('Coro works with the accessibility settings on your iPhone and iPad, and has a few of its own.')}</Text>
       <Box icon="read" title={t('Listen, or read along')} text={t('Books can read themselves aloud, in a narrator’s voice or a family member’s. Words light up as they’re read, and any word can be tapped to hear it.')} />
-      <Box icon="make" title={t('Text that’s easy to read')} text={t('Make the words bigger and choose a clear font in Reading Options. Menus and settings follow Larger Text on your device.')} />
-      <Box icon="connect" title={t('VoiceOver')} text={t('Every button has a spoken name, and the words on each page are read out as it turns.')} />
-      <Box icon="safe" title={t('Calm on the eyes')} text={t('With Reduce Motion on, Coro swaps sliding and bouncing for gentle fades. At bedtime, the nightlight dims the screen.')} />
+      <Box icon="text" title={t('Text that’s easy to read')} text={t('Make the words bigger and choose a clear font in Reading Options. Menus and settings follow Larger Text on your device.')} />
+      <Box icon="speak" title={t('VoiceOver')} text={t('Every button has a spoken name, and the words on each page are read out as it turns.')} />
+      <Box icon="calm" title={t('Calm on the eyes')} text={t('With Reduce Motion on, Coro swaps sliding and bouncing for gentle fades. At bedtime, the nightlight dims the screen.')} />
     </>
   );
   if (page === 'grownProfile') body = (
