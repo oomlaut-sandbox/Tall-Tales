@@ -166,9 +166,10 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
               <View pointerEvents="none" style={[at1, { justifyContent: 'center', alignItems: 'center' }]}>
                 {(() => {
                   if (!wide) return (
-                    <View style={{ alignItems: 'center' }}>
-                      <Image source={DESK_LOGO} resizeMode="contain" style={{ width: side * 0.86 * LOGO_K, height: side * 0.86 * LOGO_K * 434 / 1233 }} accessibilityLabel="Coro" />
-                      <Text style={[styles.slogan, { fontSize: Math.round(side * 0.055), marginTop: -side * 0.06 }]}>{t('Books you make together.')}</Text>
+                    <View style={{ width: side }}>
+                      <Image source={DESK_LOGO} resizeMode="contain" style={{ alignSelf: 'center', width: side * 0.86 * LOGO_K, height: side * 0.86 * LOGO_K * 434 / 1233 }} accessibilityLabel="Coro" />
+                      {/* lined up with the left edge of the c (at 211 of the picture's 1233) */}
+                      <Text style={[styles.slogan, { fontSize: Math.round(side * 0.055), marginTop: -side * 0.06, marginLeft: (side - side * 0.86 * LOGO_K) / 2 + side * 0.86 * LOGO_K * 211 / 1233 }]}>{t('Books you make together.')}</Text>
                     </View>
                   );
                   // sideways: the logo keeps its left edge but is a little smaller, so the felt between it and the
@@ -182,7 +183,7 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
                   return (
                     <>
                       <Image source={DESK_LOGO} resizeMode="contain" style={{ position: 'absolute', left: a - m + (vis - cw) / 2 - w * 316 / 1233, width: w, height: w * 434 / 1233 }} accessibilityLabel="Coro" />
-                      <Text style={[styles.slogan, { position: 'absolute', left: a - m, width: vis, textAlign: 'center', top: side / 2 + w * 434 / 1233 / 2 - side * 0.05, fontSize: Math.round(side * 0.055) }]}>{t('Books you make together.')}</Text>
+                      <Text style={[styles.slogan, { position: 'absolute', left: a - m + (vis - cw) / 2 - w * 316 / 1233 + w * 211 / 1233, textAlign: 'left', top: side / 2 + w * 434 / 1233 / 2 - side * 0.05, fontSize: Math.round(side * 0.055) }]}>{t('Books you make together.')}</Text>
                     </>
                   );
                 })()}
@@ -273,7 +274,7 @@ function UserIcon({ color, size = 11 }) {
 }
 
 const styles = StyleSheet.create({
-  slogan: { color: '#ffffff', fontFamily: 'PlusJakartaSans_700Bold_Italic', textAlign: 'center' }, // under the logo (Jörg, 26 Oct 2026)
+  slogan: { color: '#ffffff', fontFamily: 'PlusJakartaSans_700Bold_Italic', textAlign: 'left' }, // under the logo (Jörg, 26 Oct 2026)
   corner: { fontFamily: fonts.ui, fontSize: 12 },
   page: { backgroundColor: colors.paper, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8 },
 });
