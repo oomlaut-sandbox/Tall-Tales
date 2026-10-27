@@ -823,17 +823,17 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <View style={[StyleSheet.absoluteFill, { zIndex: 65, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }]}>
           <View style={{ width: '100%', maxWidth: 460 }}>
             <View style={{ backgroundColor: colors.white, borderRadius: 26, padding: 24 }}>
-              <Text style={{ color: '#1f1f1f', fontFamily: 'EBGaramond_500Medium', fontSize: 23, lineHeight: 30 }}>{tr('Ooooh, this is exciting. Do you know what a Coro book looks like? Want a quick little tour?')}</Text>
-              <Image source={TOUR_SPREAD} resizeMode="contain" style={{ width: Math.min(460, winW - 40) - 48, height: (Math.min(460, winW - 40) - 48) * 449 / 900, marginTop: 16, borderRadius: 4 }} accessibilityIgnoresInvertColors />
+              <Text style={{ color: '#1f1f1f', fontFamily: 'EBGaramond_500Medium', fontSize: 23, lineHeight: 30, marginTop: 10, marginBottom: 10 }}>{tr('Do you know what a Coro book looks like? Want a quick little tour?')}</Text>
+              <Image source={TOUR_SPREAD} resizeMode="contain" style={{ width: Math.min(460, winW - 40) - 48, height: (Math.min(460, winW - 40) - 48) * 449 / 900, marginTop: 16, marginBottom: 10, borderRadius: 4 }} accessibilityIgnoresInvertColors />
               <Pressable onPress={() => setTourOff((x) => !x)} accessibilityRole="checkbox" accessibilityState={{ checked: tourOff }} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 16 }}>
                 <View style={{ width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: '#555', backgroundColor: tourOff ? '#1f1f1f' : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
                   {tourOff ? <Text style={{ color: colors.white, fontSize: 14, lineHeight: 16, fontFamily: fonts.uiBold }}>✓</Text> : null}
                 </View>
                 <Text style={{ color: '#3a3a3a', fontFamily: fonts.ui, fontSize: 15, flexShrink: 1 }}>{tr('Please don’t show this again')}</Text>
               </Pressable>
-              <View style={{ flexDirection: 'row', gap: 10, marginTop: 18 }}>
-                <Pressable onPress={() => closeTour(true)} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('Take the tour')}</Text></Pressable>
+              <View style={{ flexDirection: 'row', gap: 10, marginTop: 28, justifyContent: 'flex-end' }}>
                 <Pressable onPress={() => closeTour(false)} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: '#d6d6d6', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: '#1f1f1f', fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('No thanks')}</Text></Pressable>
+                <Pressable onPress={() => closeTour(true)} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('Take the tour')}</Text></Pressable>
               </View>
             </View>
             {/* the speech bubble's point */}
