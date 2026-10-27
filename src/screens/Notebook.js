@@ -1268,8 +1268,8 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       check={t('Don’t show this message again')} button={t('Got it!')} onDismiss={(ticked) => { setDrawHint(false); if (ticked) saveJSON('drawHint', { off: true }); }} /> : null}
     {/* zoomed in: Fit shows the whole page again */}
     {zoomed ? (
-      <Pressable onPress={fit} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Show the whole page')} style={[styles.sizePop, { right: 10, top: 10, height: 36, paddingHorizontal: 14 }]}>
-        <Text style={{ color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 13 }}>{t('Fit')}</Text>
+      <Pressable onPress={fit} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Show the whole page')} style={[styles.sizePop, { right: 10, top: 10, height: 36, paddingHorizontal: 16, minWidth: 0 }]}>
+        <Text style={{ color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 13 }}>{t('Fit (zoom out)')}</Text>
       </Pressable>
     ) : null}
     {/* the sizes of the tool in your hand: a little dark pill in the bottom left corner of the page */}
