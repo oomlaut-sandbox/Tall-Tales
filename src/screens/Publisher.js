@@ -822,7 +822,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         // 'Want a quick little tour?': a large white bubble over What's your book about? (Jörg, 27 Oct 2026)
         <View style={[StyleSheet.absoluteFill, { zIndex: 65, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }]}>
           <View style={{ width: '100%', maxWidth: 460 }}>
-            <View style={{ backgroundColor: colors.white, borderRadius: 26, padding: 24 }}>
+            <View style={{ backgroundColor: colors.white, borderRadius: 26, paddingHorizontal: 26, paddingTop: 30, paddingBottom: 30 }}>
               <Text style={{ color: '#1f1f1f', fontFamily: 'EBGaramond_500Medium', fontSize: 23, lineHeight: 30, marginTop: 10, marginBottom: 10 }}>{tr('Do you know what a Coro book looks like? Want a quick little tour?')}</Text>
               <Image source={TOUR_SPREAD} resizeMode="contain" style={{ width: Math.min(460, winW - 40) - 48, height: (Math.min(460, winW - 40) - 48) * 449 / 900, marginTop: 16, marginBottom: 10, borderRadius: 4 }} accessibilityIgnoresInvertColors />
               <Pressable onPress={() => setTourOff((x) => !x)} accessibilityRole="checkbox" accessibilityState={{ checked: tourOff }} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 16 }}>

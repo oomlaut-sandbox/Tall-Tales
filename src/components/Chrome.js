@@ -650,7 +650,7 @@ export function BubbleHost({ defaultArea }) {
           {/* a ● in the message is drawn in the record button's red */}
           <Text style={styles.toast}>{String(message).split('●').map((part, i) => (i ? [<Text key={i} style={{ color: colors.highlight }}>●</Text>, part] : part))}</Text>
           {b.button ? (
-            <Pressable onPress={close} accessibilityRole="button" style={{ alignSelf: 'center', marginTop: 14, height: 40, borderRadius: 20, paddingHorizontal: 22, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }}>
+            <Pressable onPress={close} accessibilityRole="button" style={{ alignSelf: 'center', marginTop: 24, height: 40, borderRadius: 20, paddingHorizontal: 22, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }}>
               <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{b.button}</Text>
             </Pressable>
           ) : null}
@@ -688,7 +688,8 @@ const styles = StyleSheet.create({
   optSub: { color: '#d6d6d6', fontFamily: fonts.ui, fontSize: 14 },
   toastWrap: { position: 'absolute', left: 0, right: 0, top: 64, alignItems: 'center', zIndex: 60, paddingHorizontal: 24 },
   bubbleWrap: { width: '90%', maxWidth: 560, paddingBottom: 22, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.4, shadowRadius: 12, elevation: 10 },
-  bubble: { backgroundColor: colors.white, borderRadius: 22, paddingHorizontal: 26, paddingTop: 16, paddingBottom: 24 }, // the serif sits low, so a little more room below centres it
+  // RULE (Jörg, 27 Oct 2026): speech bubbles always get generous room around their words
+  bubble: { backgroundColor: colors.white, borderRadius: 24, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 34 }, // the serif sits low, so a little more room below centres it
   bubbleTail: { position: 'absolute', left: '14%', bottom: 0, width: 0, height: 0, borderTopWidth: 23, borderRightWidth: 22, borderTopColor: colors.white, borderRightColor: 'transparent' },
   toast: { color: colors.ink, fontFamily: 'EBGaramond_500Medium', fontSize: 21, lineHeight: 28, textAlign: 'center' }, // the book serif
 });

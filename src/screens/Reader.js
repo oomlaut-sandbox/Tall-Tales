@@ -1060,7 +1060,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
         // the record tip: a black speech bubble just above the red record button (tap to close)
         <Pressable onPress={() => setRecTip(false)} accessibilityRole="button" accessibilityLabel={tr('Close')}
           style={{ position: 'absolute', zIndex: 60, maxWidth: 300, right: wide ? BL.rightW + 12 : 12, bottom: wide ? 90 : barH + 12 }}>
-          <View style={{ backgroundColor: 'rgba(0,0,0,0.9)', borderRadius: 18, paddingHorizontal: 18, paddingVertical: 14 }}>
+          <View style={{ backgroundColor: 'rgba(0,0,0,0.9)', borderRadius: 20, paddingHorizontal: 22, paddingVertical: 22 }}>
             <Text style={{ color: colors.white, fontFamily: fonts.ui, fontSize: 16, lineHeight: 22 }}>{tr('Record yourself reading this Coro book and share it or enjoy it on your own. Books made in-app do not come with automatic narrator options.')}</Text>
           </View>
           {!wide ? <View style={{ position: 'absolute', bottom: -9, right: 55, width: 0, height: 0, borderLeftWidth: 10, borderRightWidth: 10, borderTopWidth: 10, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: 'rgba(0,0,0,0.9)' }} /> : null}
