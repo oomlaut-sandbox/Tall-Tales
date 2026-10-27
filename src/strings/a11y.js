@@ -68,4 +68,6 @@ export default {
   'Robot': { de: 'Roboter', fr: 'Robot', es: 'Robot', ja: 'ロボット', ar: 'روبوت' },
   "Edit this book": { de: "Dieses Buch bearbeiten", fr: "Modifier ce livre", es: "Editar este libro", ja: "この 本を なおす", ar: "تعديل هذا الكتاب" },
   "Change its pictures, words and pages": { de: "Bilder, Worte und Seiten ändern", fr: "Changer ses images, ses mots et ses pages", es: "Cambiar sus dibujos, palabras y páginas", ja: "え、ことば、ページを かえる", ar: "غيّر صوره وكلماته وصفحاته" },
+  "Got it": { de: "Verstanden", fr: "Compris", es: "Entendido", ja: "わかった", ar: "فهمت" },
+  "A quick peek at a Coro book": { de: "Ein kurzer Blick in ein Coro-Buch", fr: "Un petit aperçu d’un livre Coro", es: "Un vistazo a un libro de Coro", ja: "Coroの 本を ちょっと のぞいてみよう", ar: "لمحة سريعة عن كتاب Coro" },
 };
