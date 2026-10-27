@@ -315,10 +315,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const [drawTip, setDrawTip] = useState(false); // a new book: 'Pssst…' about photographing paper drawings (once per launch)
   const drawTipShown = useRef(false);
   useEffect(() => {
-    if (drawTipShown.current || !startMode || !coverOpen || aboutOpen) return undefined;
+    if (drawTipShown.current || !startMode || !coverOpen || aboutOpen || guide) return undefined;
     const tm = setTimeout(() => { drawTipShown.current = true; setDrawTip(true); }, 1000);
     return () => clearTimeout(tm);
-  }, [startMode, coverOpen, aboutOpen]);
+  }, [startMode, coverOpen, aboutOpen, guide]);
   const [toolsTip, setToolsTip] = useState(true); // no title yet: a speech bubble says where the tools will be
   useEffect(() => {
     if (!(coverOpen && coverTitling)) { setCoverTip(false); return undefined; }
@@ -803,7 +803,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             onNext={({ about, aboutWords, title }) => { setDraft((d) => ({ ...d, about, aboutWords, title: d.title.trim() ? d.title : title })); setAboutOpen(false); }} />
         </View>
       ) : null}
-      {coverOpen ? (
+      {coverOpen && !aboutOpen ? ( /* the order for a new book: what it's about, then the cover, then the pages (Jörg, 27 Oct 2026) */
         // the Cover Editor stops at the black bar, which stays in view (its Pages and Finish fade out meanwhile)
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk, overflow: 'hidden' }, wide ? { right: BL.rightW } : { bottom: BL.barH }]}>
           <DeskFelt spot="publisher3" overlay />
