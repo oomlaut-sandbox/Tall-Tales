@@ -611,9 +611,9 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
       <Text style={styles.sheetSub}>{meta}</Text>
       {blurb ? <Text style={[styles.sheetText, { marginTop: 6 }]}>{blurb}</Text> : null}
       {/* Process: how the book was made, including any use of AI, so families can decide (Jörg, 26 Oct 2026) */}
-      {process ? <Text style={[styles.sheetSub, { marginTop: 8, fontFamily: fonts.uiBold }]}>{t('Process')}</Text> : null}
-      {process ? <Text style={styles.sheetText}>{t(process)}</Text> : null}
-      {copyright ? <Text style={[styles.sheetSub, { marginTop: 8 }]}>{copyright}</Text> : null}
+      {process ? <Text style={[styles.sheetSub, { marginTop: 8, fontFamily: fonts.uiBold, fontSize: 14 }]}>{t('Process')}</Text> : null}
+      {process ? <Text style={[styles.sheetText, { fontSize: 14, lineHeight: 20, marginBottom: 12 }]}>{t(process)}</Text> : null}
+      {copyright ? <Text style={[styles.sheetSub, { fontSize: 14, lineHeight: 20 }]}>{copyright}</Text> : null}
       {!here ? <Text style={[styles.sheetText, { marginTop: 6 }]}>{t('Downloading new books arrives in the next update.')}</Text> : null}
       {/* a single book can also be read with the membership */}
       {action === 'buy' ? <Pressable onPress={onJoin} hitSlop={8} accessibilityRole="button"><Text style={[styles.sheetSub, { textDecorationLine: 'underline', marginBottom: 18 }]}>{t('Or read every book with the membership')}</Text></Pressable> : null}
@@ -642,7 +642,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
           <View style={{ position: 'absolute', left: 0, right: ear, top: 0, height: ear, backgroundColor: CARD_GREY }} />
           <View style={{ position: 'absolute', right: 0, top: 0, width: 0, height: 0, borderTopWidth: ear, borderLeftWidth: ear, borderTopColor: 'transparent', borderLeftColor: CARD_GREY }} />
         </Animated.View>
-        <Animated.View pointerEvents={boxH ? 'auto' : 'none'} style={{ opacity: fade, flexDirection: across ? 'row' : 'column' }}>
+        <Animated.View pointerEvents={boxH ? 'auto' : 'none'} style={{ opacity: fade, flexDirection: across ? 'row' : 'column', flexShrink: 1 }}>
         <View style={{ flexDirection: across ? 'column' : 'row' }}>
           <View style={{ width: cs + M, height: across ? cs + M : cs + 2 * M }} />{/* the same margin above and below the cover */}
           {/* sideways: the green button under the cover, on its left edge */}
@@ -655,13 +655,13 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
           ) : null}
         </View>
         {across ? (
-          <View style={{ flex: 1, padding: M, paddingLeft: M + 16, paddingRight: M + 30, paddingBottom: M + 10, minHeight: cs + 2 * M }}>{/* the words with generous margins */}
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: M, paddingLeft: M + 16, paddingRight: M + 30, paddingBottom: M + 10, minHeight: cs + 2 * M }} showsVerticalScrollIndicator>{/* the words with generous margins; they scroll when long (Jörg, 27 Oct 2026) */}
             <View style={{ marginTop: -10 }}>{/* the title level with the top of the cover */}
               {info}
             </View>
-          </View>
+          </ScrollView>
         ) : (
-          <View style={{ padding: M, paddingTop: 2, paddingBottom: M + 8 }}>{info}</View>
+          <ScrollView style={{ flexShrink: 1 }} contentContainerStyle={{ padding: M, paddingTop: 2, paddingBottom: M + 8 }} showsVerticalScrollIndicator>{info}</ScrollView>
         )}
         </Animated.View>
         {/* close: a dog-ear in the top-right corner, folded like a page corner (it replaces the ×) */}
