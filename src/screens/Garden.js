@@ -32,6 +32,7 @@ const SPOTS = [
   // { game: 'sticks', box: [0.57, 0.11, 0.86, 0.3], label: 'The woodpile' },
   // { game: 'pinwheel', box: [0.1, 0.32, 0.5, 0.49], label: 'The flowers' },
 ];
+const CRICKETS = require('../../assets/ambient/crickets.mp3'); // at night (the same night meadow as in Music and Sounds)
 const BIRDS = require('../../assets/ambient/forest-birds.mp3'); // birdsong, fading in very slowly while you're in the garden
 
 export default function Garden({ u, openMenu, toast, onHome }) {
@@ -58,14 +59,22 @@ export default function Garden({ u, openMenu, toast, onHome }) {
     const id = setTimeout(() => toast && toast(t('The garden is a beta feature that might get removed. Tap the gate to get outa here.'), 5500), 2200);
     return () => clearTimeout(id);
   }, []);
-  // birdsong: starts silent and comes up very slowly; goes quiet when you leave
+  // birdsong by day; at night the crickets take over (one fades out as the other comes up). Both start silent and
+  // come up very slowly; they go quiet when you leave (Jörg, 26 Oct 2026)
+  const todRef = useRef(tod); todRef.current = tod;
   useEffect(() => {
-    let p = null, id = null, v = 0;
+    let birds = null, crickets = null, id = null, vb = 0, vc = 0;
     try {
-      p = createAudioPlayer(BIRDS); p.loop = true; p.volume = 0; p.play();
-      id = setInterval(() => { v = Math.min(0.55, v + 0.005); try { p.volume = v; } catch (e) {} if (v >= 0.55) clearInterval(id); }, 200); // about 22 seconds to full
+      birds = createAudioPlayer(BIRDS); birds.loop = true; birds.volume = 0; birds.play();
+      crickets = createAudioPlayer(CRICKETS); crickets.loop = true; crickets.volume = 0; crickets.play();
+      const step = (v, to) => (v < to ? Math.min(to, v + 0.005) : Math.max(to, v - 0.01)); // up slowly, down a little quicker
+      id = setInterval(() => {
+        const night = todRef.current === 'night';
+        vb = step(vb, night ? 0 : 0.55); vc = step(vc, night ? 0.6 : 0);
+        try { birds.volume = vb; crickets.volume = vc; } catch (e) {}
+      }, 200); // about 22 seconds to full
     } catch (e) {}
-    return () => { clearInterval(id); try { p && p.pause(); p && p.remove(); } catch (e) {} };
+    return () => { clearInterval(id); [birds, crickets].forEach((p) => { try { p && p.pause(); p && p.remove(); } catch (e) {} }); };
   }, []);
   const [MAP, MAP_BG] = MAPS[tod];
   let map = null;
@@ -541,14 +550,17 @@ function Firefly({ w, h, delay }) {
     return () => { alive = false; clearTimeout(t0); };
   }, [w, h]);
   return (
-    <Animated.View pointerEvents="none" style={{ position: 'absolute', left: -14, top: -14, width: 28, height: 28, opacity: glow, transform: [{ translateX: x }, { translateY: y }] }}>
-      {/* a soft halo and a bright little heart */}
-      <View style={{ position: 'absolute', left: 0, top: 0, width: 28, height: 28, borderRadius: 14, backgroundColor: 'rgba(220,255,140,0.13)' }} />
-      <View style={{ position: 'absolute', left: 7, top: 7, width: 14, height: 14, borderRadius: 7, backgroundColor: 'rgba(225,255,150,0.28)' }} />
-      <View style={{ position: 'absolute', left: 11.5, top: 11.5, width: 5, height: 5, borderRadius: 2.5, backgroundColor: '#f4ffc8', shadowColor: '#e6ff9a', shadowOpacity: 1, shadowRadius: 6, shadowOffset: { width: 0, height: 0 } }} />
+    <Animated.View pointerEvents="none" style={{ position: 'absolute', left: -G / 2, top: -G / 2, width: G, height: G, opacity: glow, transform: [{ translateX: x }, { translateY: y }] }}>
+      {/* a soft, blurred glow: many faint rings, brighter towards the middle (like light in the dark), and a small warm heart (Jörg, 26 Oct 2026) */}
+      {GLOW_RINGS.map(([d, a], k) => (
+        <View key={k} style={{ position: 'absolute', left: (G - d) / 2, top: (G - d) / 2, width: d, height: d, borderRadius: d / 2, backgroundColor: `rgba(222,255,150,${a})` }} />
+      ))}
+      <View style={{ position: 'absolute', left: (G - 4) / 2, top: (G - 4) / 2, width: 4, height: 4, borderRadius: 2, backgroundColor: '#fbffe0', shadowColor: '#e6ff9a', shadowOpacity: 1, shadowRadius: 10, shadowOffset: { width: 0, height: 0 } }} />
     </Animated.View>
   );
 }
+const G = 56; // the glow's full size
+const GLOW_RINGS = [[56, 0.03], [46, 0.04], [38, 0.05], [30, 0.07], [23, 0.09], [17, 0.12], [12, 0.16], [8, 0.22]];
 function Fireflies({ w, h }) {
   return <>{[0, 1, 2, 3, 4, 5].map((i) => <Firefly key={i} w={w} h={h} delay={i * 1300 + Math.random() * 1500} />)}</>;
 }
