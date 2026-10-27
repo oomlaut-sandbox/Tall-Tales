@@ -3,7 +3,7 @@
 //   'note':   a square for a photo or a drawing (or both: drawing on a photo), and a square of typed notes
 //   'sketch': two square pages to draw on (strokes: the top one, strokes2: the bottom one)
 // { pages: [{ pid, kind, text, uri, w, h, strokes: [...] }] }
-import { deleteFile, keepFile, loadJSON, saveJSON } from './storage';
+import { deleteFile, keepFile, liveUri, loadJSON, saveJSON } from './storage';
 import { newPageId } from './userStories';
 
 const KEY = 'notebook';
@@ -15,11 +15,11 @@ export const blankSketch = () => ({ pid: newPageId(), kind: 'sketch', text: '', 
 
 export async function loadNotebook() {
   const n = await loadJSON(KEY, null);
-  const pages = n && Array.isArray(n.pages) ? n.pages.map((p) => ({ ...blankNote(), ...p, strokes: p.strokes || [], strokes2: p.strokes2 || [] })) : [];
+  const pages = n && Array.isArray(n.pages) ? n.pages.map((p) => ({ ...blankNote(), ...p, uri: liveUri(p.uri), strokes: p.strokes || [], strokes2: p.strokes2 || [] })) : [];
   return { pages: pages.length ? pages : [blankNote()] };
 }
 
 export const saveNotebook = (nb) => serial(() => saveJSON(KEY, { pages: nb.pages }));
 
 export const keepNotebookPicture = (uri) => keepFile(uri, 'notebook', `img-${Date.now()}.jpg`);
-export const dropNotebookPicture = (uri) => deleteFile(uri);
+export const dropNotebookPicture = (uri) => deleteFile(liveUri(uri));

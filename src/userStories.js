@@ -1,6 +1,6 @@
 // Stories made with "Make a book", saved on the phone.
 // Saves are queued so quick autosaves never overwrite each other.
-import { deleteFile, keepFile, loadJSON, saveJSON } from './storage';
+import { deleteFile, keepFile, liveUri, loadJSON, saveJSON } from './storage';
 import { pruneRecordings } from './recordings';
 import { markFirst } from './badges';
 
@@ -24,7 +24,14 @@ export function creditsLine(writer, artist) {
   return '';
 }
 
-function fromSaved(s) {
+// The phone's app folder gets a new address after every update, so saved pictures are found again by their place
+// inside it (liveUri), never by the old full address (Jörg's pictures vanished after an update, 27 Oct 2026).
+const liveCover = (c) => (c && c.uri ? { ...c, uri: liveUri(c.uri), ...(c.src ? { src: liveUri(c.src) } : null) } : c);
+function liveStory(s) {
+  return { ...s, cover: liveCover(s.cover), pages: (s.pages || []).map((p) => ({ ...p, uri: liveUri(p.uri), uri2: liveUri(p.uri2), src: liveUri(p.src), src2: liveUri(p.src2) })) };
+}
+function fromSaved(s0) {
+  const s = liveStory(s0);
   const bodyPages = s.pages.map((p, i) => ({ src: p.src || null, edit: p.edit || null, src2: p.src2 || null, edit2: p.edit2 || null, pid: p.pid || `i${i}`, text: p.text || '', image: p.uri ? { uri: p.uri } : null, w: p.w || 1, h: p.h || 1, image2: p.uri2 && !(p.text || '').trim() ? { uri: p.uri2 } : null, w2: p.w2 || 1, h2: p.h2 || 1, src: p.src || null, edit: p.edit || null, src2: (!p.text.trim() && p.src2) || null, edit2: p.edit2 || null }));
   const credits = creditsLine(s.writer, s.artist);
   const coverImg = s.cover && s.cover.uri ? { uri: s.cover.uri } : (bodyPages[0] && bodyPages[0].image) || null;
@@ -49,7 +56,7 @@ export async function keepPicture(storyId, uri) {
   return keepFile(uri, `stories/${storyId}`, `img-${Date.now()}.jpg`);
 }
 export function dropPicture(uri) {
-  deleteFile(uri);
+  deleteFile(liveUri(uri));
 }
 
 // draft: { id, title, pages: [{ pid, text, uri, w, h }] }. Empty pages are left out.
@@ -75,7 +82,7 @@ export function deleteUserStory(id) {
   return serial(async () => {
     const list = await loadJSON('stories', []);
     const s = list.find((x) => x.id === id);
-    if (s) { s.pages.forEach((p) => [p.uri, p.uri2, p.src, p.src2].forEach((x) => x && deleteFile(x))); if (s.cover) [s.cover.uri, s.cover.src].forEach((x) => x && deleteFile(x)); }
+    if (s) { s.pages.forEach((p) => [p.uri, p.uri2, p.src, p.src2].forEach((x) => x && deleteFile(liveUri(x)))); if (s.cover) [s.cover.uri, s.cover.src].forEach((x) => x && deleteFile(liveUri(x))); }
     const next = list.filter((x) => x.id !== id);
     await saveJSON('stories', next);
     await pruneRecordings(id, []);
