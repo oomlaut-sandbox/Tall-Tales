@@ -64,7 +64,7 @@ import { addProfile, loadProfiles, onProfiles, switchProfile } from './src/profi
 import { playSound, setEffects, setEffectsVolume } from './src/sound';
 import { stopSpeech } from './src/speech';
 import { stopVoice } from './src/voice';
-import { clearBack, hasStep, markBack, markBackInto, onStepsChange, takeStep, useBackStep } from './src/nav';
+import { backHidden, clearBack, hasStep, markBack, markBackInto, onStepsChange, takeStep, useBackStep } from './src/nav';
 
 function Root() {
   const { width, height } = useWindowDimensions();
@@ -535,7 +535,7 @@ function Root() {
         {/* Back: a small arrow in the top right corner of the banner */}{/* (My Library: no house beside the title, Jörg 27 Oct 2026) */}
         {/* Back: on every page, always the same size and in the same spot, top right (Jörg, 27 Oct 2026). It goes
             back one step: whatever is open on top first, then the step before in this screen, then the screen before */}
-        {screen !== 'reader' /* (not while reading a book: the one exception, Jörg 27 Oct 2026) */ && !splash && !introWho && !welcome && !flyer && !opening && !closingBook ? (
+        {screen !== 'reader' /* (not while reading a book: the one exception, Jörg 27 Oct 2026) */ && !backHidden() /* nor over the drawing editor */ && !splash && !introWho && !welcome && !flyer && !opening && !closingBook ? (
           <BackRing onPress={goBack} label={t('Back')} style={{ position: 'absolute', zIndex: 200, top: screenInsets.top + 10, right: 12 + (sideways ? drawerRight : 0), opacity: canBack() ? 1 : 0.35 }} />
         ) : null}
         <Toast message={message} ms={toastMs} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />

@@ -7,6 +7,7 @@
 // Opened from My Library, the little notebook grows into place and its cover swings open like the one on
 // the start page. After that the white pages turn with the paper peel, like the books.
 // Everything saves on its own. Turn pages with the dog-ear or by swiping; "Pages" lists them all.
+import { useHideBack } from '../nav';
 import { useT } from '../i18n';
 import StripCover from '../components/StripCover';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -1023,6 +1024,7 @@ function UndoIcon({ flip }) {
 // ---- The drawing editor: a page to draw on with your finger, with brushes (ink, watercolour, pencil), colours,
 // sizes, a fill, an eraser, undo and clear. (The book maker uses it too, for Make a drawing.) ----
 export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
+  useHideBack(); // no back button over the drawing editor (Jörg, 27 Oct 2026)
   const t = useT();
   const { width: winW, height: winH } = useWindowDimensions();
   const wideScreen = winW > winH * 1.1; // sideways: the page on the left, the tools on the right
