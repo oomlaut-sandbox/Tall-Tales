@@ -462,7 +462,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
 
   // a hardcover look as the cover picture (Text only cover: the title goes on top as usual)
   const applyHardcover = async (src) => {
-    try { const a = Asset.fromModule(src); await a.downloadAsync(); pickCover('library', { uri: a.localUri || a.uri, w: a.width || 1600, h: a.height || 1600 }); } catch (e) {}
+    // (copied into the book's own folder, so it's still there after the app is updated)
+    try { const a = Asset.fromModule(src); await a.downloadAsync(); let uri = a.localUri || a.uri; try { uri = await keepPicture(draft.id, uri); } catch (e) {} pickCover('library', { uri, w: a.width || 1600, h: a.height || 1600, hard: true }); // hard: a cloth hardcover (its spine turns to the top when the book is upright) } catch (e) {}
   };
   const removeImage = () => {
     if (page.uri) dropPicture(page.uri);
@@ -847,7 +848,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <View style={{ width: '100%', maxWidth: 460 }}>
             <View style={{ backgroundColor: colors.white, borderRadius: 26, paddingHorizontal: 26, paddingTop: 30, paddingBottom: 30 }}>
               <Text style={{ color: '#1f1f1f', fontFamily: 'EBGaramond_500Medium', fontSize: 23, lineHeight: 30, marginTop: 10, marginBottom: 10 }}>{tr('Do you know what a Coro book looks and feels like? Want to have a quick peek?')}</Text>
-              <View style={{ marginTop: 16, marginBottom: 10, borderRadius: 4, backgroundColor: '#fff', shadowColor: '#000', shadowOpacity: 0.22, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 4 }}><Image source={TOUR_SPREAD} resizeMode="contain" style={{ width: Math.min(460, winW - 40) - 48, height: (Math.min(460, winW - 40) - 48) * 449 / 900, borderRadius: 4 }} accessibilityIgnoresInvertColors /></View>
+              <View style={{ marginTop: 16, marginBottom: 10, borderRadius: 4 }}><Image source={TOUR_SPREAD} resizeMode="contain" style={{ width: Math.min(460, winW - 40) - 48, height: (Math.min(460, winW - 40) - 48) * 449 / 900, borderRadius: 4 }} accessibilityIgnoresInvertColors /></View>
               <Pressable onPress={() => setTourOff((x) => !x)} accessibilityRole="checkbox" accessibilityState={{ checked: tourOff }} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 26 }}>
                 <View style={{ width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: '#555', backgroundColor: tourOff ? '#1f1f1f' : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
                   {tourOff ? <Text style={{ color: colors.white, fontSize: 14, lineHeight: 16, fontFamily: fonts.uiBold }}>✓</Text> : null}

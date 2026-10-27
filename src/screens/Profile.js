@@ -134,7 +134,7 @@ export default function Profile({ u, openMenu, toast }) {
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {/* Jörg's stitched orange felt, treated like the My Library and Book Store banners */}
-        {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}{/* iPad: the classic solid orange */}
+        {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: IS_TABLET ? 0 : insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}{/* iPad: the classic solid orange */}
         {/* just the title, centred top to bottom in the band (like My Library and the Book Store) */}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="profile" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Profile')}</Text></View>
       </View>

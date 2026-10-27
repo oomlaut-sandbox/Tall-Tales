@@ -18,7 +18,7 @@ export default function MusicSounds({ u, openMenu, prefs, setPrefs }) {
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
-        {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}
+        {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: IS_TABLET ? 0 : insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="music" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Music and Sounds')}</Text></View>
       </View>
       <ScrollView contentContainerStyle={styles.body}>

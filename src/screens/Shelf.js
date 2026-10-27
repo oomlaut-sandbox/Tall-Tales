@@ -117,10 +117,15 @@ function MakeBookSpread({ winW, inner, onPress, t, go, wait = 1000 }) {
   const turn = (back) => ({ transform: [{ perspective: 1400 }, { translateX: -W / 2 }, { rotateY: open.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '-180deg'] }) }, { translateX: W / 2 }, ...(back ? [{ rotateY: '180deg' }] : [])] });
   const face = { position: 'absolute', left: 0, top: 0, width: W, height: W, backfaceVisibility: 'hidden' };
   // shut, the cover sits in the middle; open, the two pages (2W wide, the right one at W + gap) are in the middle
-  const slide = open.interpolate({ inputRange: [0, 1], outputRange: [-(W + gap) / 2, -gap / 2] });
+  // iPad: the room the box really gives it (the window is wider than the box, with the bar beside it), the book
+  // centred in it (Jörg, 27 Oct 2026; the phone is unchanged)
+  const [roomW, setRoomW] = useState(null);
+  const off = IS_TABLET && roomW ? Math.max(0, (roomW - (2 * W + gap)) / 2) : 0;
+  const slide = open.interpolate({ inputRange: [0, 1], outputRange: [off - (W + gap) / 2, off - gap / 2] });
   const plus = Math.round(W * 0.26), bar = Math.max(3, Math.round(W * 0.03));
   return (
-    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={t('Make a book')} style={{ width: spreadW, height: W }}>
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={t('Make a book')} style={{ width: IS_TABLET ? '100%' : spreadW, height: W, overflow: IS_TABLET ? 'hidden' : 'visible' }}
+      onLayout={IS_TABLET ? (e) => setRoomW(e.nativeEvent.layout.width) : undefined}>
       <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: spreadW, height: W, transform: [{ translateX: slide }] }}>
         {/* the right page, under the cover: white, with a + */}
         <View style={[styles.makePage, { left: W + gap, width: W, height: W }]}>
@@ -164,7 +169,7 @@ function Band({ color, felt, dark, title, sub, action, onAction, icon }) {
       {/* iPad keeps the classic solid colour banners */}
       {/* phone: the felt's real bottom edge lets the desk show through, so the colour only fills the status bar strip */}
       {felt ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: insets.top + 2, backgroundColor: color }} /> : null}
-      {felt ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT[felt]} /></View> : <><Felt /><Stitch inset={7} /></>}
+      {felt ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: IS_TABLET ? 0 : insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT[felt]} /></View> : <><Felt /><Stitch inset={7} /></>}
       {/* the title alone (no subtitle), centred in the band, with Select / Cancel on the same line */}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>

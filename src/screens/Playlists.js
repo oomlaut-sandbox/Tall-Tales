@@ -86,7 +86,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
       <View style={[styles.band, { paddingTop: insets.top + 30 }, { backgroundColor: 'transparent' }]}>
         {/* Jörg's brown felt banner (phone); its soft bottom edge shows the desk, so the colour only fills the status bar strip */}
         {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: insets.top + 2, backgroundColor: BAND_COLOR }} /> : null}
-        {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}
+        {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: IS_TABLET ? 0 : insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="playlists" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Playlists')}</Text></View>
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">

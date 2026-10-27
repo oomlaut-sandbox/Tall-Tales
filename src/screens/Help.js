@@ -229,7 +229,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
-        {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}
+        {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: IS_TABLET ? 0 : insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="support" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Help')}</Text></View>
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">

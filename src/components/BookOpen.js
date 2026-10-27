@@ -236,7 +236,8 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, am
             the cover off screen on every frame, which made the swing choppy. The pictures are exactly square. */}
         <Animated.View style={[{ width: s, height: s, backgroundColor: '#828282' }, leaf]}>
           <Animated.View style={[StyleSheet.absoluteFill, { opacity: frontOp, backgroundColor: '#828282' }]}>
-            {cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s }} resizeMode="cover" /> : null}
+            {/* a cloth hardcover made in Coro: upright, the book opens upward, so its spine turns to the top (Jörg, 27 Oct 2026) */}
+            {cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s, transform: !L.wide && story && story.cover && (story.cover.hard || /hardcovers/.test(String(story.cover.uri || ''))) ? [{ rotate: '90deg' }] : [] }} resizeMode="cover" /> : null}
             {/* Amber light: the cover warmed like the pictures inside */}
             {cover && amber ? <AmberTint /> : null}
           </Animated.View>

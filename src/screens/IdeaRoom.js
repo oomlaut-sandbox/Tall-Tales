@@ -28,7 +28,7 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
       <View style={[styles.band, { paddingTop: insets.top + 30 }, { backgroundColor: 'transparent' }]}>
         {/* phone: the felt's soft bottom edge shows the desk through it, so the band's own colour only fills the status bar strip */}
         {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: insets.top + 2, backgroundColor: '#3e4a2c' }} /> : null}
-        {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}
+        {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: IS_TABLET ? 0 : insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="help" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Ideas')}</Text></View>
       </View>
       <ScrollView contentContainerStyle={styles.body}>

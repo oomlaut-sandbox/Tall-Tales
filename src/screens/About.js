@@ -23,7 +23,7 @@ export default function About({ u, openMenu, onSecret, onBack }) {
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         {/* Jörg's red felt, treated like the other banners (phones); iPad keeps the classic solid red */}
-        {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}
+        {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: IS_TABLET ? 0 : insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="about" lift={2} /><Text style={[styles.title, { flexShrink: 1 }]}>Coro</Text></View>
         <Text style={styles.tagline}>{t('Books you make together.')}</Text>
       </View>
