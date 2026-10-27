@@ -121,7 +121,14 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
                 <Text style={[styles.cardTitle, { fontSize: 18 }]}>{t('Quick and Safe Kid')}</Text>
                 <Text style={styles.small}>{t('Recommended for a child reading alone')}</Text>
                 <Text style={styles.p}>{t('The simplest, most foolproof setup: only My Library and My Notebook. Every book reads itself aloud a page at a time, and your child turns the page when ready. Nothing can be bought, shared, printed, recorded or changed. With your child’s age set, only books rated for that age.')}</Text>
-                {quick ? <Text style={[styles.p, { color: colors.white, fontFamily: fonts.uiBold }]}>{t('Quick and Safe Kid is on.')}</Text> : (
+                {quick ? (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>{/* a big red Turn off beside it (Jörg, 27 Oct 2026): everything back on, the age and bedtime kept */}
+                    <Text style={[styles.p, { color: colors.white, fontFamily: fonts.uiBold, flexShrink: 1 }]}>{t('Quick and Safe Kid is on.')}</Text>
+                    <Pressable onPress={() => setControls({ ...DEFAULT_CONTROLS, childAge: controls.childAge, ...night })} style={[styles.pill, { backgroundColor: colors.red, alignSelf: 'center' }]} accessibilityRole="button" accessibilityLabel={t('Turn off Quick and Safe Kid')}>
+                      <Text style={styles.pillText}>{t('Turn off')}</Text>
+                    </Pressable>
+                  </View>
+                ) : (
                   <Pressable onPress={() => setControls({ ...quickSafeControls(controls.childAge), ...night })} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button">
                     <Text style={styles.pillText}>{t('Use Quick and Safe Kid')}</Text>
                   </Pressable>
