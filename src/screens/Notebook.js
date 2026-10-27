@@ -673,6 +673,12 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
                       <Image source={PRINTER} style={{ width: 17, height: 17, tintColor: colors.white }} resizeMode="contain" />
                     </Pressable>
                   ) : null}
+                  {/* share just this page (a PDF, after the grown-up question) (Jörg, 27 Oct 2026) */}
+                  {controls.sharing !== false ? (
+                    <Pressable onPress={() => { setPagesOpen(false); setOutRange({ from: k, to: k }); setOutGate('share'); }} hitSlop={6} style={styles.pbtn} accessibilityRole="button" accessibilityLabel={t('Share this page')}>
+                      <Image source={ENVELOPE} style={{ width: 18, height: 18, tintColor: colors.white }} resizeMode="contain" />
+                    </Pressable>
+                  ) : null}
                   <Pressable onPress={() => removePage(k)} hitSlop={6} style={styles.pbtn} accessibilityRole="button" accessibilityLabel={t('Delete page')}>
                     <Image source={TRASH} style={{ width: 16, height: 16, tintColor: colors.white }} resizeMode="contain" />
                   </Pressable>
