@@ -111,6 +111,7 @@ const HARDCOVERS = [
   ['black', require('../../assets/hardcovers/black.jpg'), 'Black cloth'],
   ['linen', require('../../assets/hardcovers/linen.jpg'), 'Linen'],
 ];
+const TOUR_SPREAD = require('../../assets/tour-spread.jpg'); // a spread of Different, in the tour bubble
 const BLUE_CLOTH = require('../../assets/make-cover-cloth.jpg'); // the blue cloth book cover (as on Let's make a book)
 const BLUE = { l: 0.283, r: 0.711, t: 0.243, b: 0.684 };
 // A text field whose words always sit in the middle, top to bottom: the box centres a one-line field that is exactly
@@ -224,9 +225,14 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   };
   const [saved, setSaved] = useState(true);
   const [guide, setGuide] = useState(false);
-  useEffect(() => {
-    loadJSON('guide', {}).then((g) => { if (!g.seen) setGuide(true); });
-  }, []);
+  // (the guide no longer opens by itself: the 'Want a quick little tour?' bubble offers it: Jörg, 27 Oct 2026)
+  const [tourAsk, setTourAsk] = useState(false);
+  const [tourOff, setTourOff] = useState(false); // 'Please don't show this again' ticked
+  const closeTour = (take) => {
+    setTourAsk(false);
+    if (tourOff) saveJSON('tourAsk', { off: true });
+    if (take) setGuide(true);
+  };
   const closeGuide = () => { setGuide(false); saveJSON('guide', { seen: true }); };
   const timer = useRef(null);
   const first = useRef(true);
@@ -314,6 +320,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const [coverTip, setCoverTip] = useState(false); // the 'Tap the title…' bubble
   const [drawTip, setDrawTip] = useState(false); // a new book: 'Pssst…' about photographing paper drawings (once per launch)
   const drawTipShown = useRef(false);
+  useEffect(() => {
+    if (!aboutOpen) return undefined;
+    let on = true;
+    const tm = setTimeout(() => { loadJSON('tourAsk', {}).then((x) => { if (on && !(x && x.off)) setTourAsk(true); }).catch(() => {}); }, 1000);
+    return () => { on = false; clearTimeout(tm); setTourAsk(false); };
+  }, [aboutOpen]);
   useEffect(() => {
     if (drawTipShown.current || !startMode || !coverOpen || aboutOpen || guide) return undefined;
     const tm = setTimeout(() => { drawTipShown.current = true; setDrawTip(true); }, 1000);
@@ -803,6 +815,29 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             onNext={({ about, aboutWords, title }) => { setDraft((d) => ({ ...d, about, aboutWords, title: d.title.trim() ? d.title : title })); setAboutOpen(false); }} />
         </View>
       ) : null}
+      {tourAsk && aboutOpen ? (
+        // 'Want a quick little tour?': a large white bubble over What's your book about? (Jörg, 27 Oct 2026)
+        <View style={[StyleSheet.absoluteFill, { zIndex: 65, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }]}>
+          <View style={{ width: '100%', maxWidth: 460 }}>
+            <View style={{ backgroundColor: colors.white, borderRadius: 26, padding: 24 }}>
+              <Text style={{ color: '#1f1f1f', fontFamily: 'EBGaramond_500Medium', fontSize: 23, lineHeight: 30 }}>{tr('Ooooh, this is exciting. Do you know what a Coro book looks like? Want a quick little tour?')}</Text>
+              <Image source={TOUR_SPREAD} resizeMode="contain" style={{ width: '100%', height: undefined, aspectRatio: 900 / 449, marginTop: 16, borderRadius: 4 }} accessibilityIgnoresInvertColors />
+              <Pressable onPress={() => setTourOff((x) => !x)} accessibilityRole="checkbox" accessibilityState={{ checked: tourOff }} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 16 }}>
+                <View style={{ width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: '#555', backgroundColor: tourOff ? '#1f1f1f' : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
+                  {tourOff ? <Text style={{ color: colors.white, fontSize: 14, lineHeight: 16, fontFamily: fonts.uiBold }}>✓</Text> : null}
+                </View>
+                <Text style={{ color: '#3a3a3a', fontFamily: fonts.ui, fontSize: 15, flexShrink: 1 }}>{tr('Please don’t show this again')}</Text>
+              </Pressable>
+              <View style={{ flexDirection: 'row', gap: 10, marginTop: 18 }}>
+                <Pressable onPress={() => closeTour(true)} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('Take the tour')}</Text></Pressable>
+                <Pressable onPress={() => closeTour(false)} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: '#d6d6d6', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: '#1f1f1f', fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('No thanks')}</Text></Pressable>
+              </View>
+            </View>
+            {/* the speech bubble's point */}
+            <View style={{ marginLeft: '14%', width: 0, height: 0, borderTopWidth: 22, borderRightWidth: 22, borderTopColor: colors.white, borderRightColor: 'transparent' }} />
+          </View>
+        </View>
+      ) : null}
       {coverOpen && !aboutOpen ? ( /* the order for a new book: what it's about, then the cover, then the pages (Jörg, 27 Oct 2026) */
         // the Cover Editor stops at the black bar, which stays in view (its Pages and Finish fade out meanwhile)
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk, overflow: 'hidden' }, wide ? { right: BL.rightW } : { bottom: BL.barH }]}>
@@ -1051,7 +1086,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           onDone={(strokes) => { const t = drawFor; setDrawFor(null); placeDrawing(t, strokes); }} />
       ) : null}
       <ParentGate visible={!!camGate} reason="Taking a photo opens the camera." onPass={() => { const t = camGate; setCamGate(null); setTimeout(() => placeImage(t, 'camera'), 250); }} onCancel={() => setCamGate(null)} />
-      <StoryGuide visible={guide && !coverOpen} onClose={closeGuide} onIdeas={onIdeas ? () => { closeGuide(); onIdeas(); } : null} area={wide ? { left: BL.leftW, right: BL.rightW } : { top: BL.topH, bottom: BL.barH }} />
+      <StoryGuide visible={guide} onClose={closeGuide} onIdeas={onIdeas ? () => { closeGuide(); onIdeas(); } : null} area={wide ? { left: BL.leftW, right: BL.rightW } : { top: BL.topH, bottom: BL.barH }} />
       <ParentGate visible={!!gateFor} reason={gateFor?.mode === 'print' ? tr('Printing opens your phone’s print options.') : tr('Sharing sends this story outside the app.')} onPass={() => makePdf(gateFor)} onCancel={() => setGateFor(null)} />
     </KeyboardAvoidingView>
   );
