@@ -230,7 +230,7 @@ const HEAD_ARROW_WIDE = 14 + 22; // sideways head: top padding + half the 44-poi
 // then this one slides out. (Pop-up boxes are separate and can float over anything.)
 const openPanels = new Map(); // id -> close function
 let panelSeq = 0;
-export function Panel({ open, title, onClose, bottom, inset = 0, children, portraitWidth }) {
+export function Panel({ open, title, onClose, bottom, inset = 0, children, portraitWidth, floating }) { // floating: the rounded black glass box, clear of the edges (Jörg, 27 Oct 2026)
   const tr = useT();
   const x = useRef(new Animated.Value(open ? 0 : 1)).current;
   const id = useRef(++panelSeq).current;
@@ -273,10 +273,11 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children, portr
         <Animated.View
           pointerEvents={open ? 'auto' : 'none'}
           style={[styles.panel, wide ? { width: panelW, maxWidth: panelW, top: wideTop, right: 0 } : { bottom: 0, left: 0 }, !wide && portraitWidth ? { width: portraitWidth, maxWidth: 520 } : null,
-            { maxHeight, transform: [wide ? { translateX: shift } : { translateY: shift }] }]}
+            { maxHeight: floating ? maxHeight - 24 : maxHeight, transform: [wide ? { translateX: shift } : { translateY: shift }] },
+            floating ? [{ borderRadius: 26, overflow: 'hidden', backgroundColor: 'rgba(0,0,0,0.88)' }, wide ? { right: 12 } : { bottom: 12, left: '3%', width: '94%' }] : null]}
         >
-          <Felt />
-          <View style={[styles.panelHead, wide && { paddingTop: 14, paddingBottom: 12 }, compact && { paddingTop: 16, paddingBottom: 12 }]}>
+          {floating ? null : <Felt />}
+          <View style={[styles.panelHead, wide && { paddingTop: 14, paddingBottom: 12 }, compact && { paddingTop: 16, paddingBottom: 12 }, floating && { backgroundColor: 'transparent' }]}>
             <Text style={[styles.panelTitle, { flex: 1 }, wide && { fontSize: 20 }]}>{title}</Text>
             {/* Close: a small chevron pointing back at the menu bar it goes into (down when upright,
                 right when sideways). Tapping outside the menu still closes it too. */}
@@ -291,7 +292,7 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children, portr
           <ScrollView style={{ flexGrow: 0, flexShrink: 1, backgroundColor: 'transparent' }} contentContainerStyle={[styles.panelList, wide && styles.panelCols, compact && { gap: 10, paddingTop: 14, paddingBottom: 14 }]} bounces={false}>
             {wide ? flat(children).map((c, i) => <View key={i} style={{ width: colW }}>{c}</View>) : children}
           </ScrollView>
-          <Stitch inset={6} />
+          {floating ? null : <Stitch inset={6} />}
         </Animated.View>
       </View>
     </>

@@ -668,7 +668,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       </View>
       )}
 
-      <Panel open={pagesOpen} side="right" title={tr('Pages')} portraitWidth="94%" bottom={wide ? 0 : barH} inset={wide ? BL.rightW : 0} onClose={() => setPagesOpen(false)}>
+      <Panel floating open={pagesOpen} side="right" title={tr('Pages')} portraitWidth="94%" bottom={wide ? 0 : barH} inset={wide ? BL.rightW : 0} onClose={() => setPagesOpen(false)}>
         <ScrollView style={{ maxHeight: Math.max(380, winH * 0.55) }} contentContainerStyle={{ gap: 14, paddingBottom: 6 }}>
           {draft.pages.map((p, k) => (
             <View key={p.pid} style={[styles.prow, k === i && { borderColor: colors.green }]}>
@@ -1168,12 +1168,12 @@ const styles = StyleSheet.create({
   sub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 12, marginTop: 2 },
   btn: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15, paddingHorizontal: 3 },
   finish: { backgroundColor: colors.green, paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' }, // a solid green pill
-  prow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, backgroundColor: '#2a2a2a', padding: 12, borderWidth: 2, borderColor: 'transparent' },
-  thumb: { width: 64, height: 64, backgroundColor: '#666', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  prow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, backgroundColor: '#2a2a2a', padding: 12, borderWidth: 2, borderColor: 'transparent', borderRadius: 16 },
+  thumb: { width: 64, height: 64, borderRadius: 8, backgroundColor: '#666', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   thumbNum: { color: colors.white, fontFamily: fonts.uiBold },
   prowTitle: { color: colors.white, fontSize: 17, fontFamily: fonts.uiBold },
   prowSub: { color: '#bbb', fontSize: 14, fontFamily: fonts.uiRegular },
-  pbtn: { width: 36, height: 36, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
+  pbtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
   pbtnText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 18 },
   deleteLink: { color: '#ff6b6b', fontFamily: fonts.uiBold, fontSize: 15 },
   warn: { color: '#e6e6e6', fontFamily: fonts.ui, fontSize: 15, lineHeight: 21 },
