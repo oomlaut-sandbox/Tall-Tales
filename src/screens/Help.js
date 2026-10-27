@@ -158,12 +158,20 @@ const ALL_HELP = [
   { section: 'Grown-ups', title: 'The grown-up check', text: [
     'Some things, like taking photos, printing, sharing and deleting, first ask a quick question only a grown-up can answer.',
   ] },
-  { section: 'Grown-ups', title: 'AI and authenticity', text: [
-    'Authenticity is a top priority at Coro.',
-    'Any use of AI in created content, such as the books in the Book Store, is clearly documented and described in each book’s Process description. Parents and kids have full transparency, so they can decide for themselves.',
-  ] },
   { section: 'Grown-ups', title: 'Sending us your book', store: true, text: [
     'Authors and illustrators young and old can send their books to the Coro Book Store. Visit corobooks.com for more information.',
+  ] },
+  { section: 'Artificial Intelligence', title: 'Coro and AI', text: [
+    'The Coro app itself doesn’t use any AI. Nothing your family makes is sent to an AI, and no AI writes, draws or reads in the app.',
+    'This is a fast-changing conversation, and one we take very seriously. We care about children’s development, learning and fun.',
+  ] },
+  { section: 'Artificial Intelligence', title: 'Making books, honestly', text: [
+    'We strongly encourage traditional ways of making: pen and paper, paint, photos and your own words. A photo of a drawing on paper makes a wonderful page.',
+    'We don’t discourage a healthy, ethical use of AI for pictures or stories, either. Authenticity is everything: just always be honest about how you made your book.',
+  ] },
+  { section: 'Artificial Intelligence', title: 'Process descriptions', text: [
+    'Every book in the Book Store says how it was made, including any use of AI, in its Process description. Different was made entirely by hand; The Rough Lives of Animals was drawn by hand and then rendered in 3D with AI tools, as an example of an open process.',
+    'We trust parents and caregivers to know best. That’s why Coro gives you the tools to shape each reader’s own experience: profiles, ages, parental controls and more.',
   ] },
   { section: 'Accessibility', title: 'Listening and reading along', text: [
     'Any book can read itself aloud: tap Play on the bar. Words light up as they’re read. Tap any word to hear it on its own.',

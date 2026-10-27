@@ -50,6 +50,8 @@ export const SAMPLE_STORY = {
 // each printed spread (one picture + one line) becomes one reader page.
 export const DIFFERENT = {
   id: 'different',
+  copyright: '© 2020 Jörg Schmidt. All rights reserved. First published in 2020.',
+  process: 'Written and illustrated by hand by Jörg Schmidt. No AI was used for the words or the pictures.',
   minAge: 4, maxAge: 8, // age rating (the Store Manager's rating wins when set there)
   title: 'Different',
   // PLACEHOLDER synopsis (Jörg will replace this with his own text)
@@ -165,9 +167,11 @@ export const SMALL_WONDERS = {
 // "The Rough Lives of Animals": Jörg's pictures, short darkly funny verses. The cover is the ostrich, no words.
 export const ROUGH_LIVES = {
   id: 'rough-lives',
+  copyright: '© 2021 Jörg Schmidt. All rights reserved. First published in 2021.',
+  process: 'Every animal was drawn by hand by Jörg Schmidt, then turned into 3D pictures with AI tools. The words were written by Jörg with some help from AI. This book shows what an open, honest process looks like in Coro.',
   minAge: 6, maxAge: 10, // age rating (the Store Manager's rating wins when set there)
   title: 'The Rough Lives of Animals',
-  author: 'Oomlaut',
+  author: 'Jörg Schmidt',
   storeShelf: 'new',
   blurb: 'A worried cat, an elephant who is totally fine, a hedgehog who needs a hug, a wolf nobody follows and an ostrich who has stopped reading the news. Deadpan one-liners in the spirit of the old newspaper cartoons, for anxious times.',
   syllables: {

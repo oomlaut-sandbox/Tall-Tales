@@ -10,6 +10,7 @@ export const HEADING_ICONS = {
   'My Notebook': require('../assets/heading-icons/my-notebook.png'),
   'Books': require('../assets/heading-icons/books.png'),
   'Grown-ups': require('../assets/heading-icons/grown-ups.png'),
+  'Artificial Intelligence': require('../assets/heading-icons/ai.png'), // two sparkles
   'Accessibility': require('../assets/heading-icons/accessibility.png'), // a person in a circle, arms out (Jörg, 27 Oct 2026)
   'Teachers and Educators': require('../assets/heading-icons/learning.png'),
   'Your favourite books': require('../assets/heading-icons/your-favourite-books.png'),
