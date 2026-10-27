@@ -295,7 +295,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
           {/* in Jörg's green felt patch, the words inside its stitching */}
           <Pressable onPress={onIdeas} accessibilityRole="button" style={[styles.ideas, { width: feltW, height: Math.round(feltW * 805 / 1100), borderRadius: feltW * 98 / 1100 /* the felt's own corners, so the shadow matches */ }]}>
             <Image source={IDEAS_FELT} style={{ position: 'absolute', left: 0, top: 0, width: feltW, height: Math.round(feltW * 805 / 1100) }} resizeMode="stretch" />
-            <View style={{ flex: 1, gap: 6, justifyContent: 'center', paddingLeft: '12%', paddingRight: '8%', paddingVertical: '8%' }}>
+            <View style={{ flex: 1, gap: 6, justifyContent: 'center', paddingLeft: '12%', paddingRight: '8%', paddingTop: '5%', paddingBottom: '11%' }}>{/* (nudged up: Jörg, 27 Oct 2026) */}
               <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="help" size={24} lift={0} /><Text style={styles.ideasTitle}>{t('Ideas')}</Text></View>
               <Text style={styles.ideasText}>{t('Many ideas for books you can make together: your photos and drawings, your words, your voice.')}</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 14 }}>
@@ -307,8 +307,8 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
           </Pressable>
           {/* the intro again, any time, at the very bottom: the notebook asks "Are you a kid or a grown-up?" (Jörg, 26 Oct 2026) */}
           {onIntro ? (
-            <Pressable onPress={onIntro} accessibilityRole="button" style={[styles.aboutPill, { marginTop: 26 }]}>
-              <Text style={styles.aboutText}>{t('Start the intro again')}</Text>
+            <Pressable onPress={onIntro} accessibilityRole="button" style={[styles.aboutPill, { marginTop: 26, backgroundColor: colors.blue }]}>
+              <Text style={styles.aboutText}>{t('Replay the Introduction')}</Text>
             </Pressable>
           ) : null}
         </View>

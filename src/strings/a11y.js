@@ -1,5 +1,6 @@
 // Translations for accessibility (VoiceOver names and the like). Merged into the main table in src/i18n.js.
 export default {
+  "Replay the Introduction": { de: "Einführung noch einmal ansehen", fr: "Revoir l’introduction", es: "Ver la introducción otra vez", ja: "はじめの せつめいを もういちど", ar: "إعادة تشغيل المقدمة" },
   "Fit (zoom out)": { de: "Einpassen (verkleinern)", fr: "Ajuster (dézoomer)", es: "Ajustar (alejar)", ja: "ぜんたい（ちいさく）", ar: "ملاءمة (تصغير)" },
   "Before we get started…": { de: "Bevor wir loslegen …", fr: "Avant de commencer…", es: "Antes de empezar…", ja: "はじめる まえに…", ar: "قبل أن نبدأ…" },
   "Do you know what a Coro book looks and feels like? Want a quick tour?": { de: "Weißt du, wie ein Coro-Buch aussieht und sich anfühlt? Lust auf eine kurze Tour?", fr: "Tu sais à quoi ressemble un livre Coro, et ce qu’on ressent en le lisant ? Une petite visite ?", es: "¿Sabes cómo es un libro de Coro y cómo se siente? ¿Quieres un recorrido rápido?", ja: "Coro の 本が どんな みためで、どんな かんじか しってる？ ちょっと みてみる？", ar: "هل تعرف كيف يبدو كتاب Coro وكيف تشعر به؟ هل تريد جولة سريعة؟" },
