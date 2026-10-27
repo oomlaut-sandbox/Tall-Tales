@@ -50,7 +50,7 @@ import { deleteUserStory, loadUserStories } from './src/userStories';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, loadJSONFor, saveJSON, saveJSONFor } from './src/storage';
 import { TITLE_ICONS } from './src/titleIcons';
-import { BulbIcon, CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, PencilIcon, StoreIcon, Toast, BubbleHost, setGoHome, HomeIcon } from './src/components/Chrome';
+import { BulbIcon, CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast, BubbleHost, setGoHome, HomeIcon } from './src/components/Chrome';
 import { setVolumeBubble } from './src/volume';
 import { DESK_FELT, DESK_IPAD_NOW, DeskFelt, Felt, IS_TABLET, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
@@ -431,7 +431,7 @@ function Root() {
         {screen === 'profile' && <Profile u={u} openMenu={openMenu} toast={toast} />}
         {screen === 'reader' && story && (
           <Reader key={queue ? `${queue.key}:${queue.i}` : 'one'} u={u} story={story} setToastSpot={setToastSpot} prefs={readerPrefs}
-            autoStart={!!queue} startRecording={recordOnOpen} onFinished={onBookFinished} onSettings={() => setSettingsGate(true)} onPlaylists={() => go('playlists')} setPrefs={setReaderPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} onCover={() => { stopSpeech(); stopVoice(); setClosingBook({ story, cover: lastOpen.current.cover || (story.cover && story.cover.uri ? { uri: story.cover.uri } : null), rect: lastOpen.current.rect }); }} toast={toast} menuRequest={playMenu} landscape={landscape} coverShut={!!closingBook} onOpenCover={() => setCoverOpenReq((n) => n + 1)} onShown={() => { if (openingRef.current) { clearTimeout(openingRef.current); openingRef.current = null; setOpening(null); } }} />
+            autoStart={!!queue} startRecording={recordOnOpen} onFinished={onBookFinished} onSettings={() => setSettingsGate(true)} onEdit={story && story.mine && controls.create ? () => openPublisher(userStories.find((x) => x.id === story.id) || story) : undefined} onPlaylists={() => go('playlists')} setPrefs={setReaderPrefs} openMenu={openMenu} goLibrary={() => { playSound('coverClose'); go('library'); }} onCover={() => { stopSpeech(); stopVoice(); setClosingBook({ story, cover: lastOpen.current.cover || (story.cover && story.cover.uri ? { uri: story.cover.uri } : null), rect: lastOpen.current.rect }); }} toast={toast} menuRequest={playMenu} landscape={landscape} coverShut={!!closingBook} onOpenCover={() => setCoverOpenReq((n) => n + 1)} onShown={() => { if (openingRef.current) { clearTimeout(openingRef.current); openingRef.current = null; setOpening(null); } }} />
         )}
         {closingBook ? (
           <BookOpen closing openSignal={coverOpenReq} u={u} story={closingBook.story} cover={closingBook.cover} rect={closingBook.rect} textScale={prefs.textScale || 1} fontKey={prefs.font || 'serif'} amber={!!prefs.amber}
@@ -543,8 +543,6 @@ function Root() {
         {/* the main menu slides in over everything else on screen (pop-ups, pages boxes), except speech bubbles */}
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
           <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
-            {/* reading a book you made: edit it, straight from the menu (Jörg, 27 Oct 2026) */}
-            {screen === 'reader' && story && story.mine && controls.create ? <Option glyph={<PencilIcon />} title={t('Edit this book')} sub={t('Change its pictures, words and pages')} onPress={() => { setDrawer(false); openPublisher(userStories.find((x) => x.id === story.id) || story); }} /> : null}
             {/* Make a Book first: Coro is a book maker first (Jörg, 25 Oct 2026) */}
             {controls.create ? <Option glyph={<PlusIcon />} title={t('Make a Book')} sub={t('Your pictures, your words')} onPress={newBook} /> : null}
             <Option glyph={<HomeIcon size={MENU_ICON + 2} color={colors.white} />} title={t('My Library')} sub={t('Find and read your favorite books')} onPress={() => go('library')} />

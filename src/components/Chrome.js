@@ -448,20 +448,6 @@ export function BubbleIcon({ size = MENU_ICON, color = colors.white }) {
     </View>
   );
 }
-// a pencil, writing (the menu's Edit this book)
-export function PencilIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
-  const L = size * 0.95, W = size * 0.27;
-  return (
-    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', transform: [{ rotate: '-45deg' }] }}>
-        <View style={{ width: 0, height: 0, borderTopWidth: W / 2, borderBottomWidth: W / 2, borderRightWidth: W * 0.9, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderRightColor: color }} />
-        <View style={{ width: L * 0.6, height: W, borderWidth: weight, borderLeftWidth: 0, borderColor: color }} />
-        <View style={{ width: L * 0.13, height: W, marginLeft: 1.5, backgroundColor: color, borderTopRightRadius: 2, borderBottomRightRadius: 2 }} />
-      </View>
-    </View>
-  );
-}
-
 export function PlusIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>

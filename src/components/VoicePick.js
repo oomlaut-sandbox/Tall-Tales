@@ -3,7 +3,7 @@
 // narrators and everyone who recorded this book; pick one and the book reads in that voice. Works with the grown-up controls locked (nothing here
 // records, deletes or changes anything else). Pages a reader didn't record are read by the narrator.
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme';
 import { BubbleIcon, PersonIcon, Slider } from './Chrome';
 import { withTap } from '../haptics';
@@ -24,7 +24,7 @@ export function VoiceFace({ photo, name, narrator = false, person = false, size 
 
 // the box: anchored just above the bar (upright) or beside it (sideways)
 // onEdit: the scissors in the top-right corner (edit the readers: photos, a new reader); left out when locked
-export default function VoicePick({ options, value, onPick, onClose, tr, anchor, onEdit, speed, onSpeed }) { // speed / onSpeed: the reading speed slider under the voices (Jörg, 27 Oct 2026)
+export default function VoicePick({ options, value, onPick, onClose, tr, anchor, onEdit, speed, onSpeed, extra, extraTitle }) { // extra: Reading Options, under the voices (the box scrolls when it's all too tall) // speed / onSpeed: the reading speed slider under the voices (Jörg, 27 Oct 2026)
   const [sp, setSp] = useState(null);
   const a = useRef(new Animated.Value(0)).current;
   useEffect(() => { Animated.timing(a, { toValue: 1, duration: 180, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(); }, []);
@@ -33,6 +33,7 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
     <View style={[StyleSheet.absoluteFill, { zIndex: 90 }]}>
       <Pressable style={StyleSheet.absoluteFill} onPress={() => close()} accessibilityRole="button" accessibilityLabel={tr('Close')} />
       <Animated.View style={[styles.box, anchor, { opacity: a, transform: [{ scale: a.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] }) }] }]}>
+        <ScrollView style={{ flexShrink: 1, borderRadius: 26 }} contentContainerStyle={{ paddingHorizontal: 14, paddingTop: 24, paddingBottom: 20, gap: 6 }} showsVerticalScrollIndicator={false}>
         <Text style={[styles.title, { marginBottom: 16 }]}>{tr('Who reads this book?')}</Text>
         {onEdit ? (
           <Pressable onPress={withTap(() => close(onEdit))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Edit readers')} style={styles.edit}>
@@ -56,13 +57,21 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
               format={(v) => `${v.toFixed(2).replace(/0$/, '')}×`} onChange={setSp} onDone={(v) => { setSp(null); onSpeed(Math.round(v * 100) / 100); }} />
           </View>
         ) : null}
+        {extra ? (
+          <View style={styles.extra}>
+            {extraTitle ? <Text style={[styles.title, { marginLeft: 0, marginBottom: 8 }]}>{extraTitle}</Text> : null}
+            {extra}
+          </View>
+        ) : null}
+        </ScrollView>
       </Animated.View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  box: { position: 'absolute', width: 250, backgroundColor: 'rgba(0,0,0,0.86)', /* see-through black, dark enough that the page's words don't show through */ borderRadius: 26, paddingHorizontal: 14, paddingTop: 24, paddingBottom: 20, gap: 6, boxShadow: '0 16px 40px rgba(0,0,0,0.6)' },
+  box: { position: 'absolute', width: 250, backgroundColor: 'rgba(0,0,0,0.86)', /* see-through black, dark enough that the page's words don't show through */ borderRadius: 26, boxShadow: '0 16px 40px rgba(0,0,0,0.6)' },
+  extra: { marginTop: 16, paddingTop: 24, paddingHorizontal: 6, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: 'rgba(255,255,255,0.18)', gap: 6 },
   edit: { position: 'absolute', top: 16, right: 18, padding: 2 },
   title: { color: 'rgba(255,255,255,0.7)', fontFamily: fonts.uiBold, fontSize: 14, marginLeft: 6, marginBottom: 6 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 8, paddingVertical: 8, borderRadius: 18 },

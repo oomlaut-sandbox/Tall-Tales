@@ -76,6 +76,7 @@ import { announce } from '../a11y';
 import { getBookVoice, getReaders, getRecording, listRecordings, pageKey, removeRecording, saveRecording, setBookVoice, setTrim } from '../recordings';
 import ReaderPick from '../components/ReaderPick';
 import VoicePick, { VoiceFace } from '../components/VoicePick';
+const SCISSORS = require('../../assets/icon-scissors.png'); // Edit this book (a book you made)
 import TrimEditor from '../components/TrimEditor';
 const TRASH = require('../../assets/icon-trash.png');
 import { markFinished, markFirst, markReadToday } from '../badges';
@@ -107,7 +108,7 @@ export function Seg({ value, options, onChange, stacked }) {
   );
 }
 
-export default function Reader({ coverShut = false, onOpenCover, u, story, prefs, setPrefs, openMenu, goLibrary, onCover, toast, menuRequest, landscape, setToastSpot, autoStart, startRecording, onFinished, onSettings, onPlaylists, onShown }) {
+export default function Reader({ coverShut = false, onOpenCover, u, story, prefs, setPrefs, openMenu, goLibrary, onCover, toast, menuRequest, landscape, setToastSpot, autoStart, startRecording, onFinished, onSettings, onPlaylists, onShown, onEdit }) { // onEdit: scissors on the bar, for a book you made (Jörg, 27 Oct 2026)
   const tr = useT(); // the reader's own panel, in the app's language
   const appLang = useLang();
   const controls = useControls(); // parental controls: recording, sharing and printing may be switched off
@@ -930,6 +931,49 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   } else layers.push(...pageLayers());
 
   const bulbL = deskW ? Math.max(2, (deskW - BL.bookW) / 4 - 10) : 12; // the bulb: halfway between the felt's left edge and the book
+  // Reading Options' modes and the page's look, shown in the Reading Options panel and under the voices in the
+  // voice box (Jörg, 27 Oct 2026). done: closes whichever one it's in.
+  const modeRows = (done) => MODES.map(([g, id, t, s]) => (
+          <React.Fragment key={id}>
+          <Option glyph={g} title={tr(t)} sub={tr(s)} selected={prefs.mode === id} onPress={() => {
+            chooseMode(id);
+            done();
+            if (id === 'auto' || id === 'page' || id === 'listen') { /* reading starts in chooseMode */ }
+            else if (id === 'learn') toast(tr('Tap any word to hear it.'));
+            else if (id === 'self') toast(tr('Reading on your own. Turn the page when you’re ready.'));
+            else toast(tr('Tap the glowing circles in the picture.'));
+          }} />
+          </React.Fragment>
+        ));
+  const lookRows = (
+    <>
+        <View style={styles.setting}>
+          <Text style={styles.help}>{tr('Text size')}</Text>
+          <Seg value={prefs.textScale || 1} options={TEXT_SIZES.map(([label, v]) => [v, tr(label)])} onChange={(v) => setPrefs((p) => ({ ...p, textScale: v }))} />
+        </View>
+        <View style={styles.setting}>
+          <Text style={styles.help}>{tr('Book font')}</Text>
+          <Seg stacked value={prefs.font || 'serif'} options={Object.entries(BOOK_FONTS).map(([k, f]) => [k, tr(f.label), f.family])} onChange={(v) => setPrefs((p) => ({ ...p, font: v }))} />
+        </View>
+        {/* Amber light: warm, softer pages for the evening */}
+        <View style={styles.setting}>
+          <Text style={styles.help}>{tr('Amber light')}</Text>
+          <Seg value={prefs.amber ? 'on' : 'off'} options={[['off', tr('Off')], ['on', tr('On')]]} onChange={(v) => setPrefs((p) => ({ ...p, amber: v === 'on' }))} />
+        </View>
+        <View style={styles.setting}>
+          <Text style={styles.help}>{tr('Sound effects')}</Text>
+          <Seg value={prefs.sound ? 'on' : 'off'} options={[['off', tr('Off')], ['on', tr('On')]]}
+            onChange={(v) => { const on = v === 'on'; setPrefs((p) => ({ ...p, sound: on })); setEffects(on); if (on) playSound('swish'); }} />
+          {/* how loud the sound effects are (only while they're on); a swish plays at the new level */}
+          {prefs.sound ? (
+            <Slider value={volDraft ?? (prefs.soundVol == null ? 0.5 : prefs.soundVol)} min={0.05} max={1} step={0.05} leftLabel={tr('Quieter')} rightLabel={tr('Louder')}
+              format={(v) => `${Math.round(v * 100)}%`} showValue={false}
+              onChange={setVolDraft}
+              onDone={(v) => { setVolDraft(null); const vol = Math.round(v * 100) / 100; setPrefs((p) => ({ ...p, soundVol: vol })); setEffectsVolume(vol); playSound('swish'); }} />
+          ) : null}
+        </View>
+    </>
+  );
   return (
     <View style={[styles.screen, wide && { flexDirection: 'row' }]}>
       <Felt />
@@ -990,6 +1034,11 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
             {canMoon ? (
               <Pressable onPress={withTap(toggleNight)} hitSlop={12} accessibilityRole="button" accessibilityLabel={dayOn ? tr('Close Daydream') : tr('Nightlight')} style={S}>
                 {dayOn ? <SolidSun size={u * 5.3} color="#e0e0e0" /> : <View style={{ transform: [v ? { translateY: 0 } : { translateX: u * MOON_NUDGE }] }}><MoonIcon size={u * 4.6} color={prefs.mode === 'listen' ? '#e0e0e0' : IDLE} /></View>}
+              </Pressable>
+            ) : null}
+            {onEdit && !nightOn ? (
+              <Pressable onPress={withTap(() => { stopReading(); onEdit(); })} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Edit this book')} style={S}>
+                <Image source={SCISSORS} style={{ width: u * 4.8, height: u * 4.8, tintColor: IDLE }} resizeMode="contain" />
               </Pressable>
             ) : null}
             {nightOn ? (
@@ -1095,8 +1144,8 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       ) : null}
       {trimRec ? <TrimEditor rec={trimRec} title={tr('Page {n}', { n: trimRec.page + 1 })} onCancel={() => setTrimRec(null)}
         onSave={async (start, end) => { await setTrim(story.id, trimRec.pid, start, end, trimRec.reader || 'me'); setTrimRec(null); openRecList(); }} /> : null}
-      {voiceBox ? <VoicePick options={boxOptions} value={boxValue} tr={tr} onPick={pickVoice} speed={speedOf(prefs)} onSpeed={(v) => setPrefs((p) => ({ ...p, rate: v }))} onClose={() => setVoiceBox(false)} onEdit={controls.recording ? () => setEditReaders(true) : null}
-        anchor={wide ? { right: BL.rightW + 10, bottom: Math.max(16, insets.bottom) } : { right: 12, bottom: barH + 10 }} /> : null}
+      {voiceBox ? <VoicePick options={boxOptions} value={boxValue} tr={tr} onPick={pickVoice} speed={speedOf(prefs)} onSpeed={(v) => setPrefs((p) => ({ ...p, rate: v }))} onClose={() => setVoiceBox(false)} extra={<>{modeRows(() => setVoiceBox(false))}{lookRows}</>} extraTitle={tr('Reading Options')} onEdit={controls.recording ? () => setEditReaders(true) : null}
+        anchor={wide ? { right: BL.rightW + 10, bottom: Math.max(16, insets.bottom), width: Math.min(440, winW - BL.rightW - 20), maxHeight: winH - Math.max(16, insets.bottom) - insets.top - 16 } : { right: 12, bottom: barH + 10, width: Math.min(440, winW - 24), maxHeight: winH - barH - 10 - insets.top - 14 }} /* a much bigger box: the voices, then Reading Options under them (Jörg, 27 Oct 2026) */ /> : null}
       {editReaders ? <ReaderPick edit initial={voiceOptions.some((o) => o.id === voice) && voice !== 'narrator' ? voice : null} onCancel={() => { setEditReaders(false); getReaders().then(setReaders); refreshRecPages(); }}
         onDone={() => { setEditReaders(false); getReaders().then(setReaders); refreshRecPages(); }} /> : null}
       {askReader ? <ReaderPick initial={recReader.current} onCancel={() => { setAskReader(false); recordingSoon.current = false; }}
@@ -1121,18 +1170,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
           </>
         ) : (
           <>
-        {MODES.map(([g, id, t, s]) => (
-          <React.Fragment key={id}>
-          <Option glyph={g} title={tr(t)} sub={tr(s)} selected={prefs.mode === id} onPress={() => {
-            chooseMode(id);
-            setPanel(null);
-            if (id === 'auto' || id === 'page' || id === 'listen') { /* reading starts in chooseMode */ }
-            else if (id === 'learn') toast(tr('Tap any word to hear it.'));
-            else if (id === 'self') toast(tr('Reading on your own. Turn the page when you’re ready.'));
-            else toast(tr('Tap the glowing circles in the picture.'));
-          }} />
-          </React.Fragment>
-        ))}
+        {modeRows(() => setPanel(null))}
         <Option glyph={<BubbleIcon />} title={tr('Voices')} sub={tr('Narrator: {name}', { name: (NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1] })} onPress={() => setPlayView('voices')} />
         {onPlaylists ? <Option glyph={<PlaylistIcon />} title={tr('Playlists')} sub={tr('Books read one after another')} onPress={() => { setPanel(null); setPlayView('main'); onPlaylists(); }} /> : null}
         <View style={styles.setting}>
@@ -1142,31 +1180,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
             onChange={setSpeedDraft}
             onDone={(v) => { setSpeedDraft(null); setPrefs((p) => ({ ...p, rate: Math.round(v * 100) / 100 })); }} />
         </View>
-        <View style={styles.setting}>
-          <Text style={styles.help}>{tr('Text size')}</Text>
-          <Seg value={prefs.textScale || 1} options={TEXT_SIZES.map(([label, v]) => [v, tr(label)])} onChange={(v) => setPrefs((p) => ({ ...p, textScale: v }))} />
-        </View>
-        <View style={styles.setting}>
-          <Text style={styles.help}>{tr('Book font')}</Text>
-          <Seg stacked value={prefs.font || 'serif'} options={Object.entries(BOOK_FONTS).map(([k, f]) => [k, tr(f.label), f.family])} onChange={(v) => setPrefs((p) => ({ ...p, font: v }))} />
-        </View>
-        {/* Amber light: warm, softer pages for the evening */}
-        <View style={styles.setting}>
-          <Text style={styles.help}>{tr('Amber light')}</Text>
-          <Seg value={prefs.amber ? 'on' : 'off'} options={[['off', tr('Off')], ['on', tr('On')]]} onChange={(v) => setPrefs((p) => ({ ...p, amber: v === 'on' }))} />
-        </View>
-        <View style={styles.setting}>
-          <Text style={styles.help}>{tr('Sound effects')}</Text>
-          <Seg value={prefs.sound ? 'on' : 'off'} options={[['off', tr('Off')], ['on', tr('On')]]}
-            onChange={(v) => { const on = v === 'on'; setPrefs((p) => ({ ...p, sound: on })); setEffects(on); if (on) playSound('swish'); }} />
-          {/* how loud the sound effects are (only while they're on); a swish plays at the new level */}
-          {prefs.sound ? (
-            <Slider value={volDraft ?? (prefs.soundVol == null ? 0.5 : prefs.soundVol)} min={0.05} max={1} step={0.05} leftLabel={tr('Quieter')} rightLabel={tr('Louder')}
-              format={(v) => `${Math.round(v * 100)}%`} showValue={false}
-              onChange={setVolDraft}
-              onDone={(v) => { setVolDraft(null); const vol = Math.round(v * 100) / 100; setPrefs((p) => ({ ...p, soundVol: vol })); setEffectsVolume(vol); playSound('swish'); }} />
-          ) : null}
-        </View>
+        {lookRows}
         {/* Print: two choices, each a little picture of the page (not when the parental controls turn sharing off) */}
         {controls.sharing ? <View style={styles.setting}>
           <Text style={styles.help}>{printing ? tr('Getting ready to print…') : tr('Print this book')}</Text>
