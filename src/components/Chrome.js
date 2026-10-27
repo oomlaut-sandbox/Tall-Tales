@@ -458,6 +458,19 @@ export function BackRing({ onPress, style, label = 'Back' }) {
   );
 }
 
+// a simple little camera, drawn in lines (the bubbles' 'take a photo' hint)
+export function CameraIcon({ size = 34, color = '#2b2b2b', weight = 2.2 }) {
+  const w = size, h = size * 0.7;
+  return (
+    <View style={{ width: w, height: h + size * 0.12, alignItems: 'center' }}>
+      <View style={{ width: w * 0.36, height: size * 0.16, borderWidth: weight, borderBottomWidth: 0, borderColor: color, borderTopLeftRadius: 3, borderTopRightRadius: 3, marginBottom: -weight / 2 }} />
+      <View style={{ width: w, height: h, borderWidth: weight, borderColor: color, borderRadius: size * 0.16, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: size * 0.36, height: size * 0.36, borderRadius: size * 0.18, borderWidth: weight, borderColor: color }} />
+      </View>
+    </View>
+  );
+}
+
 export function PlusIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
@@ -615,7 +628,7 @@ let bubbleNow = null, bubbleSeq = 0;
 const bubbleSubs = new Set();
 const tellBubble = () => bubbleSubs.forEach((f) => f(bubbleNow));
 
-export function Toast({ message, area, onDismiss, center, ms = BUBBLE_MS, button, check }) { // check: a 'don't show again' box (onDismiss gets whether it was ticked) // button: a green pill that closes it (then ms 0: it stays until then)
+export function Toast({ message, area, onDismiss, center, ms = BUBBLE_MS, button, check, icon }) { // icon: a small picture above the words // check: a 'don't show again' box (onDismiss gets whether it was ticked) // button: a green pill that closes it (then ms 0: it stays until then)
   const dismiss = useRef(onDismiss);
   dismiss.current = onDismiss;
   const mine = useRef(null);
@@ -624,7 +637,7 @@ export function Toast({ message, area, onDismiss, center, ms = BUBBLE_MS, button
     if (!message) return undefined;
     const id = ++bubbleSeq;
     mine.current = id;
-    bubbleNow = { id, message, area, center, ms, button, check, onDismiss: (ticked) => dismiss.current && dismiss.current(ticked) };
+    bubbleNow = { id, message, area, center, ms, button, check, icon, onDismiss: (ticked) => dismiss.current && dismiss.current(ticked) };
     tellBubble();
     return () => { if (bubbleNow && bubbleNow.id === id) { bubbleNow = null; tellBubble(); } };
   }, [message, areaKey, center]);
@@ -660,6 +673,7 @@ export function BubbleHost({ defaultArea }) {
           (center: in the middle of the given area instead, e.g. the picture page while recording.) */}
       <Pressable onPress={close} accessibilityRole="button" accessibilityHint={tr('Closes the message')} style={styles.bubbleWrap}>
         <View style={styles.bubble}>
+          {b.icon === 'camera' ? <View style={{ alignItems: 'center', marginTop: 6, marginBottom: 26 }}><CameraIcon /></View> : null}{/* well clear of the words */}
           {/* a ● in the message is drawn in the record button's red */}
           <Text style={styles.toast}>{String(message).split('●').map((part, i) => (i ? [<Text key={i} style={{ color: colors.highlight }}>●</Text>, part] : part))}</Text>
           {b.check ? (
