@@ -635,7 +635,7 @@ export default function Publisher({ onBack, u, initial, fontKey, openMenu, toast
           <Animated.Text numberOfLines={1} style={[styles.countText, { position: 'absolute', opacity: savedFade }]}>{tr('Saved')}</Animated.Text>
         </View>
         {/* Back, in the top right corner (the ? moves over beside it) (Jörg, 27 Oct 2026) */}
-        {onBack ? <BackRing onPress={onBack} label={tr('Back')} style={{ position: 'absolute', zIndex: 6, top: 10, right: 10 }} /> : null}
+        {onBack ? <BackRing onPress={onBack} label={tr('Back')} style={{ position: 'absolute', zIndex: 6, top: 10, right: 10, backgroundColor: 'rgba(0,0,0,0.6)' }} /> : null}
         <Pressable onPress={() => setGuide(true)} style={[styles.help, { top: onBack ? 11 : 10, right: onBack ? 58 : 10 }]} hitSlop={8} accessibilityLabel={tr('How to make a story')}>
           <Text style={styles.helpText}>?</Text>
         </Pressable>
