@@ -670,6 +670,29 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
 
       <Panel floating open={pagesOpen} side="right" title={tr('Pages')} portraitWidth="94%" bottom={wide ? 0 : barH} inset={wide ? BL.rightW : 0} onClose={() => setPagesOpen(false)}>
         <ScrollView style={{ maxHeight: Math.max(380, winH * 0.55) }} contentContainerStyle={{ gap: 14, paddingBottom: 6 }}>
+          {/* Layout: the whole book at a glance, the cover and then every spread as it will look (Jörg, 27 Oct 2026) */}
+          <Text style={styles.layoutHead}>{tr('Layout')}</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 14, paddingBottom: 4 }}>
+            <Pressable onPress={() => { setPagesOpen(false); openCover(); }} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')} style={{ alignItems: 'center', gap: 6 }}>
+              <View style={[styles.spreadPage, { backgroundColor: '#2f5f9e' }]}>
+                {cover && cover.uri ? <Image source={{ uri: cover.uri }} style={styles.fill} resizeMode="cover" /> : null}
+              </View>
+              <Text style={styles.spreadNum}>{tr('Cover')}</Text>
+            </Pressable>
+            {draft.pages.map((p, k) => (
+              <Pressable key={p.pid} onPress={() => { setI(k); setPagesOpen(false); }} accessibilityRole="button" accessibilityLabel={tr('Go to page {n}', { n: k + 1 })} style={{ alignItems: 'center', gap: 6 }}>
+                <View style={[{ flexDirection: 'row', borderRadius: 4, overflow: 'hidden' }, k === i && { borderWidth: 2, borderColor: colors.green }]}>
+                  <View style={[styles.spreadPage, { borderRadius: 0 }]}>{p.uri ? <Image source={{ uri: p.uri }} style={styles.fill} resizeMode="cover" /> : null}</View>
+                  <View style={[styles.spreadPage, { borderRadius: 0, backgroundColor: '#e9e7e2', borderLeftWidth: 1, borderLeftColor: '#bdbdbd', alignItems: 'center', justifyContent: 'center', padding: 5 }]}>
+                    {p.uri2 ? <Image source={{ uri: p.uri2 }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+                      : p.text.trim() ? <Text numberOfLines={5} style={{ fontSize: 6, lineHeight: 8, color: '#333', textAlign: 'center' }}>{p.text.trim()}</Text> : null}
+                  </View>
+                </View>
+                <Text style={styles.spreadNum}>{k + 1}</Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+          <Text style={[styles.layoutHead, { marginTop: 8 }]}>{tr('Pages')}</Text>
           {draft.pages.map((p, k) => (
             <View key={p.pid} style={[styles.prow, k === i && { borderColor: colors.green }]}>
               <Pressable onPress={() => { setI(k); setPagesOpen(false); }} style={styles.thumb} accessibilityLabel={tr('Go to page {n}', { n: k + 1 })}>
@@ -1168,6 +1191,9 @@ const styles = StyleSheet.create({
   sub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 12, marginTop: 2 },
   btn: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15, paddingHorizontal: 3 },
   finish: { backgroundColor: colors.green, paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' }, // a solid green pill
+  layoutHead: { color: '#bdbdbd', fontFamily: fonts.uiBold, fontSize: 12, letterSpacing: 0.8, textTransform: 'uppercase' },
+  spreadPage: { width: 58, height: 58, backgroundColor: '#d9d9d9', borderRadius: 4, overflow: 'hidden' },
+  spreadNum: { color: '#d6d6d6', fontFamily: fonts.uiSemiBold, fontSize: 12 },
   prow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, backgroundColor: '#2a2a2a', padding: 12, borderWidth: 2, borderColor: 'transparent', borderRadius: 16 },
   thumb: { width: 64, height: 64, borderRadius: 8, backgroundColor: '#666', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   thumbNum: { color: colors.white, fontFamily: fonts.uiBold },
