@@ -321,7 +321,7 @@ export function Library({ toBooks, onReadingOptions, onGarden, narrator, toast, 
           </Pressable> : null}
         </Bar>
       ))}>
-      <Band icon="library" color={colors.green} felt="library" title={selecting ? t('Select books') : t('My Library')}
+      <Band color={colors.green} felt="library" title={selecting ? t('Select books') : t('My Library')}
         sub={selecting ? (picked.length ? t('{n} selected', { n: picked.length }) : t('Tap books to select them')) : t('Your stories, ready to read')} />
       {/* pulled up past the corkboard at the very bottom: a speech bubble invites you on to the Garden (once per pull),
           only once a grown-up has unlocked it in Settings → The Garden */}

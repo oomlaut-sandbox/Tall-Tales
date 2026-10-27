@@ -527,7 +527,7 @@ function Root() {
           setIntroAsk(false); setIntroWho(null); setCoverOpen(true); setStartKey((n) => n + 1); // back to the start page, the notebook open
         }} /> : null}
         {welcome ? <Welcome controls={controls} setControls={setControls} onDone={welcomeDone} /> : null}
-        {/* Back: a small arrow in the top right corner of the banner */}
+        {/* Back: a small arrow in the top right corner of the banner */}{/* (My Library: no house beside the title, Jörg 27 Oct 2026) */}
         {BACK_ON.includes(screen) && hist.current.length > 0 && !introWho && !welcome && !flyer ? (
           <Pressable onPress={goBack} hitSlop={14} accessibilityRole="button" accessibilityLabel={t('Back')}
             style={{ position: 'absolute', zIndex: 60, top: screenInsets.top + 28, right: 22 + (sideways ? drawerRight : 0), width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(0,0,0,0.32)', alignItems: 'center', justifyContent: 'center' }}>
