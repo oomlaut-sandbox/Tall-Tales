@@ -23,6 +23,13 @@ const TRASH_ICON = require('../../assets/icon-trash.png');
 const CLASS_FOLDER = require('../../assets/class-folder.png'); // Jörg's blue paper folder (900 × 880); the class's name goes on its white tab label
 
 const AGES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+// the avatars' names, for VoiceOver (the keys are the old colour names: see profiles.js)
+const AVATAR_NAMES = {
+  red: 'Rust friend', green: 'Olive friend', orange: 'Mustard friend', grey: 'Blue friend',
+  unicorn: 'Unicorn', elephant: 'Elephant', dogs: 'Dogs', bee: 'Bee', hamster: 'Hamster', wolf: 'Wolf', worms: 'Worms',
+  'coro-jump': 'Coro jumping', 'coro-green': 'Coro in green', 'coro-red': 'Coro in red', 'coro-headphones': 'Coro listening',
+  'coro-writing': 'Coro writing', 'coro-blue': 'Coro in blue', 'coro-reading': 'Coro reading', 'coro-cheer': 'Coro cheering', robot: 'Robot',
+};
 
 function Choice({ label, on, onPress }) {
   return (
@@ -211,7 +218,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
           {room && !folders && shown.length ? (
             <View style={{ flexDirection: 'row', gap: 8, alignSelf: 'flex-end', marginTop: -6 }}>
               {[['grid', t('Grid')], ['list', t('List')]].map(([k, label]) => (
-                <Pressable key={k} onPress={() => setView(k)} accessibilityRole="button" accessibilityState={{ selected: view === k }} style={[styles.choice, view === k && styles.choiceOn]}>
+                <Pressable key={k} onPress={() => setView(k)} accessibilityRole="tab" accessibilityState={{ selected: view === k }} style={[styles.choice, view === k && styles.choiceOn]}>
                   <Text style={styles.choiceText}>{label}</Text>
                 </Pressable>
               ))}
@@ -221,7 +228,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
             // the class folders: blue squares for now, with the class's name and how many students
             <View style={styles.grid}>
               {classes.map((c) => (
-                <Pressable key={c.id} onPress={() => (selecting ? togglePick(c.id) : editing ? setClassForm({ id: c.id, name: c.name }) : setOpenCls(c.id))} accessibilityRole="button" accessibilityLabel={c.name || t('Classroom')} style={[styles.cell, { width: cellW }]}>
+                <Pressable key={c.id} onPress={() => (selecting ? togglePick(c.id) : editing ? setClassForm({ id: c.id, name: c.name }) : setOpenCls(c.id))} accessibilityRole="button" accessibilityLabel={c.name || t('Classroom')} accessibilityState={selecting ? { selected: picked.includes(c.id) } : undefined} style={[styles.cell, { width: cellW }]}>
                   <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}>
                     {(() => { const fw = Math.round(side * 0.92), fh = Math.round(fw * 880 / 900); return (
                       <View style={{ width: fw, height: fh, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.45, shadowRadius: 6 }}>
@@ -273,7 +280,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
               return (
                 <Pressable key={p.id} disabled={!selecting && !editing && !canSwitch && !on} onPress={() => (selecting ? togglePick(p.id) : editing ? openForm(p) : on ? backToLibrary() : pick(p.id))}
                   onLayout={(e) => { const L = e.nativeEvent.layout; cells.current[p.id] = L; if (on && !picking.current) { boxXY.setValue({ x: L.x, y: L.y }); setBoxSize({ w: L.width, h: L.height }); placed.current = true; } }}
-                  accessibilityRole="button" accessibilityLabel={p.name} accessibilityState={{ selected: on }} style={[styles.cell, { width: cellW }]}>
+                  accessibilityRole="button" accessibilityLabel={p.name} accessibilityState={{ selected: selecting ? sel : on }} style={[styles.cell, { width: cellW }]}>
                   {/* the child reading now gets a box around them instead of growing */}
                   <View style={{ width: side, height: side, alignItems: 'center', justifyContent: 'center' }}><ProfileTile p={p} size={Math.round(side * 0.68)} active={on} grow={1} /></View>
                   {selecting ? <View style={[styles.tick, { position: 'absolute', top: 8, right: 8 }, sel && styles.tickOn]}>{sel ? <View style={styles.tickMark} /> : null}</View> : null}
@@ -337,7 +344,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
               <Text style={[styles.section, { marginTop: 10 }]}>{t('Character')}</Text>
               <View style={[styles.choices, { marginTop: 4, marginBottom: 2, flexWrap: 'nowrap', justifyContent: 'space-between' }]}>{/* all five on one line */}
                 {PROFILE_COLORS.map(([c, img]) => (
-                  <Pressable key={c} onPress={() => setForm({ ...form, color: c })} accessibilityRole="radio" accessibilityLabel={c} accessibilityState={{ selected: form.color === c }}
+                  <Pressable key={c} onPress={() => setForm({ ...form, color: c })} accessibilityRole="radio" accessibilityLabel={AVATAR_NAMES[c] ? t(AVATAR_NAMES[c]) : t('Character')} accessibilityState={{ selected: form.color === c }}
                     style={[styles.swatch, form.color === c && styles.swatchOn]}>{/* the chosen one: boxed (like the reading child), not bigger */}
                     {form.color === c ? <View pointerEvents="none" style={styles.glow} /> : null}
                     <ProfileTile p={{ color: c }} size={40} active={form.color === c} grow={1} />
@@ -424,14 +431,14 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
       {/* Explore more avatars: a black glass box (the large set arrives soon) */}
       {moreAv ? (
         <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setMoreAv(false)}>
-          <Pressable style={styles.sureBack} onPress={() => setMoreAv(false)}>
-            <Pressable style={[styles.sureBox, { backgroundColor: 'rgba(0,0,0,0.86)', gap: 18 }]} onPress={() => {}}>
+          <Pressable style={styles.sureBack} onPress={() => setMoreAv(false)} accessible={false}>{/* (not one big VoiceOver element: the avatars inside stay reachable; Close is below) */}
+            <Pressable style={[styles.sureBox, { backgroundColor: 'rgba(0,0,0,0.86)', gap: 18 }]} onPress={() => {}} accessible={false}>
               <Text style={[styles.sureText, { fontFamily: fonts.uiBold, fontSize: 20 }]}>{t('More avatars')}</Text>
               {/* the avatars scroll when there are more than fit (more are coming) */}
               <ScrollView style={{ maxHeight: Math.max(220, winH * 0.5) }} contentContainerStyle={{ paddingVertical: 6 }} showsVerticalScrollIndicator>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
                 {MORE_AVATARS.map(([c]) => (
-                  <Pressable key={c} onPress={() => { setForm((f) => ({ ...f, color: c })); setMoreAv(false); }} accessibilityRole="button" accessibilityLabel={c} style={[styles.swatch, form && form.color === c && styles.swatchOn]}>
+                  <Pressable key={c} onPress={() => { setForm((f) => ({ ...f, color: c })); setMoreAv(false); }} accessibilityRole="radio" accessibilityLabel={AVATAR_NAMES[c] ? t(AVATAR_NAMES[c]) : t('Character')} accessibilityState={{ selected: !!(form && form.color === c) }} style={[styles.swatch, form && form.color === c && styles.swatchOn]}>
                     {form && form.color === c ? <View pointerEvents="none" style={styles.glow} /> : null}
                     <ProfileTile p={{ color: c }} size={40} grow={1} />
                   </Pressable>

@@ -464,7 +464,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           ) : null}
           <Fade edge={wide ? 'right' : 'bottom'} size={Math.round(side * 0.1)} max={0.22} />
         </Pressable>
-        <Pressable disabled={!live} onPress={() => setWriting(true)} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.07, backgroundColor: WHITE }]} accessibilityRole="button" accessibilityLabel={t('Notes for this page')}>
+        <Pressable disabled={!live} onPress={() => setWriting(true)} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.07, backgroundColor: WHITE }]} accessibilityRole="button" accessibilityLabel={t('Notes for this page')} accessibilityValue={pg.text ? { text: pg.text } : undefined}>
           <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.09)} max={0.13} />
           <Spine wide={wide} />
           <Lines side={side} />
@@ -484,7 +484,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     setOutAsk(kind);
   };
   const pageCount = intro || i === COVER_SPREAD || i === ABOUT || i === BADGES ? null : (
-    <Pressable onPress={() => setPagesOpen(true)} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Pages')} style={styles.countBox}>
+    <Pressable onPress={() => setPagesOpen(true)} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Pages')} accessibilityValue={{ text: t('{a} of {b}', { a: i + 1, b: total }) }} style={styles.countBox}>
       <Animated.Text numberOfLines={1} style={[styles.countText, { opacity: savedFade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>{t('{a} of {b}', { a: i + 1, b: total })}</Animated.Text>
       <Animated.Text numberOfLines={1} style={[styles.countText, { position: 'absolute', opacity: savedFade }]}>{t('Saved')}</Animated.Text>
     </Pressable>
@@ -649,30 +649,30 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           <Pressable onPress={() => addPage('sketch')} style={[styles.halfPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('New sketch page')}</Text></Pressable>
         </View>
         <ScrollView style={{ maxHeight: Math.max(340, winH * 0.5) }} contentContainerStyle={{ gap: 14, paddingBottom: 6 }}>
-          <Pressable onPress={() => { setI(BADGES); setPagesOpen(false); }} style={[styles.prow, i === BADGES && { borderColor: colors.green }]}>
+          <Pressable onPress={() => { setI(BADGES); setPagesOpen(false); }} style={[styles.prow, i === BADGES && { borderColor: colors.green }]} accessibilityRole="button" accessibilityState={{ selected: i === BADGES }}>
             <View style={[styles.thumb, { backgroundColor: '#c9a227' }]}><Text style={styles.thumbNum}>★</Text></View>
             <View style={{ flex: 1, justifyContent: 'center', height: 64 }}><Text style={styles.prowTitle}>{t('Badges')}<Text style={styles.prowSub}>{'  ·  '}{t('Page {n}', { n: 2 })}</Text></Text></View>
           </Pressable>
           {pages.map((p, k) => (
             <View key={p.pid} style={[styles.prow, i === k + FIRST_PAGE && { borderColor: colors.green }]}>
-              <Pressable onPress={() => { setI(k + FIRST_PAGE); setPagesOpen(false); }} style={[styles.thumb, { backgroundColor: WHITE }]} accessibilityLabel={t('Go to page {n}', { n: k + FIRST_PAGE + 1 })}>
+              <Pressable onPress={() => { setI(k + FIRST_PAGE); setPagesOpen(false); }} style={[styles.thumb, { backgroundColor: WHITE }]} accessibilityRole="button" accessibilityLabel={t('Go to page {n}', { n: k + FIRST_PAGE + 1 })}>
                 {p.uri ? <Image source={{ uri: p.uri }} style={styles.fill} resizeMode="cover" /> : null}
                 <StrokesView strokes={p.strokes} width={64} height={64} noPaper />
               </Pressable>
               <View style={{ flex: 1, minWidth: 0, height: 64, justifyContent: 'space-between' }}>
-                <Pressable onPress={() => { setI(k + FIRST_PAGE); setPagesOpen(false); }}>
+                <Pressable onPress={() => { setI(k + FIRST_PAGE); setPagesOpen(false); }} accessibilityRole="button" accessibilityState={{ selected: i === k + FIRST_PAGE }}>
                   <Text numberOfLines={1} style={styles.prowTitle}>{p.kind === 'sketch' ? t('Sketch') : t('Notes')}<Text style={styles.prowSub}>{'  ·  '}{t('Page {n}', { n: k + 3 })}{p.text.trim() ? `  ·  ${p.text.trim()}` : ''}</Text></Text>
                 </Pressable>
                 <View style={{ flexDirection: 'row', gap: 8 }}>
-                  <Pressable onPress={() => move(k, -1)} disabled={k === 0} hitSlop={6} style={[styles.pbtn, k === 0 && { opacity: 0.3 }]} accessibilityLabel={t('Move up')}><Text style={styles.pbtnText}>↑</Text></Pressable>
-                  <Pressable onPress={() => move(k, 1)} disabled={k === pages.length - 1} hitSlop={6} style={[styles.pbtn, k === pages.length - 1 && { opacity: 0.3 }]} accessibilityLabel={t('Move down')}><Text style={styles.pbtnText}>↓</Text></Pressable>
+                  <Pressable onPress={() => move(k, -1)} disabled={k === 0} hitSlop={6} style={[styles.pbtn, k === 0 && { opacity: 0.3 }]} accessibilityRole="button" accessibilityLabel={t('Move up')} accessibilityState={{ disabled: k === 0 }}><Text style={styles.pbtnText}>↑</Text></Pressable>
+                  <Pressable onPress={() => move(k, 1)} disabled={k === pages.length - 1} hitSlop={6} style={[styles.pbtn, k === pages.length - 1 && { opacity: 0.3 }]} accessibilityRole="button" accessibilityLabel={t('Move down')} accessibilityState={{ disabled: k === pages.length - 1 }}><Text style={styles.pbtnText}>↓</Text></Pressable>
                   {/* print just this page (after the grown-up question) */}
                   {controls.sharing !== false ? (
-                    <Pressable onPress={() => { setPagesOpen(false); setOutRange({ from: k, to: k }); setOutGate('print'); }} hitSlop={6} style={styles.pbtn} accessibilityLabel={t('Print this page')}>
+                    <Pressable onPress={() => { setPagesOpen(false); setOutRange({ from: k, to: k }); setOutGate('print'); }} hitSlop={6} style={styles.pbtn} accessibilityRole="button" accessibilityLabel={t('Print this page')}>
                       <Image source={PRINTER} style={{ width: 17, height: 17, tintColor: colors.white }} resizeMode="contain" />
                     </Pressable>
                   ) : null}
-                  <Pressable onPress={() => removePage(k)} hitSlop={6} style={styles.pbtn} accessibilityLabel={t('Delete page')}>
+                  <Pressable onPress={() => removePage(k)} hitSlop={6} style={styles.pbtn} accessibilityRole="button" accessibilityLabel={t('Delete page')}>
                     <Image source={TRASH} style={{ width: 16, height: 16, tintColor: colors.white }} resizeMode="contain" />
                   </Pressable>
                 </View>
@@ -712,9 +712,9 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         const num = (k) => k + FIRST_PAGE + 1;
         const stepper = (which, v) => (
           <View style={styles.stepper}>
-            <Pressable onPress={() => step(which, -1)} hitSlop={6} style={styles.stepBtn} accessibilityLabel={t('Earlier page')}><Text style={styles.pbtnText}>−</Text></Pressable>
+            <Pressable onPress={() => step(which, -1)} hitSlop={6} style={styles.stepBtn} accessibilityRole="button" accessibilityLabel={t('Earlier page')}><Text style={styles.pbtnText}>−</Text></Pressable>
             <Text style={styles.stepNum}>{num(v)}</Text>
-            <Pressable onPress={() => step(which, 1)} hitSlop={6} style={styles.stepBtn} accessibilityLabel={t('Later page')}><Text style={styles.pbtnText}>+</Text></Pressable>
+            <Pressable onPress={() => step(which, 1)} hitSlop={6} style={styles.stepBtn} accessibilityRole="button" accessibilityLabel={t('Later page')}><Text style={styles.pbtnText}>+</Text></Pressable>
           </View>
         );
         return (
@@ -726,7 +726,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
                 <View style={{ gap: 6 }}><Text style={styles.prowSub}>{t('From page')}</Text>{stepper('from', r.from)}</View>
                 <View style={{ gap: 6 }}><Text style={styles.prowSub}>{t('To page')}</Text>{stepper('to', r.to)}</View>
               </View>
-              <Pressable onPress={() => set(0, pages.length - 1)} hitSlop={6} style={[styles.allChip, { alignSelf: 'flex-start' }]}><Text style={styles.pbtnText}>{t('All pages')}</Text></Pressable>
+              <Pressable onPress={() => set(0, pages.length - 1)} hitSlop={6} style={[styles.allChip, { alignSelf: 'flex-start' }]} accessibilityRole="button"><Text style={styles.pbtnText}>{t('All pages')}</Text></Pressable>
               <View style={{ flexDirection: 'row', gap: 10, justifyContent: 'flex-end', marginTop: 6 }}>
                 <Pressable onPress={() => setOutAsk(null)} style={[styles.outPill, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Cancel')}</Text></Pressable>
                 <Pressable onPress={() => { const k = outAsk; setOutAsk(null); setOutGate(k); }} style={[styles.outPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{outAsk === 'print' ? t('Print') : t('Share')}</Text></Pressable>
@@ -974,7 +974,15 @@ function PaintWheel({ size, spot, onPick, label, onTouch }) {
     onPick(wheelColour(sx, sy), [sx, sy], done);
   };
   return (
-    <View style={{ alignSelf: 'center', width: size, height: size, marginVertical: 6 }} accessibilityRole="adjustable" accessibilityLabel={label}
+    <View style={{ alignSelf: 'center', width: size, height: size, marginVertical: 6 }} accessible accessibilityRole="adjustable" accessibilityLabel={label}
+      accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+      onAccessibilityAction={(e) => { // VoiceOver: swipe up or down to go round the wheel's rim, a twelfth at a time
+        const d = e.nativeEvent.actionName === 'increment' ? 1 : e.nativeEvent.actionName === 'decrement' ? -1 : 0;
+        if (!d) return;
+        const a0 = spot ? Math.atan2(spot[1], spot[0]) : -Math.PI / 2;
+        const a1 = a0 + (d * Math.PI) / 6, sx = Math.cos(a1) * 0.9, sy = Math.sin(a1) * 0.9;
+        onPick(wheelColour(sx, sy), [sx, sy], true);
+      }}
       onStartShouldSetResponder={() => true} onMoveShouldSetResponder={() => true} onResponderTerminationRequest={() => false}
       onResponderGrant={(e) => { onTouch && onTouch(true); at(e, false); }} onResponderMove={(e) => at(e, false)}
       onResponderRelease={(e) => { at(e, true); onTouch && onTouch(false); }} onResponderTerminate={() => onTouch && onTouch(false)}>
@@ -1172,7 +1180,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     return (
       <Animated.View style={[styles.sizePop, { left: 10, bottom: 10, opacity: sizeFade }]}>
         {SIZES.map(([name, sz]) => (
-          <Pressable key={name} onPress={() => pickSize(sz)} hitSlop={6} accessibilityRole="button" accessibilityLabel={t('{name} pen', { name: t(name) })}
+          <Pressable key={name} onPress={() => pickSize(sz)} hitSlop={6} accessibilityRole="button" accessibilityLabel={t('{name} pen', { name: t(name) })} accessibilityState={{ selected: size === sz }}
             style={{ width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', backgroundColor: size === sz ? colors.green : 'transparent' }}>
             <View style={{ width: 5 + sz * 280, height: 5 + sz * 280, borderRadius: 20, backgroundColor: colors.white }} />
           </Pressable>
@@ -1205,7 +1213,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     {stamp && !dropper && !sizePop ? (
       <View style={[styles.sizePop, { left: 10, bottom: 10, paddingHorizontal: 10 }]}>
         {SIZES.map(([name, sz]) => (
-          <Pressable key={name} onPress={() => setSize(sz)} hitSlop={6} accessibilityRole="button" accessibilityLabel={t('{name} pen', { name: t(name) })}
+          <Pressable key={name} onPress={() => setSize(sz)} hitSlop={6} accessibilityRole="button" accessibilityLabel={t('{name} pen', { name: t(name) })} accessibilityState={{ selected: size === sz }}
             style={{ width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', backgroundColor: size === sz ? colors.green : 'transparent' }}>
             <View style={{ width: 5 + sz * 280, height: 5 + sz * 280, borderRadius: 20, backgroundColor: colors.white }} />
           </Pressable>
@@ -1253,7 +1261,9 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       </Pressable>
     );
   };
-  const colourName = (hex) => { const f = [...PENS_BRIGHT, ...PENS].find(([h]) => h.toLowerCase() === hex.toLowerCase()); return f ? t(f[1]) : t('Mixed colour'); };
+  // the greys' names, for VoiceOver (in the order of GREYS: light to dark)
+  const GREY_NAMES = { '#ffffff': 'White', '#d9d9d9': 'Pale grey', '#b0b0b0': 'Light grey', '#868686': 'Grey', '#5c5c5c': 'Dark grey', '#333333': 'Charcoal', '#111111': 'Black' };
+  const colourName = (hex) => { if (GREY_NAMES[hex.toLowerCase()]) return t(GREY_NAMES[hex.toLowerCase()]); const f = [...PENS_BRIGHT, ...PENS].find(([h]) => h.toLowerCase() === hex.toLowerCase()); return f ? t(f[1]) : t('Mixed colour'); };
   // the colour you're drawing with, on its own, bigger, in a rounded box of black glass with a soft white glow
   const currentEl = (
     <View style={styles.currentBox} accessibilityLabel={t('The colour you are drawing with')}>
@@ -1279,7 +1289,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     </Pressable>
   );
   const binEl = (
-    <Pressable onPress={() => { setStrokes([]); setRedo([]); }} disabled={!strokes.length} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Clear the drawing')}
+    <Pressable onPress={() => { setStrokes([]); setRedo([]); }} disabled={!strokes.length} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Clear the drawing')} accessibilityState={{ disabled: !strokes.length }}
       style={[styles.plusBtn, !strokes.length && { opacity: 0.35 }]}>
       <Image source={TRASH} style={{ width: 22, height: 22, tintColor: colors.white }} resizeMode="contain" />
     </Pressable>
@@ -1288,11 +1298,11 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
       <Text numberOfLines={1} style={[styles.editorTitle, { flex: 1 }]}>{title}</Text>
       <Pressable onPress={() => { const last = strokes[strokes.length - 1]; if (!last) return; setStrokes(strokes.slice(0, -1)); setRedo((r) => [...r, last]); }} disabled={!strokes.length}
-        style={[styles.tool, !strokes.length && { opacity: 0.35 }]} accessibilityRole="button" accessibilityLabel={t('Undo')}>
+        style={[styles.tool, !strokes.length && { opacity: 0.35 }]} accessibilityRole="button" accessibilityLabel={t('Undo')} accessibilityState={{ disabled: !strokes.length }}>
         <UndoIcon />
       </Pressable>
       <Pressable onPress={() => { const back = redo[redo.length - 1]; if (!back) return; setRedo(redo.slice(0, -1)); setStrokes((s2) => [...s2, back]); }} disabled={!redo.length}
-        style={[styles.tool, !redo.length && { opacity: 0.35 }]} accessibilityRole="button" accessibilityLabel={t('Redo')}>
+        style={[styles.tool, !redo.length && { opacity: 0.35 }]} accessibilityRole="button" accessibilityLabel={t('Redo')} accessibilityState={{ disabled: !redo.length }}>
         <UndoIcon flip />
       </Pressable>
       <Pressable onPress={() => onDone(strokes)} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Done')}><DoneTick size={38} /></Pressable>
@@ -1318,7 +1328,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     return (
       <View style={{ width: w, height: TRAY_H, overflow: 'hidden', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10 }}>
         {TRAY.map(([k, name], n) => (
-          <Pressable key={k} onPress={() => pickTool(k)} accessibilityRole="button" accessibilityLabel={t(name)} accessibilityState={{ selected: onTool === k }}
+          <Pressable key={k} onPress={() => pickTool(k)} accessibilityRole="button" accessibilityLabel={t(TRAY_NAMES[k] || name)} accessibilityState={{ selected: onTool === k }}
             style={{ width: tw, height: TRAY_H }}>
             {onTool === k ? (
               <>
@@ -1344,7 +1354,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     return (
       <View style={[styles.sheet, { width: w, paddingBottom: insets.bottom + 18 }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <View accessibilityLabel={t('The colour you are drawing with')}>{swatch(pen, t('The colour you are drawing with'), 80, () => {}, false)}</View>{/* twice the size (Jörg, 26 Oct 2026) */}
+          <View accessible accessibilityRole="image" accessibilityLabel={t('The colour you are drawing with')} accessibilityValue={{ text: colourName(pen) }}>{swatch(pen, t('The colour you are drawing with'), 80, () => {}, false)}</View>{/* twice the size (Jörg, 26 Oct 2026) */}
           <Text style={[styles.editorTitle, { flex: 1 }]}>{t('Colours')}</Text>
           <Pressable onPress={() => setMore(false)} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Close')} style={styles.plusBtn}>
             <View style={{ position: 'absolute', width: 20, height: 2.6, borderRadius: 1.3, backgroundColor: colors.white, transform: [{ rotate: '45deg' }] }} />
@@ -1360,25 +1370,25 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
         {/* the greys, right under the earthy colours (Jörg, 26 Oct 2026) */}
         <Text style={styles.sheetLabel}>{t('Greys')}</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 8, rowGap: 10 }}>
-          {GREYS.map((hex) => swatch(hex, t('Grey'), Math.min(34, Math.floor((w - 44) / 8) - 8), () => { setWheelSpot(null); pick(hex); }, !erase && !mixing && pen.toLowerCase() === hex.toLowerCase()))}
+          {GREYS.map((hex) => swatch(hex, mixing ? t('Mix in {name}', { name: t(GREY_NAMES[hex] || 'Grey') }) : t('{name} pen', { name: t(GREY_NAMES[hex] || 'Grey') }), Math.min(34, Math.floor((w - 44) / 8) - 8), () => { setWheelSpot(null); pick(hex); }, !erase && !mixing && pen.toLowerCase() === hex.toLowerCase()))}
         </View>
         {/* every colour: the paint wheel (pale in the middle, the full colour, deep at the edge; tap or drag) */}
         <Text style={styles.sheetLabel}>{t('Every colour')}</Text>
         <PaintWheel size={Math.min(w - 44, 300)} spot={wheelSpot} onPick={(hex, spot, done) => { setWheelSpot(spot); if (done) pick(hex); else { setPen(mixing ? mixColours(pen, hex) : hex); setErase(false); setBucket(false); } }} label={t('Colour wheel')} onTouch={setOnWheel} />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 20 }}>
-          <Pressable onPress={() => setMixing((x) => !x)} style={[styles.toolWide, mixing && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mix colours')}><Text style={styles.toolText}>{t('Mix')}</Text></Pressable>
-          <Pressable onPress={() => { setShapesOpen((x) => !x); if (shapesOpen) setShape(null); }} style={[styles.toolWide, (shapesOpen || shape) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Shapes')}><Text style={styles.toolText}>{t('Shapes')}</Text></Pressable>
-          <Pressable onPress={() => setMirror((x) => !x)} style={[styles.toolWide, mirror && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mirror drawing')}><Text style={styles.toolText}>{t('Mirror')}</Text></Pressable>
-          {SHOW_STAMPS ? <Pressable onPress={() => setStampsOpen((x) => !x)} style={[styles.toolWide, (stampsOpen || stamp) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Stamps')}><Text style={styles.toolText}>{t('Stamps')}</Text></Pressable> : null}
-          <Pressable onPress={() => setBehind((x) => !x)} style={[styles.toolWide, behind && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Colour behind the lines')}><Text style={styles.toolText}>{t('Behind the lines')}</Text></Pressable>
-          <Pressable onPress={() => { setDropper(true); setMore(false); }} style={[styles.toolWide, dropper && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Pick up a colour from the page')}><Text style={styles.toolText}>{t('Pick up a colour')}</Text></Pressable>
+          <Pressable onPress={() => setMixing((x) => !x)} style={[styles.toolWide, mixing && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mix colours')} accessibilityState={{ selected: !!mixing }}><Text style={styles.toolText}>{t('Mix')}</Text></Pressable>
+          <Pressable onPress={() => { setShapesOpen((x) => !x); if (shapesOpen) setShape(null); }} style={[styles.toolWide, (shapesOpen || shape) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Shapes')} accessibilityState={{ expanded: !!shapesOpen, selected: !!shape }}><Text style={styles.toolText}>{t('Shapes')}</Text></Pressable>
+          <Pressable onPress={() => setMirror((x) => !x)} style={[styles.toolWide, mirror && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mirror drawing')} accessibilityState={{ selected: !!mirror }}><Text style={styles.toolText}>{t('Mirror')}</Text></Pressable>
+          {SHOW_STAMPS ? <Pressable onPress={() => setStampsOpen((x) => !x)} style={[styles.toolWide, (stampsOpen || stamp) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Stamps')} accessibilityState={{ expanded: !!stampsOpen, selected: !!stamp }}><Text style={styles.toolText}>{t('Stamps')}</Text></Pressable> : null}
+          <Pressable onPress={() => setBehind((x) => !x)} style={[styles.toolWide, behind && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Colour behind the lines')} accessibilityState={{ selected: !!behind }}><Text style={styles.toolText}>{t('Behind the lines')}</Text></Pressable>
+          <Pressable onPress={() => { setDropper(true); setMore(false); }} style={[styles.toolWide, dropper && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Pick up a colour from the page')} accessibilityState={{ selected: !!dropper }}><Text style={styles.toolText}>{t('Pick up a colour')}</Text></Pressable>
         </View>
         {SHOW_STAMPS && stampsOpen ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
             {STAMPS.map(([k, src, aspect, name]) => {
               const d = Math.floor((w - 44 - 5 * 8) / 6);
               return (
-                <Pressable key={k} onPress={() => { setStamp(k); setShape(null); setErase(false); setBucket(false); setDropper(false); setMore(false); }} accessibilityRole="button" accessibilityLabel={t(name)}
+                <Pressable key={k} onPress={() => { setStamp(k); setShape(null); setErase(false); setBucket(false); setDropper(false); setMore(false); }} accessibilityRole="button" accessibilityLabel={t(name)} accessibilityState={{ selected: stamp === k }}
                   style={{ width: d, height: d, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: stamp === k ? colors.green : 'rgba(255,255,255,0.08)' }}>
                   <Image source={src} style={{ width: d * 0.82, height: d * 0.82 }} resizeMode="contain" />
                 </Pressable>
@@ -1389,7 +1399,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
         {shapesOpen ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
             {SHAPES.map(([k, glyph, name]) => (
-              <Pressable key={k} onPress={() => { setShape((x) => (x === k ? null : k)); setStamp(null); setErase(false); setBucket(false); setMore(false); }} style={[styles.tool, shape === k && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t(name)}>
+              <Pressable key={k} onPress={() => { setShape((x) => (x === k ? null : k)); setStamp(null); setErase(false); setBucket(false); setMore(false); }} style={[styles.tool, shape === k && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t(name)} accessibilityState={{ selected: shape === k }}>
                 <Text style={[styles.toolText, { fontSize: 20, lineHeight: 24 }]}>{glyph}</Text>
               </Pressable>
             ))}

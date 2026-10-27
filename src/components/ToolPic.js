@@ -22,7 +22,7 @@ export default function ToolPic({ kind, width, height, floor }) {
   const k = Math.min(height / ih, (width * 0.78) / iw); // (room between the tools)
   const w = iw * k, h = ih * k;
   return (
-    <View pointerEvents="none" style={{ width, height: Math.max(height, (floor || 0) + 40), alignItems: 'center' }}>
+    <View pointerEvents="none" accessible={false} importantForAccessibility="no-hide-descendants" style={{ width, height: Math.max(height, (floor || 0) + 40), alignItems: 'center' }}>
       <View style={{ width: w, height: h, marginTop: floor != null ? Math.max(0, floor + Math.max(14, h * 0.2) - h) : 0 }}>
         {/* its shadow on the tray: its own shape, dark and soft, a little down and to the right */}
         {/* one picture, its soft shadow drawn by the phone from its own shape (a second, darkened copy showed as a double) */}

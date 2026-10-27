@@ -12,6 +12,9 @@ import { PhotoPreview, composePhoto } from './PhotoCanvas';
 import { DEFAULT_EDIT, LAYOUTS, LOOKS, PAGE_COLORS, frameOf } from './photoLayout';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+// the page colours' names, for VoiceOver (the same names as the cover title's colours)
+const PAGE_COLOR_NAMES = { '#ffffff': 'White', '#f4f1ea': 'Soft white', '#d9d4c7': 'Linen', '#a8a39a': 'Stone grey', '#36393b': 'Charcoal',
+  '#1e1a17': 'Warm black', '#2f5d3a': 'Forest green', '#1f3a5f': 'Dark blue', '#c4683f': 'Terracotta', '#c9a227': 'Mustard' };
 
 export default function PhotoEditor({ src, edit: given, tr, insets, onDone, onCancel }) {
   const { width: winW, height: winH } = useWindowDimensions();
@@ -50,8 +53,8 @@ export default function PhotoEditor({ src, edit: given, tr, insets, onDone, onCa
     setBusy(false);
     onDone(out, e);
   };
-  const Chip = ({ on, label, onPress }) => (
-    <Pressable onPress={onPress} style={[styles.chip, on && { backgroundColor: colors.green }]} accessibilityRole="button" accessibilityState={{ selected: !!on }}>
+  const Chip = ({ on, label, onPress, a11y }) => (
+    <Pressable onPress={onPress} style={[styles.chip, on && { backgroundColor: colors.green }]} accessibilityRole="button" accessibilityLabel={a11y} accessibilityState={{ selected: !!on }}>
       <Text numberOfLines={1} style={styles.chipText}>{label}</Text>
     </Pressable>
   );
@@ -61,7 +64,7 @@ export default function PhotoEditor({ src, edit: given, tr, insets, onDone, onCa
       <ScrollView contentContainerStyle={{ paddingTop: insets.top + 16, paddingBottom: insets.bottom + 24, paddingHorizontal: 20, alignItems: 'center', gap: 14, ...(wide ? { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center' } : null) }}>
         <View style={{ gap: 10 }}>
           <Text style={styles.head}>{tr('Edit photo')}</Text>
-          <View {...pan.panHandlers} style={styles.shadow}>
+          <View {...pan.panHandlers} style={styles.shadow} accessible accessibilityRole="image" accessibilityLabel={tr('Edit photo')} accessibilityHint={tr('Drag to move. Pinch to zoom.')}>
             <PhotoPreview uri={src.uri} edit={e} size={S} />
           </View>
           <Text style={styles.hint}>{tr('Drag to move. Pinch to zoom.')}</Text>
@@ -74,8 +77,8 @@ export default function PhotoEditor({ src, edit: given, tr, insets, onDone, onCa
           <View style={styles.rule} />
           {tab === 'crop' ? (
             <View style={styles.row}>
-              <Chip label={'−'} onPress={() => set({ zoom: clamp(e.zoom / 1.15, 0.5, 5) })} />
-              <Chip label={'+'} onPress={() => set({ zoom: clamp(e.zoom * 1.15, 0.5, 5) })} />
+              <Chip label={'−'} a11y={tr('Zoom out')} onPress={() => set({ zoom: clamp(e.zoom / 1.15, 0.5, 5) })} />
+              <Chip label={'+'} a11y={tr('Zoom in')} onPress={() => set({ zoom: clamp(e.zoom * 1.15, 0.5, 5) })} />
               <Chip label={tr('Turn')} onPress={() => set({ rot: ((e.rot || 0) + 90) % 360 })} />
               <Chip on={e.flip} label={tr('Flip')} onPress={() => set({ flip: !e.flip })} />
               <Chip label={tr('Reset')} onPress={() => set({ zoom: 1, ox: 0, oy: 0, rot: 0, flip: false })} />
@@ -91,7 +94,7 @@ export default function PhotoEditor({ src, edit: given, tr, insets, onDone, onCa
                   <Text style={styles.label}>{tr('Page colour')}</Text>
                   <View style={styles.row}>
                     {PAGE_COLORS.map((c) => (
-                      <Pressable key={c} onPress={() => set({ bg: c })} accessibilityLabel={c} style={[styles.swatch, { backgroundColor: c }, e.bg === c && styles.swatchOn]} />
+                      <Pressable key={c} onPress={() => set({ bg: c })} accessibilityRole="radio" accessibilityLabel={PAGE_COLOR_NAMES[c] ? tr(PAGE_COLOR_NAMES[c]) : tr('Page colour')} accessibilityState={{ selected: e.bg === c }} style={[styles.swatch, { backgroundColor: c }, e.bg === c && styles.swatchOn]} />
                     ))}
                   </View>
                 </>

@@ -56,7 +56,7 @@ function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onP
     else onPress(null);
   };
   return (
-    <Pressable onPress={press} onLongPress={onLongPress} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={label}
+    <Pressable onPress={press} onLongPress={onLongPress} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={label} accessibilityState={selecting ? { selected: !!selected } : undefined}
       onLayout={lean ? (e) => setLeanW(e.nativeEvent.layout.width) : undefined}>
       {/* the featured book: a grey character leans against its right side, his hand on its edge, feet on the felt */}
       {/* (the mascot is away until Jörg's new hand-drawn one arrives: SHOW_MASCOT brings this back) */}
@@ -223,7 +223,7 @@ function WhoReads({ onPress }) {
   const p = activeProfile();
   return (
     <View style={{ width: tileWidth(winW) }}>{/* the box is as wide as a book */}
-      <Pressable onPress={onPress} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Profiles')}
+      <Pressable onPress={onPress} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Profiles')} accessibilityValue={p ? { text: p.name } : undefined}
         style={{ alignSelf: 'stretch', flexDirection: 'row', alignItems: 'center', gap: p ? 12 : 9, backgroundColor: 'rgba(0,0,0,0.45)', borderRadius: 14, paddingVertical: 10, paddingLeft: p ? 12 : 16, paddingRight: 14 }}>{/* on a see-through black box with rounded corners */}
         {p ? <View style={{ width: 40, height: 40, borderRadius: 20, overflow: 'hidden', marginHorizontal: 4, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.85)', backgroundColor: '#3a3a3a' }}><Image source={p.color === 'photo' && p.photo ? { uri: liveUri(p.photo) } : feltFor(p.color)} style={{ width: '100%', height: '100%' }} resizeMode="cover" /></View>
           : <View style={{ alignItems: 'center' }}>{/* a small person: only as tall as itself, so the word centres on it */}
@@ -405,8 +405,8 @@ export function Library({ onReadingOptions, onGarden, narrator, toast, onProfile
             {chosen.length > mineCount ? ' ' + t('Built-in books can be brought back later.') : ''}
           </Text>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <Pressable onPress={() => setGate('delete')} style={[styles.actBtn, { backgroundColor: colors.deepRed }]}><Text style={styles.actText}>{t('Delete')}</Text></Pressable>
-            <Pressable onPress={() => setConfirm(false)} style={[styles.actBtn, { backgroundColor: '#333' }]}><Text style={styles.actText}>{t('Keep')}</Text></Pressable>
+            <Pressable onPress={() => setGate('delete')} style={[styles.actBtn, { backgroundColor: colors.deepRed }]} accessibilityRole="button"><Text style={styles.actText}>{t('Delete')}</Text></Pressable>
+            <Pressable onPress={() => setConfirm(false)} style={[styles.actBtn, { backgroundColor: '#333' }]} accessibilityRole="button"><Text style={styles.actText}>{t('Keep')}</Text></Pressable>
           </View>
         </View>
       ) : null}
@@ -619,7 +619,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
   return (
     <View style={[StyleSheet.absoluteFill, { zIndex: 60 }]}>
       <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: dim }]}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={() => close()} accessibilityLabel={t('Close')} />
+        <Pressable style={StyleSheet.absoluteFill} onPress={() => close()} accessibilityRole="button" accessibilityLabel={t('Close')} />
       </Animated.View>
       {/* a small light grey Close under the card, at its bottom right (on the felt) */}
       {boxH ? (

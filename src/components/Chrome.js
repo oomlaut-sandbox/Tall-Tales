@@ -25,12 +25,13 @@ export function slotStyle(u, vertical, nudge = true) {
 // The menu button. On the black bars it brings the house and the music note with it, in their fixed slots.
 // home / music: false to leave them out; vertical: which way the bar runs (else the bar says)
 export function Burger({ onPress, u, home = true, music = true, onHome, vertical: v }) {
+  const tr = useT();
   const ctx = useContext(BarDir);
   const vertical = v != null ? v : ctx;
   const G = barGeo(u);
   const mh = 3 * G.t + 2 * G.gap;
   const menu = (
-    <Pressable onPress={withTap(onPress)} hitSlop={14} accessibilityRole="button" accessibilityLabel="Menu" style={{ width: G.mw, justifyContent: 'center' }}>
+    <Pressable onPress={withTap(onPress)} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Menu')} style={{ width: G.mw, justifyContent: 'center' }}>
       <View style={{ height: G.t, backgroundColor: colors.white }} />
       <View style={{ height: G.t, backgroundColor: colors.white, marginTop: G.gap }} />
       <View style={{ height: G.t, backgroundColor: colors.white, marginTop: G.gap }} />
@@ -148,7 +149,7 @@ export function RecordButton({ onPress, active, k = 1 }) {
     return () => loop.stop();
   }, [active]);
   return (
-    <Pressable onPress={withTap(onPress, thunk)} hitSlop={8} style={[styles.ctl, { width: 44 * k, height: 44 * k }]} accessibilityLabel={tr('Recording options')}>
+    <Pressable onPress={withTap(onPress, thunk)} hitSlop={8} style={[styles.ctl, { width: 44 * k, height: 44 * k }]} accessibilityRole="button" accessibilityLabel={tr('Recording options')}>
       <Animated.View style={{ width: 34 * k, height: 34 * k, borderRadius: 17 * k, backgroundColor: colors.highlight, transform: [{ scale: pulse }] }} />
     </Pressable>
   );
@@ -158,9 +159,10 @@ export function RecordButton({ onPress, active, k = 1 }) {
 // nothing); when it isn't reading, Play is white and Pause is greyed. (Record stays red.)
 export const IDLE = '#3d3d3d'; // greyed out on the black bar: about 24% white, the way iOS greys out a control that can't be used right now
 export function PauseButton({ onPress, disabled, active = true, k = 1 }) {
+  const tr = useT();
   const c = active ? colors.white : IDLE;
   return (
-    <Pressable onPress={withTap(onPress)} disabled={disabled || !active} hitSlop={8} style={[styles.ctl, { width: 44 * k, height: 44 * k }, disabled && { opacity: 0.35 }]} accessibilityLabel="Pause" accessibilityState={{ disabled: disabled || !active }}>
+    <Pressable onPress={withTap(onPress)} disabled={disabled || !active} hitSlop={8} style={[styles.ctl, { width: 44 * k, height: 44 * k }, disabled && { opacity: 0.35 }]} accessibilityRole="button" accessibilityLabel={tr('Pause')} accessibilityState={{ disabled: disabled || !active }}>
       <View style={{ flexDirection: 'row', gap: 8 * k }}>
         <View style={{ width: 9 * k, height: 30 * k, backgroundColor: c }} />
         <View style={{ width: 9 * k, height: 30 * k, backgroundColor: c }} />
@@ -170,9 +172,10 @@ export function PauseButton({ onPress, disabled, active = true, k = 1 }) {
 }
 
 export function PlayButton({ onPress, active, disabled, k = 1 }) {
+  const tr = useT();
   const c = active ? IDLE : colors.white; // playing: greyed (it would do nothing)
   return (
-    <Pressable onPress={withTap(onPress)} disabled={disabled || active} hitSlop={8} style={[styles.ctl, { width: 44 * k, height: 44 * k }, disabled && { opacity: 0.35 }]} accessibilityLabel="Play" accessibilityState={{ disabled: disabled || !!active }}>
+    <Pressable onPress={withTap(onPress)} disabled={disabled || active} hitSlop={8} style={[styles.ctl, { width: 44 * k, height: 44 * k }, disabled && { opacity: 0.35 }]} accessibilityRole="button" accessibilityLabel={tr('Play')} accessibilityState={{ disabled: disabled || !!active }}>
       <View style={{ width: 0, height: 0, marginLeft: 6 * k, borderLeftWidth: 26 * k, borderTopWidth: 16 * k, borderBottomWidth: 16 * k, borderLeftColor: c, borderTopColor: 'transparent', borderBottomColor: 'transparent' }} />
     </Pressable>
   );
@@ -190,7 +193,7 @@ export function DogEar({ u, onPress, label = 'Next page', under = colors.earUnde
     <View key={`${size}-${off}`} style={{ position: 'absolute', right: off * 0.4, bottom: off * 0.4, width: 0, height: 0, borderRightWidth: size, borderTopWidth: size, borderRightColor: 'transparent', borderTopColor: color }} />
   );
   return (
-    <Pressable onPress={onPress} accessibilityLabel={tr(label)} style={[styles.ear, { width: Math.max(48, e + 16), height: Math.max(48, e + 16) }]}>
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={tr(label)} style={[styles.ear, { width: Math.max(48, e + 16), height: Math.max(48, e + 16) }]}>
       {bare ? null : <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderLeftWidth: e, borderBottomWidth: e, borderLeftColor: 'transparent', borderBottomColor: under }} />}
       {/* soft shadow: many faint layers, each a little larger, so it fades smoothly */}
       {bare ? null : Array.from({ length: 10 }, (_, i) => (10 - i) * 0.8).map((d) => tri(e + d, 'rgba(0,0,0,0.018)', d))}
@@ -264,7 +267,7 @@ export function Panel({ open, title, onClose, bottom, inset = 0, children, portr
   return (
     <>
       {/* tapping outside closes the menu, but the bar stays live, so its other buttons (record, Pages…) still work */}
-      {open ? <Pressable style={[StyleSheet.absoluteFill, wide ? { right: rightW } : { bottom: bottom || 0 }]} onPress={onClose} accessibilityLabel={tr('Close menu')} /> : null}
+      {open ? <Pressable style={[StyleSheet.absoluteFill, wide ? { right: rightW } : { bottom: bottom || 0 }]} onPress={onClose} accessibilityRole="button" accessibilityLabel={tr('Close menu')} /> : null}
       {/* the clip: everything up to the edge of the menu bar */}
       <View pointerEvents="box-none" style={[styles.panelClip, wide ? { right: rightW } : { bottom: bottom || 0 }]}>
         <Animated.View
@@ -532,7 +535,7 @@ export function GearIcon({ size = 18, color = colors.white, hole = colors.tile }
 export function Option({ glyph, title, sub, onPress, selected, disabled }) {
   const felt = useLook() === 'felt';
   return (
-    <Pressable onPress={withTap(onPress)} disabled={disabled} style={[styles.opt, disabled && { opacity: 0.45 }]} accessibilityRole="button">
+    <Pressable onPress={withTap(onPress)} disabled={disabled} style={[styles.opt, disabled && { opacity: 0.45 }]} accessibilityRole="button" accessibilityState={{ selected: !!selected, disabled: !!disabled }}>
       <View style={[styles.optIc, selected && { backgroundColor: colors.green }, felt && { borderRadius: 12, overflow: 'hidden' }]}>
         <Felt />
         <Stitch inset={4} radius={12} />
@@ -547,7 +550,7 @@ export function Option({ glyph, title, sub, onPress, selected, disabled }) {
 }
 
 // A simple slider: drag the knob or tap the track. Values snap to `step`.
-export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLabel, rightLabel, format = (v) => v, showValue = true }) {
+export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLabel, rightLabel, format = (v) => v, showValue = true, accessibilityLabel }) {
   const [w, setW] = React.useState(0);
   const geo = useRef({ w: 0, x0: 0 });
   const cb = useRef({});
@@ -571,7 +574,14 @@ export function Slider({ value, min, max, step = 0.05, onChange, onDone, leftLab
   return (
     <View>
       <View style={{ height: 44, justifyContent: 'center' }} onLayout={(e) => { geo.current.w = e.nativeEvent.layout.width; setW(e.nativeEvent.layout.width); }} {...pan.panHandlers}
-        accessibilityRole="adjustable" accessibilityValue={{ text: String(format(value)) }}>
+        accessible accessibilityRole="adjustable" accessibilityLabel={accessibilityLabel} accessibilityValue={{ text: String(format(value)) }}
+        accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+        onAccessibilityAction={(e) => { // VoiceOver: swipe up or down to change it by one step
+          const d = e.nativeEvent.actionName === 'increment' ? step : e.nativeEvent.actionName === 'decrement' ? -step : 0;
+          if (!d) return;
+          const v = Math.max(min, Math.min(max, Math.round((value + d) / step) * step));
+          onChange(v); onDone && onDone(v);
+        }}>
         <View pointerEvents="none" style={{ height: 6, backgroundColor: '#444' }}>
           <View style={{ width: f * w, height: 6, backgroundColor: colors.green }} />
         </View>

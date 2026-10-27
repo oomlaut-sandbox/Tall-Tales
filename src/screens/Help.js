@@ -165,6 +165,21 @@ const ALL_HELP = [
   { section: 'Grown-ups', title: 'Sending us your book', store: true, text: [
     'Authors and illustrators young and old can send their books to the Coro Book Store. Visit corobooks.com for more information.',
   ] },
+  { section: 'Accessibility', title: 'Listening and reading along', text: [
+    'Any book can read itself aloud: tap Play on the bar. Words light up as they’re read. Tap any word to hear it on its own.',
+    'Books you make are read in a recorded voice. Record each page yourself, or ask someone who loves the reader.',
+  ] },
+  { section: 'Accessibility', title: 'Text size and fonts', text: [
+    'In a book, open Reading Options to make the words bigger and choose a clear font.',
+    'Menus and settings follow your device’s text size: Settings → Accessibility → Display & Text Size → Larger Text.',
+  ] },
+  { section: 'Accessibility', title: 'VoiceOver', text: [
+    'Every button has a spoken name, and the words on each page are read out as it turns. Turn on VoiceOver in Settings → Accessibility → VoiceOver.',
+  ] },
+  { section: 'Accessibility', title: 'Reduce Motion and the nightlight', text: [
+    'With Reduce Motion on (Settings → Accessibility → Motion), Coro swaps sliding and bouncing for gentle fades, and skips the opening film. Page turns stay as they are.',
+    'At bedtime, Listen Only turns the screen into a nightlight that dims slowly.',
+  ] },
   { section: 'Teachers and Educators', title: 'Classroom folders', text: [
     'A classroom folder holds up to 30 student profiles. Set it up in Settings, under Teachers and Educators: give your class a name, then add each student in Profiles.',
     'Students tap their name to start. Each one keeps their own notebook, badges and settings.',
@@ -231,7 +246,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
             const secOpen = searching || openSec === section;
             return (
               <View key={section} style={styles.box}>
-                <Pressable disabled={searching} onPress={() => { setOpenSec((o) => (o === section ? null : section)); setOpen(null); }} accessibilityRole="button" accessibilityState={{ expanded: secOpen }}
+                <Pressable disabled={searching} onPress={() => { setOpenSec((o) => (o === section ? null : section)); setOpen(null); }} accessibilityRole="button" accessibilityLabel={t(section)} accessibilityState={{ expanded: secOpen }}
                   style={[styles.secHead, !secOpen && { marginBottom: 0 }]}>
                   {HEADING_ICONS[section] ? <Image source={HEADING_ICONS[section]} style={styles.secIcon} accessibilityIgnoresInvertColors /> : null}
                   <Text style={[styles.section, { flex: 1 }]}>{t(section)}</Text>
@@ -241,7 +256,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
                   const shown = searching || open === h.title;
                   return (
                     <View key={h.title} style={styles.card}>
-                      <Pressable onPress={() => setOpen((o) => (o === h.title ? null : h.title))} accessibilityRole="button" accessibilityState={{ expanded: shown }} style={styles.cardHead}>
+                      <Pressable onPress={() => setOpen((o) => (o === h.title ? null : h.title))} accessibilityRole="button" accessibilityLabel={t(h.title)} accessibilityState={{ expanded: shown }} style={styles.cardHead}>
                         <Text style={styles.cardTitle}>{t(h.title)}</Text>
                         <Text style={styles.chev}>{shown ? '−' : '+'}</Text>
                       </Pressable>

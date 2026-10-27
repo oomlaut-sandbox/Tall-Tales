@@ -14,7 +14,7 @@ const SCISSORS = require('../../assets/icon-scissors.png');
 export function VoiceFace({ photo, name, narrator = false, person = false, size = 36 }) {
   return (
     <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-      {photo ? <Image source={{ uri: photo }} style={{ width: size, height: size }} resizeMode="cover" />
+      {photo ? <Image source={{ uri: photo }} style={{ width: size, height: size }} resizeMode="cover" accessibilityIgnoresInvertColors />
         : person ? <View style={{ transform: [{ translateY: -size * 0.025 }] }}><PersonIcon size={size * 0.4} color="#8a8a8a" /></View>
         : narrator || !name ? <View style={{ transform: [{ translateY: size * 0.07 }] }}><BubbleIcon size={size * 0.5} color="#e0e0e0" /></View>
         : <Text allowFontScaling={false} style={{ color: '#e0e0e0', fontFamily: fonts.uiBold, fontSize: size * 0.44 }}>{name.trim().charAt(0).toUpperCase()}</Text>}
@@ -30,7 +30,7 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
   const close = (then) => Animated.timing(a, { toValue: 0, duration: 140, easing: Easing.in(Easing.quad), useNativeDriver: true }).start(() => { onClose(); then && then(); });
   return (
     <View style={[StyleSheet.absoluteFill, { zIndex: 90 }]}>
-      <Pressable style={StyleSheet.absoluteFill} onPress={() => close()} accessibilityLabel={tr('Close')} />
+      <Pressable style={StyleSheet.absoluteFill} onPress={() => close()} accessibilityRole="button" accessibilityLabel={tr('Close')} />
       <Animated.View style={[styles.box, anchor, { opacity: a, transform: [{ scale: a.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] }) }] }]}>
         <Text style={styles.title}>{tr('Who reads this book?')}</Text>
         {onEdit ? (

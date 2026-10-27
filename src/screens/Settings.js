@@ -35,7 +35,7 @@ function Toggle({ label, value, onChange }) {
   return (
     <View style={styles.row}>
       <Text style={styles.rowText}>{label}</Text>
-      <Switch value={value} onValueChange={(v) => { tap(); onChange(v); }} trackColor={{ true: colors.green, false: '#555' }} thumbColor={colors.white} ios_backgroundColor="#555" />
+      <Switch accessibilityLabel={label} value={value} onValueChange={(v) => { tap(); onChange(v); }} trackColor={{ true: colors.green, false: '#555' }} thumbColor={colors.white} ios_backgroundColor="#555" />
     </View>
   );
 }
@@ -55,7 +55,7 @@ function Section({ id, icon, title, open, setOpen, children }) {
   const on = open === id;
   return (
     <View style={styles.box}>
-      <Pressable onPress={() => setOpen((o) => (o === id ? null : id))} accessibilityRole="button" accessibilityState={{ expanded: on }} style={[styles.secHead, on && { marginBottom: 6 }]}>
+      <Pressable onPress={() => setOpen((o) => (o === id ? null : id))} accessibilityRole="button" accessibilityLabel={title} accessibilityState={{ expanded: on }} style={[styles.secHead, on && { marginBottom: 6 }]}>
         <Image source={icon} style={styles.secIcon} accessibilityIgnoresInvertColors />
         <Text style={[styles.secTitle, { flex: 1 }]}>{title}</Text>
         <Text style={styles.secChev}>{on ? '−' : '+'}</Text>
@@ -209,7 +209,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
                   {LANGS.map(([k, name]) => <Choice key={k} label={name} on={bookLang === k} disabled={!ps.member} onPress={() => setBookLang(k)} />)}
                 </View>
                 <Text style={styles.small}>{t('Members can read books in another language than the app’s: a German book in an English app, for example. Each book can be read in the languages it has been translated into.')}</Text>
-                {!ps.member ? <Pressable onPress={onJoin} hitSlop={8}><Text style={styles.link}>{t('Join the membership to choose')}</Text></Pressable> : null}
+                {!ps.member ? <Pressable onPress={onJoin} hitSlop={8} accessibilityRole="link"><Text style={styles.link}>{t('Join the membership to choose')}</Text></Pressable> : null}
               </View>
           </Section>
           {/* Teachers and Educators: a classroom folder of up to 30 students (Jörg, 26 Oct 2026) */}
