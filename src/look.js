@@ -41,6 +41,10 @@ export const DESK_FELT = require('../assets/desk-felt.jpg'); // (on iPad it's dr
 // iPad (Jörg, 27 Oct 2026): the felt is back, as a seamless tile cut from the same photo, repeated at the phone's
 // scale, so it stays sharp and even however big the screen is. Phones are unchanged.
 export const DESK_TILE = require('../assets/desk-felt-tile.jpg');
+// Jörg's own iPad felt (27 Oct 2026): one big photo for upright, the same turned for sideways
+const DESK_IPAD = require('../assets/desk-felt-ipad.jpg');
+const DESK_IPAD_WIDE = require('../assets/desk-felt-ipad-wide.jpg');
+export const DESK_IPAD_NOW = (w, h) => (w > h ? DESK_IPAD_WIDE : DESK_IPAD);
 
 // The felt background, locked in place. Every screen draws the same picture at the same size and in the
 // same spot on the screen (the whole window), and only shows the part that falls inside its own area, so
@@ -80,7 +84,7 @@ export function DeskFelt({ spot = 'any', overlay }) {
   return (
     <View ref={ref} collapsable={false} onLayout={measure} pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]}>
       {IS_TABLET
-        ? <TileFelt left={-o.x} top={-o.y} w={win.width} h={win.height} />
+        ? <Image source={DESK_IPAD_NOW(win.width, win.height)} resizeMode="cover" style={{ position: 'absolute', left: -o.x, top: -o.y, width: win.width, height: win.height }} />
         : <Image source={DESK_FELT} resizeMode="cover" style={{ position: 'absolute', left: -o.x, top: -o.y, width: win.width, height: win.height }} />}
     </View>
   );
