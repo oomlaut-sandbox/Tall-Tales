@@ -1,7 +1,7 @@
 // The intro (being worked on separately: off in the app until it's ready, INTRO_ON in App.js; the web preview
 // shows it at #intro). Jörg, 26 Oct 2026: words only, on the dark felt, in light grey boxes (no mascot, no
 // screen grabs). The notebook asks "Are you a kid or a grown-up?"; each then gets its own short journey here,
-// and ends on the start page (Make a book, Read a book). Every page has a small Skip beside Next.
+// and ends on the start page (Make a book, Read a book). (No Skip: Jörg, 27 Oct 2026.)
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -167,16 +167,14 @@ export default function Intro({ who, onDone, onBack }) {
           {body}
         </Animated.View>
       </ScrollView>
-      {/* Next, with a small Skip beside it; and how far along you are */}
-      {/* back in the bottom left corner, forward in the bottom right; how far along, and a small Skip, between them */}
+      {/* back in the bottom left corner, forward in the bottom right; how far along between them */}
       <View style={[styles.foot, { paddingBottom: insets.bottom + 22 }]}>
         <Pressable onPress={back} disabled={i === 0 && !onBack} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Back')} style={[styles.arrow, i === 0 && !onBack && { opacity: 0.3 }]}>
           <View style={[styles.chev, { transform: [{ translateX: 2 }, { rotate: '45deg' }], borderLeftWidth: 2.4, borderBottomWidth: 2.4 }]} />
         </Pressable>
-        {/* between the arrows: how far along, and 'Skip intro', centred and well away from the Next arrow */}
+        {/* between the arrows: how far along (no Skip intro: Jörg, 27 Oct 2026) */}
         <View style={{ flex: 1, alignItems: 'center', gap: 10 }}>
           <View style={styles.dots}>{pages.map((p, k) => <View key={p} style={[styles.dot, k === i && styles.dotOn]} />)}</View>
-          <Pressable onPress={finish} hitSlop={10} accessibilityRole="button"><Text style={styles.skip}>{t('Skip intro')}</Text></Pressable>
         </View>
         <Pressable onPress={next} hitSlop={10} accessibilityRole="button" accessibilityLabel={i < pages.length - 1 ? t('Next') : t('Let’s go!')} style={[styles.arrow, styles.arrowOn]}>
           <View style={[styles.chev, { transform: [{ translateX: -2 }, { rotate: '45deg' }], borderRightWidth: 2.4, borderTopWidth: 2.4 }]} />
