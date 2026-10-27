@@ -1,5 +1,5 @@
 {
-  "_note": "Voiceovers for the two portrait videos (Jörg, 26 Oct 2026), read by Fatima (ElevenLabs Lily). Each line becomes one sentence group, with a short pause between.",
+  "_note": "Voiceovers for the two portrait videos (Jörg, 26 Oct 2026), read by Fatima (ElevenLabs Lily). Each line becomes one sentence group, with a short pause between. Intro videos added 27 Oct 2026 (the What is Coro? and Meet Coro videos); 'done' ones are skipped.",
   "voice": "pFZP5JQG7iQjIQuC4Bku",
   "model": "eleven_multilingual_v2",
   "videos": {
@@ -15,7 +15,8 @@
         "Each child gets their own profile. Parental controls and a grown-up check keep buying, sharing and settings with you.",
         "Need a spark? Ideas has sixty-four kinds of books to make together. And every Book Store book shows exactly how it was made.",
         "Coro. Books you make together."
-      ]
+      ],
+      "done": true
     },
     "coro-kids-30s": {
       "speed": 0.85,
@@ -26,13 +27,112 @@
         "Then read it out loud. Your voice is in the book!",
         "Send it to Grandma and Grandpa. They can read it with you.",
         "Pick your Coro and start making. Coro!"
-      ]
+      ],
+      "done": true
     },
     "coro-hi": {
       "speed": 1.0,
       "pause": "0.3s",
       "lines": [
         "Hi! I'm Coro."
+      ],
+      "done": true
+    },
+    "intro-kids-make-a-book": {
+      "speed": 0.88,
+      "pause": "1.2s",
+      "lines": [
+        "Hi! I'm Coro. Let's make a book together!",
+        "Tap Make a book, and your notebook opens.",
+        "Draw a picture. Any picture! Swirly, spotty, silly. It's all perfect.",
+        "Then write what happens. Just a few words is plenty.",
+        "Want more? Add another page.",
+        "Give your book a name, and put your name on the cover. You're the author!",
+        "Last, read it out loud with someone you love, and record it.",
+        "Ta-da! Your very own book.",
+        "Coro. Books you make together."
+      ]
+    },
+    "intro-1-complete-walk-through": {
+      "speed": 0.95,
+      "pause": "0.7s",
+      "lines": [
+        "Welcome to Coro! Here, you and your child make picture books together.",
+        "Make a book in minutes. Draw or add photos, write a few words on each page, and design a cover.",
+        "Then read it aloud and record it. Every Coro book you make is told in a real voice: yours, a grandparent's, your child's.",
+        "Your books live in My Library, next to Coro books from the Book Store.",
+        "Read together, or let a book read itself, with Daydream by day and Nightlight at bedtime.",
+        "Share your books with family, wherever they are.",
+        "Each reader gets their own profile and shelf.",
+        "Buying, sharing and settings ask a grown-up first, so little hands can explore freely.",
+        "Coro. Books you make together."
+      ]
+    },
+    "intro-2-quick-tour": {
+      "speed": 0.95,
+      "pause": "0.7s",
+      "lines": [
+        "This is Coro.",
+        "Make a book with your child: pictures, words, and your own voices.",
+        "Keep them all in My Library.",
+        "Find new Coro books in the Book Store.",
+        "And share them with the people you love.",
+        "Coro. Books you make together."
+      ]
+    },
+    "intro-3-making-and-sharing": {
+      "speed": 0.95,
+      "pause": "0.7s",
+      "lines": [
+        "Ready? Tap Make a book.",
+        "Start with what your book is about. One idea is all you need.",
+        "Draw right on the page, or add a photo of your child's artwork.",
+        "Add a few words to each page. Short is sweet.",
+        "On the cover, move and style the title and the author's name just how you like.",
+        "Tap Finish. Now the best part: read your book aloud and record it, page by page.",
+        "Your book is now told in your voice.",
+        "Share it with grandparents, cousins, friends. They can listen anywhere.",
+        "Coro. Books you make together."
+      ]
+    },
+    "intro-4-reading-books": {
+      "speed": 0.95,
+      "pause": "0.7s",
+      "lines": [
+        "Tap any book on the shelf, and it opens like a real one.",
+        "Turn the pages and read together, at your own pace.",
+        "Tap a word to hear it.",
+        "Pick who reads: the narrator, or anyone in the family who recorded it.",
+        "Want to listen? Daydream plays calm pictures by day. Nightlight dims everything for bedtime.",
+        "Reading Options let you change the text size, font and more.",
+        "Make a playlist, and books play one after another.",
+        "Coro. Books you make together."
+      ]
+    },
+    "intro-5-parental-controls": {
+      "speed": 0.95,
+      "pause": "0.7s",
+      "lines": [
+        "Kids can see everything in Coro. Buying, sharing and settings just need a grown-up to open them.",
+        "A quick question only a grown-up can answer keeps those doors closed.",
+        "In Parental Controls, set your child's age, and Coro shows books that fit.",
+        "You decide what gets shared, and with whom.",
+        "So your child can explore freely, and you can relax.",
+        "Coro. Books you make together."
+      ]
+    },
+    "intro-6-for-teachers": {
+      "speed": 0.95,
+      "pause": "0.7s",
+      "lines": [
+        "Hello, teachers! Coro has a Classroom mode.",
+        "Make a folder for each class, with up to 30 students.",
+        "Paste in your class list, and every student gets a profile in one go.",
+        "See your class as a grid or a list.",
+        "Each student makes and records their own books, on their own shelf.",
+        "At the end of the year, select and remove profiles or whole classes in a few taps.",
+        "Make books together as a class, and share them with families.",
+        "Coro. Books you make together."
       ]
     }
   }

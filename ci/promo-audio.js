@@ -7,6 +7,7 @@ const cfg = JSON.parse(fs.readFileSync(path.join(__dirname, 'promo-scripts.json'
   if (!KEY) { console.log('no ELEVENLABS_API_KEY'); process.exit(1); }
   fs.mkdirSync('out/promo', { recursive: true });
   for (const [name, v] of Object.entries(cfg.videos)) {
+    if (v.done) continue; // (made already)
     const text = v.lines.join(` <break time="${v.pause}" /> `);
     const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${cfg.voice}?output_format=mp3_44100_192`, {
       method: 'POST', headers: { 'xi-api-key': KEY, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
