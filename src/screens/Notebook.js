@@ -643,7 +643,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         </View>
       ) : null}
       {introEl}
-      <Panel open={pagesOpen} side="right" title={t('Pages')} portraitWidth="94%" bottom={wide ? 0 : u * 17 + insets.bottom} inset={wide ? BL.rightW : 0} onClose={() => setPagesOpen(false)}>
+      <Panel floating open={pagesOpen} side="right" title={t('Pages')} portraitWidth="94%" bottom={wide ? 0 : u * 17 + insets.bottom} inset={wide ? BL.rightW : 0} onClose={() => setPagesOpen(false)}>
         {/* new pages first, side by side, above the list */}
         <View style={{ flexDirection: 'row', gap: 12, marginBottom: 18 }}>
           <Pressable onPress={() => addPage('note')} style={[styles.halfPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('New notes page')}</Text></Pressable>
@@ -1539,12 +1539,12 @@ const styles = StyleSheet.create({
   discMark: { color: colors.white, fontFamily: TYPE, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 },
   stitch: { ...StyleSheet.absoluteFillObject, borderWidth: 1.5, borderStyle: 'dashed', borderColor: 'rgba(255,255,255,0.75)' },
   badgeLabel: { fontFamily: TYPE, fontSize: 11.5, lineHeight: 14, color: colors.ink, textAlign: 'center', marginTop: 6 },
-  prow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, backgroundColor: '#2a2a2a', padding: 12, borderWidth: 2, borderColor: 'transparent' },
-  thumb: { width: 64, height: 64, backgroundColor: '#666', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  prow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, backgroundColor: '#2a2a2a', padding: 12, borderWidth: 2, borderColor: 'transparent', borderRadius: 16 },
+  thumb: { width: 64, height: 64, borderRadius: 8, backgroundColor: '#666', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   thumbNum: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 22 },
   prowTitle: { color: colors.white, fontSize: 17, fontFamily: fonts.uiBold },
   prowSub: { color: '#bbb', fontSize: 14, fontFamily: fonts.uiRegular },
-  pbtn: { width: 36, height: 36, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
+  pbtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },
   pbtnText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 18 },
   outBox: { width: '100%', maxWidth: 400, gap: 14, paddingHorizontal: 26, paddingTop: 26, paddingBottom: 22, borderRadius: 24, backgroundColor: 'rgba(0,0,0,0.78)' }, // slightly see-through
   outTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 20 },
