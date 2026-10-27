@@ -169,7 +169,7 @@ function Root() {
   const toast = useCallback((m, ms = 3000) => {
     setMessage(m); setToastMs(ms);
     clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setMessage(''), ms + 500); // the bubble itself closes after ms (or sooner with a tap)
+    if (ms > 0) toastTimer.current = setTimeout(() => setMessage(''), ms + 500); // the bubble itself closes after ms (or sooner with a tap); ms 0: it stays until it's tapped
   }, []);
   // a new reading badge: a little speech bubble (the badges are on the first page of My Notebook)
   useEffect(() => onNewBadge((fresh) => {
