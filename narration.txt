@@ -1,0 +1,134 @@
+Plan: creator, characters used 49096 of 121000
+Lily: found in your voices as "Lily - Velvety Actress" (premade)
+made lily/rough-lives@de/rl01 (26 chars, 2.1s)
+made lily/rough-lives@de/rl02 (79 chars, 6.3s)
+made lily/rough-lives@de/rl03 (64 chars, 5.2s)
+made lily/rough-lives@de/rl04 (72 chars, 5.5s)
+made lily/rough-lives@de/rl06 (44 chars, 3.8s)
+made lily/rough-lives@de/rl07 (37 chars, 3.1s)
+made lily/rough-lives@de/rl08 (69 chars, 5.8s)
+made lily/rough-lives@de/rl09 (112 chars, 9.4s)
+made lily/rough-lives@de/rl10 (77 chars, 5.9s)
+made lily/rough-lives@fr/rl01 (24 chars, 1.9s)
+made lily/rough-lives@fr/rl02 (70 chars, 5.3s)
+made lily/rough-lives@fr/rl03 (67 chars, 5.2s)
+made lily/rough-lives@fr/rl04 (76 chars, 6.0s)
+made lily/rough-lives@fr/rl06 (43 chars, 3.2s)
+made lily/rough-lives@fr/rl07 (41 chars, 4.2s)
+made lily/rough-lives@fr/rl08 (74 chars, 5.4s)
+made lily/rough-lives@fr/rl09 (106 chars, 8.6s)
+made lily/rough-lives@fr/rl10 (93 chars, 7.3s)
+made lily/rough-lives@es/rl01 (29 chars, 2.6s)
+made lily/rough-lives@es/rl02 (89 chars, 7.2s)
+made lily/rough-lives@es/rl03 (74 chars, 6.4s)
+made lily/rough-lives@es/rl04 (68 chars, 5.4s)
+made lily/rough-lives@es/rl06 (37 chars, 3.1s)
+made lily/rough-lives@es/rl07 (35 chars, 3.4s)
+made lily/rough-lives@es/rl08 (88 chars, 7.6s)
+made lily/rough-lives@es/rl09 (87 chars, 7.5s)
+made lily/rough-lives@es/rl10 (90 chars, 8.5s)
+made lily/rough-lives@ja/rl01 (19 chars, 3.1s)
+made lily/rough-lives@ja/rl02 (39 chars, 7.5s)
+made lily/rough-lives@ja/rl03 (35 chars, 4.5s)
+made lily/rough-lives@ja/rl04 (37 chars, 6.2s)
+made lily/rough-lives@ja/rl06 (28 chars, 3.5s)
+made lily/rough-lives@ja/rl07 (13 chars, 2.6s)
+made lily/rough-lives@ja/rl08 (28 chars, 3.9s)
+made lily/rough-lives@ja/rl09 (55 chars, 10.0s)
+made lily/rough-lives@ja/rl10 (45 chars, 6.9s)
+made lily/rough-lives@ar/rl01 (22 chars, 2.2s)
+made lily/rough-lives@ar/rl02 (53 chars, 6.0s)
+made lily/rough-lives@ar/rl03 (51 chars, 5.7s)
+made lily/rough-lives@ar/rl04 (58 chars, 5.2s)
+made lily/rough-lives@ar/rl06 (36 chars, 3.6s)
+made lily/rough-lives@ar/rl07 (35 chars, 3.9s)
+made lily/rough-lives@ar/rl08 (53 chars, 5.5s)
+made lily/rough-lives@ar/rl09 (70 chars, 9.1s)
+made lily/rough-lives@ar/rl10 (66 chars, 6.9s)
+Lily: 0 word and part clips made, 481 unchanged (481 words, 329 parts)
+Lily: different de: 2 word clips made, 67 unchanged
+Lily: different fr: 3 word clips made, 72 unchanged
+Lily: different es: 2 word clips made, 55 unchanged
+Lily: different ja: 0 word clips made, 41 unchanged
+Lily: different ar: 0 word clips made, 58 unchanged
+Lily: rough-lives de: 65 word clips made, 26 unchanged
+Lily: rough-lives fr: 67 word clips made, 31 unchanged
+Lily: rough-lives es: 73 word clips made, 37 unchanged
+Lily: rough-lives ja: 42 word clips made, 0 unchanged
+Lily: rough-lives ar: 72 word clips made, 6 unchanged
+Lily: tips de: 21 word clips made, 307 unchanged
+Lily: tips fr: 44 word clips made, 316 unchanged
+Lily: tips es: 38 word clips made, 302 unchanged
+Lily: tips ja: 0 word clips made, 13 unchanged
+Lily: sample unchanged
+Gregory Grumble: found in your voices as "Gregory Grumble - Old lovable bedtime bear. " (professional)
+made gregory/rough-lives@de/rl01 (26 chars, 2.8s)
+made gregory/rough-lives@de/rl02 (79 chars, 10.0s)
+made gregory/rough-lives@de/rl03 (64 chars, 8.1s)
+made gregory/rough-lives@de/rl04 (72 chars, 9.0s)
+made gregory/rough-lives@de/rl06 (44 chars, 7.1s)
+made gregory/rough-lives@de/rl07 (37 chars, 5.4s)
+made gregory/rough-lives@de/rl08 (69 chars, 7.9s)
+made gregory/rough-lives@de/rl09 (112 chars, 14.3s)
+made gregory/rough-lives@de/rl10 (77 chars, 8.0s)
+made gregory/rough-lives@fr/rl01 (24 chars, 2.6s)
+made gregory/rough-lives@fr/rl02 (70 chars, 8.3s)
+made gregory/rough-lives@fr/rl03 (67 chars, 7.8s)
+made gregory/rough-lives@fr/rl04 (76 chars, 9.8s)
+made gregory/rough-lives@fr/rl06 (43 chars, 4.8s)
+made gregory/rough-lives@fr/rl07 (41 chars, 5.2s)
+made gregory/rough-lives@fr/rl08 (74 chars, 7.7s)
+made gregory/rough-lives@fr/rl09 (106 chars, 13.1s)
+made gregory/rough-lives@fr/rl10 (93 chars, 11.2s)
+made gregory/rough-lives@es/rl01 (29 chars, 3.3s)
+made gregory/rough-lives@es/rl02 (89 chars, 9.7s)
+made gregory/rough-lives@es/rl03 (74 chars, 7.8s)
+made gregory/rough-lives@es/rl04 (68 chars, 9.0s)
+made gregory/rough-lives@es/rl06 (37 chars, 4.9s)
+made gregory/rough-lives@es/rl07 (35 chars, 4.6s)
+made gregory/rough-lives@es/rl08 (88 chars, 10.4s)
+made gregory/rough-lives@es/rl09 (87 chars, 12.5s)
+made gregory/rough-lives@es/rl10 (90 chars, 11.0s)
+made gregory/rough-lives@ja/rl01 (19 chars, 3.9s)
+made gregory/rough-lives@ja/rl02 (39 chars, 9.8s)
+made gregory/rough-lives@ja/rl03 (35 chars, 9.4s)
+made gregory/rough-lives@ja/rl04 (37 chars, 11.0s)
+made gregory/rough-lives@ja/rl06 (28 chars, 6.7s)
+made gregory/rough-lives@ja/rl07 (13 chars, 3.9s)
+made gregory/rough-lives@ja/rl08 (28 chars, 8.5s)
+made gregory/rough-lives@ja/rl09 (55 chars, 15.5s)
+made gregory/rough-lives@ja/rl10 (45 chars, 10.7s)
+made gregory/rough-lives@ar/rl01 (22 chars, 3.2s)
+made gregory/rough-lives@ar/rl02 (53 chars, 8.5s)
+made gregory/rough-lives@ar/rl03 (51 chars, 8.6s)
+made gregory/rough-lives@ar/rl04 (58 chars, 9.2s)
+made gregory/rough-lives@ar/rl06 (36 chars, 6.3s)
+made gregory/rough-lives@ar/rl07 (35 chars, 7.7s)
+made gregory/rough-lives@ar/rl08 (53 chars, 8.5s)
+made gregory/rough-lives@ar/rl09 (70 chars, 14.2s)
+made gregory/rough-lives@ar/rl10 (66 chars, 10.7s)
+Gregory Grumble: 0 word and part clips made, 481 unchanged (481 words, 329 parts)
+Gregory Grumble: different de: 2 word clips made, 67 unchanged
+Gregory Grumble: different fr: 3 word clips made, 72 unchanged
+Gregory Grumble: different es: 2 word clips made, 55 unchanged
+Gregory Grumble: different ja: 0 word clips made, 41 unchanged
+Gregory Grumble: different ar: 0 word clips made, 58 unchanged
+Gregory Grumble: rough-lives de: 65 word clips made, 26 unchanged
+Gregory Grumble: rough-lives fr: 67 word clips made, 31 unchanged
+Gregory Grumble: rough-lives es: 73 word clips made, 37 unchanged
+Gregory Grumble: rough-lives ja: 42 word clips made, 0 unchanged
+Gregory Grumble: rough-lives ar: 72 word clips made, 6 unchanged
+Gregory Grumble: tips de: 21 word clips made, 307 unchanged
+Gregory Grumble: tips fr: 44 word clips made, 316 unchanged
+Gregory Grumble: tips es: 38 word clips made, 302 unchanged
+Gregory Grumble: tips ja: 0 word clips made, 13 unchanged
+Gregory Grumble: sample unchanged
+Johnny Kid: found in your voices as "Johnny Kid - Serious and Calm Narrator" (professional)
+Johnny Kid: 0 word and part clips made, 25 unchanged (25 words, 31 parts)
+Johnny Kid: different de: 2 word clips made, 67 unchanged
+Johnny Kid: different fr: 2 word clips made, 73 unchanged
+Johnny Kid: different es: 2 word clips made, 55 unchanged
+Johnny Kid: different ja: 0 word clips made, 41 unchanged
+Johnny Kid: different ar: 0 word clips made, 58 unchanged
+Johnny Kid: sample unchanged
+Done: 90 new, 498 unchanged, 0 failed, 5028 characters used this run
