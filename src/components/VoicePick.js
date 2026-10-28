@@ -34,7 +34,7 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
       <Pressable style={StyleSheet.absoluteFill} onPress={() => close()} accessibilityRole="button" accessibilityLabel={tr('Close')} />
       <Animated.View style={[styles.box, anchor, { opacity: a, transform: [{ scale: a.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] }) }] }]}>
         <ScrollView style={{ flexShrink: 1, borderRadius: 26 }} contentContainerStyle={{ paddingHorizontal: 14, paddingTop: 24, paddingBottom: 20, gap: 6 }} showsVerticalScrollIndicator={false}>
-        <Text style={[styles.title, { marginBottom: 16 }]}>{tr('Who reads this book?')}</Text>
+        <Text style={[styles.title, { marginBottom: 16, marginRight: 40, color: colors.white, fontSize: 22, lineHeight: 28 }]} accessibilityRole="header">{tr('Who reads this book?')}</Text>{/* a bigger title (Jörg, 28 Oct 2026) */}
         {/* top right: a downward arrow closes the box (Jörg, 28 Oct 2026) */}
         <Pressable onPress={withTap(() => close())} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Close')} style={styles.edit}>
           <View style={{ width: 12, height: 12, borderColor: 'rgba(255,255,255,0.8)', borderRightWidth: 2.2, borderBottomWidth: 2.2, transform: [{ translateY: -3 }, { rotate: '45deg' }] }} />
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   extra: { marginTop: 16, paddingTop: 24, paddingHorizontal: 6, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: 'rgba(255,255,255,0.18)', gap: 6 },
   editPill: { alignSelf: 'flex-start', marginTop: 10, marginLeft: 8, height: 34, borderRadius: 17, paddingHorizontal: 18, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
   editText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 14 },
-  edit: { position: 'absolute', top: 22, right: 20, padding: 2 },
+  edit: { position: 'absolute', top: 30, right: 20, padding: 2 }, // (in line with the bigger title)
   title: { color: 'rgba(255,255,255,0.7)', fontFamily: fonts.uiBold, fontSize: 14, marginLeft: 6, marginBottom: 6 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 8, paddingVertical: 8, borderRadius: 18 },
   rowOn: { backgroundColor: colors.green },
