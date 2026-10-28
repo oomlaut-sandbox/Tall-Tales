@@ -106,7 +106,7 @@ export const PageView = forwardRef(function PageView(
     <View ref={ref} collapsable={false} style={[styles.page, { width, height }, L.wide && styles.row, amber && { backgroundColor: AMBER.paper }]}>
       {/* The picture square, with a very soft shadow falling below it. */}
       <View style={[L.wide ? { width: artW, height, justifyContent: 'center' } : styles.artShadow, { zIndex: 1 }]}>
-      <View style={[styles.art, { width: artW, height: artH }, page?.whiteArt && { backgroundColor: amber ? AMBER.white : colors.white }, page?.blankArt && { backgroundColor: '#d9d9d9' }]}>{/* blankArt: a light grey placeholder until a picture is added */}
+      <View style={[styles.art, { width: artW, height: artH }, page?.image && !end && { backgroundColor: 'transparent' } /* a picture still loading in a page-turn layer shows the same page underneath, never a flash (Jörg, 28 Oct 2026) */, page?.whiteArt && { backgroundColor: amber ? AMBER.white : colors.white }, page?.blankArt && { backgroundColor: '#d9d9d9' }]}>{/* blankArt: a light grey placeholder until a picture is added */}
         {end ? (
           // "The End" on a plain white page, in the book's own font and size, like a page of words
           <View style={[styles.fill, styles.endArt, amber && { backgroundColor: AMBER.white }]} accessibilityLabel={t('The End')}>

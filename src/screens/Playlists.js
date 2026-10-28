@@ -97,6 +97,8 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
             <>
               {/* Jörg's felt cassette, centred, about half the column wide (its soft shadow is part of the picture) */}
               <Cassette width={tapeW} />{/* its two reels turn */}
+              {/* how playlists work, in a few words with plenty of room around them (Jörg, 28 Oct 2026) */}
+              <Text style={[styles.p, { textAlign: 'center', paddingHorizontal: 30, paddingTop: 20, paddingBottom: 30, color: '#d6d6d6' }]}>{t('A playlist is a stack of books that play one after another, each reading itself. Tap Play to start, Shuffle to mix them up, or Loop to begin again at the end.')}</Text>
               {lists.map((p) => {
                 const bs = books(p);
                 return (

@@ -121,6 +121,8 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   const controls = useControls(); // parental controls: recording, sharing and printing may be switched off
   const insets = useSafeAreaInsets();
   const pages = useMemo(() => [...story.pages, { end: true }], [story]);
+  // a book's own photos (files on the phone): decoded once up front, so the page-turn layers draw them at once
+  useEffect(() => { story.pages.forEach((pg) => [pg.image, pg.image2].forEach((im) => { if (im && im.uri) Image.prefetch(im.uri).catch(() => {}); })); }, [story]);
   const [idx, setIdx] = useState(() => Math.min(startPage('reader', story.id), story.pages.length - 1)); // (Back: the page that was open)
   useEffect(() => { rememberPage('reader', story.id, idx); }, [idx, story.id]);
   // While recording (and a little after, for 'Saved your voice…'), speech bubbles sit in the middle of the
