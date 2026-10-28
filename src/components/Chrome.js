@@ -523,6 +523,7 @@ export function ChoiceLabel({ icon, text, style }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12, paddingHorizontal: 16 }}>
       {icon === 'camera' ? <View style={{ marginTop: -1 }}><CameraIcon size={19} color={color} weight={1.6} /></View>
+        : icon === 'cover' ? <CoverIcon size={20} color={color} /> /* the bar's own cover icon (Jörg, 28 Oct 2026) */
         : typeof icon === 'string' ? <LineIcon kind={icon} size={20} color={color} />
         : icon ? <Image source={icon} style={{ width: 22, height: 22, tintColor: color }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
       <Text style={[style, { flexShrink: 1 }]} numberOfLines={1}>{text}</Text>

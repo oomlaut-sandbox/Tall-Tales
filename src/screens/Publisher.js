@@ -71,7 +71,7 @@ function AboutPage({ tr, insets, onNext, onSkip }) {
         <TextInput ref={inputRef} value={words} onChangeText={(v) => { setWords(v); if (v.trim() && !pick) setPick('else'); }} placeholder={tr('Or tell us: a book about…')} placeholderTextColor="#8a8a8a"
           style={styles.aboutInput} returnKeyType="next" onSubmitEditing={() => ready && go()} accessibilityLabel={tr('What’s your book about?')} />
         <Pressable onPress={go} disabled={!ready} accessibilityRole="button" style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 34 }, !ready && { opacity: 0.4 }]}>{/* well apart from the choices */}
-          <ChoiceLabel icon={CHOICE_ICONS.cover} text={tr('Next, let’s make a cover')} style={styles.choiceBtnText} />
+          <ChoiceLabel icon="cover" text={tr('Next, let’s make a cover')} style={styles.choiceBtnText} />
         </Pressable>
         <Pressable onPress={onSkip} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'center', marginTop: 6 }}><Text style={styles.aboutSkip}>{tr('Skip')}</Text></Pressable>
       </View>
@@ -1126,7 +1126,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Text style={styles.choiceTitle}>{tr('What’s next?')}</Text>
             <Pressable onPress={addPage} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.page} text={tr('Add another page')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Keep working on this page')} style={styles.choiceBtnText} /></Pressable>
-            <Pressable onPress={() => openCover(true)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.cover} text={cover && cover.uri ? tr('Edit the cover') : tr('Design a cover')} style={styles.choiceBtnText} /></Pressable>
+            <Pressable onPress={() => openCover(true)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon="cover" text={cover && cover.uri ? tr('Edit the cover') : tr('Design a cover')} style={styles.choiceBtnText} /></Pressable>
             {/* leave the book maker for now; what's been made so far stays saved */}
             <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await saveUserStory(latest.current)); } catch (e) { toast(tr('Couldn’t save the story. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Cancel book editor')}</Text></Pressable>
             {/* Finish last, in green, with extra room around it */}
