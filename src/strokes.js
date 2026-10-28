@@ -390,10 +390,10 @@ export function drawOrder(list) {
 // eraser and the smudge only work on the layer they were used on. Returns [behind, front] (either may be empty).
 // Layers (Jörg, 27 Oct 2026): four fixed layers, 1 at the bottom to 4 on top (ly; none means 1). In each layer,
 // behind the lines first, then the rest, each on its own sheet, so the eraser only rubs its own sheet.
-export const LAYERS = [1, 2, 3, 4];
+export const DRAW_LAYERS = [1, 2, 3, 4];
 export const byLayer = (list) => {
   const all = list || [];
-  return LAYERS.flatMap((n) => {
+  return DRAW_LAYERS.flatMap((n) => {
     const mine = all.filter((st) => (st.ly || 1) === n);
     return [mine.filter((st) => st.bk), mine.filter((st) => !st.bk)];
   });

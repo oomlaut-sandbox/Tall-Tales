@@ -74,4 +74,5 @@ export default {
   "Turn off Quick and Safe Kid": { de: "Schnell und sicher für Kinder ausschalten", fr: "Désactiver le mode Enfant simple et sûr", es: "Desactivar Niño rápido y seguro", ja: "かんたん あんしん キッズを オフにする", ar: "إيقاف وضع الطفل السريع والآمن" },
   "Layers": { de: "Ebenen", fr: "Calques", es: "Capas", ja: "レイヤー", ar: "الطبقات" },
   "Layer {n}": { de: "Ebene {n}", fr: "Calque {n}", es: "Capa {n}", ja: "レイヤー {n}", ar: "الطبقة {n}" },
+  "Zoom": { de: "Zoom", fr: "Zoom", es: "Zoom", ja: "ズーム", ar: "تكبير" },
 };

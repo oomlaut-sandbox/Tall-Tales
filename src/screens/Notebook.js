@@ -28,7 +28,7 @@ import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
 import ToolPic from '../components/ToolPic';
 import { STAMPS, stampWidth } from '../stamps';
 const SHOW_STAMPS = false; // the stamps are the felt mascot: away until Jörg's hand-drawn one arrives (drawings that have them still show them)
-import { BRUSHES, GREYS, LAYERS, PENS, PENS_BRIGHT, SHAPES, wheelColour, SIZES, makeFill, mixColours, near, shapePts, withMirrors } from '../strokes';
+import { BRUSHES, GREYS, DRAW_LAYERS, PENS, PENS_BRIGHT, SHAPES, wheelColour, SIZES, makeFill, mixColours, near, shapePts, withMirrors } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
 import { STORIES } from '../story';
@@ -881,9 +881,10 @@ function scatter(items, side, region, seed, maxD) {
 // Bottom page: the firsts and a patch for every book finished, scattered too.
 // the drawing's zoom in percent (follows the pinch without redrawing the page)
 function ZoomLabel({ v }) {
+  const t = useT();
   const [z, setZ] = useState(1);
   useEffect(() => { const id = v.addListener(({ value }) => setZ(value)); return () => v.removeListener(id); }, [v]);
-  return <Text style={{ position: 'absolute', right: 2, bottom: -24, color: '#bdbdbd', fontFamily: fonts.uiSemiBold, fontSize: 12 }} accessibilityLabel={`${Math.round(z * 100)}%`}>{Math.round(z * 100)}%</Text>;
+  return <Text style={{ position: 'absolute', right: 2, bottom: -24, color: '#bdbdbd', fontFamily: fonts.uiSemiBold, fontSize: 12 }} accessibilityLabel={`${t('Zoom')} ${Math.round(z * 100)}%`}>{t('Zoom')} {Math.round(z * 100)}%</Text>; // 'Zoom 100%' (Jörg, 27 Oct 2026)
 }
 
 // what the notebook is for: a blank page, then a few words on the next one
@@ -1286,7 +1287,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
         (four fixed layers: they can't be deleted or moved: Jörg, 27 Oct 2026) */}
     <View style={{ position: 'absolute', left: 2, bottom: -29, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
       <Text style={{ color: '#bdbdbd', fontFamily: fonts.uiSemiBold, fontSize: 12, marginRight: 4 }}>{t('Layers')}</Text>
-      {LAYERS.map((n) => (
+      {DRAW_LAYERS.map((n) => (
         <Pressable key={n} onPress={() => setLayer(n)} hitSlop={{ top: 10, bottom: 10, left: 3, right: 3 }} accessibilityRole="radio" accessibilityState={{ selected: layer === n }} accessibilityLabel={t('Layer {n}', { n })}
           style={{ width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', borderWidth: 1.2, borderColor: layer === n ? '#ffffff' : 'transparent' }}>
           <Text style={{ color: layer === n ? '#ffffff' : '#bdbdbd', fontFamily: fonts.uiSemiBold, fontSize: 12 }}>{n}</Text>
