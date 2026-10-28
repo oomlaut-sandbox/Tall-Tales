@@ -298,7 +298,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
                 <Text style={[styles.cardTitle, { flex: 1 }]}>{t(v)}</Text>
               </Pressable>
             ))}
-            {soonVid ? <Text style={[styles.p, { color: '#cfcfcf', fontSize: 14 }]}>{t('“{name}” is coming soon.', { name: t(soonVid) })}</Text> : null}
+            {soonVid ? <Text style={[styles.p, { color: '#cfcfcf', fontSize: 14 }]}>{t('The video is coming soon.')}</Text> : null}
           </View>
           <View style={{ height: 30 }} />
           {/* the Idea Room, at the bottom now (Ideas has its own place in the menu: Jörg, 26 Oct 2026) */}

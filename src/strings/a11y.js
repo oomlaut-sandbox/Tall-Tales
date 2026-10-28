@@ -81,4 +81,5 @@ export default {
   "Do you want to print or share your drawing now, or save it and start the next page?": { de: "Möchtest du deine Zeichnung jetzt drucken oder teilen, oder sie speichern und mit der nächsten Seite anfangen?", fr: "Veux-tu imprimer ou partager ton dessin maintenant, ou l’enregistrer et commencer la page suivante ?", es: "¿Quieres imprimir o compartir tu dibujo ahora, o guardarlo y empezar la página siguiente?", ja: "いま えを いんさつ・シェアする？ それとも ほぞんして つぎの ページへ？", ar: "هل تريد طباعة رسمتك أو مشاركتها الآن، أم حفظها والبدء بالصفحة التالية؟" },
   "My drawing": { de: "Meine Zeichnung", fr: "Mon dessin", es: "Mi dibujo", ja: "わたしの え", ar: "رسمتي" },
   "That didn’t work. Try again.": { de: "Das hat nicht geklappt. Versuch es noch einmal.", fr: "Ça n’a pas marché. Réessaie.", es: "No ha funcionado. Inténtalo de nuevo.", ja: "うまく いきませんでした。もういちど ためしてね。", ar: "لم ينجح ذلك. حاول مرة أخرى." },
+  "How Coro works": { de: "So funktioniert Coro", fr: "Comment fonctionne Coro", es: "Cómo funciona Coro", ja: "Coroの つかいかた", ar: "كيف يعمل Coro" },
 };

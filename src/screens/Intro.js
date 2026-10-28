@@ -52,7 +52,7 @@ function Chip({ label, on, onPress }) {
 }
 
 // the tutorial videos on the What is Coro? page (the films themselves are still being made)
-export const VIDEOS = ['Complete walk-through', 'Quick tour', 'Making and sharing books', 'Reading books', 'Parental controls', 'For teachers']; // (Parental controls: the same words as in Settings)
+export const VIDEOS = ['How Coro works']; // one film for grown-ups, here and in Help (Jörg, 28 Oct 2026; Jörg is making it) // (Parental controls: the same words as in Settings)
 
 export default function Intro({ who, onDone, onBack }) {
   const t = useT();
@@ -118,18 +118,15 @@ export default function Intro({ who, onDone, onBack }) {
   );
   if (page === 'whatIs') body = (
     <>
-      <Text style={styles.title}>{t('What is Coro?')}</Text>
+      <Text style={styles.title}>{t('Meet Coro')}</Text>{/* one video, like the kids' page (Jörg, 28 Oct 2026) */}
       <Text style={styles.lead}>{t('Watch a short video to see how it all works.')}</Text>
-      {VIDEOS.map((v) => (
-        <Pressable key={v} onPress={() => setSoon(v)} accessibilityRole="button" style={[styles.box, { flexDirection: 'row', alignItems: 'center', gap: 16, paddingVertical: 14 }]}>
-          {/* a play button */}
-          <View style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: '#333', alignItems: 'center', justifyContent: 'center' }}>
-            <View style={{ width: 0, height: 0, marginLeft: 3, borderTopWidth: 7, borderBottomWidth: 7, borderLeftWidth: 11, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: '#e6e6e6' }} />
-          </View>
-          <Text style={[styles.boxTitle, { flex: 1 }]}>{t(v)}</Text>
-        </Pressable>
-      ))}
-      {soon ? <Text style={[styles.lead, { marginBottom: 0 }]}>{t('“{name}” is coming soon.', { name: t(soon) })}</Text> : null}
+      <Pressable onPress={() => setSoon(VIDEOS[0])} accessibilityRole="button" style={[styles.box, { flexDirection: 'row', alignItems: 'center', gap: 16, paddingVertical: 18 }]}>
+        <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#333', alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: 0, height: 0, marginLeft: 4, borderTopWidth: 9, borderBottomWidth: 9, borderLeftWidth: 14, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: '#e6e6e6' }} />
+        </View>
+        <Text style={[styles.boxTitle, { flex: 1 }]}>{t(VIDEOS[0])}</Text>
+      </Pressable>
+      {soon ? <Text style={[styles.lead, { marginBottom: 0 }]}>{t('The video is coming soon.')}</Text> : null}
     </>
   );
   if (page === 'access') body = (
