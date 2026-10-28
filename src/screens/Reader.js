@@ -36,7 +36,7 @@ function PeelLayer({ start, ...props }) {
 }
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { BackRing, BulbIcon, Bar, BarMeta, HomeButton, BubbleIcon, HeadphonesIcon, MoonIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon, sideTop } from '../components/Chrome';
+import { BackRing, LineIcon, BulbIcon, Bar, BarMeta, HomeButton, BubbleIcon, HeadphonesIcon, MoonIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon, sideTop } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
@@ -1467,8 +1467,8 @@ function ListenChoice({ area, center, onDay, onNight, onCancel, onGone, tr }) {
             ))}
           </View>
           {/* Cancel: small, light grey, under the box's bottom right corner (a touch anywhere outside the box cancels too) */}
-          <Pressable onPress={withTap(onCancel)} hitSlop={14} style={{ marginTop: 12, marginRight: 6 }} accessibilityRole="button">
-            <Text style={{ color: 'rgba(255,255,255,0.38)', fontFamily: fonts.ui, fontSize: 11.5, letterSpacing: 0.4 }}>{tr('Cancel')}</Text>
+          <Pressable onPress={withTap(onCancel)} hitSlop={16} style={{ marginTop: 12, marginRight: 6, alignSelf: 'flex-end' }} accessibilityRole="button" accessibilityLabel={tr('Cancel')}>
+            <LineIcon kind="cancel" size={22} color="rgba(255,255,255,0.55)" weight={1.4} />{/* a little circle with an x, not the word (Jörg, 28 Oct 2026) */}
           </Pressable>
         </Animated.View>
       </View>
