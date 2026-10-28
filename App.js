@@ -354,7 +354,9 @@ function Root() {
   // the book maker sideways (no banner): the back button in the felt's bottom left corner, centred in the left and
   // bottom margins like the reader's, where the opening menu can't cover it (Jörg, 28 Oct 2026)
   const makerCorner = (() => {
-    if (screen !== 'publisher' || !(width > height * 1.1)) return null;
+    if (!(width > height * 1.1)) return null;
+    // sideways the top right corner belongs to the menu: the back button always lives bottom left (Jörg, 28 Oct 2026)
+    if (screen !== 'publisher' && screen !== 'notebook') return { left: screenInsets.left + 14, bottom: Math.max(14, insets.bottom + 6) };
     const ML = bookLayout(width, height, screenInsets, u * 17);
     if (!ML.wide) return null;
     const deskW = width - ML.leftW - ML.rightW;
