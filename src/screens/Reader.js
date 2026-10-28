@@ -1020,7 +1020,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       {controls.sharing && !nightOn ? (
         <Pressable onPress={withTap(() => setShareGate(true))} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Share Book')}
           style={wide ? { position: 'absolute', zIndex: 6, left: bulbL - 1, bottom: backBottom + barGeo(u).step * (onEdit ? 2 : 1) - 1 }
-            : { position: 'absolute', zIndex: 6, right: Math.max(4, bulbL - 6), bottom: Math.max(4, ((winH - topH - barH - BL.bookH) / 2 - 22) / 2) } /* halfway between the page and the bar */}>
+            : { position: 'absolute', zIndex: 6, right: Math.max(7, bulbL - 3), bottom: Math.max(4, ((winH - topH - barH - BL.bookH) / 2 - 22) / 2) } /* halfway between the page and the bar */}>
           <Image source={ENVELOPE} style={{ width: 22, height: 22, tintColor: '#ffffff' }} resizeMode="contain" />
         </Pressable>
       ) : null}
