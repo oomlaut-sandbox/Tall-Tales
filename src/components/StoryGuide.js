@@ -6,11 +6,11 @@ import { colors, fonts } from '../theme';
 import { useT } from '../i18n';
 
 export const GUIDE_STEPS = [
-  { title: 'Add a picture', body: 'Tap the grey area to choose a picture from your photos. Square pictures work best: they fill the page and show in full. For a sharp result, use at least 1500 × 1500 pixels. You can crop a photo to a square right after picking it.' },
-  { title: 'Write the words', body: 'Type below the picture. Two or three short sentences per page is easiest for young readers to follow.' },
-  { title: 'Turn the page', body: 'Tap the folded corner at the bottom right to add the next page. To go back to an earlier page, tap Pages and choose it.' },
-  { title: 'Arrange your pages', body: 'Tap Pages to jump to any page, move it up or down, or delete it.' },
-  { title: 'Name it and finish', body: 'Tap the title in the bottom bar to rename your story. Everything saves as you go. Tap Done when you’re finished. To change it later, hold its cover in My Library.' },
+  { title: 'Add a picture', body: 'Tap the blue photo to add a picture: choose one from your photos, take a photo or make a drawing. Square pictures fill the page best. Once it’s on the page, tap Edit on the picture to crop, turn or frame it.' },
+  { title: 'Write the words', body: 'Tap the words side of the page and type. Two or three short sentences per page is easiest for young readers to follow.' },
+  { title: 'Turn the page', body: 'Tap the folded corner at the bottom right to add the next page. To go back to an earlier page, tap the Pages button on the bar and choose it.' },
+  { title: 'Arrange your pages', body: 'Tap the Pages button on the bar to see every page, move one up or down, or delete it.' },
+  { title: 'Name it and finish', body: 'Your book’s name goes on its cover. Everything saves as you go. Tap the green tick when you’re finished. To change it later, open it in My Library and tap the scissors.' },
   { title: 'Read it in your voice', body: 'Open your story and tap the red button to record yourself reading each page. Your child will hear your voice every time.', ideas: true },
 ];
 
