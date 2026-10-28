@@ -247,7 +247,6 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
               style={styles.search} allowFontScaling={false} multiline scrollEnabled={false} submitBehavior="blurAndSubmit" returnKeyType="search" accessibilityLabel={t('Search ideas and support')} />
           </Pressable>
           {/* About lives here now (it left the main menu) */}
-          <Pressable onPress={onAbout} accessibilityRole="button" style={styles.aboutPill}><Text style={styles.aboutText}>{t('About Coro')}</Text></Pressable>
           {onWelcome ? <Pressable onPress={onWelcome} accessibilityRole="button" style={[styles.aboutPill, { marginTop: 10 }]}><Text style={styles.aboutText}>{t('Watch the welcome again')}</Text></Pressable> : null}
           <View style={{ height: 18 }} />
           {!found.length ? <Text style={[styles.p, { color: colors.white }]}>{t('Nothing found for “{q}”. Try another word.', { q: q.trim() })}</Text> : null}
@@ -281,6 +280,8 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
               </View>
             );
           })}
+          {/* About Coro, under the help categories (Jörg, 28 Oct 2026) */}
+          {!searching ? <Pressable onPress={onAbout} accessibilityRole="button" style={[styles.aboutPill, { marginTop: 18 }]}><Text style={styles.aboutText}>{t('About Coro')}</Text></Pressable> : null}
           <View style={{ height: 18 }} />
           {/* Videos: the same tutorial films as the intro's What is Coro? page, well apart from the sections above and the
               Ideas patch below (Jörg, 26 Oct 2026) */}
@@ -317,7 +318,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
           </Pressable>
           {/* the intro again, any time, at the very bottom: the notebook asks "Are you a kid or a grown-up?" (Jörg, 26 Oct 2026) */}
           {onIntro ? (
-            <Pressable onPress={onIntro} accessibilityRole="button" style={[styles.aboutPill, { marginTop: 26, backgroundColor: colors.blue }]}>
+            <Pressable onPress={onIntro} accessibilityRole="button" style={[styles.aboutPill, { marginTop: 26, backgroundColor: '#4a4a4a' }]}>{/* grey (Jörg, 28 Oct 2026) */}
               <Text style={styles.aboutText}>{t('Replay the Introduction')}</Text>
             </Pressable>
           ) : null}
