@@ -82,7 +82,8 @@ import { announce } from '../a11y';
 import { getBookVoice, getReaders, getRecording, listRecordings, pageKey, removeRecording, saveRecording, setBookVoice, setTrim } from '../recordings';
 import ReaderPick from '../components/ReaderPick';
 import VoicePick, { VoiceFace } from '../components/VoicePick';
-const SCISSORS = require('../../assets/icon-scissors.png'); // Edit this book (a book you made)
+const SCISSORS = require('../../assets/icon-scissors.png');
+const ENVELOPE = require('../../assets/icon-envelope.png'); // share (the envelope everywhere now: Jörg, 28 Oct 2026) // Edit this book (a book you made)
 import TrimEditor from '../components/TrimEditor';
 const TRASH = require('../../assets/icon-trash.png');
 import { markFinished, markFirst, markReadToday } from '../badges';
@@ -490,7 +491,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       getRecording(story.id, pageKey(p, pageIndex), voiceRef.current).then((rec) => {
         if (st.current.idx !== pageIndex) return;
         if (rec && playVoice(rec.uri, { rate: speedOf({ ...prefs, narrator: 'lily' }) / DEFAULT_SPEED, /* (a family voice: Fatima's pace setting, not Henry's) */ start: rec.start || 0, end: rec.end || null, // a parent's own pace at the default setting; only the trimmed part
-           onProgress: (f) => hlChar(Math.floor(f * p.text.length)), onDone: afterPage,
+           /* (no words lighting up in a family recording: a guess from the time never kept in step: Jörg, 28 Oct 2026) */ onDone: afterPage,
            onFail: () => { if (st.current.idx === pageIndex) narrate(); } })) {
           usingVoice.current = true;
         } else {
@@ -1011,6 +1012,15 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       {onBackToBooks && !nightOn ? (
         <BackRing onPress={() => { stopReading(); onBackToBooks(); }} label={tr('My Books')}
           style={wide ? { position: 'absolute', zIndex: 6, left: bulbL, bottom: backBottom } : { position: 'absolute', zIndex: 6, right: bulbL, top: 8 }} />
+      ) : null}
+      {/* share this book (an envelope, Jörg, 28 Oct 2026): upright in the felt's bottom right corner, sideways above the
+          scissors (or above Back in books that can't be edited) */}
+      {controls.sharing && !nightOn ? (
+        <Pressable onPress={withTap(() => setShareGate(true))} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Share Book')}
+          style={wide ? { position: 'absolute', zIndex: 6, left: bulbL - 1, bottom: backBottom + barGeo(u).step * (onEdit ? 2 : 1) - 1 }
+            : { position: 'absolute', zIndex: 6, right: bulbL + 2, bottom: 14 }}>
+          <Image source={ENVELOPE} style={{ width: 22, height: 22, tintColor: '#ffffff' }} resizeMode="contain" />
+        </Pressable>
       ) : null}
       {wide && onEdit && !nightOn ? (
         <Pressable onPress={withTap(() => { stopReading(); onEdit(); })} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Edit this book')}

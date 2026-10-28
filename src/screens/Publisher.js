@@ -88,7 +88,7 @@ const CHOICE_ICONS = { // the icons before the words in the pop-up choices (the 
   crop: require('../../assets/icon-scissors.png'),
   trash: require('../../assets/icon-trash.png'),
   notes: require('../../assets/heading-icons/my-notebook.png'),
-  share: require('../../assets/icon-share-line.png'),
+  share: require('../../assets/icon-envelope.png'),
   print: require('../../assets/icon-printer.png'),
   page: require('../../assets/title-icons/make-a-book.png'),
   cover: require('../../assets/heading-icons/reading.png'),
