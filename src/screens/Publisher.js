@@ -1157,7 +1157,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       ) : null}
       {drawFor ? (
         <DrawEditor insets={insets} title={drawFor === 'cover' ? tr('Drawing · Cover') : tr('Drawing · Page {n}', { n: i + 1 })}
-          onDone={(strokes) => { const t = drawFor; setDrawFor(null); placeDrawing(t, strokes); }} />
+          onDone={(strokes) => { const t = drawFor; setDrawFor(null); placeDrawing(t, strokes); }}
+          onNext={async (strokes) => { // Next page: save the drawing, then on to the next page (a new one after the last)
+            const t = drawFor; setDrawFor(null); await placeDrawing(t, strokes);
+            if (t === 'cover') { finishCover(); return; }
+            setDraft((d) => (i === d.pages.length - 1 && d.pages.length < MAX_PAGES ? { ...d, pages: [...d.pages, blank()] } : d));
+            setI((k) => Math.min(k + 1, MAX_PAGES - 1));
+          }} />
       ) : null}
       <ParentGate visible={!!camGate} reason="Taking a photo opens the camera." onPass={() => { const t = camGate; setCamGate(null); setTimeout(() => placeImage(t, 'camera'), 250); }} onCancel={() => setCamGate(null)} />
       <StoryGuide visible={guide} onClose={closeGuide} onIdeas={onIdeas ? () => { closeGuide(); onIdeas(); } : null} area={wide ? { left: BL.leftW, right: BL.rightW } : { top: BL.topH, bottom: BL.barH }} />

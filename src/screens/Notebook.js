@@ -47,7 +47,7 @@ const SPLOTCH = [ // round splotches of paint: the shape (tinted with the colour
   [require('../../assets/splotch/splotch-7.png'), require('../../assets/splotch/splotch-7-tex.png')],
 ];
 const TRASH = require('../../assets/icon-trash.png');
-import { printNotebook, shareNotebookPdf } from '../pdf';
+import { printDrawing, printNotebook, shareDrawing, shareNotebookPdf } from '../pdf';
 
 const GAP = 30;
 const MAX_PX = 1600;
@@ -107,6 +107,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const [outAsk, setOutAsk] = useState(null); // 'print' | 'share': the box that asks which pages
   const [outGate, setOutGate] = useState(null); // 'print' | 'share', behind the grown-up question
   const [outBusy, setOutBusy] = useState(false);
+  const [outErr, toastHere] = useState(null);
   const [writing, setWriting] = useState(false); // the notes editor
   const [drawing, setDrawing] = useState(false); // the drawing editor
   const latest = useRef(null);
@@ -783,7 +784,8 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       {drawing && page ? (
         <DrawEditor insets={insets} photo={page.kind === 'sketch' ? null : page.uri} strokes={drawing === 'bottom' ? page.strokes2 || [] : page.strokes}
           title={page.kind === 'sketch' ? t('Sketch · Page {n}', { n: i + 1 }) : t('Drawing · Page {n}', { n: i + 1 })}
-          onDone={(strokes) => { update(drawing === 'bottom' ? { strokes2: strokes } : { strokes }); setDrawing(false); if (strokes.length) markFirst('firstDrawing'); }} />
+          onDone={(strokes) => { update(drawing === 'bottom' ? { strokes2: strokes } : { strokes }); setDrawing(false); if (strokes.length) markFirst('firstDrawing'); }}
+          onNext={(strokes) => { update(drawing === 'bottom' ? { strokes2: strokes } : { strokes }); setDrawing(false); if (strokes.length) markFirst('firstDrawing'); setTimeout(next, 350); }} />
       ) : null}
     </View>
   );
@@ -1028,7 +1030,7 @@ function UndoIcon({ flip }) {
 
 // ---- The drawing editor: a page to draw on with your finger, with brushes (ink, watercolour, pencil), colours,
 // sizes, a fill, an eraser, undo and clear. (The book maker uses it too, for Make a drawing.) ----
-export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone }) {
+export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone, onNext }) {
   useHideBack(); // no back button over the drawing editor (Jörg, 27 Oct 2026)
   const t = useT();
   const { width: winW, height: winH } = useWindowDimensions();
@@ -1053,6 +1055,16 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const [stampsOpen, setStampsOpen] = useState(false);
   const [behind, setBehind] = useState(false); // colouring in behind the lines: what's drawn goes underneath everything else
   const [layer, setLayer] = useState(1); // Layers: the one being drawn on (1 bottom to 4 top)
+  // the green tick (Jörg, 28 Oct 2026): 'Print or share your drawing now, or save and start the next page?'
+  const [doneAsk, setDoneAsk] = useState(false);
+  const [outFor, setOutFor] = useState(null); // 'print' | 'share', behind the grown-up question
+  const [outBusy, setOutBusy] = useState(false);
+  const sendOut = async (what) => {
+    setOutBusy(true);
+    try { await (what === 'print' ? printDrawing(strokes, photo) : shareDrawing(strokes, photo, title || t('My drawing'))); }
+    catch (e) { toastHere(e && e.message ? e.message : t('That didn’t work. Try again.')); }
+    setOutBusy(false);
+  };
   const [dropper, setDropper] = useState(false);
   const [onWheel, setOnWheel] = useState(false); // a finger on the paint wheel: the sheet holds still
   const [wheelSpot, setWheelSpot] = useState(null); // where on the paint wheel the colour was picked (the white ring) // the eyedropper: the next tap on the page picks up the colour there // Mirror: everything drawn appears flipped on the other side too
@@ -1283,6 +1295,20 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
     </View>
     </Animated.View>
     </View>
+    {doneAsk ? (
+      <View style={[StyleSheet.absoluteFill, styles.choiceBack, { zIndex: 80 }]}>
+        <View style={styles.choice}>
+          <Text style={[styles.choiceTitle, { lineHeight: 28 }]}>{t('Do you want to print or share your drawing now, or save it and start the next page?')}</Text>
+          <Pressable disabled={outBusy} onPress={() => setOutFor('share')} style={[styles.choiceBtn, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Share')}</Text></Pressable>
+          <Pressable disabled={outBusy} onPress={() => setOutFor('print')} style={[styles.choiceBtn, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Print')}</Text></Pressable>
+          <Pressable onPress={() => setDoneAsk(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Cancel')}</Text></Pressable>
+          <Pressable onPress={() => { setDoneAsk(false); (onNext || onDone)(strokes); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Next page')}</Text></Pressable>
+        </View>
+      </View>
+    ) : null}
+    <ParentGate visible={!!outFor} reason={outFor === 'print' ? t('Printing opens your phone’s print options.') : t('Sharing opens your phone’s messages and email.')}
+      onPass={() => { const w = outFor; setOutFor(null); setTimeout(() => sendOut(w), 250); }} onCancel={() => setOutFor(null)} />
+    {outErr ? <Toast message={outErr} onDismiss={() => toastHere(null)} /> : null}
     {drawHint ? <Toast message={t('Hint: Nothing beats drawing on paper. Phones especially are tough to draw on. So have fun here, but remember you can always take a picture of your work on paper and import it.')} ms={0} center
       check={t('Don’t show this message again')} button={t('Got it!')} onDismiss={(ticked) => { setDrawHint(false); if (ticked) saveJSON('drawHint', { off: true }); }} /> : null}
     {/* the zoom now, in percent: a small label under the page, on the right (Jörg, 27 Oct 2026) */}
@@ -1402,7 +1428,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
         style={[styles.tool, !redo.length && { opacity: 0.35 }]} accessibilityRole="button" accessibilityLabel={t('Redo')} accessibilityState={{ disabled: !redo.length }}>
         <UndoIcon flip />
       </Pressable>
-      <Pressable onPress={() => onDone(strokes)} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Done')}><DoneTick size={38} /></Pressable>
+      <Pressable onPress={() => (strokes.length ? setDoneAsk(true) : onDone(strokes))} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Done')}><DoneTick size={38} /></Pressable>
     </View>
   );
   // the tools in a tray, like real ones on a desk (the one in your hand stands up higher): an eraser, a pencil, a

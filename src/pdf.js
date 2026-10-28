@@ -14,3 +14,11 @@ export async function shareNotebookPdf() {
 export async function printNotebook() {
   throw new Error('Printing works in the iPhone and Android app.');
 }
+
+export async function printDrawing() {
+  throw new Error('Printing works in the iPhone and Android app.');
+}
+
+export async function shareDrawing() {
+  throw new Error('Sharing works in the iPhone and Android app.');
+}

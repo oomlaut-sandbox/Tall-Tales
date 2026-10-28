@@ -212,3 +212,28 @@ export async function shareNotebookPdf(pages, from) {
   if (!(await Sharing.isAvailableAsync())) throw new Error('Sharing is not available on this device.');
   await Sharing.shareAsync(shareUri, { UTI: 'com.adobe.pdf', mimeType: 'application/pdf', dialogTitle: 'My Notebook' });
 }
+
+// One drawing, straight from the drawing screen (Jörg, 28 Oct 2026): print it (centred on a page) or share it as a
+// picture.
+export async function printDrawing(strokes, photo = null) {
+  const png = await strokesToImage(strokes, 1600, '#ffffff', photo);
+  const b64 = await new File(png).base64();
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>@page{margin:0}html,body{margin:0;height:100%}body{display:flex;align-items:center;justify-content:center}img{width:86%;height:auto}</style></head><body><img src="data:image/png;base64,${b64}"></body></html>`;
+  try { await Print.printAsync({ html }); } catch (e) {
+    if (!/cancel|did not complete|not completed|dismiss/i.test(String(e && e.message))) throw e;
+  }
+}
+
+export async function shareDrawing(strokes, photo = null, name = 'My drawing') {
+  const png = await strokesToImage(strokes, 1600, '#ffffff', photo);
+  let shareUri = png;
+  try {
+    const target = new File(Paths.cache, `${name}.png`);
+    if (target.exists) target.delete();
+    const f = new File(png);
+    await f.copy(target);
+    shareUri = target.uri;
+  } catch (e) {}
+  if (!(await Sharing.isAvailableAsync())) throw new Error('Sharing is not available on this device.');
+  await Sharing.shareAsync(shareUri, { UTI: 'public.png', mimeType: 'image/png', dialogTitle: name });
+}
