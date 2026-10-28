@@ -1,4 +1,5 @@
 // My Library and Book Store.
+import { LinearGradient } from 'expo-linear-gradient';
 import { TitleIcon, TITLE_ICONS } from '../titleIcons';
 import React, { useEffect, useRef, useState } from 'react';
 import { useScrollMemory } from '../nav';
@@ -42,6 +43,18 @@ const MUG = require('../../assets/mug-shadow.png'); // hot chocolate from above,
 const SHOW_MASCOT = false; // the felt mascot is off everywhere but the profile pictures (25 Oct 2026); a hand-drawn one is coming
 const LEANER = require('../../assets/store-lean.png'); // Skippy: Jörg's grey character in sunglasses, leaning on the featured book (700 × 696)
 
+// A bound book's spine down the cover's left side, like the cloth hardcovers' (Cousins): a dark edge, a thin
+// highlight, the groove of the hinge, then a soft shadow fading out onto the cover (Jörg, 28 Oct 2026)
+export function BookSpine() {
+  return (
+    <LinearGradient pointerEvents="none" start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }}
+      colors={['rgba(0,0,0,0.42)', 'rgba(0,0,0,0.12)', 'rgba(255,255,255,0.16)', 'rgba(255,255,255,0.05)', 'rgba(0,0,0,0.30)', 'rgba(0,0,0,0.12)', 'rgba(0,0,0,0)']}
+      locations={[0, 0.06, 0.12, 0.2, 0.3, 0.5, 1]}
+      style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '9%' }} />
+  );
+}
+const hasOwnSpine = (c) => !!(c && (c.hard || /hardcovers/.test(String(c.uri || '')))); // a cloth hardcover already has one
+
 function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, option, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
   const t = useT();
   const { width: winW } = useWindowDimensions();
@@ -77,6 +90,7 @@ function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onP
           </View>
         ) : null}
         {glyph || null}
+        {(cover || coverArt) && !plus && !glyph && !option && !hasOwnSpine(coverArt) ? <BookSpine /> : null}
         {/* a small dog-ear (My Library only; the Book Store covers have none) */}
         {showEar ? <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderLeftWidth: ear, borderBottomWidth: ear, borderLeftColor: 'transparent', borderBottomColor: colors.earUnder }} /> : null}
         {showEar ? <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderRightWidth: ear, borderTopWidth: ear, borderRightColor: 'transparent', borderTopColor: colors.white }} /> : null}
@@ -698,6 +712,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
       {/* the cover, already in place in the card's top-left corner (it fades with the box) */}
       <Animated.View ref={coverRef} collapsable={false} pointerEvents="none" style={[styles.tileShadow, { position: 'absolute', left: boxX + M, top: boxY + M, width: cs, height: cs, opacity: boxH ? coverOp : 0, transform: coverMove }]}>
         {coverArtFor(book) ? <CoverArt cover={coverArtFor(book)} /> : cover ? <Image source={cover} style={styles.coverImg} resizeMode="cover" /> : null}
+        {(coverArtFor(book) || cover) && !hasOwnSpine(coverArtFor(book)) ? <BookSpine /> : null}
         {/* a very thin dark grey line just outside the cover */}
         <View pointerEvents="none" style={{ position: 'absolute', left: -1, top: -1, right: -1, bottom: -1, borderWidth: 1, borderColor: '#5a5a5a' }} />
       </Animated.View>

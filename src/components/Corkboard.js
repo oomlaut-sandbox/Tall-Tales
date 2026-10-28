@@ -10,6 +10,11 @@ import { colors, fonts } from '../theme';
 import { useT } from '../i18n';
 import { withTap } from '../haptics';
 import ParentGate from './ParentGate';
+import { CameraIcon, ChoiceLabel } from './Chrome';
+
+// the icons before the words, the same line icons as the app's other pop-ups (Jörg, 28 Oct 2026)
+const PIN_ICONS = { note: require('../../assets/heading-icons/my-notebook.png'), photo: require('../../assets/heading-icons/family-and-memories.png') };
+const PinIcon = ({ src }) => (src ? <Image source={src} style={{ width: 22, height: 22, tintColor: colors.white }} resizeMode="contain" accessibilityIgnoresInvertColors /> : <View style={{ width: 22, alignItems: 'center' }}><CameraIcon size={19} color={colors.white} weight={1.6} /></View>);
 import { loadPins, pinNote, pinPhoto, unpin } from '../corkboard';
 import { onScopeChange } from '../scope';
 
@@ -102,15 +107,15 @@ export default function Corkboard({ width, toast }) {
             <View style={styles.box}>
               <Text style={styles.boxTitle}>{t('Pin something')}</Text>
               <Pressable onPress={withTap(() => { setAsk(false); setWriting(''); })} style={styles.choice} accessibilityRole="button">
-                <View style={[styles.choiceIcon, { backgroundColor: NOTE_YELLOW }]} /><Text style={styles.choiceText}>{t('A sticky note')}</Text>
+                <PinIcon src={PIN_ICONS.note} /><Text style={styles.choiceText}>{t('A sticky note')}</Text>
               </Pressable>
               <Pressable onPress={withTap(() => { setAsk(false); setTimeout(() => getPhoto('library'), 250); })} style={styles.choice} accessibilityRole="button">
-                <View style={[styles.choiceIcon, { backgroundColor: '#fff' }]} /><Text style={styles.choiceText}>{t('Choose a photo')}</Text>
+                <PinIcon src={PIN_ICONS.photo} /><Text style={styles.choiceText}>{t('Choose a photo')}</Text>
               </Pressable>
               <Pressable onPress={withTap(() => { setAsk(false); setCamGate(true); })} style={styles.choice} accessibilityRole="button">
-                <View style={[styles.choiceIcon, { backgroundColor: '#fff' }]} /><Text style={styles.choiceText}>{t('Take a photo')}</Text>
+                <PinIcon /><Text style={styles.choiceText}>{t('Take a photo')}</Text>
               </Pressable>
-              <Pressable onPress={() => setAsk(false)} hitSlop={8} style={{ alignSelf: 'center', marginTop: 10 }}><Text style={styles.cancel}>{t('Cancel')}</Text></Pressable>
+              <Pressable onPress={() => setAsk(false)} hitSlop={8} style={{ alignSelf: 'center', marginTop: 10 }}><ChoiceLabel icon="cancel" text={t('Cancel')} style={styles.cancel} /></Pressable>
             </View>
           </Pressable>
         </Modal>
