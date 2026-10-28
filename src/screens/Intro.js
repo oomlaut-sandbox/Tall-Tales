@@ -24,7 +24,7 @@ const ICONS = {
   share: require('../../assets/heading-icons/together-with-others.png'),
   read: require('../../assets/heading-icons/reading.png'),
   safe: require('../../assets/heading-icons/grown-ups.png'),
-  connect: require('../../assets/heading-icons/family-and-memories.png'),
+  connect: require('../../assets/icon-heart-line.png'), // a heart (Meaningful connections: Jörg, 28 Oct 2026)
   decide: require('../../assets/title-icons/person.png'),
   text: require('../../assets/heading-icons/learning.png'), // an A in a box (text size and fonts)
   speak: require('../../assets/heading-icons/communication-support.png'), // a speech bubble (VoiceOver)
