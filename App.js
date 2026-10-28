@@ -541,7 +541,7 @@ function Root() {
         {/* Back: a small arrow in the top right corner of the banner */}
         {/* Back: on every page, always the same size and in the same spot, top right (Jörg, 27 Oct 2026). It goes
             back one step: whatever is open on top first, then the step before in this screen, then the screen before */}
-        {(screen !== 'reader' || !sideways) /* reading: back to My Books, here when upright; sideways the reader has its own, bottom left (Jörg, 28 Oct 2026) */ && screen !== 'start' /* nor on the start page, where there's nothing to go back to */ && !backHidden() /* nor over the drawing editor */ && !splash && !introWho && !welcome && !flyer && !opening && !closingBook ? (
+        {screen !== 'reader' /* reading: the reader draws its own back to My Books, in the felt margin (Jörg, 28 Oct 2026) */ && screen !== 'start' /* nor on the start page, where there's nothing to go back to */ && !backHidden() /* nor over the drawing editor */ && !splash && !introWho && !welcome && !flyer && !opening && !closingBook ? (
           <BackRing onPress={screen === 'reader' ? backToBooks : goBack} label={screen === 'reader' ? t('My Books') : t('Back')} style={{ position: 'absolute', zIndex: 200, top: screenInsets.top + 10, right: 12 + (sideways ? drawerRight : 0), opacity: screen === 'reader' || canBack() ? 1 : 0.35 }} />
         ) : null}
         <Toast message={message} ms={toastMs} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />

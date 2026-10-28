@@ -937,6 +937,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   } else layers.push(...pageLayers());
 
   const bulbL = deskW ? Math.max(2, (deskW - BL.bookW) / 4 - 10) : 12; // the bulb: halfway between the felt's left edge and the book
+  const backBottom = Math.max(6, (winH - BL.bookH) / 4 - 10); // sideways: the back button centred in the bottom margin (the book sits in the middle, top to bottom)
   // Reading Options' modes and the page's look, shown in the Reading Options panel and under the voices in the
   // voice box (Jörg, 27 Oct 2026). done: closes whichever one it's in.
   const modeRows = (done) => MODES.map(([g, id, t, s]) => (
@@ -999,12 +1000,15 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       {/* sideways: Edit this book (white scissors) in the felt's bottom right corner, between the book and the bar,
           mirroring the bulb (the bar has no room for it there: Jörg, 27 Oct 2026) */}
       {/* sideways: back to My Books in the felt's bottom left corner, and the scissors well above it (Jörg, 28 Oct 2026) */}
-      {wide && onBackToBooks && !nightOn ? (
-        <BackRing onPress={() => { stopReading(); onBackToBooks(); }} label={tr('My Books')} style={{ position: 'absolute', zIndex: 6, left: bulbL, bottom: 12 + insets.bottom }} />
+      {/* back to My Books, centred in the felt margins (Jörg, 28 Oct 2026): upright, in the right margin level with the
+          bulb (mirroring it); sideways, in the bottom left corner, centred in the left and the bottom margins */}
+      {onBackToBooks && !nightOn ? (
+        <BackRing onPress={() => { stopReading(); onBackToBooks(); }} label={tr('My Books')}
+          style={wide ? { position: 'absolute', zIndex: 6, left: bulbL, bottom: backBottom } : { position: 'absolute', zIndex: 6, right: bulbL, top: 8 }} />
       ) : null}
       {wide && onEdit && !nightOn ? (
         <Pressable onPress={withTap(() => { stopReading(); onEdit(); })} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Edit this book')}
-          style={{ position: 'absolute', zIndex: 6, left: bulbL - 1, bottom: 12 + insets.bottom + barGeo(u).step - 1 /* one bar step above Back, centre to centre */ }}>
+          style={{ position: 'absolute', zIndex: 6, left: bulbL - 1, bottom: backBottom + barGeo(u).step - 1 /* one bar step above Back, centre to centre */ }}>
           <Image source={SCISSORS} style={{ width: 22, height: 22, tintColor: '#ffffff' }} resizeMode="contain" />
         </Pressable>
       ) : null}
