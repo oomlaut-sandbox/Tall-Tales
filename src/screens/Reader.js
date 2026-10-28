@@ -41,7 +41,13 @@ import { BackRing, BulbIcon, Bar, BarMeta, HomeButton, BubbleIcon, HeadphonesIco
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
 export const DEFAULT_SPEED = 0.75;
-export const speedOf = (prefs) => prefs.rate || (prefs.speed === 'slow' ? 0.8 : DEFAULT_SPEED);
+// each narrator keeps their own speed: Henry sounds best a little quicker, 1.0 to start (Jörg, 28 Oct 2026)
+const NARRATOR_SPEED = { lily: DEFAULT_SPEED, gregory: 1.0 };
+export const speedOf = (prefs) => {
+  const who = narratorOf(prefs);
+  if (prefs.rate && (prefs.rateFor || 'lily') === who) return prefs.rate;
+  return who === 'lily' && prefs.speed === 'slow' ? 0.8 : NARRATOR_SPEED[who] || DEFAULT_SPEED;
+};
 // Book narrators (ElevenLabs). Fatima (voice key 'lily') is the default.
 // A tiny printed page: white sheet with the picture and words squares, upright or sideways.
 export const NARRATORS = [['lily', 'Fatima'], ['gregory', 'Henry']]; // add more voices here (and in ci/narrate.js)
@@ -483,7 +489,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     if (voiceRef.current && voiceRef.current !== 'narrator') {
       getRecording(story.id, pageKey(p, pageIndex), voiceRef.current).then((rec) => {
         if (st.current.idx !== pageIndex) return;
-        if (rec && playVoice(rec.uri, { rate: speedOf(prefs) / DEFAULT_SPEED, start: rec.start || 0, end: rec.end || null, // a parent's own pace at the default setting; only the trimmed part
+        if (rec && playVoice(rec.uri, { rate: speedOf({ ...prefs, narrator: 'lily' }) / DEFAULT_SPEED, /* (a family voice: Fatima's pace setting, not Henry's) */ start: rec.start || 0, end: rec.end || null, // a parent's own pace at the default setting; only the trimmed part
            onProgress: (f) => hlChar(Math.floor(f * p.text.length)), onDone: afterPage,
            onFail: () => { if (st.current.idx === pageIndex) narrate(); } })) {
           usingVoice.current = true;
@@ -1171,7 +1177,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       ) : null}
       {trimRec ? <TrimEditor rec={trimRec} title={tr('Page {n}', { n: trimRec.page + 1 })} onCancel={() => setTrimRec(null)}
         onSave={async (start, end) => { await setTrim(story.id, trimRec.pid, start, end, trimRec.reader || 'me'); setTrimRec(null); openRecList(); }} /> : null}
-      {voiceBox ? <VoicePick options={boxOptions} value={boxValue} tr={tr} onPick={pickVoice} speed={speedOf(prefs)} onSpeed={(v) => setPrefs((p) => ({ ...p, rate: v }))} onClose={() => setVoiceBox(false)} extra={<>{modeRows(() => setVoiceBox(false))}{lookRows}</>} extraTitle={tr('Reading Options')} onEdit={controls.recording ? () => setEditReaders(true) : null}
+      {voiceBox ? <VoicePick options={boxOptions} value={boxValue} tr={tr} onPick={pickVoice} speed={speedOf(prefs)} onSpeed={(v) => setPrefs((p) => ({ ...p, rate: v, rateFor: narratorOf(p) }))} onClose={() => setVoiceBox(false)} extra={<>{modeRows(() => setVoiceBox(false))}{lookRows}</>} extraTitle={tr('Reading Options')} onEdit={controls.recording ? () => setEditReaders(true) : null}
         anchor={wide ? { right: BL.rightW + 10, bottom: Math.max(16, insets.bottom), width: Math.min(440, winW - BL.rightW - 20), maxHeight: winH - Math.max(16, insets.bottom) - insets.top - 16 } : { right: 12, bottom: barH + 10, width: Math.min(440, winW - 24), maxHeight: winH - barH - 10 - insets.top - 14 }} /* a much bigger box: the voices, then Reading Options under them (Jörg, 27 Oct 2026) */ /> : null}
       {editReaders ? <ReaderPick edit initial={voiceOptions.some((o) => o.id === voice) && voice !== 'narrator' ? voice : null} onCancel={() => { setEditReaders(false); getReaders().then(setReaders); refreshRecPages(); }}
         onDone={() => { setEditReaders(false); getReaders().then(setReaders); refreshRecPages(); }} /> : null}
@@ -1205,7 +1211,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
           <Slider value={speedDraft ?? speedOf(prefs)} min={0.5} max={1.5} step={0.05} leftLabel={tr('Slower')} rightLabel={tr('Faster')}
             format={(v) => `${v.toFixed(2).replace(/0$/, '')}×`}
             onChange={setSpeedDraft}
-            onDone={(v) => { setSpeedDraft(null); setPrefs((p) => ({ ...p, rate: Math.round(v * 100) / 100 })); }} />
+            onDone={(v) => { setSpeedDraft(null); setPrefs((p) => ({ ...p, rate: Math.round(v * 100) / 100, rateFor: narratorOf(p) })); }} />
         </View>
         {lookRows}
         {/* Print: two choices, each a little picture of the page (not when the parental controls turn sharing off) */}

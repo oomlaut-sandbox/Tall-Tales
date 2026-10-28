@@ -44,7 +44,7 @@ export function ReadingOptionsContent({ prefs, setPrefs, toast, onPlaylists, onC
           <Slider value={speed ?? speedOf(prefs)} min={0.5} max={1.5} step={0.05} leftLabel={tr('Slower')} rightLabel={tr('Faster')}
             format={(v) => `${v.toFixed(2).replace(/0$/, '')}×`}
             onChange={setSpeed}
-            onDone={(v) => { setSpeed(null); setPrefs((p) => ({ ...p, rate: Math.round(v * 100) / 100 })); }} />
+            onDone={(v) => { setSpeed(null); setPrefs((p) => ({ ...p, rate: Math.round(v * 100) / 100, rateFor: narratorOf(p) })); }} />
         </View>
         <View style={styles.setting}>
           <Text style={styles.help}>{tr('Text size')}</Text>
