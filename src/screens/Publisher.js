@@ -34,9 +34,9 @@ import { TITLE_ICONS } from '../titleIcons';
 const ABOUT = [
   ['me', 'Me', 'All About Me', () => TITLE_ICONS.settings],
   ['family', 'My family', 'Our Family', () => HEADING_ICONS['Together with others']],
-  ['trip', 'A trip', 'Our Big Trip', () => HEADING_ICONS['Adventures and imagination']],
+  ['trip', 'A trip', 'Our Big Trip', () => require('../../assets/heading-icons/airplane.png')], // (an airplane: Jörg, 28 Oct 2026)
   ['feeling', 'A feeling', 'How I Feel', () => HEADING_ICONS.Feelings],
-  ['pet', 'A pet', 'My Pet', () => HEADING_ICONS['Your favourite books']],
+  ['pet', 'A pet', 'My Pet', () => require('../../assets/heading-icons/fish.png')], // (a fish)
   ['else', 'Something else', null, () => HEADING_ICONS['Making books']],
 ];
 const CORO_LYING = require('../../assets/coro-lying.png'); // Jörg's Coro lying down, cut out (dark backgrounds only)
@@ -104,6 +104,8 @@ const FULL = 'Books can have up to {n} pages. That’s a long story!'; // shown 
 
 const blank = () => ({ pid: newPageId(), text: '', uri: null, w: 1, h: 1 });
 
+// dark title words: most likely a light cover (the dashed box turns grey)
+const isDark = (hex) => { const m = /^#?([0-9a-f]{6})$/i.exec(hex || ''); if (!m) return false; const n = parseInt(m[1], 16); return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) < 128; };
 export function draftFrom(story) {
   if (!story) return { id: `s${Date.now()}`, title: '', writer: '', artist: '', pages: [blank()] }; // no title yet: the bar invites tr('Tap to add title')
   const d = {
@@ -978,7 +980,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                     </Pressable>
                   )}
                   {/* the title: type in it, drag it anywhere on the cover */}
-                  {coverTitling && t ? (() => { const B = coverBoxes(t, W); const box = (on) => (on && !kbUp ? { borderWidth: 1.5, borderStyle: 'dashed', borderColor: 'rgba(255,255,255,0.8)', borderRadius: 6 } : null); return (
+                  {coverTitling && t ? (() => { const B = coverBoxes(t, W); const lightCover = /draw-|linen/.test((cover && cover.uri) || '') || isDark(t.color); const box = (on) => (on && !kbUp ? { borderWidth: 1.5, borderStyle: 'dashed', borderColor: lightCover ? 'rgba(90,90,90,0.85)' : 'rgba(255,255,255,0.8)', borderRadius: 6 } : null); /* grey on a white cover (Jörg, 28 Oct 2026) */ return (
                     <>
                     <View {...titleDrag.panHandlers} style={[B.title, box(coverSel === 'title')]}>
                       {/* tap the title to type in it; otherwise it's plain text that can be dragged anywhere */}
