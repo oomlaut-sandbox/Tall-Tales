@@ -1012,7 +1012,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       {/* back to My Books, centred in the felt margins (Jörg, 28 Oct 2026): upright, in the right margin level with the
           bulb (mirroring it); sideways, in the bottom left corner, centred in the left and the bottom margins */}
       {onBackToBooks && !nightOn ? (
-        <BackRing onPress={() => { stopReading(); onBackToBooks(); }} label={tr('My Books')}
+        <BackRing onPress={() => { stopReading(); onBackToBooks(); }} label={tr('My Book Collection')}
           style={wide ? { position: 'absolute', zIndex: 6, left: bulbL, bottom: backBottom } : { position: 'absolute', zIndex: 6, right: bulbL, top: 8 }} />
       ) : null}
       {/* share this book (an envelope, Jörg, 28 Oct 2026): upright in the felt's bottom right corner, sideways above the

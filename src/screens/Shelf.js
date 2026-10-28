@@ -267,13 +267,22 @@ function WhoReads({ onPress }) {
   );
 }
 
-export function Library({ toBooks, onReadingOptions, onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
+export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
   const t = useT();
   // Read a book (from the start page): open scrolled down so My Books is at the top, just under the band
   const keep = useScrollMemory('library'); // Back returns to this spot
   const scrollRef = keep.ref;
   const booksY = useRef(null);
   const booksDone = useRef(0);
+  const wip = stories.filter((s) => s.mine && !s.published);
+  const wipY = useRef(null);
+  const wipDone = useRef(0);
+  const toWipNow = () => {
+    if (!toWip || wipDone.current === toWip || wipY.current == null || !scrollRef.current) return;
+    wipDone.current = toWip;
+    scrollRef.current.scrollTo({ y: Math.max(0, wipY.current - 24), animated: false });
+  };
+  useEffect(() => { toWipNow(); }, [toWip]);
   const toMyBooks = () => {
     if (!toBooks || booksDone.current === toBooks || booksY.current == null || !scrollRef.current) return;
     booksDone.current = toBooks;
@@ -374,9 +383,9 @@ export function Library({ toBooks, onReadingOptions, onGarden, narrator, toast, 
         ) : null}
         {!selecting ? <View style={{ width: '100%' }} /> : null}{/* the books start their own row */}
         {/* a title over the books: the ones you made first, then the picture books */}
-        {!selecting ? <Text onLayout={(e) => { booksY.current = e.nativeEvent.layout.y; toMyBooks(); }} style={[styles.section, { marginTop: 2 }]} accessibilityRole="header">{t('My Books')}</Text> : null}{/* a little closer to Let's make a book */}
+        {!selecting ? <Text onLayout={(e) => { booksY.current = e.nativeEvent.layout.y; toMyBooks(); }} style={[styles.section, { marginTop: 2 }]} accessibilityRole="header">{t('My Book Collection')}</Text> : null}{/* a little closer to Let's make a book */}
         {/* (the parental controls can hide books rated for older children) */}
-        {stories.filter((s) => ageAllowed(ageOf(null, s), controls.childAge)).sort((a, b) => (b.mine ? 1 : 0) - (a.mine ? 1 : 0)).map((s) => (
+        {stories.filter((s) => (!s.mine || s.published) /* books still being made are in Work in Progress */ && ageAllowed(ageOf(null, s), controls.childAge)).sort((a, b) => (b.mine ? 1 : 0) - (a.mine ? 1 : 0)).map((s) => (
           // just the title under each cover (no author, pages or other details)
           <Tile key={s.id} spotId={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title}
             selecting={selecting} selected={picked.includes(s.id)}
@@ -392,8 +401,15 @@ export function Library({ toBooks, onReadingOptions, onGarden, narrator, toast, 
         ) : null}
         {/* (a much bigger space after My Books: Jörg, 25 Oct 2026) */}
         {/* Reading Options under the books, in black glass (Jörg, 26 Oct 2026) */}
-        {!selecting && onReadingOptions ? <ReadingOptionsSection {...onReadingOptions} style={{ width: '100%', marginTop: 40 }} /> : null}
+        {!selecting && onReadingOptions ? <ReadingOptionsSection {...onReadingOptions} style={{ width: '100%', marginTop: 0 }} /> : null}
         {!selecting ? <View style={{ width: '100%', height: onReadingOptions ? 40 : 70 }} /> : null}
+        {/* Work in Progress: the books being made (saved with Save and Exit, not yet published); a tap carries on in
+            the book maker. 'Finish and publish to library' moves a book up into My Book Collection (Jörg, 28 Oct 2026) */}
+        {!selecting && wip.length ? <Text onLayout={(e) => { wipY.current = e.nativeEvent.layout.y; toWipNow(); }} style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('Work in Progress')}</Text> : null}
+        {!selecting ? wip.map((s) => (
+          <Tile key={s.id} spotId={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title} onPress={() => onEdit(s)} />
+        )) : null}
+        {!selecting && wip.length ? <View style={{ width: '100%', height: 40 }} /> : null}
         {/* My Notebook (and who is reading), just above My Folder: Let's make a book and My Books come first (Jörg, 26 Oct 2026) */}
         {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
         {!selecting && onNotebook ? <View style={{ width: '100%', height: 18 }} /> : null}{/* the notebook has its row to itself */}

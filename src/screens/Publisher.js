@@ -94,6 +94,7 @@ const CHOICE_ICONS = { // the icons before the words in the pop-up choices (the 
   cover: require('../../assets/heading-icons/reading.png'),
   done: require('../../assets/icon-select.png'),
   voice: require('../../assets/heading-icons/your-voice.png'),
+  save: require('../../assets/title-icons/home.png'), // Save and Exit: back to My Library
 };
 
 const MAX_PX = 1600;
@@ -601,9 +602,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     setTitleBox(false);
     clearTimeout(timer.current);
     try {
-      const list = await saveUserStory(latest.current);
+      const list = await saveUserStory(latest.current, { publish: true });
       const hasPages = latest.current.pages.some((p) => p.text.trim() || p.uri || p.uri2);
-      toast(hasPages ? tr('Saved to My Library.') : tr('Nothing to save yet, so no story was added.'));
+      toast(hasPages ? tr('Added to My Book Collection.') : tr('Nothing to save yet, so no story was added.'));
       // a book you make is read in a real voice, never the phone's: invite the author to record it now (Jörg, 26 Oct 2026)
       if (hasPages && list.some((x) => x.id === latest.current.id)) { setRecordAsk({ list, id: latest.current.id }); return; }
       onDone(list);
@@ -878,7 +879,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Text style={styles.choiceTitle}>{tr('Give your book a title')}</Text>
             <TextInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder={tr('Type the title')} placeholderTextColor="#8a8a8a" autoFocus style={styles.field} accessibilityLabel={tr('Book title')}
               returnKeyType="done" onSubmitEditing={() => finish(true)} />
-            <Pressable onPress={() => finish(true)} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 10 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={tr('Finish and save book')} style={styles.choiceBtnText} /></Pressable>
+            <Pressable onPress={() => finish(true)} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 10 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={tr('Finish and publish to library')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => setTitleBox(false)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Keep working')} style={styles.choiceBtnText} /></Pressable>
           </View>
         </KeyboardAvoidingView>
@@ -1129,8 +1130,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Pressable onPress={() => openCover(true)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon="cover" text={cover && cover.uri ? tr('Edit the cover') : tr('Design a cover')} style={styles.choiceBtnText} /></Pressable>
             {/* leave the book maker for now; what's been made so far stays saved */}
             <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await saveUserStory(latest.current)); } catch (e) { toast(tr('Couldn’t save the story. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon="cancel" text={tr('Cancel book editor')} style={styles.choiceBtnText} /></Pressable>
+            {/* Save and Exit: saved as it is, into Work in Progress in My Library (Jörg, 28 Oct 2026) */}
+            <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await saveUserStory(latest.current), null, 'wip'); } catch (e) { toast(tr('Couldn’t save the story. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.save} text={tr('Save and Exit')} style={styles.choiceBtnText} /></Pressable>
             {/* Finish last, in green, with extra room around it */}
-            <Pressable onPress={() => { setPageDone(false); finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 18, marginBottom: 8 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={tr('Finish and save book')} style={styles.choiceBtnText} /></Pressable>
+            <Pressable onPress={() => { setPageDone(false); finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 18, marginBottom: 8 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={tr('Finish and publish to library')} style={styles.choiceBtnText} /></Pressable>
           </View>
         </View>
       ) : null}

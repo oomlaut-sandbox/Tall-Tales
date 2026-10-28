@@ -183,6 +183,7 @@ function Root() {
   }), [toast]);
 
   // From the start page to My Library: the closed notebook flies onto the shelf as the library fades in.
+  const [toWip, setToWip] = useState(0); // Save and Exit in the book maker: My Library opens at Work in Progress
   const [toBooks, setToBooks] = useState(0); // Read a book on the start page: My Library opens scrolled down to My Books
   const [flyer, setFlyer] = useState(null); // { from, to } screen rectangles
   const libFade = useRef(new Animated.Value(1)).current;
@@ -396,7 +397,7 @@ function Root() {
         ) : null}
         {(screen === 'library' || (screen === 'start' && peek === 'library')) && (
           <Animated.View style={{ flex: 1, opacity: screen === 'library' ? libFade : 1 }}>
-          <Library toBooks={toBooks} onReadingOptions={readingBox} onGarden={controls.garden ? () => go('garden') : undefined} u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
+          <Library toBooks={toBooks} toWip={toWip} onReadingOptions={readingBox} onGarden={controls.garden ? () => go('garden') : undefined} u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
             onNotebook={(rect) => {
               // the notebook stays where it is while the shelf dissolves away to plain felt; then the notebook
               // screen takes over (its own notebook is already in the same spot) and the held one is taken away
@@ -431,7 +432,7 @@ function Root() {
         )}
         {screen === 'notebook' && <Notebook u={u} from={nbFrom} openMenu={openMenu} toast={toast} onDone={() => go('library')} />}
         {screen === 'publisher' && draft && (
-          <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list, recId) => { setUserStories(list); const rs = recId && list.find((x) => x.id === recId); if (rs) { setRecordOnOpen(true); openStory(rs); return; } go('library'); }} onIdeas={() => go('ideas')} />
+          <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list, recId, where) => { setUserStories(list); const rs = recId && list.find((x) => x.id === recId); if (rs) { setRecordOnOpen(true); openStory(rs); return; } if (where === 'wip') setToWip((n) => n + 1); /* Save and Exit: My Library at Work in Progress */ go('library'); }} onIdeas={() => go('ideas')} />
         )}
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} onReadingOptions={readingBox} />}
         {screen === 'music' && <MusicSounds u={u} openMenu={openMenu} prefs={prefs} setPrefs={setPrefs} />}
@@ -553,7 +554,7 @@ function Root() {
         {/* Back: on every page, always the same size and in the same spot, top right (Jörg, 27 Oct 2026). It goes
             back one step: whatever is open on top first, then the step before in this screen, then the screen before */}
         {screen !== 'reader' /* reading: the reader draws its own back to My Books, in the felt margin (Jörg, 28 Oct 2026) */ && screen !== 'start' /* nor on the start page, where there's nothing to go back to */ && !backHidden() /* nor over the drawing editor */ && !splash && !introWho && !welcome && !flyer && !opening && !closingBook ? (
-          <BackRing onPress={screen === 'reader' ? backToBooks : goBack} label={screen === 'reader' ? t('My Books') : t('Back')} style={{ position: 'absolute', zIndex: 200, ...(makerCorner || { top: screenInsets.top + 10, right: 12 + (sideways ? drawerRight : 0) }), opacity: screen === 'reader' || canBack() ? 1 : 0.35 }} />
+          <BackRing onPress={screen === 'reader' ? backToBooks : goBack} label={screen === 'reader' ? t('My Book Collection') : t('Back')} style={{ position: 'absolute', zIndex: 200, ...(makerCorner || { top: screenInsets.top + 10, right: 12 + (sideways ? drawerRight : 0) }), opacity: screen === 'reader' || canBack() ? 1 : 0.35 }} />
         ) : null}
         <Toast message={message} ms={toastMs} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         {/* the Audio Player for music and nature sounds: in the middle of the screen over a dark layer until it's closed */}

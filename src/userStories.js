@@ -44,6 +44,7 @@ function fromSaved(s0) {
     artist: s.artist || '',
     author: [s.writer, s.artist].filter((x) => x && x.trim()).filter((x, i, a) => a.indexOf(x) === i).join(' and ') || undefined,
     mine: true,
+    published: !!s.published, // finished with 'Finish and publish to library': in My Book Collection; until then in Work in Progress (Jörg, 28 Oct 2026)
     cover: s.cover && s.cover.uri ? s.cover : null, // made in the Cover Editor (picture and, if wanted, the title)
     pages: [titlePage, ...bodyPages],
   };
@@ -60,7 +61,9 @@ export function dropPicture(uri) {
 }
 
 // draft: { id, title, pages: [{ pid, text, uri, w, h }] }. Empty pages are left out.
-export function saveUserStory(draft) {
+// publish: the book is finished and goes into My Book Collection. Saves after that keep it there (editing a
+// published book never takes it back to Work in Progress); books made before 28 Oct 2026 start in Work in Progress.
+export function saveUserStory(draft, { publish = false } = {}) {
   return serial(async () => {
     // (the photo editor's originals and settings are kept too, so a photo can be edited again after the book is reopened)
     const pages = draft.pages.filter(hasContent).map((p) => ({ pid: p.pid, text: p.text.trim(), uri: p.uri || null, w: p.w, h: p.h, uri2: (!p.text.trim() && p.uri2) || null, w2: p.w2 || 1, h2: p.h2 || 1,
@@ -73,7 +76,7 @@ export function saveUserStory(draft) {
     if (!started) {
       if (i >= 0) list.splice(i, 1);
     } else {
-      const saved = { id: draft.id, title: draft.title.trim() || 'Untitled story', writer: (draft.writer || '').trim(), artist: (draft.artist || '').trim(), pages, cover: draft.cover && draft.cover.uri ? draft.cover : null };
+      const saved = { id: draft.id, title: draft.title.trim() || 'Untitled story', writer: (draft.writer || '').trim(), artist: (draft.artist || '').trim(), pages, cover: draft.cover && draft.cover.uri ? draft.cover : null, published: !!(publish || (i >= 0 && list[i].published)) };
       if (i >= 0) list[i] = saved; else list.push(saved);
     }
     await saveJSON('stories', list);
