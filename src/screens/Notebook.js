@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { colors, fonts, MAX_WIDTH } from '../theme';
-import { Bar, Burger, DogEar, DoneTick, Panel, Toast, barGeo } from '../components/Chrome';
+import { Bar, Burger, DogEar, DoneTick, Panel, Toast, barGeo, ChoiceLabel } from '../components/Chrome';
 import { loadJSON, saveJSON } from '../storage';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
@@ -48,6 +48,20 @@ const SPLOTCH = [ // round splotches of paint: the shape (tinted with the colour
 ];
 const TRASH = require('../../assets/icon-trash.png');
 import { printDrawing, printNotebook, shareDrawing, shareNotebookPdf } from '../pdf';
+const CHOICE_ICONS = { // the icons before the words in the pop-up choices (the app's own set)
+  photo: require('../../assets/heading-icons/family-and-memories.png'),
+  draw: require('../../assets/heading-icons/making-books.png'),
+  text: require('../../assets/heading-icons/learning.png'),
+  crop: require('../../assets/icon-scissors.png'),
+  trash: require('../../assets/icon-trash.png'),
+  notes: require('../../assets/heading-icons/my-notebook.png'),
+  share: require('../../assets/icon-share-line.png'),
+  print: require('../../assets/icon-printer.png'),
+  page: require('../../assets/title-icons/make-a-book.png'),
+  cover: require('../../assets/heading-icons/reading.png'),
+  done: require('../../assets/icon-select.png'),
+  next: require('../../assets/icon-share-line.png'),
+};
 
 const GAP = 30;
 const MAX_PX = 1600;
@@ -698,8 +712,8 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
             <Text style={styles.choiceTitle}>{t('Add a new page')}</Text>
-            <Pressable onPress={() => addPage('note')} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Notes page')}</Text></Pressable>
-            <Pressable onPress={() => addPage('sketch')} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Sketch page')}</Text></Pressable>
+            <Pressable onPress={() => addPage('note')} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.notes} text={t('Notes page')} style={styles.choiceBtnText} /></Pressable>
+            <Pressable onPress={() => addPage('sketch')} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={t('Sketch page')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => setNewAsk(false)} style={[styles.choiceBtn, { marginTop: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Cancel')}</Text></Pressable>
           </View>
         </View>
@@ -709,10 +723,10 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
             <Text style={styles.choiceTitle}>{page.uri || page.strokes.length ? t('Change the picture') : t('Add a picture')}</Text>
-            <Pressable onPress={() => { setPicAsk(false); choosePhoto('library'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Choose a photo')}</Text></Pressable>
-            <Pressable onPress={() => { setPicAsk(false); setCamGate(true); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Take a photo')}</Text></Pressable>
-            <Pressable onPress={() => { setPicAsk(false); setDrawing('top'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{page.uri ? t('Draw on the photo') : page.strokes.length ? t('Keep drawing') : t('Make a drawing')}</Text></Pressable>
-            {page.uri ? <Pressable onPress={() => { setPicAsk(false); dropNotebookPicture(page.uri); update({ uri: null, w: 1, h: 1 }); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Remove the photo')}</Text></Pressable> : null}
+            <Pressable onPress={() => { setPicAsk(false); choosePhoto('library'); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.photo} text={t('Choose a photo')} style={styles.choiceBtnText} /></Pressable>
+            <Pressable onPress={() => { setPicAsk(false); setCamGate(true); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={'camera'} text={t('Take a photo')} style={styles.choiceBtnText} /></Pressable>
+            <Pressable onPress={() => { setPicAsk(false); setDrawing('top'); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={page.uri ? t('Draw on the photo') : page.strokes.length ? t('Keep drawing') : t('Make a drawing')} style={styles.choiceBtnText} /></Pressable>
+            {page.uri ? <Pressable onPress={() => { setPicAsk(false); dropNotebookPicture(page.uri); update({ uri: null, w: 1, h: 1 }); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.trash} text={t('Remove the photo')} style={styles.choiceBtnText} /></Pressable> : null}
             <Pressable onPress={() => setPicAsk(false)} style={[styles.choiceBtn, { marginTop: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Cancel')}</Text></Pressable>
           </View>
         </View>
@@ -1299,10 +1313,10 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
       <View style={[StyleSheet.absoluteFill, styles.choiceBack, { zIndex: 80 }]}>
         <View style={styles.choice}>
           <Text style={[styles.choiceTitle, { lineHeight: 28 }]}>{t('Do you want to print or share your drawing now, or save it and start the next page?')}</Text>
-          <Pressable disabled={outBusy} onPress={() => setOutFor('share')} style={[styles.choiceBtn, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Share')}</Text></Pressable>
-          <Pressable disabled={outBusy} onPress={() => setOutFor('print')} style={[styles.choiceBtn, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Print')}</Text></Pressable>
+          <Pressable disabled={outBusy} onPress={() => setOutFor('share')} style={[styles.choiceBtn, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.share} text={t('Share')} style={styles.choiceBtnText} /></Pressable>
+          <Pressable disabled={outBusy} onPress={() => setOutFor('print')} style={[styles.choiceBtn, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.print} text={t('Print')} style={styles.choiceBtnText} /></Pressable>
           <Pressable onPress={() => setDoneAsk(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Cancel')}</Text></Pressable>
-          <Pressable onPress={() => { setDoneAsk(false); (onNext || onDone)(strokes); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Next page')}</Text></Pressable>
+          <Pressable onPress={() => { setDoneAsk(false); (onNext || onDone)(strokes); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 8 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.next} text={t('Next page')} style={styles.choiceBtnText} /></Pressable>
         </View>
       </View>
     ) : null}

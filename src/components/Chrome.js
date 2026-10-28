@@ -483,6 +483,19 @@ export function CameraIcon({ size = 34, color = '#2b2b2b', weight = 2.2 }) {
   );
 }
 
+// A choice in a pop-up (the grey pills): a small icon from the app's set before the words (Jörg, 28 Oct 2026).
+// icon: a picture (tinted to match the words) or 'camera' (drawn).
+export function ChoiceLabel({ icon, text, style }) {
+  const color = (StyleSheet.flatten(style) || {}).color || colors.white;
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12, paddingHorizontal: 16 }}>
+      {icon === 'camera' ? <View style={{ marginTop: -2 }}><CameraIcon size={22} color={color} weight={1.8} /></View>
+        : icon ? <Image source={icon} style={{ width: 22, height: 22, tintColor: color }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
+      <Text style={[style, { flexShrink: 1 }]} numberOfLines={1}>{text}</Text>
+    </View>
+  );
+}
+
 export function PlusIcon({ size = MENU_ICON, color = colors.white, weight = 2 }) {
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>

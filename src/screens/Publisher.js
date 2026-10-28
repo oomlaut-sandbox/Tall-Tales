@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { BOOK_FONTS, bookFont, colors, fonts } from '../theme';
-import { Bar, Burger, CoverIcon, DogEar, DoneTick, Panel, PageShape, PagesIcon, Toast } from '../components/Chrome';
+import { Bar, Burger, CoverIcon, DogEar, DoneTick, Panel, PageShape, PagesIcon, Toast, ChoiceLabel } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, DESK_BG } from '../look';
@@ -81,6 +81,20 @@ function AboutPage({ tr, insets, onNext, onSkip }) {
   );
 }
 import { strokesToImage } from '../components/Strokes';
+const CHOICE_ICONS = { // the icons before the words in the pop-up choices (the app's own set)
+  photo: require('../../assets/heading-icons/family-and-memories.png'),
+  draw: require('../../assets/heading-icons/making-books.png'),
+  text: require('../../assets/heading-icons/learning.png'),
+  crop: require('../../assets/icon-scissors.png'),
+  trash: require('../../assets/icon-trash.png'),
+  notes: require('../../assets/heading-icons/my-notebook.png'),
+  share: require('../../assets/icon-share-line.png'),
+  print: require('../../assets/icon-printer.png'),
+  page: require('../../assets/title-icons/make-a-book.png'),
+  cover: require('../../assets/heading-icons/reading.png'),
+  done: require('../../assets/icon-select.png'),
+  next: require('../../assets/icon-share-line.png'),
+};
 
 const MAX_PX = 1600;
 const TOOLBOX_H = 92; // the cover editor's black glass tools box (two rows of buttons)
@@ -862,7 +876,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Text style={styles.choiceTitle}>{tr('Give your book a title')}</Text>
             <TextInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder={tr('Type the title')} placeholderTextColor="#8a8a8a" autoFocus style={styles.field} accessibilityLabel={tr('Book title')}
               returnKeyType="done" onSubmitEditing={() => finish(true)} />
-            <Pressable onPress={() => finish(true)} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 10 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Finish and save book')}</Text></Pressable>
+            <Pressable onPress={() => finish(true)} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 10 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={tr('Finish and save book')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => setTitleBox(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Keep working')}</Text></Pressable>
           </View>
         </KeyboardAvoidingView>
@@ -1108,13 +1122,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
             <Text style={styles.choiceTitle}>{tr('What’s next?')}</Text>
-            <Pressable onPress={addPage} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Add another page')}</Text></Pressable>
-            <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Keep working on this page')}</Text></Pressable>
-            <Pressable onPress={() => openCover(true)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{cover && cover.uri ? tr('Edit the cover') : tr('Design a cover')}</Text></Pressable>
+            <Pressable onPress={addPage} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.page} text={tr('Add another page')} style={styles.choiceBtnText} /></Pressable>
+            <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Keep working on this page')} style={styles.choiceBtnText} /></Pressable>
+            <Pressable onPress={() => openCover(true)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.cover} text={cover && cover.uri ? tr('Edit the cover') : tr('Design a cover')} style={styles.choiceBtnText} /></Pressable>
             {/* leave the book maker for now; what's been made so far stays saved */}
             <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await saveUserStory(latest.current)); } catch (e) { toast(tr('Couldn’t save the story. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Cancel book editor')}</Text></Pressable>
             {/* Finish last, in green, with extra room around it */}
-            <Pressable onPress={() => { setPageDone(false); finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 18, marginBottom: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Finish and save book')}</Text></Pressable>
+            <Pressable onPress={() => { setPageDone(false); finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 18, marginBottom: 8 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={tr('Finish and save book')} style={styles.choiceBtnText} /></Pressable>
           </View>
         </View>
       ) : null}
@@ -1122,13 +1136,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
             <Text style={styles.choiceTitle}>{photoOf(imgAsk) ? tr('Picture') : tr('Add a picture')}</Text>
-            {photoOf(imgAsk) ? <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setPhotoEdit(t); }} style={[styles.choiceBtn, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Edit photo')}</Text></Pressable> : null}
-            <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); placeImage(t, 'library'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Choose a picture')}</Text></Pressable>
+            {photoOf(imgAsk) ? <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setPhotoEdit(t); }} style={[styles.choiceBtn, { backgroundColor: colors.green }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.crop} text={tr('Edit photo')} style={styles.choiceBtnText} /></Pressable> : null}
+            <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); placeImage(t, 'library'); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.photo} text={tr('Choose a picture')} style={styles.choiceBtnText} /></Pressable>
             {/* a photo of a drawing, say; the camera only opens after the grown-up check */}
-            <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setCamGate(t); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Take a photo')}</Text></Pressable>
-            <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setDrawFor(t); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Make a drawing')}</Text></Pressable>
+            <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setCamGate(t); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={'camera'} text={tr('Take a photo')} style={styles.choiceBtnText} /></Pressable>
+            <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setDrawFor(t); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Make a drawing')} style={styles.choiceBtnText} /></Pressable>
             {/* the cover only: just the title on a hardcover (cloth, leather…) of their choice */}
-            {imgAsk === 'cover' ? <Pressable onPress={() => { setImgAsk(null); setHardAsk(true); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Text only cover')}</Text></Pressable> : null}
+            {imgAsk === 'cover' ? <Pressable onPress={() => { setImgAsk(null); setHardAsk(true); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.text} text={tr('Text only cover')} style={styles.choiceBtnText} /></Pressable> : null}
             <Pressable onPress={() => setImgAsk(null)} style={[styles.choiceBtn, { marginTop: 14 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Cancel')}</Text></Pressable>
           </View>
         </View>
@@ -1201,7 +1215,7 @@ const styles = StyleSheet.create({
   coverHint: { color: '#cfcfcf', fontFamily: fonts.ui, fontSize: 13, marginLeft: 4 },
   countBox: { position: 'absolute', zIndex: 6, backgroundColor: '#4a4a4a', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, alignItems: 'center', justifyContent: 'center' },
   countText: { color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 13, fontVariant: ['tabular-nums'] },
-  coverHead: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 17, marginBottom: 4 },
+  coverHead: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 24, marginBottom: 8 }, // (bigger: Jörg, 28 Oct 2026)
   fieldBox: { backgroundColor: '#161616', height: 48, borderRadius: 14, paddingHorizontal: 14 },
   fieldBoxSmall: { flex: 1, minWidth: 0, height: 42 },
   fieldText: { color: colors.white, fontFamily: fonts.ui, fontSize: 17 },
