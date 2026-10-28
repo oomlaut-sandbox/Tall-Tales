@@ -6,7 +6,7 @@ import { Image, View } from 'react-native';
 const TOOLS = {
   eraser: [require('../../assets/tools/eraser.png'), null, 176, 455],
   pencil: [require('../../assets/tools/pencil.png'), null, 85, 455],
-  pen: [require('../../assets/tools/pen.png'), null, 98, 454],
+  pen: [require('../../assets/tools/pen.png'), null, 147, 455], // Jörg's flat fountain pen (28 Oct 2026), drawn at twice this size
   water: [require('../../assets/tools/water.png'), null, 67, 458],
   crayon: [require('../../assets/tools/crayon.png'), null, 79, 455],
   smudge: [require('../../assets/tools/smudge.png'), null, 62, 432], // a paper blending stump

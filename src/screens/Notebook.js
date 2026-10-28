@@ -888,7 +888,7 @@ function ZoomLabel({ v }) {
   const t = useT();
   const [z, setZ] = useState(1);
   useEffect(() => { const id = v.addListener(({ value }) => setZ(value)); return () => v.removeListener(id); }, [v]);
-  return <Text style={{ position: 'absolute', right: 2, bottom: -24, color: '#bdbdbd', fontFamily: fonts.uiSemiBold, fontSize: 12 }} accessibilityLabel={`${t('Zoom')} ${Math.round(z * 100)}%`}>{t('Zoom')} {Math.round(z * 100)}%</Text>; // 'Zoom 100%' (Jörg, 27 Oct 2026)
+  return <View style={{ position: 'absolute', right: 2, bottom: -24, flexDirection: 'row', alignItems: 'center', gap: 5 }}>{/* a tiny magnifying glass before it (Jörg, 28 Oct 2026) */}<View style={{ width: 11, height: 11 }}><View style={{ position: 'absolute', left: 0, top: 0, width: 8, height: 8, borderRadius: 4, borderWidth: 1.4, borderColor: '#bdbdbd' }} /><View style={{ position: 'absolute', left: 7, top: 6, width: 1.6, height: 5, borderRadius: 1, backgroundColor: '#bdbdbd', transform: [{ rotate: '-45deg' }] }} /></View><Text style={{ color: '#bdbdbd', fontFamily: fonts.uiSemiBold, fontSize: 12 }} accessibilityLabel={`${t('Zoom')} ${Math.round(z * 100)}%`}>{t('Zoom')} {Math.round(z * 100)}%</Text></View>; // 'Zoom 100%' (Jörg, 27 Oct 2026)
 }
 
 // what the notebook is for: a blank page, then a few words on the next one
