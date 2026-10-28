@@ -107,7 +107,6 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
   const [outAsk, setOutAsk] = useState(null); // 'print' | 'share': the box that asks which pages
   const [outGate, setOutGate] = useState(null); // 'print' | 'share', behind the grown-up question
   const [outBusy, setOutBusy] = useState(false);
-  const [outErr, toastHere] = useState(null);
   const [writing, setWriting] = useState(false); // the notes editor
   const [drawing, setDrawing] = useState(false); // the drawing editor
   const latest = useRef(null);
@@ -1059,6 +1058,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   const [doneAsk, setDoneAsk] = useState(false);
   const [outFor, setOutFor] = useState(null); // 'print' | 'share', behind the grown-up question
   const [outBusy, setOutBusy] = useState(false);
+  const [outErr, toastHere] = useState(null);
   const sendOut = async (what) => {
     setOutBusy(true);
     try { await (what === 'print' ? printDrawing(strokes, photo) : shareDrawing(strokes, photo, title || t('My drawing'))); }
