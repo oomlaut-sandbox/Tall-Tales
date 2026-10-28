@@ -18,7 +18,7 @@ import ReadingOptionsSection from '../components/ReadingOptionsSection';
 import { LANGS, useT } from '../i18n';
 import { lockedControls, quickSafeControls, DEFAULT_CONTROLS, STORE_ON } from '../controls';
 import { usePurchases } from '../purchases';
-import { MAX_CLASS, PROFILE_COLORS, addProfile, canAdd, endClassroom, inClass, getProfiles, onProfiles as watchProfiles, setClassroom } from '../profiles';
+import { MAX_CLASS, PROFILE_COLORS, activeProfile, addProfile, canAdd, endClassroom, inClass, getProfiles, onProfiles as watchProfiles, setClassroom } from '../profiles';
 import { hapticsOn, onHaptics, setHapticsOn, tap } from '../haptics';
 
 const MODES = [['self', 'Read Yourself'], ['learn', 'Learn to Read'], ['auto', 'Auto Play'], ['page', 'Page by Page Play'], ['listen', 'Listen Only']];
@@ -74,6 +74,9 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
   const [roView, setRoView] = useState('main'); // Reading Options: the choices, or the voices
   const [openSec, setOpenSec] = useState(null);
   const [room, setRoom] = useState(getProfiles().classroom || null); // the classroom folder, if there is one
+  // whose controls these are: the reader using the app now (Jörg, 28 Oct 2026)
+  const [who, setWho] = useState(() => (activeProfile() || {}).name || null);
+  useEffect(() => watchProfiles(() => setWho((activeProfile() || {}).name || null)), []);
   useEffect(() => watchProfiles((st) => setRoom(st.classroom || null)), []); // (not the onProfiles prop, which opens Profiles)
   const [roomName, setRoomName] = useState('');
   const [names, setNames] = useState(''); // a pasted class list: one name per line (or separated by commas)
@@ -115,7 +118,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
         <View style={styles.col}>
           {/* five categories, each in its own black glass box that opens when tapped (like Ideas and Support):
               Parental Controls, Reading Options, Music and Sounds, Profiles, Languages (Jörg, 26 Oct 2026) */}
-          <Section id="parental" icon={SET_ICONS.parental} title={t('Parental controls')} open={openSec} setOpen={setOpenSec}>
+          <Section id="parental" icon={SET_ICONS.parental} title={who ? t('Parental controls for {name}', { name: who }) : t('Parental controls')} open={openSec} setOpen={setOpenSec}>
               {/* the recommended one-tap setup for a child reading alone */}
               <View style={[styles.card, { borderWidth: 2, borderColor: quick ? colors.green : 'transparent' }]}>
                 <Text style={[styles.cardTitle, { fontSize: 18 }]}>{t('Quick and Safe Kid')}</Text>
@@ -136,7 +139,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
               </View>
               {/* the child's age: books rated for older children are hidden everywhere */}
               <View style={styles.card}>
-                <Text style={styles.cardTitle}>{t('Your child’s age')}</Text>
+                <Text style={styles.cardTitle}>{who ? t('{name}’s age', { name: who }) : t('Your child’s age')}</Text>
                 <View style={styles.choices}>
                   <Choice label={t('Show every book')} on={controls.childAge == null} onPress={() => set({ childAge: null })} />
                   {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((a) => <Choice key={a} label={String(a)} on={controls.childAge === a} onPress={() => set({ childAge: a })} />)}

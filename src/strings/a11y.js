@@ -82,4 +82,6 @@ export default {
   "My drawing": { de: "Meine Zeichnung", fr: "Mon dessin", es: "Mi dibujo", ja: "わたしの え", ar: "رسمتي" },
   "That didn’t work. Try again.": { de: "Das hat nicht geklappt. Versuch es noch einmal.", fr: "Ça n’a pas marché. Réessaie.", es: "No ha funcionado. Inténtalo de nuevo.", ja: "うまく いきませんでした。もういちど ためしてね。", ar: "لم ينجح ذلك. حاول مرة أخرى." },
   "How Coro works": { de: "So funktioniert Coro", fr: "Comment fonctionne Coro", es: "Cómo funciona Coro", ja: "Coroの つかいかた", ar: "كيف يعمل Coro" },
+  "Parental controls for {name}": { de: "Kindersicherung für {name}", fr: "Contrôle parental pour {name}", es: "Control parental para {name}", ja: "{name}の ペアレンタルコントロール", ar: "الرقابة الأبوية لـ {name}" },
+  "{name}’s age": { de: "Alter von {name}", fr: "Âge de {name}", es: "Edad de {name}", ja: "{name}の ねんれい", ar: "عمر {name}" },
 };
