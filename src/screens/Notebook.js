@@ -28,7 +28,7 @@ import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
 import ToolPic from '../components/ToolPic';
 import { STAMPS, stampWidth } from '../stamps';
 const SHOW_STAMPS = false; // the stamps are the felt mascot: away until Jörg's hand-drawn one arrives (drawings that have them still show them)
-import { BRUSHES, GREYS, PENS, PENS_BRIGHT, SHAPES, wheelColour, SIZES, makeFill, mixColours, near, shapePts, withMirrors } from '../strokes';
+import { BRUSHES, GREYS, LAYERS, PENS, PENS_BRIGHT, SHAPES, wheelColour, SIZES, makeFill, mixColours, near, shapePts, withMirrors } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
 import { STORIES } from '../story';
@@ -1047,6 +1047,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   const [stamp, setStamp] = useState(null); // a stamp in hand: put a finger down to place it, slide to move it, lift to stick it
   const [stampsOpen, setStampsOpen] = useState(false);
   const [behind, setBehind] = useState(false); // colouring in behind the lines: what's drawn goes underneath everything else
+  const [layer, setLayer] = useState(1); // Layers: the one being drawn on (1 bottom to 4 top)
   const [dropper, setDropper] = useState(false);
   const [onWheel, setOnWheel] = useState(false); // a finger on the paint wheel: the sheet holds still
   const [wheelSpot, setWheelSpot] = useState(null); // where on the paint wheel the colour was picked (the white ring) // the eyedropper: the next tap on the page picks up the colour there // Mirror: everything drawn appears flipped on the other side too
@@ -1072,7 +1073,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
   };
   const lastWater = useRef(null); // the last watercolour stroke and when it was finished (still wet for a while)
   const S = useRef({});
-  S.current = { strokes, pen, size, erase, bucket, tall, brush, shape, mirror, eraseSoft, smudgeK, dropper, photo, behind, stamp };
+  S.current = { strokes, pen, size, erase, bucket, tall, brush, shape, mirror, eraseSoft, smudgeK, dropper, photo, behind, stamp, layer };
   const toolsH = 16; // (portrait: the panel has its own room below the page) // (two rows of colours, the colour row; the brushes, the sizes and the shapes take a row each)
   const add = (st) => { setStrokes((s) => [...s, st]); setRedo([]); };
   const W = !area ? 0 : wideScreen ? Math.max(120, Math.floor(Math.min(area.h, area.w - TOOLS_W - 28)))
@@ -1147,10 +1148,10 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       }
       if (S.current.bucket) {
         const f = makeFill(withMirrors(S.current.strokes.filter((st) => !st.e && !st.sm)), x, y, S.current.tall ? 2 : 1, S.current.pen);
-        if (f) add({ ...f, ...(S.current.mirror ? { m: 1 } : null), ...(S.current.behind ? { bk: 1 } : null) });
+        if (f) add({ ...f, ...(S.current.mirror ? { m: 1 } : null), ...(S.current.behind ? { bk: 1 } : null), ...(S.current.layer > 1 ? { ly: S.current.layer } : null) });
         return;
       }
-      const m = { ...(S.current.mirror ? { m: 1 } : null), ...(S.current.behind ? { bk: 1 } : null) }; // (mirror, and behind the lines)
+      const m = { ...(S.current.mirror ? { m: 1 } : null), ...(S.current.behind ? { bk: 1 } : null), ...(S.current.layer > 1 ? { ly: S.current.layer } : null) }; // (mirror, behind the lines, and the layer)
       if (S.current.stamp) { // a stamp appears under the finger (it can be slid into place before it sticks)
         cur.current = { stp: S.current.stamp, p: [+x.toFixed(4), +y.toFixed(4)], w: stampWidth(S.current.size), ...m };
         setLive({ ...cur.current });
@@ -1281,6 +1282,17 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone 
       check={t('Don’t show this message again')} button={t('Got it!')} onDismiss={(ticked) => { setDrawHint(false); if (ticked) saveJSON('drawHint', { off: true }); }} /> : null}
     {/* the zoom now, in percent: a small label under the page, on the right (Jörg, 27 Oct 2026) */}
     <ZoomLabel v={zS} />
+    {/* Layers: a small label under the page on the left, then 1 2 3 4; the one being drawn on has a ring
+        (four fixed layers: they can't be deleted or moved: Jörg, 27 Oct 2026) */}
+    <View style={{ position: 'absolute', left: 2, bottom: -29, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+      <Text style={{ color: '#bdbdbd', fontFamily: fonts.uiSemiBold, fontSize: 12, marginRight: 4 }}>{t('Layers')}</Text>
+      {LAYERS.map((n) => (
+        <Pressable key={n} onPress={() => setLayer(n)} hitSlop={{ top: 10, bottom: 10, left: 3, right: 3 }} accessibilityRole="radio" accessibilityState={{ selected: layer === n }} accessibilityLabel={t('Layer {n}', { n })}
+          style={{ width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', borderWidth: 1.2, borderColor: layer === n ? '#ffffff' : 'transparent' }}>
+          <Text style={{ color: layer === n ? '#ffffff' : '#bdbdbd', fontFamily: fonts.uiSemiBold, fontSize: 12 }}>{n}</Text>
+        </Pressable>
+      ))}
+    </View>
     {/* zoomed in: Fit shows the whole page again */}
     {zoomed ? (
       <Pressable onPress={fit} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Show the whole page')} style={[styles.sizePop, { right: 10, top: 10, height: 36, paddingHorizontal: 16, minWidth: 0 }]}>

@@ -72,4 +72,6 @@ export default {
   "A quick peek at a Coro book": { de: "Ein kurzer Blick in ein Coro-Buch", fr: "Un petit aperçu d’un livre Coro", es: "Un vistazo a un libro de Coro", ja: "Coroの 本を ちょっと のぞいてみよう", ar: "لمحة سريعة عن كتاب Coro" },
   "Turn off": { de: "Ausschalten", fr: "Désactiver", es: "Desactivar", ja: "オフにする", ar: "إيقاف" },
   "Turn off Quick and Safe Kid": { de: "Schnell und sicher für Kinder ausschalten", fr: "Désactiver le mode Enfant simple et sûr", es: "Desactivar Niño rápido y seguro", ja: "かんたん あんしん キッズを オフにする", ar: "إيقاف وضع الطفل السريع والآمن" },
+  "Layers": { de: "Ebenen", fr: "Calques", es: "Capas", ja: "レイヤー", ar: "الطبقات" },
+  "Layer {n}": { de: "Ebene {n}", fr: "Calque {n}", es: "Capa {n}", ja: "レイヤー {n}", ar: "الطبقة {n}" },
 };
