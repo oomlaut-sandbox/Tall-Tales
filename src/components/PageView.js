@@ -75,7 +75,7 @@ export function AmberTint() {
 }
 
 export const PageView = forwardRef(function PageView(
-  { page, width, height, bottomInset = 0, textScale = 1, fontKey = 'serif', highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary, onShare, zoomable, amber },
+  { page, width, height, bottomInset = 0, textScale = 1, fontKey = 'serif', highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary, onShare, zoomable, amber, seeThrough },
   ref,
 ) {
   const t = useT();
@@ -103,7 +103,7 @@ export const PageView = forwardRef(function PageView(
   if (!page && !end) return <View ref={ref} collapsable={false} style={[styles.page, { width, height }, amber && { backgroundColor: AMBER.paper }]} />;
 
   return (
-    <View ref={ref} collapsable={false} style={[styles.page, { width, height }, L.wide && styles.row, amber && { backgroundColor: AMBER.paper }]}>
+    <View ref={ref} collapsable={false} style={[styles.page, { width, height }, L.wide && styles.row, amber && { backgroundColor: AMBER.paper }, seeThrough && page?.image && { backgroundColor: 'transparent' } /* (a page-turn copy of the picture side: the page underneath shows while its photo loads) */]}>
       {/* The picture square, with a very soft shadow falling below it. */}
       <View style={[L.wide ? { width: artW, height, justifyContent: 'center' } : styles.artShadow, { zIndex: 1 }]}>
       <View style={[styles.art, { width: artW, height: artH }, page?.image && !end && { backgroundColor: 'transparent' } /* a picture still loading in a page-turn layer shows the same page underneath, never a flash (Jörg, 28 Oct 2026) */, page?.whiteArt && { backgroundColor: amber ? AMBER.white : colors.white }, page?.blankArt && { backgroundColor: '#d9d9d9' }]}>{/* blankArt: a light grey placeholder until a picture is added */}

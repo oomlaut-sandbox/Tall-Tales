@@ -878,7 +878,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     layers.push(
       <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
       wide
-        ? <View key="fat" pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: W / 2, height: H, overflow: 'hidden' }}>{view(a, `t${a}`)}</View>
+        ? <View key="fat" pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: W / 2, height: H, overflow: 'hidden' }}><PageView key={`t${a}`} {...pageProps(a)} seeThrough /></View>
         : <View key="fat" pointerEvents="none" style={[styles.half, { top: 0, height: flipT.artH }]}>{view(a, `t${a}`)}</View>,
     );
   } else if (flipPair && size && wide) {
