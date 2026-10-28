@@ -8,9 +8,11 @@ import React, { useRef, useState } from 'react';
 import { PanResponder, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
 import { DeskFelt } from '../look';
+import { ChoiceLabel } from './Chrome';
 import { PhotoPreview, composePhoto } from './PhotoCanvas';
 import { DEFAULT_EDIT, LAYOUTS, LOOKS, PAGE_COLORS, frameOf } from './photoLayout';
 
+const DONE_ICON = require('../../assets/icon-select.png');
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 // the page colours' names, for VoiceOver (the same names as the cover title's colours)
 const PAGE_COLOR_NAMES = { '#ffffff': 'White', '#f4f1ea': 'Soft white', '#d9d4c7': 'Linen', '#a8a39a': 'Stone grey', '#36393b': 'Charcoal',
@@ -53,11 +55,12 @@ export default function PhotoEditor({ src, edit: given, tr, insets, onDone, onCa
     setBusy(false);
     onDone(out, e);
   };
-  const Chip = ({ on, label, onPress, a11y }) => (
-    <Pressable onPress={onPress} style={[styles.chip, on && { backgroundColor: colors.green }]} accessibilityRole="button" accessibilityLabel={a11y} accessibilityState={{ selected: !!on }}>
-      <Text numberOfLines={1} style={styles.chipText}>{label}</Text>
+  const Chip = ({ on, label, onPress, a11y, icon }) => (
+    <Pressable onPress={onPress} style={[styles.chip, on && { backgroundColor: colors.green }, icon && { paddingHorizontal: 0 }]} accessibilityRole="button" accessibilityLabel={a11y || label} accessibilityState={{ selected: !!on }}>
+      {icon ? <ChoiceLabel icon={icon} text={label} style={styles.chipText} /> : <Text numberOfLines={1} style={styles.chipText}>{label}</Text>}
     </Pressable>
   );
+  const LAYOUT_ICON = { fill: 'square', fit: 'wide', border: 'border', circle: 'circle' }; // (fine drawn icons: Jörg, 28 Oct 2026)
   return (
     <View style={[StyleSheet.absoluteFill, { zIndex: 90, backgroundColor: colors.desk }]}>
       <DeskFelt spot="photo-editor" overlay />
@@ -72,7 +75,7 @@ export default function PhotoEditor({ src, edit: given, tr, insets, onDone, onCa
         <View style={[styles.box, { width: wide ? Math.min(380, winW - S - 80) : S }]}>
           {/* the three kinds of tools */}
           <View style={{ flexDirection: 'row', gap: 6 }}>
-            {[['crop', tr('Crop')], ['layout', tr('Layout')], ['look', tr('Look')]].map(([k, l]) => <Chip key={k} on={tab === k} label={l} onPress={() => setTab(k)} />)}
+            {[['crop', tr('Crop'), 'crop'], ['layout', tr('Layout'), 'layout'], ['look', tr('Look'), 'eye']].map(([k, l, ic]) => <Chip key={k} on={tab === k} label={l} icon={ic} onPress={() => setTab(k)} />)}
           </View>
           <View style={styles.rule} />
           {tab === 'crop' ? (
@@ -87,7 +90,7 @@ export default function PhotoEditor({ src, edit: given, tr, insets, onDone, onCa
           {tab === 'layout' ? (
             <>
               <View style={styles.row}>
-                {LAYOUTS.map(([k, l]) => <Chip key={k} on={e.layout === k} label={tr(l)} onPress={() => set({ layout: k, zoom: 1, ox: 0, oy: 0 })} />)}
+                {LAYOUTS.map(([k, l]) => <Chip key={k} on={e.layout === k} label={tr(l)} icon={LAYOUT_ICON[k]} onPress={() => set({ layout: k, zoom: 1, ox: 0, oy: 0 })} />)}
               </View>
               {e.layout !== 'fill' ? (
                 <>
@@ -108,7 +111,7 @@ export default function PhotoEditor({ src, edit: given, tr, insets, onDone, onCa
           ) : null}
           <View style={[styles.row, { justifyContent: 'flex-end', marginTop: 14 }]}>
             <Pressable onPress={onCancel} style={[styles.pill, { backgroundColor: '#4a4a4a' }]} accessibilityRole="button"><Text style={styles.pillText}>{tr('Cancel')}</Text></Pressable>
-            <Pressable onPress={done} disabled={busy} style={[styles.pill, { backgroundColor: colors.green, opacity: busy ? 0.6 : 1 }]} accessibilityRole="button"><Text style={styles.pillText}>{tr('Done')}</Text></Pressable>
+            <Pressable onPress={done} disabled={busy} style={[styles.pill, { backgroundColor: colors.green, opacity: busy ? 0.6 : 1 }]} accessibilityRole="button"><ChoiceLabel icon={DONE_ICON} text={tr('Done')} style={styles.pillText} /></Pressable>
           </View>
         </View>
       </ScrollView>

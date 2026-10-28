@@ -485,11 +485,35 @@ export function CameraIcon({ size = 34, color = '#2b2b2b', weight = 2.2 }) {
 
 // A choice in a pop-up (the grey pills): a small icon from the app's set before the words (Jörg, 28 Oct 2026).
 // icon: a picture (tinted to match the words) or 'camera' (drawn).
+// fine drawn icons for the text buttons (Jörg, 28 Oct 2026): size, colour, stroke
+export function LineIcon({ kind, size = 20, color = colors.white, weight = 1.6 }) {
+  const s = size, w = weight, c = color, abs = { position: 'absolute' };
+  let body = null;
+  if (kind === 'crop') body = (<>
+    <View style={[abs, { left: s * 0.22, top: 0, width: s * 0.58, height: s * 0.78, borderLeftWidth: w, borderBottomWidth: w, borderColor: c }]} />
+    <View style={[abs, { left: 0, top: s * 0.22, width: s * 0.78, height: s * 0.56, borderTopWidth: w, borderRightWidth: w, borderColor: c }]} />
+  </>);
+  if (kind === 'layout') body = (<>
+    <View style={[abs, { left: s * 0.08, top: s * 0.1, width: s * 0.84, height: s * 0.34, borderWidth: w, borderColor: c, borderRadius: 1.5 }]} />
+    <View style={[abs, { left: s * 0.08, top: s * 0.56, width: s * 0.84, height: s * 0.34, borderWidth: w, borderColor: c, borderRadius: 1.5 }]} />
+  </>);
+  if (kind === 'eye') body = (<>
+    <View style={[abs, { left: 0, top: s * 0.22, width: s, height: s * 0.56, borderWidth: w, borderColor: c, borderRadius: s / 2 }]} />
+    <View style={[abs, { left: s * 0.36, top: s * 0.36, width: s * 0.28, height: s * 0.28, borderRadius: s * 0.14, backgroundColor: c }]} />
+  </>);
+  if (kind === 'square') body = <View style={[abs, { left: s * 0.1, top: s * 0.1, width: s * 0.8, height: s * 0.8, borderWidth: w, borderColor: c }]} />;
+  if (kind === 'wide') body = <View style={[abs, { left: 0, top: s * 0.22, width: s, height: s * 0.56, borderWidth: w, borderColor: c }]} />;
+  if (kind === 'border') body = <View style={[abs, { left: s * 0.1, top: s * 0.1, width: s * 0.8, height: s * 0.8, borderWidth: w * 2.4, borderColor: c }]} />;
+  if (kind === 'circle') body = <View style={[abs, { left: s * 0.08, top: s * 0.08, width: s * 0.84, height: s * 0.84, borderRadius: s * 0.42, borderWidth: w, borderColor: c }]} />;
+  return <View style={{ width: s, height: s }} accessible={false}>{body}</View>;
+}
+
 export function ChoiceLabel({ icon, text, style }) {
   const color = (StyleSheet.flatten(style) || {}).color || colors.white;
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12, paddingHorizontal: 16 }}>
-      {icon === 'camera' ? <View style={{ marginTop: -2 }}><CameraIcon size={22} color={color} weight={1.8} /></View>
+      {icon === 'camera' ? <View style={{ marginTop: -1 }}><CameraIcon size={19} color={color} weight={1.6} /></View>
+        : typeof icon === 'string' ? <LineIcon kind={icon} size={20} color={color} />
         : icon ? <Image source={icon} style={{ width: 22, height: 22, tintColor: color }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
       <Text style={[style, { flexShrink: 1 }]} numberOfLines={1}>{text}</Text>
     </View>

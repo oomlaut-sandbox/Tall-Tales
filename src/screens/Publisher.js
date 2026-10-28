@@ -71,7 +71,7 @@ function AboutPage({ tr, insets, onNext, onSkip }) {
         <TextInput ref={inputRef} value={words} onChangeText={(v) => { setWords(v); if (v.trim() && !pick) setPick('else'); }} placeholder={tr('Or tell us: a book about…')} placeholderTextColor="#8a8a8a"
           style={styles.aboutInput} returnKeyType="next" onSubmitEditing={() => ready && go()} accessibilityLabel={tr('What’s your book about?')} />
         <Pressable onPress={go} disabled={!ready} accessibilityRole="button" style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 34 }, !ready && { opacity: 0.4 }]}>{/* well apart from the choices */}
-          <Text style={styles.choiceBtnText}>{tr('Next, let’s make a cover')}</Text>
+          <ChoiceLabel icon={CHOICE_ICONS.cover} text={tr('Next, let’s make a cover')} style={styles.choiceBtnText} />
         </Pressable>
         <Pressable onPress={onSkip} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'center', marginTop: 6 }}><Text style={styles.aboutSkip}>{tr('Skip')}</Text></Pressable>
       </View>
@@ -93,6 +93,7 @@ const CHOICE_ICONS = { // the icons before the words in the pop-up choices (the 
   page: require('../../assets/title-icons/make-a-book.png'),
   cover: require('../../assets/heading-icons/reading.png'),
   done: require('../../assets/icon-select.png'),
+  voice: require('../../assets/heading-icons/your-voice.png'),
   next: require('../../assets/icon-share-line.png'),
 };
 
@@ -798,10 +799,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           // the pills stacked on the right, well clear of the pages list: Share as PDF, Print, (the owner's Publish), Delete Book
           <View style={{ alignItems: 'flex-end', gap: 12, marginTop: 30, marginBottom: 10 }}>
             <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('share'); }} disabled={making} style={[styles.stackPill, { backgroundColor: '#6b6b6b' }]} accessibilityRole="button">
-              <Text style={styles.wideText}>{making ? tr('Working…') : tr('Share as PDF')}</Text>
+              <ChoiceLabel icon={CHOICE_ICONS.share} text={making ? tr('Working…') : tr('Share as PDF')} style={styles.wideText} />
             </Pressable>
             <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice('print'); }} disabled={making} style={[styles.stackPill, { backgroundColor: '#6b6b6b' }]} accessibilityRole="button">
-              <Text style={styles.wideText}>{tr('Print')}</Text>
+              <ChoiceLabel icon={CHOICE_ICONS.print} text={tr('Print')} style={styles.wideText} />
             </Pressable>
             {admin ? (
               <Pressable onPress={publish} disabled={publishing} style={[styles.stackPill, { backgroundColor: colors.blue }]} accessibilityRole="button">
@@ -809,7 +810,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               </Pressable>
             ) : null}
             <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} style={[styles.stackPill, { backgroundColor: colors.deepRed }]} accessibilityRole="button">
-              <Text style={styles.wideText}>{tr('Delete Book')}</Text>
+              <ChoiceLabel icon={CHOICE_ICONS.trash} text={tr('Delete Book')} style={styles.wideText} />
             </Pressable>
           </View>
         )}
@@ -877,7 +878,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <TextInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder={tr('Type the title')} placeholderTextColor="#8a8a8a" autoFocus style={styles.field} accessibilityLabel={tr('Book title')}
               returnKeyType="done" onSubmitEditing={() => finish(true)} />
             <Pressable onPress={() => finish(true)} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 10 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={tr('Finish and save book')} style={styles.choiceBtnText} /></Pressable>
-            <Pressable onPress={() => setTitleBox(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Keep working')}</Text></Pressable>
+            <Pressable onPress={() => setTitleBox(false)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Keep working')} style={styles.choiceBtnText} /></Pressable>
           </View>
         </KeyboardAvoidingView>
       ) : null}
@@ -887,7 +888,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <View style={styles.choice}>
             <Text style={styles.choiceTitle}>{tr('Now read it aloud')}</Text>
             <Text style={[styles.choiceBtnText, { fontFamily: fonts.ui, textAlign: 'center', lineHeight: 22, marginBottom: 8 }]}>{tr('Books you make are read in a real voice: yours, or the voice of someone who loves the reader. Coro has no computer voice, so until someone records the pages, the book is silent. Record it now, one page at a time.')}</Text>
-            <Pressable onPress={() => { const r = recordAsk; setRecordAsk(null); onDone(r.list, r.id); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 6 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Record now')}</Text></Pressable>
+            <Pressable onPress={() => { const r = recordAsk; setRecordAsk(null); onDone(r.list, r.id); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 6 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.voice} text={tr('Record now')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => { const r = recordAsk; setRecordAsk(null); onDone(r.list); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Later')}</Text></Pressable>
           </View>
         </View>

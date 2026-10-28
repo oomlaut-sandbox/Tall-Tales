@@ -13,13 +13,14 @@ import { DESK_FELT, DESK_BG, IS_TABLET, BandFill } from '../look';
 
 const IDEAS_FELT = require('../../assets/ideas-felt.png'); // the mossy green stitched felt (Ideas and Support), 1100 × 805
 const BAND_FELT = require('../../assets/band-settings.jpg'); // Jörg's grey stitched felt banner
-import { Bar, Burger, MusicIcon, Option, PlayGlyph, WithBar } from '../components/Chrome';
+import { Bar, Burger, MusicIcon, Option, PlayGlyph, WithBar, ChoiceLabel } from '../components/Chrome';
 import ReadingOptionsSection from '../components/ReadingOptionsSection';
 import { LANGS, useT } from '../i18n';
 import { lockedControls, quickSafeControls, DEFAULT_CONTROLS, STORE_ON } from '../controls';
 import { usePurchases } from '../purchases';
 import { MAX_CLASS, PROFILE_COLORS, activeProfile, addProfile, canAdd, endClassroom, inClass, getProfiles, onProfiles as watchProfiles, setClassroom } from '../profiles';
 import { hapticsOn, onHaptics, setHapticsOn, tap } from '../haptics';
+const LOCK_ICON = require('../../assets/heading-icons/grown-ups.png'); // (the lock, before Use Quick and Safe Kid)
 
 const MODES = [['self', 'Read Yourself'], ['learn', 'Learn to Read'], ['auto', 'Auto Play'], ['page', 'Page by Page Play'], ['listen', 'Listen Only']];
 
@@ -133,7 +134,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
                   </View>
                 ) : (
                   <Pressable onPress={() => setControls({ ...quickSafeControls(controls.childAge), ...night })} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button">
-                    <Text style={styles.pillText}>{t('Use Quick and Safe Kid')}</Text>
+                    <ChoiceLabel icon={LOCK_ICON} text={t('Use Quick and Safe Kid')} style={styles.pillText} />
                   </Pressable>
                 )}
               </View>
