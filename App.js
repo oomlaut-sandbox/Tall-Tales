@@ -351,6 +351,15 @@ function Root() {
     : screen === 'start' ? bookLayout(width, height, { ...insets, top: camBar }, u * 17, startRoom(width, height)).barH : barH;
   const drawerRight = sideways ? (screen === 'reader' ? bookLayout(width, height, { ...insets, left: camBar }, u * 17).rightW : Math.round(u * 17 * 1.15)) : 0;
   const screenInsets = useMemo(() => (sideways ? { ...insets, left: camBar } : { ...insets, top: camBar }), [insets, sideways, camBar]);
+  // the book maker sideways (no banner): the back button in the felt's bottom left corner, centred in the left and
+  // bottom margins like the reader's, where the opening menu can't cover it (Jörg, 28 Oct 2026)
+  const makerCorner = (() => {
+    if (screen !== 'publisher' || !(width > height * 1.1)) return null;
+    const ML = bookLayout(width, height, screenInsets, u * 17);
+    if (!ML.wide) return null;
+    const deskW = width - ML.leftW - ML.rightW;
+    return { left: ML.leftW + Math.max(2, (deskW - ML.bookW) / 4 - 10), bottom: Math.max(6, (height - ML.bookH) / 4 - 10) };
+  })();
   return (
     <View style={styles.outer}>
       <StatusBar style="light" />
@@ -542,7 +551,7 @@ function Root() {
         {/* Back: on every page, always the same size and in the same spot, top right (Jörg, 27 Oct 2026). It goes
             back one step: whatever is open on top first, then the step before in this screen, then the screen before */}
         {screen !== 'reader' /* reading: the reader draws its own back to My Books, in the felt margin (Jörg, 28 Oct 2026) */ && screen !== 'start' /* nor on the start page, where there's nothing to go back to */ && !backHidden() /* nor over the drawing editor */ && !splash && !introWho && !welcome && !flyer && !opening && !closingBook ? (
-          <BackRing onPress={screen === 'reader' ? backToBooks : goBack} label={screen === 'reader' ? t('My Books') : t('Back')} style={{ position: 'absolute', zIndex: 200, top: screenInsets.top + 10, right: 12 + (sideways ? drawerRight : 0), opacity: screen === 'reader' || canBack() ? 1 : 0.35 }} />
+          <BackRing onPress={screen === 'reader' ? backToBooks : goBack} label={screen === 'reader' ? t('My Books') : t('Back')} style={{ position: 'absolute', zIndex: 200, ...(makerCorner || { top: screenInsets.top + 10, right: 12 + (sideways ? drawerRight : 0) }), opacity: screen === 'reader' || canBack() ? 1 : 0.35 }} />
         ) : null}
         <Toast message={message} ms={toastMs} center={!!toastSpot && screen === 'reader'} area={toastSpot && screen === 'reader' ? { left: toastSpot.x, top: toastSpot.y, right: width - toastSpot.x - toastSpot.w, bottom: height - toastSpot.y - toastSpot.h } : toastArea} onDismiss={() => { clearTimeout(toastTimer.current); setMessage(''); }} />
         {/* the Audio Player for music and nature sounds: in the middle of the screen over a dark layer until it's closed */}
