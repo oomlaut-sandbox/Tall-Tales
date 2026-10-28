@@ -369,6 +369,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   const choosing = nightEnabled && scene === 'choose';
   const nightOn = nightEnabled && !choosing; // the nightlight or Daydream is showing (the lock and alarm are on the bar)
   useHideBack(nightOn); // (no back button over the nightlight)
+  useHideBack(voiceBox); // (nor over the voice box: it has its own close arrow, in that corner)
   const dayOn = nightOn && scene === 'day';
   // the choice box stays on screen while it dissolves over the nightlight or Daydream fading in underneath
   const [boxUp, setBoxUp] = useState(false);
