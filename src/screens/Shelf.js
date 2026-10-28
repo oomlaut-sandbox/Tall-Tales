@@ -216,7 +216,7 @@ function NotebookTile({ onPress, hidden, onRect }) {
           <Image source={NOTEBOOK_COVER} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
         </View>
       </View>
-      <Text style={styles.tileTitle}>{t('My Notebook')}</Text>
+      <Text style={[styles.tileTitle, styles.tileOption]}>{t('My Notebook')}</Text>{/* in the Coro font, like My Folder (Jörg, 27 Oct 2026) */}
     </Pressable>
   );
 }
