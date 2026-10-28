@@ -36,7 +36,7 @@ function PeelLayer({ start, ...props }) {
 }
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { BulbIcon, Bar, BarMeta, HomeButton, BubbleIcon, HeadphonesIcon, MoonIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon, sideTop } from '../components/Chrome';
+import { BackRing, BulbIcon, Bar, BarMeta, HomeButton, BubbleIcon, HeadphonesIcon, MoonIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon, sideTop } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
@@ -63,7 +63,7 @@ const VOICE_RECORDING = {
 };
 import { checkVolume } from '../volume';
 import { playSound, playSwitch, setEffects, setEffectsVolume, suspendSounds } from '../sound';
-import { rememberPage, startPage, useBackStep } from '../nav';
+import { rememberPage, startPage, useBackStep, useHideBack } from '../nav';
 import { pauseSpeech, resumeSpeech, speakQueue, speakTracked, stopSpeech } from '../speech';
 import { shareInvite } from '../invite';
 import { shareBookWithVoices } from '../voiceShare';
@@ -108,7 +108,7 @@ export function Seg({ value, options, onChange, stacked }) {
   );
 }
 
-export default function Reader({ coverShut = false, onOpenCover, u, story, prefs, setPrefs, openMenu, goLibrary, onCover, toast, menuRequest, landscape, setToastSpot, autoStart, startRecording, onFinished, onSettings, onPlaylists, onShown, onEdit }) { // onEdit: scissors on the bar, for a book you made (Jörg, 27 Oct 2026)
+export default function Reader({ coverShut = false, onOpenCover, u, story, prefs, setPrefs, openMenu, goLibrary, onCover, toast, menuRequest, landscape, setToastSpot, autoStart, startRecording, onFinished, onSettings, onPlaylists, onShown, onEdit, onBackToBooks }) { // onEdit: scissors on the bar, for a book you made (Jörg, 27 Oct 2026)
   const tr = useT(); // the reader's own panel, in the app's language
   const appLang = useLang();
   const controls = useControls(); // parental controls: recording, sharing and printing may be switched off
@@ -368,6 +368,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   const nightEnabled = listen && controls.nightlight !== false; // Settings → Nightlight mode can switch the nightlight off
   const choosing = nightEnabled && scene === 'choose';
   const nightOn = nightEnabled && !choosing; // the nightlight or Daydream is showing (the lock and alarm are on the bar)
+  useHideBack(nightOn); // (no back button over the nightlight)
   const dayOn = nightOn && scene === 'day';
   // the choice box stays on screen while it dissolves over the nightlight or Daydream fading in underneath
   const [boxUp, setBoxUp] = useState(false);
@@ -996,9 +997,13 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       ) : null}
       {/* sideways: Edit this book (white scissors) in the felt's bottom right corner, between the book and the bar,
           mirroring the bulb (the bar has no room for it there: Jörg, 27 Oct 2026) */}
+      {/* sideways: back to My Books in the felt's bottom left corner, and the scissors well above it (Jörg, 28 Oct 2026) */}
+      {wide && onBackToBooks && !nightOn ? (
+        <BackRing onPress={() => { stopReading(); onBackToBooks(); }} label={tr('My Books')} style={{ position: 'absolute', zIndex: 6, left: bulbL, bottom: 12 + insets.bottom }} />
+      ) : null}
       {wide && onEdit && !nightOn ? (
         <Pressable onPress={withTap(() => { stopReading(); onEdit(); })} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Edit this book')}
-          style={{ position: 'absolute', zIndex: 6, right: bulbL, bottom: 10 + insets.bottom }}>
+          style={{ position: 'absolute', zIndex: 6, left: bulbL - 1, bottom: 12 + insets.bottom + 70 }}>
           <Image source={SCISSORS} style={{ width: 22, height: 22, tintColor: '#ffffff' }} resizeMode="contain" />
         </Pressable>
       ) : null}

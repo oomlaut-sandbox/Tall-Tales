@@ -69,6 +69,6 @@ export function takeStep() {
 // screens where the back button stays away (the drawing editor: Jörg, 27 Oct 2026)
 let hidden = 0;
 export function backHidden() { return hidden > 0; }
-export function useHideBack() {
-  useEffect(() => { hidden += 1; told(); return () => { hidden -= 1; told(); }; }, []);
+export function useHideBack(active = true) {
+  useEffect(() => { if (!active) return undefined; hidden += 1; told(); return () => { hidden -= 1; told(); }; }, [!!active]);
 }
