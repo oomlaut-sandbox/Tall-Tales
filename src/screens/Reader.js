@@ -1003,7 +1003,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       ) : null}
       {wide && onEdit && !nightOn ? (
         <Pressable onPress={withTap(() => { stopReading(); onEdit(); })} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Edit this book')}
-          style={{ position: 'absolute', zIndex: 6, left: bulbL - 1, bottom: 12 + insets.bottom + 70 }}>
+          style={{ position: 'absolute', zIndex: 6, left: bulbL - 1, bottom: 12 + insets.bottom + barGeo(u).step - 1 /* one bar step above Back, centre to centre */ }}>
           <Image source={SCISSORS} style={{ width: 22, height: 22, tintColor: '#ffffff' }} resizeMode="contain" />
         </Pressable>
       ) : null}
