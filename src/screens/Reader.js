@@ -993,7 +993,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
         // tap it (it's small, so the finger gets a generous area) to hear what it means
         <Pressable onPress={() => toast(tr('This red dot means you’ve recorded this page in your own voice.'))} hitSlop={20}
           accessibilityRole="button" accessibilityLabel={tr('This page has a voice recording')}
-          style={[styles.recMark, IS_TABLET ? { left: bulbL + 32 } : { right: 14 }]} />
+          style={[styles.recMark, !wide ? { top: 'auto', bottom: 14, left: bulbL + 4 } /* upright: bottom left, clear of the back button (Jörg, 28 Oct 2026) */ : IS_TABLET ? { left: bulbL + 32 } : { right: 14 }]} />
       ) : null}
       {/* sideways: Edit this book (white scissors) in the felt's bottom right corner, between the book and the bar,
           mirroring the bulb (the bar has no room for it there: Jörg, 27 Oct 2026) */}

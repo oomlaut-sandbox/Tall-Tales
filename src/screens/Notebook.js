@@ -1053,7 +1053,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   const [stamp, setStamp] = useState(null); // a stamp in hand: put a finger down to place it, slide to move it, lift to stick it
   const [stampsOpen, setStampsOpen] = useState(false);
   const [behind, setBehind] = useState(false); // colouring in behind the lines: what's drawn goes underneath everything else
-  const [layer, setLayer] = useState(1); // Layers: the one being drawn on (1 bottom to 4 top)
+  const [layer, setLayer] = useState(2); // Layers: the one being drawn on (1 bottom to 4 top); a drawing opens on layer 2 (Jörg, 28 Oct 2026)
   // the green tick (Jörg, 28 Oct 2026): 'Print or share your drawing now, or save and start the next page?'
   const [doneAsk, setDoneAsk] = useState(false);
   const [outFor, setOutFor] = useState(null); // 'print' | 'share', behind the grown-up question
