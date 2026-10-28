@@ -20,7 +20,7 @@ const MODEL = 'eleven_multilingual_v2';
 // as-is, so the audio is never slowed down on the phone at the default setting.
 const PACE = 0.75;
 // books whose translations get ElevenLabs narration too (the rest use the phone's voice in other languages)
-const TRANSLATED = ['different', 'tips'];
+const TRANSLATED = ['different', 'tips', 'rough-lives'];
 // The voices Jörg picked. `find` is what we look for by name. (Michael Caine was considered; Lily only for now.)
 const VOICES = [
   // id: ElevenLabs' standard voice ID, used if the key isn't allowed to look voices up.

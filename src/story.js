@@ -185,6 +185,25 @@ export const ROUGH_LIVES = {
     florida: ['flor', 'i', 'da'], introductions: ['in', 'tro', 'duc', 'tions'], afternoon: ['af', 'ter', 'noon'], forty: ['for', 'ty'],
     doris: ['dor', 'is'], honestly: ['hon', 'est', 'ly'], sunset: ['sun', 'set'], posted: ['post', 'ed'], started: ['start', 'ed'], instead: ['in', 'stead'], photo: ['pho', 'to'],
   },
+  // Translations (28 Oct 2026): the words for each page, in order, and the store description (Mittens gets a local
+  // cat name; the jokes kept, not word for word)
+  langs: {
+    de: { title: 'Das harte Leben der Tiere', author: 'Jörg Schmidt',
+      blurb: 'Eine besorgte Katze, ein Elefant, dem es bestens geht, ein Igel, der eine Umarmung braucht, ein Wolf, dem niemand folgt, und ein Strauß, der keine Nachrichten mehr schaut. Trockene Einzeiler im Geist der alten Zeitungscartoons, für unruhige Zeiten.',
+      texts: ['Das harte Leben der Tiere.', 'Plötzlich wurde Mieze klar: Das Wollknäuel hatte sie die ganze Zeit beobachtet.', 'Was die Experten auch sagten: Gerald glaubte fest an den Ballon.', 'Was Fuchs nicht wusste: Die Maus war schon im März nach Florida gezogen.', '„Klar, es ist klein. Aber es ist abbezahlt.“', 'Gratis-Umarmungen. Tag einundvierzig.', 'Das Kennenlernen im Hundepark dauerte oft bis weit in den Nachmittag.', 'Wolf ließ das Heulen ausfallen und postete stattdessen den Sonnenuntergang. Zwei Likes, beide von seiner Mutter.', 'Doris schaute keine Nachrichten mehr, und ehrlich gesagt war sie nie ruhiger.'] },
+    fr: { title: 'La dure vie des animaux', author: 'Jörg Schmidt',
+      blurb: 'Une chatte inquiète, un éléphant qui va très bien, un hérisson qui a besoin d’un câlin, un loup que personne ne suit et une autruche qui ne lit plus les infos. Des répliques pince-sans-rire dans l’esprit des vieux dessins de presse, pour des temps agités.',
+      texts: ['La dure vie des animaux.', 'Soudain, Minette comprit que la pelote la surveillait depuis le début.', 'Malgré l’avis des experts, Gérald gardait confiance dans le ballon.', 'Renard l’ignorait, mais la souris avait déménagé en Floride au mois de mars.', '« D’accord, c’est petit. Mais c’est payé. »', 'Câlins gratuits. Quarante et unième jour.', 'Au parc à chiens, les présentations duraient souvent jusqu’à l’après-midi.', 'Loup a sauté le hurlement et posté le coucher de soleil à la place. Deux j’aime, tous les deux de sa mère.', 'Doris ne regardait plus les infos et, franchement, elle ne s’était jamais sentie aussi calme.'] },
+    es: { title: 'La dura vida de los animales', author: 'Jörg Schmidt',
+      blurb: 'Una gata preocupada, un elefante que está perfectamente, un erizo que necesita un abrazo, un lobo al que nadie sigue y una avestruz que ya no ve las noticias. Frases secas al estilo de las viejas viñetas de periódico, para tiempos inquietos.',
+      texts: ['La dura vida de los animales.', 'De pronto, Michi se dio cuenta de que el ovillo la había estado vigilando todo el tiempo.', 'Dijeran lo que dijeran los expertos, Gerardo seguía confiando en el globo.', 'Zorro no lo sabía, pero el ratón se había mudado a Florida en marzo.', '«Vale, es pequeña. Pero está pagada.»', 'Abrazos gratis. Día cuarenta y uno.', 'En el parque de perros, las presentaciones solían alargarse hasta bien entrada la tarde.', 'Lobo se saltó el aullido y publicó la puesta de sol. Dos me gusta, los dos de su madre.', 'Doris había dejado de ver las noticias y, la verdad, nunca se había sentido tan tranquila.'] },
+    ja: { title: 'どうぶつたちの たいへんな まいにち', author: 'Jörg Schmidt',
+      blurb: 'しんぱいしょうの ネコ、ぜんぜん へいきな ゾウ、ハグが ほしい ハリネズミ、だれにも フォローされない オオカミ、そして ニュースを 見なくなった ダチョウ。むかしの しんぶんまんがのような、すこし おとなっぽい ひとことの 本。',
+      texts: ['どうぶつたちの たいへんな まいにち。', 'とつぜん、ミトンは きづいた。けいとだまが ずっと こっちを 見ていたことに。', 'せんもんかが なんと言おうと、ジェラルドは ふうせんを しんじていた。', 'キツネは しらなかった。ネズミは 3月に フロリダへ ひっこしていたのだ。', '「たしかに せまいよ。でも ローンは もう ないんだ。」', 'ハグ むりょう。41日め。', 'ドッグパークの あいさつは たいてい ごごまで つづく。', 'オオカミは とおぼえを やめて、ゆうひの しゃしんを とうこうした。いいねは 2つ。どちらも おかあさんから。', 'ドリスは ニュースを 見るのを やめた。しょうじき、こんなに おちついたことは なかった。'] },
+    ar: { title: 'حياة الحيوانات الصعبة', author: 'Jörg Schmidt',
+      blurb: 'قطة قلقة، وفيل بخير تمامًا، وقنفذ يحتاج إلى عناق، وذئب لا يتابعه أحد، ونعامة توقفت عن مشاهدة الأخبار. جمل قصيرة ساخرة بروح رسوم الصحف القديمة، لأوقات مقلقة.',
+      texts: ['حياة الحيوانات الصعبة.', 'فجأة أدركت ميشا أن كرة الصوف كانت تراقبها طوال الوقت.', 'رغم كل ما قاله الخبراء، ظلّ جيرالد واثقًا بالبالون.', 'لم يكن الثعلب يعلم أن الفأر انتقل إلى فلوريدا في شهر مارس.', '«صحيح أنه صغير، لكنه مدفوع بالكامل.»', 'عناق مجاني. اليوم الحادي والأربعون.', 'كانت التعارفات في حديقة الكلاب تمتد غالبًا حتى العصر.', 'تخطّى الذئب العواء ونشر صورة الغروب بدلًا منه. إعجابان، كلاهما من أمه.', 'توقفت دوريس عن مشاهدة الأخبار، وبصراحة لم تشعر بهذا الهدوء من قبل.'] },
+  },
   pages: [
     { pid: 'rl01', titlePage: true, image: require('../assets/books/rough-lives/cover.jpg'), w: 1600, h: 1600, text: 'The Rough Lives of Animals.' },
     { pid: 'rl02', image: require('../assets/books/rough-lives/cat.jpg'), w: 1600, h: 1600, text: 'Suddenly, Mittens realized the yarn had been watching her the whole time.' },
