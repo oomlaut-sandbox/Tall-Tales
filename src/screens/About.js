@@ -38,7 +38,7 @@ export default function About({ u, openMenu, onSecret, onBack }) {
         <Text style={[styles.p, textStyle]}>
           {t('Record yourselves reading each book and send it to grandparents, cousins and friends, who can add their own voices. A few beautiful picture books are here too, read by a warm narrator, with each word lighting up as it’s spoken.')}
         </Text>
-        <Text style={[styles.p, textStyle]}>{t('Oomlaut is always looking for new picture books. If you’ve written or illustrated a story, send it to us and join the Oomlaut author community. Visit corobooks.com for more information.')}</Text>
+        <Text style={[styles.p, textStyle]}>{t('Coro is always looking for new picture books. If you’ve written or illustrated a story, send it to us and join the Coro author community. Visit corobooks.com for more information.')}</Text>
         {/* back to Support (About is opened from there), well clear of the words (Jörg, 26 Oct 2026) */}
         {onBack ? (
           <Pressable onPress={onBack} hitSlop={10} accessibilityRole="button" style={styles.backRow}>
