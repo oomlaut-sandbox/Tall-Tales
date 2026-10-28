@@ -62,10 +62,15 @@ export function dropPicture(uri) {
 // draft: { id, title, pages: [{ pid, text, uri, w, h }] }. Empty pages are left out.
 export function saveUserStory(draft) {
   return serial(async () => {
-    const pages = draft.pages.filter(hasContent).map((p) => ({ pid: p.pid, text: p.text.trim(), uri: p.uri || null, w: p.w, h: p.h, uri2: (!p.text.trim() && p.uri2) || null, w2: p.w2 || 1, h2: p.h2 || 1 }));
+    // (the photo editor's originals and settings are kept too, so a photo can be edited again after the book is reopened)
+    const pages = draft.pages.filter(hasContent).map((p) => ({ pid: p.pid, text: p.text.trim(), uri: p.uri || null, w: p.w, h: p.h, uri2: (!p.text.trim() && p.uri2) || null, w2: p.w2 || 1, h2: p.h2 || 1,
+      ...(p.src ? { src: p.src } : null), ...(p.edit ? { edit: p.edit } : null), ...(p.src2 && !p.text.trim() ? { src2: p.src2 } : null), ...(p.edit2 ? { edit2: p.edit2 } : null) }));
+    // a book is kept as soon as there's anything made in it: a page or a cover (nothing lost: Jörg, 28 Oct 2026).
+    // (a title alone isn't enough: 'What's your book about?' names every new book, even one that's left at once)
+    const started = pages.length || (draft.cover && draft.cover.uri);
     const list = await loadJSON('stories', []);
     const i = list.findIndex((s) => s.id === draft.id);
-    if (!pages.length) {
+    if (!started) {
       if (i >= 0) list.splice(i, 1);
     } else {
       const saved = { id: draft.id, title: draft.title.trim() || 'Untitled story', writer: (draft.writer || '').trim(), artist: (draft.artist || '').trim(), pages, cover: draft.cover && draft.cover.uri ? draft.cover : null };

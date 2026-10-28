@@ -91,7 +91,7 @@ const blank = () => ({ pid: newPageId(), text: '', uri: null, w: 1, h: 1 });
 
 export function draftFrom(story) {
   if (!story) return { id: `s${Date.now()}`, title: '', writer: '', artist: '', pages: [blank()] }; // no title yet: the bar invites tr('Tap to add title')
-  return {
+  const d = {
     id: story.id,
     title: story.title,
     writer: story.writer || '',
@@ -99,6 +99,8 @@ export function draftFrom(story) {
     pages: story.pages.filter((p) => !p.titlePage).map((p) => ({ pid: p.pid, text: p.text, uri: p.image ? p.image.uri : null, w: p.w, h: p.h, uri2: p.image2 ? p.image2.uri : null, w2: p.w2 || 1, h2: p.h2 || 1, src: p.src || null, edit: p.edit || null, src2: p.src2 || null, edit2: p.edit2 || null })),
     cover: story.cover || null,
   };
+  if (!d.pages.length) d.pages = [blank()]; // (a book with only a cover so far: page 1 is waiting)
+  return d;
 }
 
 // The empty picture square: Jörg's light grey Polaroid with "Add Image" in white in the middle of its blue
@@ -204,7 +206,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     else go(null);
   };
   const closeWords = () => {
-    const done = () => { setEditing(false); setPageDone(true); };
+    const done = () => { setEditing(false); setPageDone(true); sayStep(); };
     if (!fromRect.current || !zoomTo) return done();
     Animated.timing(zoom, { toValue: 0, duration: 260, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(done);
   };
@@ -254,6 +256,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     }, 700);
   }, [draft]);
   useEffect(() => () => clearTimeout(timer.current), []);
+  // After each step (a page written, a picture or drawing placed, the cover finished): save right away and say so
+  // in a short speech bubble, so nothing is ever lost (Jörg, 28 Oct 2026)
+  const sayStep = () => setTimeout(async () => {
+    clearTimeout(timer.current);
+    try { onChange(await saveUserStory(latest.current)); setSaved(true); toast(tr('Saved'), 1300); } catch (e) {}
+  }, 150);
   // 'Saved' fades in quietly after each save, then away again
   const savedFade = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -373,6 +381,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     if (startMode) { setStartMode(false); setI(0); } // 'Start writing': straight to page 1
     else if (coverFromNext.current) setPageDone(true); // back to 'What's next?'
     coverFromNext.current = false;
+    sayStep();
   };
   const coverNo = () => { setCover({ ...cover, title: null }); setCoverAsk(false); }; // stay on the cover
   const coverYes = () => {
@@ -444,7 +453,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   };
   // given: a picture already made (a drawing), instead of choosing one
   const placeImage = async (target, source, given) => {
-    if (target === 'cover') return pickCover(source, given);
+    if (target === 'cover') { await pickCover(source, given); sayStep(); return; }
     try {
       const ph = given || await choosePhoto(source);
       if (!ph) return;
@@ -452,11 +461,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         if (page.uri2) dropPicture(page.uri2);
         if (page.src2 && page.src2 !== page.uri2) dropPicture(page.src2);
         update({ uri2: ph.uri, w2: ph.w, h2: ph.h, src2: null, edit2: null });
+        sayStep();
         return;
       }
       if (page.uri) dropPicture(page.uri);
       if (page.src && page.src !== page.uri) dropPicture(page.src);
       update({ ...ph, src: null, edit: null });
+      sayStep();
     } catch (e) {
       toast(source === 'camera' ? tr('Couldn’t open the camera.') : tr('Couldn’t open your photos. Check that Coro is allowed to use Photos in Settings.'));
     }
@@ -513,6 +524,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     if (t === 'cover') setCover({ ...cover, uri: pic.uri, w: pic.w || cover.w, h: pic.h || cover.h, src: cur.src, edit });
     else if (t === 'page2') update({ uri2: pic.uri, w2: pic.w || page.w2, h2: pic.h || page.h2, src2: cur.src, edit2: edit });
     else update({ uri: pic.uri, w: pic.w || page.w, h: pic.h || page.h, src: cur.src, edit });
+    sayStep();
   };
 
   const next = () => {
