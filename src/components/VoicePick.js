@@ -22,7 +22,8 @@ export function VoiceFace({ photo, name, narrator = false, person = false, size 
 }
 
 // the box: anchored just above the bar (upright) or beside it (sideways)
-// onEdit: the scissors in the top-right corner (edit the readers: photos, a new reader); left out when locked
+// onEdit: Edit under the voices (edit the readers: photos, a new reader); left out when locked. A downward arrow in the
+// top right corner closes the box.
 export default function VoicePick({ options, value, onPick, onClose, tr, anchor, onEdit, speed, onSpeed, extra, extraTitle }) { // extra: Reading Options, under the voices (the box scrolls when it's all too tall) // speed / onSpeed: the reading speed slider under the voices (Jörg, 27 Oct 2026)
   const [sp, setSp] = useState(null);
   const a = useRef(new Animated.Value(0)).current;
@@ -34,11 +35,10 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
       <Animated.View style={[styles.box, anchor, { opacity: a, transform: [{ scale: a.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] }) }] }]}>
         <ScrollView style={{ flexShrink: 1, borderRadius: 26 }} contentContainerStyle={{ paddingHorizontal: 14, paddingTop: 24, paddingBottom: 20, gap: 6 }} showsVerticalScrollIndicator={false}>
         <Text style={[styles.title, { marginBottom: 16 }]}>{tr('Who reads this book?')}</Text>
-        {onEdit ? (
-          <Pressable onPress={withTap(() => close(onEdit))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Edit readers')} style={styles.edit}>
-            <Text style={styles.editText}>{tr('Edit')}</Text>{/* the word, not scissors (scissors on the bar edit the book: Jörg, 27 Oct 2026) */}
-          </Pressable>
-        ) : null}
+        {/* top right: a downward arrow closes the box (Jörg, 28 Oct 2026) */}
+        <Pressable onPress={withTap(() => close())} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Close')} style={styles.edit}>
+          <View style={{ width: 12, height: 12, borderColor: 'rgba(255,255,255,0.8)', borderRightWidth: 2.2, borderBottomWidth: 2.2, transform: [{ translateY: -3 }, { rotate: '45deg' }] }} />
+        </Pressable>
         {options.map((o) => {
           const on = o.id === value && !o.off; // (o.off: this voice isn't available for this book: grey, can't be picked)
           return (
@@ -49,6 +49,12 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
             </Pressable>
           );
         })}
+        {/* Edit (the readers: photos, a new reader), under the voices; left out when locked */}
+        {onEdit ? (
+          <Pressable onPress={withTap(() => close(onEdit))} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Edit readers')} style={styles.editPill}>
+            <Text style={styles.editText}>{tr('Edit')}</Text>
+          </Pressable>
+        ) : null}
         {onSpeed ? (
           <View style={{ marginTop: 30, marginBottom: 14, paddingTop: 24, paddingHorizontal: 6, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: 'rgba(255,255,255,0.18)' }}>{/* well apart from the voices (Jörg, 27 Oct 2026) */}
             <Text style={[styles.title, { marginLeft: 0, marginBottom: 8 }]}>{tr('Reading speed')}</Text>
@@ -71,7 +77,8 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
 const styles = StyleSheet.create({
   box: { position: 'absolute', width: 250, backgroundColor: '#000000', /* solid black, nothing shows through (Jörg, 27 Oct 2026) */ borderRadius: 26, boxShadow: '0 16px 40px rgba(0,0,0,0.6)' },
   extra: { marginTop: 16, paddingTop: 24, paddingHorizontal: 6, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: 'rgba(255,255,255,0.18)', gap: 6 },
-  editText: { color: 'rgba(255,255,255,0.7)', fontFamily: fonts.uiBold, fontSize: 14 },
+  editPill: { alignSelf: 'flex-start', marginTop: 10, marginLeft: 8, height: 34, borderRadius: 17, paddingHorizontal: 18, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
+  editText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 14 },
   edit: { position: 'absolute', top: 22, right: 20, padding: 2 },
   title: { color: 'rgba(255,255,255,0.7)', fontFamily: fonts.uiBold, fontSize: 14, marginLeft: 6, marginBottom: 6 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 8, paddingVertical: 8, borderRadius: 18 },
