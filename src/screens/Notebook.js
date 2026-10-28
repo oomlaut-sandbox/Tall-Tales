@@ -459,7 +459,11 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           <StrokesView strokes={pg.strokes} width={side} height={side} noPaper={!!pg.uri} />
           {!pg.uri && !pg.strokes.length ? (
             <View style={{ alignItems: 'center' }}>
-              <Text style={[styles.plus, { fontSize: u * 24, lineHeight: u * 24 }]}>+</Text>
+              {/* a thinner + (drawn, not the bold letter: Jörg, 27 Oct 2026) */}
+              <View style={{ width: u * 11, height: u * 11, marginTop: u * 6, marginBottom: u * 7, alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ position: 'absolute', width: u * 11, height: Math.max(2.5, u * 0.95), backgroundColor: '#6b6b6b' }} />
+                <View style={{ position: 'absolute', height: u * 11, width: Math.max(2.5, u * 0.95), backgroundColor: '#6b6b6b' }} />
+              </View>
               <Text style={styles.addImage}>{t('Add a picture')}</Text>
               <Text style={styles.addSub}>{t('or a drawing')}</Text>
             </View>
