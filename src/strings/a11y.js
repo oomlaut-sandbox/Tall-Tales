@@ -75,4 +75,7 @@ export default {
   "Layers": { de: "Ebenen", fr: "Calques", es: "Capas", ja: "レイヤー", ar: "الطبقات" },
   "Layer {n}": { de: "Ebene {n}", fr: "Calque {n}", es: "Capa {n}", ja: "レイヤー {n}", ar: "الطبقة {n}" },
   "Zoom": { de: "Zoom", fr: "Zoom", es: "Zoom", ja: "ズーム", ar: "تكبير" },
+  "Your work automatically saves as you go. And you can come back and edit your book anytime from your Library.": { de: "Deine Arbeit wird beim Machen automatisch gespeichert. Und du kannst dein Buch jederzeit in deiner Bibliothek wieder bearbeiten.", fr: "Ton travail s’enregistre tout seul au fur et à mesure. Et tu peux revenir modifier ton livre quand tu veux depuis ta bibliothèque.", es: "Tu trabajo se guarda solo mientras avanzas. Y puedes volver a editar tu libro cuando quieras desde tu biblioteca.", ja: "つくったものは じどうで ほぞんされます。ライブラリから いつでも 本を なおせます。", ar: "يُحفظ عملك تلقائيًا أثناء العمل. ويمكنك العودة لتعديل كتابك في أي وقت من مكتبتك." },
+  "Don’t show this again": { de: "Nicht mehr anzeigen", fr: "Ne plus afficher", es: "No volver a mostrar", ja: "つぎから ひょうじしない", ar: "لا تعرض هذا مرة أخرى" },
+  "Keep going": { de: "Weitermachen", fr: "Continuer", es: "Seguir", ja: "つづける", ar: "تابع" },
 };

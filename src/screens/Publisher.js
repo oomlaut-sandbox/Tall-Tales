@@ -510,6 +510,17 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   useBackStep(tourPlay, () => setTourPlay(false));
   useBackStep(drawTip, () => setDrawTip(false)); // the 'Pssst' hint: like Got it!
   useBackStep(coverTip, () => setCoverTip(false));
+  // A new book, a few seconds into page 1 after the cover: 'Your work automatically saves…' (with Don't show this
+  // again and a green Keep going), so nobody worries about losing their book (Jörg, 28 Oct 2026)
+  const [saveTip, setSaveTip] = useState(false);
+  const saveTipAsked = useRef(false);
+  useEffect(() => {
+    if (saveTipAsked.current || !startedNew.current || coverOpen || aboutOpen) return undefined;
+    let on = true;
+    const tm = setTimeout(() => { loadJSON('saveTip', {}).then((x) => { if (on && !(x && x.off)) { saveTipAsked.current = true; setSaveTip(true); } }).catch(() => {}); }, 8000);
+    return () => { on = false; clearTimeout(tm); };
+  }, [coverOpen, aboutOpen]);
+  useBackStep(saveTip && !editing && !drawFor && !photoEdit, () => setSaveTip(false));
   const photoOf = (t) => (t === 'cover' ? (cover && cover.uri ? { src: cover.src || cover.uri, uri: cover.uri, edit: cover.edit } : null)
     : t === 'page2' ? (page.uri2 ? { src: page.src2 || page.uri2, uri: page.uri2, edit: page.edit2 } : null)
     : (page.uri ? { src: page.src || page.uri, uri: page.uri, edit: page.edit } : null));
@@ -876,6 +887,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         </View>
       ) : null}
       {tourPlay ? <TourVideo tr={tr} onClose={() => setTourPlay(false)} /> : null}
+      {saveTip && !editing && !drawFor && !photoEdit && !coverOpen && !tourPlay ? <Toast message={tr('Your work automatically saves as you go. And you can come back and edit your book anytime from your Library.')} ms={0}
+        check={tr('Don’t show this again')} button={tr('Keep going')} onDismiss={(ticked) => { setSaveTip(false); if (ticked) saveJSON('saveTip', { off: true }); }} /> : null}
       {tourAsk && aboutOpen ? (
         // 'Want a quick little tour?': a large white bubble over What's your book about? (Jörg, 27 Oct 2026)
         <View style={[StyleSheet.absoluteFill, { zIndex: 65, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }]}>
