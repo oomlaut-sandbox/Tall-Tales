@@ -288,7 +288,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
           <View style={{ height: 30 }} />
           <View style={styles.box}>
             <View style={[styles.secHead, { marginBottom: 6 }]}>
-              <Image source={HEADING_ICONS['Reading']} style={styles.secIcon} accessibilityIgnoresInvertColors />
+              <Image source={require('../../assets/heading-icons/videos.png')} style={styles.secIcon} accessibilityIgnoresInvertColors />{/* a film camera (Jörg, 28 Oct 2026) */}
               <Text style={[styles.section, { flex: 1 }]}>{t('Videos')}</Text>
             </View>
             {VIDEOS.map((v) => (
