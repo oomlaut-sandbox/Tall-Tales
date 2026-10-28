@@ -1,0 +1,22 @@
+build 174: VALID (id 4be94433-2259-4939-97ad-f5015ae34205)
+build 173: VALID (id 48848812-622d-495c-a3f0-1eb42b88e6aa)
+build 172: VALID (id 01e20da0-e200-4367-8a3d-98c38ae988bf)
+build 171: VALID (id 212dda3c-bdc0-47a1-9e9a-44c9c22d5b33)
+build 170: VALID (id 5b526653-a310-4bae-a161-f2e19e411125)
+crash submissions: HTTP 200
+0 found
+{
+  "data" : [ ],
+  "links" : {
+    "self" : "https://api.appstoreconnect.apple.com/v1/apps/6822165068/betaFeedbackCrashSubmissions?limit=20"
+  },
+  "meta" : {
+    "paging" : {
+      "total" : 0,
+      "limit" : 20
+    }
+  }
+}
+diagnostics for build 174: HTTP 404 
+diagnostics for build 173: HTTP 404 
+run at Wed Oct 28 21:12:46 UTC 2026
