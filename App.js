@@ -31,6 +31,7 @@ import Welcome from './src/screens/Welcome';
 import Intro from './src/screens/Intro';
 import Splash from './src/components/Splash';
 const INTRO_ON = true; // the new intro (Kid or Grown-up, Jörg 26 Oct 2026): on (Jörg, 26 Oct); shown once, on the first launch. The web preview shows it at #intro
+const BADGE_BUBBLES = false; // the 'A new badge!' speech bubbles (off for now)
 const WELCOME_ON = false; // the welcome intro: hidden from builds until it's finished (web preview #welcome still shows it)
 import IdeaRoom from './src/screens/IdeaRoom';
 import Settings from './src/screens/Settings';
@@ -173,7 +174,9 @@ function Root() {
     if (ms > 0) toastTimer.current = setTimeout(() => setMessage(''), ms + 500); // the bubble itself closes after ms (or sooner with a tap); ms 0: it stays until it's tapped
   }, []);
   // a new reading badge: a little speech bubble (the badges are on the first page of My Notebook)
+  // (off for now: the bubbles were distracting. Badges are still earned and shown in My Notebook: Jörg, 27 Oct 2026)
   useEffect(() => onNewBadge((fresh) => {
+    if (!BADGE_BUBBLES) return;
     const b = fresh[0];
     const tr = (str, v) => translate(langRef.current, str, v);
     setTimeout(() => toast(fresh.length > 1 ? tr('New badges! {name} and more. See them in My Notebook.', { name: tr(b.title) }) : tr('A new badge, {name}! See it in My Notebook.', { name: tr(b.title) })), 900);
