@@ -156,7 +156,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
               <Text style={styles.letterText}>{t('The Abc sheet is a good place to start. Tap a letter and listen.')}</Text>
               <Text style={styles.letterText}>{t('When someone sends you a drawing or a note, it will be waiting here for you.')}</Text>
               <Text style={styles.letterText}>{t('Happy reading!')}</Text>
-              <Text style={[styles.hand, { fontSize: 16, marginTop: 10, alignSelf: 'flex-end' }]}>{t('Jörg and everyone at Oomlaut')}</Text>
+              <Text style={[styles.hand, { fontSize: 16, marginTop: 10, alignSelf: 'flex-end' }]}>{t('Your friends at Coro')}</Text>
             </View>
           ) : open === 'abc' ? (
             <AbcSheet size={big} narrator={narrator} />

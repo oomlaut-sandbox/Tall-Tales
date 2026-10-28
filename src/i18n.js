@@ -167,7 +167,7 @@ const T = {
   'The Abc sheet is a good place to start. Tap a letter and listen.': { de: 'Fang am besten mit dem Abc-Blatt an. Tippe auf einen Buchstaben und hör zu.', fr: 'La feuille Abc est un bon début. Touche une lettre et écoute.', es: 'La hoja Abc es un buen comienzo. Toca una letra y escucha.', ja: 'まずは Abcの シートから。もじを タップして きいてみよう。', ar: "ورقة «أ ب ت» مكان جيد للبدء. اضغط على حرف واستمع." },
   'When someone sends you a drawing or a note, it will be waiting here for you.': { de: 'Wenn dir jemand ein Bild oder eine Nachricht schickt, wartet es hier auf dich.', fr: 'Quand quelqu’un t’envoie un dessin ou un mot, il t’attendra ici.', es: 'Cuando alguien te envíe un dibujo o una nota, te estará esperando aquí.', ja: 'だれかが え や てがみを おくってくれたら、ここで まっているよ。', ar: "عندما يرسل لك أحدٌ رسمًا أو رسالة، ستجدها هنا بانتظارك." },
   'Happy reading!': { de: 'Viel Spaß beim Lesen!', fr: 'Bonne lecture !', es: '¡Feliz lectura!', ja: 'たのしく よんでね！', ar: "قراءة ممتعة!" },
-  'Jörg and everyone at Oomlaut': { de: 'Jörg und alle bei Oomlaut', fr: 'Jörg et toute l’équipe d’Oomlaut', es: 'Jörg y todos en Oomlaut', ja: 'Jörgと Oomlautの みんなより', ar: "يورغ وكل فريق Oomlaut" },
+  'Your friends at Coro': { de: 'Deine Freunde bei Coro', fr: 'Tes amis de Coro', es: 'Tus amigos de Coro', ja: 'Coroの なかまたちより', ar: "أصدقاؤك في Coro" },
   'From {name}': { de: 'Von {name}', fr: 'De {name}', es: 'De {name}', ja: '{name}から', ar: "من {name}" },
   'A sheet': { de: 'Ein Blatt', fr: 'Une feuille', es: 'Una hoja', ja: 'シート', ar: "ورقة" },
   'Send a sheet': { de: 'Ein Blatt schicken', fr: 'Envoyer une feuille', es: 'Enviar una hoja', ja: 'シートを おくる', ar: "أرسل ورقة" },
