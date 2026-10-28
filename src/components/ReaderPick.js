@@ -98,8 +98,8 @@ export default function ReaderPick({ initial, onCancel, onStart, edit = false, o
           </View>
           {adding ? (
             <View style={styles.field}>
-              <TextInput value={name} onChangeText={setName} placeholder={tr('Name, e.g. Grandpa')} placeholderTextColor="#7a7a7a" autoFocus maxLength={16}
-                allowFontScaling={false} returnKeyType="done" onSubmitEditing={start} style={styles.input} accessibilityLabel={tr('Reader’s name')} />
+              <TextInput value={name} onChangeText={(v) => setName(v.replace(/\n/g, ''))} placeholder={tr('Name, e.g. Grandpa')} placeholderTextColor="#7a7a7a" autoFocus maxLength={16}
+                allowFontScaling={false} multiline scrollEnabled={false} submitBehavior="blurAndSubmit" returnKeyType="done" onSubmitEditing={start} style={styles.input} accessibilityLabel={tr('Reader’s name')} />
             </View>
           ) : null}
           {/* the reader's photo: what a child sees on the bar when this voice reads */}
@@ -167,7 +167,9 @@ const styles = StyleSheet.create({
   chipOn: { backgroundColor: colors.green },
   chipText: { color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 15 },
   field: { backgroundColor: '#161616', height: 52, borderRadius: 14, paddingHorizontal: 16, justifyContent: 'center', marginTop: 20 },
-  input: { alignSelf: 'stretch', height: 22, color: colors.white, fontFamily: fonts.ui, fontSize: 17, paddingVertical: 0, paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 }, // exactly one line tall; the box centres it
+  // the same recipe as the Ideas search field (the one-line iPhone field cut its words off at the bottom): a one-line
+  // text box as tall as the box, its line placed in the middle by padding (Jörg, 28 Oct 2026)
+  input: { alignSelf: 'stretch', height: 52, color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 22, paddingTop: 15, paddingBottom: 0, paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 },
   photoRow: { flexDirection: 'row', alignItems: 'center', gap: 18, marginTop: 22, marginBottom: 6, padding: 16, borderRadius: 20, backgroundColor: '#2a2a2d' }, // the reader's photo and its buttons in a grey rounded box of their own (Jörg, 26 Oct 2026)
   photoBtn: { height: 32, borderRadius: 16, paddingHorizontal: 14, backgroundColor: '#4a4a4f', alignItems: 'center', justifyContent: 'center' },
   photoText: { color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 13 },
