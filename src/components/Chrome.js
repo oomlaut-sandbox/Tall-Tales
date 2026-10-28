@@ -523,7 +523,7 @@ export function ChoiceLabel({ icon, text, style }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12, paddingHorizontal: 16 }}>
       {icon === 'camera' ? <View style={{ marginTop: -1 }}><CameraIcon size={19} color={color} weight={1.6} /></View>
-        : icon === 'cover' ? <CoverIcon size={20} color={color} /> /* the bar's own cover icon (Jörg, 28 Oct 2026) */
+        : icon === 'cover' ? <View style={{ width: 20, height: 20, alignItems: 'center', justifyContent: 'center' }}><CoverIcon size={17} weight={1.9} color={color} /></View> /* the bar's own cover icon (Jörg, 28 Oct 2026) */
         : typeof icon === 'string' ? <LineIcon kind={icon} size={20} color={color} />
         : icon ? <Image source={icon} style={{ width: 22, height: 22, tintColor: color }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
       <Text style={[style, { flexShrink: 1 }]} numberOfLines={1}>{text}</Text>
@@ -845,8 +845,8 @@ export function DoneTick({ size = 34 }) {
   );
 }
 // the book's cover: a closed book seen from the front, its spine on the left, a little picture on it
-export function CoverIcon({ size = 28, color = colors.white }) {
-  const w = Math.max(1.6, size * 0.07); // the same thin stroke as the house and the note
+export function CoverIcon({ size = 28, color = colors.white, weight }) {
+  const w = weight || Math.max(1.6, size * 0.07); // the same thin stroke as the house and the note
   return (
     // a square book (Coro's pages are square), its spine down the left; nothing inside (Jörg, 26 Oct 2026)
     <View style={{ width: size * 0.92, height: size * 0.92, borderWidth: w, borderColor: color, borderRadius: size * 0.09 }}>
