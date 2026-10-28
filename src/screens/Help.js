@@ -62,8 +62,8 @@ const ALL_HELP = [
     'Grown-ups can tap Upload or record music (it asks the grown-up question first). Upload a song saved on the phone, or record one right there, like a parent or grandparent singing a lullaby. Give it a name and it joins the music list.',
     'Press and hold your own music to remove it.',
   ] },
-  { section: 'Music and sounds', title: 'Playlists', text: [
-    'Open Reading Options and choose Playlists to line up several books that play one after another. Turn on Loop to start again from the beginning, and share a playlist with family.',
+  { section: 'Music and sounds', title: 'Book Playlists', text: [
+    'Open Reading Options and choose Book Playlists to line up several books that play one after another. Turn on Loop to start again from the beginning, and share a playlist with family.',
   ] },
   { section: 'Bedtime', title: 'Listen Only and the nightlight', text: [
     'Tap the moon on the black bar while a book is open. The book reads by itself and the screen slowly fades to a soft, glowing sunset sun.',

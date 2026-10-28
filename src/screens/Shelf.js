@@ -393,7 +393,7 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
             onLongPress={!selecting && s.mine ? () => onEdit(s) : undefined} />
         ))}
         {/* Playlists, at the end of My Books: three little felt books stacked */}
-        {!selecting && onPlaylists ? <Tile u={u} option title={t('Playlists')} onPress={onPlaylists} cover={PLAYLISTS_FELT} /> : null}{/* Jörg's photo of five stacked felt books (27 Oct 2026) */}
+        {!selecting && onPlaylists ? <Tile u={u} option title={t('Book Playlists')} onPress={onPlaylists} cover={PLAYLISTS_FELT} /> : null}{/* Jörg's photo of five stacked felt books (27 Oct 2026) */}
         {!selecting && removedCount ? (
           <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
             <Text style={styles.restore}>{t('Show removed books ({n})', { n: removedCount })}</Text>

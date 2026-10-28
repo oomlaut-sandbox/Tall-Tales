@@ -1217,7 +1217,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
           <>
         {modeRows(() => setPanel(null))}
         <Option glyph={<BubbleIcon />} title={tr('Voices')} sub={tr('Narrator: {name}', { name: (NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1] })} onPress={() => setPlayView('voices')} />
-        {onPlaylists ? <Option glyph={<PlaylistIcon />} title={tr('Playlists')} sub={tr('Books read one after another')} onPress={() => { setPanel(null); setPlayView('main'); onPlaylists(); }} /> : null}
+        {onPlaylists ? <Option glyph={<PlaylistIcon />} title={tr('Book Playlists')} sub={tr('Books read one after another')} onPress={() => { setPanel(null); setPlayView('main'); onPlaylists(); }} /> : null}
         <View style={styles.setting}>
           <Text style={styles.help}>{tr('Playback speed')}</Text>
           <Slider value={speedDraft ?? speedOf(prefs)} min={0.5} max={1.5} step={0.05} leftLabel={tr('Slower')} rightLabel={tr('Faster')}

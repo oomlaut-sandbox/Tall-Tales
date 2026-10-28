@@ -106,4 +106,5 @@ export default {
   "Save and Exit": { de: "Speichern und beenden", fr: "Enregistrer et quitter", es: "Guardar y salir", ja: "ほぞんして おわる", ar: "احفظ واخرج" },
   "Finish and publish to library": { de: "Fertigstellen und in die Bibliothek stellen", fr: "Terminer et publier dans la bibliothèque", es: "Terminar y publicar en la biblioteca", ja: "しあげて ライブラリに のせる", ar: "أنهِ وانشر في المكتبة" },
   "Added to My Book Collection.": { de: "Zu Meiner Büchersammlung hinzugefügt.", fr: "Ajouté à Ma collection de livres.", es: "Añadido a Mi colección de libros.", ja: "わたしの 本の コレクションに いれました。", ar: "أُضيف إلى مجموعة كتبي." },
+  "Book Playlists": { de: "Buch-Playlists", fr: "Listes de livres", es: "Listas de libros", ja: "本の プレイリスト", ar: "قوائم الكتب" },
 };
