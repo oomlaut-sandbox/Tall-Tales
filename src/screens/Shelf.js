@@ -36,7 +36,7 @@ const gridGap = (w) => { const n = COLS(w); return `${(100 - n * TILE[n]) / (n -
 import Folder from '../components/Folder';
 import Corkboard from '../components/Corkboard';
 const SELECT_ICON = require('../../assets/icon-select.png');
-const FOLDER = require('../../assets/folder.png'); // 560 × 564, Jörg's kraft folder
+const FOLDER = require('../../assets/folder.png'); // 560 × 547, Jörg's kraft folder
 const PENCIL = require('../../assets/pencil-shadow.png');
 const MUG = require('../../assets/mug-shadow.png'); // hot chocolate from above, already turned
 const SHOW_MASCOT = false; // the felt mascot is off everywhere but the profile pictures (25 Oct 2026); a hand-drawn one is coming
@@ -107,7 +107,15 @@ const MAKE_BOX_PAD = 18;
 // inner: the room inside the black glass box (the book's two pages fit in it, still a gap between them)
 function MakeBookSpread({ winW, inner, onPress, t, go, wait = 1000 }) {
   const n = COLS(winW), colW = ((winW - 40) * TILE[n]) / 100, gap = ((winW - 40) * ((100 - n * TILE[n]) / (n - 1))) / 100;
-  const W = Math.min(colW, inner ? (inner - gap) / 2 : colW), spreadW = inner || 2 * colW + gap;
+  const { height: winH } = useWindowDimensions();
+  // a phone on its side: the window counts the notch and the bar beside the page, so the book is sized from the
+  // room the box really gives it and kept to a size that fits the screen's height, centred like the iPad's (Jörg, 28 Oct 2026)
+  const sideways = !IS_TABLET && winW > winH;
+  const [roomW, setRoomW] = useState(null);
+  const fit = IS_TABLET || sideways;
+  let W = Math.min(colW, inner ? (inner - gap) / 2 : colW);
+  if (sideways) W = Math.max(60, Math.min(roomW ? (roomW - gap) / 2 : W, Math.round(winH * 0.42)));
+  const spreadW = sideways ? 2 * W + gap : inner || 2 * colW + gap;
   const open = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (!go) return undefined;
@@ -120,13 +128,12 @@ function MakeBookSpread({ winW, inner, onPress, t, go, wait = 1000 }) {
   // shut, the cover sits in the middle; open, the two pages (2W wide, the right one at W + gap) are in the middle
   // iPad: the room the box really gives it (the window is wider than the box, with the bar beside it), the book
   // centred in it (Jörg, 27 Oct 2026; the phone is unchanged)
-  const [roomW, setRoomW] = useState(null);
-  const off = IS_TABLET && roomW ? Math.max(0, (roomW - (2 * W + gap)) / 2) : 0;
+  const off = fit && roomW ? Math.max(0, (roomW - (2 * W + gap)) / 2) : 0;
   const slide = open.interpolate({ inputRange: [0, 1], outputRange: [off - (W + gap) / 2, off - gap / 2] });
   const plus = Math.round(W * 0.26), bar = Math.max(3, Math.round(W * 0.03));
   return (
-    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={t('Make a book')} style={{ width: IS_TABLET ? '100%' : spreadW, height: W, overflow: IS_TABLET ? 'hidden' : 'visible' }}
-      onLayout={IS_TABLET ? (e) => setRoomW(e.nativeEvent.layout.width) : undefined}>
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={t('Make a book')} style={{ width: fit ? '100%' : spreadW, height: W, overflow: fit ? 'hidden' : 'visible' }}
+      onLayout={fit ? (e) => setRoomW(e.nativeEvent.layout.width) : undefined}>
       <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: spreadW, height: W, transform: [{ translateX: slide }] }}>
         {/* the right page, under the cover: white, with a + */}
         <View style={[styles.makePage, { left: W + gap, width: W, height: W }]}>
@@ -384,7 +391,7 @@ export function Library({ toBooks, onReadingOptions, onGarden, narrator, toast, 
               <Pressable onPress={() => setFolderOpen(true)} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={t('My Folder')}>
                 <View style={{ width: colW, height: colW, alignItems: 'center', justifyContent: 'center' }}>
                   {(() => {
-                    const fw = colW * 1.04, fh = fw * 564 / 560;
+                    const fw = colW * 1.04, fh = fw * 547 / 560;
                     const who = (activeProfile() || {}).name || '';
                     return (
                       <View style={{ width: fw, height: fh }}>
