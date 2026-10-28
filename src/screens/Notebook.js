@@ -20,7 +20,7 @@ import { Bar, Burger, DogEar, DoneTick, Panel, Toast, barGeo, ChoiceLabel } from
 import { loadJSON, saveJSON } from '../storage';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
-import { DESK_FELT, DeskFelt, Felt, DESK_BG } from '../look';
+import { DESK_FELT, DeskFelt, Felt, DESK_BG, IS_TABLET } from '../look';
 import ParentGate from '../components/ParentGate';
 import { StrokesView, colourAt } from '../components/Strokes';
 import { EarArt } from '../components/Ear';
@@ -1106,8 +1106,10 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   S.current = { strokes, pen, size, erase, bucket, tall, brush, shape, mirror, eraseSoft, smudgeK, dropper, photo, behind, stamp, layer };
   const toolsH = 16; // (portrait: the panel has its own room below the page) // (two rows of colours, the colour row; the brushes, the sizes and the shapes take a row each)
   const add = (st) => { setStrokes((s) => [...s, st]); setRedo([]); };
-  const W = !area ? 0 : wideScreen ? Math.max(120, Math.floor(Math.min(area.h, area.w - TOOLS_W - 28)))
-    : Math.max(120, Math.floor(Math.min(winW - 2 * GAP, tall ? (area.h - toolsH) / 2 : area.h - toolsH)));
+  // iPad: the page a little smaller, so Layers and Zoom under it have room above the colours (Jörg, 28 Oct 2026; the phone is unchanged)
+  const LABELS = IS_TABLET ? 40 : 0;
+  const W = !area ? 0 : wideScreen ? Math.max(120, Math.floor(Math.min(area.h - LABELS, area.w - TOOLS_W - 28)))
+    : Math.max(120, Math.floor(Math.min(winW - 2 * GAP, tall ? (area.h - toolsH - LABELS) / 2 : area.h - toolsH - LABELS)));
   const Wref = useRef(W);
   Wref.current = W;
   // ---- Pinch to zoom (like other drawing apps, Jörg 27 Oct 2026): two fingers zoom in and move the page around;
@@ -1572,7 +1574,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
     <View style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk }]}>
       <DeskFelt spot="notebook4" overlay />
       <View style={{ paddingTop: insets.top + 14, paddingHorizontal: GAP }}>{headEl}</View>
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} onLayout={(e) => setArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: IS_TABLET ? 24 : 0 /* iPad: the page sits a little higher, Layers and Zoom under it */ }} onLayout={(e) => setArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
         {W ? paper : null}
       </View>
       {/* the panel at the bottom */}
