@@ -876,10 +876,10 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     const view = (i, k) => <PageView key={k} {...pageProps(i)} />;
     layers.push(...pageLayers());
     layers.push(
-      <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
+      <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}><PageView key={`p${b}`} {...pageProps(b)} seeThrough /></View>,
       wide
         ? <View key="fat" pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: W / 2, height: H, overflow: 'hidden' }}><PageView key={`t${a}`} {...pageProps(a)} seeThrough /></View>
-        : <View key="fat" pointerEvents="none" style={[styles.half, { top: 0, height: flipT.artH }]}>{view(a, `t${a}`)}</View>,
+        : <View key="fat" pointerEvents="none" style={[styles.half, { top: 0, height: flipT.artH }]}><PageView key={`t${a}`} {...pageProps(a)} seeThrough /></View>,
     );
   } else if (flipPair && size && wide) {
     // Sideways iPad: the words page (right) turns over the spine like a real book's page. Its back
@@ -893,8 +893,8 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     const backOp = flipP.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] });
     const shade = flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.22, 0] });
     layers.push(
-      <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
-      <View key="fal" pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: half, height: H, overflow: 'hidden' }}>{view(a, `l${a}`)}</View>,
+      <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}><PageView key={`p${b}`} {...pageProps(b)} seeThrough /></View>,
+      <View key="fal" pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: half, height: H, overflow: 'hidden' }}><PageView key={`l${a}`} {...pageProps(a)} seeThrough /></View>,
       <Animated.View key="leaf" pointerEvents="none" style={{ position: 'absolute', left: half, top: 0, width: half, height: H, transformOrigin: 'left', transform: [{ perspective: 2400 }, { rotateY: turn }] }}>
         <Animated.View style={{ ...StyleSheet.absoluteFillObject, overflow: 'hidden', opacity: frontOp, backfaceVisibility: 'hidden' }}>
           <View style={{ position: 'absolute', left: -half, top: 0, width: W, height: H }}>{view(a, `r${a}`)}</View>
@@ -917,8 +917,8 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     // would lose the rest of a swipe). The turning layers are drawn on top.
     layers.push(...pageLayers());
     layers.push(
-      <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}>{view(b, `p${b}`)}</View>,
-      <View key="fat" pointerEvents="none" style={[styles.half, { top: 0, height: artH }]}>{view(a, `t${a}`)}</View>,
+      <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}><PageView key={`p${b}`} {...pageProps(b)} seeThrough /></View>,
+      <View key="fat" pointerEvents="none" style={[styles.half, { top: 0, height: artH }]}><PageView key={`t${a}`} {...pageProps(a)} seeThrough /></View>,
       <Animated.View key="sh1" pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: artH, height: textH * 0.6, opacity: shadow }}>
         <Fade edge="top" size={textH * 0.6} max={0.32} />
       </Animated.View>,

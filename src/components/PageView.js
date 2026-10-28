@@ -102,10 +102,12 @@ export const PageView = forwardRef(function PageView(
   // A page that doesn't exist (shouldn't happen) is drawn as blank paper instead of crashing.
   if (!page && !end) return <View ref={ref} collapsable={false} style={[styles.page, { width, height }, amber && { backgroundColor: AMBER.paper }]} />;
 
+  // a page-turn copy: only the paper under the picture is see-through, so the page underneath shows while the picture loads (never white)
+  const clear = !!(seeThrough && page?.image && !end);
   return (
-    <View ref={ref} collapsable={false} style={[styles.page, { width, height }, L.wide && styles.row, amber && { backgroundColor: AMBER.paper }, seeThrough && page?.image && { backgroundColor: 'transparent' } /* (a page-turn copy of the picture side: the page underneath shows while its photo loads) */]}>
+    <View ref={ref} collapsable={false} style={[styles.page, { width, height }, L.wide && styles.row, amber && { backgroundColor: AMBER.paper }, clear && { backgroundColor: 'transparent' } /* (a page-turn copy of the picture side: the page underneath shows while its photo loads) */]}>
       {/* The picture square, with a very soft shadow falling below it. */}
-      <View style={[L.wide ? { width: artW, height, justifyContent: 'center' } : styles.artShadow, { zIndex: 1 }]}>
+      <View style={[L.wide ? { width: artW, height, justifyContent: 'center' } : styles.artShadow, { zIndex: 1 }, clear && { backgroundColor: 'transparent', shadowOpacity: 0, elevation: 0 }]}>
       <View style={[styles.art, { width: artW, height: artH }, page?.image && !end && { backgroundColor: 'transparent' } /* a picture still loading in a page-turn layer shows the same page underneath, never a flash (Jörg, 28 Oct 2026) */, page?.whiteArt && { backgroundColor: amber ? AMBER.white : colors.white }, page?.blankArt && { backgroundColor: '#d9d9d9' }]}>{/* blankArt: a light grey placeholder until a picture is added */}
         {end ? (
           // "The End" on a plain white page, in the book's own font and size, like a page of words
@@ -132,7 +134,7 @@ export const PageView = forwardRef(function PageView(
         {L.wide ? <Fade edge="right" size={Math.round(artW * 0.1)} max={0.22} /> : <Fade edge="bottom" size={Math.round(artH * 0.1)} max={0.22} />}
       </View>
       </View>
-      <View style={[styles.textBox, { paddingHorizontal: L.padX, paddingTop: L.padY, paddingBottom: L.padY + bottomInset }]}>
+      <View style={[styles.textBox, { paddingHorizontal: L.padX, paddingTop: L.padY, paddingBottom: L.padY + bottomInset }, clear && { backgroundColor: amber ? AMBER.paper : colors.paper } /* the words keep their paper when the rest is see-through */]}>
         <Felt opacity={0.7} />
         {/* a page of two pictures: the second fills the words square */}
         {!end && page?.image2 && !(page.text || '').trim() ? <Image source={page.image2} style={styles.fill} resizeMode="cover" /> : null}

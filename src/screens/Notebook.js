@@ -1322,7 +1322,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
     <ParentGate visible={!!outFor} reason={outFor === 'print' ? t('Printing opens your phone’s print options.') : t('Sharing opens your phone’s messages and email.')}
       onPass={() => { const w = outFor; setOutFor(null); setTimeout(() => sendOut(w), 250); }} onCancel={() => setOutFor(null)} />
     {outErr ? <Toast message={outErr} onDismiss={() => toastHere(null)} /> : null}
-    {drawHint ? <Toast message={t('Hint: Nothing beats drawing on paper. Phones especially are tough to draw on. So have fun here, but remember you can always take a picture of your work on paper and import it.')} ms={0} center
+    {drawHint ? <Toast message={t('Nothing beats drawing on real paper. Phones especially are tough to draw on. So have fun here, but remember you can always take a picture of your work on paper and import it.')} ms={0} center
       check={t('Don’t show this message again')} button={t('Got it!')} onDismiss={(ticked) => { setDrawHint(false); if (ticked) saveJSON('drawHint', { off: true }); }} /> : null}
     {/* the zoom now, in percent: a small label under the page, on the right (Jörg, 27 Oct 2026) */}
     <ZoomLabel v={zS} />
