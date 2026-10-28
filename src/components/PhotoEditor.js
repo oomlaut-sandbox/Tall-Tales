@@ -110,7 +110,7 @@ export default function PhotoEditor({ src, edit: given, tr, insets, onDone, onCa
             </View>
           ) : null}
           <View style={[styles.row, { justifyContent: 'flex-end', marginTop: 14 }]}>
-            <Pressable onPress={onCancel} style={[styles.pill, { backgroundColor: '#4a4a4a' }]} accessibilityRole="button"><Text style={styles.pillText}>{tr('Cancel')}</Text></Pressable>
+            <Pressable onPress={onCancel} style={[styles.pill, { backgroundColor: '#4a4a4a' }]} accessibilityRole="button"><ChoiceLabel icon="cancel" text={tr('Cancel')} style={styles.pillText} /></Pressable>
             <Pressable onPress={done} disabled={busy} style={[styles.pill, { backgroundColor: colors.green, opacity: busy ? 0.6 : 1 }]} accessibilityRole="button"><ChoiceLabel icon={DONE_ICON} text={tr('Done')} style={styles.pillText} /></Pressable>
           </View>
         </View>

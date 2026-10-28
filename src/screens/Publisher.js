@@ -94,7 +94,6 @@ const CHOICE_ICONS = { // the icons before the words in the pop-up choices (the 
   cover: require('../../assets/heading-icons/reading.png'),
   done: require('../../assets/icon-select.png'),
   voice: require('../../assets/heading-icons/your-voice.png'),
-  next: require('../../assets/icon-share-line.png'),
 };
 
 const MAX_PX = 1600;
@@ -1146,7 +1145,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setDrawFor(t); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Make a drawing')} style={styles.choiceBtnText} /></Pressable>
             {/* the cover only: just the title on a hardcover (cloth, leather…) of their choice */}
             {imgAsk === 'cover' ? <Pressable onPress={() => { setImgAsk(null); setHardAsk(true); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.text} text={tr('Text only cover')} style={styles.choiceBtnText} /></Pressable> : null}
-            <Pressable onPress={() => setImgAsk(null)} style={[styles.choiceBtn, { marginTop: 14 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Cancel')}</Text></Pressable>
+            <Pressable onPress={() => setImgAsk(null)} style={[styles.choiceBtn, { marginTop: 14 }]} accessibilityRole="button"><ChoiceLabel icon="cancel" text={tr('Cancel')} style={styles.choiceBtnText} /></Pressable>
           </View>
         </View>
       ) : null}
@@ -1164,7 +1163,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               )) : [0, 1, 2, 3].map((n) => <View key={n} style={{ width: 120, height: 120, borderRadius: 6, backgroundColor: '#2e2e30' }} />)}
             </ScrollView>
             {!HARDCOVERS.length ? <Text style={[styles.choiceBtnText, { fontSize: 14, color: '#bdbdbd', textAlign: 'center', marginTop: 10 }]}>{tr('The hardcovers are coming soon.')}</Text> : null}
-            <Pressable onPress={() => setHardAsk(false)} style={[styles.choiceBtn, { marginTop: 16 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Cancel')}</Text></Pressable>
+            <Pressable onPress={() => setHardAsk(false)} style={[styles.choiceBtn, { marginTop: 16 }]} accessibilityRole="button"><ChoiceLabel icon="cancel" text={tr('Cancel')} style={styles.choiceBtnText} /></Pressable>
           </Pressable>
         </Pressable>
       ) : null}

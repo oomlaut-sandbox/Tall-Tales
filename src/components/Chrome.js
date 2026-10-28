@@ -504,6 +504,16 @@ export function LineIcon({ kind, size = 20, color = colors.white, weight = 1.6 }
   if (kind === 'square') body = <View style={[abs, { left: s * 0.1, top: s * 0.1, width: s * 0.8, height: s * 0.8, borderWidth: w, borderColor: c }]} />;
   if (kind === 'wide') body = <View style={[abs, { left: 0, top: s * 0.22, width: s, height: s * 0.56, borderWidth: w, borderColor: c }]} />;
   if (kind === 'border') body = <View style={[abs, { left: s * 0.1, top: s * 0.1, width: s * 0.8, height: s * 0.8, borderWidth: w * 2.4, borderColor: c }]} />;
+  // next: a circle with a small chevron, like Visit Ideas and the Back ring; cancel: the same circle with a small x
+  if (kind === 'next' || kind === 'cancel') body = (<>
+    <View style={[abs, { left: s * 0.04, top: s * 0.04, width: s * 0.92, height: s * 0.92, borderRadius: s * 0.46, borderWidth: w, borderColor: c }]} />
+    {kind === 'next'
+      ? <View style={[abs, { left: s * 0.33, top: s * 0.36, width: s * 0.28, height: s * 0.28, borderTopWidth: w, borderRightWidth: w, borderColor: c, transform: [{ rotate: '45deg' }] }]} />
+      : <>
+          <View style={[abs, { left: s * 0.5 - w / 2, top: s * 0.31, width: w, height: s * 0.38, backgroundColor: c, transform: [{ rotate: '45deg' }] }]} />
+          <View style={[abs, { left: s * 0.5 - w / 2, top: s * 0.31, width: w, height: s * 0.38, backgroundColor: c, transform: [{ rotate: '-45deg' }] }]} />
+        </>}
+  </>);
   if (kind === 'circle') body = <View style={[abs, { left: s * 0.08, top: s * 0.08, width: s * 0.84, height: s * 0.84, borderRadius: s * 0.42, borderWidth: w, borderColor: c }]} />;
   return <View style={{ width: s, height: s }} accessible={false}>{body}</View>;
 }

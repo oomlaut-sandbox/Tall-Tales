@@ -60,7 +60,6 @@ const CHOICE_ICONS = { // the icons before the words in the pop-up choices (the 
   page: require('../../assets/title-icons/make-a-book.png'),
   cover: require('../../assets/heading-icons/reading.png'),
   done: require('../../assets/icon-select.png'),
-  next: require('../../assets/icon-share-line.png'),
 };
 
 const GAP = 30;
@@ -714,7 +713,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
             <Text style={styles.choiceTitle}>{t('Add a new page')}</Text>
             <Pressable onPress={() => addPage('note')} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.notes} text={t('Notes page')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => addPage('sketch')} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={t('Sketch page')} style={styles.choiceBtnText} /></Pressable>
-            <Pressable onPress={() => setNewAsk(false)} style={[styles.choiceBtn, { marginTop: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Cancel')}</Text></Pressable>
+            <Pressable onPress={() => setNewAsk(false)} style={[styles.choiceBtn, { marginTop: 8 }]} accessibilityRole="button"><ChoiceLabel icon="cancel" text={t('Cancel')} style={styles.choiceBtnText} /></Pressable>
           </View>
         </View>
       ) : null}
@@ -727,7 +726,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
             <Pressable onPress={() => { setPicAsk(false); setCamGate(true); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={'camera'} text={t('Take a photo')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => { setPicAsk(false); setDrawing('top'); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={page.uri ? t('Draw on the photo') : page.strokes.length ? t('Keep drawing') : t('Make a drawing')} style={styles.choiceBtnText} /></Pressable>
             {page.uri ? <Pressable onPress={() => { setPicAsk(false); dropNotebookPicture(page.uri); update({ uri: null, w: 1, h: 1 }); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.trash} text={t('Remove the photo')} style={styles.choiceBtnText} /></Pressable> : null}
-            <Pressable onPress={() => setPicAsk(false)} style={[styles.choiceBtn, { marginTop: 8 }]} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Cancel')}</Text></Pressable>
+            <Pressable onPress={() => setPicAsk(false)} style={[styles.choiceBtn, { marginTop: 8 }]} accessibilityRole="button"><ChoiceLabel icon="cancel" text={t('Cancel')} style={styles.choiceBtnText} /></Pressable>
           </View>
         </View>
       ) : null}
@@ -1315,8 +1314,8 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
           <Text style={[styles.choiceTitle, { lineHeight: 28 }]}>{t('Do you want to print or share your drawing now, or save it and start the next page?')}</Text>
           <Pressable disabled={outBusy} onPress={() => setOutFor('share')} style={[styles.choiceBtn, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.share} text={t('Share')} style={styles.choiceBtnText} /></Pressable>
           <Pressable disabled={outBusy} onPress={() => setOutFor('print')} style={[styles.choiceBtn, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.print} text={t('Print')} style={styles.choiceBtnText} /></Pressable>
-          <Pressable onPress={() => setDoneAsk(false)} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{t('Cancel')}</Text></Pressable>
-          <Pressable onPress={() => { setDoneAsk(false); (onNext || onDone)(strokes); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 8 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.next} text={t('Next page')} style={styles.choiceBtnText} /></Pressable>
+          <Pressable onPress={() => setDoneAsk(false)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon="cancel" text={t('Cancel')} style={styles.choiceBtnText} /></Pressable>
+          <Pressable onPress={() => { setDoneAsk(false); (onNext || onDone)(strokes); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 8 }]} accessibilityRole="button"><ChoiceLabel icon="next" text={t('Next page')} style={styles.choiceBtnText} /></Pressable>
         </View>
       </View>
     ) : null}
