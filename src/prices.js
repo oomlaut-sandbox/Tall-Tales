@@ -19,4 +19,4 @@ export const bookProductId = (bookId) => `oomlaut.book.${String(bookId).replace(
 
 // Apple's standard terms of use for subscriptions; the privacy policy page is still to be made (docs/store-plan.md)
 export const TERMS_URL = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
-export const PRIVACY_URL = null;
+export const PRIVACY_URL = 'https://corobooks.com/privacy'; // (Apple wants it on the membership screen: 28 Oct 2026)
