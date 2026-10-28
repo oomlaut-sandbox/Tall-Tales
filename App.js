@@ -536,7 +536,7 @@ function Root() {
           setIntroAsk(false); setIntroWho(null); setCoverOpen(true); setStartKey((n) => n + 1); // back to the start page, the notebook open
         }} /> : null}
         {welcome ? <Welcome controls={controls} setControls={setControls} onDone={welcomeDone} /> : null}
-        {/* Back: a small arrow in the top right corner of the banner */}{/* (My Library: no house beside the title, Jörg 27 Oct 2026) */}
+        {/* Back: a small arrow in the top right corner of the banner */}
         {/* Back: on every page, always the same size and in the same spot, top right (Jörg, 27 Oct 2026). It goes
             back one step: whatever is open on top first, then the step before in this screen, then the screen before */}
         {screen !== 'reader' /* (not while reading a book: the one exception, Jörg 27 Oct 2026) */ && screen !== 'start' /* nor on the start page, where there's nothing to go back to */ && !backHidden() /* nor over the drawing editor */ && !splash && !introWho && !welcome && !flyer && !opening && !closingBook ? (
