@@ -394,7 +394,7 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
         {/* a title over the books: the ones you made first, then the picture books */}
         {!selecting && !ws ? <Text onLayout={(e) => { booksY.current = e.nativeEvent.layout.y; toMyBooks(); }} style={[styles.section, { marginTop: 2 }]} accessibilityRole="header">{t('My Book Collection')}</Text> : null}{/* a little closer to Let's make a book */}
         {/* (the parental controls can hide books rated for older children) */}
-        {(ws ? [] : stories).filter((s) => (!s.mine || s.published || selecting) /* books still being made are in Work in Progress (but can be picked here, to share or delete) */ && ageAllowed(ageOf(null, s), controls.childAge)).sort((a, b) => (b.mine ? 1 : 0) - (a.mine ? 1 : 0)).map((s) => (
+        {(ws ? [] : stories).filter((s) => (!s.mine || s.published) /* books still being made are in My Workspace (picked there) */ && ageAllowed(ageOf(null, s), controls.childAge)).sort((a, b) => (b.mine ? 1 : 0) - (a.mine ? 1 : 0)).map((s) => (
           // just the title under each cover (no author, pages or other details)
           <Tile key={s.id} spotId={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title}
             selecting={selecting} selected={picked.includes(s.id)}
