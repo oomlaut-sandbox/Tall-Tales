@@ -310,7 +310,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
           {/* the intro again, any time, at the very bottom: the notebook asks "Are you a kid or a grown-up?" (Jörg, 26 Oct 2026) */}
           {onIntro ? (
             <Pressable onPress={onIntro} accessibilityRole="button" style={[styles.aboutPill, { marginTop: 26, backgroundColor: '#4a4a4a' }]}>{/* grey (Jörg, 28 Oct 2026) */}
-              <Text style={styles.aboutText}>{t('Replay the Introduction')}</Text>
+              <Text style={styles.aboutText}>{t('Restart the app')}</Text>
             </Pressable>
           ) : null}
         </View>
