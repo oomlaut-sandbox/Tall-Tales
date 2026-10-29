@@ -302,6 +302,7 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
   if (typeof window !== 'undefined' && window.location && /garden/.test(window.location.hash || '')) window.__openGarden = onGarden; // (web preview screenshots)
   const controls = useControls(); // parental controls: My Notes, Make a book and Select may be hidden
   const { width: winW, height: winH } = useWindowDimensions();
+  const folderY = useRef(0), lastY = useRef(0); // where the page was when Things to share opened
   const [folderOpen, setFolderOpen] = useState(false); // Things to share, opened (the sheets)
   const [selecting, setSelecting] = useState(false);
   const [picked, setPicked] = useState([]);
@@ -366,7 +367,7 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
           only once a grown-up has unlocked it in Settings → The Garden */}
       <ScrollView ref={scrollRef} onContentSizeChange={keep.onContentSizeChange} contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]} scrollEventThrottle={64}
         onScroll={(e) => {
-          keep.onScroll(e);
+          keep.onScroll(e); lastY.current = e.nativeEvent.contentOffset.y;
           const { contentOffset: o, layoutMeasurement: l, contentSize: c } = e.nativeEvent;
           const past = o.y + l.height - c.height;
           if (past > 70 && !gardenAsked.current && onGarden && !selecting) { gardenAsked.current = true; toast && toast(t('Come explore the Garden'), 3500); }
@@ -429,7 +430,7 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
           const n = COLS(winW), colW = ((winW - 40) * TILE[n]) / 100, gap = ((winW - 40) * ((100 - n * TILE[n]) / (n - 1))) / 100;
           return (
             <>
-              <Pressable onPress={() => setFolderOpen(true)} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={t('Things to share')}>
+              <Pressable onPress={() => { folderY.current = lastY.current; setFolderOpen(true); }} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={t('Things to share')}>
                 <View style={{ width: colW, height: colW, alignItems: 'center', justifyContent: 'center' }}>
                   {(() => {
                     const fw = colW * 1.04, fh = fw * 547 / 560;
@@ -465,7 +466,7 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
           );
         })() : null}
       </ScrollView>
-      {folderOpen ? <Folder narrator={narrator} toast={toast} canSend={controls.sharing !== false} onClose={() => setFolderOpen(false)} /> : null}
+      {folderOpen ? <Folder narrator={narrator} toast={toast} canSend={controls.sharing !== false} onClose={() => { const y = folderY.current; setFolderOpen(false); requestAnimationFrame(() => scrollRef.current && scrollRef.current.scrollTo({ y, animated: false })); }} /* back to the same spot (Jörg, 29 Oct 2026) */ /> : null}
       {confirm ? (
         <View style={styles.confirm}>
           <Text style={styles.confirmText}>
