@@ -69,7 +69,7 @@ export function FilmBox({ title, boxStyle, titleStyle, look = 'light' }) {
       </Pressable>
       {open && filmW ? (
         <Animated.View style={{ height: grow.interpolate({ inputRange: [0, 1], outputRange: [0, filmH + 20] }), opacity: grow, overflow: 'hidden', alignItems: 'center' }}>
-          <View style={{ marginTop: 20, width: filmW, height: filmH, borderRadius: Math.round(filmW * 0.07), overflow: 'hidden', backgroundColor: '#000' }}>
+          <View style={{ marginTop: 20, width: filmW, height: filmH, borderRadius: Math.round(filmW * 0.14) /* an iPhone's corners */, overflow: 'hidden', backgroundColor: '#000' }}>
             <InlineFilm />
           </View>
         </Animated.View>
