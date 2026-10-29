@@ -15,7 +15,7 @@ import { CameraIcon, ChoiceLabel } from './Chrome';
 // the icons before the words, the same line icons as the app's other pop-ups (Jörg, 28 Oct 2026)
 const PIN_ICONS = { note: require('../../assets/heading-icons/sticky-note.png') /* a note with its corner curling up (Jörg, 29 Oct 2026) */, photo: require('../../assets/heading-icons/family-and-memories.png') };
 const PinIcon = ({ src }) => (src ? <Image source={src} style={{ width: 22, height: 22, tintColor: colors.white }} resizeMode="contain" accessibilityIgnoresInvertColors /> : <View style={{ width: 22, alignItems: 'center' }}><CameraIcon size={19} color={colors.white} weight={1.6} /></View>);
-import { loadPins, pinNote, pinPhoto, unpin } from '../corkboard';
+import { inSheet, loadPins, pinNote, pinPhoto, unpin } from '../corkboard';
 import { onScopeChange } from '../scope';
 
 const CORK = require('../../assets/cork.jpg');
@@ -82,15 +82,6 @@ export default function Corkboard({ width, toast, onPlaylists }) {
         <View style={[StyleSheet.absoluteFill, { borderRadius: 10, overflow: 'hidden' }]}>
           <Image source={CORK} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
         </View>
-        {pins.map((p) => {
-          const s = width * (p.kind === 'note' ? 0.26 : 0.28);
-          return (
-            <Pressable key={p.id} onPress={withTap(() => setOpen(p))} accessibilityRole="button" accessibilityLabel={p.kind === 'note' ? p.text : t('Photo')}
-              style={{ position: 'absolute', left: p.x * width - s / 2, top: p.y * H - s / 2, transform: [{ rotate: `${p.rot || 0}deg` }] }}>
-              <Pin p={p} W={width} />
-            </Pressable>
-          );
-        })}
         {/* Book Playlists: a white sheet always pinned in the lower left corner, like a list on the board (Jörg, 29 Oct 2026) */}
         {onPlaylists ? (() => {
           const sw = Math.round(width * 0.25), sh = Math.round(sw * 1.3);
@@ -104,6 +95,17 @@ export default function Corkboard({ width, toast, onPlaylists }) {
             </Pressable>
           );
         })() : null}
+        {pins.map((p) => {
+          const s = width * (p.kind === 'note' ? 0.26 : 0.28);
+          // (a pin from before the sheet, sitting over it: shown just above it instead)
+          if (onPlaylists && inSheet(p.x, p.y)) p = { ...p, y: 0.38 };
+          return (
+            <Pressable key={p.id} onPress={withTap(() => setOpen(p))} accessibilityRole="button" accessibilityLabel={p.kind === 'note' ? p.text : t('Photo')}
+              style={{ position: 'absolute', left: p.x * width - s / 2, top: p.y * H - s / 2, transform: [{ rotate: `${p.rot || 0}deg` }] }}>
+              <Pin p={p} W={width} />
+            </Pressable>
+          );
+        })}
         {/* the pin button: pin something new */}
         <Pressable onPress={withTap(() => setAsk(true))} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Pin something')} style={styles.pinBtn}>
           <Image source={PIN_ICON} style={{ width: 16, height: 16, tintColor: colors.white }} resizeMode="contain" />

@@ -12,12 +12,16 @@ export async function loadPins() {
 }
 async function save() { await saveJSON('corkboard', { pins: cache }); }
 
+// the Book Playlists sheet, always pinned in the board's lower left corner: no pin's middle may land where the
+// pin would cover any of it (Jörg, 29 Oct 2026)
+export const inSheet = (x, y) => x < 0.45 && y > 0.5;
 // somewhere free-ish on the board, a little tilted
 function spot() {
   const taken = cache || [];
   let best = null;
-  for (let k = 0; k < 24; k++) {
-    const x = 0.16 + Math.random() * 0.68, y = 0.2 + Math.random() * 0.6;
+  for (let k = 0; k < 60; k++) {
+    const x = 0.16 + Math.random() * 0.68, y = 0.15 + Math.random() * 0.7;
+    if (inSheet(x, y)) continue; // never over the Book Playlists sheet
     const d = taken.length ? Math.min(...taken.map((p) => (p.x - x) ** 2 + ((p.y - y) * 0.75) ** 2)) : 1;
     if (!best || d > best.d) best = { x, y, d };
   }
