@@ -283,7 +283,7 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
   const toWipNow = () => {
     if (!toWip || wipDone.current === toWip || wipY.current == null || !scrollRef.current) return;
     wipDone.current = toWip;
-    scrollRef.current.scrollTo({ y: Math.max(0, wipY.current - 24), animated: false });
+    scrollRef.current.scrollTo({ y: Math.max(0, wipY.current - 60), animated: false });
   };
   useEffect(() => { toWipNow(); }, [toWip]);
   const toMyBooks = () => {
