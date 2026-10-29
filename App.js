@@ -470,7 +470,7 @@ function Root() {
         )}
         {screen === 'notebook' && <Notebook u={u} from={nbFrom} openMenu={openMenu} toast={toast} onDone={() => go('workspace')} />}
         {screen === 'publisher' && draft && (
-          <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list, recId, where) => { setUserStories(list); const rs = recId && list.find((x) => x.id === recId); if (rs) { setRecordOnOpen(true); openStory(rs); return; } const back = makerFrom.current; if (where === 'wip' && back === 'workspace') setToWip((n) => n + 1); /* Save and Exit: at the books still being made */ go(back); /* done: back where it was opened from */ }} onIdeas={() => go('ideas')} />
+          <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list, recId, where) => { setUserStories(list); const rs = recId && list.find((x) => x.id === recId); if (rs) { setRecordOnOpen(true); openStory(rs); return; } if (where === 'published') { go('library'); return; } /* Finish and publish: always My Library (Jörg, 29 Oct 2026) */ const back = makerFrom.current; if (where === 'wip' && back === 'workspace') setToWip((n) => n + 1); /* Save and Exit: at the books still being made */ go(back); /* done: back where it was opened from */ }} onIdeas={() => go('ideas')} />
         )}
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} onReadingOptions={readingBox} />}
         {screen === 'music' && <MusicSounds u={u} openMenu={openMenu} prefs={prefs} setPrefs={setPrefs} />}
