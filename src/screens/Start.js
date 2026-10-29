@@ -44,21 +44,23 @@ const corners = (side, wide, flipped) => (flipped ? (wide
 const TILE_LIBRARY = require('../../assets/tile-library.png');
 const TILE_MAKE = require('../../assets/tile-store.png'); // the blue felt tile: Make a book (blue, like the book in My Library)
 
-function MenuItem({ u, icon, title, sub, onPress }) {
+function MenuItem({ u, title, sub, onPress, ticked }) {
+  // a check box like the intro's "Kid / Grown-up" ones (in place of the big felt tiles: Jörg, 29 Oct 2026):
+  // tap it, it's ticked, and a moment later that way opens
   return (
-    <Pressable onPress={onPress} accessibilityRole="button" style={{ flexDirection: 'row', alignItems: 'center', gap: u * 9 }}>
-      {/* the icon: a stitched felt tile (Jörg's), with a slight drop shadow */}
-      <View style={{ shadowColor: '#000', shadowOffset: { width: 1, height: 4 }, shadowOpacity: 0.55, shadowRadius: 5, elevation: 5 }}>{/* a darker shadow: the felt tile sits on the page */}
-        <Image source={icon} resizeMode="contain" style={{ width: u * 19, height: u * 33 }} />
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityState={{ checked: !!ticked }} hitSlop={6} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: u * 5 }}>
+      <View style={{ width: u * 9, height: u * 9, borderRadius: u * 1.6, borderWidth: 1.8, borderColor: colors.ink, alignItems: 'center', justifyContent: 'center', marginTop: u * 0.2 }}>
+        {ticked ? <View style={{ width: u * 4.6, height: u * 2.6, borderLeftWidth: 2.2, borderBottomWidth: 2.2, borderColor: colors.ink, transform: [{ translateY: -u * 0.6 }, { rotate: '-45deg' }] }} /> : null}
       </View>
-      <View style={{ width: u * 54 }}>
+      <View style={{ width: u * 62 }}>
         {/* the typewriter font, sized with the notebook so it always fits on its page (small phones too) */}
-        <Text style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.min(17, u * 6.4), lineHeight: Math.min(21, u * 7.9), color: colors.ink, marginBottom: u * 2 }}>{title}</Text>
+        <Text style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.min(19, k7(u)), lineHeight: Math.min(24, u * 8.9), color: colors.ink, marginBottom: u * 2 }}>{title}</Text>
         <Text style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.min(14, u * 5.1), lineHeight: Math.min(18, u * 6.6), color: colors.ink }}>{sub}</Text>
       </View>
     </Pressable>
   );
 }
+const k7 = (u) => u * 7; // the same size as the intro's check box words
 
 export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClosed, onPeek, ask, onIntro }) {
   const t = useT();
@@ -78,6 +80,7 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
   const { width: winW, height: winH } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const leaving = useRef(false);
+  const [menuPick, setMenuPick] = useState(null); // Make a book / Read a book, just ticked
   const [askPick, setAskPick] = useState(null); // the intro's question: the box just ticked
   const pageRef = useRef(null); // the page under the cover (not turning), measured for the flight to the shelf
   const coverRef = useRef(null); // the cover, measured when it's about to fly to the shelf
@@ -216,8 +219,8 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
                   </View>
                 ) : (<>
                                 {/* Make a book first (Coro is a book maker first), then Read a book (My Library) */}
-                {controls.create ? <MenuItem u={k} icon={TILE_MAKE} title={t('Make a book')} sub={t('Share your words, your pictures, your voice.')} onPress={() => goTo('make')} /> : null}
-                <MenuItem u={k} icon={TILE_LIBRARY} title={t('Read a book')} sub={t('Collect, record and share your favorite stories.')} onPress={() => goTo('library')} />
+                {controls.create ? <MenuItem u={k} ticked={menuPick === 'make'} title={t('Make a book')} sub={t('Share your words, your pictures, your voice.')} onPress={() => { if (menuPick) return; setMenuPick('make'); setTimeout(() => { goTo('make'); setMenuPick(null); }, 350); }} /> : null}
+                <MenuItem u={k} ticked={menuPick === 'library'} title={t('Read a book')} sub={t('Collect, record and share your favorite stories.')} onPress={() => { if (menuPick) return; setMenuPick('library'); setTimeout(() => { goTo('library'); setMenuPick(null); }, 350); }} />
                 </>)}
               </View>
             </View>
