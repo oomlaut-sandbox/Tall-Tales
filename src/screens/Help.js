@@ -5,6 +5,7 @@ import { useScrollMemory } from '../nav';
 import { HEADING_ICONS } from '../headingIcons';
 import { STORE_ON } from '../controls';
 import { VIDEOS } from './Intro';
+import FilmPlayer from '../components/FilmPlayer';
 import React, { useMemo, useRef, useState } from 'react';
 import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -203,7 +204,7 @@ const IDEAS_FELT = require('../../assets/ideas-felt.png');
 
 export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro }) {
   const keep = useScrollMemory('help'); // Back returns to this spot
-  const [soonVid, setSoonVid] = React.useState(null); // a video tapped (they're on the way)
+  const [soonVid, setSoonVid] = React.useState(null); // the video playing
   const searchRef = useRef(null);
   const { width: winWf } = useWindowDimensions();
   const feltW = Math.min(520, winWf - 48); // the felt patch, as wide as the column
@@ -292,14 +293,14 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
               <Text style={[styles.section, { flex: 1 }]}>{t('Videos')}</Text>
             </View>
             {VIDEOS.map((v) => (
-              <Pressable key={v} onPress={() => setSoonVid(v)} accessibilityRole="button" style={[styles.card, { flexDirection: 'row', alignItems: 'center', gap: 14 }]}>
+              <Pressable key={v} onPress={() => setSoonVid(v)} /* plays Coro's short film */ accessibilityRole="button" style={[styles.card, { flexDirection: 'row', alignItems: 'center', gap: 14 }]}>
                 <View style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#d6d6d6', alignItems: 'center', justifyContent: 'center' }}>
                   <View style={{ width: 0, height: 0, marginLeft: 3, borderTopWidth: 6, borderBottomWidth: 6, borderLeftWidth: 10, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: '#333' }} />
                 </View>
                 <Text style={[styles.cardTitle, { flex: 1 }]}>{t(v)}</Text>
               </Pressable>
             ))}
-            {soonVid ? <Text style={[styles.p, { color: '#cfcfcf', fontSize: 14 }]}>{t('The video is coming soon.')}</Text> : null}
+            <FilmPlayer visible={!!soonVid} onClose={() => setSoonVid(null)} />
           </View>
           <View style={{ height: 30 }} />
           {/* the Idea Room, at the bottom now (Ideas has its own place in the menu: Jörg, 26 Oct 2026) */}

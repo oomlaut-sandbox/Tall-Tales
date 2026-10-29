@@ -9,6 +9,7 @@ import { colors, fonts } from '../theme';
 import { DESK_BG, DeskFelt } from '../look';
 import { useT } from '../i18n';
 import { useReduceMotion } from '../a11y';
+import FilmPlayer from '../components/FilmPlayer';
 
 const AGES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
@@ -52,7 +53,7 @@ function Chip({ label, on, onPress }) {
 }
 
 // the tutorial videos on the What is Coro? page (the films themselves are still being made)
-export const VIDEOS = ['How Coro works']; // one film for grown-ups, here and in Help (Jörg, 28 Oct 2026; Jörg is making it) // (Parental controls: the same words as in Settings)
+export const VIDEOS = ['How Coro works']; // one film, here, in the kids' intro and in Help: assets/videos/coro-intro.mp4 (Jörg, 28 Oct 2026) // (Parental controls: the same words as in Settings)
 
 export default function Intro({ who, onDone, onBack }) {
   const t = useT();
@@ -72,7 +73,7 @@ export default function Intro({ who, onDone, onBack }) {
   const next = () => (i < pages.length - 1 ? setI(i + 1) : finish());
   // back: the page before, or (on the first page) the notebook's question again
   const back = () => (i > 0 ? setI(i - 1) : onBack && onBack());
-  const [soon, setSoon] = useState(null); // a video tapped (they're on the way)
+  const [film, setFilm] = useState(false); // Coro's short film, playing (Jörg, 28 Oct 2026)
   const page = pages[i];
 
   let body = null;
@@ -107,26 +108,24 @@ export default function Intro({ who, onDone, onBack }) {
     <>
       <Text style={styles.title}>{t('Meet Coro')}</Text>
       <Text style={styles.lead}>{t('Let’s have a look at all the fun things you can do here.')}</Text>
-      <Pressable onPress={() => setSoon('Make your own picture book. It’s easy!')} accessibilityRole="button" style={[styles.box, { flexDirection: 'row', alignItems: 'center', gap: 16, paddingVertical: 18 }]}>
+      <Pressable onPress={() => setFilm(true)} accessibilityRole="button" style={[styles.box, { flexDirection: 'row', alignItems: 'center', gap: 16, paddingVertical: 18 }]}>
         <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#333', alignItems: 'center', justifyContent: 'center' }}>
           <View style={{ width: 0, height: 0, marginLeft: 4, borderTopWidth: 9, borderBottomWidth: 9, borderLeftWidth: 14, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: '#e6e6e6' }} />
         </View>
         <Text style={[styles.boxTitle, { flex: 1 }]}>{t('Make your own picture book. It’s easy!')}</Text>
       </Pressable>
-      {soon ? <Text style={[styles.lead, { marginBottom: 0 }]}>{t('The video is coming soon.')}</Text> : null}
     </>
   );
   if (page === 'whatIs') body = (
     <>
       <Text style={styles.title}>{t('Meet Coro')}</Text>{/* one video, like the kids' page (Jörg, 28 Oct 2026) */}
       <Text style={styles.lead}>{t('Watch a short video to see how it all works.')}</Text>
-      <Pressable onPress={() => setSoon(VIDEOS[0])} accessibilityRole="button" style={[styles.box, { flexDirection: 'row', alignItems: 'center', gap: 16, paddingVertical: 18 }]}>
+      <Pressable onPress={() => setFilm(true)} accessibilityRole="button" style={[styles.box, { flexDirection: 'row', alignItems: 'center', gap: 16, paddingVertical: 18 }]}>
         <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#333', alignItems: 'center', justifyContent: 'center' }}>
           <View style={{ width: 0, height: 0, marginLeft: 4, borderTopWidth: 9, borderBottomWidth: 9, borderLeftWidth: 14, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: '#e6e6e6' }} />
         </View>
         <Text style={[styles.boxTitle, { flex: 1 }]}>{t(VIDEOS[0])}</Text>
       </Pressable>
-      {soon ? <Text style={[styles.lead, { marginBottom: 0 }]}>{t('The video is coming soon.')}</Text> : null}
     </>
   );
   if (page === 'access') body = (
@@ -159,6 +158,7 @@ export default function Intro({ who, onDone, onBack }) {
   return (
     <View style={[StyleSheet.absoluteFill, styles.screen]}>
       <DeskFelt spot="intro" />
+      <FilmPlayer visible={film} onClose={() => setFilm(false)} />
       <ScrollView contentContainerStyle={[styles.body, { paddingTop: insets.top + 48, paddingBottom: 30 }]} keyboardShouldPersistTaps="handled">
         <Animated.View style={[styles.col, { opacity: slide.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }), transform: [{ translateX: slide.interpolate({ inputRange: [0, 1], outputRange: [0, still ? 0 : 60] }) }] }]}>
           {body}
