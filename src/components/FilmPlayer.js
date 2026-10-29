@@ -78,9 +78,9 @@ function PhoneFilm({ onClose }) {
       <Animated.View style={{ flex: 1, opacity: fade }}>
         <Pressable onPress={close} style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.85)' }]} accessibilityLabel={t('Close')} />
         <View pointerEvents="box-none" style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: insets.top + 50, paddingBottom: insets.bottom + 20 }}>
-          <Animated.View style={{ width: filmW, height: filmH, borderRadius: Math.round(filmW * 0.14), overflow: 'hidden', backgroundColor: '#000',
+          <Animated.View style={{ width: filmW, height: filmH, borderRadius: Math.round(filmW * 0.14), overflow: 'hidden', backgroundColor: '#000', borderWidth: 2, borderColor: '#3a3a3a', padding: 8,
             transform: [{ scale: fade.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] }) }] }}>
-            <InlineFilm onEnd={close} />
+            <View style={{ flex: 1, borderRadius: Math.round(filmW * 0.14) - 8, overflow: 'hidden' }}><InlineFilm onEnd={close} /></View>
           </Animated.View>
         </View>
         <Pressable onPress={close} hitSlop={14} accessibilityRole="button" accessibilityLabel={t('Close')} style={{ position: 'absolute', top: insets.top + 10, right: 18 }}>
@@ -110,7 +110,7 @@ export function PagePhone({ room = 250 }) {
   const player = useVideoPlayer(FILM, (p) => { p.loop = false; });
   useEffect(() => () => { try { player.pause(); } catch (e) {} }, [player]);
   return (
-    <View style={{ alignSelf: 'center', width: w, height: h, borderRadius: Math.round(w * 0.15), backgroundColor: '#000', padding: 8,
+    <View style={{ alignSelf: 'center', width: w, height: h, borderRadius: Math.round(w * 0.15), backgroundColor: '#000', padding: 8, borderWidth: 2, borderColor: '#3a3a3a' /* a thin grey rim, like Jörg's mockup */,
       shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.5, shadowRadius: 18, elevation: 12 }}>
       <View style={{ flex: 1, borderRadius: Math.round(w * 0.15) - 8, overflow: 'hidden', backgroundColor: '#000' }}>
         <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls allowsFullscreen={false} allowsPictureInPicture={false} />
