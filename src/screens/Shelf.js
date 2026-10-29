@@ -39,6 +39,7 @@ import Corkboard from '../components/Corkboard';
 const SELECT_ICON = require('../../assets/icon-select.png');
 const FOLDER = require('../../assets/folder.png'); // 560 × 547, Jörg's kraft folder
 const PENCIL = require('../../assets/pencil-shadow.png');
+const PENCIL_YELLOW = require('../../assets/pencil-yellow.png'); // Jörg's yellow pencil, cut out, the maker's lettering painted out
 const MUG = require('../../assets/mug-shadow.png'); // hot chocolate from above, already turned
 const SHOW_MASCOT = false; // the felt mascot is off everywhere but the profile pictures (25 Oct 2026); a hand-drawn one is coming
 const LEANER = require('../../assets/store-lean.png'); // Skippy: Jörg's grey character in sunglasses, leaning on the featured book (700 × 696)
@@ -417,6 +418,15 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
         {/* My Workspace: the notebook, Book Playlists, My Folder and the corkboard (Jörg, 29 Oct 2026) */}
         {!selecting && onNotebook ? <Text style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('My Workspace')}</Text> : null}
         {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
+        {/* a yellow pencil beside the notebook, a little tilted, with a soft shadow (Jörg, 29 Oct 2026) */}
+        {!selecting && onNotebook && controls.notebook ? (() => {
+          const n = COLS(winW), colW = ((winW - 40) * TILE[n]) / 100, ph = colW * 0.98, pw = ph * 180 / 1020;
+          return (
+            <View pointerEvents="none" style={{ width: tileWidth(winW), height: colW }}>
+              <Image source={PENCIL_YELLOW} resizeMode="contain" style={{ position: 'absolute', left: colW * 0.18, top: (colW - ph) / 2, width: pw, height: ph, transform: [{ rotate: '-14deg' }] }} />
+            </View>
+          );
+        })() : null}
         {!selecting && onNotebook ? <View style={{ width: '100%', height: 18 }} /> : null}{/* the notebook has its row to itself */}
         {/* My Folder starts its own row: the folder (the size of a book) */}
         {!selecting ? (() => {
