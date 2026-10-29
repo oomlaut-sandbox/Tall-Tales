@@ -404,15 +404,17 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
         {/* (a much bigger space after My Books: Jörg, 25 Oct 2026) */}
         {/* Reading Options under the books, in black glass (Jörg, 26 Oct 2026) */}
         {!selecting && onReadingOptions ? <ReadingOptionsSection {...onReadingOptions} style={{ width: '100%', marginTop: 0 }} /> : null}
-        {!selecting ? <View style={{ width: '100%', height: onReadingOptions ? 40 : 70 }} /> : null}
+        {!selecting ? <View style={{ width: '100%', height: onReadingOptions ? 48 : 70 }} /> : null}
         {/* Work in Progress: the books being made (saved with Save and Exit, not yet published); a tap carries on in
             the book maker. 'Finish and publish to library' moves a book up into My Book Collection (Jörg, 28 Oct 2026) */}
         {!selecting && wip.length ? <Text onLayout={(e) => { wipY.current = e.nativeEvent.layout.y; toWipNow(); }} style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('Work in Progress')}</Text> : null}
         {!selecting ? wip.map((s) => (
           <Tile key={s.id} spotId={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title} onPress={() => onEdit(s)} />
         )) : null}
-        {!selecting && wip.length ? <View style={{ width: '100%', height: 40 }} /> : null}
+        {!selecting && wip.length ? <View style={{ width: '100%', height: 48 }} /> : null}
         {/* My Notebook (and who is reading), just above My Folder: Let's make a book and My Books come first (Jörg, 26 Oct 2026) */}
+        {/* My Workspace: the notebook, Book Playlists, My Folder and the corkboard (Jörg, 29 Oct 2026) */}
+        {!selecting && onNotebook ? <Text style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('My Workspace')}</Text> : null}
         {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
         {/* Book Playlists beside My Notebook (Jörg, 28 Oct 2026) */}
         {!selecting && onPlaylists ? <Tile u={u} option title={t('Book Playlists')} onPress={onPlaylists} cover={PLAYLISTS_FELT} /> : null}{/* Jörg's photo of five stacked felt books (27 Oct 2026) */}
