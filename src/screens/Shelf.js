@@ -417,10 +417,8 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
         {/* My Workspace: the notebook, Book Playlists, My Folder and the corkboard (Jörg, 29 Oct 2026) */}
         {!selecting && onNotebook ? <Text style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('My Workspace')}</Text> : null}
         {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
-        {/* Book Playlists beside My Notebook (Jörg, 28 Oct 2026) */}
-        {!selecting && onPlaylists ? <Tile u={u} option cutout title={t('Book Playlists')} onPress={onPlaylists} cover={PLAYLISTS_STACK} /> : null}{/* Jörg's photo of five stacked felt books (27 Oct 2026) */}
         {!selecting && onNotebook ? <View style={{ width: '100%', height: 18 }} /> : null}{/* the notebook has its row to itself */}
-        {/* My Folder starts its own row: the folder (the size of a book), a pencil beside it, then a mug of hot chocolate */}
+        {/* My Folder starts its own row: the folder (the size of a book), Book Playlists beside it */}
         {!selecting ? (() => {
           const n = COLS(winW), colW = ((winW - 40) * TILE[n]) / 100, gap = ((winW - 40) * ((100 - n * TILE[n]) / (n - 1))) / 100;
           return (
@@ -446,12 +444,8 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
                 </View>
                 <Text style={[styles.tileTitle, styles.tileOption]}>{t('My Folder')}</Text>
               </Pressable>
-              <View pointerEvents="none" style={{ width: tileWidth(winW), height: colW }}>
-                {/* (sideways: both a little further right, clear of the folder) a pencil and a mug of hot chocolate (turned 47° anticlockwise), each with a deep soft shadow to the
-                    bottom right (drawn into the pictures: the pencil 969 tall in 1237, the mug 452 × 439 in 856 × 843) */}
-                {(() => { const k = (colW * 0.46) / 969; return <Image source={PENCIL} resizeMode="stretch" style={{ position: 'absolute', left: colW * (winW > winH * 1.1 ? 0.14 : 0.06) - 134 * k, top: colW * 0.27 - 134 * k, width: 419 * k, height: 1237 * k }} />; })()}
-                {(() => { const k = (colW * 0.4) / 400; return <Image source={MUG} resizeMode="stretch" style={{ position: 'absolute', left: colW * (winW > winH * 1.1 ? 0.68 : 0.6) - (856 * k) / 2, top: colW * 0.48 - (843 * k) / 2, width: 856 * k, height: 843 * k }} />; })()}
-              </View>
+              {/* Book Playlists beside My Folder, in place of the pencil and mug (Jörg, 29 Oct 2026): his stack of cloth books, cut out */}
+              {onPlaylists ? <Tile u={u} option cutout title={t('Book Playlists')} onPress={onPlaylists} cover={PLAYLISTS_STACK} /> : null}
               {/* the corkboard: always at the very bottom, as wide as two books */}
               <View style={{ width: '100%' }} />
               <Corkboard width={2 * colW + gap} toast={toast} />
