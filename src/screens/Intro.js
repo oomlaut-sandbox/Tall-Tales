@@ -9,7 +9,7 @@ import { colors, fonts } from '../theme';
 import { DESK_BG, DeskFelt } from '../look';
 import { useT } from '../i18n';
 import { useReduceMotion } from '../a11y';
-import { FilmBox } from '../components/FilmPlayer';
+import { PagePhone } from '../components/FilmPlayer';
 
 const AGES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
@@ -106,15 +106,13 @@ export default function Intro({ who, onDone, onBack }) {
   if (page === 'kidMeet') body = (
     <>
       <Text style={styles.title}>{t('Meet Coro')}</Text>
-      <Text style={styles.lead}>{t('Let’s have a look at all the fun things you can do here.')}</Text>
-      <FilmBox title={t('Make your own picture book. It’s easy!')} boxStyle={[styles.box, { paddingVertical: 18 }]} titleStyle={styles.boxTitle} />{/* opens downwards, the film in a phone shape (Jörg, 29 Oct 2026) */}
+      <PagePhone />{/* just the title and the phone, upright, solid black, the film on its screen (Jörg, 29 Oct 2026) */}
     </>
   );
   if (page === 'whatIs') body = (
     <>
       <Text style={styles.title}>{t('Meet Coro')}</Text>{/* one video, like the kids' page (Jörg, 28 Oct 2026) */}
-      <Text style={styles.lead}>{t('Watch a short video to see how it all works.')}</Text>
-      <FilmBox title={t(VIDEOS[0])} boxStyle={[styles.box, { paddingVertical: 18 }]} titleStyle={styles.boxTitle} />{/* opens downwards, the film in a phone shape (Jörg, 29 Oct 2026) */}
+      <PagePhone />{/* just the title and the phone, upright, solid black, the film on its screen (Jörg, 29 Oct 2026) */}
     </>
   );
   if (page === 'access') body = (

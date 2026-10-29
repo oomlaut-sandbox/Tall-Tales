@@ -99,3 +99,22 @@ function InlineFilm({ onEnd }) {
   }, [player]);
   return <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls allowsFullscreen={false} allowsPictureInPicture={false} />;
 }
+
+// Meet Coro (the intros): just the title and a phone standing upright under it, solid black, the film on its
+// screen; the phone's own play button starts it (Jörg, 29 Oct 2026)
+export function PagePhone({ room = 250 }) {
+  const insets = useSafeAreaInsets();
+  const { width: winW, height: winH } = useWindowDimensions();
+  const h = Math.max(260, Math.min(winH - insets.top - insets.bottom - room, (winW - 48) * 1920 / 886 + 16));
+  const w = (h - 16) * 886 / 1920 + 16; // a black edge of 8 all round the screen
+  const player = useVideoPlayer(FILM, (p) => { p.loop = false; });
+  useEffect(() => () => { try { player.pause(); } catch (e) {} }, [player]);
+  return (
+    <View style={{ alignSelf: 'center', width: w, height: h, borderRadius: Math.round(w * 0.15), backgroundColor: '#000', padding: 8,
+      shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.5, shadowRadius: 18, elevation: 12 }}>
+      <View style={{ flex: 1, borderRadius: Math.round(w * 0.15) - 8, overflow: 'hidden', backgroundColor: '#000' }}>
+        <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls allowsFullscreen={false} allowsPictureInPicture={false} />
+      </View>
+    </View>
+  );
+}
