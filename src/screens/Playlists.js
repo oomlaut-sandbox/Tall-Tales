@@ -147,7 +147,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
                 <Text style={styles.pillText}>+  {t('New playlist')}</Text>
               </Pressable>
               {/* Done: under New playlist, back to My Library */}
-              <Pressable onPress={() => onDone && onDone()} style={[styles.pill, { backgroundColor: colors.green, alignSelf: 'flex-end' }]} accessibilityRole="button">
+              <Pressable onPress={() => onDone && onDone()} style={[styles.pill, { backgroundColor: colors.green, alignSelf: 'flex-end', marginTop: 36 /* well apart from New playlist (Jörg, 29 Oct 2026) */ }]} accessibilityRole="button">
                 <Text style={styles.pillText}>{t('Done')}</Text>
               </Pressable>
             </>
