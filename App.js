@@ -604,7 +604,7 @@ function Root() {
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
           <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
             {/* Make a Book first: Coro is a book maker first (Jörg, 25 Oct 2026) */}
-            <Option glyph={<PlusIcon />} title={t('My Workspace')} sub={t('Make and share books and ideas')} onPress={() => go('workspace')} />{/* (was Make a Book: Jörg, 29 Oct 2026) */}
+            <Option glyph={<Image source={TITLE_ICONS.make} style={{ width: 26, height: 26, tintColor: colors.white }} />} title={t('My Workspace')} sub={t('Make and share books and ideas')} onPress={() => go('workspace')} />{/* (was Make a Book: Jörg, 29 Oct 2026) */}
             <Option glyph={<HomeIcon size={MENU_ICON + 2} color={colors.white} />} title={t('My Library')} sub={t('Find and read your favorite books')} onPress={() => go('library')} />
             {STORE_ON && controls.store ? <Option glyph={<LibraryIcon size={MENU_ICON} />} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => go('store')} /> : null}
             {/* Reading Options and Music and Sounds live in Settings now (and Reading Options under the books in My Library
