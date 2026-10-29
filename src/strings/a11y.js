@@ -125,4 +125,5 @@ export default {
   "Message Board": { de: "Pinnwand", fr: "Tableau des messages", es: "Tablón de mensajes", ja: "メッセージボード", ar: "لوحة الرسائل" },
   "My Desk": { de: "Mein Schreibtisch", fr: "Mon bureau", es: "Mi escritorio", ja: "わたしの つくえ", ar: "مكتبي" },
   "Make, read and share books": { de: "Bücher machen, lesen und teilen", fr: "Créer, lire et partager des livres", es: "Crear, leer y compartir libros", ja: "本を つくって、よんで、シェアしよう", ar: "اصنع الكتب واقرأها وشاركها" },
+  "Search Help": { de: "Hilfe durchsuchen", fr: "Rechercher dans l’aide", es: "Buscar en la ayuda", ja: "ヘルプを けんさく", ar: "ابحث في المساعدة" },
 };

@@ -316,7 +316,9 @@ function Root() {
   };
   useEffect(() => () => clearTimeout(queueNext.current), []);
   const look = 'classic'; // one look for now (the Looks setting was dropped)
-  const openPublisher = (story) => { setDraft(draftFrom(story)); go('publisher'); };
+  // where the book maker was opened from: it goes back there when done (My Library when the book was opened from there or from reading it; My Workspace otherwise) (Jörg, 29 Oct 2026)
+  const makerFrom = useRef('workspace');
+  const openPublisher = (story) => { makerFrom.current = screen === 'library' || screen === 'reader' ? 'library' : 'workspace'; setDraft(draftFrom(story)); go('publisher'); };
   // a new book: free up to FREE_BOOKS made books; after that it's Coro Family (asked of a grown-up). Only once
   // purchases are switched on: until then everyone can keep making books.
   const [moreGate, setMoreGate] = useState(false);
@@ -468,7 +470,7 @@ function Root() {
         )}
         {screen === 'notebook' && <Notebook u={u} from={nbFrom} openMenu={openMenu} toast={toast} onDone={() => go('workspace')} />}
         {screen === 'publisher' && draft && (
-          <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list, recId, where) => { setUserStories(list); const rs = recId && list.find((x) => x.id === recId); if (rs) { setRecordOnOpen(true); openStory(rs); return; } if (where === 'wip') { setToWip((n) => n + 1); go('workspace'); return; } /* Save and Exit: My Workspace at Work in Progress */ if (where === 'published') { go('library'); return; } /* finished: in My Book Collection */ const last = hist.current[hist.current.length - 1]; go(last && last.screen === 'library' ? 'library' : 'workspace'); /* (left: back where it was opened from) */ }} onIdeas={() => go('ideas')} />
+          <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list, recId, where) => { setUserStories(list); const rs = recId && list.find((x) => x.id === recId); if (rs) { setRecordOnOpen(true); openStory(rs); return; } const back = makerFrom.current; if (where === 'wip' && back === 'workspace') setToWip((n) => n + 1); /* Save and Exit: at the books still being made */ go(back); /* done: back where it was opened from */ }} onIdeas={() => go('ideas')} />
         )}
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} onReadingOptions={readingBox} />}
         {screen === 'music' && <MusicSounds u={u} openMenu={openMenu} prefs={prefs} setPrefs={setPrefs} />}

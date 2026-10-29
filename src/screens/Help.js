@@ -246,7 +246,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
             <LinearGradient pointerEvents="none" start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['rgba(0,0,0,0.08)', 'rgba(0,0,0,0)']} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 16 }} />
             {/* a text box (multiline, one line only) with its line placed exactly in the middle by padding: the
                 one-line iPhone field centres its words its own way and kept putting them low */}
-            <TextInput ref={searchRef} value={q} onChangeText={(v) => setQ(v.replace(/\n/g, ''))} placeholder={t('Search ideas and support')} placeholderTextColor="#666"
+            <TextInput ref={searchRef} value={q} onChangeText={(v) => setQ(v.replace(/\n/g, ''))} placeholder={t('Search Help')} placeholderTextColor="#666"
               style={styles.search} allowFontScaling={false} multiline scrollEnabled={false} submitBehavior="blurAndSubmit" returnKeyType="search" accessibilityLabel={t('Search ideas and support')} />
           </Pressable>
           {/* About lives here now (it left the main menu) */}
