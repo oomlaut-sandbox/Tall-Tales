@@ -423,7 +423,7 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
         
         {ws && !selecting && onNotebook ? <Text style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('My Desk')}</Text> : null}{/* (Jörg, 29 Oct 2026) */}
         {ws && !selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
-        {ws && !selecting && onNotebook ? <View style={{ width: '100%', height: 18 }} /> : null}{/* the notebook has its row to itself */}
+        {ws && !selecting && onNotebook ? <View style={{ width: '100%', height: 0, marginTop: -10 }} /> : null}{/* (Things to share closer under My Notes: Jörg, 29 Oct 2026) */}{/* the notebook has its row to itself */}
         {/* Things to share starts its own row: the folder (the size of a book) */}
         {ws && !selecting ? (() => {
           const n = COLS(winW), colW = ((winW - 40) * TILE[n]) / 100, gap = ((winW - 40) * ((100 - n * TILE[n]) / (n - 1))) / 100;
