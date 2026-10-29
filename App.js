@@ -670,7 +670,10 @@ export default function App() {
     const t = setTimeout(finish, 1800); // never wait longer than this
     return () => clearTimeout(t);
   }, []);
-  if (!loaded || !pictureReady || !who) return (
+  // the opening film plays over the start page for its first seconds, so its pictures load behind the film: no
+  // waiting for them first (that wait was a plain grey screen before the film: Jörg, 29 Oct 2026)
+  const filmFirst = !(Platform.OS === 'web' && typeof window !== 'undefined' && /nosplash|intro/.test(window.location.hash));
+  if (!loaded || (!pictureReady && !filmFirst) || !who) return (
     <View style={{ flex: 1, backgroundColor: colors.desk }}>
       {/* drawn tiny and invisible, only so they're decoded before the start screen shows */}
       {WARM.map((src, k) => <Image key={k} source={src} onLoadEnd={() => { shown.current += 1; check(); }} style={{ position: 'absolute', left: 0, top: 0, width: 4, height: 4, opacity: 0.01 }} />)}
