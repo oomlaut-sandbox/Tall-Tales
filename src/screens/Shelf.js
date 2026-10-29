@@ -267,16 +267,19 @@ function WhoReads({ onPress }) {
   );
 }
 
+// which 'open at My Book Collection / Work in Progress' requests were already carried out: kept outside My Library,
+// so coming back to it later (the home button, the menu) opens at the top, not at the old spot again (Jörg, 28 Oct 2026)
+const scrollAsks = { books: { current: 0 }, wip: { current: 0 } };
 export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
   const t = useT();
   // Read a book (from the start page): open scrolled down so My Books is at the top, just under the band
   const keep = useScrollMemory('library'); // Back returns to this spot
   const scrollRef = keep.ref;
   const booksY = useRef(null);
-  const booksDone = useRef(0);
+  const booksDone = scrollAsks.books;
   const wip = stories.filter((s) => s.mine && !s.published);
   const wipY = useRef(null);
-  const wipDone = useRef(0);
+  const wipDone = scrollAsks.wip;
   const toWipNow = () => {
     if (!toWip || wipDone.current === toWip || wipY.current == null || !scrollRef.current) return;
     wipDone.current = toWip;
