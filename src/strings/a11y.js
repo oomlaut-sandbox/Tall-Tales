@@ -124,4 +124,5 @@ export default {
   "Make and share books and ideas.": { de: "Bücher und Ideen machen und teilen.", fr: "Créer et partager des livres et des idées.", es: "Crear y compartir libros e ideas.", ja: "本や アイデアを つくって シェアしよう。", ar: "اصنع الكتب والأفكار وشاركها." },
   "Message Board": { de: "Pinnwand", fr: "Tableau des messages", es: "Tablón de mensajes", ja: "メッセージボード", ar: "لوحة الرسائل" },
   "My Desk": { de: "Mein Schreibtisch", fr: "Mon bureau", es: "Mi escritorio", ja: "わたしの つくえ", ar: "مكتبي" },
+  "Make, read and share books": { de: "Bücher machen, lesen und teilen", fr: "Créer, lire et partager des livres", es: "Crear, leer y compartir libros", ja: "本を つくって、よんで、シェアしよう", ar: "اصنع الكتب واقرأها وشاركها" },
 };

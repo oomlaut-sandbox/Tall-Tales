@@ -5,12 +5,15 @@ import { deleteFile, keepFile, loadJSON, saveJSON } from './storage';
 export const MAX_PINS = 12;
 let cache = null;
 
+// every board comes with one yellow note already pinned (once: taken down, it stays down) (Jörg, 29 Oct 2026)
+const STARTER = { id: 'starter', kind: 'note', text: 'Make, read and share books', seed: 1, x: 0.7, y: 0.56, rot: 3 };
 export async function loadPins() {
   const b = await loadJSON('corkboard', null);
   cache = b && Array.isArray(b.pins) ? b.pins : [];
+  if (!b || !b.seeded) { cache = [...cache, STARTER]; await save(); }
   return cache;
 }
-async function save() { await saveJSON('corkboard', { pins: cache }); }
+async function save() { await saveJSON('corkboard', { pins: cache, seeded: true }); }
 
 // the Book Playlists sheet, always pinned in the board's lower left corner: no pin's middle may land where the
 // pin would cover any of it (Jörg, 29 Oct 2026)

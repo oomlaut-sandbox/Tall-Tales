@@ -25,12 +25,13 @@ const NOTE_YELLOW = '#e9da92'; // a softer, less saturated yellow
 const HAND = 'SpecialElite_400Regular'; // the typewriter, like My Notes
 
 function Pin({ p, W }) {
+  const t = useT();
   const s = Math.round(W * (p.kind === 'note' ? 0.26 : 0.28));
   const head = <Image source={PIN_HEAD} style={{ position: 'absolute', top: -s * 0.02, left: s / 2 - 4, width: 8, height: 8, zIndex: 2 }} />;
   return p.kind === 'note' ? (
     <View style={[styles.note, { width: s, height: s }]}>
       {head}
-      <Text numberOfLines={5} adjustsFontSizeToFit minimumFontScale={0.5} style={[styles.noteText, { fontSize: s * 0.11, lineHeight: s * 0.155 }]}>{p.text}</Text>
+      <Text numberOfLines={5} adjustsFontSizeToFit minimumFontScale={0.5} style={[styles.noteText, { fontSize: s * 0.11, lineHeight: s * 0.155 }]}>{p.seed ? t(p.text) : p.text}</Text>
     </View>
   ) : (
     <View style={[styles.polaroid, { width: s, height: s * 1.12, padding: s * 0.06, paddingBottom: s * 0.18 }]}>
