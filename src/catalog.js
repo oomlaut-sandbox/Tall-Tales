@@ -105,7 +105,7 @@ export async function loadStoreBook(book) {
   };
 }
 
-export const accessLabel = (b) => (b.access === 'free' ? 'Free' : b.access === 'member' ? 'Members' : `Members or ${b.price_label || '$2.99'}`);
+export const accessLabel = (b) => (b.access === 'free' ? 'Free' : 'Members'); // (membership only: 29 Oct 2026)
 
 // A book's age rating: the youngest age it's for (and the oldest it's aimed at, or null for "and up").
 // Set per book in the Store Manager; books inside the app have their own (story.js: minAge / maxAge).

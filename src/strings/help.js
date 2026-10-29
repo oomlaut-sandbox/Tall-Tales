@@ -252,11 +252,11 @@ export default {
     fr: 'La Librairie propose de nouveaux livres à découvrir. Touchez une couverture pour voir de quoi parle le livre, puis Lire.',
     es: 'En la Librería hay libros nuevos por descubrir. Toca una portada para ver de qué trata y luego Leer ahora.',
     ja: '「本やさん」には、あたらしい本があります。ひょうしをタップするとどんなお話かわかります。そして「よむ」をタップします。', ar: "في «متجر الكتب» كتب جديدة لتكتشفها. اضغط على غلاف لترى عمّ يتحدث الكتاب، ثم «اقرأ الآن»." },
-  'Some books are free. The membership unlocks every book in the Book Store, and each new one as it arrives: $4.99 a month or $39.99 a year, and the first 7 days are free.': {
-    de: 'Manche Bücher sind gratis. Die Mitgliedschaft schaltet alle Bücher im Buchladen frei, und jedes neue, sobald es da ist: 4,99 $ im Monat oder 39,99 $ im Jahr, und die ersten 7 Tage sind gratis.',
-    fr: 'Certains livres sont gratuits. L’abonnement débloque tous les livres de la Librairie, et chaque nouveau dès sa sortie : 4,99 $ par mois ou 39,99 $ par an, et les 7 premiers jours sont gratuits.',
-    es: 'Algunos libros son gratis. La membresía desbloquea todos los libros de la Librería, y cada uno nuevo en cuanto llega: 4,99 $ al mes o 39,99 $ al año, y los primeros 7 días son gratis.',
-    ja: 'むりょうの本もあります。メンバーシップでは「本やさん」のすべての本と、これから出るあたらしい本がよめます。月$4.99または年$39.99で、さいしょの7日間はむりょうです。', ar: "بعض الكتب مجانية. الاشتراك يفتح كل كتب «متجر الكتب»، وكل كتاب جديد عند وصوله: ‎$4.99 شهريًا أو ‎$39.99 سنويًا، وأول 7 أيام مجانية." },
+  'Some books are free. The membership unlocks every book in the Book Store, and each new one as it arrives: $3.99 a month or $29.99 a year, and the first 7 days are free.': {
+    de: 'Manche Bücher sind gratis. Die Mitgliedschaft schaltet alle Bücher im Buchladen frei, und jedes neue, sobald es da ist: 3,99 $ im Monat oder 29,99 $ im Jahr, und die ersten 7 Tage sind gratis.',
+    fr: 'Certains livres sont gratuits. L’abonnement débloque tous les livres de la Librairie, et chaque nouveau dès sa sortie : 3,99 $ par mois ou 29,99 $ par an, et les 7 premiers jours sont gratuits.',
+    es: 'Algunos libros son gratis. La membresía desbloquea todos los libros de la Librería, y cada uno nuevo en cuanto llega: 3,99 $ al mes o 29,99 $ al año, y los primeros 7 días son gratis.',
+    ja: 'むりょうの本もあります。メンバーシップでは「本やさん」のすべての本と、これから出るあたらしい本がよめます。月$3.99または年$29.99で、さいしょの7日間はむりょうです。', ar: "بعض الكتب مجانية. الاشتراك يفتح كل كتب «متجر الكتب»، وكل كتاب جديد عند وصوله: ‎$3.99 شهريًا أو ‎$29.99 سنويًا، وأول 7 أيام مجانية." },
   'Some books can also be bought on their own, to keep, for $2.99. Members can read those too.': {
     de: 'Manche Bücher kannst du auch einzeln für 2,99 $ kaufen und behalten. Mitglieder können sie ebenfalls lesen.',
     fr: 'Certains livres peuvent aussi s’acheter à l’unité, pour toujours, à 2,99 $. Les membres peuvent aussi les lire.',

@@ -80,7 +80,7 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
           <TextInput value={process} onChangeText={setProcess} onBlur={() => process !== (book.process || '') && save({ process: process.trim() || null }, 'Process saved.')}
             multiline placeholder="How the book was made: who wrote and drew it, the tools used, and any use of AI" placeholderTextColor="#888" style={[styles.input, { minHeight: 90 }]} />
           <Text style={styles.label}>Who can read it</Text>
-          <Choice options={[['free', 'Free'], ['member', 'Members'], ['paid', 'Members or $2.99']]} value={book.access || 'member'}
+          <Choice options={[['free', 'Free'], ['member', 'Members']]} /* membership only (Jörg, 29 Oct 2026) */ value={book.access || 'member'}
             onChange={(v) => save(v === 'paid' ? { access: v, price_label: book.price_label || '$2.99' } : { access: v }, v === 'free' ? 'Free for everyone.' : v === 'member' ? 'For members.' : 'For members, or $2.99 on its own.')} />
           {/* the age rating: parents can show only the books rated for their child's age (Settings) */}
           <Text style={styles.label}>Age rating: from age</Text>

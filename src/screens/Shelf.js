@@ -533,10 +533,11 @@ export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
   // books inside the app that name a store shelf (storeShelf) appear there even before the online catalogue lists them
   const extra = cat ? STORIES.filter((st) => st.storeShelf && SHOWN_BOOKS.includes(st.id) && !cat.books.some((b) => b.id === st.id))
     .map((st, i) => ({ id: st.id, title: st.title, author: st.author || null, blurb: st.blurb || null, shelf_id: st.storeShelf, sort: i, access: 'free', bundled: true, featured: false })) : [];
-  const shown = cat ? { ...cat, books: [...cat.books.filter((b) => (SHOWN_BOOKS.includes(b.id) || !b.bundled) && !STORIES.some((st) => st.id === b.id && st.libraryOnly)), ...extra] } : null; // plus every book published from the Store Manager
+  // membership only, no single books (Jörg, 29 Oct 2026): a book once marked 'paid' is a members' book
+  const shown = cat ? { ...cat, books: [...cat.books.map((b) => (b.access === 'paid' ? { ...b, access: 'member' } : b)).filter((b) => (SHOWN_BOOKS.includes(b.id) || !b.bundled) && !STORIES.some((st) => st.id === b.id && st.libraryOnly)), ...extra] } : null; // plus every book published from the Store Manager
   // (web preview only, #pay-demo: two books shown as a members' book and a single book to buy)
   if (shown && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash === '#pay-demo') {
-    shown.books = shown.books.map((b) => (b.id === 'rough-lives' ? { ...b, access: 'member' } : b.id === 'two-snakes' ? { ...b, access: 'paid', price_label: '$2.99' } : b));
+    shown.books = shown.books.map((b) => (b.id === 'rough-lives' ? { ...b, access: 'member' } : b));
   }
   // the parental controls can hide books rated for older children
   if (shown && controls.childAge != null) shown.books = shown.books.filter((b) => ageAllowed(ageOf(b, bundledStory(b.id)), controls.childAge));

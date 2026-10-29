@@ -143,8 +143,7 @@ const ALL_HELP = [
     'The Book Store has new books to discover. Tap a cover to see what it’s about, then Read now.',
   ] },
   { section: 'Books', title: 'Membership and buying books', store: true, text: [
-    'Some books are free. The membership unlocks every book in the Book Store, and each new one as it arrives: $4.99 a month or $39.99 a year, and the first 7 days are free.',
-    'Some books can also be bought on their own, to keep, for $2.99. Members can read those too.',
+    'Some books are free. The membership unlocks every book in the Book Store, and each new one as it arrives: $3.99 a month or $29.99 a year, and the first 7 days are free.',
     'Buying is for grown-ups: the app asks a grown-up question first, and payment goes through your Apple ID. Cancel the membership any time in your App Store account settings. On a new phone, use Restore Purchases on the membership screen.',
   ] },
   { section: 'Grown-ups', title: 'Settings and parental controls', text: [
