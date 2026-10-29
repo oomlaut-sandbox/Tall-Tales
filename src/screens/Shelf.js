@@ -393,7 +393,6 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
             onLongPress={!selecting && s.mine ? () => onEdit(s) : undefined} />
         ))}
         {/* Playlists, at the end of My Books: three little felt books stacked */}
-        {!selecting && onPlaylists ? <Tile u={u} option title={t('Book Playlists')} onPress={onPlaylists} cover={PLAYLISTS_FELT} /> : null}{/* Jörg's photo of five stacked felt books (27 Oct 2026) */}
         {!selecting && removedCount ? (
           <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
             <Text style={styles.restore}>{t('Show removed books ({n})', { n: removedCount })}</Text>
@@ -412,6 +411,8 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
         {!selecting && wip.length ? <View style={{ width: '100%', height: 40 }} /> : null}
         {/* My Notebook (and who is reading), just above My Folder: Let's make a book and My Books come first (Jörg, 26 Oct 2026) */}
         {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
+        {/* Book Playlists beside My Notebook (Jörg, 28 Oct 2026) */}
+        {!selecting && onPlaylists ? <Tile u={u} option title={t('Book Playlists')} onPress={onPlaylists} cover={PLAYLISTS_FELT} /> : null}{/* Jörg's photo of five stacked felt books (27 Oct 2026) */}
         {!selecting && onNotebook ? <View style={{ width: '100%', height: 18 }} /> : null}{/* the notebook has its row to itself */}
         {/* My Folder starts its own row: the folder (the size of a book), a pencil beside it, then a mug of hot chocolate */}
         {!selecting ? (() => {
