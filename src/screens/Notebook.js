@@ -899,11 +899,11 @@ function scatter(items, side, region, seed, maxD) {
 // Top page: the title and how much has been read, with the milestones and the streaks scattered around it.
 // Bottom page: the firsts and a patch for every book finished, scattered too.
 // the drawing's zoom in percent (follows the pinch without redrawing the page)
-function ZoomLabel({ v }) {
+function ZoomLabel({ v, onPress }) { // tap it: back to the whole page at 100% (Jörg, 29 Oct 2026)
   const t = useT();
   const [z, setZ] = useState(1);
   useEffect(() => { const id = v.addListener(({ value }) => setZ(value)); return () => v.removeListener(id); }, [v]);
-  return <View style={{ position: 'absolute', right: 2, bottom: -24, flexDirection: 'row', alignItems: 'center', gap: 5 }}>{/* a tiny magnifying glass before it (Jörg, 28 Oct 2026) */}<View style={{ width: 11, height: 11 }}><View style={{ position: 'absolute', left: 0, top: 0, width: 8, height: 8, borderRadius: 4, borderWidth: 1.4, borderColor: '#bdbdbd' }} /><View style={{ position: 'absolute', left: 7, top: 6, width: 1.6, height: 5, borderRadius: 1, backgroundColor: '#bdbdbd', transform: [{ rotate: '-45deg' }] }} /></View><Text style={{ color: '#bdbdbd', fontFamily: fonts.uiSemiBold, fontSize: 12 }} accessibilityLabel={`${t('Zoom')} ${Math.round(z * 100)}%`}>{t('Zoom')} {Math.round(z * 100)}%</Text></View>; // 'Zoom 100%' (Jörg, 27 Oct 2026)
+  return <Pressable onPress={onPress} hitSlop={12} accessibilityRole="button" style={{ position: 'absolute', right: 2, bottom: -24, flexDirection: 'row', alignItems: 'center', gap: 5 }}>{/* a tiny magnifying glass before it (Jörg, 28 Oct 2026) */}<View style={{ width: 11, height: 11 }}><View style={{ position: 'absolute', left: 0, top: 0, width: 8, height: 8, borderRadius: 4, borderWidth: 1.4, borderColor: '#bdbdbd' }} /><View style={{ position: 'absolute', left: 7, top: 6, width: 1.6, height: 5, borderRadius: 1, backgroundColor: '#bdbdbd', transform: [{ rotate: '-45deg' }] }} /></View><Text style={{ color: '#bdbdbd', fontFamily: fonts.uiSemiBold, fontSize: 12 }} accessibilityLabel={`${t('Zoom')} ${Math.round(z * 100)}%`}>{t('Zoom')} {Math.round(z * 100)}%</Text></Pressable>; // 'Zoom 100%' (Jörg, 27 Oct 2026)
 }
 
 // what the notebook is for: a blank page, then a few words on the next one
@@ -1346,7 +1346,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
     {drawHint ? <Toast message={t('Nothing beats drawing on real paper. Phones especially are tough to draw on. So have fun here, but remember you can always take a picture of your work on paper and import it.')} ms={0} center
       check={t('Don’t show this message again')} button={t('Got it!')} onDismiss={(ticked) => { setDrawHint(false); if (ticked) saveJSON('drawHint', { off: true }); }} /> : null}
     {/* the zoom now, in percent: a small label under the page, on the right (Jörg, 27 Oct 2026) */}
-    <ZoomLabel v={zS} />
+    <ZoomLabel v={zS} onPress={fit} />
     {/* a photo onto this layer: a small picture, exactly between Layers and Zoom (Jörg, 29 Oct 2026) */}
     <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: -29, height: 22, alignItems: 'center', justifyContent: 'center' }}>
       <Pressable onPress={importPhoto} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Add a photo to layer {n}', { n: layer })}>
