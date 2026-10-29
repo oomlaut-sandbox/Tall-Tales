@@ -1,6 +1,7 @@
 // Upload or record music (Music and Sounds, behind the grown-ups' question): a grown-up uploads an audio file from
 // the phone, or records one right here (a parent or grandparent singing a lullaby), gives it a name, and it becomes
 // a new piece in the Music list to choose like any other.
+import LineInput from './LineInput';
 import React, { useEffect, useRef, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { AudioModule, RecordingPresets, createAudioPlayer, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
@@ -107,7 +108,7 @@ export default function MyMusicSheet({ visible, onClose, kind = 'music' }) {
           {step === 'name' ? (
             <View style={{ marginTop: 12 }}>
               <Text style={styles.label}>{t('Name')}</Text>
-              <TextInput allowFontScaling={false} value={name} onChangeText={setName} placeholder={isSound ? t('Rain on our window') : t('Grandma’s lullaby')} placeholderTextColor="#777" style={styles.input} autoFocus maxLength={40} returnKeyType="done" onSubmitEditing={save} />
+              <LineInput allowFontScaling={false} value={name} onChangeText={setName} placeholder={isSound ? t('Rain on our window') : t('Grandma’s lullaby')} placeholderTextColor="#777" style={styles.input} autoFocus maxLength={40} returnKeyType="done" onSubmitEditing={save} />
               <View style={{ marginTop: 16 }}><Pill label={isSound ? t('Add to Sounds') : t('Add to Music')} onPress={save} disabled={!name.trim()} /></View>
             </View>
           ) : null}

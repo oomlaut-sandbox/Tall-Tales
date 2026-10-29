@@ -1,6 +1,7 @@
 // "Make a book": add a picture and words page by page (Jörg's Publisher design).
 // Everything saves automatically. "Pages" opens a list to reorder or delete pages,
 // or to delete the whole story.
+import LineInput from '../components/LineInput';
 import { rememberPage, startPage, useBackStep } from '../nav';
 import { Asset } from 'expo-asset';
 import PhotoEditor from '../components/PhotoEditor';
@@ -68,7 +69,7 @@ function AboutPage({ tr, insets, onNext, onSkip }) {
             </Pressable>
           ))}
         </View>
-        <TextInput ref={inputRef} value={words} onChangeText={(v) => { setWords(v); if (v.trim() && !pick) setPick('else'); }} placeholder={tr('Or tell us: a book about…')} placeholderTextColor="#8a8a8a"
+        <LineInput ref={inputRef} value={words} onChangeText={(v) => { setWords(v); if (v.trim() && !pick) setPick('else'); }} placeholder={tr('Or tell us: a book about…')} placeholderTextColor="#8a8a8a"
           style={styles.aboutInput} returnKeyType="next" onSubmitEditing={() => ready && go()} accessibilityLabel={tr('What’s your book about?')} />
         <Pressable onPress={go} disabled={!ready} accessibilityRole="button" style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 34 }, !ready && { opacity: 0.4 }]}>{/* well apart from the choices */}
           <ChoiceLabel icon="cover" text={tr('Next, let’s make a cover')} style={styles.choiceBtnText} />
@@ -878,7 +879,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, styles.choiceBack]}>
           <View style={styles.choice}>
             <Text style={styles.choiceTitle}>{tr('Give your book a title')}</Text>
-            <TextInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder={tr('Type the title')} placeholderTextColor="#8a8a8a" autoFocus style={styles.field} accessibilityLabel={tr('Book title')}
+            <LineInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder={tr('Type the title')} placeholderTextColor="#8a8a8a" autoFocus style={styles.field} accessibilityLabel={tr('Book title')}
               returnKeyType="done" onSubmitEditing={() => finish(true)} />
             <Pressable onPress={() => finish(true)} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 10 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={tr('Finish and publish to library')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => setTitleBox(false)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Keep working')} style={styles.choiceBtnText} /></Pressable>
@@ -1202,7 +1203,7 @@ const styles = StyleSheet.create({
   aboutChip: { height: 64, borderRadius: 18, paddingHorizontal: 16, backgroundColor: 'rgba(0,0,0,0.5)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', flexDirection: 'row', alignItems: 'center', gap: 12 },
   aboutChipOn: { backgroundColor: colors.green, borderColor: colors.green },
   aboutChipText: { flexShrink: 1, color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 16 },
-  aboutInput: { backgroundColor: '#161616', height: 52, borderRadius: 14, paddingHorizontal: 16, color: colors.white, fontFamily: fonts.ui, fontSize: 17 },
+  aboutInput: { backgroundColor: '#161616', height: 52, outlineWidth: 0, borderRadius: 14, paddingHorizontal: 16, color: colors.white, fontFamily: fonts.ui, fontSize: 17 },
   aboutSkip: { color: '#bdbdbd', fontFamily: fonts.ui, fontSize: 15, paddingVertical: 6 },
   editor: { alignItems: 'center' },
   editorHead: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 30, paddingBottom: 12 },

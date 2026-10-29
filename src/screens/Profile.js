@@ -1,5 +1,6 @@
 // The parent's profile: sign in (Apple, or a code by email), your name, sign out, delete account.
 // Reached from the menu behind the parent gate.
+import LineInput from '../components/LineInput';
 import { TitleIcon } from '../titleIcons';
 import { useScrollMemory } from '../nav';
 import React, { useEffect, useState } from 'react';
@@ -66,7 +67,7 @@ export default function Profile({ u, openMenu, toast }) {
         <Text style={styles.label}>{t('Signed in as')}</Text>
         <Text style={styles.value}>{user.email || t('Your Apple ID (email hidden)')}</Text>
         <Text style={[styles.label, { marginTop: 18 }]}>{t('Your name')}</Text>
-        <TextInput allowFontScaling={false} value={name} onChangeText={setName} placeholder={t('Your name')} placeholderTextColor="#777" style={styles.input}
+        <LineInput allowFontScaling={false} value={name} onChangeText={setName} placeholder={t('Your name')} placeholderTextColor="#777" style={styles.input}
           autoCapitalize="words" returnKeyType="done"
           onEndEditing={() => name !== (user.user_metadata?.name || '') && run(async () => { await updateProfile({ name: name.trim() }); toast && toast(t('Saved.')); })} />
         <Text style={styles.small}>{t('Coming next: your stories and recordings backed up, and on all your family’s devices.')}</Text>
@@ -107,7 +108,7 @@ export default function Profile({ u, openMenu, toast }) {
     body = (
       <>
         <Text style={styles.p}>{t('We’ll email you a 6-digit code.')}</Text>
-        <TextInput allowFontScaling={false} value={email} onChangeText={setEmail} placeholder="you@example.com" placeholderTextColor="#777" style={styles.input}
+        <LineInput allowFontScaling={false} value={email} onChangeText={setEmail} placeholder="you@example.com" placeholderTextColor="#777" style={styles.input}
           keyboardType="email-address" autoCapitalize="none" autoCorrect={false} textContentType="emailAddress" autoComplete="email" />
         <Pressable disabled={busy || !/.+@.+\..+/.test(email)} onPress={() => run(async () => { await sendEmailCode(email); setStep('code'); })}
           style={[styles.btn, (busy || !/.+@.+\..+/.test(email)) && styles.off]} accessibilityRole="button">
@@ -120,7 +121,7 @@ export default function Profile({ u, openMenu, toast }) {
     body = (
       <>
         <Text style={styles.p}>{t('Enter the code we sent to {email}.', { email: email.trim() })}</Text>
-        <TextInput allowFontScaling={false} value={code} onChangeText={(v) => setCode(v.replace(/\D/g, '').slice(0, 6))} placeholder="123456" placeholderTextColor="#777"
+        <LineInput allowFontScaling={false} value={code} onChangeText={(v) => setCode(v.replace(/\D/g, '').slice(0, 6))} placeholder="123456" placeholderTextColor="#777"
           style={[styles.input, styles.codeInput]} keyboardType="number-pad" textContentType="oneTimeCode" autoComplete="one-time-code" maxLength={6} />
         <Pressable disabled={busy || code.length !== 6} onPress={() => run(() => verifyEmailCode(email, code))}
           style={[styles.btn, (busy || code.length !== 6) && styles.off]} accessibilityRole="button">

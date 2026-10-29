@@ -2,6 +2,7 @@
 // shows it at #intro). Jörg, 26 Oct 2026: words only, on the dark felt, in light grey boxes (no mascot, no
 // screen grabs). The notebook asks "Are you a kid or a grown-up?"; each then gets its own short journey here,
 // and ends on the start page (Make a book, Read a book). (No Skip: Jörg, 27 Oct 2026.)
+import LineInput from '../components/LineInput';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -131,7 +132,7 @@ export default function Intro({ who, onDone, onBack }) {
       <Text style={styles.lead}>{t('This changes what they can see and do with Coro. Let’s start by creating a profile.')}</Text>
       <View style={[styles.box, { gap: 14 }]}>
         <Text style={styles.boxTitle}>{t('Your child’s name')}</Text>
-        <TextInput value={name} onChangeText={setName} placeholder={t('Name')} placeholderTextColor="#8a8a8a" maxLength={20} autoCapitalize="words" autoCorrect={false}
+        <LineInput value={name} onChangeText={setName} placeholder={t('Name')} placeholderTextColor="#8a8a8a" maxLength={20} autoCapitalize="words" autoCorrect={false}
           allowFontScaling={false} style={styles.input} accessibilityLabel={t('Name')} />
         <Text style={[styles.boxTitle, { marginTop: 4 }]}>{t('Age')}</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>

@@ -1,6 +1,7 @@
 // Playlists (main menu): line books up to be read one after another, in order or shuffled. Play reads
 // them all by themselves (Auto Play), one book after the next. Each child has their own playlists;
 // "Bedtime" is there from the start.
+import LineInput from '../components/LineInput';
 import { TitleIcon } from '../titleIcons';
 import { useScrollMemory } from '../nav';
 import React, { useEffect, useRef, useState } from 'react';
@@ -163,7 +164,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
               <ScrollView contentContainerStyle={{ padding: 20, gap: 14 }} keyboardShouldPersistTaps="handled">
                 <Text style={styles.sheetTitle}>{t('Edit playlist')}</Text>
             <>
-              <TextInput allowFontScaling={false} value={pl.name} onChangeText={(name) => set(pl.id, { name })} style={styles.input} maxLength={30} accessibilityLabel={t('Playlist name')} placeholder={t('Playlist name')} placeholderTextColor="#888" />
+              <LineInput allowFontScaling={false} value={pl.name} onChangeText={(name) => set(pl.id, { name })} style={styles.input} maxLength={30} accessibilityLabel={t('Playlist name')} placeholder={t('Playlist name')} placeholderTextColor="#888" />
               {adding ? (
                 <>
                   <Text style={styles.p}>{t('Tap books to add them. Tap again to take them out.')}</Text>

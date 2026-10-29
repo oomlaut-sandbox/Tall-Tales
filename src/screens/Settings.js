@@ -3,6 +3,7 @@
 //   Parental controls — shape the app down to exactly the experience a parent wants: what shows (Book Store,
 //   My Notes, Make a Book, Help), whether the child may change playback (or it always plays one way),
 //   recording, sharing and printing, and changing the language. "Lock everything" leaves only My Library.
+import LineInput from '../components/LineInput';
 import { TitleIcon } from '../titleIcons';
 import { useScrollMemory } from '../nav';
 import React, { useEffect, useState } from 'react';
@@ -257,7 +258,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
                 </>
               ) : (
                 <>
-                  <TextInput value={roomName} onChangeText={setRoomName} placeholder={t('Class name, like Room 4')} placeholderTextColor="#8a8a8a" maxLength={30}
+                  <LineInput value={roomName} onChangeText={setRoomName} placeholder={t('Class name, like Room 4')} placeholderTextColor="#8a8a8a" maxLength={30}
                     allowFontScaling={false} style={styles.input} accessibilityLabel={t('Class name, like Room 4')} />
                   <Pressable onPress={() => { setClassroom(roomName); setRoomName(''); }} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button">
                     <Text style={styles.pillText}>{t('Set up a classroom')}</Text>

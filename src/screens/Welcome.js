@@ -4,6 +4,7 @@
 //         My Library.
 //   grown-ups: calm, short screens (text, with a small speaker to have Fatima read them), a playful grown-up check,
 //         then they set up a profile for each child (and why), then hand the phone over: the kid path, by name.
+import LineInput from '../components/LineInput';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions, Platform, KeyboardAvoidingView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -583,7 +584,7 @@ function P5Check({ t, lang, passed, onPass }) {
         <>
           <Text style={{ color: '#fff', fontFamily: F.bold, fontSize: 19, textAlign: 'center' }}>{t('What is {a} times {b}?', { a: words[q.a], b: words[q.b] })}</Text>
           <View style={{ flexDirection: 'row', gap: 10, marginTop: 16 }}>
-            <TextInput value={ans} onChangeText={(v) => { setAns(v.replace(/[^0-9]/g, '')); setWrong(false); }} keyboardType="number-pad" maxLength={3} onSubmitEditing={check}
+            <LineInput value={ans} onChangeText={(v) => { setAns(v.replace(/[^0-9]/g, '')); setWrong(false); }} keyboardType="number-pad" maxLength={3} onSubmitEditing={check}
               style={{ width: 110, height: 48, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.12)', color: '#fff', fontSize: 22, textAlign: 'center', fontFamily: F.reg, outlineWidth: 0 }} />
             <Pill label={t('Check')} onPress={check} disabled={!ans} />
           </View>
@@ -612,7 +613,7 @@ function ProfileForm({ t, controls, setControls, kids, onSaved }) {
     <View style={{ marginTop: 6 }}>
       {kids.map((k) => <Text key={k} style={{ color: colors.green, fontFamily: F.reg, fontSize: 15, marginTop: 6 }}>✓ {t('{name}’s shelf is ready.', { name: k })}</Text>)}
       {label(t('First name or nickname'))}
-      <TextInput value={name} onChangeText={setName} maxLength={16} placeholder="" style={{ height: 48, borderRadius: 12, backgroundColor: 'rgba(0,0,0,0.06)', color: INK, fontSize: 18, paddingHorizontal: 14, fontFamily: F.reg, outlineWidth: 0 }} />
+      <LineInput value={name} onChangeText={setName} maxLength={16} placeholder="" style={{ height: 48, borderRadius: 12, backgroundColor: 'rgba(0,0,0,0.06)', color: INK, fontSize: 18, paddingHorizontal: 14, fontFamily: F.reg, outlineWidth: 0 }} />
       {label(t('Age'))}
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
         {[2, 3, 4, 5, 6, 7, 8, 9, 10].map((a) => (

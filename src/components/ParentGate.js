@@ -1,4 +1,5 @@
 // A simple grown-up check before anything leaves the app (Apple's Kids category requires one).
+import LineInput from './LineInput';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Image, Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
@@ -42,7 +43,7 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
   // the two buttons on one line), centred in the space above the keyboard and no wider than it needs to be
   const flat = winW > winH;
   const input = (
-    <TextInput
+    <LineInput
       value={answer}
       onChangeText={(t) => { setAnswer(t.replace(/\D/g, '')); setWrong(false); }}
       keyboardType="number-pad"

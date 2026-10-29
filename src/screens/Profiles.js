@@ -3,6 +3,7 @@
 // The books, the membership, parents' recordings, the language and the music are the family's.
 // Kids can switch between profiles by tapping (unless a grown-up has turned that off); adding, changing and
 // removing a profile is behind the grown-up question.
+import LineInput from '../components/LineInput';
 import { TITLE_ICONS, TitleIcon } from '../titleIcons';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -345,7 +346,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 44, paddingVertical: 10, paddingLeft: 10 }}>{/* plenty of room all round the character (it's drawn wider than its box) */}
                 {/* the chosen character; with a photo, tap the circle to choose another photo */}
                 <Pressable onPress={form.color === 'photo' ? pickPhoto : undefined} disabled={form.color !== 'photo'} accessibilityRole="button" accessibilityLabel={t('Use a photo')}><ProfileTile p={{ name: form.name || '?', color: form.color, photo: form.photo }} size={60} /></Pressable>
-                <TextInput allowFontScaling={false} value={form.name} onChangeText={(name) => setForm({ ...form, name })} placeholder={t('Name')} placeholderTextColor="#8a8a8a"
+                <LineInput allowFontScaling={false} value={form.name} onChangeText={(name) => setForm({ ...form, name })} placeholder={t('Name')} placeholderTextColor="#8a8a8a"
                   style={styles.input} maxLength={20} autoCapitalize="words" autoCorrect={false} returnKeyType="done" accessibilityLabel={t('Name')} />
               </View>
               <Text style={[styles.section, { marginTop: 10 }]}>{t('Character')}</Text>
@@ -424,7 +425,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
           <View style={styles.sureBack}>
             <View style={[styles.sureBox, { gap: 16 }]}>
               <Text style={[styles.sureText, { fontFamily: fonts.uiBold }]}>{classForm.id ? t('Class name') : t('Add a class')}</Text>
-              <TextInput allowFontScaling={false} value={classForm.name} onChangeText={(name) => setClassForm({ ...classForm, name })} placeholder={t('Class name, like Room 4')} placeholderTextColor="#8a8a8a"
+              <LineInput allowFontScaling={false} value={classForm.name} onChangeText={(name) => setClassForm({ ...classForm, name })} placeholder={t('Class name, like Room 4')} placeholderTextColor="#8a8a8a"
                 style={[styles.input, { flex: 0 }]} maxLength={30} autoFocus accessibilityLabel={t('Class name')} />
               <View style={{ flexDirection: 'row', gap: 10, marginTop: 6 }}>
                 <Pressable onPress={() => { if (classForm.id) renameClass(classForm.id, classForm.name); else setOpenCls(addClass(classForm.name)); setClassForm(null); }} style={[styles.pill, styles.pillFit, { backgroundColor: colors.green }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Save')}</Text></Pressable>
