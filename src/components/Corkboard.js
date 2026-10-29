@@ -52,7 +52,7 @@ export default function Corkboard({ width, toast, onPlaylists }) {
     loadPins().then(setPins);
     return onScopeChange(() => loadPins().then(setPins)); // another child's board
   }, []);
-  const H = Math.round(width * 0.56);
+  const H = Math.round(width * 1.1); // much taller than wide (Jörg, 29 Oct 2026)
 
   const getPhoto = async (source) => {
     try {
