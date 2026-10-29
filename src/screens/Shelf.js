@@ -418,7 +418,7 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
         {!selecting && onNotebook ? <Text style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('My Workspace')}</Text> : null}
         {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
         {!selecting && onNotebook ? <View style={{ width: '100%', height: 18 }} /> : null}{/* the notebook has its row to itself */}
-        {/* My Folder starts its own row: the folder (the size of a book), Book Playlists beside it */}
+        {/* My Folder starts its own row: the folder (the size of a book) */}
         {!selecting ? (() => {
           const n = COLS(winW), colW = ((winW - 40) * TILE[n]) / 100, gap = ((winW - 40) * ((100 - n * TILE[n]) / (n - 1))) / 100;
           return (
@@ -444,11 +444,12 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
                 </View>
                 <Text style={[styles.tileTitle, styles.tileOption]}>{t('My Folder')}</Text>
               </Pressable>
-              {/* Book Playlists beside My Folder, in place of the pencil and mug (Jörg, 29 Oct 2026): his stack of cloth books, cut out */}
-              {onPlaylists ? <Tile u={u} option cutout title={t('Book Playlists')} onPress={onPlaylists} cover={PLAYLISTS_STACK} /> : null}
               {/* the corkboard: always at the very bottom, as wide as two books */}
               <View style={{ width: '100%' }} />
               <Corkboard width={2 * colW + gap} toast={toast} />
+              {/* Book Playlists under the corkboard, the felt books on light grey again (Jörg, 29 Oct 2026) */}
+              {onPlaylists ? <View style={{ width: '100%', height: 30 }} /> : null}
+              {onPlaylists ? <Tile u={u} option title={t('Book Playlists')} onPress={onPlaylists} cover={PLAYLISTS_FELT} /> : null}
             </>
           );
         })() : null}
