@@ -452,7 +452,7 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
               {/* a yellow pencil beside the folder, a little tilted, with a soft shadow (Jörg, 29 Oct 2026) */}
               {(() => { const ph = colW * 0.98, pw = ph * 180 / 1020; return (
                 <View pointerEvents="none" style={{ width: tileWidth(winW), height: colW }}>
-                  <Image source={PENCIL_YELLOW} resizeMode="contain" style={{ position: 'absolute', left: colW * 0.18, top: (colW - ph) / 2, width: pw, height: ph, transform: [{ rotate: '-14deg' }] }} />
+                  <Image source={PENCIL_YELLOW} resizeMode="contain" style={{ position: 'absolute', left: colW * 0.18, top: (colW - ph) / 2, width: pw, height: ph }} />{/* straight, the point up, its shadow to the right (Jörg, 29 Oct 2026) */
                 </View>
               ); })()}
               {/* the corkboard: always at the very bottom, as wide as two books */}
