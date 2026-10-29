@@ -410,7 +410,7 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
         ) : null}
         {/* (a much bigger space after My Books: Jörg, 25 Oct 2026) */}
         {/* Reading Options under the books, in black glass (Jörg, 26 Oct 2026) */}
-        {!selecting && !ws && onReadingOptions ? <ReadingOptionsSection {...onReadingOptions} style={{ width: '100%', marginTop: 26 }} />{/* a little apart from the books (Jörg, 29 Oct 2026) */} : null}
+        {!selecting && !ws && onReadingOptions ? <ReadingOptionsSection {...onReadingOptions} style={{ width: '100%', marginTop: 26 }} /* a little apart from the books (Jörg, 29 Oct 2026) */ /> : null}
         {!selecting && !ws ? <View style={{ width: '100%', height: onReadingOptions ? 48 : 70 }} /> : null}
         {/* Work in Progress: the books being made (saved with Save and Exit, not yet published); a tap carries on in
             the book maker. 'Finish and publish to library' moves a book up into My Book Collection (Jörg, 28 Oct 2026) */}
