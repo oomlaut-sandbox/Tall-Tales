@@ -6,14 +6,20 @@ import { Animated, Easing, Modal, Pressable, StyleSheet, Text, View, useWindowDi
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { LineIcon } from './Chrome';
-import { useT } from '../i18n';
+import { useLang, useT } from '../i18n';
 
-const FILM = require('../../assets/videos/coro-intro.mp4');
+// one film per language: Fatima's voice in each (29 Oct 2026); the pictures are the same English screens
+const FILMS = {
+  en: require('../../assets/videos/coro-intro.mp4'), de: require('../../assets/videos/coro-intro-de.mp4'), fr: require('../../assets/videos/coro-intro-fr.mp4'),
+  es: require('../../assets/videos/coro-intro-es.mp4'), ja: require('../../assets/videos/coro-intro-ja.mp4'), ar: require('../../assets/videos/coro-intro-ar.mp4'),
+};
+const useFilm = () => { const lang = useLang(); return FILMS[lang] || FILMS.en; };
 
 function Film({ onClose }) {
   const insets = useSafeAreaInsets();
   const t = useT();
-  const player = useVideoPlayer(FILM, (p) => { p.loop = false; p.play(); });
+  const film = useFilm();
+  const player = useVideoPlayer(film, (p) => { p.loop = false; p.play(); });
   useEffect(() => {
     let sub;
     try { sub = player.addListener('playToEnd', () => setTimeout(onClose, 600)); } catch (e) {}
@@ -91,7 +97,8 @@ function PhoneFilm({ onClose }) {
   );
 }
 function InlineFilm({ onEnd }) {
-  const player = useVideoPlayer(FILM, (p) => { p.loop = false; p.play(); });
+  const film = useFilm();
+  const player = useVideoPlayer(film, (p) => { p.loop = false; p.play(); });
   useEffect(() => {
     let sub;
     try { sub = player.addListener('playToEnd', () => setTimeout(() => onEnd && onEnd(), 700)); } catch (e) {}
@@ -107,7 +114,8 @@ export function PagePhone({ room = 250 }) {
   const { width: winW, height: winH } = useWindowDimensions();
   const h = Math.max(260, Math.min(winH - insets.top - insets.bottom - room, (winW - 48) * 1920 / 886 + 16));
   const w = (h - 16) * 886 / 1920 + 16; // a black edge of 8 all round the screen
-  const player = useVideoPlayer(FILM, (p) => { p.loop = false; });
+  const film = useFilm();
+  const player = useVideoPlayer(film, (p) => { p.loop = false; });
   // it plays by itself once the page has slid in (Jörg, 29 Oct 2026); leaving the page stops it
   useEffect(() => {
     const tm = setTimeout(() => { try { player.play(); } catch (e) {} }, 600);
