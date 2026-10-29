@@ -13,7 +13,7 @@ import ParentGate from './ParentGate';
 import { CameraIcon, ChoiceLabel } from './Chrome';
 
 // the icons before the words, the same line icons as the app's other pop-ups (Jörg, 28 Oct 2026)
-const PIN_ICONS = { note: require('../../assets/heading-icons/my-notebook.png'), photo: require('../../assets/heading-icons/family-and-memories.png') };
+const PIN_ICONS = { note: require('../../assets/heading-icons/sticky-note.png') /* a note with its corner curling up (Jörg, 29 Oct 2026) */, photo: require('../../assets/heading-icons/family-and-memories.png') };
 const PinIcon = ({ src }) => (src ? <Image source={src} style={{ width: 22, height: 22, tintColor: colors.white }} resizeMode="contain" accessibilityIgnoresInvertColors /> : <View style={{ width: 22, alignItems: 'center' }}><CameraIcon size={19} color={colors.white} weight={1.6} /></View>);
 import { loadPins, pinNote, pinPhoto, unpin } from '../corkboard';
 import { onScopeChange } from '../scope';
