@@ -62,6 +62,7 @@ export function ProfileTile({ p, size, active, grow = 1.3 }) {
   );
 }
 
+const WORKSPACE_BLUE = '#385c7d'; // the blue of the blue cloth book (Let's make a book)
 export default function Profiles({ u, openMenu, setControls, onPicked, onBack }) {
   // picking who reads: the selection box glides to the child, then a quick fade to My Library
   const cells = useRef({}); // each child's box, in the grid
@@ -148,10 +149,10 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
   };
 
   // tapping the child already reading: straight back to My Library (the same quick fade)
-  const backToLibrary = () => {
+  const backToLibrary = (to) => {
     if (picking.current || !onBack) return;
     picking.current = true;
-    Animated.timing(pageFade, { toValue: 0, duration: 220, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => { picking.current = false; onBack(); });
+    Animated.timing(pageFade, { toValue: 0, duration: 220, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => { picking.current = false; onBack(to); });
   };
   const pick = (id, glide = true) => {
     if (picking.current) return;
@@ -311,11 +312,6 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
                 <Text style={styles.pillText}>{editing ? t('Done editing') : folders ? t('Edit classes') : t('Edit profiles')}</Text>
               </Pressable>
             ) : <View />}
-            {onBack && !editing ? (
-              <Pressable onPress={backToLibrary} style={[styles.pill, { backgroundColor: '#2f5a31' }]} accessibilityRole="button">
-                <Text style={styles.pillText}>{t('My Library')}</Text>
-              </Pressable>
-            ) : null}
           </View>
           {!canSwitch ? <Text style={styles.small}>{t('A grown-up has turned off switching profiles.')}</Text> : null}
           {/* back to the family's profiles: ends classroom mode (everyone's profile stays); a grown-up question first */}
@@ -325,6 +321,17 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
             </Pressable>
           ) : null}
           <Text style={styles.small}>{room ? t('Books are shared by the whole class, so students can make books together. Each student’s notebook, badges and settings are their own.') : t('Books, the membership, recordings, the language and the music are shared by the whole family.')}</Text>
+          {/* well below everything: on to My Library (green) or My Workspace (the blue of the blue book) (Jörg, 29 Oct 2026) */}
+          {onBack && !editing ? (
+            <View style={{ marginTop: 70, gap: 16, alignItems: 'stretch' }}>
+              <Pressable onPress={() => backToLibrary('library')} style={[styles.pill, { backgroundColor: '#2f5a31', alignItems: 'center' }]} accessibilityRole="button">
+                <Text style={styles.pillText}>{t('My Library')}</Text>
+              </Pressable>
+              <Pressable onPress={() => backToLibrary('workspace')} style={[styles.pill, { backgroundColor: WORKSPACE_BLUE, alignItems: 'center' }]} accessibilityRole="button">
+                <Text style={styles.pillText}>{t('My Workspace')}</Text>
+              </Pressable>
+            </View>
+          ) : null}
         </View>
       </Animated.ScrollView>
       )}
