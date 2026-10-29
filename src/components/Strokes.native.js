@@ -238,8 +238,7 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
 
 // The eyedropper: the colour at (x, y) (in widths of the drawing) as you see it: the drawing over its photo or the
 // white paper, worked out on a small picture of the page. aspect: the page's height in widths (2 for a tall page).
-export async function colourAt(strokes, x, y, aspect = 1, photo = null) {
-  const px = 240, ph = Math.round(px * aspect);
+async function pageImage(strokes, px, ph, photo) {
   const surface = (Skia.Surface.MakeOffscreen && Skia.Surface.MakeOffscreen(px, ph)) || Skia.Surface.Make(px, ph);
   const canvas = surface.getCanvas();
   canvas.clear(Skia.Color('#ffffff'));
@@ -275,9 +274,22 @@ export async function colourAt(strokes, x, y, aspect = 1, photo = null) {
   canvas.restore();
   }
   surface.flush();
-  const img = surface.makeImageSnapshot();
+  return surface.makeImageSnapshot();
+}
+export async function colourAt(strokes, x, y, aspect = 1, photo = null) {
+  const px = 240, ph = Math.round(px * aspect);
+  const img = await pageImage(strokes, px, ph, photo);
   const cx = Math.max(0, Math.min(px - 1, Math.round(x * px))), cy = Math.max(0, Math.min(ph - 1, Math.round(y * px)));
   const d = img.readPixels(cx, cy, { width: 1, height: 1, colorType: ColorType.RGBA_8888, alphaType: AlphaType.Unpremul });
   if (!d || d.length < 3) return null;
   return '#' + [d[0], d[1], d[2]].map((v) => v.toString(16).padStart(2, '0')).join('');
+}
+// the page as the paint bucket sees it: every cell's colour (RGBA, cols across), for the fill's tolerance
+export async function pagePixels(strokes, cols, aspect = 1, photo = null) {
+  const rows = Math.round(cols * aspect);
+  try {
+    const img = await pageImage(strokes, cols, rows, photo);
+    const d = img.readPixels(0, 0, { width: cols, height: rows, colorType: ColorType.RGBA_8888, alphaType: AlphaType.Unpremul });
+    return d && d.length >= cols * rows * 4 ? { cols, rows, data: d } : null;
+  } catch (e) { return null; }
 }

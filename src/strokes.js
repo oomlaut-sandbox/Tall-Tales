@@ -93,10 +93,14 @@ export function near(st, x, y, r) {
 // laid over the drawing. It's worked out once, when you tap: the lines are drawn onto the grid as walls, and the
 // colour spreads from the tapped spot until it meets them (small gaps in a line are closed, so it doesn't leak).
 // Fills are drawn under all the lines and stretch a little under them, so the lines stay crisp on top.
-const G = 160; // cells across the drawing
+const G = 160; // cells across the drawing (fills made before 29 Oct 2026)
+export const FILL_G = 320; // new fills: twice as fine, so their edges are smooth
+export const FILL_TOL = 12; // like Photoshop's tolerance: colours this close (0–255, each of red, green, blue) count as the same
 
-export function makeFill(strokes, x, y, aspect, colour) {
-  const cols = G, rows = Math.round(G * aspect);
+// pix: the page as you see it, FILL_G cells across ({ cols, rows, data: RGBA }), so the fill also stops where the
+// colour changes by more than the tolerance (another fill, a stamp, a photo), not only at lines (Jörg, 29 Oct 2026)
+export function makeFill(strokes, x, y, aspect, colour, pix = null, tol = FILL_TOL) {
+  const GG = pix ? FILL_G : G, cols = GG, rows = Math.round(GG * aspect), K = GG / G; // K: cells per old cell
   const wall = new Uint8Array(cols * rows);
   const mark = (cx, cy, r) => {
     const r2 = r * r, x0 = Math.max(0, Math.floor(cx - r)), x1 = Math.min(cols - 1, Math.ceil(cx + r));
@@ -106,16 +110,25 @@ export function makeFill(strokes, x, y, aspect, colour) {
   for (const st of strokes) {
     if (st.f || st.stp || st.ph) continue; // other fills (and stamps) aren't walls: a new fill simply goes on top
     const p = st.p || [];
-    const r = (st.s || 0.01) * G / 2 + 1.1; // the line, plus a little to close small gaps
+    const r = (st.s || 0.01) * GG / 2 + 1.1 * K; // the line, plus a little to close small gaps
     for (let i = 0; i < p.length; i += 2) {
-      const ax = p[i] * G, ay = p[i + 1] * G;
-      const bx = i + 2 < p.length ? p[i + 2] * G : ax, by = i + 2 < p.length ? p[i + 3] * G : ay;
+      const ax = p[i] * GG, ay = p[i + 1] * GG;
+      const bx = i + 2 < p.length ? p[i + 2] * GG : ax, by = i + 2 < p.length ? p[i + 3] * GG : ay;
       const n = Math.max(1, Math.ceil(Math.hypot(bx - ax, by - ay) / 0.5));
       for (let k = 0; k <= n; k++) mark(ax + (bx - ax) * k / n, ay + (by - ay) * k / n, r);
     }
   }
-  const sx = Math.min(cols - 1, Math.max(0, Math.floor(x * G))), sy = Math.min(rows - 1, Math.max(0, Math.floor(y * G)));
+  const sx = Math.min(cols - 1, Math.max(0, Math.floor(x * GG))), sy = Math.min(rows - 1, Math.max(0, Math.floor(y * GG)));
   if (wall[sy * cols + sx]) return null; // tapped right on a line
+  // the tolerance: a cell whose colour is further from the tapped colour than tol (in red, green or blue) is a wall too
+  const edge = new Uint8Array(cols * rows); // walls that are only a change of colour (not a line): the fill barely tucks under these
+  if (pix && pix.cols === cols && pix.rows === rows) {
+    const D = pix.data, s0 = (sy * cols + sx) * 4, r0 = D[s0], g0 = D[s0 + 1], b0 = D[s0 + 2];
+    for (let c = 0; c < cols * rows; c++) {
+      const o = c * 4;
+      if (!wall[c] && (Math.abs(D[o] - r0) > tol || Math.abs(D[o + 1] - g0) > tol || Math.abs(D[o + 2] - b0) > tol)) { wall[c] = 1; edge[c] = 1; }
+    }
+  }
   // spread from the tapped cell
   const fill = new Uint8Array(cols * rows);
   const stack = [sy * cols + sx];
@@ -130,7 +143,8 @@ export function makeFill(strokes, x, y, aspect, colour) {
   for (let c0 = 0; c0 < cols * rows; c0++) {
     if (seen[c0] || fill[c0] || wall[c0]) continue;
     const comp = [c0]; seen[c0] = 1; let touches = false;
-    for (let k = 0; k < comp.length && comp.length <= 60; k++) {
+    const POCKET = 60 * K * K;
+    for (let k = 0; k < comp.length && comp.length <= POCKET; k++) {
       const c = comp[k], cx = c % cols;
       const nb = [cx > 0 ? c - 1 : -1, cx < cols - 1 ? c + 1 : -1, c >= cols ? c - cols : -1, c + cols < cols * rows ? c + cols : -1];
       for (const q of nb) {
@@ -139,16 +153,17 @@ export function makeFill(strokes, x, y, aspect, colour) {
         else if (!wall[q] && !seen[q]) { seen[q] = 1; comp.push(q); }
       }
     }
-    if (comp.length <= 60 && touches) for (const c of comp) fill[c] = 1;
+    if (comp.length <= POCKET && touches) for (const c of comp) fill[c] = 1;
   }
   // grow it a little, so it tucks under the lines around it
   let grown = fill;
-  for (let pass = 0; pass < 3; pass++) {
+  for (let pass = 0; pass < 3 * K; pass++) {
     const g2 = grown.slice();
+    const into = (q) => { if (pass < K || !edge[q]) g2[q] = 1; }; // (under lines all the way; a colour's edge only by a cell, to hide its soft rim)
     for (let c = 0; c < cols * rows; c++) if (grown[c]) {
       const cx = c % cols;
-      if (cx > 0) g2[c - 1] = 1; if (cx < cols - 1) g2[c + 1] = 1;
-      if (c >= cols) g2[c - cols] = 1; if (c + cols < cols * rows) g2[c + cols] = 1;
+      if (cx > 0) into(c - 1); if (cx < cols - 1) into(c + 1);
+      if (c >= cols) into(c - cols); if (c + cols < cols * rows) into(c + cols);
     }
     grown = g2;
   }
@@ -162,7 +177,7 @@ export function makeFill(strokes, x, y, aspect, colour) {
       if (!on && start >= 0) { f.push(yy, start, xx); start = -1; }
     }
   }
-  return f.length ? { c: colour, f, g: G } : null;
+  return f.length ? { c: colour, f, g: GG } : null;
 }
 
 // the fill as SVG path data, sized to `w` (each run a thin rectangle, a hair taller so rows meet without seams)
@@ -299,7 +314,7 @@ function layersOf(st, w) {
   if (st.e) return st.k != null && st.k < 1
     ? [{ d: strokeD(st, w), width: Math.max(2, (st.s || 0.05) * w), alpha: st.k, blur: Math.max(1.5, (st.s || 0.05) * w * 0.3), erase: true }]
     : [{ d: strokeD(st, w), width: Math.max(2, (st.s || 0.05) * w), alpha: 1, erase: true }];
-  if (st.f) return [{ d: fillD(st, w), fill: true, alpha: 0.94 }];
+  if (st.f) return [{ d: fillD(st, w), fill: true, alpha: 0.94, blur: Math.max(0.5, (w / (st.g || 160)) * 0.6) }]; // (a soft edge, so it isn't stepped: 29 Oct 2026)
   const lw = Math.max(1, (st.s || 0.01) * w);
   const b = st.b || 'ink';
   const light = /^#f{3,6}$/i.test(st.c || '') || /^#f1e8d8$/i.test(st.c || ''); // white or cream: lighter than the paper's shadows, so no multiply

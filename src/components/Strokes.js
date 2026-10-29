@@ -101,8 +101,7 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
 }
 
 // The eyedropper (web preview): the colour at (x, y) on a small picture of the page (the drawing over its photo)
-export async function colourAt(strokes, x, y, aspect = 1, photo = null) {
-  const px = 240, ph = Math.round(px * aspect);
+async function pageCanvas(strokes, px, ph, photo) {
   const c = document.createElement('canvas'); c.width = px; c.height = ph;
   const g = c.getContext('2d');
   g.fillStyle = '#ffffff'; g.fillRect(0, 0, px, ph);
@@ -128,6 +127,15 @@ export async function colourAt(strokes, x, y, aspect = 1, photo = null) {
   }
   g.drawImage(d, 0, 0);
   }
+  return g;
+}
+export async function pagePixels(strokes, cols, aspect = 1, photo = null) {
+  const rows = Math.round(cols * aspect);
+  try { const g = await pageCanvas(strokes, cols, rows, photo); return { cols, rows, data: g.getImageData(0, 0, cols, rows).data }; } catch (e) { return null; }
+}
+export async function colourAt(strokes, x, y, aspect = 1, photo = null) {
+  const px = 240, ph = Math.round(px * aspect);
+  const g = await pageCanvas(strokes, px, ph, photo);
   try {
     const v = g.getImageData(Math.max(0, Math.min(px - 1, Math.round(x * px))), Math.max(0, Math.min(ph - 1, Math.round(y * px))), 1, 1).data;
     return '#' + [v[0], v[1], v[2]].map((n) => n.toString(16).padStart(2, '0')).join('');

@@ -22,13 +22,13 @@ import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, Felt, DESK_BG, IS_TABLET } from '../look';
 import ParentGate from '../components/ParentGate';
-import { StrokesView, colourAt } from '../components/Strokes';
+import { StrokesView, colourAt, pagePixels } from '../components/Strokes';
 import { EarArt } from '../components/Ear';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
 import ToolPic from '../components/ToolPic';
 import { STAMPS, stampWidth } from '../stamps';
 const SHOW_STAMPS = false; // the stamps are the felt mascot: away until Jörg's hand-drawn one arrives (drawings that have them still show them)
-import { BRUSHES, GREYS, DRAW_LAYERS, PENS, PENS_BRIGHT, SHAPES, wheelColour, SIZES, makeFill, mixColours, near, shapePts, withMirrors } from '../strokes';
+import { BRUSHES, GREYS, DRAW_LAYERS, PENS, PENS_BRIGHT, SHAPES, wheelColour, SIZES, makeFill, FILL_G, mixColours, near, shapePts, withMirrors } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
 import { STORIES } from '../story';
@@ -1194,8 +1194,12 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
         return;
       }
       if (S.current.bucket) {
-        const f = makeFill(withMirrors(S.current.strokes.filter((st) => !st.e && !st.sm)), x, y, S.current.tall ? 2 : 1, S.current.pen);
-        if (f) add({ ...f, ...(S.current.mirror ? { m: 1 } : null), ...(S.current.behind ? { bk: 1 } : null), ...(S.current.layer > 1 ? { ly: S.current.layer } : null) });
+        // the page as you see it, so the fill stops where the colour changes (tolerance 12, like Photoshop)
+        const cur0 = S.current, asp = cur0.tall ? 2 : 1;
+        pagePixels(cur0.strokes, FILL_G, asp, cur0.photo).then((pix) => {
+          const f = makeFill(withMirrors(cur0.strokes.filter((st) => !st.e && !st.sm)), x, y, asp, cur0.pen, pix);
+          if (f) add({ ...f, ...(cur0.mirror ? { m: 1 } : null), ...(cur0.behind ? { bk: 1 } : null), ...(cur0.layer > 1 ? { ly: cur0.layer } : null) });
+        });
         return;
       }
       const m = { ...(S.current.mirror ? { m: 1 } : null), ...(S.current.behind ? { bk: 1 } : null), ...(S.current.layer > 1 ? { ly: S.current.layer } : null) }; // (mirror, behind the lines, and the layer)
