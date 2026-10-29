@@ -168,7 +168,7 @@ export const SMALL_WONDERS = {
 export const ROUGH_LIVES = {
   id: 'rough-lives',
   copyright: '© 2021 Jörg Schmidt. All rights reserved. First published in 2021.',
-  process: 'Every animal was drawn by hand by Jörg Schmidt, then turned into 3D pictures with AI tools. The words were written by Jörg with some help from AI. This book shows what an open, honest process looks like in Coro.',
+  process: 'Every animal was drawn by hand by Jörg Schmidt, then turned into 3D pictures with AI tools. The text was written with help from AI. This book shows what an open, honest process looks like in Coro.',
   minAge: 6, maxAge: 10, // age rating (the Store Manager's rating wins when set there)
   title: 'The Rough Lives of Animals',
   author: 'Jörg Schmidt',
