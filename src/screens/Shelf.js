@@ -418,15 +418,6 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
         {/* My Workspace: the notebook, Book Playlists, My Folder and the corkboard (Jörg, 29 Oct 2026) */}
         {!selecting && onNotebook ? <Text style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('My Workspace')}</Text> : null}
         {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
-        {/* a yellow pencil beside the notebook, a little tilted, with a soft shadow (Jörg, 29 Oct 2026) */}
-        {!selecting && onNotebook && controls.notebook ? (() => {
-          const n = COLS(winW), colW = ((winW - 40) * TILE[n]) / 100, ph = colW * 0.98, pw = ph * 180 / 1020;
-          return (
-            <View pointerEvents="none" style={{ width: tileWidth(winW), height: colW }}>
-              <Image source={PENCIL_YELLOW} resizeMode="contain" style={{ position: 'absolute', left: colW * 0.18, top: (colW - ph) / 2, width: pw, height: ph, transform: [{ rotate: '-14deg' }] }} />
-            </View>
-          );
-        })() : null}
         {!selecting && onNotebook ? <View style={{ width: '100%', height: 18 }} /> : null}{/* the notebook has its row to itself */}
         {/* My Folder starts its own row: the folder (the size of a book) */}
         {!selecting ? (() => {
@@ -454,6 +445,12 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
                 </View>
                 <Text style={[styles.tileTitle, styles.tileOption]}>{t('My Folder')}</Text>
               </Pressable>
+              {/* a yellow pencil beside the folder, a little tilted, with a soft shadow (Jörg, 29 Oct 2026) */}
+              {(() => { const ph = colW * 0.98, pw = ph * 180 / 1020; return (
+                <View pointerEvents="none" style={{ width: tileWidth(winW), height: colW }}>
+                  <Image source={PENCIL_YELLOW} resizeMode="contain" style={{ position: 'absolute', left: colW * 0.18, top: (colW - ph) / 2, width: pw, height: ph, transform: [{ rotate: '-14deg' }] }} />
+                </View>
+              ); })()}
               {/* the corkboard: always at the very bottom, as wide as two books */}
               <View style={{ width: '100%' }} />
               <Corkboard width={2 * colW + gap} toast={toast} onPlaylists={onPlaylists} />{/* Book Playlists: a white sheet pinned to the board (Jörg, 29 Oct 2026) */}
