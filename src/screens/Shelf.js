@@ -365,14 +365,14 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
           keep.onScroll(e);
           const { contentOffset: o, layoutMeasurement: l, contentSize: c } = e.nativeEvent;
           const past = o.y + l.height - c.height;
-          if (past > 70 && !gardenAsked.current && onGarden) { gardenAsked.current = true; toast && toast(t('Come explore the Garden'), 3500); }
+          if (past > 70 && !gardenAsked.current && onGarden && !selecting) { gardenAsked.current = true; toast && toast(t('Come explore the Garden'), 3500); }
           else if (past < 0) gardenAsked.current = false;
-          if (past > 70) gardenPull.current = true;
+          if (past > 70 && !selecting) gardenPull.current = true; // (never while picking books: Jörg, 29 Oct 2026)
         }}
         // let go while pulled up far enough: into the Garden
         onScrollEndDrag={(e) => {
           const { contentOffset: o, layoutMeasurement: l, contentSize: c } = e.nativeEvent;
-          if (onGarden && gardenPull.current && o.y + l.height - c.height > 70) { gardenPull.current = false; onGarden(); }
+          if (onGarden && !selecting && gardenPull.current && o.y + l.height - c.height > 70) { gardenPull.current = false; onGarden(); }
           else gardenPull.current = false;
         }}>
         {/* who is reading (their character and name), at the top left above Let's make a book; tap it for Profiles */}
@@ -390,7 +390,7 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
         {/* a title over the books: the ones you made first, then the picture books */}
         {!selecting ? <Text onLayout={(e) => { booksY.current = e.nativeEvent.layout.y; toMyBooks(); }} style={[styles.section, { marginTop: 2 }]} accessibilityRole="header">{t('My Book Collection')}</Text> : null}{/* a little closer to Let's make a book */}
         {/* (the parental controls can hide books rated for older children) */}
-        {stories.filter((s) => (!s.mine || s.published) /* books still being made are in Work in Progress */ && ageAllowed(ageOf(null, s), controls.childAge)).sort((a, b) => (b.mine ? 1 : 0) - (a.mine ? 1 : 0)).map((s) => (
+        {stories.filter((s) => (!s.mine || s.published || selecting) /* books still being made are in Work in Progress (but can be picked here, to share or delete) */ && ageAllowed(ageOf(null, s), controls.childAge)).sort((a, b) => (b.mine ? 1 : 0) - (a.mine ? 1 : 0)).map((s) => (
           // just the title under each cover (no author, pages or other details)
           <Tile key={s.id} spotId={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title}
             selecting={selecting} selected={picked.includes(s.id)}
