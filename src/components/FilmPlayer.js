@@ -110,7 +110,7 @@ export function PagePhone({ room = 250 }) {
   const player = useVideoPlayer(FILM, (p) => { p.loop = false; });
   useEffect(() => () => { try { player.pause(); } catch (e) {} }, [player]);
   return (
-    <View style={{ alignSelf: 'center', width: w, height: h, borderRadius: Math.round(w * 0.15), backgroundColor: '#000', padding: 8, borderWidth: 2, borderColor: '#3a3a3a' /* a thin grey rim, like Jörg's mockup */,
+    <View style={{ alignSelf: 'center', marginTop: 28 /* well clear of the title (Jörg, 29 Oct 2026) */, width: w, height: h, borderRadius: Math.round(w * 0.15), backgroundColor: '#000', padding: 8, borderWidth: 2, borderColor: '#3a3a3a' /* a thin grey rim, like Jörg's mockup */,
       shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.5, shadowRadius: 18, elevation: 12 }}>
       <View style={{ flex: 1, borderRadius: Math.round(w * 0.15) - 8, overflow: 'hidden', backgroundColor: '#000' }}>
         <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls allowsFullscreen={false} allowsPictureInPicture={false} />
