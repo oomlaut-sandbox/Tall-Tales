@@ -421,6 +421,7 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
         {/* My Notes (and who is reading), just above Things to share: Let's make a book and My Books come first (Jörg, 26 Oct 2026) */}
         {/* My Workspace: the notebook, Book Playlists, Things to share and the corkboard (Jörg, 29 Oct 2026) */}
         
+        {ws && onNotebook ? <Text style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('My Desk')}</Text> : null}{/* (Jörg, 29 Oct 2026) */}
         {ws && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
         {ws && onNotebook ? <View style={{ width: '100%', height: 18 }} /> : null}{/* the notebook has its row to itself */}
         {/* Things to share starts its own row: the folder (the size of a book) */}
@@ -452,7 +453,7 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
               {/* a yellow pencil beside the folder, a little tilted, with a soft shadow (Jörg, 29 Oct 2026) */}
               {(() => { const ph = colW * 0.98, pw = ph * 180 / 1020; return (
                 <View pointerEvents="none" style={{ width: tileWidth(winW), height: colW }}>
-                  <Image source={PENCIL_YELLOW} resizeMode="contain" style={{ position: 'absolute', left: colW * 0.18, top: (colW - ph) / 2, width: pw, height: ph }} />{/* straight, the point up, its shadow to the right (Jörg, 29 Oct 2026) */}
+                  <Image source={PENCIL_YELLOW} resizeMode="contain" style={{ position: 'absolute', left: colW * 0.08, top: colW * 1.008 - ph * 0.94 /* its point level with the folder's bottom (Jörg, 29 Oct 2026) */, width: pw, height: ph }} />{/* straight, the point up, its shadow to the right (Jörg, 29 Oct 2026) */}
                 </View>
               ); })()}
               {/* the corkboard: always at the very bottom, as wide as two books */}
