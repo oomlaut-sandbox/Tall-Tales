@@ -18,7 +18,9 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const PAGE_COLOR_NAMES = { '#ffffff': 'White', '#f4f1ea': 'Soft white', '#d9d4c7': 'Linen', '#a8a39a': 'Stone grey', '#36393b': 'Charcoal',
   '#1e1a17': 'Warm black', '#2f5d3a': 'Forest green', '#1f3a5f': 'Dark blue', '#c4683f': 'Terracotta', '#c9a227': 'Mustard' };
 
-export default function PhotoEditor({ src, edit: given, tr, insets, onDone, onCancel }) {
+const DRAW_ICON = require('../../assets/heading-icons/making-books.png');
+// onDraw: the photo as it's set up here goes to the drawing tools, to draw on (Jörg, 29 Oct 2026)
+export default function PhotoEditor({ src, edit: given, tr, insets, onDone, onCancel, onDraw }) {
   const { width: winW, height: winH } = useWindowDimensions();
   const [e, setE] = useState({ ...DEFAULT_EDIT, ...(given || {}) });
   const [tab, setTab] = useState('crop');
@@ -54,6 +56,14 @@ export default function PhotoEditor({ src, edit: given, tr, insets, onDone, onCa
     try { out = await composePhoto(src.uri, e); } catch (er) {}
     setBusy(false);
     onDone(out, e);
+  };
+  const toDraw = async () => {
+    if (busy) return;
+    setBusy(true);
+    let out = null;
+    try { out = await composePhoto(src.uri, e); } catch (er) {}
+    setBusy(false);
+    if (out) onDraw(out, e);
   };
   const Chip = ({ on, label, onPress, a11y, icon }) => (
     <Pressable onPress={onPress} style={[styles.chip, on && { backgroundColor: colors.green }, icon && { paddingHorizontal: 0 }]} accessibilityRole="button" accessibilityLabel={a11y || label} accessibilityState={{ selected: !!on }}>
@@ -108,6 +118,11 @@ export default function PhotoEditor({ src, edit: given, tr, insets, onDone, onCa
             <View style={styles.row}>
               {Object.entries(LOOKS).map(([k, L]) => <Chip key={k} on={e.look === k} label={tr(L.label)} onPress={() => set({ look: k })} />)}
             </View>
+          ) : null}
+          {onDraw ? (
+            <Pressable onPress={toDraw} disabled={busy} style={[styles.pill, { backgroundColor: '#4a4a4a', alignSelf: 'stretch', marginTop: 14 }]} accessibilityRole="button">
+              <ChoiceLabel icon={DRAW_ICON} text={tr('Draw on this photo')} style={styles.pillText} />
+            </Pressable>
           ) : null}
           <View style={[styles.row, { justifyContent: 'flex-end', marginTop: 14 }]}>
             <Pressable onPress={onCancel} style={[styles.pill, { backgroundColor: '#4a4a4a' }]} accessibilityRole="button"><ChoiceLabel icon="cancel" text={tr('Cancel')} style={styles.pillText} /></Pressable>

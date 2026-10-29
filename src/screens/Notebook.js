@@ -17,7 +17,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { colors, fonts, MAX_WIDTH } from '../theme';
 import { Bar, Burger, DogEar, DoneTick, Panel, Toast, barGeo, ChoiceLabel } from '../components/Chrome';
-import { loadJSON, saveJSON } from '../storage';
+import { keepFile, loadJSON, saveJSON } from '../storage';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, Felt, DESK_BG, IS_TABLET } from '../look';
@@ -48,6 +48,7 @@ const SPLOTCH = [ // round splotches of paint: the shape (tinted with the colour
 ];
 const TRASH = require('../../assets/icon-trash.png');
 import { printDrawing, printNotebook, shareDrawing, shareNotebookPdf } from '../pdf';
+const PHOTO_ICON = require('../../assets/heading-icons/family-and-memories.png'); // a picture: mountains and the sun
 const CHOICE_ICONS = { // the icons before the words in the pop-up choices (the app's own set)
   photo: require('../../assets/heading-icons/family-and-memories.png'),
   draw: require('../../assets/heading-icons/making-books.png'),
@@ -1106,6 +1107,20 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   S.current = { strokes, pen, size, erase, bucket, tall, brush, shape, mirror, eraseSoft, smudgeK, dropper, photo, behind, stamp, layer };
   const toolsH = 16; // (portrait: the panel has its own room below the page) // (two rows of colours, the colour row; the brushes, the sizes and the shapes take a row each)
   const add = (st) => { setStrokes((s) => [...s, st]); setRedo([]); };
+  // the picture button between Layers and Zoom: a photo from the phone onto the layer being drawn on, filling the
+  // page (Jörg, 29 Oct 2026); undo takes it away again, the eraser on its layer rubs it
+  const importPhoto = async () => {
+    try {
+      const r = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'images', quality: 1 });
+      if (r.canceled || !r.assets || !r.assets[0]) return;
+      const a = r.assets[0];
+      let uri = a.uri;
+      try { const w = a.width || 0, h = a.height || 0; uri = (await ImageManipulator.manipulateAsync(uri, [{ resize: w >= h ? { width: Math.min(2000, w || 2000) } : { height: Math.min(2000, h || 2000) } }], { compress: 0.88, format: ImageManipulator.SaveFormat.JPEG })).uri; } catch (e) {}
+      let kept = uri;
+      try { kept = await keepFile(uri, 'drawings', `photo-${Date.now()}.jpg`); } catch (e) {}
+      add({ ph: kept, ly: layer });
+    } catch (e) { toastHere(t('Couldn’t open your photos. Check that Coro is allowed to use Photos in Settings.')); }
+  };
   // iPad: the page a little smaller, so Layers and Zoom under it have room above the colours (Jörg, 28 Oct 2026; the phone is unchanged)
   const LABELS = IS_TABLET ? 40 : 0;
   const W = !area ? 0 : wideScreen ? Math.max(120, Math.floor(Math.min(area.h - LABELS, area.w - TOOLS_W - 28)))
@@ -1328,6 +1343,12 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
       check={t('Don’t show this message again')} button={t('Got it!')} onDismiss={(ticked) => { setDrawHint(false); if (ticked) saveJSON('drawHint', { off: true }); }} /> : null}
     {/* the zoom now, in percent: a small label under the page, on the right (Jörg, 27 Oct 2026) */}
     <ZoomLabel v={zS} />
+    {/* a photo onto this layer: a small picture, exactly between Layers and Zoom (Jörg, 29 Oct 2026) */}
+    <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: -29, height: 22, alignItems: 'center', justifyContent: 'center' }}>
+      <Pressable onPress={importPhoto} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Add a photo to layer {n}', { n: layer })}>
+        <Image source={PHOTO_ICON} style={{ width: 18, height: 18, tintColor: '#bdbdbd' }} resizeMode="contain" accessibilityIgnoresInvertColors />
+      </Pressable>
+    </View>
     {/* Layers: a small label under the page on the left, then 1 2 3 4; the one being drawn on has a ring
         (four fixed layers: they can't be deleted or moved: Jörg, 27 Oct 2026) */}
     <View style={{ position: 'absolute', left: 2, bottom: -29, flexDirection: 'row', alignItems: 'center', gap: 4 }}>

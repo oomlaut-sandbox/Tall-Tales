@@ -460,6 +460,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const pickImage = () => setImgAsk('page');
   // Make a drawing: the notebook's drawing tool, full screen; Done turns the drawing into the square's picture
   const [drawFor, setDrawFor] = useState(null); // 'page' | 'page2' | 'cover'
+  const [drawStart, setDrawStart] = useState(null); // a drawing begun on a photo (Edit photo → Draw on this photo)
   const placeDrawing = async (target, strokes) => {
     if (!strokes || !strokes.length) return;
     try {
@@ -1172,13 +1173,14 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       ) : null}
       {photoEdit && photoOf(photoEdit) ? (
         <PhotoEditor src={{ uri: photoOf(photoEdit).src }} edit={photoOf(photoEdit).edit} tr={tr} insets={insets}
-          onCancel={() => setPhotoEdit(null)} onDone={(out, edit) => photoDone(photoEdit, out, edit)} />
+          onCancel={() => setPhotoEdit(null)} onDone={(out, edit) => photoDone(photoEdit, out, edit)}
+          onDraw={async (out, edit) => { const t = photoEdit; await photoDone(t, out, edit); setDrawStart([{ ph: out.uri, ly: 1 }]); setDrawFor(t); }} />{/* the photo, as set up, on layer 1 of a new drawing (Jörg, 29 Oct 2026) */}
       ) : null}
       {drawFor ? (
-        <DrawEditor insets={insets} title={drawFor === 'cover' ? tr('Drawing · Cover') : tr('Drawing · Page {n}', { n: i + 1 })}
-          onDone={(strokes) => { const t = drawFor; setDrawFor(null); placeDrawing(t, strokes); }}
+        <DrawEditor key={drawStart ? 'photo' : 'plain'} strokes={drawStart || undefined} insets={insets} title={drawFor === 'cover' ? tr('Drawing · Cover') : tr('Drawing · Page {n}', { n: i + 1 })}
+          onDone={(strokes) => { const t = drawFor; setDrawFor(null); setDrawStart(null); placeDrawing(t, strokes); }}
           onNext={async (strokes) => { // Next page: save the drawing, then on to the next page (a new one after the last)
-            const t = drawFor; setDrawFor(null); await placeDrawing(t, strokes);
+            const t = drawFor; setDrawFor(null); setDrawStart(null); await placeDrawing(t, strokes);
             if (t === 'cover') { finishCover(); return; }
             setDraft((d) => (i === d.pages.length - 1 && d.pages.length < MAX_PAGES ? { ...d, pages: [...d.pages, blank()] } : d));
             setI((k) => Math.min(k + 1, MAX_PAGES - 1));

@@ -9,6 +9,7 @@ import { Asset } from 'expo-asset';
 import { File, Paths } from 'expo-file-system';
 import { byLayer, drawOrder, layersFor, mirrored, smudgeOf } from '../strokes';
 import { STAMP, stampBox } from '../stamps';
+import { liveUri } from '../storage';
 
 const GRAIN = require('../../assets/paper-grain.png'); // 512 × 512, repeats without seams
 const TOOTH = require('../../assets/paper-tooth.png');
@@ -68,7 +69,14 @@ function StampPic({ st, width }) {
   const pic = <SkImage image={img} x={b.x} y={b.y} width={b.w} height={b.h} fit="contain" />;
   return st.fx ? <Group transform={[{ translateX: 2 * (b.x + b.w / 2) }, { scaleX: -1 }]}>{pic}</Group> : pic;
 }
-const One = React.memo(function One({ st, width }) {
+// an imported photo: filling the page, cropped from its middle (see strokes.js)
+function PhotoPic({ st, width, height }) {
+  const img = useImage(liveUri(st.ph));
+  if (!img) return null;
+  return <SkImage image={img} x={0} y={0} width={width} height={height} fit="cover" />;
+}
+const One = React.memo(function One({ st, width, height }) {
+  if (st.ph) return <PhotoPic st={st} width={width} height={height || width} />;
   if (st.stp) return st.m ? <><StampPic st={{ ...st, m: 0 }} width={width} /><StampPic st={mirrored(st)} width={width} /></> : <StampPic st={st} width={width} />;
   if (st.sm) return <Smudge st={st} width={width} />;
   const layers = useMemo(() => layersFor(st, width), [st, width]);
@@ -91,10 +99,10 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
           {/* fills under the lines, the eraser rubbing out what came before it (see drawOrder) */}
           {runsOf(drawOrder(part), width).map((r, i) => (r.tex > 0 ? (
             <Group key={i} layer>
-              {r.list.map((st, j) => <One key={j} st={st} width={width} />)}
+              {r.list.map((st, j) => <One key={j} st={st} width={width} height={height} />)}
               {tooth ? <Rect x={0} y={0} width={width} height={height} blendMode="srcATop" opacity={TOOTH_OF[r.tex]}>{tex(tooth)}</Rect> : null}
             </Group>
-          ) : r.list.map((st, j) => <One key={`${i}-${j}`} st={st} width={width} />)))}
+          ) : r.list.map((st, j) => <One key={`${i}-${j}`} st={st} width={width} height={height} />)))}
         </Group>
         ) : null))}
         {grain && !noPaper ? <Rect x={0} y={0} width={width} height={height} blendMode="multiply" opacity={0.6}>{tex(grain)}</Rect> : null}
@@ -139,6 +147,19 @@ async function drawStamp(canvas, st, px) {
     canvas.restore();
   }
 }
+// an imported photo onto a canvas (the exported picture, the eyedropper): filling w × h, cropped from its middle
+const photoCache = {};
+async function drawPhotoStroke(canvas, st, w, h) {
+  const u = liveUri(st.ph);
+  try {
+    if (!(u in photoCache)) photoCache[u] = Skia.Image.MakeImageFromEncoded(Skia.Data.fromBytes(await new File(u).bytes()));
+    const img = photoCache[u];
+    if (!img) return;
+    const iw = img.width(), ih = img.height(), k = Math.min(iw / w, ih / h), sw = w * k, sh = h * k;
+    const p = Skia.Paint(); p.setAntiAlias(true);
+    canvas.drawImageRect(img, Skia.XYWHRect((iw - sw) / 2, (ih - sh) / 2, sw, sh), Skia.XYWHRect(0, 0, w, h), p);
+  } catch (e) {}
+}
 const texPaint = (img, px, blend, alpha = 1) => {
   const k = (TILE * px) / 512;
   const m = Skia.Matrix(); m.scale(k, k);
@@ -171,6 +192,7 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
   for (const r of runsOf(drawOrder(part), px)) {
    if (r.tex > 0) canvas.saveLayer();
    for (const st of r.list) {
+    if (st.ph) { await drawPhotoStroke(canvas, st, px, px); continue; }
     if (st.stp) { await drawStamp(canvas, st, px); continue; }
     if (st.sm) { // the smudge: blur what's there so far, inside where the finger rubbed
       for (const q of st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]) {
@@ -234,6 +256,7 @@ export async function colourAt(strokes, x, y, aspect = 1, photo = null) {
   canvas.saveLayer();
   for (const st of drawOrder(part)) {
     if (st.sm) continue;
+    if (st.ph) { await drawPhotoStroke(canvas, st, px, ph); continue; }
     if (st.stp) { await drawStamp(canvas, st, px); continue; }
     for (const L of layersFor(st, px)) {
       if (!L.alpha) continue;

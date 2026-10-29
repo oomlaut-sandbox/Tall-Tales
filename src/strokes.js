@@ -104,7 +104,7 @@ export function makeFill(strokes, x, y, aspect, colour) {
     for (let yy = y0; yy <= y1; yy++) for (let xx = x0; xx <= x1; xx++) if ((xx + 0.5 - cx) ** 2 + (yy + 0.5 - cy) ** 2 <= r2) wall[yy * cols + xx] = 1;
   };
   for (const st of strokes) {
-    if (st.f || st.stp) continue; // other fills (and stamps) aren't walls: a new fill simply goes on top
+    if (st.f || st.stp || st.ph) continue; // other fills (and stamps) aren't walls: a new fill simply goes on top
     const p = st.p || [];
     const r = (st.s || 0.01) * G / 2 + 1.1; // the line, plus a little to close small gaps
     for (let i = 0; i < p.length; i += 2) {
@@ -291,7 +291,7 @@ const uprightOf = (st) => { const m = mean(st.t); return m == null ? 1 : m; };
 // a light touch makes a lighter mark, pressing hard a deeper one (pencil, crayon, watercolour)
 const darkOf = (st, lo = 0.45) => { const q = pressOf(st); return q == null ? 1 : clamp(lo + q * (1.25 - lo), lo, 1.15); };
 function layersOf(st, w) {
-  if (st.stp) return []; // a stamp is a picture (drawn by the canvas itself), not paint
+  if (st.stp || st.ph) return []; // a stamp or an imported photo is a picture (drawn by the canvas itself), not paint
   if (st.sm) return []; // the smudge draws nothing of its own: it softens what's under it (see smudgeOutline)
   if (st.m) return [...layersOf({ ...st, m: 0 }, w), ...layersOf(mirrored(st), w)]; // mirror drawing: both sides
   // the eraser: a soft round line that rubs out what was drawn before it (down to the paper or the photo)
@@ -391,6 +391,9 @@ export function drawOrder(list) {
 // Layers (Jörg, 27 Oct 2026): four fixed layers, 1 at the bottom to 4 on top (ly; none means 1). In each layer,
 // behind the lines first, then the rest, each on its own sheet, so the eraser only rubs its own sheet.
 export const DRAW_LAYERS = [1, 2, 3, 4];
+// An imported photo (Jörg, 29 Oct 2026): { ph: its file, ly: the layer it went on } — it fills the page (cropped
+// from its middle, like a page picture), on that layer, so drawing on the layers above sits over it and the eraser
+// on its own layer rubs it away.
 export const byLayer = (list) => {
   const all = list || [];
   return DRAW_LAYERS.flatMap((n) => {

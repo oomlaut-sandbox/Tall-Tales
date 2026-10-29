@@ -108,4 +108,6 @@ export default {
   "Added to My Book Collection.": { de: "Zu Meiner Büchersammlung hinzugefügt.", fr: "Ajouté à Ma collection de livres.", es: "Añadido a Mi colección de libros.", ja: "わたしの 本の コレクションに いれました。", ar: "أُضيف إلى مجموعة كتبي." },
   "Book Playlists": { de: "Buch-Playlists", fr: "Listes de livres", es: "Listas de libros", ja: "本の プレイリスト", ar: "قوائم الكتب" },
   "My Workspace": { de: "Mein Arbeitsplatz", fr: "Mon espace de travail", es: "Mi espacio de trabajo", ja: "わたしの さぎょうば", ar: "مساحة عملي" },
+  "Draw on this photo": { de: "Auf diesem Foto zeichnen", fr: "Dessiner sur cette photo", es: "Dibujar en esta foto", ja: "この しゃしんに かく", ar: "ارسم على هذه الصورة" },
+  "Add a photo to layer {n}": { de: "Ein Foto auf Ebene {n} legen", fr: "Ajouter une photo au calque {n}", es: "Añadir una foto a la capa {n}", ja: "レイヤー{n}に しゃしんを いれる", ar: "أضف صورة إلى الطبقة {n}" },
 };

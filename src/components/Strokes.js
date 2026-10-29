@@ -22,7 +22,7 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
   const id = `${id0}-${n}`;
   const all = drawOrder(part);
   let paths = [];
-  all.forEach((st, i) => (st.stp ? (st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]).forEach((q, j) => { // a stamp: its picture
+  all.forEach((st, i) => (st.ph ? paths.push(h('image', { key: `${i}-ph`, href: st.ph, x: 0, y: 0, width, height, preserveAspectRatio: 'xMidYMid slice' })) /* an imported photo, filling the page */ : st.stp ? (st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]).forEach((q, j) => { // a stamp: its picture
     const b = stampBox(q, width), cx = b.x + b.w / 2;
     paths.push(h('image', { key: `${i}-st${j}`, href: src((STAMP[q.stp] || {}).src), x: b.x, y: b.y, width: b.w, height: b.h, preserveAspectRatio: 'xMidYMid meet',
       transform: q.fx ? `translate(${2 * cx} 0) scale(-1 1)` : undefined }));
@@ -83,6 +83,7 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
   const g = c.getContext('2d');
   g.clearRect(0, 0, px, px);
   for (const st of drawOrder(part)) {
+    if (st.ph) { await drawPhotoWeb(g, st, px, px); continue; }
     if (st.stp) { await drawStampWeb(g, st, px); continue; }
     for (const L of layersFor(st, px).filter((L2) => L2.alpha && !L2.inner)) {
       g.save();
@@ -114,6 +115,7 @@ export async function colourAt(strokes, x, y, aspect = 1, photo = null) {
   h.clearRect(0, 0, px, ph);
   for (const st of drawOrder(part)) {
     if (st.sm) continue;
+    if (st.ph) { await drawPhotoWeb(h, st, px, ph); continue; }
     if (st.stp) { await drawStampWeb(h, st, px); continue; }
     for (const L of layersFor(st, px).filter((L2) => L2.alpha && !L2.inner)) {
       h.save(); h.globalAlpha = L.alpha;
@@ -132,6 +134,13 @@ export async function colourAt(strokes, x, y, aspect = 1, photo = null) {
   } catch (e) { return null; }
 }
 
+// an imported photo onto a canvas (web preview): filling w × h, cropped from its middle
+async function drawPhotoWeb(g, st, w, h) {
+  const im = await new Promise((res) => { const i = new window.Image(); i.crossOrigin = 'anonymous'; i.onload = () => res(i); i.onerror = () => res(null); i.src = st.ph; });
+  if (!im) return;
+  const k = Math.min(im.width / w, im.height / h), sw = w * k, sh = h * k;
+  g.drawImage(im, (im.width - sw) / 2, (im.height - sh) / 2, sw, sh, 0, 0, w, h);
+}
 // a stamp onto a canvas (web preview): its picture, loaded once
 const webStamps = {};
 function webStamp(k) {
