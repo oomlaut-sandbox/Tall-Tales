@@ -55,7 +55,7 @@ export function BookSpine() {
 }
 const hasOwnSpine = (c) => !!(c && (c.hard || /hardcovers/.test(String(c.uri || '')))); // a cloth hardcover already has one
 
-function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, option, selecting, selected, badge, label, ear: showEar = false }) { // (no dog-ears on the covers)
+function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, option, cutout, selecting, selected, badge, label, ear: showEar = false }) { // cutout: a picture on a see-through background, sitting straight on the felt (no square, no shadow) // (no dog-ears on the covers)
   const t = useT();
   const { width: winW } = useWindowDimensions();
   const ear = u * 3;
@@ -79,8 +79,8 @@ function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onP
           style={{ position: 'absolute', zIndex: 2, width: leanW * 0.52 * 700 / 696, height: leanW * 0.52, left: leanW - leanW * 0.52 * 0.012, bottom: -leanW * 0.01 }} />
       ) : null}
       {/* a very subtle drop shadow under the square cover */}
-      <View style={styles.tileShadow}>
-      <View ref={coverRef} collapsable={false} style={{ aspectRatio: 1, backgroundColor: plain ? '#3a3a3a' : '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>{/* plain: a solid dark grey square (pictures to come) */}
+      <View style={cutout ? null : styles.tileShadow}>
+      <View ref={coverRef} collapsable={false} style={{ aspectRatio: 1, backgroundColor: cutout ? 'transparent' : plain ? '#3a3a3a' : '#828282', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>{/* plain: a solid dark grey square (pictures to come) */}
         {coverArt ? <CoverArt cover={coverArt} /> : cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }} resizeMode="cover" /> : null}
         {/* a small, thin grey + in the top right corner (Make a book, Playlists) */}
         {plus ? (
@@ -90,7 +90,7 @@ function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onP
           </View>
         ) : null}
         {glyph || null}
-        {(cover || coverArt) && !plus && !glyph && !option && !hasOwnSpine(coverArt) ? <BookSpine /> : null}
+        {(cover || coverArt) && !plus && !glyph && !option && !cutout && !hasOwnSpine(coverArt) ? <BookSpine /> : null}
         {/* a small dog-ear (My Library only; the Book Store covers have none) */}
         {showEar ? <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderLeftWidth: ear, borderBottomWidth: ear, borderLeftColor: 'transparent', borderBottomColor: colors.earUnder }} /> : null}
         {showEar ? <View style={{ position: 'absolute', right: 0, bottom: 0, width: 0, height: 0, borderRightWidth: ear, borderTopWidth: ear, borderRightColor: 'transparent', borderTopColor: colors.white }} /> : null}
@@ -213,7 +213,8 @@ function Band({ color, felt, dark, title, sub, action, onAction, icon }) {
 // and can be brought back with "Show removed books".
 // My Notebook's cover: the brown leather of the notebook on the start page
 const CREATE_TILE = require('../../assets/tile-create.jpg'); // Jörg's blue felt book on grey paper (a small + sits in the corner)
-const PLAYLISTS_FELT = require('../../assets/tile-playlists-felt.jpg'); // five felt books, stacked (the Playlists tile)
+const PLAYLISTS_FELT = require('../../assets/tile-playlists-felt.jpg');
+const PLAYLISTS_STACK = require('../../assets/tile-playlists-stack.png'); // Jörg's stack of cloth books, cut out (29 Oct 2026) // five felt books, stacked (the Playlists tile)
 const PLAYLISTS_TILE = require('../../assets/tile-playlists.jpg'); // Jörg's stack of felt books, behind the Playlists sign
 const TIP_CORO = require('../../assets/welcome/coro-wave.png'); // Coro in the library's welcome bubble (a reading pose is coming from Jörg)
 let libTipSeen = false; // the library's welcome shows once each time the app is opened
@@ -417,7 +418,7 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
         {!selecting && onNotebook ? <Text style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('My Workspace')}</Text> : null}
         {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
         {/* Book Playlists beside My Notebook (Jörg, 28 Oct 2026) */}
-        {!selecting && onPlaylists ? <Tile u={u} option title={t('Book Playlists')} onPress={onPlaylists} cover={PLAYLISTS_FELT} /> : null}{/* Jörg's photo of five stacked felt books (27 Oct 2026) */}
+        {!selecting && onPlaylists ? <Tile u={u} option cutout title={t('Book Playlists')} onPress={onPlaylists} cover={PLAYLISTS_STACK} /> : null}{/* Jörg's photo of five stacked felt books (27 Oct 2026) */}
         {!selecting && onNotebook ? <View style={{ width: '100%', height: 18 }} /> : null}{/* the notebook has its row to itself */}
         {/* My Folder starts its own row: the folder (the size of a book), a pencil beside it, then a mug of hot chocolate */}
         {!selecting ? (() => {
