@@ -1,4 +1,4 @@
-// My Folder: a kraft folder in My Library that holds sheets. Tapped, the screen dims and the sheets fan out:
+// Things to share: a kraft folder in My Library that holds sheets. Tapped, the screen dims and the sheets fan out:
 // a warm note from Oomlaut, the Abc sheet (tap a letter and the chosen narrator says it: "B… buh… bear."), and any
 // sheets other families sent (a drawing, a photo, a note from their notebook). A grown-up can send one of the
 // child's notebook pages as a sheet.
@@ -22,7 +22,7 @@ import { onScopeChange } from '../scope';
 const KRAFT = require('../../assets/kraft.jpg');
 const ENVELOPE = require('../../assets/icon-envelope.png');
 const TRASH = require('../../assets/icon-trash.png');
-const TYPE = 'SpecialElite_400Regular'; // the typewriter, like My Notebook
+const TYPE = 'SpecialElite_400Regular'; // the typewriter, like My Notes
 const CREAM = '#f4f2ed';
 
 // a page from someone's notebook, drawn like the notebook: the picture square above the notes
@@ -118,7 +118,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
       <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.78)', opacity: fade }]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={close} accessibilityLabel={t('Close')} />
         <ScrollView contentContainerStyle={{ paddingTop: 90, paddingBottom: 60, paddingHorizontal: 24, alignItems: 'center' }}>
-          <Text style={styles.title}>{t('My Folder')}</Text>
+          <Text style={styles.title}>{t('Things to share')}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 24, marginTop: 26 }}>
             {card('welcome', t('A note from Oomlaut'), (
               <View style={[styles.paper, { width: thumb, height: thumb * 1.25, padding: thumb * 0.1 }]}>
@@ -190,11 +190,11 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
       {picking ? (
         <View style={[StyleSheet.absoluteFill, styles.openBack]}>
           <View style={[styles.sureBox, { maxWidth: 440, maxHeight: winH - 160 }]}>
-            <Text style={[styles.sureText, { fontFamily: fonts.uiBold }]}>{t('Which page from My Notebook?')}</Text>
+            <Text style={[styles.sureText, { fontFamily: fonts.uiBold }]}>{t('Which page from My Notes?')}</Text>
             {picking.length ? (
               <ScrollView style={{ marginTop: 16 }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
                 {picking.map((p, k) => (
-                  <Pressable key={p.pid} onPress={withTap(async () => { setPicking(null); await shareSheet(p, name || t('a friend'), t('A sheet for you from {name}. Open the file in Coro to put it in My Folder.', { name: name || t('a friend') })); })}
+                  <Pressable key={p.pid} onPress={withTap(async () => { setPicking(null); await shareSheet(p, name || t('a friend'), t('A sheet for you from {name}. Open the file in Coro to put it in Things to share.', { name: name || t('a friend') })); })}
                     style={{ alignItems: 'center', gap: 4 }} accessibilityRole="button" accessibilityLabel={t('Page {n}', { n: k + 3 })}>
                     <SheetPage page={p} size={90} />
                     <Text style={styles.cardLabel}>{t('Page {n}', { n: k + 3 })}</Text>

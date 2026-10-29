@@ -137,7 +137,7 @@ export async function shareStoryPdf(story, layout, fontKey) {
   await Sharing.shareAsync(shareUri, { UTI: 'com.adobe.pdf', mimeType: 'application/pdf', dialogTitle: story.title });
 }
 
-// ---- My Notebook: a page or a run of pages, printed or shared as a PDF ----
+// ---- My Notes: a page or a run of pages, printed or shared as a PDF ----
 // Each notebook page is one US Letter page, drawn like the notebook: two cream squares with soft round corners,
 // the picture (a photo, a drawing, or a drawing on a photo) above the typed notes; a sketch page is its two drawings.
 async function fileData(uri, type) {
@@ -166,7 +166,7 @@ export async function buildNotebookHtml(pages, from = 1) {
       top = pic ? `<img src="${pic}"/>` : '';
       bottom = (p.text || '').trim() ? `<p>${esc(p.text).replace(/\n/g, '<br/>')}</p>` : '';
     }
-    out.push(`<div class="pg"><div class="nb"><div class="nsq t">${top}</div><div class="nsq b${p.kind === 'sketch' ? '' : ' note'}">${bottom}</div></div><div class="num">My Notebook · ${from + k}</div></div>`);
+    out.push(`<div class="pg"><div class="nb"><div class="nsq t">${top}</div><div class="nsq b${p.kind === 'sketch' ? '' : ' note'}">${bottom}</div></div><div class="num">My Notes · ${from + k}</div></div>`);
   }
   const style = `${face}
 @page{size:${PAGE_W}pt ${PAGE_H}pt;margin:0}
@@ -203,14 +203,14 @@ export async function shareNotebookPdf(pages, from) {
   let shareUri = uri;
   try {
     const to = from + pages.length - 1;
-    const target = new File(Paths.cache, pages.length > 1 ? `My Notebook, pages ${from}-${to}.pdf` : `My Notebook, page ${from}.pdf`);
+    const target = new File(Paths.cache, pages.length > 1 ? `My Notes, pages ${from}-${to}.pdf` : `My Notes, page ${from}.pdf`);
     if (target.exists) target.delete();
     const f = new File(uri);
     await f.move(target);
     shareUri = f.uri;
   } catch (e) {}
   if (!(await Sharing.isAvailableAsync())) throw new Error('Sharing is not available on this device.');
-  await Sharing.shareAsync(shareUri, { UTI: 'com.adobe.pdf', mimeType: 'application/pdf', dialogTitle: 'My Notebook' });
+  await Sharing.shareAsync(shareUri, { UTI: 'com.adobe.pdf', mimeType: 'application/pdf', dialogTitle: 'My Notes' });
 }
 
 // One drawing, straight from the drawing screen (Jörg, 28 Oct 2026): print it (centred on a page) or share it as a

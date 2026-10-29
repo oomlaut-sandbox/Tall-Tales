@@ -24,8 +24,8 @@ const MAP_AR = 1116 / 1886; // (the grey patch below the bottom gate is cut off)
 const ORDER = ['day', 'evening', 'night'];
 // the places to tap, as parts of the map (left, top, right, bottom). For now only the gates: the games aren't ready
 const SPOTS = [
-  { game: 'home', box: [0.38, 0.0, 0.53, 0.095], label: 'My Library' }, // the gate at the top: back to the books
-  { game: 'home', box: [0.48, 0.86, 0.72, 1.0], label: 'My Library' }, // the gate at the bottom
+  { game: 'home', box: [0.38, 0.0, 0.53, 0.095], label: 'My Workspace' }, // the gate at the top: back to My Workspace (Jörg, 29 Oct 2026)
+  { game: 'home', box: [0.48, 0.86, 0.72, 1.0], label: 'My Workspace' }, // the gate at the bottom
   // (put away until they're ready)
   // { game: 'pebbles', box: [0.12, 0.18, 0.33, 0.29], label: 'The rocks' },
   // { game: 'pebbles', box: [0.1, 0.78, 0.37, 0.95], label: 'The rocks' },
@@ -56,7 +56,7 @@ export default function Garden({ u, openMenu, toast, onHome }) {
   };
   // a couple of seconds in: a word that the Garden is a beta (the same speech bubble as the library's)
   useEffect(() => {
-    const id = setTimeout(() => toast && toast(t('Welcome to the garden, a relaxing space where you can enjoy simple games and puzzles. Check back later for more. And remember, nothing beats going outside in nature. For real, go outside. (If you’re looking for your way back to the library, tap on the gate.)'), 0) /* (stays until it's tapped closed: Jörg, 27 Oct 2026) */, 2200);
+    const id = setTimeout(() => toast && toast(t('Welcome to the garden, a relaxing space where you can enjoy simple games and puzzles. Check back later for more. And remember, nothing beats going outside in nature. For real, go outside. (If you’re looking for your way back to My Workspace, tap on the gate.)'), 0) /* (stays until it's tapped closed: Jörg, 27 Oct 2026) */, 2200);
     return () => clearTimeout(id);
   }, []);
   // birdsong by day; at night the crickets take over (one fades out as the other comes up). Both start silent and

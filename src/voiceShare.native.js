@@ -60,7 +60,7 @@ export async function shareBookWithVoices(story) {
 export async function readVoicesFile(uri) {
   try {
     const data = JSON.parse(await new File(uri).text());
-    if (data && data.kind === 'oomlaut-sheet' && data.page) return data; // a sheet for My Folder (see sheetShare)
+    if (data && data.kind === 'oomlaut-sheet' && data.page) return data; // a sheet for Things to share (see sheetShare)
     if (!data || data.kind !== KIND || !Array.isArray(data.pages)) return null;
     return data;
   } catch (e) { return null; }

@@ -635,7 +635,7 @@ function ProfileForm({ t, controls, setControls, kids, onSaved }) {
         </View>
         <View style={{ flex: 1 }}>
           <Text style={{ color: INK, fontFamily: F.bold, fontSize: 15 }}>{t('Quick and Safe Kid')}</Text>
-          <Text style={{ color: 'rgba(0,0,0,0.55)', fontFamily: F.reg, fontSize: 13, lineHeight: 18, marginTop: 3 }}>{t('Only My Library and My Notebook, every book read aloud, nothing to buy, share or record. Recommended if they’ll read alone.')}</Text>
+          <Text style={{ color: 'rgba(0,0,0,0.55)', fontFamily: F.reg, fontSize: 13, lineHeight: 18, marginTop: 3 }}>{t('Only My Library and My Notes, every book read aloud, nothing to buy, share or record. Recommended if they’ll read alone.')}</Text>
         </View>
       </Pressable>
       <View style={{ flexDirection: 'row', marginTop: 18 }}>

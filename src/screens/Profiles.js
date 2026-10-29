@@ -1,4 +1,4 @@
-// Profiles (Start page, top right): one for each child. Each child has their own My Notebook, badges,
+// Profiles (Start page, top right): one for each child. Each child has their own My Notes, badges,
 // playlists, playback choices and parental controls (with their age, so their shelf only shows their books).
 // The books, the membership, parents' recordings, the language and the music are the family's.
 // Kids can switch between profiles by tapping (unless a grown-up has turned that off); adding, changing and

@@ -1,4 +1,4 @@
-// My Folder: the sheets a child keeps. Two are always there (a warm note from Oomlaut and the Abc sheet); the
+// Things to share: the sheets a child keeps. Two are always there (a warm note from Oomlaut and the Abc sheet); the
 // rest are sheets sent by other Oomlaut families (a notebook page: a drawing, a photo, a note), added when a
 // grown-up opens the file they were sent. Each child has their own folder.
 // { sheets: [{ id, kind: 'page', from, date, page: { kind: 'note' | 'sketch', text, uri, strokes, strokes2 } }] }

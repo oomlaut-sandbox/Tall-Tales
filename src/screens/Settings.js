@@ -1,7 +1,7 @@
 // Settings (the last item in the main menu, always behind the grown-up question):
 //   Language — the app's language, and (members) a different language for the books
 //   Parental controls — shape the app down to exactly the experience a parent wants: what shows (Book Store,
-//   My Notebook, Make a Book, Help), whether the child may change playback (or it always plays one way),
+//   My Notes, Make a Book, Help), whether the child may change playback (or it always plays one way),
 //   recording, sharing and printing, and changing the language. "Lock everything" leaves only My Library.
 import { TitleIcon } from '../titleIcons';
 import { useScrollMemory } from '../nav';
@@ -124,7 +124,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
               <View style={[styles.card, { borderWidth: 2, borderColor: quick ? colors.green : 'transparent' }]}>
                 <Text style={[styles.cardTitle, { fontSize: 18 }]}>{t('Quick and Safe Kid')}</Text>
                 <Text style={styles.small}>{t('Recommended for a child reading alone')}</Text>
-                <Text style={styles.p}>{t('The simplest, most foolproof setup: only My Library and My Notebook. Every book reads itself aloud a page at a time, and your child turns the page when ready. Nothing can be bought, shared, printed, recorded or changed. With your child’s age set, only books rated for that age.')}</Text>
+                <Text style={styles.p}>{t('The simplest, most foolproof setup: only My Library and My Notes. Every book reads itself aloud a page at a time, and your child turns the page when ready. Nothing can be bought, shared, printed, recorded or changed. With your child’s age set, only books rated for that age.')}</Text>
                 {quick ? (
                   <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>{/* a big red Turn off beside it (Jörg, 27 Oct 2026): everything back on, the age and bedtime kept */}
                     <Text style={[styles.p, { color: colors.white, fontFamily: fonts.uiBold, flexShrink: 1 }]}>{t('Quick and Safe Kid is on.')}</Text>
@@ -150,7 +150,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
               <View style={styles.card}>
                 <Text style={styles.p}>{t('Choose exactly what your child can see and do. Settings always asks the grown-up question first.')}</Text>
                 {STORE_ON ? <Toggle label={t('Show the Book Store')} value={controls.store} onChange={(v) => set({ store: v })} /> : null}
-                <Toggle label={t('Show My Notebook')} value={controls.notebook} onChange={(v) => set({ notebook: v })} />
+                <Toggle label={t('Show My Notes')} value={controls.notebook} onChange={(v) => set({ notebook: v })} />
                 <Toggle label={t('Show Make a Book')} value={controls.create} onChange={(v) => set({ create: v })} />
                 <Toggle label={t('Ideas, Support and About')} value={controls.help} onChange={(v) => set({ help: v })} />
                 <Toggle label={t('Recording own voice')} value={controls.recording} onChange={(v) => set({ recording: v })} />
@@ -192,7 +192,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
                 {gardenBox ? <Image source={IDEAS_FELT} style={{ position: 'absolute', left: 0, top: 0, width: gardenBox.w, height: gardenBox.h }} resizeMode="stretch" /> : null}
                 <Text style={[styles.small, { color: '#eef0e2' }]}>{t('The Garden is a secret place for your child to discover: calm nature games with rocks, sticks and animals, to play and learn after a good book. It starts locked. Unlock it whenever you like, as a surprise or a reward.')}</Text>
                 <Toggle label={t('Unlock the Garden')} value={!!controls.garden} onChange={(v) => set({ garden: v })} />
-                <Text style={[styles.small, { color: '#eef0e2' }]}>{t('Once it’s unlocked, your child finds the way in by scrolling past the corkboard at the bottom of My Library. We won’t tell them.')}</Text>
+                <Text style={[styles.small, { color: '#eef0e2' }]}>{t('Once it’s unlocked, your child finds the way in by scrolling past the Message Board at the bottom of My Workspace. We won’t tell them.')}</Text>
               </View>
           </Section>
           <ReadingOptionsSection prefs={prefs} setPrefs={setPrefs} toast={toast} onPlaylists={onPlaylists} open={openSec === 'reading'} onToggle={() => setOpenSec((o) => (o === 'reading' ? null : 'reading'))} />

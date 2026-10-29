@@ -173,13 +173,13 @@ function Root() {
     clearTimeout(toastTimer.current);
     if (ms > 0) toastTimer.current = setTimeout(() => setMessage(''), ms + 500); // the bubble itself closes after ms (or sooner with a tap); ms 0: it stays until it's tapped
   }, []);
-  // a new reading badge: a little speech bubble (the badges are on the first page of My Notebook)
-  // (off for now: the bubbles were distracting. Badges are still earned and shown in My Notebook: Jörg, 27 Oct 2026)
+  // a new reading badge: a little speech bubble (the badges are on the first page of My Notes)
+  // (off for now: the bubbles were distracting. Badges are still earned and shown in My Notes: Jörg, 27 Oct 2026)
   useEffect(() => onNewBadge((fresh) => {
     if (!BADGE_BUBBLES) return;
     const b = fresh[0];
     const tr = (str, v) => translate(langRef.current, str, v);
-    setTimeout(() => toast(fresh.length > 1 ? tr('New badges! {name} and more. See them in My Notebook.', { name: tr(b.title) }) : tr('A new badge, {name}! See it in My Notebook.', { name: tr(b.title) })), 900);
+    setTimeout(() => toast(fresh.length > 1 ? tr('New badges! {name} and more. See them in My Notes.', { name: tr(b.title) }) : tr('A new badge, {name}! See it in My Notes.', { name: tr(b.title) })), 900);
   }), [toast]);
 
   // From the start page to My Library: the closed notebook flies onto the shelf as the library fades in.
@@ -397,7 +397,7 @@ function Root() {
         ) : null}
         {(screen === 'library' || (screen === 'start' && peek === 'library')) && (
           <View style={{ flex: 1 }}>
-          <Library toBooks={toBooks} toWip={toWip} onReadingOptions={readingBox} onGarden={controls.garden ? () => go('garden') : undefined} u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
+          <Library toBooks={toBooks} toWip={toWip} onReadingOptions={readingBox} u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
             onNotebookOff={(rect) => {
               // the notebook stays where it is while the shelf dissolves away to plain felt; then the notebook
               // screen takes over (its own notebook is already in the same spot) and the held one is taken away
@@ -430,10 +430,10 @@ function Root() {
             }} />
           </View>
         )}
-        {/* My Workspace (Jörg, 29 Oct 2026): who is reading, Let's make a book, Work in Progress, My Notebook, My Folder, the corkboard */}
+        {/* My Workspace (Jörg, 29 Oct 2026): who is reading, Let's make a book, Work in Progress, My Notes, Things to share, the corkboard */}
         {screen === 'workspace' && (
           <Animated.View style={{ flex: 1, opacity: libFade }}>
-          <Library mode="workspace" toWip={toWip} u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
+          <Library mode="workspace" toWip={toWip} onGarden={controls.garden ? () => go('garden') : undefined} /* the Garden lies below My Workspace now (Jörg, 29 Oct 2026) */ u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
             onNotebook={(rect) => {
               // the notebook stays where it is while the shelf dissolves away to plain felt; then the notebook
               // screen takes over (its own notebook is already in the same spot) and the held one is taken away
@@ -476,7 +476,7 @@ function Root() {
         {screen === 'playlists' && <Playlists u={u} openMenu={openMenu} shelf={childShelf} onPlay={playPlaylist} onDone={() => { const last = hist.current[hist.current.length - 1]; if (last && (last.screen === 'library' || last.screen === 'workspace')) goBack(); else go('workspace'); }} /* from My Library: back to the same spot (the corkboard), like the back button (Jörg, 29 Oct 2026) */ />}
         {screen === 'settings' && <Settings u={u} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
           controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} onProfiles={() => go('profiles')} onPlaylists={() => go('playlists')} onReadingOptions={readingOptions} onMusic={() => go('music')} prefs={prefs} setPrefs={setPrefs} toast={toast} />}
-        {screen === 'garden' && <Garden u={u} openMenu={openMenu} toast={toast} onHome={() => go('library')} />}
+        {screen === 'garden' && <Garden u={u} openMenu={openMenu} toast={toast} onHome={() => go('workspace')} />}
         {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} onWelcome={WELCOME_ON ? () => setWelcome(true) : null}
           onIntro={() => { setSplash(true); setIntroWho(null); setIntroAsk(true); setCoverOpen(false); setStartKey((n) => n + 1); go('start'); }} />}
         {screen === 'ideas' && <IdeaRoom u={u} openMenu={openMenu} onMake={() => openPublisher(null)} onHelp={() => go('help')} />}
@@ -533,19 +533,19 @@ function Root() {
         <Membership visible={memberOpen} onClose={() => setMemberOpen(false)} toast={toast} />
         <ParentGate visible={moreGate} reason={t('Making more than {n} books is part of Coro Family.', { n: FREE_BOOKS })} onPass={() => { setMoreGate(false); setMemberOpen(true); }} onCancel={() => setMoreGate(false)} />
         {incoming && incoming.kind === SHEET_KIND ? (
-          // a sheet someone sent: into My Folder
+          // a sheet someone sent: into Things to share
           <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setIncoming(null)}>
             <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 28 }}>
               <View style={{ width: '100%', maxWidth: 400, backgroundColor: 'rgba(0,0,0,0.86)', borderRadius: 24, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26 }}>
                 <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 20 }}>{t('{name} sent you a sheet', { name: incoming.from || t('Someone') })}</Text>
-                <Text style={{ color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, marginTop: 12 }}>{t('Put it in My Folder?')}</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, marginTop: 12 }}>{t('Put it in Things to share?')}</Text>
                 <View style={{ flexDirection: 'row', gap: 10, marginTop: 26, justifyContent: 'flex-end' }}>
                   <Pressable onPress={() => setIncoming(null)} style={{ height: 44, borderRadius: 22, paddingHorizontal: 20, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 }}>{t('Not now')}</Text></Pressable>
                   <Pressable onPress={async () => {
                     const d = incoming; setIncoming(null);
                     try {
                       await addSheet({ kind: 'page', from: d.from || '', page: d.page }, d.photo ? sheetPhotoFile(d.photo) : null);
-                      go('workspace'); toast(t('It’s in My Folder.'));
+                      go('workspace'); toast(t('It’s in Things to share.'));
                     } catch (e) { toast(t('That file couldn’t be opened.')); }
                   }} style={{ height: 44, borderRadius: 22, paddingHorizontal: 22, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 }}>{t('Add')}</Text></Pressable>
                 </View>

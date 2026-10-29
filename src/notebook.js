@@ -1,4 +1,4 @@
-// My Notebook, kept on the phone. The first page is always the badge board (it isn't stored here);
+// My Notes, kept on the phone. The first page is always the badge board (it isn't stored here);
 // after it come the child's own pages, in two kinds:
 //   'note':   a square for a photo or a drawing (or both: drawing on a photo), and a square of typed notes
 //   'sketch': two square pages to draw on (strokes: the top one, strokes2: the bottom one)

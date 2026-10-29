@@ -27,7 +27,7 @@ const ALL_HELP = [
     'The menu button (three lines) in the bottom bar takes you anywhere in the app.',
   ] },
   { section: 'Getting started', title: 'Profiles for each child', text: [
-    'Everyone can have their own profile, children and grown-ups, with their own notebook, badges, playlists and settings. Grown-ups add and change them in Settings, under Profiles. To switch, tap your picture beside My Notebook in My Library.',
+    'Everyone can have their own profile, children and grown-ups, with their own notebook, badges, playlists and settings. Grown-ups add and change them in Settings, under Profiles. To switch, tap your picture beside My Notes in My Library.',
   ] },
   { section: 'Reading', title: 'Reading a book', text: [
     'Open My Library and tap a book. Its cover opens and the first page appears.',
@@ -96,11 +96,11 @@ const ALL_HELP = [
     'Tap the picture square to add a picture: choose one from your photos, or take a photo (of a drawing, say). Taking a photo asks a grown-up first.',
     'Tap the words square to type the words for that page. Two or three sentences reads best.',
     'Tap the folded corner for a new page. Tap the title in the bottom bar to name your book and add who wrote and illustrated it.',
-    'Everything saves on its own. Save and Exit keeps the book in Work in Progress, in My Workspace. Finish and publish to library puts it in My Book Collection, in My Library.',
+    'Everything saves on its own. Save and Exit keeps the book in Books I’m still making, in My Workspace. Finish and publish to library puts it in My Book Collection, in My Library.',
   ] },
   { section: 'Making books', title: 'My Workspace', text: [
-    'My Workspace is where you make things: who is reading, Let’s make a book, Work in Progress (the books you’re still making), My Notebook, My Folder and the corkboard.',
-    'Tap a book in Work in Progress to carry on where you left off.',
+    'My Workspace is where you make things: who is reading, Let’s make a book, Books I’m still making, My Notes, Things to share and the Message Board.',
+    'Tap a book in Books I’m still making to carry on where you left off.',
   ] },
   { section: 'Making books', title: 'Designing a cover', text: [
     'After writing a page, choose Design a cover. Add a picture, then the title if you like.',
@@ -113,25 +113,25 @@ const ALL_HELP = [
   { section: 'Making books', title: 'How long can a book be?', text: [
     'A book can have up to 40 pages, each with a picture and words. A few sentences a page reads best; longer text gets smaller to fit.',
     'Pictures are kept sharp but small, so a whole book is usually 15 to 25 MB. Recordings take about 1 MB a minute.',
-    'My Notebook has room for 60 pages.',
+    'My Notes has room for 60 pages.',
   ] },
-  { section: 'My Notebook', title: 'Your notebook', text: [
-    'My Notebook is in My Workspace. Tap it to open it.',
+  { section: 'My Notes', title: 'Your notebook', text: [
+    'My Notes is in My Workspace. Tap it to open it.',
     'The first page is the inside cover with “My Notes”. Turn the page to see your badges, then your own pages.',
     'Turn the pages by tapping the bottom-right corner or swiping left or up; tap the bottom-left corner or swipe right or down to go back. On the last page, the bottom-right corner adds a page: a Notes page (a picture or drawing with your notes below) or a Sketch page (two squares to draw on).',
   ] },
-  { section: 'My Notebook', title: 'Drawing and notes', text: [
+  { section: 'My Notes', title: 'Drawing and notes', text: [
     'Tap a picture square to make a drawing, choose a photo or take one. You can also draw on top of a photo.',
     'The drawing tools lie in the tray at the bottom: the eraser, a pencil, an ink pen, a watercolour brush, the smudge tool and the paint roller. Tap a tool to pick it up, and tap it again to choose a thin, medium or thick line.',
     'Pick a colour from the paint splotches. The + has every colour, bright and earthy, and Mix, Shapes and Mirror. The paint roller fills a shape: tap inside it. The smudge tool softly blurs what you’ve drawn.',
     'Undo and Redo are at the top, beside the green tick for Done. The bin clears the page.',
     'Tap the lined square to write notes.',
   ] },
-  { section: 'My Notebook', title: 'Printing and sharing pages', text: [
+  { section: 'My Notes', title: 'Printing and sharing pages', text: [
     'Tap the envelope to share pages as a PDF, or the printer to print them. Pick the pages (or All pages); a grown-up is asked first.',
     'In Pages, each page also has its own printer and a trash can.',
   ] },
-  { section: 'My Notebook', title: 'Badges', text: [
+  { section: 'My Notes', title: 'Badges', text: [
     'Badges are earned by reading: finishing books, reading several days in a row, reading at bedtime, and firsts like your first recording, first drawing and first book made.',
     'Badges you haven’t earned yet are grey. Tap any badge to see how to earn it.',
   ] },
@@ -139,9 +139,9 @@ const ALL_HELP = [
     'My Library is your Book Collection: the books you’ve finished, then the books that come with the app.',
     'Tap Select to choose books to share or delete. Books that came with the app can be brought back with “Show removed books”.',
   ] },
-  { section: 'Books', title: 'My Folder and the corkboard', text: [
-    'My Folder is in My Workspace, under My Notebook. It holds a note from us, the Abc sheet (tap a letter to hear it) and sheets other families send you.',
-    'The corkboard at the bottom of My Workspace is for sticky notes and photos, with Book Playlists pinned in its corner. Tap the pin to add one, and tap a note or photo to see it big or take it down.',
+  { section: 'Books', title: 'Things to share and the Message Board', text: [
+    'Things to share is in My Workspace, under My Notes. It holds a note from us, the Abc sheet (tap a letter to hear it) and sheets other families send you.',
+    'The Message Board at the bottom of My Workspace is for sticky notes and photos, with Book Playlists pinned in its corner. Tap the pin to add one, and tap a note or photo to see it big or take it down.',
   ] },
   { section: 'Books', title: 'The Book Store', store: true, text: [
     'The Book Store has new books to discover. Tap a cover to see what it’s about, then Read now.',
@@ -153,12 +153,12 @@ const ALL_HELP = [
   { section: 'Grown-ups', title: 'Settings and parental controls', text: [
     'Settings is the last item in the menu. It always asks the grown-up question first.',
     'Language: choose English, Deutsch, Français, Español or 日本語 for the app. Members can also read books in a different language from the app’s. The languages are also listed at the top of the start page: tap one to switch.',
-    'Parental controls: choose exactly what your child can see and do. Hide My Notebook, Make a Book or Ideas and Support; switch off recording, sharing and printing; keep the language fixed; and make every book play one way (for example, always Page by Page).',
-    'Quick and Safe Kid is the recommended setup for a child reading alone: only My Library and My Notebook, every book read aloud a page at a time, and nothing to buy, share, print, record or change.',
+    'Parental controls: choose exactly what your child can see and do. Hide My Notes, Make a Book or Ideas and Support; switch off recording, sharing and printing; keep the language fixed; and make every book play one way (for example, always Page by Page).',
+    'Quick and Safe Kid is the recommended setup for a child reading alone: only My Library and My Notes, every book read aloud a page at a time, and nothing to buy, share, print, record or change.',
     'Your child’s age: every book has an age rating, and books rated for older children are hidden.',
     'Lock everything leaves only My Library and its books, read the way you chose. Unlock everything brings it all back.',
     'Nightlight mode: switch the bedtime nightlight on or off. Haptic feedback: feel soft clicks on dials, knobs and buttons, or switch them off.',
-    'The Garden (a beta that may change): a quiet garden to visit, with birdsong. Turn it on in Settings, then pull up past the bottom of My Library to go in. Tap the garden to change the light, and tap a gate to leave.',
+    'The Garden (a beta that may change): a quiet garden to visit, with birdsong. Turn it on in Settings, then pull up past the bottom of My Workspace to go in. Tap the garden to change the light, and tap a gate to leave.',
   ] },
   { section: 'Grown-ups', title: 'The grown-up check', text: [
     'Some things, like taking photos, printing, sharing and deleting, first ask a quick question only a grown-up can answer.',

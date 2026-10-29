@@ -14,7 +14,7 @@ async function save() { await saveJSON('corkboard', { pins: cache }); }
 
 // the Book Playlists sheet, always pinned in the board's lower left corner: no pin's middle may land where the
 // pin would cover any of it (Jörg, 29 Oct 2026)
-export const inSheet = (x, y) => x < 0.45 && y > 0.5;
+export const inSheet = (x, y) => (x < 0.45 && y > 0.5) || (x < 0.42 && y < 0.3); // (and the little 'Pin notes and photos here' note, top left)
 // somewhere free-ish on the board, a little tilted
 function spot() {
   const taken = cache || [];

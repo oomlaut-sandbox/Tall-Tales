@@ -1,5 +1,5 @@
 // Sending a sheet to another Oomlaut family: one notebook page (its drawing, photo and notes) packed into a file
-// ("A sheet from Annika.oomlaut") and sent by text or email. Opened in Coro, it goes into My Folder.
+// ("A sheet from Annika.oomlaut") and sent by text or email. Opened in Coro, it goes into Things to share.
 // The file: JSON { kind: 'oomlaut-sheet', v: 1, from, page: { kind, text, strokes, strokes2 }, photo?: base64 jpg }
 import { Share } from 'react-native';
 import { File, Paths } from 'expo-file-system';
@@ -31,7 +31,7 @@ export async function shareSheet(page, from, message) {
   await Share.share({ message: `${message}\n\n${APP_LINK}`, url: file.uri }).catch(() => {});
 }
 
-// a received sheet's photo, written out as a file (for My Folder to keep)
+// a received sheet's photo, written out as a file (for Things to share to keep)
 export function sheetPhotoFile(b64) {
   try { const f = new File(Paths.cache, `sheet-in-${Date.now()}.jpg`); f.write(fromBase64(b64)); return f.uri; } catch (e) { return null; }
 }

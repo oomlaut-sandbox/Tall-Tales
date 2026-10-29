@@ -128,7 +128,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   // While recording (and a little after, for 'Saved your voice…'), speech bubbles sit in the middle of the
   // picture page (top, or left when sideways) so they don't cover the words being read.
   const bookRef = useRef(null);
-  // badges (My Notebook): a day with reading, and a book read all the way to The End
+  // badges (My Notes): a day with reading, and a book read all the way to The End
   useEffect(() => { markReadToday(); }, []);
   // VoiceOver: the words on the page that just turned are read out (Jörg, 27 Oct 2026)
   useEffect(() => { const pg = pages[idx]; if (!pg) return; announce(pg.end ? tr('The End') : pg.titlePage ? (story.title || '') : (pg.text || '')); }, [idx]);
@@ -570,7 +570,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
         await saveRecording(story.id, pageKey(story.pages[page], page), recorder.uri, seconds, levels, recReader.current);
         if (voiceRef.current !== recReader.current) { setVoice(recReader.current); setBookVoice(story.id, recReader.current); } // the book now reads in this reader's voice
         setSavedPage({ n: page + 1, k: Date.now(), who: recReader.current }); // a green 'Page 2 saved' beside the recording box (no speech bubble)
-        markFirst('firstRecording'); // a badge in My Notebook
+        markFirst('firstRecording'); // a badge in My Notes
         recSession.current += 1;
         refreshRecPages();
       }

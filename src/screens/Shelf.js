@@ -212,7 +212,7 @@ function Band({ color, felt, dark, title, sub, action, onAction, icon }) {
 // Select mode: tap books to pick them, then Share (one book, as a PDF) or Delete.
 // Your own stories are deleted for good; the built-in books are only removed from the shelf
 // and can be brought back with "Show removed books".
-// My Notebook's cover: the brown leather of the notebook on the start page
+// My Notes's cover: the brown leather of the notebook on the start page
 const CREATE_TILE = require('../../assets/tile-create.jpg'); // Jörg's blue felt book on grey paper (a small + sits in the corner)
 const PLAYLISTS_FELT = require('../../assets/tile-playlists-felt.jpg');
 const PLAYLISTS_STACK = require('../../assets/tile-playlists-stack.png'); // Jörg's stack of cloth books, cut out (29 Oct 2026) // five felt books, stacked (the Playlists tile)
@@ -221,7 +221,7 @@ const TIP_CORO = require('../../assets/welcome/coro-wave.png'); // Coro in the l
 let libTipSeen = false; // the library's welcome shows once each time the app is opened
 const NOTEBOOK_COVER = require('../../assets/leather-cover.jpg');
 
-// My Notebook on the shelf: a small copy of the leather notebook on the start page, with the same
+// My Notes on the shelf: a small copy of the leather notebook on the start page, with the same
 // rounded corners (tiny along the spine at the top, rounder at the bottom) and no dog-ear.
 function NotebookTile({ onPress, hidden, onRect }) {
   const t = useT();
@@ -232,19 +232,19 @@ function NotebookTile({ onPress, hidden, onRect }) {
   const measure = (then) => (ref.current && ref.current.measureInWindow ? ref.current.measureInWindow((x, y, ww, h) => then(ww ? { x, y, w: ww, h } : null)) : then(null));
   const corners = { borderTopLeftRadius: w * 0.012, borderTopRightRadius: w * 0.012, borderBottomLeftRadius: w * 0.102, borderBottomRightRadius: w * 0.102 };
   return (
-    <Pressable onPress={() => measure(onPress)} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={t('My Notebook')}>
+    <Pressable onPress={() => measure(onPress)} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={t('My Notes')}>
       <View ref={ref} collapsable={false} onLayout={(e) => { setW(e.nativeEvent.layout.width); if (onRect) setTimeout(() => measure(onRect), 30); }}
         style={[{ aspectRatio: 1, backgroundColor: '#7c5438', shadowColor: '#000', shadowOffset: { width: 3, height: 10 }, shadowOpacity: 0.72, shadowRadius: 13, elevation: 14, opacity: hidden ? 0 : 1 }, corners]}>
         <View style={[{ flex: 1, overflow: 'hidden' }, corners]}>
           <Image source={NOTEBOOK_COVER} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
         </View>
       </View>
-      <Text style={[styles.tileTitle, styles.tileOption]}>{t('My Notebook')}</Text>{/* in the Coro font, like My Folder (Jörg, 27 Oct 2026) */}
+      <Text style={[styles.tileTitle, styles.tileOption]}>{t('My Notes')}</Text>{/* in the Coro font, like Things to share (Jörg, 27 Oct 2026) */}
     </Pressable>
   );
 }
 
-// the child reading now, at the top of the space beside My Notebook (or 'Profiles' before any are made)
+// the child reading now, at the top of the space beside My Notes (or 'Profiles' before any are made)
 function WhoReads({ onPress }) {
   const t = useT();
   const { width: winW } = useWindowDimensions();
@@ -273,7 +273,7 @@ function WhoReads({ onPress }) {
 // so coming back to it later (the home button, the menu) opens at the top, not at the old spot again (Jörg, 28 Oct 2026)
 const scrollAsks = { books: { current: 0 }, wip: { current: 0 } };
 // mode: 'library' (My Library: just My Book Collection) or 'workspace' (My Workspace: who is reading, Let's make a
-// book, Work in Progress, My Notebook, My Folder and the corkboard) (Jörg, 29 Oct 2026)
+// book, Work in Progress, My Notes, Things to share and the corkboard) (Jörg, 29 Oct 2026)
 export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
   const t = useT();
   // Read a book (from the start page): open scrolled down so My Books is at the top, just under the band
@@ -300,9 +300,9 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
   const gardenAsked = useRef(false);
   const gardenPull = useRef(false);
   if (typeof window !== 'undefined' && window.location && /garden/.test(window.location.hash || '')) window.__openGarden = onGarden; // (web preview screenshots)
-  const controls = useControls(); // parental controls: My Notebook, Make a book and Select may be hidden
+  const controls = useControls(); // parental controls: My Notes, Make a book and Select may be hidden
   const { width: winW, height: winH } = useWindowDimensions();
-  const [folderOpen, setFolderOpen] = useState(false); // My Folder, opened (the sheets)
+  const [folderOpen, setFolderOpen] = useState(false); // Things to share, opened (the sheets)
   const [selecting, setSelecting] = useState(false);
   const [picked, setPicked] = useState([]);
   const [confirm, setConfirm] = useState(false);
@@ -413,22 +413,22 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
         {!selecting && !ws ? <View style={{ width: '100%', height: onReadingOptions ? 48 : 70 }} /> : null}
         {/* Work in Progress: the books being made (saved with Save and Exit, not yet published); a tap carries on in
             the book maker. 'Finish and publish to library' moves a book up into My Book Collection (Jörg, 28 Oct 2026) */}
-        {ws && wip.length ? <Text onLayout={(e) => { wipY.current = e.nativeEvent.layout.y; toWipNow(); }} style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('Work in Progress')}</Text> : null}
+        {ws && wip.length ? <Text onLayout={(e) => { wipY.current = e.nativeEvent.layout.y; toWipNow(); }} style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('Books I’m still making')}</Text> : null}
         {ws ? wip.map((s) => (
           <Tile key={s.id} spotId={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title} onPress={() => onEdit(s)} />
         )) : null}
         {ws && wip.length ? <View style={{ width: '100%', height: 48 }} /> : null}
-        {/* My Notebook (and who is reading), just above My Folder: Let's make a book and My Books come first (Jörg, 26 Oct 2026) */}
-        {/* My Workspace: the notebook, Book Playlists, My Folder and the corkboard (Jörg, 29 Oct 2026) */}
+        {/* My Notes (and who is reading), just above Things to share: Let's make a book and My Books come first (Jörg, 26 Oct 2026) */}
+        {/* My Workspace: the notebook, Book Playlists, Things to share and the corkboard (Jörg, 29 Oct 2026) */}
         
         {ws && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
         {ws && onNotebook ? <View style={{ width: '100%', height: 18 }} /> : null}{/* the notebook has its row to itself */}
-        {/* My Folder starts its own row: the folder (the size of a book) */}
+        {/* Things to share starts its own row: the folder (the size of a book) */}
         {ws ? (() => {
           const n = COLS(winW), colW = ((winW - 40) * TILE[n]) / 100, gap = ((winW - 40) * ((100 - n * TILE[n]) / (n - 1))) / 100;
           return (
             <>
-              <Pressable onPress={() => setFolderOpen(true)} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={t('My Folder')}>
+              <Pressable onPress={() => setFolderOpen(true)} style={{ width: tileWidth(winW), gap: 8 }} accessibilityRole="button" accessibilityLabel={t('Things to share')}>
                 <View style={{ width: colW, height: colW, alignItems: 'center', justifyContent: 'center' }}>
                   {(() => {
                     const fw = colW * 1.04, fh = fw * 547 / 560;
@@ -447,7 +447,7 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
                     );
                   })()}
                 </View>
-                <Text style={[styles.tileTitle, styles.tileOption]}>{t('My Folder')}</Text>
+                <Text style={[styles.tileTitle, styles.tileOption]}>{t('Things to share')}</Text>
               </Pressable>
               {/* a yellow pencil beside the folder, a little tilted, with a soft shadow (Jörg, 29 Oct 2026) */}
               {(() => { const ph = colW * 0.98, pw = ph * 180 / 1020; return (
@@ -457,6 +457,7 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
               ); })()}
               {/* the corkboard: always at the very bottom, as wide as two books */}
               <View style={{ width: '100%' }} />
+              <Text style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('Message Board')}</Text>
               <Corkboard width={2 * colW + gap} toast={toast} onPlaylists={onPlaylists} />{/* Book Playlists: a white sheet pinned to the board (Jörg, 29 Oct 2026) */}
             </>
           );

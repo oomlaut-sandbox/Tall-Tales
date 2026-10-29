@@ -1,6 +1,6 @@
 // Translations for notebook (English source string -> { de, fr, es, ja }). Merged into the main table in src/i18n.js.
 export default {
-  // ---- My Notebook ----
+  // ---- My Notes ----
   'Your notebook is full ({n} pages). Delete a page to make room.': { de: 'Dein Notizbuch ist voll ({n} Seiten). Lösche eine Seite, dann ist wieder Platz.', fr: 'Ton carnet est plein ({n} pages). Supprime une page pour faire de la place.', es: 'Tu cuaderno está lleno ({n} páginas). Borra una página para hacer sitio.', ja: 'ノートが いっぱいです（{n}ページ）。ページを けすと、また かけるよ。', ar: "دفترك ممتلئ ({n} صفحة). احذف صفحة لتفسح مكانًا." },
   'Page deleted.': { de: 'Seite gelöscht.', fr: 'Page supprimée.', es: 'Página borrada.', ja: 'ページを けしました。', ar: "حُذفت الصفحة." },
   'or a drawing': { de: 'oder ein Bild malen', fr: 'ou un dessin', es: 'o un dibujo', ja: 'または え', ar: "أو رسمة" },

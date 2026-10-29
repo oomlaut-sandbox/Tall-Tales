@@ -1,4 +1,4 @@
-// Finger drawings in My Notebook are kept as strokes, not pictures: each stroke is a colour, a pen size
+// Finger drawings in My Notes are kept as strokes, not pictures: each stroke is a colour, a pen size
 // and its points. Points are measured in widths of the drawing (x from 0 to 1, y from 0 to the height
 // in widths), so a drawing looks the same at any size. { c: '#c0392b', s: 0.02, p: [x1, y1, x2, y2, …] }
 

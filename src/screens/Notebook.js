@@ -1,4 +1,4 @@
-// My Notebook: always first in My Library. A book editor of its own (built like Make a Book),
+// My Notes: always first in My Library. A book editor of its own (built like Make a Book),
 // shaped like the leather notebook on the start page:
 //   - spread 1: the inside of the hard leather cover (top) and a white title page, "My Notes" (bottom)
 //   - spread 2: a blank page (top) and what the notebook is for (bottom)
@@ -917,7 +917,7 @@ function AboutSpread({ side, wide }) {
       <View style={{ width: side, height: side, backgroundColor: WHITE, overflow: 'hidden', justifyContent: 'center', paddingHorizontal: side * 0.12 }}>
         <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.1)} max={0.2} />
         <Spine wide={wide} />
-        <Text style={{ fontFamily: TYPE, fontSize: side * 0.06, color: '#2b2b2b', marginBottom: side * 0.04 }}>{t('My Notebook')}</Text>
+        <Text style={{ fontFamily: TYPE, fontSize: side * 0.06, color: '#2b2b2b', marginBottom: side * 0.04 }}>{t('My Notes')}</Text>
         <Text style={{ fontFamily: TYPE, fontSize: side * 0.038, lineHeight: side * 0.058, color: '#3a3a3a' }}>{t('This notebook is all yours. Jot down ideas for stories, add photos, and draw on the sketch pages. Collect badges as you read. Everything saves by itself, and you can print or share your pages any time.')}</Text>
       </View>
     </View>

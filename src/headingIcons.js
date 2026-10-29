@@ -7,7 +7,7 @@ export const HEADING_ICONS = {
   'Bedtime': require('../assets/heading-icons/bedtime.png'),
   'Your voice': require('../assets/heading-icons/your-voice.png'),
   'Making books': require('../assets/heading-icons/making-books.png'),
-  'My Notebook': require('../assets/heading-icons/my-notebook.png'),
+  'My Notes': require('../assets/heading-icons/my-notebook.png'),
   'Books': require('../assets/heading-icons/books.png'),
   'Grown-ups': require('../assets/heading-icons/grown-ups.png'),
   'Artificial Intelligence': require('../assets/heading-icons/ai.png'), // two sparkles

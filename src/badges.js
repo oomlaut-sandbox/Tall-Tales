@@ -1,4 +1,4 @@
-// Reading badges for My Notebook. Everything is kept on the phone.
+// Reading badges for My Notes. Everything is kept on the phone.
 // What counts:
 //   - finishing a book (reading it to The End): one badge per book, with its cover
 //   - milestones: 1, 5, 10, 25 and 50 different books finished
@@ -61,7 +61,7 @@ const STREAKS = [
 const FIRSTS = [
   { id: 'firstRecording', title: 'First Recording', how: 'Record your own voice reading a page.', mark: '●', color: '#c0392b' },
   { id: 'firstBook', title: 'First Book Made', how: 'Make your own book in Make a Book.', mark: '+', color: '#4f7a3a' },
-  { id: 'firstDrawing', title: 'First Drawing', how: 'Draw a picture in My Notebook.', mark: '✎', color: '#3d6f9e' },
+  { id: 'firstDrawing', title: 'First Drawing', how: 'Draw a picture in My Notes.', mark: '✎', color: '#3d6f9e' },
   { id: 'bedtime', title: 'Bedtime Read', how: 'Read a book in the evening, after 7 o’clock.', mark: '☾', color: '#24345e' },
 ];
 

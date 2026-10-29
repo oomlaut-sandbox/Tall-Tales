@@ -81,7 +81,7 @@ export function saveUserStory(draft, { publish = false } = {}) {
     }
     await saveJSON('stories', list);
     await pruneRecordings(draft.id, pages.map((p) => p.pid));
-    if (pages.length) markFirst('firstBook'); // a badge in My Notebook
+    if (pages.length) markFirst('firstBook'); // a badge in My Notes
     return list.map(fromSaved);
   });
 }

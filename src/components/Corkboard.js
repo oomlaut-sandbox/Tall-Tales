@@ -22,7 +22,7 @@ const CORK = require('../../assets/cork.jpg');
 const PIN_ICON = require('../../assets/icon-pin.png');
 const PIN_HEAD = require('../../assets/pin-head.png');
 const NOTE_YELLOW = '#e9da92'; // a softer, less saturated yellow
-const HAND = 'SpecialElite_400Regular'; // the typewriter, like My Notebook
+const HAND = 'SpecialElite_400Regular'; // the typewriter, like My Notes
 
 function Pin({ p, W }) {
   const s = Math.round(W * (p.kind === 'note' ? 0.26 : 0.28));
@@ -82,6 +82,13 @@ export default function Corkboard({ width, toast, onPlaylists }) {
         <View style={[StyleSheet.absoluteFill, { borderRadius: 10, overflow: 'hidden' }]}>
           <Image source={CORK} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
         </View>
+        {/* what the board is for, on a small white note pinned top left (it was grey words underneath: Jörg, 29 Oct 2026) */}
+        {(() => { const nw = Math.round(width * 0.3); return (
+          <View pointerEvents="none" style={[styles.sheet, { position: 'absolute', left: width * 0.06, top: H * 0.05, width: nw, padding: nw * 0.1, paddingTop: nw * 0.13, transform: [{ rotate: '2deg' }] }]}>
+            <Image source={PIN_HEAD} style={{ position: 'absolute', top: 3, left: nw / 2 - 4, width: 8, height: 8, zIndex: 2 }} />
+            <Text style={{ fontFamily: HAND, color: '#2b2b2b', fontSize: nw * 0.1, lineHeight: nw * 0.135 }}>{t('Pin notes and photos here')}</Text>
+          </View>
+        ); })()}
         {/* Book Playlists: a white sheet always pinned in the lower left corner, like a list on the board (Jörg, 29 Oct 2026) */}
         {onPlaylists ? (() => {
           const sw = Math.round(width * 0.25), sh = Math.round(sw * 1.3);
@@ -113,7 +120,7 @@ export default function Corkboard({ width, toast, onPlaylists }) {
       </View>
 
       {/* underneath the board, in light grey */}
-      <Text style={styles.caption}>{t('Pin notes and photos here')}</Text>
+
 
       {/* what to pin */}
       {ask ? (
