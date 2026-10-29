@@ -608,7 +608,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       toast(hasPages ? tr('Added to My Book Collection.') : tr('Nothing to save yet, so no story was added.'));
       // a book you make is read in a real voice, never the phone's: invite the author to record it now (Jörg, 26 Oct 2026)
       if (hasPages && list.some((x) => x.id === latest.current.id)) { setRecordAsk({ list, id: latest.current.id }); return; }
-      onDone(list);
+      onDone(list, null, 'published');
     } catch (e) {
       toast(tr('Couldn’t save the story. Try again.'));
     }
@@ -892,7 +892,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Text style={styles.choiceTitle}>{tr('Now read it aloud')}</Text>
             <Text style={[styles.choiceBtnText, { fontFamily: fonts.ui, textAlign: 'center', lineHeight: 22, marginBottom: 8 }]}>{tr('Books you make are read in a real voice: yours, or the voice of someone who loves the reader. Coro has no computer voice, so until someone records the pages, the book is silent. Record it now, one page at a time.')}</Text>
             <Pressable onPress={() => { const r = recordAsk; setRecordAsk(null); onDone(r.list, r.id); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 6 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.voice} text={tr('Record now')} style={styles.choiceBtnText} /></Pressable>
-            <Pressable onPress={() => { const r = recordAsk; setRecordAsk(null); onDone(r.list); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Later')}</Text></Pressable>
+            <Pressable onPress={() => { const r = recordAsk; setRecordAsk(null); onDone(r.list, null, 'published'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Later')}</Text></Pressable>
           </View>
         </View>
       ) : null}

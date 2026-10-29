@@ -23,7 +23,7 @@ const SEARCH_FELT = require('../../assets/search-felt.png'); // Jörg's grey sti
 const ALL_HELP = [
   { section: 'Getting started', title: 'Opening the app', text: [
     'When the app opens you’ll see your leather notebook on the felt. Tap it, or swipe it up, to open it.',
-    'Inside are two choices: Make a book and Read a book (My Library). Tap one to go there.',
+    'Inside are two choices: My Workspace and Read a book (My Library). Tap one to go there.',
     'The menu button (three lines) in the bottom bar takes you anywhere in the app.',
   ] },
   { section: 'Getting started', title: 'Profiles for each child', text: [
@@ -92,11 +92,15 @@ const ALL_HELP = [
     'Whoever gets it taps the file and opens it in Coro to add your voice to the same book on their phone.',
   ] },
   { section: 'Making books', title: 'Making your own book', text: [
-    'Choose Make a Book from the menu (or the + tile in My Library).',
+    'Open My Workspace (on the notebook’s first page or in the menu) and tap the blue book under Let’s make a book.',
     'Tap the picture square to add a picture: choose one from your photos, or take a photo (of a drawing, say). Taking a photo asks a grown-up first.',
     'Tap the words square to type the words for that page. Two or three sentences reads best.',
     'Tap the folded corner for a new page. Tap the title in the bottom bar to name your book and add who wrote and illustrated it.',
-    'Everything saves on its own. Tap Finish when you’re done, and the book appears in My Library.',
+    'Everything saves on its own. Save and Exit keeps the book in Work in Progress, in My Workspace. Finish and publish to library puts it in My Book Collection, in My Library.',
+  ] },
+  { section: 'Making books', title: 'My Workspace', text: [
+    'My Workspace is where you make things: who is reading, Let’s make a book, Work in Progress (the books you’re still making), My Notebook, My Folder and the corkboard.',
+    'Tap a book in Work in Progress to carry on where you left off.',
   ] },
   { section: 'Making books', title: 'Designing a cover', text: [
     'After writing a page, choose Design a cover. Add a picture, then the title if you like.',
@@ -112,7 +116,7 @@ const ALL_HELP = [
     'My Notebook has room for 60 pages.',
   ] },
   { section: 'My Notebook', title: 'Your notebook', text: [
-    'My Notebook is always at the top of My Library. Tap it to open it.',
+    'My Notebook is in My Workspace. Tap it to open it.',
     'The first page is the inside cover with “My Notes”. Turn the page to see your badges, then your own pages.',
     'Turn the pages by tapping the bottom-right corner or swiping left or up; tap the bottom-left corner or swipe right or down to go back. On the last page, the bottom-right corner adds a page: a Notes page (a picture or drawing with your notes below) or a Sketch page (two squares to draw on).',
   ] },
@@ -132,12 +136,12 @@ const ALL_HELP = [
     'Badges you haven’t earned yet are grey. Tap any badge to see how to earn it.',
   ] },
   { section: 'Books', title: 'My Library', text: [
-    'All your books are here: the books you made, then the books that come with the app.',
+    'My Library is your Book Collection: the books you’ve finished, then the books that come with the app.',
     'Tap Select to choose books to share or delete. Books that came with the app can be brought back with “Show removed books”.',
   ] },
   { section: 'Books', title: 'My Folder and the corkboard', text: [
-    'My Folder is in My Library, under your books. It holds a note from us, the Abc sheet (tap a letter to hear it) and sheets other families send you.',
-    'The corkboard at the very bottom of My Library is for sticky notes and photos. Tap the pin to add one, and tap a note or photo to see it big or take it down.',
+    'My Folder is in My Workspace, under My Notebook. It holds a note from us, the Abc sheet (tap a letter to hear it) and sheets other families send you.',
+    'The corkboard at the bottom of My Workspace is for sticky notes and photos, with Book Playlists pinned in its corner. Tap the pin to add one, and tap a note or photo to see it big or take it down.',
   ] },
   { section: 'Books', title: 'The Book Store', store: true, text: [
     'The Book Store has new books to discover. Tap a cover to see what it’s about, then Read now.',

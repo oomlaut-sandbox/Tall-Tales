@@ -376,7 +376,7 @@ function Root() {
         {screen === 'start' && (
           // while the menu page is being turned, My Library is drawn underneath and shows through
           <View style={peek ? [StyleSheet.absoluteFill, { zIndex: 10 }] : { flex: 1 }}>
-            <Start key={startKey} ask={introAsk} onIntro={() => { setSplash(true); setIntroWho(null); setIntroAsk(true); setCoverOpen(false); setStartKey((n) => n + 1); }} u={u} go={(t, rect) => { if (t === 'library') setToBooks((n) => n + 1); /* Read a book: My Library opens at My Books (Jörg, 27 Oct 2026) */ if (t === 'library' && rect) {
+            <Start key={startKey} ask={introAsk} onIntro={() => { setSplash(true); setIntroWho(null); setIntroAsk(true); setCoverOpen(false); setStartKey((n) => n + 1); }} u={u} go={(t, rect) => { /* Read a book: the top of My Library (just My Book Collection now: Jörg, 29 Oct 2026); My Workspace: the notebook flies onto its shelf */ if (t === 'workspace' && rect) {
               // the flying notebook is drawn over the start page's one first; only once it's surely on screen
               // does the start page go, so there's never a frame without a notebook
               libFade.setValue(0); flyP.setValue(0); setFlyer({ from: rect });
@@ -388,7 +388,7 @@ function Root() {
             go(t); }} openMenu={coverOpen ? openMenu : () => toast(t('Start by opening your notebook.'))} onHome={coverOpen ? undefined : () => toast(t('Start by opening your notebook.'))} closed={!coverOpen} onOpened={() => setCoverOpen(true)} onClosed={() => setCoverOpen(false)} onPeek={(t) => setPeek(t || 'library')} />
           </View>
         )}
-        {flyer && screen === 'library' ? (
+        {flyer && screen === 'workspace' ? (
           // while the notebook lands: the felt, and the black bar already in My Library's place, so it doesn't blink away
           <View pointerEvents="none" style={StyleSheet.absoluteFill}>
             <DeskFelt spot="app1" />
@@ -396,8 +396,44 @@ function Root() {
           </View>
         ) : null}
         {(screen === 'library' || (screen === 'start' && peek === 'library')) && (
-          <Animated.View style={{ flex: 1, opacity: screen === 'library' ? libFade : 1 }}>
+          <View style={{ flex: 1 }}>
           <Library toBooks={toBooks} toWip={toWip} onReadingOptions={readingBox} onGarden={controls.garden ? () => go('garden') : undefined} u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
+            onNotebookOff={(rect) => {
+              // the notebook stays where it is while the shelf dissolves away to plain felt; then the notebook
+              // screen takes over (its own notebook is already in the same spot) and the held one is taken away
+              setNbFrom(rect);
+              if (!rect) { go('notebook'); return; }
+              flyP.setValue(0); setFlyer({ from: rect, hold: true });
+              Animated.timing(libFade, { toValue: 0, duration: 110, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => {
+                // the notebook screen draws its own notebook in exactly this spot from its first frame, so the held
+                // one goes in the same moment (left on top any longer, it sat over the growing one: a glitch)
+                go('notebook');
+                setFlyer((f) => (f && f.hold ? null : f));
+                setTimeout(() => libFade.setValue(1), 160);
+              });
+            }}
+            notebookHidden={!!flyer && !flyer.landed} onNotebookRect={(r) => {
+              // the notebook sits further down the shelf now: if its spot is off the screen, no flight, My Library just fades in
+              if (r && r.y + r.h > height - barH) { setFlyer((f) => (f && !f.to && !f.hold ? null : f)); Animated.timing(libFade, { toValue: 1, duration: 250, useNativeDriver: true }).start(); return; }
+              setFlyer((f) => (f && !f.to && !f.hold && r ? { ...f, to: r } : f));
+            }}
+            onCreate={newBook} onEdit={openPublisher} onPlaylists={() => go('playlists')}
+            removedCount={removed.length} onRestore={() => setRemovedSaved([])}
+            onShare={(s) => shareInvite(s.title)} // an invitation to the app, not the book
+            onDelete={async (list) => {
+              const builtIn = list.filter((s) => !s.mine).map((s) => s.id);
+              if (builtIn.length) setRemovedSaved([...new Set([...removed, ...builtIn])]);
+              let mine = null;
+              for (const s of list.filter((x) => x.mine)) mine = await deleteUserStory(s.id);
+              if (mine) setUserStories(mine);
+              toast(list.length === 1 ? t('Book deleted.') : t('{n} books deleted.', { n: list.length }));
+            }} />
+          </View>
+        )}
+        {/* My Workspace (Jörg, 29 Oct 2026): who is reading, Let's make a book, Work in Progress, My Notebook, My Folder, the corkboard */}
+        {screen === 'workspace' && (
+          <Animated.View style={{ flex: 1, opacity: libFade }}>
+          <Library mode="workspace" toWip={toWip} u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
             onNotebook={(rect) => {
               // the notebook stays where it is while the shelf dissolves away to plain felt; then the notebook
               // screen takes over (its own notebook is already in the same spot) and the held one is taken away
@@ -430,14 +466,14 @@ function Root() {
             }} />
           </Animated.View>
         )}
-        {screen === 'notebook' && <Notebook u={u} from={nbFrom} openMenu={openMenu} toast={toast} onDone={() => go('library')} />}
+        {screen === 'notebook' && <Notebook u={u} from={nbFrom} openMenu={openMenu} toast={toast} onDone={() => go('workspace')} />}
         {screen === 'publisher' && draft && (
-          <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list, recId, where) => { setUserStories(list); const rs = recId && list.find((x) => x.id === recId); if (rs) { setRecordOnOpen(true); openStory(rs); return; } if (where === 'wip') setToWip((n) => n + 1); /* Save and Exit: My Library at Work in Progress */ go('library'); }} onIdeas={() => go('ideas')} />
+          <Publisher key={draft.id} u={u} storeAdmin={storeAdmin} initial={draft} fontKey={prefs.font} openMenu={openMenu} toast={toast} onChange={setUserStories} onDone={(list, recId, where) => { setUserStories(list); const rs = recId && list.find((x) => x.id === recId); if (rs) { setRecordOnOpen(true); openStory(rs); return; } if (where === 'wip') { setToWip((n) => n + 1); go('workspace'); return; } /* Save and Exit: My Workspace at Work in Progress */ if (where === 'published') { go('library'); return; } /* finished: in My Book Collection */ const last = hist.current[hist.current.length - 1]; go(last && last.screen === 'library' ? 'library' : 'workspace'); /* (left: back where it was opened from) */ }} onIdeas={() => go('ideas')} />
         )}
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} onReadingOptions={readingBox} />}
         {screen === 'music' && <MusicSounds u={u} openMenu={openMenu} prefs={prefs} setPrefs={setPrefs} />}
         {screen === 'profiles' && <Profiles u={u} openMenu={openMenu} setControls={setControls} onPicked={(id) => { setNextScreen('library'); switchProfile(id); }} onBack={() => go('library')} />}
-        {screen === 'playlists' && <Playlists u={u} openMenu={openMenu} shelf={childShelf} onPlay={playPlaylist} onDone={() => { const last = hist.current[hist.current.length - 1]; if (last && last.screen === 'library') goBack(); else go('library'); }} /* from My Library: back to the same spot (the corkboard), like the back button (Jörg, 29 Oct 2026) */ />}
+        {screen === 'playlists' && <Playlists u={u} openMenu={openMenu} shelf={childShelf} onPlay={playPlaylist} onDone={() => { const last = hist.current[hist.current.length - 1]; if (last && (last.screen === 'library' || last.screen === 'workspace')) goBack(); else go('workspace'); }} /* from My Library: back to the same spot (the corkboard), like the back button (Jörg, 29 Oct 2026) */ />}
         {screen === 'settings' && <Settings u={u} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
           controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} onProfiles={() => go('profiles')} onPlaylists={() => go('playlists')} onReadingOptions={readingOptions} onMusic={() => go('music')} prefs={prefs} setPrefs={setPrefs} toast={toast} />}
         {screen === 'garden' && <Garden u={u} openMenu={openMenu} toast={toast} onHome={() => go('library')} />}
@@ -474,7 +510,7 @@ function Root() {
           const tx = to ? to.x + to.w / 2 - (from.x + from.w / 2) : 0;
           const ty = to ? to.y + to.w / 2 - (from.y + from.w / 2) : 0;
           const k = to ? to.w / from.w : 1;
-          const shadowOn = screen === 'library' && !flyer.landed;
+          const shadowOn = screen === 'workspace' && !flyer.landed;
           const round = { borderTopLeftRadius: from.w * R_SPINE, borderTopRightRadius: from.w * R_SPINE, borderBottomLeftRadius: from.w * R_EDGE, borderBottomRightRadius: from.w * R_EDGE };
           return (
             <Animated.View pointerEvents="none" style={{ position: 'absolute', zIndex: 150, left: from.x, top: from.y, width: from.w, height: from.w,
@@ -509,7 +545,7 @@ function Root() {
                     const d = incoming; setIncoming(null);
                     try {
                       await addSheet({ kind: 'page', from: d.from || '', page: d.page }, d.photo ? sheetPhotoFile(d.photo) : null);
-                      go('library'); toast(t('It’s in My Folder.'));
+                      go('workspace'); toast(t('It’s in My Folder.'));
                     } catch (e) { toast(t('That file couldn’t be opened.')); }
                   }} style={{ height: 44, borderRadius: 22, paddingHorizontal: 22, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 }}>{t('Add')}</Text></Pressable>
                 </View>
@@ -566,7 +602,7 @@ function Root() {
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 180 }]}>
           <Panel open={drawer} title={t('Menu')} bottom={drawerBottom} inset={drawerRight} onClose={() => setDrawer(false)}>
             {/* Make a Book first: Coro is a book maker first (Jörg, 25 Oct 2026) */}
-            {controls.create ? <Option glyph={<PlusIcon />} title={t('Make a Book')} sub={t('Your pictures, your words')} onPress={newBook} /> : null}
+            <Option glyph={<PlusIcon />} title={t('My Workspace')} sub={t('Make and share books and ideas')} onPress={() => go('workspace')} />{/* (was Make a Book: Jörg, 29 Oct 2026) */}
             <Option glyph={<HomeIcon size={MENU_ICON + 2} color={colors.white} />} title={t('My Library')} sub={t('Find and read your favorite books')} onPress={() => go('library')} />
             {STORE_ON && controls.store ? <Option glyph={<LibraryIcon size={MENU_ICON} />} title={t('Book Store')} sub={t('Discover and buy new books')} onPress={() => go('store')} /> : null}
             {/* Reading Options and Music and Sounds live in Settings now (and Reading Options under the books in My Library

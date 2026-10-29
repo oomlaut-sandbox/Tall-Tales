@@ -272,10 +272,13 @@ function WhoReads({ onPress }) {
 // which 'open at My Book Collection / Work in Progress' requests were already carried out: kept outside My Library,
 // so coming back to it later (the home button, the menu) opens at the top, not at the old spot again (Jörg, 28 Oct 2026)
 const scrollAsks = { books: { current: 0 }, wip: { current: 0 } };
-export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
+// mode: 'library' (My Library: just My Book Collection) or 'workspace' (My Workspace: who is reading, Let's make a
+// book, Work in Progress, My Notebook, My Folder and the corkboard) (Jörg, 29 Oct 2026)
+export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
   const t = useT();
   // Read a book (from the start page): open scrolled down so My Books is at the top, just under the band
-  const keep = useScrollMemory('library'); // Back returns to this spot
+  const ws = mode === 'workspace';
+  const keep = useScrollMemory(ws ? 'workspace' : 'library'); // Back returns to this spot
   const scrollRef = keep.ref;
   const booksY = useRef(null);
   const booksDone = scrollAsks.books;
@@ -351,13 +354,14 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
           <View style={{ flex: 1 }} />
           {/* Select: in the bottom right corner of the bar (not when the parental controls turn sharing off) */}
           {/* Select: an icon (a circle with a tick), so it fits the sideways bar in every language */}
-          {controls.sharing ? <Pressable onPress={() => setSelecting(true)} hitSlop={12} style={[styles.barBtn, { paddingHorizontal: 4 }]} accessibilityRole="button" accessibilityLabel={t('Select')}>
+          {controls.sharing && !ws ? <Pressable onPress={() => setSelecting(true)} hitSlop={12} style={[styles.barBtn, { paddingHorizontal: 4 }]} accessibilityRole="button" accessibilityLabel={t('Select')}>
             <Image source={SELECT_ICON} style={{ width: 29, height: 29, tintColor: colors.white }} resizeMode="contain" />
           </Pressable> : null}
         </Bar>
       ))}>
-      <Band icon="library" color={colors.green} felt="library" title={selecting ? t('Select books') : t('My Library')}
-        sub={selecting ? (picked.length ? t('{n} selected', { n: picked.length }) : t('Tap books to select them')) : t('Your stories, ready to read')} />
+      {ws ? <Band icon="make" color={colors.blue} felt="store" title={t('My Workspace')} /> : null}{/* blue for now (Jörg, 29 Oct 2026) */}
+      {!ws ? <Band icon="library" color={colors.green} felt="library" title={selecting ? t('Select books') : t('My Library')}
+        sub={selecting ? (picked.length ? t('{n} selected', { n: picked.length }) : t('Tap books to select them')) : t('Your stories, ready to read')} /> : null}
       {/* pulled up past the corkboard at the very bottom: a speech bubble invites you on to the Garden (once per pull),
           only once a grown-up has unlocked it in Settings → The Garden */}
       <ScrollView ref={scrollRef} onContentSizeChange={keep.onContentSizeChange} contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]} scrollEventThrottle={64}
@@ -376,21 +380,21 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
           else gardenPull.current = false;
         }}>
         {/* who is reading (their character and name), at the top left above Let's make a book; tap it for Profiles */}
-        {!selecting && onProfiles ? <WhoReads onPress={onProfiles} /> : null}
-        {!selecting && onProfiles ? <View style={{ width: '100%', height: 0 }} /> : null}
+        {ws && onProfiles ? <WhoReads onPress={onProfiles} /> : null}
+        {ws && onProfiles ? <View style={{ width: '100%', height: 0 }} /> : null}
         {/* Let's Create! first: Coro is a book maker first (Jörg, 25 Oct 2026) */}
         {/* Let's make a book: its title and the blue book together in a rounded black glass box */}
-        {!selecting && controls.create ? (
+        {ws && controls.create ? (
           <View style={styles.makeBox}>
             <Text style={[styles.section, { marginTop: 0, paddingLeft: ((winW - 40) * ((100 - COLS(winW) * TILE[COLS(winW)]) / (COLS(winW) - 1))) / 200 }]} accessibilityRole="header">{t('Let’s make a book')}</Text>{/* (in line with the left page once the book is open: half the gap in) */}
             <MakeBookSpread winW={winW} inner={winW - 40 - 2 * MAKE_BOX_PAD - 2} onPress={onCreate} t={t} go={bookGo && !tip} wait={500} />
           </View>
         ) : null}
-        {!selecting ? <View style={{ width: '100%' }} /> : null}{/* the books start their own row */}
+        {ws ? <View style={{ width: '100%', height: 30 }} /> : null}{/* (the workspace: room under Let's make a book) */}
         {/* a title over the books: the ones you made first, then the picture books */}
-        {!selecting ? <Text onLayout={(e) => { booksY.current = e.nativeEvent.layout.y; toMyBooks(); }} style={[styles.section, { marginTop: 2 }]} accessibilityRole="header">{t('My Book Collection')}</Text> : null}{/* a little closer to Let's make a book */}
+        {!selecting && !ws ? <Text onLayout={(e) => { booksY.current = e.nativeEvent.layout.y; toMyBooks(); }} style={[styles.section, { marginTop: 2 }]} accessibilityRole="header">{t('My Book Collection')}</Text> : null}{/* a little closer to Let's make a book */}
         {/* (the parental controls can hide books rated for older children) */}
-        {stories.filter((s) => (!s.mine || s.published || selecting) /* books still being made are in Work in Progress (but can be picked here, to share or delete) */ && ageAllowed(ageOf(null, s), controls.childAge)).sort((a, b) => (b.mine ? 1 : 0) - (a.mine ? 1 : 0)).map((s) => (
+        {(ws ? [] : stories).filter((s) => (!s.mine || s.published || selecting) /* books still being made are in Work in Progress (but can be picked here, to share or delete) */ && ageAllowed(ageOf(null, s), controls.childAge)).sort((a, b) => (b.mine ? 1 : 0) - (a.mine ? 1 : 0)).map((s) => (
           // just the title under each cover (no author, pages or other details)
           <Tile key={s.id} spotId={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title}
             selecting={selecting} selected={picked.includes(s.id)}
@@ -398,29 +402,29 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
             onLongPress={!selecting && s.mine ? () => onEdit(s) : undefined} />
         ))}
         {/* Playlists, at the end of My Books: three little felt books stacked */}
-        {!selecting && removedCount ? (
+        {!selecting && !ws && removedCount ? (
           <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
             <Text style={styles.restore}>{t('Show removed books ({n})', { n: removedCount })}</Text>
           </Pressable>
         ) : null}
         {/* (a much bigger space after My Books: Jörg, 25 Oct 2026) */}
         {/* Reading Options under the books, in black glass (Jörg, 26 Oct 2026) */}
-        {!selecting && onReadingOptions ? <ReadingOptionsSection {...onReadingOptions} style={{ width: '100%', marginTop: 0 }} /> : null}
-        {!selecting ? <View style={{ width: '100%', height: onReadingOptions ? 48 : 70 }} /> : null}
+        {!selecting && !ws && onReadingOptions ? <ReadingOptionsSection {...onReadingOptions} style={{ width: '100%', marginTop: 0 }} /> : null}
+        {!selecting && !ws ? <View style={{ width: '100%', height: onReadingOptions ? 48 : 70 }} /> : null}
         {/* Work in Progress: the books being made (saved with Save and Exit, not yet published); a tap carries on in
             the book maker. 'Finish and publish to library' moves a book up into My Book Collection (Jörg, 28 Oct 2026) */}
-        {!selecting && wip.length ? <Text onLayout={(e) => { wipY.current = e.nativeEvent.layout.y; toWipNow(); }} style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('Work in Progress')}</Text> : null}
-        {!selecting ? wip.map((s) => (
+        {ws && wip.length ? <Text onLayout={(e) => { wipY.current = e.nativeEvent.layout.y; toWipNow(); }} style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('Work in Progress')}</Text> : null}
+        {ws ? wip.map((s) => (
           <Tile key={s.id} spotId={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title} onPress={() => onEdit(s)} />
         )) : null}
-        {!selecting && wip.length ? <View style={{ width: '100%', height: 48 }} /> : null}
+        {ws && wip.length ? <View style={{ width: '100%', height: 48 }} /> : null}
         {/* My Notebook (and who is reading), just above My Folder: Let's make a book and My Books come first (Jörg, 26 Oct 2026) */}
         {/* My Workspace: the notebook, Book Playlists, My Folder and the corkboard (Jörg, 29 Oct 2026) */}
-        {!selecting && onNotebook ? <Text style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('My Workspace')}</Text> : null}
-        {!selecting && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
-        {!selecting && onNotebook ? <View style={{ width: '100%', height: 18 }} /> : null}{/* the notebook has its row to itself */}
+        
+        {ws && onNotebook && controls.notebook ? <NotebookTile onPress={onNotebook} hidden={notebookHidden} onRect={onNotebookRect} /> : null}
+        {ws && onNotebook ? <View style={{ width: '100%', height: 18 }} /> : null}{/* the notebook has its row to itself */}
         {/* My Folder starts its own row: the folder (the size of a book) */}
-        {!selecting ? (() => {
+        {ws ? (() => {
           const n = COLS(winW), colW = ((winW - 40) * TILE[n]) / 100, gap = ((winW - 40) * ((100 - n * TILE[n]) / (n - 1))) / 100;
           return (
             <>

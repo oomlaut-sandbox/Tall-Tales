@@ -116,7 +116,7 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
     // app does that, so it's told where the page is); the Book Store just appears.
     settle(0, 1);
     setTimeout(() => {
-      if (target === 'library' && pageRef.current && pageRef.current.measureInWindow) pageRef.current.measureInWindow((x, y, w, h) => go(target, w ? { x, y, w, h } : null));
+      if (target === 'workspace' && pageRef.current && pageRef.current.measureInWindow) pageRef.current.measureInWindow((x, y, w, h) => go(target, w ? { x, y, w, h } : null));
       else go(target);
     }, target === 'make' ? 720 : String(target).startsWith('intro-') ? 1100 : 470); // (the intro: the notebook shuts, a short pause, then the first page) // three-quarters of the way through the 650ms close: the cover is all but shut
     // (Make a book waits until the notebook has closed completely, then the book maker loads: Jörg, 26 Oct 2026)
@@ -219,7 +219,7 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
                   </View>
                 ) : (<>
                                 {/* Make a book first (Coro is a book maker first), then Read a book (My Library) */}
-                {controls.create ? <MenuItem u={k} ticked={menuPick === 'make'} title={t('Make a book')} sub={t('Share your words, your pictures, your voice.')} onPress={() => { if (menuPick) return; setMenuPick('make'); setTimeout(() => { goTo('make'); setMenuPick(null); }, 350); }} /> : null}
+                {<MenuItem u={k} ticked={menuPick === 'workspace'} title={t('My Workspace')} sub={t('Make and share books and ideas.')} onPress={() => { if (menuPick) return; setMenuPick('workspace'); setTimeout(() => { goTo('workspace'); setMenuPick(null); }, 350); }} />}
                 <MenuItem u={k} ticked={menuPick === 'library'} title={t('Read a book')} sub={t('Collect, record and share your favorite stories.')} onPress={() => { if (menuPick) return; setMenuPick('library'); setTimeout(() => { goTo('library'); setMenuPick(null); }, 350); }} />
                 </>)}
               </View>
