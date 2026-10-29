@@ -57,7 +57,8 @@
         "similarity_boost": 0.8,
         "style": 0.55,
         "use_speaker_boost": true
-      }
+      },
+      "done": true
     },
     "intro-1-complete-walk-through": {
       "speed": 0.95,
@@ -146,6 +147,116 @@
         "Coro. Books you make together."
       ],
       "done": true
+    },
+    "film-de": {
+      "lang": "de",
+      "split": true,
+      "speed": 0.92,
+      "pause": "0.3s",
+      "settings": {
+        "stability": 0.3,
+        "similarity_boost": 0.8,
+        "style": 0.55,
+        "use_speaker_boost": true
+      },
+      "lines": [
+        "Hallo! Ich bin Coro. Lass uns zusammen ein Buch machen!",
+        "Tipp auf Buch machen, und schon öffnet sich ein ganz neues Buch.",
+        "Jetzt mal ein Bild. Jedes Bild, das du magst! Kringelig, gepunktet, verrückt … alles ist perfekt!",
+        "Dann schreib, was passiert.",
+        "Noch mehr? Füg eine neue Seite hinzu!",
+        "Lies es laut vor, mit jemandem, den du lieb hast, und nimm es auf.",
+        "Tadaa! Dein ganz eigenes Buch!",
+        "Coro. Bücher, die ihr zusammen macht."
+      ]
+    },
+    "film-fr": {
+      "lang": "fr",
+      "split": true,
+      "speed": 0.92,
+      "pause": "0.3s",
+      "settings": {
+        "stability": 0.3,
+        "similarity_boost": 0.8,
+        "style": 0.55,
+        "use_speaker_boost": true
+      },
+      "lines": [
+        "Coucou ! Moi, c’est Coro. Faisons un livre ensemble !",
+        "Touche Créer un livre, et un tout nouveau livre s’ouvre.",
+        "Maintenant, dessine. Ce que tu veux ! Des spirales, des pois, des bêtises… tout est parfait !",
+        "Puis écris ce qui se passe.",
+        "Encore ? Ajoute une page !",
+        "Lis-le à voix haute avec quelqu’un que tu aimes, et enregistre-le.",
+        "Et voilà ! Ton livre à toi !",
+        "Coro. Des livres que l’on fait ensemble."
+      ]
+    },
+    "film-es": {
+      "lang": "es",
+      "split": true,
+      "speed": 0.92,
+      "pause": "0.3s",
+      "settings": {
+        "stability": 0.3,
+        "similarity_boost": 0.8,
+        "style": 0.55,
+        "use_speaker_boost": true
+      },
+      "lines": [
+        "¡Hola! Soy Coro. ¡Hagamos un libro juntos!",
+        "Toca Hacer un libro, y se abre un libro nuevecito.",
+        "Ahora haz un dibujo. ¡El que quieras! Con espirales, con puntos, divertido… ¡todo es perfecto!",
+        "Luego escribe lo que pasa.",
+        "¿Quieres más? ¡Añade otra página!",
+        "Léelo en voz alta con alguien a quien quieras, y grábalo.",
+        "¡Tachán! ¡Tu propio libro!",
+        "Coro. Libros que hacéis juntos."
+      ]
+    },
+    "film-ja": {
+      "lang": "ja",
+      "split": true,
+      "speed": 0.92,
+      "pause": "0.3s",
+      "settings": {
+        "stability": 0.3,
+        "similarity_boost": 0.8,
+        "style": 0.55,
+        "use_speaker_boost": true
+      },
+      "lines": [
+        "こんにちは！ ぼくは コロ。いっしょに 本を つくろう！",
+        "「えほんを つくる」を タップすると、あたらしい 本が ひらくよ。",
+        "さあ、絵を かこう。すきな 絵で いいよ！ ぐるぐる、てんてん、へんてこ… ぜんぶ すてき！",
+        "それから、おはなしを かこう。",
+        "もっと かきたい？ ページを ふやそう！",
+        "だいすきな 人と 声に だして よんで、ろくおん しよう。",
+        "じゃーん！ きみだけの 本の できあがり！",
+        "コロ。いっしょに つくる えほん。"
+      ]
+    },
+    "film-ar": {
+      "lang": "ar",
+      "split": true,
+      "speed": 0.92,
+      "pause": "0.3s",
+      "settings": {
+        "stability": 0.3,
+        "similarity_boost": 0.8,
+        "style": 0.55,
+        "use_speaker_boost": true
+      },
+      "lines": [
+        "مرحبًا! أنا كورو. هيا نصنع كتابًا معًا!",
+        "اضغط «اصنع كتابًا»، فيُفتح لك كتاب جديد تمامًا.",
+        "الآن ارسم صورة. أي صورة تحبها! دوائر، نقاط، أشياء مضحكة… كلها رائعة!",
+        "ثم اكتب ماذا يحدث.",
+        "تريد المزيد؟ أضف صفحة أخرى!",
+        "اقرأه بصوت عالٍ مع شخص تحبه، وسجّله.",
+        "تا-دا! كتابك الخاص!",
+        "كورو. كتب تصنعونها معًا."
+      ]
     }
   }
 }
