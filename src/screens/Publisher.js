@@ -94,7 +94,7 @@ const CHOICE_ICONS = { // the icons before the words in the pop-up choices (the 
   cover: require('../../assets/heading-icons/reading.png'),
   done: require('../../assets/icon-select.png'),
   voice: require('../../assets/heading-icons/your-voice.png'),
-  save: require('../../assets/title-icons/home.png'), // Save and Exit: back to My Library
+  save: require('../../assets/heading-icons/save-exit.png'), // Save and Exit: an arrow into a tray (Jörg, 29 Oct 2026)
 };
 
 const MAX_PX = 1600;
