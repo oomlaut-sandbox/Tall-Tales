@@ -108,7 +108,11 @@ export function PagePhone({ room = 250 }) {
   const h = Math.max(260, Math.min(winH - insets.top - insets.bottom - room, (winW - 48) * 1920 / 886 + 16));
   const w = (h - 16) * 886 / 1920 + 16; // a black edge of 8 all round the screen
   const player = useVideoPlayer(FILM, (p) => { p.loop = false; });
-  useEffect(() => () => { try { player.pause(); } catch (e) {} }, [player]);
+  // it plays by itself once the page has slid in (Jörg, 29 Oct 2026); leaving the page stops it
+  useEffect(() => {
+    const tm = setTimeout(() => { try { player.play(); } catch (e) {} }, 600);
+    return () => { clearTimeout(tm); try { player.pause(); } catch (e) {} };
+  }, [player]);
   return (
     <View style={{ alignSelf: 'center', marginTop: 28 /* well clear of the title (Jörg, 29 Oct 2026) */, width: w, height: h, borderRadius: Math.round(w * 0.15), backgroundColor: '#000', padding: 8, borderWidth: 2, borderColor: '#3a3a3a' /* a thin grey rim, like Jörg's mockup */,
       shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.5, shadowRadius: 18, elevation: 12 }}>
