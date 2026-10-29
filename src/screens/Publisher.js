@@ -1174,7 +1174,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       {photoEdit && photoOf(photoEdit) ? (
         <PhotoEditor src={{ uri: photoOf(photoEdit).src }} edit={photoOf(photoEdit).edit} tr={tr} insets={insets}
           onCancel={() => setPhotoEdit(null)} onDone={(out, edit) => photoDone(photoEdit, out, edit)}
-          onDraw={async (out, edit) => { const t = photoEdit; await photoDone(t, out, edit); setDrawStart([{ ph: out.uri, ly: 1 }]); setDrawFor(t); }} />{/* the photo, as set up, on layer 1 of a new drawing (Jörg, 29 Oct 2026) */}
+          onDraw={async (out, edit) => { const t = photoEdit; await photoDone(t, out, edit); setDrawStart([{ ph: out.uri, ly: 1 }]); setDrawFor(t); }} /* the photo, as set up, on layer 1 of a new drawing (Jörg, 29 Oct 2026) */ />
       ) : null}
       {drawFor ? (
         <DrawEditor key={drawStart ? 'photo' : 'plain'} strokes={drawStart || undefined} insets={insets} title={drawFor === 'cover' ? tr('Drawing · Cover') : tr('Drawing · Page {n}', { n: i + 1 })}
