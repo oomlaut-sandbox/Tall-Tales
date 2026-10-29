@@ -219,7 +219,7 @@ export default function Start({ u, go, openMenu, onHome, closed, onOpened, onClo
                   </View>
                 ) : (<>
                                 {/* Make a book first (Coro is a book maker first), then Read a book (My Library) */}
-                {<MenuItem u={k} ticked={menuPick === 'workspace'} title={t('My Workspace')} sub={t('Make and share books and ideas.')} onPress={() => { if (menuPick) return; setMenuPick('workspace'); setTimeout(() => { goTo('workspace'); setMenuPick(null); }, 350); }} />}
+                {<MenuItem u={k} ticked={menuPick === 'workspace'} title={t('Make a book')} sub={t('Share your words, your pictures, your voice.')} /* still Make a book here; it opens My Workspace (Jörg, 29 Oct 2026) */ onPress={() => { if (menuPick) return; setMenuPick('workspace'); setTimeout(() => { goTo('workspace'); setMenuPick(null); }, 350); }} />}
                 <MenuItem u={k} ticked={menuPick === 'library'} title={t('Read a book')} sub={t('Collect, record and share your favorite stories.')} onPress={() => { if (menuPick) return; setMenuPick('library'); setTimeout(() => { goTo('library'); setMenuPick(null); }, 350); }} />
                 </>)}
               </View>

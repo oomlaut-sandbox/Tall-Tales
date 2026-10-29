@@ -380,8 +380,8 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
           else gardenPull.current = false;
         }}>
         {/* who is reading (their character and name), at the top left above Let's make a book; tap it for Profiles */}
-        {ws && onProfiles ? <WhoReads onPress={onProfiles} /> : null}
-        {ws && onProfiles ? <View style={{ width: '100%', height: 0 }} /> : null}
+        {!selecting && onProfiles ? <WhoReads onPress={onProfiles} /> : null}{/* (both pages: Jörg, 29 Oct 2026) */}
+        {!selecting && onProfiles ? <View style={{ width: '100%', height: 0 }} /> : null}
         {/* Let's Create! first: Coro is a book maker first (Jörg, 25 Oct 2026) */}
         {/* Let's make a book: its title and the blue book together in a rounded black glass box */}
         {ws && controls.create ? (
@@ -452,13 +452,14 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
               {/* a yellow pencil beside the folder, a little tilted, with a soft shadow (Jörg, 29 Oct 2026) */}
               {(() => { const ph = colW * 0.98, pw = ph * 180 / 1020; return (
                 <View pointerEvents="none" style={{ width: tileWidth(winW), height: colW }}>
-                  <Image source={PENCIL_YELLOW} resizeMode="contain" style={{ position: 'absolute', left: colW * 0.18, top: (colW - ph) / 2, width: pw, height: ph }} />{/* straight, the point up, its shadow to the right (Jörg, 29 Oct 2026) */
+                  <Image source={PENCIL_YELLOW} resizeMode="contain" style={{ position: 'absolute', left: colW * 0.18, top: (colW - ph) / 2, width: pw, height: ph }} />{/* straight, the point up, its shadow to the right (Jörg, 29 Oct 2026) */}
                 </View>
               ); })()}
               {/* the corkboard: always at the very bottom, as wide as two books */}
               <View style={{ width: '100%' }} />
-              <Text style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('Message Board')}</Text>
-              <Corkboard width={2 * colW + gap} toast={toast} onPlaylists={onPlaylists} />{/* Book Playlists: a white sheet pinned to the board (Jörg, 29 Oct 2026) */}
+              <Corkboard width={2 * colW + gap} toast={toast} onPlaylists={onPlaylists} />
+              {/* its name under it, like My Notes (Jörg, 29 Oct 2026) */}
+              <Text style={[styles.tileTitle, styles.tileOption, { width: '100%', marginTop: 8 }]} accessibilityRole="header">{t('Message Board')}</Text>{/* Book Playlists: a white sheet pinned to the board (Jörg, 29 Oct 2026) */}
             </>
           );
         })() : null}
