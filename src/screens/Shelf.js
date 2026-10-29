@@ -446,10 +446,7 @@ export function Library({ toBooks, toWip, onReadingOptions, onGarden, narrator, 
               </Pressable>
               {/* the corkboard: always at the very bottom, as wide as two books */}
               <View style={{ width: '100%' }} />
-              <Corkboard width={2 * colW + gap} toast={toast} />
-              {/* Book Playlists under the corkboard, the felt books on light grey again (Jörg, 29 Oct 2026) */}
-              {onPlaylists ? <View style={{ width: '100%', height: 30 }} /> : null}
-              {onPlaylists ? <Tile u={u} option title={t('Book Playlists')} onPress={onPlaylists} cover={PLAYLISTS_FELT} /> : null}
+              <Corkboard width={2 * colW + gap} toast={toast} onPlaylists={onPlaylists} />{/* Book Playlists: a white sheet pinned to the board (Jörg, 29 Oct 2026) */}
             </>
           );
         })() : null}

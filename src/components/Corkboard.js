@@ -40,7 +40,7 @@ function Pin({ p, W }) {
   );
 }
 
-export default function Corkboard({ width, toast }) {
+export default function Corkboard({ width, toast, onPlaylists }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const [pins, setPins] = useState([]);
@@ -91,6 +91,19 @@ export default function Corkboard({ width, toast }) {
             </Pressable>
           );
         })}
+        {/* Book Playlists: a white sheet always pinned in the lower left corner, like a list on the board (Jörg, 29 Oct 2026) */}
+        {onPlaylists ? (() => {
+          const sw = Math.round(width * 0.25), sh = Math.round(sw * 1.3);
+          return (
+            <Pressable onPress={withTap(onPlaylists)} accessibilityRole="button" accessibilityLabel={t('Book Playlists')}
+              style={[styles.sheet, { position: 'absolute', left: width * 0.05, top: H - sh - H * 0.07, width: sw, height: sh, padding: sw * 0.1, transform: [{ rotate: '-3deg' }] }]}>
+              <Image source={PIN_HEAD} style={{ position: 'absolute', top: 3, left: sw / 2 - 4, width: 8, height: 8, zIndex: 2 }} />
+              <Text numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.6} style={{ fontFamily: HAND, color: '#2b2b2b', fontSize: sw * 0.12, lineHeight: sw * 0.15, marginTop: sw * 0.06 }}>{t('Book Playlists')}</Text>
+              {/* a few list lines, like a reading list */}
+              {[0.78, 0.6, 0.7, 0.45].map((f, k) => <View key={k} style={{ height: 1.5, width: `${f * 100}%`, backgroundColor: '#b9b9b9', marginTop: sw * 0.09 }} />)}
+            </Pressable>
+          );
+        })() : null}
         {/* the pin button: pin something new */}
         <Pressable onPress={withTap(() => setAsk(true))} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Pin something')} style={styles.pinBtn}>
           <Image source={PIN_ICON} style={{ width: 16, height: 16, tintColor: colors.white }} resizeMode="contain" />
@@ -163,6 +176,7 @@ const styles = StyleSheet.create({
   pinBtn: { position: 'absolute', top: 10, right: 10, width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center' },
   caption: { color: '#b4b4b4', fontFamily: fonts.ui, fontSize: 15, marginTop: 12 },
   empty: { position: 'absolute', left: 0, right: 0, top: '44%', textAlign: 'center', color: 'rgba(60,35,15,0.6)', fontFamily: HAND, fontSize: 16 },
+  sheet: { backgroundColor: '#fbfbf8', shadowColor: '#000', shadowOffset: { width: 2, height: 4 }, shadowOpacity: 0.35, shadowRadius: 4, elevation: 4 },
   note: { backgroundColor: NOTE_YELLOW, alignItems: 'center', justifyContent: 'center', padding: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 4 }, shadowOpacity: 0.35, shadowRadius: 4, elevation: 4 },
   noteText: { color: '#3b3214', fontFamily: HAND, textAlign: 'center' },
   polaroid: { backgroundColor: '#fbfaf6', shadowColor: '#000', shadowOffset: { width: 2, height: 4 }, shadowOpacity: 0.35, shadowRadius: 4, elevation: 4 },
