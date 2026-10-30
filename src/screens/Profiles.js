@@ -29,7 +29,7 @@ const AVATAR_NAMES = {
   red: 'Rust friend', green: 'Olive friend', orange: 'Mustard friend', grey: 'Blue friend',
   unicorn: 'Unicorn', elephant: 'Elephant', dogs: 'Dogs', bee: 'Bee', hamster: 'Hamster', wolf: 'Wolf', worms: 'Worms',
   'coro-jump': 'Coro jumping', 'coro-green': 'Coro in green', 'coro-red': 'Coro in red', 'coro-headphones': 'Coro listening',
-  'coro-writing': 'Coro writing', 'coro-blue': 'Coro in blue', 'coro-reading': 'Coro reading', 'coro-cheer': 'Coro cheering', robot: 'Robot',
+  'coro-writing': 'Coro writing', 'coro-blue': 'Coro in blue', 'coro-reading': 'Coro reading', 'coro-cheer': 'Coro cheering',
 };
 
 function Choice({ label, on, onPress }) {
