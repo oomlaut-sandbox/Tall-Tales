@@ -42,6 +42,8 @@ jobs:
                 // who has signed in (no addresses shown): how many accounts, by sign-in method
                 const u = await q("select count(*) as accounts, count(*) filter (where email ilike \x27%privaterelay.appleid.com\x27) as apple_hidden_email, count(*) filter (where raw_app_meta_data->>\x27provider\x27 = \x27apple\x27) as apple, count(*) filter (where raw_app_meta_data->>\x27provider\x27 = \x27email\x27) as email from auth.users");
                 out.push("accounts: " + u.text.slice(0, 300));
+                const pol = await q("select tablename, policyname, cmd from pg_policies where (schemaname = \x27storage\x27 and tablename = \x27objects\x27) or (schemaname = \x27public\x27 and tablename in (\x27books\x27, \x27shelves\x27)) order by 1, 2");
+                out.push("policies: " + pol.text.slice(0, 3000));
               }
               fs.writeFileSync("out/store-setup.txt", out.join("\n") + "\n"); console.log(out.join("\n"));
             })();'
