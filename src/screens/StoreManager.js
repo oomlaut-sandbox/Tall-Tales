@@ -13,7 +13,7 @@ import { Bar, Burger, WithBar } from '../components/Chrome';
 import { DESK_FELT } from '../look';
 import CoverArt from '../components/CoverArt';
 import { ageText, coverFor, storageUrl } from '../catalog';
-import { LANG_NAMES, addShelf, productIdFor, setAccess, approveTranslation, loadAllForManager, loadStoreContent, removeFromStore, saveTranslation, startNarration, startTranslation, updateBook, updateShelf, withdrawTranslation } from '../storeAdmin';
+import { LANG_NAMES, addShelf, productIdFor, setAccess, translateShelf, approveTranslation, loadAllForManager, loadStoreContent, removeFromStore, saveTranslation, startNarration, startTranslation, updateBook, updateShelf, withdrawTranslation } from '../storeAdmin';
 
 const NARRATION = { none: 'No narration yet', working: 'Narration being made…', ready: 'Narration ready', failed: 'Narration failed' };
 
@@ -280,6 +280,8 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
 
 function ShelfRow({ shelf, shelves, onChanged, toast }) {
   const [title, setTitle] = useState(shelf.title);
+  const [langs, setLangs] = useState(shelf.langs || {}); // the name in the other languages (correctable here)
+  useEffect(() => { setLangs(shelf.langs || {}); }, [shelf.langs]);
   const save = async (patch, note) => { try { await updateShelf(shelf.id, patch); if (note) toast(note); onChanged(); } catch (e) { toast(`Couldn’t save. ${e.message}`); } };
   const move = async (dir) => {
     const i = shelves.findIndex((x) => x.id === shelf.id), j = i + dir;
@@ -290,6 +292,18 @@ function ShelfRow({ shelf, shelves, onChanged, toast }) {
   return (
     <View style={[styles.row, { padding: 12, gap: 8 }]}>
       <TextInput value={title} onChangeText={setTitle} onBlur={() => title.trim() && title !== shelf.title && save({ title: title.trim() }, 'Shelf renamed.')} style={styles.input} accessibilityLabel="Shelf name" />
+      {Object.keys(langs).length ? (
+        <View style={{ gap: 6 }}>
+          {Object.entries(LANG_NAMES).map(([l, name]) => (
+            <View key={l} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+              <Text style={[styles.rowSub, { width: 72, marginTop: 0 }]}>{name}</Text>
+              <TextInput value={langs[l] || ''} onChangeText={(v) => setLangs((x) => ({ ...x, [l]: v }))} allowFontScaling={false}
+                onBlur={() => (langs[l] || '') !== ((shelf.langs || {})[l] || '') && save({ langs: { ...(shelf.langs || {}), [l]: (langs[l] || '').trim() } }, 'Saved.')}
+                style={[styles.input, { flex: 1, paddingVertical: 6 }, l === 'ar' && { textAlign: 'right', writingDirection: 'rtl' }]} accessibilityLabel={`${name} name`} />
+            </View>
+          ))}
+        </View>
+      ) : <Text style={styles.note}>Being translated into the other languages…</Text>}
       <View style={styles.choices}>
         <Pressable onPress={() => move(-1)} style={styles.chip}><Text style={styles.chipText}>▲ Higher</Text></Pressable>
         <Pressable onPress={() => move(1)} style={styles.chip}><Text style={styles.chipText}>▼ Lower</Text></Pressable>
@@ -328,6 +342,15 @@ export default function StoreManager({ u, openMenu, toast, demo }) {
     if (pull) setRefreshing(false);
   };
   useEffect(() => { load(false); }, []);
+  // shelves made before shelf names had languages: translate them once (30 Oct 2026)
+  const tried = React.useRef(false);
+  useEffect(() => {
+    if (demo || tried.current || !data) return;
+    const missing = data.shelves.filter((sh) => sh.langs && !Object.keys(sh.langs).length);
+    if (!missing.length) return;
+    tried.current = true;
+    Promise.all(missing.map((sh) => translateShelf(sh.id).catch(() => null))).then(() => load(false));
+  }, [data]);
   // while a narration is being made, check back every few seconds
   const working = data && data.books.some((b) => b.narration_status === 'working' || Object.values(b.langs || {}).some((x) => busyLang(x.status)));
   useEffect(() => { if (!working) return undefined; const t = setInterval(() => load(false), 5000); return () => clearInterval(t); }, [working]);

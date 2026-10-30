@@ -570,7 +570,7 @@ export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
         {/* laid out like My Library: whole covers in a grid, nothing cut off, no sideways scrolling */}
         {[...(featured ? [{ id: 'featured', title: t('Featured'), books: [featured] }] : []), ...rows].map((sh) => (
           <View key={sh.id} style={{ gap: 14 }}>
-            <Text style={styles.shelfTitle}>{t(sh.title)}</Text>
+            <Text style={styles.shelfTitle}>{(sh.langs && sh.langs[lang]) || t(sh.title) /* the shelf's own translation (Store Manager), or the app's */}</Text>
             <View style={[styles.shelfGrid, { columnGap: gridGap(winW) }]}>
               {sh.books.map((b) => (
                 // covers only: the title and author are in the details box that opens on a tap

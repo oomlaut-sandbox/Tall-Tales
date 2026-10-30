@@ -26,7 +26,7 @@ export async function refreshCatalog() {
   if (!supabase) return null;
   const cols = 'id,title,author,blurb,shelf_id,sort,access,price_label,product_id,featured,bundled,cover_path,content_path,page_count,age_range,updated_at';
   let [sh, bk] = await Promise.all([
-    supabase.from('shelves').select('id,title,sort').order('sort'),
+    supabase.from('shelves').select('id,title,sort,langs').order('sort'),
     supabase.from('books').select(`${cols},cover_title,min_age,max_age,process,langs`).order('sort'),
   ]);
   // before the languages column is added (docs/store-manager-setup.sql), the same without it
@@ -37,6 +37,7 @@ export async function refreshCatalog() {
   // before the Store Manager's setup has run there are no cover_title / age rating columns yet
   if (bk.error) bk = await supabase.from('books').select(`${cols},cover_title`).order('sort');
   if (bk.error) bk = await supabase.from('books').select(cols).order('sort');
+  if (sh.error) sh = await supabase.from('shelves').select('id,title,sort').order('sort'); // (before shelf names had languages)
   if (sh.error || bk.error) throw sh.error || bk.error;
   const c = { shelves: sh.data, books: bk.data, fetchedAt: Date.now() };
   await saveJSON(KEY, c);

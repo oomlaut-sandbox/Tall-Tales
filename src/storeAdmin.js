@@ -152,12 +152,13 @@ const MANAGER_COLS = 'id,title,author,blurb,shelf_id,sort,access,featured,publis
 const LANG_COL = ',langs'; // (after docs/store-manager-setup.sql's languages part has run)
 export async function loadAllForManager() {
   let [sh, bk] = await Promise.all([
-    supabase.from('shelves').select('id,title,sort,published').order('sort'),
+    supabase.from('shelves').select('id,title,sort,published,langs').order('sort'),
     supabase.from('books').select(`${MANAGER_COLS},process${LANG_COL}`).order('sort'),
   ]);
   if (bk.error) bk = await supabase.from('books').select(`${MANAGER_COLS}${LANG_COL}`).order('sort'); // (no process column)
   if (bk.error) bk = await supabase.from('books').select(`${MANAGER_COLS},process`).order('sort');
   if (bk.error) bk = await supabase.from('books').select(MANAGER_COLS).order('sort'); // (no process column yet)
+  if (sh.error) sh = await supabase.from('shelves').select('id,title,sort,published').order('sort'); // (no langs column yet)
   if (sh.error || bk.error) throw new Error((sh.error || bk.error).message);
   return { shelves: sh.data, books: bk.data };
 }
@@ -198,8 +199,16 @@ export async function addShelf(title) {
   const sort = ((data && data[0] && data[0].sort) || 0) + 10;
   const { error } = await supabase.from('shelves').insert({ id, title: title.trim(), sort, published: true });
   if (error) throw new Error(error.message);
+  await translateShelf(id).catch(() => {});
+}
+// a shelf's name in the other five languages (the translation service; done in a few seconds)
+export async function translateShelf(id) {
+  const { data, error } = await supabase.functions.invoke('translate', { body: { shelfId: id } });
+  if (error || (data && data.error)) throw new Error((data && data.error) || error.message);
+  return data.langs;
 }
 export async function updateShelf(id, patch) {
   const { error } = await supabase.from('shelves').update(patch).eq('id', id);
   if (error) throw new Error(error.message);
+  if (patch.title) await translateShelf(id).catch(() => {}); // renamed: its translations follow
 }

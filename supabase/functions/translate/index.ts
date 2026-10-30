@@ -139,7 +139,22 @@ Deno.serve(async (req) => {
   const asCaller = createClient(URL_, ANON, { global: { headers: { Authorization: auth } } });
   const { data: isAdmin } = await asCaller.rpc('is_store_admin');
   if (!isAdmin) return json({ error: 'Only the store owner can do this.' }, 403);
-  const { bookId, langs, force } = await req.json().catch(() => ({}));
+  const { bookId, langs, force, shelfId } = await req.json().catch(() => ({}));
+  // a shelf's name (30 Oct 2026): short, so it's done straight away; the store owner can correct it in the Store Manager
+  if (shelfId) {
+    const db = createClient(URL_, SERVICE);
+    const { data: sh } = await db.from('shelves').select('title,langs').eq('id', shelfId).maybeSingle();
+    if (!sh) return json({ error: 'No such shelf.' }, 404);
+    const out: Record<string, string> = { ...(sh.langs || {}) };
+    try {
+      await Promise.all(LANGS.map(async (l) => {
+        const r = await claude(l, `(This is the name of a shelf in a children's book store, e.g. "New", "Bedtime", "Big feelings". Keep it just as short.)`, { title: sh.title });
+        out[l] = r.title.trim();
+      }));
+    } catch (e) { return json({ error: String((e as Error).message || e) }, 500); }
+    await db.from('shelves').update({ langs: out }).eq('id', shelfId);
+    return json({ ok: true, langs: out });
+  }
   if (!bookId || !/^[a-z0-9-]+$/.test(bookId)) return json({ error: 'Which book?' }, 400);
   const which = (Array.isArray(langs) && langs.length ? langs : LANGS).filter((l: string) => LANGS.includes(l));
   const db = createClient(URL_, SERVICE);
