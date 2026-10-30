@@ -150,10 +150,12 @@ export async function updateBook(id, patch) {
   if (error) throw new Error(error.message);
 }
 
-export async function removeFromStore(id) {
-  const { data } = await supabase.storage.from('books').list(id, { limit: 1000 });
+// bundled: a book inside the app (it has no files in the store; only its row on the shelves goes)
+export async function removeFromStore(id, bundled) {
+  const { data } = bundled ? { data: [] } : await supabase.storage.from('books').list(id, { limit: 1000 });
   const { error } = await supabase.from('books').delete().eq('id', id);
   if (error) throw new Error(error.message);
+  if (bundled) return;
   // tidy its files (best effort)
   try {
     const paths = [];

@@ -7,6 +7,7 @@ import { ActivityIndicator, Image, Pressable, RefreshControl, ScrollView, StyleS
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { Bar, Burger, WithBar } from '../components/Chrome';
+import { DESK_FELT } from '../look';
 import CoverArt from '../components/CoverArt';
 import { ageText, coverFor, storageUrl } from '../catalog';
 import { LANG_NAMES, addShelf, approveTranslation, loadAllForManager, loadStoreContent, removeFromStore, saveTranslation, startNarration, startTranslation, updateBook, updateShelf, withdrawTranslation } from '../storeAdmin';
@@ -54,7 +55,7 @@ function LangReview({ book, lang, onDone, toast }) {
     }).catch((e) => setErr(e.message));
   }, [book.id, lang]);
   if (err) return <Text style={styles.err}>{err}</Text>;
-  if (!c || !ed) return <ActivityIndicator color={colors.ink} />;
+  if (!c || !ed) return <ActivityIndicator color={colors.white} />;
   const rtl = lang === 'ar';
   const field = (value, onChange, opts = {}) => (
     <TextInput value={value} onChangeText={onChange} multiline={!!opts.multi} allowFontScaling={false}
@@ -134,9 +135,9 @@ function Languages({ book, onChanged, toast }) {
             <Pressable disabled={!st || busyLang(st) || (st === 'failed' && !L.title)} onPress={() => setOpenLang((o) => (o === l ? null : l))} style={styles.langHead} accessibilityRole="button" accessibilityState={{ expanded: openLang === l }}>
               <View style={{ flex: 1, minWidth: 0 }}>
                 <Text style={styles.rowTitle}>{name}{L.title ? `: ${L.title}` : ''}</Text>
-                <Text style={[styles.rowSub, st === 'review' && { color: '#9a4b00' }, st === 'failed' && { color: '#b00000' }]}>{st ? LANG_STATUS[st] || st : 'Not translated yet'}{st === 'failed' && L.note ? `: ${L.note}` : ''}</Text>
+                <Text style={[styles.rowSub, st === 'review' && { color: '#f0b46a' }, st === 'failed' && { color: '#ff8a7e' }]}>{st ? LANG_STATUS[st] || st : 'Not translated yet'}{st === 'failed' && L.note ? `: ${L.note}` : ''}</Text>
               </View>
-              {busyLang(st) ? <ActivityIndicator color={colors.ink} /> : st && !(st === 'failed' && !L.title) ? (st === 'review' && openLang !== l ? <Text style={styles.readTag}>Read over</Text> : <Text style={styles.chev}>{openLang === l ? '–' : '+'}</Text>) : null}
+              {busyLang(st) ? <ActivityIndicator color={colors.white} /> : st && !(st === 'failed' && !L.title) ? (st === 'review' && openLang !== l ? <Text style={styles.readTag}>Read over</Text> : <Text style={styles.chev}>{openLang === l ? '–' : '+'}</Text>) : null}
             </Pressable>
             {openLang === l ? <LangReview book={book} lang={l} toast={toast} onDone={() => { setOpenLang(null); onChanged(); }} /> : null}
           </View>
@@ -183,7 +184,7 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
         </View>
         <View style={{ flex: 1, minWidth: 0 }}>
           <Text style={styles.rowTitle} numberOfLines={1}>{book.title}</Text>
-          <Text style={[styles.rowSub, !book.published && { color: '#9a4b00' }]} numberOfLines={2}>{status}</Text>
+          <Text style={[styles.rowSub, !book.published && { color: '#f0b46a' }]} numberOfLines={2}>{status}</Text>
         </View>
         <Text style={styles.chev}>{open ? '–' : '+'}</Text>
       </Pressable>
@@ -232,11 +233,13 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
                 <Text style={styles.pillText}>{book.narration_status === 'ready' ? 'Make the narration again' : 'Make the narration'}</Text>
               </Pressable>
               <Languages book={book} onChanged={onChanged} toast={toast} />
+            </>
+          ) : null}
               {confirmRemove ? (
                 <View style={{ gap: 10, marginTop: 24 }}>
-                  <Text style={styles.note}>Take “{book.title}” out of the Book Store for good? The book stays in your own library on this phone.</Text>
+                  <Text style={styles.note}>{book.bundled ? `Take “${book.title}” out of the Book Store? It’s inside the app, so it stays in the app itself; this only removes it from the store’s shelves.` : `Take “${book.title}” out of the Book Store for good? Its pages, narration and translations are deleted from the store. The book stays in your own library on this phone.`}</Text>
                   <View style={{ flexDirection: 'row', gap: 10 }}>
-                    <Pressable onPress={async () => { try { await removeFromStore(book.id); toast('Taken out of the Book Store.'); onChanged(); } catch (e) { toast(`Couldn’t remove it. ${e.message}`); } }}
+                    <Pressable onPress={async () => { try { await removeFromStore(book.id, book.bundled); toast('Taken out of the Book Store.'); onChanged(); } catch (e) { toast(`Couldn’t remove it. ${e.message}`); } }}
                       style={[styles.pill, { flex: 1, backgroundColor: colors.deepRed }]}><Text style={styles.pillText}>Remove</Text></Pressable>
                     <Pressable onPress={() => setConfirmRemove(false)} style={[styles.pill, { flex: 1 }]}><Text style={styles.pillText}>Keep it</Text></Pressable>
                   </View>
@@ -246,8 +249,6 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
                   <Text style={styles.pillText}>Remove from the store</Text>
                 </Pressable>
               )}
-            </>
-          ) : null}
         </View>
       ) : null}
     </View>
@@ -308,7 +309,7 @@ export default function StoreManager({ u, openMenu, toast, demo }) {
   const working = data && data.books.some((b) => b.narration_status === 'working' || Object.values(b.langs || {}).some((x) => busyLang(x.status)));
   useEffect(() => { if (!working) return undefined; const t = setInterval(() => load(false), 5000); return () => clearInterval(t); }, [working]);
   return (
-    <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
+    <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         <Text style={styles.title}>Store Manager</Text>
       </View>
@@ -316,7 +317,7 @@ export default function StoreManager({ u, openMenu, toast, demo }) {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} />}>
         <Text style={styles.intro}>Every book in the Book Store, hidden ones too. New books come from the book maker: open a book you made, tap Pages, then “Publish to the Book Store”.</Text>
         {err ? <Text style={styles.err}>{err}</Text> : null}
-        {!data && !err ? <ActivityIndicator color={colors.ink} /> : null}
+        {!data && !err ? <ActivityIndicator color={colors.white} /> : null}
         {data ? data.shelves.map((sh) => {
           const books = data.books.filter((b) => b.shelf_id === sh.id).sort((a, b) => a.sort - b.sort);
           return (
@@ -352,31 +353,31 @@ export default function StoreManager({ u, openMenu, toast, demo }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.paper },
-  band: { backgroundColor: '#3b3b3b', paddingBottom: 30, paddingHorizontal: 24 },
+  screen: { flex: 1, backgroundColor: '#1c1c1c' }, // dark, on the charcoal felt like the rest of the app (Jörg, 30 Oct 2026)
+  band: { backgroundColor: 'rgba(0,0,0,0.55)', paddingBottom: 30, paddingHorizontal: 24 },
   title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 32 },
   body: { padding: 20, paddingBottom: 60, gap: 26 },
-  intro: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#333' },
-  err: { fontFamily: fonts.ui, fontSize: 15, color: '#b00000' },
-  shelf: { fontFamily: fonts.uiBold, fontSize: 20, color: colors.ink },
-  row: { backgroundColor: '#e2e2e2', borderRadius: 14, overflow: 'hidden' },
+  intro: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#cfcac0' },
+  err: { fontFamily: fonts.ui, fontSize: 15, color: '#ff8a7e' },
+  shelf: { fontFamily: fonts.uiBold, fontSize: 20, color: colors.white },
+  row: { backgroundColor: 'rgba(16,16,16,0.82)', borderRadius: 14, overflow: 'hidden' },
   rowHead: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10 },
-  thumb: { width: 54, height: 54, backgroundColor: '#999', overflow: 'hidden' },
-  rowTitle: { fontFamily: fonts.uiBold, fontSize: 16, color: colors.ink },
-  rowSub: { fontFamily: fonts.ui, fontSize: 13, color: '#555', marginTop: 2 },
-  chev: { fontFamily: fonts.uiBold, fontSize: 22, color: '#555', width: 24, textAlign: 'center' },
+  thumb: { width: 54, height: 54, backgroundColor: '#444', overflow: 'hidden' },
+  rowTitle: { fontFamily: fonts.uiBold, fontSize: 16, color: colors.white },
+  rowSub: { fontFamily: fonts.ui, fontSize: 13, color: '#b5b0a7', marginTop: 2 },
+  chev: { fontFamily: fonts.uiBold, fontSize: 22, color: '#b5b0a7', width: 24, textAlign: 'center' },
   edit: { paddingHorizontal: 14, paddingBottom: 18, gap: 8 },
-  label: { fontFamily: fonts.uiBold, fontSize: 12, color: '#555', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 10 },
+  label: { fontFamily: fonts.uiBold, fontSize: 12, color: '#9d988f', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 10 },
   choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: { backgroundColor: '#6b6b6b', borderRadius: 18, height: 36, paddingHorizontal: 14, justifyContent: 'center' },
+  chip: { backgroundColor: '#454545', borderRadius: 18, height: 36, paddingHorizontal: 14, justifyContent: 'center' },
   chipText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 14 },
-  input: { backgroundColor: colors.white, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, fontFamily: fonts.ui, fontSize: 15, color: colors.ink, textAlignVertical: 'top' },
-  note: { fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, color: '#333' },
-  pill: { backgroundColor: '#6b6b6b', borderRadius: 22, height: 44, paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
+  input: { backgroundColor: '#0e0e0e', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, fontFamily: fonts.ui, fontSize: 15, color: colors.white, textAlignVertical: 'top' },
+  note: { fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, color: '#cfcac0' },
+  pill: { backgroundColor: '#454545', borderRadius: 22, height: 44, paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
   pillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 },
-  langRow: { backgroundColor: '#d4d4d4', borderRadius: 12, overflow: 'hidden' },
+  langRow: { backgroundColor: '#2a2a2a', borderRadius: 12, overflow: 'hidden' },
   langHead: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12, paddingVertical: 10 },
   review: { paddingHorizontal: 12, paddingBottom: 14, gap: 8 },
-  en: { fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, color: '#666' },
+  en: { fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, color: '#9d988f' },
   readTag: { backgroundColor: colors.green, color: colors.white, fontFamily: fonts.uiBold, fontSize: 13, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 14, overflow: 'hidden' },
 });
