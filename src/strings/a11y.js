@@ -192,4 +192,6 @@ export default {
   'Approve': { de: 'Freigeben', fr: 'Approuver', es: 'Aprobar', ja: 'みとめる', ar: 'اعتمد' },
   'The prompt is waiting in each student’s My Workspace.': { de: 'Die Buchidee wartet in Mein Arbeitsplatz jedes Kindes.', fr: 'Le sujet attend dans Mon espace de travail de chaque élève.', es: 'La idea espera en Mi espacio de trabajo de cada estudiante.', ja: 'おだいは どの せいとの「わたしの さぎょうば」にも とどきました。', ar: 'الفكرة بانتظار كل طالب في «مساحة عملي».' },
   '{name}: our books': { de: '{name}: unsere Bücher', fr: '{name} : nos livres', es: '{name}: nuestros libros', ja: '{name}：わたしたちの 本', ar: '{name}: كتبنا' },
+  'The class is locked.': { de: 'Die Klasse ist gesperrt.', fr: 'La classe est verrouillée.', es: 'La clase está bloqueada.', ja: 'クラスを ロックしました。', ar: 'تم قفل الصف.' },
+  'The lock is off.': { de: 'Die Sperre ist aus.', fr: 'Le verrou est désactivé.', es: 'El bloqueo está desactivado.', ja: 'ロックを はずしました。', ar: 'تم إلغاء القفل.' },
 };

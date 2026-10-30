@@ -225,6 +225,7 @@ function Root() {
   useEffect(() => onStepsChange(() => stepBump((n) => n + 1)), []);
   useBackStep(drawer, () => setDrawer(false)); // the menu open: Back closes it
   // from a book: back to My Library, scrolled to My Books (Jörg, 28 Oct 2026)
+  if (Platform.OS === 'web' && typeof window !== 'undefined') window.__go = (s) => go(s); // (web preview only: lets the screenshot scripts open a screen)
   const readFrom = useRef(null); // a book opened from the Teacher's Desk goes back there when it's closed
   const backToBooks = () => { playSound('coverClose'); if (readFrom.current === 'teacherDesk') { readFrom.current = null; go('teacherDesk'); return; } setToBooks((n) => n + 1); go('library'); };
   const goBack = () => {

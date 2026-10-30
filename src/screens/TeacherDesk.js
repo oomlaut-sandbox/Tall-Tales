@@ -15,7 +15,7 @@ import CoverArt from '../components/CoverArt';
 import LineInput from '../components/LineInput';
 import { useT } from '../i18n';
 import { getProfiles, inClass, onProfiles } from '../profiles';
-import { addPrompt, isLocked, locked, onPrompts, removePrompt } from '../classroom';
+import { addPrompt, classLocked, onPrompts, removePrompt, setClassLock } from '../classroom';
 import { setBookReview } from '../userStories';
 import { printAnthology, shareAnthology } from '../pdf';
 
@@ -95,7 +95,12 @@ export default function TeacherDesk({ u, openMenu, toast, stories, onList, openS
     try { await (share ? shareAnthology : printAnthology)(library, t('{name}: our books', { name: classTitle }), 'stacked', fontKey); } catch (e) { toast(t(e.message)); }
     setMaking(false);
   };
-  const lockOn = isLocked(controls);
+  const [lockOn, setLockOn] = useState(false);
+  useEffect(() => { if (klass) classLocked(klass.id).then(setLockOn).catch(() => {}); }, [klass && klass.id]);
+  const lock = async (on) => {
+    setLockOn(on);
+    try { await setClassLock(klass.id, on, students.map((st) => st.id), controls, setControls); toast(on ? t('The class is locked.') : t('The lock is off.')); } catch (e) { setLockOn(!on); }
+  };
   if (!klass) {
     return (
       <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
@@ -158,7 +163,7 @@ export default function TeacherDesk({ u, openMenu, toast, stories, onList, openS
         <Text style={styles.h}>{t('Classroom lock')}</Text>
         <View style={[styles.row, { flexDirection: 'row', alignItems: 'center', gap: 12 }]}>
           <Text style={[styles.note, { flex: 1 }]}>{t('No Book Store, no buying, and no sharing or printing outside the class.')}</Text>
-          <Switch value={lockOn} onValueChange={(on) => setControls(locked(controls, on))} trackColor={{ true: colors.green }} accessibilityLabel={t('Classroom lock')} />
+          <Switch value={lockOn} onValueChange={lock} trackColor={{ true: colors.green }} accessibilityLabel={t('Classroom lock')} />
         </View>
       </ScrollView>
     </WithBar>

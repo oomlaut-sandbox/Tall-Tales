@@ -17,6 +17,17 @@ if (typeof window !== 'undefined' && /my-book/.test(window.location.hash)) {
     pages: [{ pid: 'd1', text: 'We sat by the lake until the sun went down.', uri: window.__demoPage || null, w: 1078, h: 1078 }, // (__demoPage: a family photo for the App Store screenshots)
        { pid: 'd2', text: 'She made pancakes as big as plates!', uri: null, w: 1, h: 1 }] }]);
 }
+// (#class-demo: a class, Room 4, with Ava and Leo; a book prompt; Leo's book handed in, and one approved: the classroom tools)
+if (typeof window !== 'undefined' && /class-demo/.test(window.location.hash)) {
+  mem.profiles = JSON.stringify({ classroom: { name: 'Room 4' }, classes: [{ id: 'c1', name: 'Room 4' }], active: 's1',
+    list: [{ id: 's1', name: 'Ava', color: 'green', cls: 'c1' }, { id: 's2', name: 'Leo', color: 'orange', cls: 'c1' }] });
+  mem.classPrompts = JSON.stringify([{ id: 'pr1', title: 'My Weekend', note: 'A picture and a sentence on each page. What was the best part?', pages: 4, cls: 'c1', at: 1 }]);
+  mem.stories = JSON.stringify([
+    { id: 'leo1', title: 'The Big Snow', writer: 'Leo', artist: 'Leo', cover: null, cls: 'c1', owner: 's2', promptId: 'pr0', handIn: 'in', published: false,
+      pages: [{ pid: 'l1', text: 'It snowed all night.', uri: window.__demoPage || null, w: 1078, h: 1078 }] },
+    { id: 'ava0', title: 'Our Class Pet', writer: 'Ava', artist: 'Ava', cover: null, cls: 'c1', owner: 's1', promptId: 'pr0', handIn: 'ok', published: true,
+      pages: [{ pid: 'a1', text: 'Our hamster is called Biscuit.', uri: null, w: 1, h: 1 }] }]);
+}
 // (#kid-mode: Quick and Safe Kid already on, to show the lock on the bars)
 if (typeof window !== 'undefined' && /kid-mode/.test(window.location.hash)) {
   mem.controls = JSON.stringify(require('./controls').quickSafeControls(6));
