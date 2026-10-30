@@ -34,6 +34,10 @@ drop policy if exists "admins write books" on public.books;
 create policy "admins write books" on public.books for all using (public.is_store_admin()) with check (public.is_store_admin());
 
 -- The owner can upload, replace and remove pictures in the public "books" folder.
+-- (uploading with "replace if it's there" needs to see the folder too, not only add to it: 30 Oct 2026)
+drop policy if exists "admins read books folder" on storage.objects;
+create policy "admins read books folder" on storage.objects for select to authenticated
+  using (bucket_id = 'books' and public.is_store_admin());
 drop policy if exists "admins upload books" on storage.objects;
 create policy "admins upload books" on storage.objects for insert to authenticated
   with check (bucket_id = 'books' and public.is_store_admin());
