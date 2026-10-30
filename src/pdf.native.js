@@ -93,7 +93,7 @@ export async function buildStoryHtml(story0, layout = 'stacked', fontKey = 'seri
   // words over a picture (WordsOver.js): placed on it as in the app, in their look
   const overOf = (p, i) => (p.text && p.text.trim() && (p.textOn === 'top' ? pics[i] : p.textOn === 'bottom' ? pics2[i] : null) ? p.textOn : null);
   const overHtml = (p, pt) => {
-    const at = p.textAt || { x: 0.5, y: 0.8 };
+    const at = p.textAt || { x: 0.5, y: 0.66 };
     const look = p.textLook || 'light';
     const st = look === 'dark' ? 'background:rgba(16,16,16,.72);color:#f7f4ee'
       : look === 'shadow' ? 'color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.85)'

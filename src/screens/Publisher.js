@@ -692,14 +692,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <EmptyPicture side={side} />
           )}
           {!wide ? <Fade edge="bottom" size={Math.round(side * 0.1)} max={0.22} /> : null}
-          {over === 'top' ? <MakerWords page={page} boxW={side} boxH={side} onMove={(textAt) => update({ textAt })} onTap={openWords} /> : null}
         </Pressable>
         <Pressable onPress={secondPic || over === 'top' ? () => setImgAsk('page2') : openWords} accessibilityRole="button" accessibilityLabel={secondPic ? tr('Change the second image') : over === 'top' ? tr('Add another image page') : tr('Words for page {n}', { n: i + 1 })} ref={wordsRef} collapsable={false} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>{/* the whole words square opens the editor */}
           {/* a second picture instead of words: a page of two pictures */}
           {secondPic ? <Image source={{ uri: page.uri2 }} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" /> : null}
           {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
           <Spine wide={wide} />
-          {over === 'bottom' ? <MakerWords page={page} boxW={side} boxH={side} onMove={(textAt) => update({ textAt })} onTap={openWords} /> : null}
           {secondPic ? (
             <View style={[styles.artBtns, { bottom: 12 }]}>
               <Text style={styles.chip}>{tr('Change image')}</Text>
@@ -726,6 +724,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             </>
           )}
         </Pressable>
+        {/* words over a picture: drawn over the square they're on, outside its tap area, so dragging them never taps the picture */}
+        {over ? (
+          <View pointerEvents="box-none" style={{ position: 'absolute', width: side, height: side, left: over === 'bottom' && wide ? side : 0, top: over === 'bottom' && !wide ? side : 0 }}>
+            <MakerWords page={page} boxW={side} boxH={side} onMove={(textAt) => update({ textAt })} onTap={openWords} />
+          </View>
+        ) : null}
         <DogEar u={u} under={colors.earUnder} onPress={next} label={tr('Next page')} />
         {/* the page count in a small grey box, top left of the picture page ('Saved' takes its place for a moment after each change) */}
         <View pointerEvents="none" style={[styles.countBox, { top: 12, left: 12 }]}>

@@ -14,7 +14,7 @@ import { View } from 'react-native';
 
 export const WORD_LOOKS = [['light', 'Light panel'], ['dark', 'Dark panel'], ['shadow', 'Shadow'], ['plain', 'No shadow']];
 export const WORD_SIZES = [[0.8, 'Small'], [1, 'Medium'], [1.25, 'Large']];
-export const DEFAULT_AT = { x: 0.5, y: 0.8 };
+export const DEFAULT_AT = { x: 0.5, y: 0.66 }; // (clear of the book maker's picture buttons along the bottom)
 
 // does this page draw its words over a picture? (only with words, and only on a picture that's there)
 export function wordsOverOn(page) {
