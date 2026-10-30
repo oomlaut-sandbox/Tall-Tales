@@ -181,8 +181,8 @@ const ALL_HELP = [
   { section: 'Coro Artist Community', title: 'Getting paid', store: true, text: [
     'Before your book goes into the store, we agree on it in writing: its price, and that half of what Coro receives for each copy goes to you.',
     'Apple keeps its share of each sale first, and some countries take out sales tax; half of what is left is yours.',
-    'We pay every three months, with a statement showing how many copies of each book were sold.',
-    'You keep the rights to your story and pictures, and you can ask us to take your book out of the store at any time.',
+    'We pay once a year, in January for the year before, with a statement showing how many copies of each book were sold.',
+    'You keep the rights to your story and pictures, and you can take your book out of the store with 30 days’ notice.',
   ] },
   { section: 'Coro Artist Community', title: 'Your book in six languages', store: true, text: [
     'Every book in the store can be read in English, German, French, Spanish, Japanese and Arabic. Once a translation is checked, Coro’s narrators read your book aloud in that language, with each word lighting up.',

@@ -459,19 +459,19 @@ export default {
     ja: 'うりあげからは まず Apple の ぶんが ひかれ、くにによっては ぜいきんも ひかれます。のこりの はんぶんが あなたの ものです。',
     ar: 'تأخذ Apple حصتها من كل عملية بيع أولًا، وتقتطع بعض الدول ضريبة مبيعات؛ ونصف ما يتبقى لك.',
   },
-  'We pay every three months, with a statement showing how many copies of each book were sold.': {
-    de: 'Wir zahlen alle drei Monate, mit einer Aufstellung, wie viele Exemplare jedes Buches verkauft wurden.',
-    fr: 'Nous payons tous les trois mois, avec un relevé indiquant le nombre d’exemplaires vendus pour chaque livre.',
-    es: 'Pagamos cada tres meses, con un resumen de cuántos ejemplares de cada libro se vendieron.',
-    ja: 'おしはらいは 3か月ごとです。本ごとに なんさつ うれたかを おしらせします。',
-    ar: 'ندفع كل ثلاثة أشهر، مع كشف يبيّن عدد النسخ المبيعة من كل كتاب.',
+  'We pay once a year, in January for the year before, with a statement showing how many copies of each book were sold.': {
+    de: 'Wir zahlen einmal im Jahr, im Januar für das Vorjahr, mit einer Aufstellung, wie viele Exemplare jedes Buches verkauft wurden.',
+    fr: 'Nous payons une fois par an, en janvier pour l’année précédente, avec un relevé indiquant le nombre d’exemplaires vendus pour chaque livre.',
+    es: 'Pagamos una vez al año, en enero por el año anterior, con un resumen de cuántos ejemplares de cada libro se vendieron.',
+    ja: 'おしはらいは 1年に 1かい、1月に まえの 年の ぶんを はらいます。本ごとに なんさつ うれたかを おしらせします。',
+    ar: 'ندفع مرة واحدة في السنة، في يناير عن السنة السابقة، مع كشف يبيّن عدد النسخ المبيعة من كل كتاب.',
   },
-  'You keep the rights to your story and pictures, and you can ask us to take your book out of the store at any time.': {
-    de: 'Die Rechte an deiner Geschichte und deinen Bildern bleiben bei dir, und du kannst uns jederzeit bitten, dein Buch aus dem Buchladen zu nehmen.',
-    fr: 'Vous gardez les droits sur votre histoire et vos images, et vous pouvez nous demander à tout moment de retirer votre livre de la Librairie.',
-    es: 'Conservas los derechos de tu historia y tus imágenes, y puedes pedirnos que retiremos tu libro de la Librería en cualquier momento.',
-    ja: 'おはなしと えの けんりは あなたの ものです。いつでも 本を「本やさん」から さげるよう たのめます。',
-    ar: 'تبقى حقوق قصتك وصورك لك، ويمكنك أن تطلب منا إزالة كتابك من المتجر في أي وقت.',
+  'You keep the rights to your story and pictures, and you can take your book out of the store with 30 days’ notice.': {
+    de: 'Die Rechte an deiner Geschichte und deinen Bildern bleiben bei dir, und du kannst dein Buch mit einer Frist von 30 Tagen aus dem Buchladen nehmen.',
+    fr: 'Vous gardez les droits sur votre histoire et vos images, et vous pouvez retirer votre livre de la Librairie avec un préavis de 30 jours.',
+    es: 'Conservas los derechos de tu historia y tus imágenes, y puedes retirar tu libro de la Librería avisando con 30 días de antelación.',
+    ja: 'おはなしと えの けんりは あなたの ものです。30日まえに しらせれば、本を「本やさん」から さげられます。',
+    ar: 'تبقى حقوق قصتك وصورك لك، ويمكنك سحب كتابك من المتجر بإشعار مدته 30 يومًا.',
   },
   'Your book in six languages': {
     de: 'Dein Buch in sechs Sprachen',
