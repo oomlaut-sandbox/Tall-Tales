@@ -95,7 +95,7 @@ const ALL_HELP = [
     'Open My Workspace (on the notebook’s first page or in the menu) and tap the blue book under Let’s make a book.',
     'Tap the picture square to add a picture: choose one from your photos, or take a photo (of a drawing, say). Taking a photo asks a grown-up first.',
     'Tap the words square to type the words for that page. Two or three sentences reads best.',
-    'Tap the folded corner for a new page. Tap the title in the bottom bar to name your book and add who wrote and illustrated it.',
+    'When a page is done, tap the green tick and choose Add another page. Tap the title in the bottom bar to name your book and add who wrote and illustrated it.',
     'Everything saves on its own. Save and Exit keeps the book in Books I’m still making, in My Workspace. Finish and publish to library puts it in My Book Collection, in My Library.',
   ] },
   { section: 'Making books', title: 'My Workspace', text: [
@@ -137,7 +137,7 @@ const ALL_HELP = [
   ] },
   { section: 'Books', title: 'My Library', text: [
     'My Library is your Book Collection: the books you’ve finished, then the books that come with the app.',
-    'Tap Select to choose books to share or delete. Books that came with the app can be brought back with “Show removed books”.',
+    'Tap Select to choose books to share or delete (in My Workspace, the books you’re still making). Books that came with the app can be brought back with “Show removed books”.',
   ] },
   { section: 'Books', title: 'Things to share and the Message Board', text: [
     'Things to share is in My Workspace, under My Notes. It holds a note from us, the Abc sheet (tap a letter to hear it) and sheets other families send you.',
@@ -158,7 +158,7 @@ const ALL_HELP = [
     'Your child’s age: every book has an age rating, and books rated for older children are hidden.',
     'Lock everything leaves only My Library and its books, read the way you chose. Unlock everything brings it all back.',
     'Nightlight mode: switch the bedtime nightlight on or off. Haptic feedback: feel soft clicks on dials, knobs and buttons, or switch them off.',
-    'The Garden (a beta that may change): a quiet garden to visit, with birdsong. Turn it on in Settings, then pull up past the bottom of My Workspace to go in. Tap the garden to change the light, and tap a gate to leave.',
+    'The Garden: a quiet garden to visit, with birdsong. Turn it on in Settings, then pull up past the bottom of My Workspace to go in. Tap the garden to change the light, and tap a gate to leave.',
   ] },
   { section: 'Grown-ups', title: 'The grown-up check', text: [
     'Some things, like taking photos, printing, sharing and deleting, first ask a quick question only a grown-up can answer.',
