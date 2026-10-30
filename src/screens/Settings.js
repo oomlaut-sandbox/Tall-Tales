@@ -153,6 +153,9 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
                 {STORE_ON ? <Toggle label={t('Show the Book Store')} value={controls.store} onChange={(v) => set({ store: v })} /> : null}
                 <Toggle label={t('Show My Notes')} value={controls.notebook} onChange={(v) => set({ notebook: v })} />
                 <Toggle label={t('Show Make a Book')} value={controls.create} onChange={(v) => set({ create: v })} />
+                {/* the Advanced page editor: off to start, so the book maker stays simple for kids (Jörg, 30 Oct 2026) */}
+                {controls.create ? <Toggle label={t('Advanced page editor')} value={!!controls.advancedPages} onChange={(v) => set({ advancedPages: v })} /> : null}
+                {controls.create ? <Text style={styles.small}>{t('Put the words on a picture, and choose their look, size and place. Off: the book maker stays simple, with the words on their own page.')}</Text> : null}
                 <Toggle label={t('Ideas, Support and About')} value={controls.help} onChange={(v) => set({ help: v })} />
                 <Toggle label={t('Recording own voice')} value={controls.recording} onChange={(v) => set({ recording: v })} />
                 <Toggle label={t('Read in family voices when there are some')} value={controls.familyVoices !== false} onChange={(v) => set({ familyVoices: v })} />

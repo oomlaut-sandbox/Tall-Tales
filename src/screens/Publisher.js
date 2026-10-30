@@ -20,6 +20,7 @@ import { DESK_FELT, DeskFelt, DESK_BG } from '../look';
 import { COVER_COLORS, bylineLook, bylineStyle, coverBoxes, coverTitleLook, titleStyle } from '../components/CoverArt';
 import { creditsLine } from '../userStories';
 import { playKey } from '../sound';
+import { useControls } from '../controls';
 import { classOf, deleteUserStory, dropPicture, keepPicture, newPageId, overOf, saveUserStory } from '../userStories';
 import StoryGuide from '../components/StoryGuide';
 import ParentGate from '../components/ParentGate';
@@ -339,6 +340,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   // words over a picture (WordsOver.js): which picture they're on, and whether the second square holds a picture
   const over = wordsOverOn(page);
   const secondPic = !!(page && page.uri2 && (!(page.text || '').trim() || page.textOn));
+  const controls = useControls(); // (the Advanced page editor: Settings → Parental controls)
   const [placeOpen, setPlaceOpen] = useState(false); // the words editor's 'Words on a picture' choices
 
   // Autosave shortly after every change.
@@ -1017,7 +1019,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           ) : null}
           {/* under the page: 'Words on a picture' (left), and a green Done pill (right) */}
           <Animated.View style={{ width: winW - 2 * GAP, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: zoom }}>
-            {page.text.trim() ? (
+            {page.text.trim() && (controls.advancedPages || page.textOn) /* the Advanced page editor (Settings), or a page already set that way */ ? (
               <Pressable onPress={() => { Keyboard.dismiss(); setPlaceOpen((o) => !o); }} hitSlop={8} accessibilityRole="button" accessibilityState={{ expanded: placeOpen }} style={[styles.donePill, { backgroundColor: '#3d3d3d' }]}>
                 <Text style={styles.donePillText}>{placeOpen ? tr('Hide choices') : tr('Words on a picture')}</Text>
               </Pressable>
