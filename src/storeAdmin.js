@@ -155,6 +155,7 @@ export async function loadAllForManager() {
     supabase.from('shelves').select('id,title,sort,published').order('sort'),
     supabase.from('books').select(`${MANAGER_COLS},process${LANG_COL}`).order('sort'),
   ]);
+  if (bk.error) bk = await supabase.from('books').select(`${MANAGER_COLS}${LANG_COL}`).order('sort'); // (no process column)
   if (bk.error) bk = await supabase.from('books').select(`${MANAGER_COLS},process`).order('sort');
   if (bk.error) bk = await supabase.from('books').select(MANAGER_COLS).order('sort'); // (no process column yet)
   if (sh.error || bk.error) throw new Error((sh.error || bk.error).message);

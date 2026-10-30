@@ -30,6 +30,7 @@ export async function refreshCatalog() {
     supabase.from('books').select(`${cols},cover_title,min_age,max_age,process,langs`).order('sort'),
   ]);
   // before the languages column is added (docs/store-manager-setup.sql), the same without it
+  if (bk.error) bk = await supabase.from('books').select(`${cols},cover_title,min_age,max_age,langs`).order('sort'); // (no process column)
   if (bk.error) bk = await supabase.from('books').select(`${cols},cover_title,min_age,max_age,process`).order('sort');
   // before the process column is added (docs/catalog-setup.sql), the same without it
   if (bk.error) bk = await supabase.from('books').select(`${cols},cover_title,min_age,max_age`).order('sort');
