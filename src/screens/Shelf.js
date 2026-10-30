@@ -688,7 +688,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
       {copyright ? <Text style={[styles.sheetSub, { fontSize: 14, lineHeight: 20 }]}>{copyright}</Text> : null}
       {!here ? <Text style={[styles.sheetText, { marginTop: 6 }]}>{t('Downloading new books arrives in the next update.')}</Text> : null}
       {/* an artist's book for sale: bought on its own (members too), and half of what Coro receives goes to the artist (Jörg, 30 Oct 2026) */}
-      {book.access === 'paid' ? <Text style={[styles.sheetText, { fontSize: 14, lineHeight: 20, marginBottom: 12 }]}>{t('Written and illustrated by people, without AI. Half of what Coro earns from this book goes to its artist.')}</Text> : null}
+      {book.access === 'paid' ? <Text style={[styles.sheetText, { fontSize: 14, lineHeight: 20, marginBottom: 12 }]}>{t('Written and illustrated by people, without AI. Only the translations are made with the help of AI, once, and then checked by a person. Half of what Coro earns from this book goes to its artist.')}</Text> : null}
     </View>
   );
   return (

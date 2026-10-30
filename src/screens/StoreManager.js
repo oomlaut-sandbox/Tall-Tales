@@ -232,7 +232,7 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
             <>
               <Text style={styles.label}>Price</Text>
               <Choice options={BOOK_PRICES.map((p) => [p, p])} value={book.price_label || PRICES.book} onChange={(v) => setAccessTo('paid', v)} />
-              <Text style={styles.note}>In App Store Connect, this book needs its own in-app purchase (Non-Consumable) at the same price, with the product ID{'\n'}<Text style={{ fontFamily: fonts.uiBold, color: colors.white }} selectable>{productIdFor(book.id)}</Text>{'\n'}Families buy it on its own, members too. The store says it’s made by people, without AI, and that half of what Coro earns from it goes to the artist.</Text>
+              <Text style={styles.note}>In App Store Connect, this book needs its own in-app purchase (Non-Consumable) at the same price, with the product ID{'\n'}<Text style={{ fontFamily: fonts.uiBold, color: colors.white }} selectable>{productIdFor(book.id)}</Text>{'\n'}Families buy it on its own, members too. The store says it’s made by people, without AI (only the translations are made with AI’s help, once, and checked by you), and that half of what Coro earns from it goes to the artist.</Text>
             </>
           ) : book.access === 'member' ? <Text style={styles.note}>Marked for members (from before). Choose Free or For sale.</Text> : null}
           {/* the age rating: parents can show only the books rated for their child's age (Settings) */}
