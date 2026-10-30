@@ -78,6 +78,7 @@ html,body{margin:0;padding:0;background:#fff}
 .book.row .sq{width:330pt;height:330pt}
 .book.row .sq + .sq{border-top:1.5pt solid #000;border-left:none}
 .sq img{width:100%;height:100%;object-fit:cover;display:block}
+.ovt{position:absolute;transform:translate(-50%,-50%);max-width:84%;width:max-content;box-sizing:border-box;padding:.35em .7em;border-radius:10pt;text-align:center;line-height:1.4}
 .sq.txt{display:flex;align-items:center;justify-content:center;padding:0 ${Math.round(SQ * 0.09)}pt}
 .sq.txt p{font-size:22pt;line-height:1.55;margin:0;text-align:center}
 .num{position:absolute;bottom:22pt;font-size:11pt;color:#999;font-family:Helvetica,Arial,sans-serif}`;
@@ -88,15 +89,28 @@ export async function buildStoryHtml(story0, layout = 'stacked', fontKey = 'seri
   const face = await fontFace(fontKey);
   const pics = [];
   const pics2 = []; // the second picture of a page of two pictures (in place of the words)
-  for (const p of story.pages) { pics.push(await imageData(p.image)); pics2.push(p.image2 && !(p.text || '').trim() ? await imageData(p.image2) : null); }
+  for (const p of story.pages) { pics.push(await imageData(p.image)); pics2.push(p.image2 && (!(p.text || '').trim() || p.textOn) ? await imageData(p.image2) : null); }
+  // words over a picture (WordsOver.js): placed on it as in the app, in their look
+  const overOf = (p, i) => (p.text && p.text.trim() && (p.textOn === 'top' ? pics[i] : p.textOn === 'bottom' ? pics2[i] : null) ? p.textOn : null);
+  const overHtml = (p, pt) => {
+    const at = p.textAt || { x: 0.5, y: 0.8 };
+    const look = p.textLook || 'light';
+    const st = look === 'dark' ? 'background:rgba(16,16,16,.72);color:#f7f4ee'
+      : look === 'shadow' ? 'color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.85)'
+        : look === 'plain' ? `color:${p.textInk === 'white' ? '#fff' : '#1c1c1c'}` : 'background:rgba(250,248,242,.88);color:#1c1c1c';
+    return `<div class="ovt" style="left:${(at.x * 100).toFixed(1)}%;top:${(at.y * 100).toFixed(1)}%;font-size:${Math.round(pt * (p.textSize || 1))}pt;${st}">${esc(p.text)}</div>`;
+  };
   const out = [];
   out.push(`<div class="pg title"><h1>${esc(story.title)}</h1>${story.author ? `<div class="by">by ${esc(story.author)}</div>` : ''}<div class="made">Made with Coro</div></div>`);
   story.pages.forEach((p, i) => {
     const pic = pics[i];
+    const ov = overOf(p, i);
     if (layout === 'spreads') {
-      if (pic) out.push(`<div class="pg full"><img src="${pic}"/></div>`);
-      if (pics2[i]) out.push(`<div class="pg full"><img src="${pics2[i]}"/></div>`);
-      if (p.text && p.text.trim()) out.push(`<div class="pg words"><p>${esc(p.text)}</p></div>`);
+      if (pic) out.push(`<div class="pg full"><img src="${pic}"/>${ov === 'top' ? overHtml(p, 26) : ''}</div>`);
+      if (pics2[i]) out.push(`<div class="pg full"><img src="${pics2[i]}"/>${ov === 'bottom' ? overHtml(p, 26) : ''}</div>`);
+      if (p.text && p.text.trim() && !ov) out.push(`<div class="pg words"><p>${esc(p.text)}</p></div>`);
+    } else if (ov) {
+      out.push(`<div class="pg"><div class="book${layout === 'landscape' ? ' row' : ''}"><div class="sq">${pic ? `<img src="${pic}"/>` : ''}${ov === 'top' ? overHtml(p, 18) : ''}</div><div class="sq">${pics2[i] ? `<img src="${pics2[i]}"/>` : ''}${ov === 'bottom' ? overHtml(p, 18) : ''}</div></div><div class="num">${i + 1}</div></div>`);
     } else {
       out.push(`<div class="pg"><div class="book${layout === 'landscape' ? ' row' : ''}"><div class="sq">${pic ? `<img src="${pic}"/>` : ''}</div>${pics2[i] ? `<div class="sq"><img src="${pics2[i]}"/></div>` : `<div class="sq txt">${p.text ? `<p>${esc(p.text)}</p>` : ''}</div>`}</div><div class="num">${i + 1}</div></div>`);
     }

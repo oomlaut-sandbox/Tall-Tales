@@ -131,7 +131,7 @@ export async function loadStoreBook(book, lang = 'en', appUserId = null) {
   // the cover is always in the public folder (a book for sale too: the store shows it to everyone)
   const coverImg = c.cover ? { uri: files ? storageUrl(`${book.content_path || book.id}/${c.cover}`) : fresh(base(c.cover)) } : null;
   const words = (p) => (L ? (L.pages[p.pid] != null ? L.pages[p.pid] : p.text || '') : p.text || '');
-  const pages = c.pages.map((p) => ({ pid: p.pid, text: words(p), image: p.image ? { uri: fresh(base(p.image)) } : null, w: p.w || 1, h: p.h || 1, image2: p.image2 ? { uri: fresh(base(p.image2)) } : null }));
+  const pages = c.pages.map((p) => ({ pid: p.pid, text: words(p), image: p.image ? { uri: fresh(base(p.image)) } : null, w: p.w || 1, h: p.h || 1, image2: p.image2 ? { uri: fresh(base(p.image2)) } : null, textOn: p.textOn, textAt: p.textAt, textLook: p.textLook, textInk: p.textInk, textSize: p.textSize })); // (words over a picture)
   // like the books made in the app: the cover, a blank back of the cover, then a title page with the credits
   const title = (L && L.title) || c.title || '';
   const cred = L ? (L.credits || '') : credits;

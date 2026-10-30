@@ -180,7 +180,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     setPrinting(true);
     toast(tr('Getting the book ready to print…'));
     try {
-      await printStory({ title: story.title, author: story.author, pages: story.pages.map((p) => ({ text: p.text, image: p.image, image2: p.image2 })) }, layout, prefs.font);
+      await printStory({ title: story.title, author: story.author, pages: story.pages.map((p) => ({ text: p.text, image: p.image, image2: p.image2, textOn: p.textOn, textAt: p.textAt, textLook: p.textLook, textInk: p.textInk, textSize: p.textSize })) }, layout, prefs.font);
     } catch (e) {
       toast(tr('Couldn’t print the book. Please try again.')); // plain words, never the phone's technical message
     }

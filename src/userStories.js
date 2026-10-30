@@ -32,7 +32,7 @@ function liveStory(s) {
 }
 function fromSaved(s0) {
   const s = liveStory(s0);
-  const bodyPages = s.pages.map((p, i) => ({ src: p.src || null, edit: p.edit || null, src2: p.src2 || null, edit2: p.edit2 || null, pid: p.pid || `i${i}`, text: p.text || '', image: p.uri ? { uri: p.uri } : null, w: p.w || 1, h: p.h || 1, image2: p.uri2 && !(p.text || '').trim() ? { uri: p.uri2 } : null, w2: p.w2 || 1, h2: p.h2 || 1, src: p.src || null, edit: p.edit || null, src2: (!p.text.trim() && p.src2) || null, edit2: p.edit2 || null }));
+  const bodyPages = s.pages.map((p, i) => ({ src: p.src || null, edit: p.edit || null, src2: p.src2 || null, edit2: p.edit2 || null, pid: p.pid || `i${i}`, text: p.text || '', image: p.uri ? { uri: p.uri } : null, w: p.w || 1, h: p.h || 1, image2: p.uri2 && (!(p.text || '').trim() || p.textOn) ? { uri: p.uri2 } : null, ...overOf(p), w2: p.w2 || 1, h2: p.h2 || 1, src: p.src || null, edit: p.edit || null, src2: ((!p.text.trim() || p.textOn) && p.src2) || null, edit2: p.edit2 || null }));
   const credits = creditsLine(s.writer, s.artist);
   const coverImg = s.cover && s.cover.uri ? { uri: s.cover.uri } : (bodyPages[0] && bodyPages[0].image) || null;
   // Every book opens like 'Different': the cover, a blank back of the cover, and a title page with the credits.
@@ -50,6 +50,10 @@ function fromSaved(s0) {
   };
 }
 
+// words over a picture (WordsOver.js): kept with the page, and passed on to the reader
+const OVER_KEYS = ['textOn', 'textAt', 'textLook', 'textInk', 'textSize'];
+export const overOf = (p) => Object.fromEntries(OVER_KEYS.filter((k) => p[k] != null).map((k) => [k, p[k]]));
+
 const hasContent = (p) => (p.text && p.text.trim()) || p.uri || p.uri2;
 
 // Copy a just-picked photo into the story's own folder so it survives.
@@ -66,8 +70,8 @@ export function dropPicture(uri) {
 export function saveUserStory(draft, { publish = false } = {}) {
   return serial(async () => {
     // (the photo editor's originals and settings are kept too, so a photo can be edited again after the book is reopened)
-    const pages = draft.pages.filter(hasContent).map((p) => ({ pid: p.pid, text: p.text.trim(), uri: p.uri || null, w: p.w, h: p.h, uri2: (!p.text.trim() && p.uri2) || null, w2: p.w2 || 1, h2: p.h2 || 1,
-      ...(p.src ? { src: p.src } : null), ...(p.edit ? { edit: p.edit } : null), ...(p.src2 && !p.text.trim() ? { src2: p.src2 } : null), ...(p.edit2 ? { edit2: p.edit2 } : null) }));
+    const pages = draft.pages.filter(hasContent).map((p) => ({ pid: p.pid, text: p.text.trim(), uri: p.uri || null, w: p.w, h: p.h, uri2: ((!p.text.trim() || p.textOn) && p.uri2) || null, w2: p.w2 || 1, h2: p.h2 || 1, ...overOf(p),
+      ...(p.src ? { src: p.src } : null), ...(p.edit ? { edit: p.edit } : null), ...(p.src2 && (!p.text.trim() || p.textOn) ? { src2: p.src2 } : null), ...(p.edit2 ? { edit2: p.edit2 } : null) }));
     // a book is kept as soon as there's anything made in it: a page or a cover (nothing lost: Jörg, 28 Oct 2026).
     // (a title alone isn't enough: 'What's your book about?' names every new book, even one that's left at once)
     const started = pages.length || (draft.cover && draft.cover.uri);

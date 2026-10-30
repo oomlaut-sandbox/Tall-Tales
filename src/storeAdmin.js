@@ -12,7 +12,7 @@
 import { supabase } from './account';
 import { storageUrl } from './catalog';
 import { readBytes } from './storage';
-import { creditsLine } from './userStories';
+import { creditsLine, overOf } from './userStories';
 
 export async function isStoreAdmin() {
   if (!supabase) return false;
@@ -54,8 +54,8 @@ export async function publishToStore(story, onStep = () => {}) {
     let image = null;
     if (p.uri) { image = `pages/${p.pid}.jpg`; await upload(`${id}/${image}`, await readBytes(p.uri), 'image/jpeg', bucket); }
     let image2 = null; // a second picture where the words would be (a page of two pictures)
-    if (p.uri2 && !(p.text || '').trim()) { image2 = `pages/${p.pid}-2.jpg`; await upload(`${id}/${image2}`, await readBytes(p.uri2), 'image/jpeg', bucket); }
-    outPages.push({ pid: p.pid, text: (p.text || '').trim(), image, w: p.w || 1600, h: p.h || 1600, ...(image2 ? { image2, w2: p.w2 || 1600, h2: p.h2 || 1600 } : {}) });
+    if (p.uri2 && (!(p.text || '').trim() || p.textOn)) { image2 = `pages/${p.pid}-2.jpg`; await upload(`${id}/${image2}`, await readBytes(p.uri2), 'image/jpeg', bucket); }
+    outPages.push({ pid: p.pid, text: (p.text || '').trim(), image, w: p.w || 1600, h: p.h || 1600, ...(image2 ? { image2, w2: p.w2 || 1600, h2: p.h2 || 1600 } : {}), ...overOf(p) }); // (words over a picture: where and how)
   }
   onStep('Uploading the cover…');
   const coverUri = (story.cover && story.cover.uri) || (pages.find((p) => p.uri) || {}).uri;

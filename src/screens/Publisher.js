@@ -6,12 +6,13 @@ import { rememberPage, startPage, useBackStep } from '../nav';
 import { Asset } from 'expo-asset';
 import PhotoEditor from '../components/PhotoEditor';
 import TourVideo from '../components/TourVideo';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, Keyboard, KeyboardAvoidingView, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { BOOK_FONTS, bookFont, colors, fonts } from '../theme';
+import WordsOver, { DEFAULT_AT, WORD_LOOKS, WORD_SIZES, wordsLook, wordsOverOn, wordsOverSize, wordsOverText } from '../components/WordsOver';
 import { Bar, Burger, CoverIcon, DogEar, DoneTick, Panel, PageShape, PagesIcon, Toast, ChoiceLabel } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
@@ -19,7 +20,7 @@ import { DESK_FELT, DeskFelt, DESK_BG } from '../look';
 import { COVER_COLORS, bylineLook, bylineStyle, coverBoxes, coverTitleLook, titleStyle } from '../components/CoverArt';
 import { creditsLine } from '../userStories';
 import { playKey } from '../sound';
-import { deleteUserStory, dropPicture, keepPicture, newPageId, saveUserStory } from '../userStories';
+import { deleteUserStory, dropPicture, keepPicture, newPageId, overOf, saveUserStory } from '../userStories';
 import StoryGuide from '../components/StoryGuide';
 import ParentGate from '../components/ParentGate';
 import { useT } from '../i18n';
@@ -114,7 +115,7 @@ export function draftFrom(story) {
     title: story.title,
     writer: story.writer || '',
     artist: story.artist || '',
-    pages: story.pages.filter((p) => !p.titlePage).map((p) => ({ pid: p.pid, text: p.text, uri: p.image ? p.image.uri : null, w: p.w, h: p.h, uri2: p.image2 ? p.image2.uri : null, w2: p.w2 || 1, h2: p.h2 || 1, src: p.src || null, edit: p.edit || null, src2: p.src2 || null, edit2: p.edit2 || null })),
+    pages: story.pages.filter((p) => !p.titlePage).map((p) => ({ pid: p.pid, text: p.text, uri: p.image ? p.image.uri : null, w: p.w, h: p.h, uri2: p.image2 ? p.image2.uri : null, w2: p.w2 || 1, h2: p.h2 || 1, ...overOf(p), src: p.src || null, edit: p.edit || null, src2: p.src2 || null, edit2: p.edit2 || null })),
     cover: story.cover || null,
   };
   if (!d.pages.length) d.pages = [blank()]; // (a book with only a cover so far: page 1 is waiting)
@@ -152,6 +153,35 @@ export function CenteredField({ value, onChangeText, placeholder, onFocus, onBlu
         onFocus={onFocus} onBlur={onBlur} returnKeyType="done" multiline scrollEnabled={false} submitBehavior="blurAndSubmit"
         allowFontScaling={false} style={[{ alignSelf: 'stretch', paddingHorizontal: 0, includeFontPadding: false, outlineWidth: 0 }, text, { height: H, lineHeight: lh, paddingTop: Math.round((H - lh) / 2), paddingBottom: 0 }]} accessibilityLabel={placeholder} />
     </Pressable>
+  );
+}
+
+// Words over a picture in the book maker: drag them to move them; a tap opens the words editor (30 Oct 2026)
+function MakerWords({ page, boxW, boxH, onMove, onTap }) {
+  const [live, setLive] = useState(null); // where they are while being dragged
+  const at = useRef(page.textAt || DEFAULT_AT);
+  at.current = page.textAt || DEFAULT_AT;
+  const cb = useRef({ onMove, onTap });
+  cb.current = { onMove, onTap };
+  const clamp = (v) => Math.min(0.97, Math.max(0.03, v));
+  const pr = useMemo(() => PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderTerminationRequest: () => false,
+    onPanResponderMove: (e, g) => setLive({ x: clamp(at.current.x + g.dx / boxW), y: clamp(at.current.y + g.dy / boxH) }),
+    onPanResponderRelease: (e, g) => {
+      setLive(null);
+      if (Math.abs(g.dx) + Math.abs(g.dy) < 6) cb.current.onTap();
+      else cb.current.onMove({ x: clamp(at.current.x + g.dx / boxW), y: clamp(at.current.y + g.dy / boxH) });
+    },
+    onPanResponderTerminate: () => setLive(null),
+  }), [boxW, boxH]);
+  const look = page.textLook || 'light';
+  const fs = wordsOverSize(Math.min(boxW, boxH), page.textSize || 1);
+  return (
+    <WordsOver boxW={boxW} boxH={boxH} at={live || at.current} look={look} handlers={pr.panHandlers}>
+      <Text style={[{ fontFamily: 'SpecialElite_400Regular', fontSize: fs, lineHeight: fs * 1.4 }, wordsOverText(look, page.textInk)]}>{page.text}</Text>
+    </WordsOver>
   );
 }
 
@@ -224,7 +254,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     else go(null);
   };
   const closeWords = () => {
-    const done = () => { setEditing(false); setPageDone(true); sayStep(); };
+    const done = () => { setEditing(false); setPlaceOpen(false); setPageDone(true); sayStep(); };
     if (!fromRect.current || !zoomTo) return done();
     Animated.timing(zoom, { toValue: 0, duration: 260, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(done);
   };
@@ -238,7 +268,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     setMaking(true);
     toast(mode === 'print' ? tr('Getting your story ready to print…') : tr('Making your PDF…'));
     try {
-      const st = { title: d.title.trim() || tr('My Story'), pages: pages.map((p) => ({ text: p.text.trim(), image: p.uri ? { uri: p.uri } : null, image2: p.uri2 && !p.text.trim() ? { uri: p.uri2 } : null })) };
+      const st = { title: d.title.trim() || tr('My Story'), pages: pages.map((p) => ({ text: p.text.trim(), image: p.uri ? { uri: p.uri } : null, image2: p.uri2 && (!p.text.trim() || p.textOn) ? { uri: p.uri2 } : null, ...overOf(p) })) };
       if (mode === 'print') await printStory(st, layout, fontKey);
       else await shareStoryPdf(st, layout, fontKey);
     } catch (e) {
@@ -263,6 +293,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const latest = useRef(draft);
   latest.current = draft;
   const page = draft.pages[Math.min(i, draft.pages.length - 1)];
+  // words over a picture (WordsOver.js): which picture they're on, and whether the second square holds a picture
+  const over = wordsOverOn(page);
+  const secondPic = !!(page && page.uri2 && (!(page.text || '').trim() || page.textOn));
+  const [placeOpen, setPlaceOpen] = useState(false); // the words editor's 'Words on a picture' choices
 
   // Autosave shortly after every change.
   useEffect(() => {
@@ -508,7 +542,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const removeImage2 = () => {
     if (page.uri2) dropPicture(page.uri2);
     if (page.src2 && page.src2 !== page.uri2) dropPicture(page.src2);
-    update({ uri2: null, w2: 1, h2: 1, src2: null, edit2: null });
+    update({ uri2: null, w2: 1, h2: 1, src2: null, edit2: null, ...(page.textOn === 'bottom' ? { textOn: null } : null) });
   };
   // ---- Edit photo: crop, layout and look (the original is kept as src; the page shows the finished picture) ----
   const [photoEdit, setPhotoEdit] = useState(null); // 'page' | 'page2' | 'cover'
@@ -658,13 +692,15 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <EmptyPicture side={side} />
           )}
           {!wide ? <Fade edge="bottom" size={Math.round(side * 0.1)} max={0.22} /> : null}
+          {over === 'top' ? <MakerWords page={page} boxW={side} boxH={side} onMove={(textAt) => update({ textAt })} onTap={openWords} /> : null}
         </Pressable>
-        <Pressable onPress={page.uri2 ? () => setImgAsk('page2') : openWords} accessibilityRole="button" accessibilityLabel={page.uri2 ? tr('Change the second image') : tr('Words for page {n}', { n: i + 1 })} ref={wordsRef} collapsable={false} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>{/* the whole words square opens the editor */}
+        <Pressable onPress={secondPic || over === 'top' ? () => setImgAsk('page2') : openWords} accessibilityRole="button" accessibilityLabel={secondPic ? tr('Change the second image') : over === 'top' ? tr('Add another image page') : tr('Words for page {n}', { n: i + 1 })} ref={wordsRef} collapsable={false} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>{/* the whole words square opens the editor */}
           {/* a second picture instead of words: a page of two pictures */}
-          {page.uri2 ? <Image source={{ uri: page.uri2 }} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" /> : null}
+          {secondPic ? <Image source={{ uri: page.uri2 }} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" /> : null}
           {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
           <Spine wide={wide} />
-          {page.uri2 ? (
+          {over === 'bottom' ? <MakerWords page={page} boxW={side} boxH={side} onMove={(textAt) => update({ textAt })} onTap={openWords} /> : null}
+          {secondPic ? (
             <View style={[styles.artBtns, { bottom: 12 }]}>
               <Text style={styles.chip}>{tr('Change image')}</Text>
               <Pressable onPress={() => setPhotoEdit('page2')} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Edit photo')} style={styles.chipIcon}><Image source={CHOICE_ICONS.crop} style={styles.chipImg} /></Pressable>
@@ -673,13 +709,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           ) : (
             <>
               {/* Tapping the words opens a big editor (just the words page, above the keyboard). */}
-              <View style={{ flex: 1, justifyContent: 'center', minHeight: 0 }}>
+              {over !== 'top' ? <View style={{ flex: 1, justifyContent: 'center', minHeight: 0 }}>
                 <Text style={[styles.input, { fontFamily: 'SpecialElite_400Regular' }, !page.text && { color: '#666' }]} numberOfLines={7}>
                   {page.text || tr('To add text, tap here. Two or three sentences reads best.')}
                 </Text>
-              </View>
+              </View> : <View style={{ flex: 1 }} /> /* the words are on the picture above: this square is free for a picture */}
               {/* no words yet: a small grey plus in the bottom corner offers a second picture instead */}
-              {!page.text.trim() ? (
+              {!page.text.trim() || over === 'top' ? (
                 <Pressable onPress={() => setImgAsk('page2')} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Add another image page')}
                   style={{ position: 'absolute', left: side * 0.07, bottom: side * 0.07, flexDirection: 'row', alignItems: 'center', gap: side * 0.02 }}>
                   {/* a small grey plus, then the words */}
@@ -868,9 +904,62 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               </Animated.View>
             );
           })()}
-          {/* under the page: the three fonts to write in (left), and a green Done pill (right) */}
+          {/* words over a picture (30 Oct 2026): where the words go, their look and size. The words square stays the default */}
+          {placeOpen ? (
+            <Animated.View style={[styles.placeBox, { width: winW - 2 * GAP, opacity: zoom }]}>
+              <Text style={styles.placeLabel}>{tr('Words on')}</Text>
+              <View style={styles.placeRow}>
+                {[[null, 'Words page'], ['top', wide ? 'Left picture' : 'Top picture'], ['bottom', wide ? 'Right picture' : 'Bottom picture']].map(([v, label]) => {
+                  const off = (v === 'top' && !page.uri) || (v === 'bottom' && !page.uri2);
+                  const on = (page.textOn || null) === v;
+                  return (
+                    <Pressable key={label} disabled={off} onPress={() => update({ textOn: v, ...(v && !page.textAt ? { textAt: DEFAULT_AT } : null) })}
+                      style={[styles.placeChip, on && styles.placeChipOn, off && { opacity: 0.35 }]} accessibilityRole="radio" accessibilityState={{ selected: on, disabled: off }}>
+                      <Text style={styles.placeChipText}>{tr(label)}</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+              {!page.uri2 ? <Text style={styles.placeNote}>{tr('To put the words on a second picture, add one first: tap the plus on the words page.')}</Text> : null}
+              {page.textOn ? (
+                <>
+                  <Text style={styles.placeLabel}>{tr('Look')}</Text>
+                  <View style={styles.placeRow}>
+                    {WORD_LOOKS.map(([v, label]) => (
+                      <Pressable key={v} onPress={() => update({ textLook: v })} style={[styles.placeChip, (page.textLook || 'light') === v && styles.placeChipOn]} accessibilityRole="radio" accessibilityState={{ selected: (page.textLook || 'light') === v }}>
+                        <Text style={styles.placeChipText}>{tr(label)}</Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                  {(page.textLook || 'light') === 'plain' ? (
+                    <View style={styles.placeRow}>
+                      {[['dark', 'Dark words'], ['white', 'White words']].map(([v, label]) => (
+                        <Pressable key={v} onPress={() => update({ textInk: v })} style={[styles.placeChip, (page.textInk || 'dark') === v && styles.placeChipOn]} accessibilityRole="radio" accessibilityState={{ selected: (page.textInk || 'dark') === v }}>
+                          <Text style={styles.placeChipText}>{tr(label)}</Text>
+                        </Pressable>
+                      ))}
+                    </View>
+                  ) : null}
+                  <Text style={styles.placeLabel}>{tr('Size')}</Text>
+                  <View style={styles.placeRow}>
+                    {WORD_SIZES.map(([v, label]) => (
+                      <Pressable key={label} onPress={() => update({ textSize: v })} style={[styles.placeChip, (page.textSize || 1) === v && styles.placeChipOn]} accessibilityRole="radio" accessibilityState={{ selected: (page.textSize || 1) === v }}>
+                        <Text style={styles.placeChipText}>{tr(label)}</Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                  <Text style={styles.placeNote}>{tr('After Done, drag the words to move them on the picture.')}</Text>
+                </>
+              ) : null}
+            </Animated.View>
+          ) : null}
+          {/* under the page: 'Words on a picture' (left), and a green Done pill (right) */}
           <Animated.View style={{ width: winW - 2 * GAP, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: zoom }}>
-            <View />
+            {page.text.trim() ? (
+              <Pressable onPress={() => { Keyboard.dismiss(); setPlaceOpen((o) => !o); }} hitSlop={8} accessibilityRole="button" accessibilityState={{ expanded: placeOpen }} style={[styles.donePill, { backgroundColor: '#3d3d3d' }]}>
+                <Text style={styles.donePillText}>{placeOpen ? tr('Hide choices') : tr('Words on a picture')}</Text>
+              </Pressable>
+            ) : <View />}
             <Pressable onPress={closeWords} hitSlop={8} accessibilityRole="button" style={styles.donePill}><Text style={styles.donePillText}>{tr('Done')}</Text></Pressable>
           </Animated.View>
           </View>
@@ -1238,6 +1327,13 @@ const styles = StyleSheet.create({
   fontPill: { height: 32, borderRadius: 16, paddingHorizontal: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.14)' },
   fontPillOn: { backgroundColor: colors.green },
   fontPillText: { color: colors.white, fontSize: 14 },
+  placeBox: { backgroundColor: 'rgba(12,12,12,0.86)', borderRadius: 18, padding: 14, gap: 8, marginBottom: 12 },
+  placeLabel: { color: '#a8a39a', fontFamily: fonts.uiBold, fontSize: 12, letterSpacing: 0.6, textTransform: 'uppercase', marginTop: 2 },
+  placeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  placeChip: { backgroundColor: '#454545', borderRadius: 17, height: 34, paddingHorizontal: 14, justifyContent: 'center' },
+  placeChipOn: { backgroundColor: colors.green },
+  placeChipText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 14 },
+  placeNote: { color: '#cfcac0', fontFamily: fonts.ui, fontSize: 13, lineHeight: 18 },
   donePill: { backgroundColor: colors.green, height: 40, borderRadius: 20, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
   donePillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
   editorPage: { flex: 1, marginBottom: 14, backgroundColor: colors.paper, padding: 24, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10 },

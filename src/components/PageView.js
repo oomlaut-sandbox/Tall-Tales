@@ -8,6 +8,7 @@ import { Felt } from '../look';
 import { tokenize } from '../story';
 import { useT } from '../i18n';
 import ZoomArt from './ZoomArt';
+import WordsOver, { wordsLook, wordsOverOn, wordsOverSize, wordsOverText } from './WordsOver';
 // the end of a book: fine grey line-art icons
 const END_AGAIN = require('../../assets/icon-again-line.png');
 const END_LIBRARY = require('../../assets/icon-home.png'); // My Library: the same house as on the bars
@@ -86,6 +87,8 @@ export const PageView = forwardRef(function PageView(
   const font = bookFont(fontKey);
   const fs = useMemo(() => fitFontSize(page?.text || '', L, textScale, font), [page, L, textScale, font]);
   const storyStyle = [styles.story, { fontFamily: font.family, fontSize: fs, lineHeight: fs * 1.62 }, amber && { color: AMBER.ink }];
+  // words over a picture (top or bottom), instead of on the words square (Jörg, 30 Oct 2026)
+  const over = end ? null : wordsOverOn(page);
 
   // Map hotspot fractions onto the image as drawn with "cover".
   const spots = useMemo(() => {
@@ -99,6 +102,43 @@ export const PageView = forwardRef(function PageView(
     }));
   }, [page, artW, artH]);
 
+  const renderWords = (baseStyle, hlStyle) => {
+            const word = (w, i, last, shown) => (
+              <Text key={i} onPress={onWord ? () => onWord(i, w.word) : undefined} style={i === highlight ? hlStyle : null}>
+                {shown ?? w.word}{i < last ? (page && page.text && /\n/.test(page.text.slice(w.end, words[i + 1] ? words[i + 1].start : w.end)) ? '\n' : ' ') : ''}{/* poems keep their line breaks */}
+              </Text>
+            );
+            // A title page ("Title. Written and illustrated by …"): the title in bold on its own
+            // line(s), a space, then the author line in small regular type. Word positions stay the same,
+            // so narration highlighting still lines up.
+            const k = page?.titlePage ? words.findIndex((w) => /\.$/.test(w.word)) : -1;
+            if (k >= 0 && k < words.length - 1) {
+              return (
+                <View style={{ alignItems: 'center' }}>
+                  <Text style={[baseStyle, font.bold ? { fontFamily: font.bold } : styles.titleWords, { fontSize: Math.round(fs * 1.45), lineHeight: Math.round(fs * 1.45 * 1.2), color: amber ? AMBER.title : '#454545', textAlign: 'center' }]}>
+                    {words.slice(0, k + 1).map((w, i) => word(w, i, k, i === k ? w.word.replace(/\.$/, '') : undefined))}
+                  </Text>
+                  <View style={{ height: fs * 0.7 }} />
+                  {/* the author and illustrator credits in small type, like the cover's byline */}
+                  <Text style={[baseStyle, { fontSize: Math.round(fs * 0.65), lineHeight: Math.round(fs * 0.65 * 1.5) }]}>
+                    {words.slice(k + 1).map((w, j) => word(w, k + 1 + j, words.length - 1))}
+                  </Text>
+                </View>
+              );
+            }
+            return <Text style={baseStyle}>{words.map((w, i) => word(w, i, words.length - 1))}</Text>;
+          };
+  // the words over a picture: the page's words, in the look chosen for them
+  const overWords = (bw, bh) => {
+    if (!over) return null;
+    const ofs = wordsOverSize(Math.min(bw, bh), page.textSize || 1, textScale * font.size);
+    const look = page.textLook || 'light';
+    return (
+      <WordsOver boxW={bw} boxH={bh} at={page.textAt} look={look}>
+        {renderWords([{ fontFamily: font.family, fontSize: ofs, lineHeight: ofs * 1.45 }, wordsOverText(look, page.textInk)], { color: wordsLook(look, page.textInk).hl })}
+      </WordsOver>
+    );
+  };
   // A page that doesn't exist (shouldn't happen) is drawn as blank paper instead of crashing.
   if (!page && !end) return <View ref={ref} collapsable={false} style={[styles.page, { width, height }, amber && { backgroundColor: AMBER.paper }]} />;
 
@@ -130,6 +170,7 @@ export const PageView = forwardRef(function PageView(
         ) : null}
         {/* Amber light: the picture warmed (a soft amber laid over it, multiplied) and a little dimmer */}
         {amber && !end && page?.image ? <AmberTint /> : null}
+        {over === 'top' ? overWords(artW, artH) : null}
         {/* the spine shading: on the picture's edge where it meets the words (bottom upright, right when sideways) */}
         {L.wide ? <Fade edge="right" size={Math.round(artW * 0.1)} max={0.22} /> : <Fade edge="bottom" size={Math.round(artH * 0.1)} max={0.22} />}
       </View>
@@ -137,7 +178,8 @@ export const PageView = forwardRef(function PageView(
       <View style={[styles.textBox, { paddingHorizontal: L.padX, paddingTop: L.padY, paddingBottom: L.padY + bottomInset }, clear && { backgroundColor: amber ? AMBER.paper : colors.paper } /* the words keep their paper when the rest is see-through */]}>
         <Felt opacity={0.7} />
         {/* a page of two pictures: the second fills the words square */}
-        {!end && page?.image2 && !(page.text || '').trim() ? <Image source={page.image2} style={styles.fill} resizeMode="cover" /> : null}
+        {!end && page?.image2 && (!(page.text || '').trim() || over) ? <Image source={page.image2} style={styles.fill} resizeMode="cover" /> : null}
+        {over === 'bottom' ? overWords(L.textW, L.textH + bottomInset) : null}
         {L.wide ? <Fade edge="left" size={Math.round(L.textW * 0.09)} max={0.13} /> : <Fade edge="top" size={Math.round(L.textH * 0.09)} max={0.13} />}
         {/* the spine: a thin dark grey line where the two squares meet */}
         <View pointerEvents="none" style={L.wide ? styles.spineV : styles.spine} />
@@ -154,33 +196,8 @@ export const PageView = forwardRef(function PageView(
               ))}
             </View>
           </View>
-        ) : (
-          (() => {
-            const word = (w, i, last, shown) => (
-              <Text key={i} onPress={onWord ? () => onWord(i, w.word) : undefined} style={i === highlight ? styles.hl : null}>
-                {shown ?? w.word}{i < last ? (page && page.text && /\n/.test(page.text.slice(w.end, words[i + 1] ? words[i + 1].start : w.end)) ? '\n' : ' ') : ''}{/* poems keep their line breaks */}
-              </Text>
-            );
-            // A title page ("Title. Written and illustrated by …"): the title in bold on its own
-            // line(s), a space, then the author line in small regular type. Word positions stay the same,
-            // so narration highlighting still lines up.
-            const k = page?.titlePage ? words.findIndex((w) => /\.$/.test(w.word)) : -1;
-            if (k >= 0 && k < words.length - 1) {
-              return (
-                <View style={{ alignItems: 'center' }}>
-                  <Text style={[storyStyle, font.bold ? { fontFamily: font.bold } : styles.titleWords, { fontSize: Math.round(fs * 1.45), lineHeight: Math.round(fs * 1.45 * 1.2), color: amber ? AMBER.title : '#454545', textAlign: 'center' }]}>
-                    {words.slice(0, k + 1).map((w, i) => word(w, i, k, i === k ? w.word.replace(/\.$/, '') : undefined))}
-                  </Text>
-                  <View style={{ height: fs * 0.7 }} />
-                  {/* the author and illustrator credits in small type, like the cover's byline */}
-                  <Text style={[storyStyle, { fontSize: Math.round(fs * 0.65), lineHeight: Math.round(fs * 0.65 * 1.5) }]}>
-                    {words.slice(k + 1).map((w, j) => word(w, k + 1 + j, words.length - 1))}
-                  </Text>
-                </View>
-              );
-            }
-            return <Text style={storyStyle}>{words.map((w, i) => word(w, i, words.length - 1))}</Text>;
-          })()
+        ) : over ? null : (
+          renderWords(storyStyle, styles.hl)
         )}
       </View>
     </View>
