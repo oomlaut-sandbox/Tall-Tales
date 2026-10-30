@@ -51,7 +51,7 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
       style: L.multiply ? { mixBlendMode: 'multiply' } : undefined, strokeDasharray: L.grain === 'crayon' ? '3 1.4' : L.grain ? '6 0.6' : undefined,
     }));
   })));
-  groups.push(h('g', { key: id }, paths));
+  groups.push(h('g', { key: id, opacity: part.a < 1 ? part.a : undefined }, paths));
   });
   const id = id0;
   const tile = TILE * width;
@@ -95,7 +95,7 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
       g.restore();
     }
   }
-  o.drawImage(c, 0, 0);
+  o.globalAlpha = part.a < 1 ? part.a : 1; o.drawImage(c, 0, 0); o.globalAlpha = 1;
   }
   return out.toDataURL('image/png');
 }
@@ -125,7 +125,7 @@ async function pageCanvas(strokes, px, ph, photo) {
       h.restore();
     }
   }
-  g.drawImage(d, 0, 0);
+  g.globalAlpha = part.a < 1 ? part.a : 1; g.drawImage(d, 0, 0); g.globalAlpha = 1;
   }
   return g;
 }

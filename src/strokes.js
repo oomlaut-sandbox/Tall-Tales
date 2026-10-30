@@ -409,10 +409,23 @@ export const DRAW_LAYERS = [1, 2, 3, 4];
 // An imported photo (Jörg, 29 Oct 2026): { ph: its file, ly: the layer it went on } — it fills the page (cropped
 // from its middle, like a page picture), on that layer, so drawing on the layers above sits over it and the eraser
 // on its own layer rubs it away.
+// Each layer's transparency (Jörg, 30 Oct 2026): kept with the drawing, as one note at its start: { lo: { 2: 0.5 } }
+// (layer: how much shows, 0 to 1; a layer not in it shows fully). It isn't a stroke: undo, the eraser and fills skip it.
+export const isMeta = (st) => !!(st && st.lo);
+export const layerAlphas = (list) => ((list || []).find(isMeta) || {}).lo || {};
+export const layerAlpha = (list, n) => { const a = layerAlphas(list)[n]; return a == null ? 1 : a; };
+export const inkOf = (list) => (list || []).filter((st) => !isMeta(st)); // the strokes alone
+export function withLayerAlpha(list, n, a) {
+  const lo = { ...layerAlphas(list), [n]: Math.round(Math.max(0, Math.min(1, a)) * 100) / 100 };
+  Object.keys(lo).forEach((k) => { if (lo[k] >= 1) delete lo[k]; });
+  return Object.keys(lo).length ? [{ lo }, ...inkOf(list)] : inkOf(list);
+}
+// (each part carries its layer's transparency as .a)
 export const byLayer = (list) => {
-  const all = list || [];
+  const all = inkOf(list), lo = layerAlphas(list);
   return DRAW_LAYERS.flatMap((n) => {
     const mine = all.filter((st) => (st.ly || 1) === n);
-    return [mine.filter((st) => st.bk), mine.filter((st) => !st.bk)];
+    const a = lo[n] == null ? 1 : lo[n];
+    return [mine.filter((st) => st.bk), mine.filter((st) => !st.bk)].map((part) => Object.assign(part, { a }));
   });
 };

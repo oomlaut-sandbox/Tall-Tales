@@ -28,7 +28,7 @@ import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
 import ToolPic from '../components/ToolPic';
 import { STAMPS, stampWidth } from '../stamps';
 const SHOW_STAMPS = false; // the stamps are the felt mascot: away until Jörg's hand-drawn one arrives (drawings that have them still show them)
-import { BRUSHES, GREYS, DRAW_LAYERS, PENS, PENS_BRIGHT, SHAPES, wheelColour, SIZES, makeFill, FILL_G, mixColours, near, shapePts, withMirrors } from '../strokes';
+import { BRUSHES, GREYS, DRAW_LAYERS, PENS, PENS_BRIGHT, SHAPES, wheelColour, SIZES, makeFill, FILL_G, mixColours, near, shapePts, withMirrors, inkOf, isMeta, layerAlpha, withLayerAlpha } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
 import { STORIES } from '../story';
@@ -1043,6 +1043,40 @@ function UndoIcon({ flip }) {
 
 // ---- The drawing editor: a page to draw on with your finger, with brushes (ink, watercolour, pencil), colours,
 // sizes, a fill, an eraser, undo and clear. (The book maker uses it too, for Make a drawing.) ----
+// A layer's Transparency (Jörg, 30 Oct 2026): a vertical slider on black glass, right above the layer's number.
+// 100% (all there) at the top, the default; down to 0% (hidden) at the bottom.
+const ALPHA_TRACK = 150;
+function LayerAlpha({ n, value, onChange, t }) {
+  const y0 = useRef(0);
+  const cb = useRef(onChange); cb.current = onChange;
+  const set = (y) => cb.current(Math.round(Math.max(0, Math.min(1, 1 - y / ALPHA_TRACK)) * 20) / 20); // (5% steps)
+  const pan = useRef(PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderTerminationRequest: () => false,
+    onPanResponderGrant: (e) => { y0.current = e.nativeEvent.locationY; set(y0.current); },
+    onPanResponderMove: (_, g) => set(y0.current + g.dy),
+  })).current;
+  const pct = Math.round(value * 100);
+  const W = 96, top = (1 - value) * ALPHA_TRACK;
+  return (
+    <View style={{ position: 'absolute', bottom: 30, left: 11 - W / 2, width: W, paddingTop: 12, paddingBottom: 14, borderRadius: 16, alignItems: 'center',
+      backgroundColor: 'rgba(8,8,8,0.82)', borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(255,255,255,0.22)',
+      shadowColor: '#000', shadowOpacity: 0.4, shadowRadius: 10, shadowOffset: { width: 0, height: 4 } }}>
+      <Text style={{ color: '#ffffff', fontFamily: fonts.uiSemiBold, fontSize: 11 }} numberOfLines={1} adjustsFontSizeToFit>{t('Transparency')}</Text>
+      <Text style={{ color: '#bdbdbd', fontFamily: fonts.uiSemiBold, fontSize: 11, marginTop: 2, marginBottom: 16 }}>{pct}%</Text>
+      <View {...pan.panHandlers} style={{ width: 48, height: ALPHA_TRACK, alignItems: 'center' }}
+        accessible accessibilityRole="adjustable" accessibilityLabel={t('Transparency of layer {n}', { n })} accessibilityValue={{ text: `${pct}%` }}
+        accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+        onAccessibilityAction={(e) => onChange(Math.max(0, Math.min(1, Math.round((value + (e.nativeEvent.actionName === 'increment' ? 0.1 : -0.1)) * 10) / 10)))}>
+        <View pointerEvents="none" style={{ position: 'absolute', top: 0, bottom: 0, width: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.18)' }} />
+        <View pointerEvents="none" style={{ position: 'absolute', top, bottom: 0, width: 6, borderRadius: 3, backgroundColor: '#ffffff' }} />
+        <View pointerEvents="none" style={{ position: 'absolute', top: top - 11, width: 22, height: 22, borderRadius: 11, backgroundColor: '#ffffff', borderWidth: 2, borderColor: 'rgba(0,0,0,0.25)' }} />
+      </View>
+    </View>
+  );
+}
+
 export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone, onNext }) {
   useHideBack(); // no back button over the drawing editor (Jörg, 27 Oct 2026)
   const t = useT();
@@ -1067,6 +1101,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   const [stamp, setStamp] = useState(null); // a stamp in hand: put a finger down to place it, slide to move it, lift to stick it
   const [stampsOpen, setStampsOpen] = useState(false);
   const [behind, setBehind] = useState(false); // colouring in behind the lines: what's drawn goes underneath everything else
+  const [alphaFor, setAlphaFor] = useState(null); // the layer whose Transparency slider is open (Jörg, 30 Oct 2026)
   const [layer, setLayer] = useState(2); // Layers: the one being drawn on (1 bottom to 4 top); a drawing opens on layer 2 (Jörg, 28 Oct 2026)
   // the green tick (Jörg, 28 Oct 2026): 'Print or share your drawing now, or save and start the next page?'
   const [doneAsk, setDoneAsk] = useState(false);
@@ -1184,7 +1219,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
     onMoveShouldSetPanResponder: () => true,
     onPanResponderTerminationRequest: () => false,
     onPanResponderGrant: (e) => {
-      setSizePop(null); setMore(false); // drawing puts away the sizes and the + sheet
+      setSizePop(null); setMore(false); setAlphaFor(null); // drawing puts away the sizes, the + sheet and the Transparency slider
       const [x, y] = at(e);
       if (S.current.dropper) { // the eyedropper: the colour under your finger becomes the pen's colour
         colourAt(S.current.strokes, x, y, S.current.tall ? 2 : 1, S.current.photo).then((hex) => {
@@ -1358,10 +1393,14 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
     <View style={{ position: 'absolute', left: 2, bottom: -29, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
       <Text style={{ color: '#bdbdbd', fontFamily: fonts.uiSemiBold, fontSize: 12, marginRight: 4 }}>{t('Layers')}</Text>
       {DRAW_LAYERS.map((n) => (
-        <Pressable key={n} onPress={() => setLayer(n)} hitSlop={{ top: 10, bottom: 10, left: 3, right: 3 }} accessibilityRole="radio" accessibilityState={{ selected: layer === n }} accessibilityLabel={t('Layer {n}', { n })}
+        <View key={n} style={{ width: 22, height: 22 }}>
+        {/* tapping a number (even the one being drawn on) opens its Transparency slider, right above it; again closes it */}
+        {alphaFor === n ? <LayerAlpha n={n} value={layerAlpha(strokes, n)} onChange={(a) => setStrokes((s2) => withLayerAlpha(s2, n, a))} t={t} /> : null}
+        <Pressable onPress={() => { setLayer(n); setAlphaFor((f) => (f === n ? null : n)); }} hitSlop={{ top: 10, bottom: 10, left: 3, right: 3 }} accessibilityRole="radio" accessibilityState={{ selected: layer === n }} accessibilityLabel={t('Layer {n}', { n })}
           style={{ width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', borderWidth: 1.2, borderColor: layer === n ? '#ffffff' : 'transparent' }}>
           <Text style={{ color: layer === n ? '#ffffff' : '#bdbdbd', fontFamily: fonts.uiSemiBold, fontSize: 12 }}>{n}</Text>
         </Pressable>
+        </View>
       ))}
     </View>
     {/* zoomed in: Fit shows the whole page again */}
@@ -1451,24 +1490,25 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
       {mixing || mirror || shape || dropper || behind || stamp ? <View style={{ position: 'absolute', top: 2, right: 2, width: 9, height: 9, borderRadius: 4.5, backgroundColor: colors.green }} /> : null}
     </Pressable>
   );
+  const hasInk = inkOf(strokes).length > 0; // (not counting the layers' transparency)
   const binEl = (
-    <Pressable onPress={() => { setStrokes([]); setRedo([]); }} disabled={!strokes.length} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Clear the drawing')} accessibilityState={{ disabled: !strokes.length }}
-      style={[styles.plusBtn, !strokes.length && { opacity: 0.35 }]}>
+    <Pressable onPress={() => { setStrokes([]); setRedo([]); }} disabled={!hasInk} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Clear the drawing')} accessibilityState={{ disabled: !hasInk }}
+      style={[styles.plusBtn, !hasInk && { opacity: 0.35 }]}>
       <Image source={TRASH} style={{ width: 22, height: 22, tintColor: colors.white }} resizeMode="contain" />
     </Pressable>
   );
   const headEl = (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
       <Text numberOfLines={1} style={[styles.editorTitle, { flex: 1 }]}>{title}</Text>
-      <Pressable onPress={() => { const last = strokes[strokes.length - 1]; if (!last) return; setStrokes(strokes.slice(0, -1)); setRedo((r) => [...r, last]); }} disabled={!strokes.length}
-        style={[styles.tool, !strokes.length && { opacity: 0.35 }]} accessibilityRole="button" accessibilityLabel={t('Undo')} accessibilityState={{ disabled: !strokes.length }}>
+      <Pressable onPress={() => { const last = strokes[strokes.length - 1]; if (!last || isMeta(last)) return; setStrokes(strokes.slice(0, -1)); setRedo((r) => [...r, last]); }} disabled={!hasInk}
+        style={[styles.tool, !hasInk && { opacity: 0.35 }]} accessibilityRole="button" accessibilityLabel={t('Undo')} accessibilityState={{ disabled: !hasInk }}>
         <UndoIcon />
       </Pressable>
       <Pressable onPress={() => { const back = redo[redo.length - 1]; if (!back) return; setRedo(redo.slice(0, -1)); setStrokes((s2) => [...s2, back]); }} disabled={!redo.length}
         style={[styles.tool, !redo.length && { opacity: 0.35 }]} accessibilityRole="button" accessibilityLabel={t('Redo')} accessibilityState={{ disabled: !redo.length }}>
         <UndoIcon flip />
       </Pressable>
-      <Pressable onPress={() => (strokes.length ? setDoneAsk(true) : onDone(strokes))} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Done')}><DoneTick size={38} /></Pressable>
+      <Pressable onPress={() => (hasInk ? setDoneAsk(true) : onDone([]))} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Done')}><DoneTick size={38} /></Pressable>
     </View>
   );
   // the tools in a tray, like real ones on a desk (the one in your hand stands up higher): an eraser, a pencil, a

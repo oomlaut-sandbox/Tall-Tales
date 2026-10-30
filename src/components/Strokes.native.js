@@ -4,12 +4,15 @@
 // faint grain lies over the whole page. (The web preview uses Strokes.js.)
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { AlphaType, BackdropBlur, BlendMode, BlurMask, BlurStyle, Canvas, ClipOp, ColorType, DiscretePathEffect, Group, Image as SkImage, ImageShader, PaintStyle, Path, Rect, Skia, StrokeCap, StrokeJoin, TileMode, useImage } from '@shopify/react-native-skia';
+import { AlphaType, BackdropBlur, BlendMode, BlurMask, BlurStyle, Canvas, ClipOp, ColorType, DiscretePathEffect, Group, Image as SkImage, Paint, ImageShader, PaintStyle, Path, Rect, Skia, StrokeCap, StrokeJoin, TileMode, useImage } from '@shopify/react-native-skia';
 import { Asset } from 'expo-asset';
 import { File, Paths } from 'expo-file-system';
 import { byLayer, drawOrder, layersFor, mirrored, smudgeOf } from '../strokes';
 import { STAMP, stampBox } from '../stamps';
 import { liveUri } from '../storage';
+
+// a layer's transparency, for saveLayer (undefined: fully there)
+const alphaPaint = (a) => { if (a == null || a >= 1) return undefined; const p = Skia.Paint(); p.setAlphaf(a); return p; };
 
 const GRAIN = require('../../assets/paper-grain.png'); // 512 × 512, repeats without seams
 const TOOTH = require('../../assets/paper-tooth.png');
@@ -95,7 +98,7 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
         {/* the drawing on its own layer: the eraser rubs down to the paper, and the tooth only marks what's drawn */}
         {/* behind the lines first, then everything else, each on its own layer (the eraser only rubs its own layer) */}
         {byLayer(live ? [...(strokes || []), live] : strokes).map((part, n) => (part.length ? (
-        <Group key={n} layer>
+        <Group key={n} layer={part.a < 1 ? <Paint opacity={part.a} /> : true}>
           {/* fills under the lines, the eraser rubbing out what came before it (see drawOrder) */}
           {runsOf(drawOrder(part), width).map((r, i) => (r.tex > 0 ? (
             <Group key={i} layer>
@@ -188,7 +191,7 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
   }
   for (const part of byLayer(strokes)) {
   if (!part.length) continue;
-  canvas.saveLayer(); // the drawing on its own layer, so the eraser rubs down to the paper, not through it (behind the lines, then the rest)
+  canvas.saveLayer(alphaPaint(part.a)); // the drawing on its own layer, so the eraser rubs down to the paper, not through it (behind the lines, then the rest)
   for (const r of runsOf(drawOrder(part), px)) {
    if (r.tex > 0) canvas.saveLayer();
    for (const st of r.list) {
@@ -252,7 +255,7 @@ async function pageImage(strokes, px, ph, photo) {
     } catch (e) {}
   }
   for (const part of byLayer(strokes)) {
-  canvas.saveLayer();
+  canvas.saveLayer(alphaPaint(part.a));
   for (const st of drawOrder(part)) {
     if (st.sm) continue;
     if (st.ph) { await drawPhotoStroke(canvas, st, px, ph); continue; }
