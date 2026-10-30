@@ -40,16 +40,19 @@ export const wordsOverSize = (side, size = 1, fontScale = 1) => Math.round(Math.
 
 // Places its child (the words, as Text) over a picture of boxW × boxH, centred on `at`, at most 84% of the width.
 export default function WordsOver({ boxW, boxH, at = DEFAULT_AT, look = 'light', children, style, handlers }) {
-  const [h, setH] = useState(0);
+  const [h0, setH] = useState(0);
+  // big words (a large text size, or iPhone's larger text) never run off the picture: they shrink just enough to fit
+  const fit = h0 > boxH * 0.92 ? (boxH * 0.92) / h0 : 1;
+  const h = h0 * fit;
   const L = wordsLook(look);
   const maxW = boxW * 0.84;
   const pad = L.panel ? Math.round(boxW * 0.035) : 0;
   const y = Math.min(boxH - h / 2 - 6, Math.max(h / 2 + 6, (at.y ?? DEFAULT_AT.y) * boxH));
   const x = Math.min(boxW - maxW / 2, Math.max(maxW / 2, (at.x ?? DEFAULT_AT.x) * boxW));
   return (
-    <View pointerEvents="box-none" style={[{ position: 'absolute', left: x - maxW / 2, width: maxW, top: y - h / 2, alignItems: 'center', opacity: h ? 1 : 0 }, style]}>
+    <View pointerEvents="box-none" style={[{ position: 'absolute', left: x - maxW / 2, width: maxW, top: y - h0 / 2 /* (scaled about its middle) */, alignItems: 'center', opacity: h ? 1 : 0 }, style]}>
       <View {...(handlers || {})} onLayout={(e) => setH(e.nativeEvent.layout.height)}
-        style={{ backgroundColor: L.panel || 'transparent', borderRadius: Math.round(boxW * 0.03), paddingHorizontal: pad * 1.4, paddingVertical: pad }}>
+        style={{ transform: fit < 1 ? [{ scale: fit }] : undefined, backgroundColor: L.panel || 'transparent', borderRadius: Math.round(boxW * 0.03), paddingHorizontal: pad * 1.4, paddingVertical: pad }}>
         {children}
       </View>
     </View>
