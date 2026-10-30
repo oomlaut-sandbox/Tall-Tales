@@ -52,6 +52,13 @@ const b64ToBytes = (b64: string) => Uint8Array.from(atob(b64), (c) => c.charCode
 
 const LANGS = ['de', 'fr', 'es', 'ja', 'ar'];
 
+// The English credits line, as the app shows it on the title page (src/catalog.js).
+function creditsOf(c: any) {
+  const w = (c.writer || '').trim(), a = (c.artist || '').trim();
+  if (w && a) return w.toLowerCase() === a.toLowerCase() ? `Written and illustrated by ${w}.` : `Written by ${w} and illustrated by ${a}.`;
+  return w ? `Written by ${w}.` : a ? `Illustrated by ${a}.` : '';
+}
+
 async function narrate(bookId: string, lang: string) {
   const db = createClient(URL_, SERVICE);
   const en = lang === 'en';
@@ -67,6 +74,11 @@ async function narrate(bookId: string, lang: string) {
     const L = en ? null : content.langs && content.langs[lang];
     if (!en && !(L && L.pages)) throw new Error('This language has no translation yet.');
     const pages = (content.pages || []).map((p: any) => ({ pid: p.pid, text: en ? p.text : L.pages[p.pid] })).filter((p: any) => p.text && p.text.trim());
+    // the title page too ("Title. Written by …"), worded exactly as the app shows it (src/catalog.js), so the
+    // narrator reads it first, like the books inside the app (30 Oct 2026)
+    const title = ((en ? content.title : L.title || content.title) || '').trim();
+    const credits = en ? creditsOf(content) : (L.credits || '').trim();
+    if (title) pages.unshift({ pid: `title-${content.id || bookId}`, text: `${title.replace(/[.。]+$/, '')}${lang === 'ja' ? '。' : '.'}${credits ? ` ${credits}` : ''}` });
     const dir = en ? `${bookId}/narration` : `${bookId}/narration/${lang}`;
     const voices = await voiceIds();
     if (!voices.length) throw new Error('No narrator voices were found in ElevenLabs.');
