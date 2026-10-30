@@ -13,6 +13,7 @@ export const HEADING_ICONS = {
   'Artificial Intelligence': require('../assets/heading-icons/ai.png'), // two sparkles
   'Accessibility': require('../assets/heading-icons/accessibility.png'), // a person in a circle, arms out (Jörg, 27 Oct 2026)
   'Teachers and Educators': require('../assets/heading-icons/learning.png'),
+  'Coro Artist Community': require('../assets/heading-icons/together-with-others.png'), // two people (30 Oct 2026)
   'Your favourite books': require('../assets/heading-icons/your-favourite-books.png'),
   'Big moments and changes': require('../assets/heading-icons/big-moments-and-changes.png'),
   'Everyday routines': require('../assets/heading-icons/everyday-routines.png'),
