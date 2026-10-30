@@ -163,8 +163,30 @@ const ALL_HELP = [
   { section: 'Grown-ups', title: 'The grown-up check', text: [
     'Some things, like taking photos, printing, sharing and deleting, first ask a quick question only a grown-up can answer.',
   ] },
-  { section: 'Grown-ups', title: 'Sending us your book', store: true, text: [
-    'Authors and illustrators young and old can send their books to the Coro Book Store. Visit corobooks.com for more information.',
+  // The Coro Artist Community (Jörg, 30 Oct 2026): how artists send a book, how it's sold and how they're paid
+  { section: 'Coro Artist Community', title: 'How the program works', store: true, text: [
+    'Coro’s Book Store sells picture books by independent authors and illustrators, young and old. Families buy each book on its own, usually for $1.99, members too.',
+    'Half of what Coro earns from each sale goes to the book’s artist.',
+    'Every artist’s book is written and illustrated by people, without AI. Only the translations into Coro’s other languages are made with the help of AI, once, and then checked by a person.',
+  ] },
+  { section: 'Coro Artist Community', title: 'Sending us your book', store: true, text: [
+    'The easiest way is to make your book in Coro: open My Workspace and tap Let’s make a book. A picture and two or three sentences on each page reads best.',
+    'Then email hello@corobooks.com with the title, a sentence or two about the story, the book itself (a PDF from Coro, or the pictures and the words for each page) and your name as it should appear on the cover.',
+    'We read every book and reply if it’s a fit for the Book Store. Young authors: ask a grown-up to send it for you.',
+  ] },
+  { section: 'Coro Artist Community', title: 'What we look for', store: true, text: [
+    'Stories with warmth and a little humour that families enjoy reading more than once.',
+    'Your own words and your own pictures: no AI-written text, no AI-made pictures, and no characters that belong to someone else.',
+  ] },
+  { section: 'Coro Artist Community', title: 'Getting paid', store: true, text: [
+    'Before your book goes into the store, we agree on it in writing: its price, and that half of what Coro receives for each copy goes to you.',
+    'Apple keeps its share of each sale first, and some countries take out sales tax; half of what is left is yours.',
+    'We pay every three months, with a statement showing how many copies of each book were sold.',
+    'You keep the rights to your story and pictures, and you can ask us to take your book out of the store at any time.',
+  ] },
+  { section: 'Coro Artist Community', title: 'Your book in six languages', store: true, text: [
+    'Every book in the store can be read in English, German, French, Spanish, Japanese and Arabic. Once a translation is checked, Coro’s narrators read your book aloud in that language, with each word lighting up.',
+    'You’re welcome to check the translation in a language you know before it goes out.',
   ] },
   { section: 'Artificial Intelligence', title: 'Coro and AI', text: [
     'The Coro app itself doesn’t use any AI. Nothing your family makes is sent to an AI, and no AI writes, draws or reads in the app.',
