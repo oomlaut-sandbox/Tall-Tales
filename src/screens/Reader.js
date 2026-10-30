@@ -36,7 +36,7 @@ function PeelLayer({ start, ...props }) {
 }
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { BackRing, LineIcon, BulbIcon, Bar, BarMeta, HomeButton, BubbleIcon, HeadphonesIcon, MoonIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon, sideTop } from '../components/Chrome';
+import { Toast, BackRing, LineIcon, BulbIcon, Bar, BarMeta, HomeButton, BubbleIcon, HeadphonesIcon, MoonIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon, sideTop } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
@@ -372,11 +372,17 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   const pickScene = (sc) => {
     setScene(sc); setPrefs((p) => ({ ...p, listenScene: sc })); setTimeout(() => readPage(st.current.idx), 900); /* the story starts as the scene fades in */
     // a speech bubble once it's showing: how to get out again (once per launch for each of Daydream and the nightlight)
-    if (toast && !LISTEN_TIP_SEEN[sc]) { LISTEN_TIP_SEEN[sc] = true; setTimeout(() => toast(tr(sc === 'day' ? 'Tap the sun icon to close Listen Only mode.' : 'Tap the moon icon to close Listen Only mode.'), 5000), 1600); }
+    // Each has 'Don't show this message again' (Jörg, 30 Oct 2026): ticked, it never shows again for that one
+    if (!LISTEN_TIP_SEEN[sc]) {
+      LISTEN_TIP_SEEN[sc] = true;
+      loadJSON('listenTipOff', {}).catch(() => ({})).then((off) => { if (!(off && off[sc])) setTimeout(() => setListenTip(sc), 1600); });
+    }
   };
+  const [listenTip, setListenTip] = useState(null); // 'day' | 'night': the bubble showing
   const nightEnabled = listen && controls.nightlight !== false; // Settings → Nightlight mode can switch the nightlight off
   const choosing = nightEnabled && scene === 'choose';
   const nightOn = nightEnabled && !choosing; // the nightlight or Daydream is showing (the lock and alarm are on the bar)
+  useEffect(() => { if (!nightOn) setListenTip(null); }, [nightOn]); // (leaving Listen Only puts its bubble away)
   useHideBack(nightOn); // (no back button over the nightlight)
   useHideBack(voiceBox); // (nor over the voice box: it has its own close arrow, in that corner)
   const dayOn = nightOn && scene === 'day';
@@ -1180,6 +1186,9 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       {/* Listen Only, first: the screen dims and a small dark box asks: Daydream (the sun) or the nightlight (the moon) */}
       {boxUp && nightEnabled ? <ListenChoice area={wide ? { left: 0, top: 0, width: winW - BL.rightW, height: winH } : { left: 0, top: 0, width: winW, height: winH - barH }} center={wide ? { left: BL.leftW, width: winW - BL.leftW - BL.rightW } : null}
         onDay={() => pickScene('day')} onNight={() => pickScene('night')} onCancel={cancelListen} onGone={() => setBoxUp(false)} tr={tr} /> : null}
+      {listenTip && nightOn ? <Toast message={tr(listenTip === 'day' ? 'Tap the sun icon to close Listen Only mode.' : 'Tap the moon icon to close Listen Only mode.')} ms={0}
+        check={tr('Don’t show this message again')} button={tr('Got it!')}
+        onDismiss={(ticked) => { const sc = listenTip; setListenTip(null); if (ticked) loadJSON('listenTipOff', {}).catch(() => ({})).then((off) => saveJSON('listenTipOff', { ...(off || {}), [sc]: true })).catch(() => {}); }} /> : null}
       {nightOn ? (
         // leaving Listen Only (the sun or moon on the bar): the nightlight or Daydream dissolves away
         <Animated.View pointerEvents={leavingNight ? 'none' : 'box-none'} style={[StyleSheet.absoluteFill, { zIndex: 40, opacity: nlOut }]}>
