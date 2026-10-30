@@ -44,6 +44,8 @@ jobs:
                 out.push("accounts: " + u.text.slice(0, 300));
                 const pol = await q("select tablename, policyname, cmd from pg_policies where (schemaname = \x27storage\x27 and tablename = \x27objects\x27) or (schemaname = \x27public\x27 and tablename in (\x27books\x27, \x27shelves\x27)) order by 1, 2");
                 out.push("policies: " + pol.text.slice(0, 3000));
+                const bk = await q("select id, access, published, narration_status, narration_note, (select jsonb_object_agg(k, v->>\x27status\x27) from jsonb_each(langs) as e(k, v)) as langs, (select jsonb_object_agg(k, v->>\x27note\x27) from jsonb_each(langs) as e(k, v) where v->>\x27note\x27 is not null) as lang_notes from public.books where not bundled order by id");
+                out.push("store books: " + bk.text.slice(0, 3000));
               }
               fs.writeFileSync("out/store-setup.txt", out.join("\n") + "\n"); console.log(out.join("\n"));
             })();'
