@@ -33,7 +33,7 @@ export default function About({ u, openMenu, onSecret, onBack }) {
       <ScrollView {...keep} contentContainerStyle={[styles.body, { maxWidth: 520 }, { paddingBottom: 24 }, phone && winH < 740 && { paddingTop: 22, gap: 12 }]}>
         {/* a book maker first (Jörg, 25 Oct 2026): making together, sharing, and a few picture books */}
         <Text style={[styles.p, textStyle]}>
-          {t('Coro is for making books together: your photos, your drawings, your words and your voices, in a real picture book you can keep, share with family and read at bedtime.')}
+          {t('Coro is for making books together: your photos, your drawings, your words and your voices, in a picture book you can keep, share with family and read at bedtime.')}
         </Text>
         <Text style={[styles.p, textStyle]}>
           {t('Record yourselves reading each book and send it to grandparents, cousins and friends, who can add their own voices. A few beautiful picture books are here too, read by a warm narrator, with each word lighting up as it’s spoken.')}
