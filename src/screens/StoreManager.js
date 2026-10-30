@@ -47,7 +47,7 @@ function LangReview({ book, lang, onDone, toast }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   useEffect(() => {
-    loadStoreContent(book.id).then((cc) => {
+    (book.demoContent ? Promise.resolve(book.demoContent) : loadStoreContent(book.id)).then((cc) => {
       const L = (cc.langs || {})[lang] || {};
       setC(cc);
       setEd({ title: L.title || '', coverTitle: L.coverTitle || '', credits: L.credits || '', blurb: L.blurb || '', pages: { ...(L.pages || {}) } });
@@ -283,7 +283,12 @@ const DEMO = {
   books: [
     { id: 'different', title: 'Different', author: 'Jörg Schmidt', shelf_id: 'free', sort: 10, published: true, featured: true, bundled: true },
     { id: 'falling', title: 'Falling', author: 'Jörg Schmidt', shelf_id: 'free', sort: 20, published: true, bundled: true },
-    { id: 'brave-pebble-x1y2', title: 'The Brave Pebble', author: 'Mia', shelf_id: 'new', sort: 100, published: false, bundled: false, narration_status: 'ready', narration_note: '14 pages narrated (lily, gregory)', blurb: 'A little pebble rolls all the way to the sea.' },
+    { id: 'little-boat-x1y2', title: 'The Little Boat', author: 'Mia', shelf_id: 'new', sort: 100, published: false, bundled: false, narration_status: 'ready', narration_note: '3 pages narrated (lily, gregory)', blurb: 'A little boat sails all the way to the sea.',
+      langs: { de: { status: 'ready', title: 'Das kleine Boot' }, fr: { status: 'review', title: 'Le petit bateau' }, es: { status: 'narrating', title: 'El barquito' }, ja: { status: 'review', title: 'ちいさな ふね' }, ar: { status: 'translating' } },
+      demoContent: { title: 'The Little Boat', writer: 'Mia', artist: 'Mia', coverTitle: { text: 'The Little Boat' },
+        pages: [{ pid: 'p1', text: 'The little boat lived by the lake.' }, { pid: 'p2', text: 'One morning it wanted to see the sea.' }, { pid: 'p3', text: 'So off it went, all the way.' }],
+        langs: { fr: { title: 'Le petit bateau', coverTitle: 'Le petit bateau', credits: 'Écrit et illustré par Mia.', pages: { p1: 'Le petit bateau vivait au bord du lac.', p2: 'Un matin, il voulut voir la mer.', p3: 'Alors il partit, tout au bout du chemin.' } },
+          ja: { title: 'ちいさな ふね', coverTitle: 'ちいさな ふね', credits: 'さく・え ミア。', pages: { p1: 'ちいさな ふねは みずうみの そばに すんで いました。', p2: 'ある あさ、 うみを みたく なりました。', p3: 'そこで ずっと ずっと でかけて いきました。' } } } } },
   ],
 };
 
