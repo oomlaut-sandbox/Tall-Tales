@@ -649,8 +649,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               <Image source={{ uri: page.uri }} style={styles.fill} resizeMode="cover" />
               <View style={styles.artBtns}>
                 <Text style={styles.chip}>{tr('Change image')}</Text>
-                <Pressable onPress={() => setPhotoEdit('page')} hitSlop={6} accessibilityLabel={tr('Edit photo')}><Text style={styles.chip}>{tr('Edit')}</Text></Pressable>
-                <Pressable onPress={removeImage} hitSlop={6} accessibilityLabel={tr('Remove image')}><Text style={styles.chip}>{tr('Remove')}</Text></Pressable>
+                <Pressable onPress={() => setPhotoEdit('page')} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Edit photo')} style={styles.chipIcon}><Image source={CHOICE_ICONS.crop} style={styles.chipImg} /></Pressable>
+                <Pressable onPress={removeImage} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Remove image')} style={styles.chipIcon}><Image source={CHOICE_ICONS.trash} style={styles.chipImg} /></Pressable>
               </View>
             </>
           ) : (
@@ -666,8 +666,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           {page.uri2 ? (
             <View style={[styles.artBtns, { bottom: 12 }]}>
               <Text style={styles.chip}>{tr('Change image')}</Text>
-              <Pressable onPress={() => setPhotoEdit('page2')} hitSlop={6} accessibilityLabel={tr('Edit photo')}><Text style={styles.chip}>{tr('Edit')}</Text></Pressable>
-              <Pressable onPress={removeImage2} hitSlop={6} accessibilityLabel={tr('Remove the second image')}><Text style={styles.chip}>{tr('Remove')}</Text></Pressable>
+              <Pressable onPress={() => setPhotoEdit('page2')} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Edit photo')} style={styles.chipIcon}><Image source={CHOICE_ICONS.crop} style={styles.chipImg} /></Pressable>
+              <Pressable onPress={removeImage2} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Remove the second image')} style={styles.chipIcon}><Image source={CHOICE_ICONS.trash} style={styles.chipImg} /></Pressable>
             </View>
           ) : (
             <>
@@ -1260,6 +1260,8 @@ const styles = StyleSheet.create({
   addImage: { color: colors.white, fontSize: 22, fontFamily: fonts.uiBold, marginTop: 4 },
   artBtns: { position: 'absolute', left: 12, bottom: 12, flexDirection: 'row', gap: 8 },
   chip: { backgroundColor: 'rgba(0,0,0,0.6)', color: colors.white, fontSize: 15, paddingHorizontal: 14, paddingVertical: 8, overflow: 'hidden', fontFamily: fonts.uiBold },
+  chipIcon: { backgroundColor: 'rgba(0,0,0,0.6)', paddingHorizontal: 11, paddingVertical: 8, alignSelf: 'stretch', justifyContent: 'center' },
+  chipImg: { width: 20, height: 20, tintColor: colors.white },
   textBox: { justifyContent: 'flex-start' }, // the words (or 'To add text, tap here…') centred in the square
   addText: { fontFamily: fonts.uiBold, fontSize: 22, color: colors.ink, marginBottom: 6, textAlign: 'center' }, // always inside the words square
   input: { fontFamily: fonts.story, fontSize: 21, lineHeight: 34, color: colors.ink, textAlign: 'center', textAlignVertical: 'center', padding: 0, minHeight: 68 },
