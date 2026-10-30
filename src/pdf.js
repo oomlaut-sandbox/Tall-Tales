@@ -22,3 +22,11 @@ export async function printDrawing() {
 export async function shareDrawing() {
   throw new Error('Sharing works in the iPhone and Android app.');
 }
+
+export async function printAnthology() {
+  throw new Error('Printing works in the iPhone and Android app.');
+}
+
+export async function shareAnthology() {
+  throw new Error('Making PDFs works in the iPhone and Android app.');
+}

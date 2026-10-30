@@ -20,7 +20,7 @@ import { DESK_FELT, DeskFelt, DESK_BG } from '../look';
 import { COVER_COLORS, bylineLook, bylineStyle, coverBoxes, coverTitleLook, titleStyle } from '../components/CoverArt';
 import { creditsLine } from '../userStories';
 import { playKey } from '../sound';
-import { deleteUserStory, dropPicture, keepPicture, newPageId, overOf, saveUserStory } from '../userStories';
+import { classOf, deleteUserStory, dropPicture, keepPicture, newPageId, overOf, saveUserStory } from '../userStories';
 import StoryGuide from '../components/StoryGuide';
 import ParentGate from '../components/ParentGate';
 import { useT } from '../i18n';
@@ -110,6 +110,12 @@ const blank = () => ({ pid: newPageId(), text: '', uri: null, w: 1, h: 1 });
 const isDark = (hex) => { const m = /^#?([0-9a-f]{6})$/i.exec(hex || ''); if (!m) return false; const n = parseInt(m[1], 16); return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) < 128; };
 export function draftFrom(story) {
   if (!story) return { id: `s${Date.now()}`, title: '', writer: '', artist: '', pages: [blank()] }; // no title yet: the bar invites tr('Tap to add title')
+  // a book prompt from the teacher (classroom.js): a ready-started book, with its title and pages waiting
+  if (story.prompt) {
+    const pr = story.prompt;
+    return { id: `s${Date.now()}`, title: pr.title, writer: story.writer || '', artist: story.writer || '', pages: Array.from({ length: Math.max(1, pr.pages || 1) }, blank),
+      cls: pr.cls, owner: story.owner, promptId: pr.id, promptNote: pr.note || null, handIn: null };
+  }
   const d = {
     id: story.id,
     title: story.title,
@@ -117,6 +123,7 @@ export function draftFrom(story) {
     artist: story.artist || '',
     pages: story.pages.filter((p) => !p.titlePage).map((p) => ({ pid: p.pid, text: p.text, uri: p.image ? p.image.uri : null, w: p.w, h: p.h, uri2: p.image2 ? p.image2.uri : null, w2: p.w2 || 1, h2: p.h2 || 1, ...overOf(p), src: p.src || null, edit: p.edit || null, src2: p.src2 || null, edit2: p.edit2 || null })),
     cover: story.cover || null,
+    ...classOf(story),
   };
   if (!d.pages.length) d.pages = [blank()]; // (a book with only a cover so far: page 1 is waiting)
   return d;
@@ -669,6 +676,21 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     toast(tr('Page {n} deleted.', { n: k + 1 }));
   };
 
+  // a class book (classroom.js): handed in to the teacher instead of published; the teacher approves it into the Class Library
+  const classBook = !!draft.owner;
+  const handIn = async () => {
+    setPageDone(false); setTitleBox(false); clearTimeout(timer.current);
+    try {
+      const list = await saveUserStory(latest.current, { handIn: true });
+      if (!list.some((x) => x.id === latest.current.id)) { toast(tr('Add a picture or some words first.')); return; }
+      toast(tr('Handed in. Your teacher will have a look.'));
+      onDone(list, null, 'wip');
+    } catch (e) { toast(tr('Couldn’t save the story. Try again.')); }
+  };
+  // the teacher's words when the book opens: the prompt's instructions (a new book), or the note on a book sent back
+  const [teacherMsg, setTeacherMsg] = useState(() => (initial && initial.handIn === 'back' && initial.note ? { k: 'note', text: initial.note }
+    : initial && initial.promptNote && !(initial.pages || []).some((p) => (p.text || '').trim() || p.uri) ? { k: 'prompt', text: initial.promptNote } : null));
+
   const finish = async (named) => {
     const d0 = latest.current;
     if (named !== true && !d0.title.trim() && d0.pages.some((p) => p.text.trim() || p.uri || p.uri2)) { setTitleBox(true); return; } // a book needs a name
@@ -1011,7 +1033,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Text style={styles.choiceTitle}>{tr('Give your book a title')}</Text>
             <LineInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder={tr('Type the title')} placeholderTextColor="#8a8a8a" autoFocus style={styles.field} accessibilityLabel={tr('Book title')}
               returnKeyType="done" onSubmitEditing={() => finish(true)} />
-            <Pressable onPress={() => finish(true)} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 10 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={tr('Finish and publish to library')} style={styles.choiceBtnText} /></Pressable>
+            <Pressable onPress={() => (classBook ? handIn() : finish(true))} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 10 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={classBook ? tr('Hand in to my teacher') : tr('Finish and publish to library')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => setTitleBox(false)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Keep working')} style={styles.choiceBtnText} /></Pressable>
           </View>
         </KeyboardAvoidingView>
@@ -1036,6 +1058,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         </View>
       ) : null}
       {tourPlay ? <TourVideo tr={tr} onClose={() => setTourPlay(false)} /> : null}
+      {/* the teacher's prompt, or their note on a book sent back (classroom.js) */}
+      {teacherMsg && !coverOpen && !aboutOpen && !editing ? <Toast message={teacherMsg.k === 'note' ? tr('A note from your teacher: {note}', { note: teacherMsg.text }) : tr('From your teacher: {note}', { note: teacherMsg.text })} area={{ left: GAP - 6, right: GAP - 6, bottom: 150 }} ms={0} button={tr('OK')} onDismiss={() => setTeacherMsg(null)} /> : null}
       {saveTip && !editing && !drawFor && !photoEdit && !coverOpen && !tourPlay ? <Toast message={tr('Your work automatically saves as you go. And you can come back and edit your book anytime from your Library.')} ms={0}
         check={tr('Don’t show this again')} button={tr('Keep going')} onDismiss={(ticked) => { setSaveTip(false); if (ticked) saveJSON('saveTip', { off: true }); }} /> : null}
       {tourAsk && aboutOpen ? (
@@ -1273,7 +1297,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             {/* Save and Exit: saved as it is, into Work in Progress in My Library (Jörg, 28 Oct 2026) */}
             <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await saveUserStory(latest.current), null, 'wip'); } catch (e) { toast(tr('Couldn’t save the story. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.save} text={tr('Save and Exit')} style={styles.choiceBtnText} /></Pressable>
             {/* Finish last, in green, with extra room around it */}
-            <Pressable onPress={() => { setPageDone(false); finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 18, marginBottom: 8 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={tr('Finish and publish to library')} style={styles.choiceBtnText} /></Pressable>
+            <Pressable onPress={() => { setPageDone(false); if (classBook) handIn(); else finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 18, marginBottom: 8 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={classBook ? tr('Hand in to my teacher') : tr('Finish and publish to library')} style={styles.choiceBtnText} /></Pressable>
           </View>
         </View>
       ) : null}

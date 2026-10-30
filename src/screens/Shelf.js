@@ -10,10 +10,12 @@ import { colors, fonts, sectionBox, sectionTitle, SECTION_GAP } from '../theme';
 import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG, BandFill } from '../look';
 import ReadingOptionsSection from '../components/ReadingOptionsSection';
 import { Bar, BarMeta, Burger, DogEar, IDLE, Option, Panel, PlayGlyph, PlaylistIcon, WithBar, slotStyle } from '../components/Chrome';
-import { activeProfile, feltFor, onProfiles as onProfilesChange } from '../profiles';
+import { activeProfile, feltFor, getProfiles, onProfiles as onProfilesChange } from '../profiles';
+import { onPrompts, promptsFor } from '../classroom';
 const SHARE_ICON = require('../../assets/icon-envelope.png');
 const EDIT_ICON = require('../../assets/icon-scissors.png');
 const TRASH_ICON = require('../../assets/icon-trash.png');
+const PROMPT_ICON = require('../../assets/heading-icons/sticky-note.png'); // a book prompt from the teacher (classroom.js)
 import { liveUri, loadJSON, saveJSON } from '../storage';
 import { ageAllowed, ageOf, ageText, bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, localizeStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
@@ -274,7 +276,7 @@ function WhoReads({ onPress }) {
 const scrollAsks = { books: { current: 0 }, wip: { current: 0 } };
 // mode: 'library' (My Library: just My Book Collection) or 'workspace' (My Workspace: who is reading, Let's make a
 // book, Work in Progress, My Notes, Things to share and the corkboard) (Jörg, 29 Oct 2026)
-export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
+export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingOptions, onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
   const t = useT();
   // Read a book (from the start page): open scrolled down so My Books is at the top, just under the band
   const ws = mode === 'workspace';
@@ -283,6 +285,14 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
   const booksY = useRef(null);
   const booksDone = scrollAsks.books;
   const wip = stories.filter((s) => s.mine && !s.published);
+  // the classroom (classroom.js): the teacher's book prompts waiting for this student, and how each class book is doing
+  const [, bumpClass] = useState(0);
+  useEffect(() => onPrompts(() => bumpClass((n) => n + 1)), []);
+  useEffect(() => onProfilesChange(() => bumpClass((n) => n + 1)), []);
+  const me = activeProfile();
+  const waiting = ws && getProfiles().classroom ? promptsFor(me, stories) : [];
+  const nameOf = (id) => (getProfiles().list.find((p) => p.id === id) || {}).name || '';
+  const classSub = (s) => (!s.owner ? null : [nameOf(s.owner), s.handIn === 'in' ? t('Handed in') : s.handIn === 'back' ? t('Sent back') : null].filter(Boolean).join(' · ') || null);
   const wipY = useRef(null);
   const wipDone = scrollAsks.wip;
   const toWipNow = () => {
@@ -393,7 +403,7 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
         ) : null}
         {ws ? <View style={{ width: '100%', height: 30 }} /> : null}{/* (the workspace: room under Let's make a book) */}
         {/* a title over the books: the ones you made first, then the picture books */}
-        {!selecting && !ws ? <Text onLayout={(e) => { booksY.current = e.nativeEvent.layout.y; toMyBooks(); }} style={[styles.section, { marginTop: 2 }]} accessibilityRole="header">{t('My Book Collection')}</Text> : null}{/* a little closer to Let's make a book */}
+        {!selecting && !ws ? <Text onLayout={(e) => { booksY.current = e.nativeEvent.layout.y; toMyBooks(); }} style={[styles.section, { marginTop: 2 }]} accessibilityRole="header">{getProfiles().classroom ? t('Class Library') : t('My Book Collection')}</Text> : null}{/* (a classroom: the approved books are the Class Library) */}{/* a little closer to Let's make a book */}
         {/* (the parental controls can hide books rated for older children) */}
         {(ws ? [] : stories).filter((s) => (!s.mine || s.published) /* books still being made are in My Workspace (picked there) */ && ageAllowed(ageOf(null, s), controls.childAge)).sort((a, b) => (b.mine ? 1 : 0) - (a.mine ? 1 : 0)).map((s) => (
           // just the title under each cover (no author, pages or other details)
@@ -414,11 +424,16 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
         {!selecting && !ws ? <View style={{ width: '100%', height: onReadingOptions ? 48 : 70 }} /> : null}
         {/* Work in Progress: the books being made (saved with Save and Exit, not yet published); a tap carries on in
             the book maker. 'Finish and publish to library' moves a book up into My Book Collection (Jörg, 28 Oct 2026) */}
-        {ws && wip.length ? <Text onLayout={(e) => { wipY.current = e.nativeEvent.layout.y; toWipNow(); }} style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('Books I’m still making')}</Text> : null}
-        {ws ? wip.map((s) => (
-          <Tile key={s.id} spotId={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title} selecting={selecting} selected={picked.includes(s.id)} onPress={() => (selecting ? toggle(s.id) : onEdit(s))} />
+        {ws && (wip.length || waiting.length) ? <Text onLayout={(e) => { wipY.current = e.nativeEvent.layout.y; toWipNow(); }} style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('Books I’m still making')}</Text> : null}
+        {/* the teacher's book prompts, ready to start: a dark square with the prompt's title (classroom.js) */}
+        {ws && !selecting && onPrompt ? waiting.map((pr) => (
+          <Tile key={pr.id} u={u} plain title={pr.title} sub={t('From your teacher')} label={t('{title}, a book prompt from your teacher', { title: pr.title })}
+            glyph={<Image source={PROMPT_ICON} style={{ width: '34%', height: '34%', tintColor: '#d8d3c8' }} resizeMode="contain" />} onPress={() => onPrompt(pr, me)} />
         )) : null}
-        {ws && wip.length ? <View style={{ width: '100%', height: 48 }} /> : null}
+        {ws ? wip.map((s) => (
+          <Tile key={s.id} spotId={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title} sub={classSub(s)} selecting={selecting} selected={picked.includes(s.id)} onPress={() => (selecting ? toggle(s.id) : onEdit(s))} />
+        )) : null}
+        {ws && (wip.length || waiting.length) ? <View style={{ width: '100%', height: 48 }} /> : null}
         {/* My Notes (and who is reading), just above Things to share: Let's make a book and My Books come first (Jörg, 26 Oct 2026) */}
         {/* My Workspace: the notebook, Book Playlists, Things to share and the corkboard (Jörg, 29 Oct 2026) */}
         

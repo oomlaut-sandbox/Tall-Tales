@@ -44,6 +44,7 @@ function fromSaved(s0) {
     artist: s.artist || '',
     author: [s.writer, s.artist].filter((x) => x && x.trim()).filter((x, i, a) => a.indexOf(x) === i).join(' and ') || undefined,
     mine: true,
+    ...classOf(s), // a class book (classroom.js): its class, its student, its prompt, handed in or not, the teacher's note
     published: !!s.published, // finished with 'Finish and publish to library': in My Book Collection; until then in Work in Progress (Jörg, 28 Oct 2026)
     cover: s.cover && s.cover.uri ? s.cover : null, // made in the Cover Editor (picture and, if wanted, the title)
     pages: [titlePage, ...bodyPages],
@@ -53,6 +54,10 @@ function fromSaved(s0) {
 // words over a picture (WordsOver.js): kept with the page, and passed on to the reader
 const OVER_KEYS = ['textOn', 'textAt', 'textLook', 'textInk', 'textSize'];
 export const overOf = (p) => Object.fromEntries(OVER_KEYS.filter((k) => p[k] != null).map((k) => [k, p[k]]));
+
+// a class book's details (classroom.js)
+const CLASS_KEYS = ['cls', 'owner', 'promptId', 'promptNote', 'handIn', 'note'];
+export const classOf = (s) => Object.fromEntries(CLASS_KEYS.filter((k) => s && s[k] != null).map((k) => [k, s[k]]));
 
 const hasContent = (p) => (p.text && p.text.trim()) || p.uri || p.uri2;
 
@@ -67,7 +72,7 @@ export function dropPicture(uri) {
 // draft: { id, title, pages: [{ pid, text, uri, w, h }] }. Empty pages are left out.
 // publish: the book is finished and goes into My Book Collection. Saves after that keep it there (editing a
 // published book never takes it back to Work in Progress); books made before 28 Oct 2026 start in Work in Progress.
-export function saveUserStory(draft, { publish = false } = {}) {
+export function saveUserStory(draft, { publish = false, handIn = false } = {}) {
   return serial(async () => {
     // (the photo editor's originals and settings are kept too, so a photo can be edited again after the book is reopened)
     const pages = draft.pages.filter(hasContent).map((p) => ({ pid: p.pid, text: p.text.trim(), uri: p.uri || null, w: p.w, h: p.h, uri2: ((!p.text.trim() || p.textOn) && p.uri2) || null, w2: p.w2 || 1, h2: p.h2 || 1, ...overOf(p),
@@ -80,12 +85,24 @@ export function saveUserStory(draft, { publish = false } = {}) {
     if (!started) {
       if (i >= 0) list.splice(i, 1);
     } else {
-      const saved = { id: draft.id, title: draft.title.trim() || 'Untitled story', writer: (draft.writer || '').trim(), artist: (draft.artist || '').trim(), pages, cover: draft.cover && draft.cover.uri ? draft.cover : null, published: !!(publish || (i >= 0 && list[i].published)) };
+      const saved = { id: draft.id, title: draft.title.trim() || 'Untitled story', writer: (draft.writer || '').trim(), artist: (draft.artist || '').trim(), pages, cover: draft.cover && draft.cover.uri ? draft.cover : null, published: !!(publish || (i >= 0 && list[i].published)),
+        ...classOf(i >= 0 ? list[i] : null), ...classOf(draft), ...(handIn ? { handIn: 'in' } : null) }; // (handed in: waiting on the Teacher's Desk)
       if (i >= 0) list[i] = saved; else list.push(saved);
     }
     await saveJSON('stories', list);
     await pruneRecordings(draft.id, pages.map((p) => p.pid));
     if (pages.length) markFirst('firstBook'); // a badge in My Notes
+    return list.map(fromSaved);
+  });
+}
+
+// The teacher's answer to a handed-in book: { handIn: 'back' | 'ok', note }. Approved books go into the Class Library.
+export function setBookReview(id, patch) {
+  return serial(async () => {
+    const list = await loadJSON('stories', []);
+    const s = list.find((x) => x.id === id);
+    if (s) { Object.assign(s, patch); if (patch.handIn === 'ok') s.published = true; }
+    await saveJSON('stories', list);
     return list.map(fromSaved);
   });
 }

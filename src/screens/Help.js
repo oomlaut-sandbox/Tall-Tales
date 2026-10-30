@@ -223,6 +223,13 @@ const ALL_HELP = [
     'Books are shared by the whole class, so students can make a book together, or each make their own.',
     'To end classroom mode, open Settings again. The students’ profiles stay.',
   ] },
+  { section: 'Teachers and Educators', title: 'The Teacher’s Desk', text: [
+    'Open the Teacher’s Desk in Settings, under Teachers and Educators. Everything stays on this iPad: no accounts, nothing online.',
+    'Book prompts: write a title, a few lines of instructions and how many pages. Each student finds it in My Workspace as a ready-started book.',
+    'When a book is ready, the student taps Hand in to my teacher. On the Teacher’s Desk, read it, leave a note, then send it back or approve it. Students see your note when they open the book.',
+    'Approved books go into the Class Library, in My Library for the whole class. Print them all as one class book, or share it as a PDF.',
+    'The classroom lock switches off the Book Store, buying, and sharing or printing outside the class.',
+  ] },
 ];
 // the Book Store's topics only while the store is on (see STORE_ON)
 export const HELP = ALL_HELP.filter((h) => STORE_ON || !h.store);

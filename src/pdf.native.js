@@ -118,6 +118,43 @@ export async function buildStoryHtml(story0, layout = 'stacked', fontKey = 'seri
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${css(face, bookFont(fontKey).css, layout)}</style></head><body>${out.join('')}</body></html>`;
 }
 
+// A class anthology (classroom.js): every approved book of a class in one PDF, each book after the next, with the
+// class's own title page first. Each book keeps its own title page and page numbers.
+export async function buildAnthologyHtml(stories, title, layout = 'stacked', fontKey = 'serif') {
+  let head = '', bodies = [];
+  for (const st of stories) {
+    const html = await buildStoryHtml(st, layout, fontKey);
+    if (!head) head = html.slice(0, html.indexOf('<body>'));
+    bodies.push(html.slice(html.indexOf('<body>') + 6, html.lastIndexOf('</body>')));
+  }
+  const cover = `<div class="pg title"><h1>${esc(title)}</h1><div class="by">${stories.length} ${stories.length === 1 ? 'book' : 'books'}</div><div class="made">Made with Coro</div></div>`;
+  return `${head}<body>${cover}${bodies.join('')}</body></html>`;
+}
+async function makeAnthology(stories, title, layout, fontKey) {
+  const html = await buildAnthologyHtml(stories, title, layout, fontKey);
+  const { w, h } = pageSize(layout);
+  const { uri } = await Print.printToFileAsync({ html, width: w, height: h, margins: { top: 0, right: 0, bottom: 0, left: 0 } });
+  return uri;
+}
+export async function printAnthology(stories, title, layout = 'stacked', fontKey = 'serif') {
+  const uri = await makeAnthology(stories, title, layout, fontKey);
+  try { await Print.printAsync({ uri }); } catch (e) { if (!/cancel|did not complete|not completed|dismiss/i.test(String(e && e.message))) throw e; }
+}
+export async function shareAnthology(stories, title, layout = 'stacked', fontKey = 'serif') {
+  const uri = await makeAnthology(stories, title, layout, fontKey);
+  let shareUri = uri;
+  try {
+    const name = (title || 'Class book').replace(/[^\w\- ]+/g, '').trim().slice(0, 60) || 'Class book';
+    const target = new File(Paths.cache, `${name}.pdf`);
+    if (target.exists) target.delete();
+    const f = new File(uri);
+    await f.move(target);
+    shareUri = f.uri;
+  } catch (e) {}
+  if (!(await Sharing.isAvailableAsync())) throw new Error('Sharing is not available on this device.');
+  await Sharing.shareAsync(shareUri, { UTI: 'com.adobe.pdf', mimeType: 'application/pdf', dialogTitle: title });
+}
+
 async function makePdf(story, layout, fontKey) {
   const html = await buildStoryHtml(story, layout, fontKey);
   const { w, h } = pageSize(layout);

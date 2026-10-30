@@ -48,6 +48,7 @@ import { onNewBadge } from './src/badges';
 import { SHOWN_BOOKS, STORIES, localizeStory } from './src/story';
 import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
+import TeacherDesk from './src/screens/TeacherDesk';
 import { shareStoryPdf } from './src/pdf';
 import { loadJSON, loadJSONFor, saveJSON, saveJSONFor } from './src/storage';
 import { TITLE_ICONS } from './src/titleIcons';
@@ -224,7 +225,8 @@ function Root() {
   useEffect(() => onStepsChange(() => stepBump((n) => n + 1)), []);
   useBackStep(drawer, () => setDrawer(false)); // the menu open: Back closes it
   // from a book: back to My Library, scrolled to My Books (Jörg, 28 Oct 2026)
-  const backToBooks = () => { playSound('coverClose'); setToBooks((n) => n + 1); go('library'); };
+  const readFrom = useRef(null); // a book opened from the Teacher's Desk goes back there when it's closed
+  const backToBooks = () => { playSound('coverClose'); if (readFrom.current === 'teacherDesk') { readFrom.current = null; go('teacherDesk'); return; } setToBooks((n) => n + 1); go('library'); };
   const goBack = () => {
     if (takeStep()) return; // the last step inside this screen first
     let e = hist.current.pop();
@@ -435,7 +437,7 @@ function Root() {
         {/* My Workspace (Jörg, 29 Oct 2026): who is reading, Let's make a book, Work in Progress, My Notes, Things to share, the corkboard */}
         {screen === 'workspace' && (
           <Animated.View style={{ flex: 1, opacity: libFade }}>
-          <Library mode="workspace" toWip={toWip} onGarden={controls.garden ? () => go('garden') : undefined} /* the Garden lies below My Workspace now (Jörg, 29 Oct 2026) */ u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
+          <Library mode="workspace" onPrompt={(prompt, me) => openPublisher({ prompt, owner: me && me.id, writer: (me && me.name) || '' }) /* a book prompt from the teacher (classroom.js) */} toWip={toWip} onGarden={controls.garden ? () => go('garden') : undefined} /* the Garden lies below My Workspace now (Jörg, 29 Oct 2026) */ u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
             onNotebook={(rect) => {
               // the notebook stays where it is while the shelf dissolves away to plain felt; then the notebook
               // screen takes over (its own notebook is already in the same spot) and the held one is taken away
@@ -477,7 +479,8 @@ function Root() {
         {screen === 'profiles' && <Profiles u={u} openMenu={openMenu} setControls={setControls} onPicked={(id) => { setNextScreen('library'); switchProfile(id); }} onBack={(to) => go(to === 'workspace' ? 'workspace' : 'library')} />}
         {screen === 'playlists' && <Playlists u={u} openMenu={openMenu} shelf={childShelf} onPlay={playPlaylist} onDone={() => { const last = hist.current[hist.current.length - 1]; if (last && (last.screen === 'library' || last.screen === 'workspace')) goBack(); else go('workspace'); }} /* from My Library: back to the same spot (the corkboard), like the back button (Jörg, 29 Oct 2026) */ />}
         {screen === 'settings' && <Settings u={u} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
-          controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} onProfiles={() => go('profiles')} onPlaylists={() => go('playlists')} onReadingOptions={readingOptions} onMusic={() => go('music')} prefs={prefs} setPrefs={setPrefs} toast={toast} />}
+          controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} onProfiles={() => go('profiles')} onPlaylists={() => go('playlists')} onReadingOptions={readingOptions} onMusic={() => go('music')} onTeacherDesk={() => go('teacherDesk')} prefs={prefs} setPrefs={setPrefs} toast={toast} />}
+        {screen === 'teacherDesk' && <TeacherDesk u={u} openMenu={openMenu} toast={toast} stories={userStories} onList={setUserStories} openStory={(s) => { readFrom.current = 'teacherDesk'; openStory(s); }} controls={controls} setControls={setControls} fontKey={prefs.font} />}
         {screen === 'garden' && <Garden u={u} openMenu={openMenu} toast={toast} onHome={() => go('workspace')} />}
         {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} onWelcome={WELCOME_ON ? () => setWelcome(true) : null}
           onIntro={() => { setSplash(true); setIntroWho(null); setIntroAsk(true); setCoverOpen(false); setStartKey((n) => n + 1); go('start'); }} />}

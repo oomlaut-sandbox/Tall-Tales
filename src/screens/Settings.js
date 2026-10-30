@@ -68,7 +68,7 @@ function Section({ id, icon, title, open, setOpen, children }) {
   );
 }
 
-export default function Settings({ u, openMenu, lang, setLang, bookLang, setBookLang, controls, setControls, mode, onDone, onJoin, onProfiles, onPlaylists, onReadingOptions, onMusic, prefs, setPrefs, toast }) {
+export default function Settings({ u, openMenu, lang, setLang, bookLang, setBookLang, controls, setControls, mode, onDone, onJoin, onProfiles, onPlaylists, onReadingOptions, onMusic, onTeacherDesk, prefs, setPrefs, toast }) {
   const keep = useScrollMemory('settings'); // Back returns to this spot
   const t = useT();
   const insets = useSafeAreaInsets();
@@ -236,6 +236,13 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
                   <Pressable onPress={onProfiles} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button">
                     <Text style={styles.pillText}>{t('Open the classroom')}</Text>
                   </Pressable>
+                  {/* book prompts, handed-in books, the Class Library and the classroom lock (TeacherDesk.js, 30 Oct 2026) */}
+                  {onTeacherDesk ? (
+                    <Pressable onPress={onTeacherDesk} style={[styles.pill, { backgroundColor: colors.blue }]} accessibilityRole="button">
+                      <Text style={styles.pillText}>{t('Open the Teacher’s Desk')}</Text>
+                    </Pressable>
+                  ) : null}
+                  {onTeacherDesk ? <Text style={styles.small}>{t('Give the class book prompts, read the books they hand in, and print the class book.')}</Text> : null}
                   {/* the class list: paste the names (from a spreadsheet or an email) and each one gets a profile */}
                   <Text style={[styles.cardTitle, { marginTop: 8 }]}>{t('Add students from a list')}</Text>
                   <Text style={styles.small}>{t('Paste your class list: one name per line, or separated by commas. Each name gets its own profile, up to {n} in the class.', { n: MAX_CLASS })}</Text>
