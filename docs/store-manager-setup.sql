@@ -69,6 +69,23 @@ end $$;
 revoke all on function public.set_book_lang(text, text, jsonb) from public, anon;
 grant execute on function public.set_book_lang(text, text, jsonb) to authenticated, service_role;
 
+-- Books for sale (30 Oct 2026): an artist's book bought on its own, on top of the membership. Its pages and
+-- narration live in the private "sold-books" folder; the "open-book" service hands a buyer short-lived links
+-- after checking the purchase with RevenueCat. Its cover stays in the public "books" folder for the store.
+insert into storage.buckets (id, name, public) values ('sold-books', 'sold-books', false) on conflict (id) do nothing;
+drop policy if exists "admins read sold books" on storage.objects;
+create policy "admins read sold books" on storage.objects for select to authenticated
+  using (bucket_id = 'sold-books' and public.is_store_admin());
+drop policy if exists "admins upload sold books" on storage.objects;
+create policy "admins upload sold books" on storage.objects for insert to authenticated
+  with check (bucket_id = 'sold-books' and public.is_store_admin());
+drop policy if exists "admins update sold books" on storage.objects;
+create policy "admins update sold books" on storage.objects for update to authenticated
+  using (bucket_id = 'sold-books' and public.is_store_admin());
+drop policy if exists "admins delete sold books" on storage.objects;
+create policy "admins delete sold books" on storage.objects for delete to authenticated
+  using (bucket_id = 'sold-books' and public.is_store_admin());
+
 -- Make yourself the owner: put your sign-in email between the quotes.
 insert into public.store_admins (user_id)
   select id from auth.users where lower(email) = lower('YOUR-EMAIL-HERE')

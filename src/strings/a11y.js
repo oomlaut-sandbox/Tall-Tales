@@ -126,4 +126,10 @@ export default {
   "My Desk": { de: "Mein Schreibtisch", fr: "Mon bureau", es: "Mi escritorio", ja: "わたしの つくえ", ar: "مكتبي" },
   "Make, read and share books": { de: "Bücher machen, lesen und teilen", fr: "Créer, lire et partager des livres", es: "Crear, leer y compartir libros", ja: "本を つくって、よんで、シェアしよう", ar: "اصنع الكتب واقرأها وشاركها" },
   "Search Help": { de: "Hilfe durchsuchen", fr: "Rechercher dans l’aide", es: "Buscar en la ayuda", ja: "ヘルプを けんさく", ar: "ابحث في المساعدة" },
+  'Written and illustrated by people, without AI. Half of what Coro earns from this book goes to its artist.': {
+    de: 'Von Menschen geschrieben und illustriert, ohne KI. Die Hälfte dessen, was Coro mit diesem Buch verdient, geht an die Künstlerin oder den Künstler.',
+    fr: 'Écrit et illustré par des personnes, sans IA. La moitié de ce que Coro gagne avec ce livre revient à son artiste.',
+    es: 'Escrito e ilustrado por personas, sin IA. La mitad de lo que Coro gana con este libro es para su artista.',
+    ja: 'ひとが かいて、ひとが えを かいた 本です（AIは つかっていません）。この 本の うりあげの はんぶんは、さっかに とどきます。',
+    ar: 'كتبه ورسمه أشخاص، من دون ذكاء اصطناعي. نصف ما تكسبه Coro من هذا الكتاب يذهب إلى الفنان.' },
 };

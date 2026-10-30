@@ -6,11 +6,14 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
+import { PRICES } from '../prices';
+
+const BOOK_PRICES = ['$0.99', '$1.99', '$2.99', '$3.99', '$4.99']; // what an artist's book can cost (App Store price points)
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import { DESK_FELT } from '../look';
 import CoverArt from '../components/CoverArt';
 import { ageText, coverFor, storageUrl } from '../catalog';
-import { LANG_NAMES, addShelf, approveTranslation, loadAllForManager, loadStoreContent, removeFromStore, saveTranslation, startNarration, startTranslation, updateBook, updateShelf, withdrawTranslation } from '../storeAdmin';
+import { LANG_NAMES, addShelf, productIdFor, setAccess, approveTranslation, loadAllForManager, loadStoreContent, removeFromStore, saveTranslation, startNarration, startTranslation, updateBook, updateShelf, withdrawTranslation } from '../storeAdmin';
 
 const NARRATION = { none: 'No narration yet', working: 'Narration being made…', ready: 'Narration ready', failed: 'Narration failed' };
 
@@ -48,7 +51,7 @@ function LangReview({ book, lang, onDone, toast }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   useEffect(() => {
-    (book.demoContent ? Promise.resolve(book.demoContent) : loadStoreContent(book.id)).then((cc) => {
+    (book.demoContent ? Promise.resolve(book.demoContent) : loadStoreContent(book.id, book.access)).then((cc) => {
       const L = (cc.langs || {})[lang] || {};
       setC(cc);
       setEd({ title: L.title || '', coverTitle: L.coverTitle || '', credits: L.credits || '', blurb: L.blurb || '', pages: { ...(L.pages || {}) } });
@@ -101,11 +104,11 @@ function LangReview({ book, lang, onDone, toast }) {
         </View>
       ))}
       <View style={[styles.choices, { marginTop: 10 }]}>
-        <Pressable disabled={busy || missing > 0} onPress={() => run(() => approveTranslation(book.id, lang, ed), `${LANG_NAMES[lang]} approved. Making the narration…`)}
+        <Pressable disabled={busy || missing > 0} onPress={() => run(() => approveTranslation(book.id, lang, ed, book.access), `${LANG_NAMES[lang]} approved. Making the narration…`)}
           style={[styles.pill, { backgroundColor: colors.green }, (busy || missing > 0) && { opacity: 0.4 }]} accessibilityRole="button">
           <Text style={styles.pillText}>{ready ? 'Save and narrate again' : 'Approve and narrate'}</Text>
         </Pressable>
-        <Pressable disabled={busy} onPress={() => run(() => saveTranslation(book.id, lang, ed), 'Saved.')} style={[styles.pill, busy && { opacity: 0.4 }]} accessibilityRole="button">
+        <Pressable disabled={busy} onPress={() => run(() => saveTranslation(book.id, lang, ed, book.access), 'Saved.')} style={[styles.pill, busy && { opacity: 0.4 }]} accessibilityRole="button">
           <Text style={styles.pillText}>Save for later</Text>
         </Pressable>
       </View>
@@ -162,6 +165,17 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
   const [blurb, setBlurb] = useState(book.blurb || '');
   const [process, setProcess] = useState(book.process || '');
   const [confirmRemove, setConfirmRemove] = useState(false);
+  const [moving, setMoving] = useState(false);
+  const setAccessTo = async (access, price) => {
+    if (moving || (access === (book.access === 'paid' ? 'paid' : 'free') && (access !== 'paid' || price === book.price_label))) return;
+    setMoving(true);
+    try {
+      if (book.bundled) await updateBook(book.id, { access });
+      else await setAccess(book.id, access, price);
+      toast(access === 'paid' ? `“${book.title}” is for sale at ${price}.` : `“${book.title}” is free for everyone.`); onChanged();
+    } catch (e) { toast(`Couldn’t change it. ${e.message}`); }
+    setMoving(false);
+  };
   const save = async (patch, note) => {
     try { await updateBook(book.id, patch); if (note) toast(note); onChanged(); } catch (e) { toast(`Couldn’t save. ${e.message}`); }
   };
@@ -210,8 +224,17 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
           <TextInput value={process} onChangeText={setProcess} onBlur={() => process !== (book.process || '') && save({ process: process.trim() || null }, 'Process saved.')}
             multiline placeholder="How the book was made: who wrote and drew it, the tools used, and any use of AI" placeholderTextColor="#888" style={[styles.input, { minHeight: 90 }]} />
           <Text style={styles.label}>Who can read it</Text>
-          <Choice options={[['free', 'Free'], ['member', 'Members']]} /* membership only (Jörg, 29 Oct 2026) */ value={book.access || 'member'}
-            onChange={(v) => save(v === 'paid' ? { access: v, price_label: book.price_label || '$2.99' } : { access: v }, v === 'free' ? 'Free for everyone.' : v === 'member' ? 'For members.' : 'For members, or $2.99 on its own.')} />
+          {/* free for everyone, or an artist's book for sale, bought on its own by everyone, members too (Jörg, 30 Oct 2026).
+              Books inside the app are always free. A book for sale's files move to the private folder on the server. */}
+          <Choice options={book.bundled ? [['free', 'Free']] : [['free', 'Free'], ['paid', 'For sale']]} value={book.access === 'paid' ? 'paid' : 'free'}
+            onChange={(v) => setAccessTo(v, v === 'paid' ? book.price_label || PRICES.book : null)} />
+          {book.access === 'paid' ? (
+            <>
+              <Text style={styles.label}>Price</Text>
+              <Choice options={BOOK_PRICES.map((p) => [p, p])} value={book.price_label || PRICES.book} onChange={(v) => setAccessTo('paid', v)} />
+              <Text style={styles.note}>In App Store Connect, this book needs its own in-app purchase (Non-Consumable) at the same price, with the product ID{'\n'}<Text style={{ fontFamily: fonts.uiBold, color: colors.white }} selectable>{productIdFor(book.id)}</Text>{'\n'}Families buy it on its own, members too. The store says it’s made by people, without AI, and that half of what Coro earns from it goes to the artist.</Text>
+            </>
+          ) : book.access === 'member' ? <Text style={styles.note}>Marked for members (from before). Choose Free or For sale.</Text> : null}
           {/* the age rating: parents can show only the books rated for their child's age (Settings) */}
           <Text style={styles.label}>Age rating: from age</Text>
           <Choice options={[[null, 'Not set'], ...AGES.map((a) => [a, String(a)])]} value={book.min_age == null ? null : book.min_age}

@@ -6,7 +6,7 @@ import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, Vi
 import { colors, fonts } from '../theme';
 import { PRICES, PRIVACY_URL, TERMS_URL } from '../prices';
 import { useT } from '../i18n';
-import { STORE_ON } from '../controls';
+import { STORE_ON } from '../controls'; // (no longer changes the wording here)
 import { joinMembership, planPrice, purchasesReady, restorePurchases, usePurchases } from '../purchases';
 
 export default function Membership({ visible, onClose, toast }) {
@@ -49,7 +49,7 @@ export default function Membership({ visible, onClose, toast }) {
         <ScrollView contentContainerStyle={{ gap: 14 }} bounces={false}>
           <Text style={styles.kicker}>{t('For grown-ups')}</Text>
           <Text style={styles.title}>{t('Coro Family')}</Text>
-          <Text style={styles.body}>{STORE_ON ? t('Make as many books as you like, with every page, voice and drawing tool. Share them with family, save a print-quality PDF, and read every picture book in the Book Store too.') : t('Make as many books as you like, with every page, voice and drawing tool. Share them with family and save a print-quality PDF.')}</Text>
+          <Text style={styles.body}>{t('Make as many books as you like, with every page, voice and drawing tool. Share them with family and save a print-quality PDF.') /* the membership is for the book maker; artists' books are bought on their own (Jörg, 30 Oct 2026) */}</Text>
           <View style={{ gap: 10 }}>
             <Plan id="yearly" title={t('Yearly')} price={planPrice(s, 'yearly')} per={t(' / year')} note={t('Best value: about a third off')} />
             <Plan id="monthly" title={t('Monthly')} price={planPrice(s, 'monthly')} per={t(' / month')} />

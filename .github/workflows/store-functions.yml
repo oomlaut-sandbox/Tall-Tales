@@ -23,17 +23,24 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          REVENUECAT_SECRET_KEY: ${{ secrets.REVENUECAT_SECRET_KEY }}
         run: |
           mkdir -p out
           REF=$(echo "$SUPABASE_URL" | sed -E 's#^https://([a-z0-9]+)\.supabase\.co/?$#\1#')
           if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then echo "SUPABASE_ACCESS_TOKEN secret is missing" | tee out/store.txt; exit 0; fi
           ( npx --yes supabase@2 functions deploy narrate --project-ref "$REF" --use-api 2>&1 | tail -5 ) | tee out/store.txt
-          ( npx --yes supabase@2 functions deploy translate --project-ref "$REF" --use-api 2>&1 | tail -5 ) | tee -a out/store.txt
+          for f in translate book-access; do ( npx --yes supabase@2 functions deploy $f --project-ref "$REF" --use-api 2>&1 | tail -3 ) | tee -a out/store.txt; done
+          # open-book is called by every family's phone (not only signed-in grown-ups): no Supabase sign-in needed
+          ( npx --yes supabase@2 functions deploy open-book --project-ref "$REF" --use-api --no-verify-jwt 2>&1 | tail -2 ) | tee -a out/store.txt
           ( npx --yes supabase@2 secrets set "ELEVENLABS_API_KEY=$ELEVENLABS_API_KEY" --project-ref "$REF" 2>&1 | grep -v ELEVENLABS | tail -3 ) | tee -a out/store.txt
           if [ -n "$ANTHROPIC_API_KEY" ]; then
             ( npx --yes supabase@2 secrets set "ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY" --project-ref "$REF" 2>&1 | grep -v ANTHROPIC | tail -3 ) | tee -a out/store.txt
             echo "anthropic key: set" | tee -a out/store.txt
           else echo "anthropic key: MISSING (add the ANTHROPIC_API_KEY secret in GitHub, then run this again)" | tee -a out/store.txt; fi
+          if [ -n "$REVENUECAT_SECRET_KEY" ]; then
+            ( npx --yes supabase@2 secrets set "REVENUECAT_SECRET_KEY=$REVENUECAT_SECRET_KEY" --project-ref "$REF" 2>&1 | grep -v REVENUECAT | tail -3 ) | tee -a out/store.txt
+            echo "revenuecat secret key: set" | tee -a out/store.txt
+          else echo "revenuecat secret key: MISSING (add the REVENUECAT_SECRET_KEY secret in GitHub, then run this again)" | tee -a out/store.txt; fi
       - name: Save report
         if: always()
         run: |

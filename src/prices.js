@@ -2,13 +2,15 @@
 // The real prices always come from the App Store once purchases are switched on; these are only shown
 // until then (and in the web preview).
 //   Membership (Coro Family): $3.99 a month, or $29.99 a year, both with a 7-day free trial. Unlimited books to make, and every book to read.
-//   (No single books since 29 Oct 2026: membership only. A book marked 'paid' is shown as a members' book.)
+//   Books for sale (30 Oct 2026): artists' books, bought one at a time on top of the membership, members too
+//   (the membership is for the book maker). Half of what Coro receives for a book goes to its artist.
+//   One new free book is added to the store every month.
 //   Free: three books, marked 'free' in the Store Manager.
 // Coro is a book maker first (Jörg, 25 Oct 2026): making and sharing are free up to FREE_BOOKS made books;
 // the membership, Coro Family, is for making more (unlimited books, voices, the drawing set, a print PDF, and
 // every picture book too). Sharing, and adding a voice to a book someone sent, are always free.
 export const FREE_BOOKS = 3;
-export const PRICES = { monthly: '$3.99', yearly: '$29.99', book: '$2.99', trialDays: 7 }; // (29 Oct 2026: $3.99 a month, $29.99 a year; single books are gone, 'book' is unused)
+export const PRICES = { monthly: '$3.99', yearly: '$29.99', book: '$1.99', trialDays: 7 }; // ('book': an artist's book for sale, back on 30 Oct 2026; each book's own price is set in the Store Manager)
 
 // The App Store product IDs (the same IDs go into App Store Connect and RevenueCat):
 //   membership: oomlaut.member.monthly and oomlaut.member.yearly, in one subscription group,

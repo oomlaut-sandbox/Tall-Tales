@@ -92,9 +92,20 @@ export function localizeStoreBook(book, lang) {
 // In another language: that language's words, and only that language's narration is fetched
 // (narration/<lang>/<voice>/), so a phone never downloads audio for languages it doesn't read in.
 const VOICE_KEYS = ['lily', 'gregory'];
-export async function loadStoreBook(book, lang = 'en') {
-  const base = (p) => storageUrl(`${book.content_path || book.id}/${p}`);
-  const fresh = (u) => `${u}?v=${encodeURIComponent(book.updated_at || '')}`;
+export async function loadStoreBook(book, lang = 'en', appUserId = null) {
+  // a book for sale: its files are private; the server checks the purchase and hands out short-lived links
+  let files = null;
+  if (book.access === 'paid' && !book.bundled) {
+    const { data, error } = await supabase.functions.invoke('open-book', { body: { bookId: book.id, appUserId } });
+    if (error || !data || data.error || !data.files) {
+      let msg = data && data.error;
+      try { if (!msg && error && error.context && error.context.json) msg = (await error.context.json()).error; } catch (e) {}
+      throw new Error(msg || 'This book could not be downloaded. Check the internet connection and try again.');
+    }
+    files = data.files;
+  }
+  const base = (p) => (files ? files[p] || null : storageUrl(`${book.content_path || book.id}/${p}`));
+  const fresh = (u) => (files || !u ? u : `${u}?v=${encodeURIComponent(book.updated_at || '')}`);
   const r = await fetch(fresh(base('content.json')));
   if (!r.ok) throw new Error('This book could not be downloaded. Check the internet connection and try again.');
   const c = await r.json();
@@ -103,7 +114,9 @@ export async function loadStoreBook(book, lang = 'en') {
   const narration = {};
   await Promise.all(VOICE_KEYS.map(async (v) => {
     try {
-      const t = await fetch(fresh(base(`${nDir}/${v}/timings.json`)));
+      const tu = base(`${nDir}/${v}/timings.json`);
+      if (!tu) return;
+      const t = await fetch(fresh(tu));
       if (!t.ok) return;
       const times = await t.json();
       narration[v] = {};
@@ -113,7 +126,8 @@ export async function loadStoreBook(book, lang = 'en') {
   const credits = [c.writer, c.artist].some((x) => x && x.trim())
     ? (() => { const w = (c.writer || '').trim(), a = (c.artist || '').trim(); if (w && a) return w.toLowerCase() === a.toLowerCase() ? `Written and illustrated by ${w}.` : `Written by ${w} and illustrated by ${a}.`; return w ? `Written by ${w}.` : `Illustrated by ${a}.`; })()
     : '';
-  const coverImg = c.cover ? { uri: fresh(base(c.cover)) } : null;
+  // the cover is always in the public folder (a book for sale too: the store shows it to everyone)
+  const coverImg = c.cover ? { uri: files ? storageUrl(`${book.content_path || book.id}/${c.cover}`) : fresh(base(c.cover)) } : null;
   const words = (p) => (L ? (L.pages[p.pid] != null ? L.pages[p.pid] : p.text || '') : p.text || '');
   const pages = c.pages.map((p) => ({ pid: p.pid, text: words(p), image: p.image ? { uri: fresh(base(p.image)) } : null, w: p.w || 1, h: p.h || 1, image2: p.image2 ? { uri: fresh(base(p.image2)) } : null }));
   // like the books made in the app: the cover, a blank back of the cover, then a title page with the credits

@@ -14,6 +14,7 @@
 //                                          src: { <key>: fingerprint of the English it was made from } } }
 //         books.langs[<lang>]  { status, note, title, blurb, coverTitle } (through public.set_book_lang)
 import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
+import { bookBucket } from '../_shared/books.ts';
 
 const URL_ = Deno.env.get('SUPABASE_URL')!;
 const ANON = Deno.env.get('SUPABASE_ANON_KEY')!;
@@ -78,9 +79,10 @@ async function translate(bookId: string, langs: string[], force: boolean, before
   const db = createClient(URL_, SERVICE);
   const setLang = (lang: string, patch: Record<string, unknown>) => db.rpc('set_book_lang', { book_id: bookId, lang, patch });
   let content: any = null;
+  const BUCKET = await bookBucket(db, bookId); // a book for sale lives in the private folder
   try {
     if (!AI_KEY) throw new Error('The Anthropic key is missing in Supabase (the ANTHROPIC_API_KEY secret in GitHub, then run Store functions).');
-    const dl = await db.storage.from('books').download(`${bookId}/content.json`);
+    const dl = await db.storage.from(BUCKET).download(`${bookId}/content.json`);
     if (dl.error || !dl.data) throw new Error('The book’s words could not be read.');
     content = JSON.parse(await dl.data.text());
   } catch (e) {
@@ -120,7 +122,7 @@ async function translate(bookId: string, langs: string[], force: boolean, before
     }
   }));
   for (const r of results) if ((r as any).L) content.langs[r.lang] = (r as any).L;
-  const up = await db.storage.from('books').upload(`${bookId}/content.json`, new Blob([JSON.stringify(content)], { type: 'application/json' }), { contentType: 'application/json', upsert: true, cacheControl: '60' });
+  const up = await db.storage.from(BUCKET).upload(`${bookId}/content.json`, new Blob([JSON.stringify(content)], { type: 'application/json' }), { contentType: 'application/json', upsert: true, cacheControl: '60' });
   for (const r of results as any[]) {
     if (r.error || up.error) { await setLang(r.lang, { status: 'failed', note: r.error || `Saving failed: ${up.error!.message}` }); continue; }
     const L = r.L;

@@ -43,8 +43,12 @@ export function usePurchases() {
   return s;
 }
 
-// may this book be read? (free; or a member; or a single book they bought)
-export const canOpen = (s, book) => book.access === 'free' || s.member || (book.access === 'paid' && s.owned.includes(bookProductId(book.id)));
+// may this book be read? (free; a book for sale that they bought; or, for any book still marked members', a member)
+// Books for sale are bought on top of the membership, members too: the membership is for the book maker (Jörg, 30 Oct 2026).
+export const canOpen = (s, book) => book.access === 'free' || (book.access === 'paid' ? s.owned.includes(bookProductId(book.id)) : s.member);
+
+// RevenueCat's ID for this phone: the server checks it when a bought book is opened (supabase/functions/open-book)
+export async function appUserId() { try { return purchasesReady ? await Purchases.getAppUserID() : null; } catch (e) { return null; } }
 
 // the price to show for a plan ('monthly' | 'yearly'), from the App Store once it's known
 export const planPrice = (s, plan) => (s.plans && s.plans[plan] && s.plans[plan].product.priceString) || PRICES[plan];

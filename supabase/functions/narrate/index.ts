@@ -11,6 +11,7 @@
 //         books/<id>/narration/<voice>/timings.json   { <pid>: { fp, words: [start seconds…], dur } }
 // Pages whose words haven't changed since last time are kept (fp = fingerprint of voice + words).
 import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
+import { bookBucket } from '../_shared/books.ts';
 
 const URL_ = Deno.env.get('SUPABASE_URL')!;
 const ANON = Deno.env.get('SUPABASE_ANON_KEY')!;
@@ -59,7 +60,8 @@ async function narrate(bookId: string, lang: string) {
     : db.rpc('set_book_lang', { book_id: bookId, lang, patch: { status: status === 'working' ? 'narrating' : status, note } });
   try {
     if (!EL_KEY) throw new Error('The ElevenLabs key is missing in Supabase.');
-    const dl = await db.storage.from('books').download(`${bookId}/content.json`);
+    const BUCKET = await bookBucket(db, bookId); // a book for sale lives in the private folder
+    const dl = await db.storage.from(BUCKET).download(`${bookId}/content.json`);
     if (dl.error || !dl.data) throw new Error('The book’s words could not be read.');
     const content = JSON.parse(await dl.data.text());
     const L = en ? null : content.langs && content.langs[lang];
@@ -71,7 +73,7 @@ async function narrate(bookId: string, lang: string) {
     let made = 0, kept = 0;
     for (const v of voices) {
       const tPath = `${dir}/${v.key}/timings.json`;
-      const old = await db.storage.from('books').download(tPath);
+      const old = await db.storage.from(BUCKET).download(tPath);
       const timings: Record<string, any> = old.data ? JSON.parse(await old.data.text()) : {};
       const next: Record<string, any> = {};
       // a few pages at a time, so a whole book is done in well under a minute
@@ -84,7 +86,7 @@ async function narrate(bookId: string, lang: string) {
             body: JSON.stringify({ text: p.text, model_id: MODEL, ...(en ? {} : { language_code: lang }), voice_settings: { stability: 0.55, similarity_boost: 0.8, style: 0.15, use_speaker_boost: true, speed: v.pace } }),
           });
           if (r.status !== 200 || !r.body || !r.body.audio_base64) throw new Error(`ElevenLabs said no (HTTP ${r.status}) for page ${p.pid}.`);
-          const up = await db.storage.from('books').upload(`${dir}/${v.key}/${p.pid}.mp3`, b64ToBytes(r.body.audio_base64), { contentType: 'audio/mpeg', upsert: true });
+          const up = await db.storage.from(BUCKET).upload(`${dir}/${v.key}/${p.pid}.mp3`, b64ToBytes(r.body.audio_base64), { contentType: 'audio/mpeg', upsert: true });
           if (up.error) throw new Error(`Saving the narration failed: ${up.error.message}`);
           const al = r.body.alignment || r.body.normalized_alignment;
           const starts = al ? tokenize(p.text).map((t) => Math.round((al.character_start_times_seconds[Math.min(t.start, al.character_start_times_seconds.length - 1)] || 0) * 1000) / 1000) : [];
@@ -93,7 +95,7 @@ async function narrate(bookId: string, lang: string) {
           made++;
         }));
       }
-      const up = await db.storage.from('books').upload(tPath, new Blob([JSON.stringify(next)], { type: 'application/json' }), { contentType: 'application/json', upsert: true });
+      const up = await db.storage.from(BUCKET).upload(tPath, new Blob([JSON.stringify(next)], { type: 'application/json' }), { contentType: 'application/json', upsert: true });
       if (up.error) throw new Error(`Saving the word timings failed: ${up.error.message}`);
     }
     await setStatus('ready', `${made} pages narrated, ${kept} unchanged (${voices.map((v) => v.key).join(', ')})`);

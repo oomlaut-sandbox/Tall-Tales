@@ -18,7 +18,7 @@ import { liveUri, loadJSON, saveJSON } from '../storage';
 import { ageAllowed, ageOf, ageText, bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, localizeStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
 import Membership from '../components/Membership';
-import { buyBook, canOpen, usePurchases } from '../purchases';
+import { appUserId, buyBook, canOpen, usePurchases } from '../purchases';
 import { PRICES } from '../prices';
 import { useLang, useT } from '../i18n';
 import { useControls } from '../controls';
@@ -543,7 +543,7 @@ export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
   const extra = cat ? STORIES.filter((st) => st.storeShelf && SHOWN_BOOKS.includes(st.id) && !cat.books.some((b) => b.id === st.id))
     .map((st, i) => ({ id: st.id, title: st.title, author: st.author || null, blurb: st.blurb || null, shelf_id: st.storeShelf, sort: i, access: 'free', bundled: true, featured: false })) : [];
   // membership only, no single books (Jörg, 29 Oct 2026): a book once marked 'paid' is a members' book
-  const shown = cat ? { ...cat, books: [...cat.books.map((b) => localizeStoreBook(b.access === 'paid' ? { ...b, access: 'member' } : b, lang)).filter((b) => (SHOWN_BOOKS.includes(b.id) || !b.bundled) && !STORIES.some((st) => st.id === b.id && st.libraryOnly)), ...extra] } : null; // plus every book published from the Store Manager
+  const shown = cat ? { ...cat, books: [...cat.books.map((b) => localizeStoreBook(b, lang)).filter((b) => (SHOWN_BOOKS.includes(b.id) || !b.bundled) && !STORIES.some((st) => st.id === b.id && st.libraryOnly)), ...extra] } : null; // plus every book published from the Store Manager
   // (web preview only, #pay-demo: two books shown as a members' book and a single book to buy)
   if (shown && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash === '#pay-demo') {
     shown.books = shown.books.map((b) => (b.id === 'rough-lives' ? { ...b, access: 'member' } : b));
@@ -559,7 +559,7 @@ export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
     const st = bundledStory(b.id);
     if (st) return openStory(st, rect);
     setFetching(b.id);
-    try { openStory(await loadStoreBook(b, lang), rect); } catch (e) { toast && toast(t(e.message)); }
+    try { openStory(await loadStoreBook(b, lang, await appUserId()), rect); } catch (e) { toast && toast(t(e.message)); }
     setFetching(null);
   };
   return (
@@ -661,7 +661,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
   const process = book.process || (bundledStory(book.id) || {}).process;
   const copyright = book.copyright || (bundledStory(book.id) || {}).copyright; // © year, author (Jörg, 27 Oct 2026) // how it was made (any use of AI is described here)
   const pageCount = bundledStory(book.id) ? bundledStory(book.id).pages.length * 2 : book.page_count;
-  const access = book.access === 'free' ? t('Free') : book.access === 'member' ? t('Members') : t('Members or {price}', { price: book.price_label || PRICES.book });
+  const access = book.access === 'free' ? t('Free') : book.access === 'member' ? t('Members') : book.price_label || PRICES.book; // a book for sale: its price
   const meta = [pageCount ? t('{n} pages', { n: pageCount }) : null, ageText(ageOf(book, bundledStory(book.id))) ? t('ages {n}', { n: ageText(ageOf(book, bundledStory(book.id))) }) : book.age_range ? t('ages {n}', { n: book.age_range }) : null, access].filter(Boolean).join(' · ');
   const here = !!(bundledStory(book.id) || !book.bundled); // in the app, or downloadable from the store
   const canRead = allowed && here; // free, a member, or a single book they bought
@@ -687,8 +687,8 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
       {process ? <Text style={[styles.sheetText, { fontSize: 14, lineHeight: 20, marginBottom: 12 }]}>{t(process)}</Text> : null}
       {copyright ? <Text style={[styles.sheetSub, { fontSize: 14, lineHeight: 20 }]}>{copyright}</Text> : null}
       {!here ? <Text style={[styles.sheetText, { marginTop: 6 }]}>{t('Downloading new books arrives in the next update.')}</Text> : null}
-      {/* a single book can also be read with the membership */}
-      {action === 'buy' ? <Pressable onPress={onJoin} hitSlop={8} accessibilityRole="button"><Text style={[styles.sheetSub, { textDecorationLine: 'underline', marginBottom: 18 }]}>{t('Or read every book with the membership')}</Text></Pressable> : null}
+      {/* an artist's book for sale: bought on its own (members too), and half of what Coro receives goes to the artist (Jörg, 30 Oct 2026) */}
+      {book.access === 'paid' ? <Text style={[styles.sheetText, { fontSize: 14, lineHeight: 20, marginBottom: 12 }]}>{t('Written and illustrated by people, without AI. Half of what Coro earns from this book goes to its artist.')}</Text> : null}
     </View>
   );
   return (
@@ -752,14 +752,14 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
   );
 }
 
-// The access label: a small solid tag (green for Free, blue for members, orange to buy) with a soft shadow.
+// The access label: a small solid tag (green for Free, blue for members, orange with the price for a book for sale) with a soft shadow.
 function Badge({ book }) {
   const t = useT();
   const bg = book.access === 'free' ? colors.green : book.access === 'member' ? colors.blue : colors.orange;
   return (
     <View style={styles.badgeShadow}>
       <View style={[styles.badge, { backgroundColor: bg }]}>
-        <Text style={[styles.badgeText, book.access === 'paid' && { color: colors.ink }]}>{book.access === 'free' ? t('Free') : book.access === 'member' ? t('Members') : t('Members or {price}', { price: book.price_label || PRICES.book })}</Text>
+        <Text style={[styles.badgeText, book.access === 'paid' && { color: colors.ink }]}>{book.access === 'free' ? t('Free') : book.access === 'member' ? t('Members') : book.price_label || PRICES.book}</Text>
       </View>
     </View>
   );

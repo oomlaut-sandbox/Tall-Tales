@@ -147,7 +147,7 @@ const ALL_HELP = [
     'The Book Store has new books to discover. Tap a cover to see what it’s about, then Read now.',
   ] },
   { section: 'Books', title: 'Membership and buying books', store: true, text: [
-    'Some books are free. The membership unlocks every book in the Book Store, and each new one as it arrives: $3.99 a month or $29.99 a year, and the first 7 days are free.',
+    'Coro Family, the membership, is for making books: as many as you like, with every page, voice and drawing tool, for $3.99 a month or $29.99 a year, and the first 7 days are free. In the Book Store, some books are free, with a new free book every month. Books by artists are bought one at a time, members too, and half of what Coro earns from each goes to its artist.',
     'Buying is for grown-ups: the app asks a grown-up question first, and payment goes through your Apple ID. Cancel the membership any time in your App Store account settings. On a new phone, use Restore Purchases on the membership screen.',
   ] },
   { section: 'Grown-ups', title: 'Settings and parental controls', text: [
