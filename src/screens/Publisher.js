@@ -185,6 +185,42 @@ function MakerWords({ page, boxW, boxH, onMove, onTap }) {
   );
 }
 
+// Live handles on the cover's selected text box (Jörg, 30 Oct 2026): drag a corner to make the words bigger or
+// smaller (the box grows with them), or a side to make the box wider or narrower (the words wrap inside it).
+// get(): the box's { size, w } now; set({ size?, w? }); sizeMin/sizeMax: the font size's range (a share of the cover).
+function BoxHandles({ W, get, set, sizeMin, sizeMax, color }) {
+  const cb = useRef({ get, set });
+  cb.current = { get, set };
+  const make = (kind, sign) => PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderTerminationRequest: () => false,
+    onPanResponderGrant: () => { make.from = cb.current.get(); },
+    onPanResponderMove: (e, g) => {
+      const f0 = make.from; if (!f0) return;
+      const d = (sign * g.dx * 2) / W; // the box grows on both sides (it stays centred where it is)
+      if (kind === 'side') { cb.current.set({ w: Math.min(1, Math.max(0.3, f0.w + d)) }); return; }
+      const k = Math.min(sizeMax / f0.size, Math.max(sizeMin / f0.size, 1 + d / f0.w));
+      cb.current.set({ size: f0.size * k, w: Math.min(1, Math.max(0.3, f0.w * k)) });
+    },
+  });
+  const hs = useMemo(() => ({
+    tl: make('corner', -1), tr: make('corner', 1), bl: make('corner', -1), br: make('corner', 1), l: make('side', -1), r: make('side', 1),
+  }), [W]);
+  const dot = { position: 'absolute', width: 22, height: 22, alignItems: 'center', justifyContent: 'center' };
+  const knob = (round) => <View style={{ width: round ? 13 : 9, height: round ? 13 : 20, borderRadius: 7, backgroundColor: '#ffffff', borderWidth: 1.5, borderColor: color }} />;
+  return (
+    <>
+      <View {...hs.tl.panHandlers} hitSlop={10} style={[dot, { left: -12, top: -12 }]}>{knob(true)}</View>
+      <View {...hs.tr.panHandlers} hitSlop={10} style={[dot, { right: -12, top: -12 }]}>{knob(true)}</View>
+      <View {...hs.bl.panHandlers} hitSlop={10} style={[dot, { left: -12, bottom: -12 }]}>{knob(true)}</View>
+      <View {...hs.br.panHandlers} hitSlop={10} style={[dot, { right: -12, bottom: -12 }]}>{knob(true)}</View>
+      <View {...hs.l.panHandlers} hitSlop={10} style={[dot, { left: -12, top: '50%', marginTop: -11 }]}>{knob(false)}</View>
+      <View {...hs.r.panHandlers} hitSlop={10} style={[dot, { right: -12, top: '50%', marginTop: -11 }]}>{knob(false)}</View>
+    </>
+  );
+}
+
 function EmptyPicture({ side, plain }) {
   const tr = useT();
   // the cover editor: no Polaroid; the blue cloth book cover fills the square, 'Add Image' in white (Jörg, 26 Oct 2026)
@@ -1089,6 +1125,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                         <Text style={[titleStyle, coverTitleLook(t), { fontSize: t.size * W, lineHeight: t.size * W * 1.2, paddingHorizontal: W * 0.04, textAlign: B.align }]} accessibilityLabel={tr('Cover title')}>{t.text}</Text>
                       )}
                       {t.byline && !B.byline ? <Text style={[titleStyle, bylineStyle, coverTitleLook(bylineLook(t), true), { fontSize: B.bs * W, lineHeight: B.bs * W * 1.4, paddingHorizontal: W * 0.04 }]}>{t.byline}</Text> : null}
+                      {coverSel === 'title' && !kbUp && !titleEditing ? (
+                        <BoxHandles W={W} color={lightCover ? 'rgba(90,90,90,0.9)' : 'rgba(40,40,40,0.9)'} sizeMin={0.05} sizeMax={0.24}
+                          get={() => { const c = latest.current.cover && latest.current.cover.title; return { size: c.size, w: c.w || 1 }; }} set={(v) => setCoverTitle(v)} />
+                      ) : null}
                     </View>
                     {/* the author line on its own: drag it, tap to type in it */}
                     {B.byline ? (
@@ -1101,6 +1141,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                         ) : (
                           <Text style={[titleStyle, bylineStyle, coverTitleLook(bylineLook(t), true), { fontSize: B.bs * W, lineHeight: B.bs * W * 1.4, paddingHorizontal: W * 0.04, textAlign: B.balign }]} accessibilityLabel={tr('Author')}>{t.byline}</Text>
                         )}
+                        {coverSel === 'byline' && !kbUp && !bylineEditing ? (
+                          <BoxHandles W={W} color={lightCover ? 'rgba(90,90,90,0.9)' : 'rgba(40,40,40,0.9)'} sizeMin={0.025} sizeMax={0.12}
+                            get={() => { const c = latest.current.cover && latest.current.cover.title; return { size: c.bs || c.size * 0.42, w: c.bw || 1 }; }} set={(v) => setCoverTitle({ ...(v.size != null ? { bs: v.size } : null), ...(v.w != null ? { bw: v.w } : null) })} />
+                        ) : null}
                       </View>
                     ) : null}
                     </>
