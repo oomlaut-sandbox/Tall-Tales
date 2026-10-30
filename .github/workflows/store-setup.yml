@@ -39,6 +39,9 @@ jobs:
                 out.push("setup: HTTP " + r.status + (r.status >= 300 ? " " + r.text.slice(0, 400) : " (done)"));
                 const c = await q("select (select count(*) from public.store_admins) as owners, (select count(*) from auth.users where lower(email) = lower(\x27" + owner + "\x27)) as matching_users, exists(select 1 from information_schema.columns where table_name = \x27books\x27 and column_name = \x27langs\x27) as langs_column");
                 out.push("check: " + c.text.slice(0, 300));
+                // who has signed in (no addresses shown): how many accounts, by sign-in method
+                const u = await q("select count(*) as accounts, count(*) filter (where email ilike '%privaterelay.appleid.com') as apple_hidden_email, count(*) filter (where raw_app_meta_data->>'provider' = 'apple') as apple, count(*) filter (where raw_app_meta_data->>'provider' = 'email') as email from auth.users");
+                out.push("accounts: " + u.text.slice(0, 300));
               }
               fs.writeFileSync("out/store-setup.txt", out.join("\n") + "\n"); console.log(out.join("\n"));
             })();'
