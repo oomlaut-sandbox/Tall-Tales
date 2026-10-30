@@ -464,8 +464,10 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       // is none yet, the phone reads it in that language
       const other = story.lang && story.lang !== 'en';
       const sk = other ? `${story.id}@${story.lang}` : story.id;
-      if (other && !AUDIO[voiceKey]?.[sk]?.[p.pid] && !AUDIO.lily?.[sk]?.[p.pid]) { speakTracked(p.text, { lang: story.lang, rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage }); return; }
-      const own = !other && story.narration ? (story.narration[voiceKey]?.[p.pid] || story.narration.lily?.[p.pid]) : null;
+      // a store book brings narration in the language it opened in (narrationLang), the other languages too (30 Oct 2026)
+      const ownLang = !!story.narration && (story.narrationLang || 'en') === (story.lang || 'en');
+      if (other && !ownLang && !AUDIO[voiceKey]?.[sk]?.[p.pid] && !AUDIO.lily?.[sk]?.[p.pid]) { speakTracked(p.text, { lang: story.lang, rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage }); return; }
+      const own = ownLang ? (story.narration[voiceKey]?.[p.pid] || story.narration.lily?.[p.pid]) : null;
       const audio = own ? { uri: own.uri } : AUDIO[voiceKey]?.[sk]?.[p.pid] || AUDIO.lily?.[sk]?.[p.pid];
       const times = own ? own.words : (TIMINGS[AUDIO[voiceKey]?.[sk]?.[p.pid] ? voiceKey : 'lily']?.[sk]?.[p.pid] || {}).words;
       // narration with word timings that don't match the words (the text changed since it was made) still plays in

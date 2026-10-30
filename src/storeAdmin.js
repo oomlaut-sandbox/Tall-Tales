@@ -6,7 +6,11 @@
 //   content.json            title, credits, cover title and the pages (words + picture file names)
 //   cover.jpg, pages/<pid>.jpg
 //   narration/<voice>/…     made by the "narrate" function in Supabase (Fatima and Henry)
+//   narration/<lang>/<voice>/…   the same in another language, once its translation is approved
+// content.json also carries the translations (langs), made by the "translate" function and read over and
+// approved by the store owner in the Store Manager (30 Oct 2026).
 import { supabase } from './account';
+import { storageUrl } from './catalog';
 import { readBytes } from './storage';
 import { creditsLine } from './userStories';
 
@@ -54,9 +58,13 @@ export async function publishToStore(story, onStep = () => {}) {
   const coverUri = (story.cover && story.cover.uri) || (pages.find((p) => p.uri) || {}).uri;
   if (coverUri) await upload(`${id}/cover.jpg`, await readBytes(coverUri), 'image/jpeg');
   const author = [story.writer, story.artist].map((x) => (x || '').trim()).filter((x, i, a) => x && a.indexOf(x) === i).join(' and ') || null;
+  // the translations made before (and any edits to them) carry over; the translation service then redoes
+  // only the pages whose English changed
+  const before = existing ? await loadStoreContent(id).catch(() => null) : null;
   const content = {
     id, title: story.title || 'Untitled story', writer: story.writer || '', artist: story.artist || '', author,
     cover: coverUri ? 'cover.jpg' : null, coverTitle: (story.cover && story.cover.title) || null, pages: outPages,
+    ...(before && before.langs ? { langs: before.langs } : {}),
   };
   await upload(`${id}/content.json`, new TextEncoder().encode(JSON.stringify(content)), 'application/json');
   onStep('Adding it to the store…');
@@ -70,7 +78,52 @@ export async function publishToStore(story, onStep = () => {}) {
   if (error) throw new Error(error.message);
   onStep('Starting the narration…');
   const { error: fnErr } = await supabase.functions.invoke('narrate', { body: { bookId: id } });
-  return { id, narration: fnErr ? `The narration couldn’t start (${fnErr.message}). Try again from the Store Manager.` : null };
+  // the other five languages, for reading over in the Store Manager
+  const { error: trErr } = await supabase.functions.invoke('translate', { body: { bookId: id } });
+  const problems = [fnErr ? `The narration couldn’t start (${fnErr.message}).` : null, trErr ? `The translations couldn’t start (${trErr.message}).` : null].filter(Boolean);
+  return { id, narration: problems.length ? `${problems.join(' ')} Try again from the Store Manager.` : null };
+}
+
+// ── Languages (30 Oct 2026) ─────────────────────────────────────────────────────────────────────────
+export const LANG_NAMES = { de: 'German', fr: 'French', es: 'Spanish', ja: 'Japanese', ar: 'Arabic' };
+
+// The book's content.json as it is in the store now (never a cached copy).
+export async function loadStoreContent(id) {
+  const r = await fetch(`${storageUrl(`${id}/content.json`)}?t=${Date.now()}`);
+  if (!r.ok) throw new Error('The book’s words could not be loaded.');
+  return r.json();
+}
+
+// Make the translations (all five languages, or some), again. force: redo every page, not just changed ones.
+export async function startTranslation(id, langs, force) {
+  const { error } = await supabase.functions.invoke('translate', { body: { bookId: id, ...(langs ? { langs } : {}), ...(force ? { force: true } : {}) } });
+  if (error) throw new Error(error.message);
+}
+
+// Save the store owner's edits to one language: { title, coverTitle, credits, blurb, pages: { pid: words } }.
+export async function saveTranslation(id, lang, edits) {
+  const content = await loadStoreContent(id);
+  content.langs = content.langs || {};
+  const L = content.langs[lang] || { pages: {}, src: {} };
+  for (const k of ['title', 'coverTitle', 'credits', 'blurb']) if (edits[k] != null) L[k] = edits[k].trim();
+  L.pages = { ...(L.pages || {}), ...Object.fromEntries(Object.entries(edits.pages || {}).map(([pid, w]) => [pid, w.trim()])) };
+  content.langs[lang] = L;
+  await upload(`${id}/content.json`, new TextEncoder().encode(JSON.stringify(content)), 'application/json');
+  const { error } = await supabase.rpc('set_book_lang', { book_id: id, lang, patch: { title: L.title || null, blurb: L.blurb || null, coverTitle: L.coverTitle || null } });
+  if (error) throw new Error(error.message);
+}
+
+// Approved: the language is narrated (Fatima and Henry), then families see and hear the book in it.
+export async function approveTranslation(id, lang, edits) {
+  if (edits) await saveTranslation(id, lang, edits);
+  const { error } = await supabase.functions.invoke('narrate', { body: { bookId: id, lang } });
+  if (error) throw new Error(error.message);
+}
+
+// Take a language away from families again (back to waiting for review); its words and narration stay.
+export async function withdrawTranslation(id, lang) {
+  const { error } = await supabase.rpc('set_book_lang', { book_id: id, lang, patch: { status: 'review' } });
+  if (error) throw new Error(error.message);
 }
 
 export async function startNarration(id) {
@@ -80,11 +133,13 @@ export async function startNarration(id) {
 
 // Everything in the store, hidden books too (the owner sees all of it).
 const MANAGER_COLS = 'id,title,author,blurb,shelf_id,sort,access,featured,published,bundled,cover_path,cover_title,page_count,age_range,min_age,max_age,price_label,narration_status,narration_note,source_story';
+const LANG_COL = ',langs'; // (after docs/store-manager-setup.sql's languages part has run)
 export async function loadAllForManager() {
   let [sh, bk] = await Promise.all([
     supabase.from('shelves').select('id,title,sort,published').order('sort'),
-    supabase.from('books').select(`${MANAGER_COLS},process`).order('sort'),
+    supabase.from('books').select(`${MANAGER_COLS},process${LANG_COL}`).order('sort'),
   ]);
+  if (bk.error) bk = await supabase.from('books').select(`${MANAGER_COLS},process`).order('sort');
   if (bk.error) bk = await supabase.from('books').select(MANAGER_COLS).order('sort'); // (no process column yet)
   if (sh.error || bk.error) throw new Error((sh.error || bk.error).message);
   return { shelves: sh.data, books: bk.data };
@@ -103,7 +158,9 @@ export async function removeFromStore(id) {
   try {
     const paths = [];
     for (const f of data || []) paths.push(`${id}/${f.name}`);
-    for (const sub of ['pages', 'narration/lily', 'narration/gregory']) {
+    const subs = ['pages', 'narration/lily', 'narration/gregory'];
+    for (const l of Object.keys(LANG_NAMES)) subs.push(`narration/${l}/lily`, `narration/${l}/gregory`);
+    for (const sub of subs) {
       const { data: d } = await supabase.storage.from('books').list(`${id}/${sub}`, { limit: 1000 });
       for (const f of d || []) paths.push(`${id}/${sub}/${f.name}`);
     }

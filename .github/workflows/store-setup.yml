@@ -1,0 +1,56 @@
+# Runs the store's database setup (docs/store-manager-setup.sql) in Supabase, through the Management API,
+# so nothing has to be pasted into the SQL editor. Safe to run again (everything is "if not exists" or
+# "create or replace"). The store owner's sign-in email comes in as an input, so it isn't kept in the code.
+# Needs the SUPABASE_ACCESS_TOKEN and SUPABASE_URL secrets. Never prints keys.
+name: Store setup
+on:
+  workflow_dispatch:
+    inputs:
+      owner_email:
+        description: The email the store owner signs in to Coro with
+        required: true
+permissions:
+  contents: write
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run the SQL
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          OWNER: ${{ inputs.owner_email }}
+        run: |
+          mkdir -p out
+          node -e '
+            const fs = require("fs");
+            const ref = (process.env.SUPABASE_URL || "").trim().replace(/^https:\/\/([a-z0-9]+)\.supabase\.co\/?$/, "$1");
+            const owner = (process.env.OWNER || "").trim().replace(/\x27/g, "");
+            const sql = fs.readFileSync("docs/store-manager-setup.sql", "utf8").replace("YOUR-EMAIL-HERE", owner);
+            const q = (query) => fetch(`https://api.supabase.com/v1/projects/${ref}/database/query`, {
+              method: "POST", headers: { Authorization: `Bearer ${process.env.SUPABASE_ACCESS_TOKEN}`, "Content-Type": "application/json" },
+              body: JSON.stringify({ query }) }).then(async (r) => ({ status: r.status, text: await r.text() }));
+            (async () => {
+              const out = [];
+              if (!process.env.SUPABASE_ACCESS_TOKEN) out.push("SUPABASE_ACCESS_TOKEN secret is missing");
+              else {
+                const r = await q(sql);
+                out.push("setup: HTTP " + r.status + (r.status >= 300 ? " " + r.text.slice(0, 400) : " (done)"));
+                const c = await q("select (select count(*) from public.store_admins) as owners, (select count(*) from auth.users where lower(email) = lower(\x27" + owner + "\x27)) as matching_users, exists(select 1 from information_schema.columns where table_name = \x27books\x27 and column_name = \x27langs\x27) as langs_column");
+                out.push("check: " + c.text.slice(0, 300));
+              }
+              fs.writeFileSync("out/store-setup.txt", out.join("\n") + "\n"); console.log(out.join("\n"));
+            })();'
+      - name: Save report
+        if: always()
+        run: |
+          cp out/store-setup.txt /tmp/r.txt 2>/dev/null || echo "no report" > /tmp/r.txt
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          git checkout -q --orphan store-setup-output
+          git rm -rfq --cached . > /dev/null
+          rm -rf ./* .gitignore 2>/dev/null || true
+          cp /tmp/r.txt store-setup.txt
+          git add -f store-setup.txt
+          git commit -qm "Store setup report"
+          git push -qf origin store-setup-output

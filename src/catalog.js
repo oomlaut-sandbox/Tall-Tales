@@ -27,8 +27,10 @@ export async function refreshCatalog() {
   const cols = 'id,title,author,blurb,shelf_id,sort,access,price_label,product_id,featured,bundled,cover_path,content_path,page_count,age_range,updated_at';
   let [sh, bk] = await Promise.all([
     supabase.from('shelves').select('id,title,sort').order('sort'),
-    supabase.from('books').select(`${cols},cover_title,min_age,max_age,process`).order('sort'),
+    supabase.from('books').select(`${cols},cover_title,min_age,max_age,process,langs`).order('sort'),
   ]);
+  // before the languages column is added (docs/store-manager-setup.sql), the same without it
+  if (bk.error) bk = await supabase.from('books').select(`${cols},cover_title,min_age,max_age,process`).order('sort');
   // before the process column is added (docs/catalog-setup.sql), the same without it
   if (bk.error) bk = await supabase.from('books').select(`${cols},cover_title,min_age,max_age`).order('sort');
   // before the Store Manager's setup has run there are no cover_title / age rating columns yet
@@ -71,37 +73,60 @@ export function coverArtFor(book) {
   return url ? { uri: url, title: book.cover_title } : null;
 }
 
+// A store book in another language (30 Oct 2026): each store book carries all six languages. A language
+// shows only once Jörg has approved its translation in the Store Manager and its narration is made
+// (books.langs[lang].status === 'ready'); until then the book shows and reads in English.
+export const STORE_LANGS = ['de', 'fr', 'es', 'ja', 'ar'];
+export const storeLangReady = (book, lang) => !!(lang && lang !== 'en' && book && book.langs && book.langs[lang] && book.langs[lang].status === 'ready');
+export function localizeStoreBook(book, lang) {
+  if (!storeLangReady(book, lang)) return book;
+  const L = book.langs[lang];
+  return {
+    ...book, title: L.title || book.title, blurb: L.blurb || book.blurb,
+    cover_title: book.cover_title && L.coverTitle ? { ...book.cover_title, text: L.coverTitle } : book.cover_title,
+  };
+}
+
 // A store book that isn't inside the app: its words and pictures, and the narration made for it
 // (Fatima and Henry, with word timings), fetched from the store. Shaped like the app's own books.
+// In another language: that language's words, and only that language's narration is fetched
+// (narration/<lang>/<voice>/), so a phone never downloads audio for languages it doesn't read in.
 const VOICE_KEYS = ['lily', 'gregory'];
-export async function loadStoreBook(book) {
+export async function loadStoreBook(book, lang = 'en') {
   const base = (p) => storageUrl(`${book.content_path || book.id}/${p}`);
   const fresh = (u) => `${u}?v=${encodeURIComponent(book.updated_at || '')}`;
   const r = await fetch(fresh(base('content.json')));
   if (!r.ok) throw new Error('This book could not be downloaded. Check the internet connection and try again.');
   const c = await r.json();
+  const L = storeLangReady(book, lang) && c.langs && c.langs[lang] && c.langs[lang].pages ? c.langs[lang] : null;
+  const nDir = L ? `narration/${lang}` : 'narration';
   const narration = {};
   await Promise.all(VOICE_KEYS.map(async (v) => {
     try {
-      const t = await fetch(fresh(base(`narration/${v}/timings.json`)));
+      const t = await fetch(fresh(base(`${nDir}/${v}/timings.json`)));
       if (!t.ok) return;
       const times = await t.json();
       narration[v] = {};
-      for (const [pid, info] of Object.entries(times)) narration[v][pid] = { uri: fresh(base(`narration/${v}/${pid}.mp3`)), words: info.words };
+      for (const [pid, info] of Object.entries(times)) narration[v][pid] = { uri: fresh(base(`${nDir}/${v}/${pid}.mp3`)), words: info.words };
     } catch (e) {}
   }));
   const credits = [c.writer, c.artist].some((x) => x && x.trim())
     ? (() => { const w = (c.writer || '').trim(), a = (c.artist || '').trim(); if (w && a) return w.toLowerCase() === a.toLowerCase() ? `Written and illustrated by ${w}.` : `Written by ${w} and illustrated by ${a}.`; return w ? `Written by ${w}.` : `Illustrated by ${a}.`; })()
     : '';
   const coverImg = c.cover ? { uri: fresh(base(c.cover)) } : null;
-  const pages = c.pages.map((p) => ({ pid: p.pid, text: p.text || '', image: p.image ? { uri: fresh(base(p.image)) } : null, w: p.w || 1, h: p.h || 1, image2: p.image2 ? { uri: fresh(base(p.image2)) } : null }));
+  const words = (p) => (L ? (L.pages[p.pid] != null ? L.pages[p.pid] : p.text || '') : p.text || '');
+  const pages = c.pages.map((p) => ({ pid: p.pid, text: words(p), image: p.image ? { uri: fresh(base(p.image)) } : null, w: p.w || 1, h: p.h || 1, image2: p.image2 ? { uri: fresh(base(p.image2)) } : null }));
   // like the books made in the app: the cover, a blank back of the cover, then a title page with the credits
-  const titlePage = { pid: `title-${c.id}`, titlePage: true, text: `${(c.title || '').replace(/\.+$/, '')}.${credits ? ` ${credits}` : ''}`, image: coverImg, w: 1600, h: 1600 };
+  const title = (L && L.title) || c.title || '';
+  const cred = L ? (L.credits || '') : credits;
+  const titlePage = { pid: `title-${c.id}`, titlePage: true, text: `${title.replace(/[.。]+$/, '')}${lang === 'ja' && L ? '。' : '.'}${cred ? ` ${cred}` : ''}`, image: coverImg, w: 1600, h: 1600 };
+  const coverTitle = c.coverTitle && L && L.coverTitle ? { ...c.coverTitle, text: L.coverTitle } : c.coverTitle || null;
   return {
-    id: c.id, title: c.title, author: c.author || undefined, store: true,
-    cover: coverImg ? { uri: coverImg.uri, title: c.coverTitle || null } : null,
+    id: c.id, title, author: c.author || undefined, store: true,
+    ...(L ? { lang } : {}),
+    cover: coverImg ? { uri: coverImg.uri, title: coverTitle } : null,
     pages: [titlePage, ...pages],
-    narration,
+    narration, narrationLang: L ? lang : 'en',
   };
 }
 

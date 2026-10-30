@@ -15,7 +15,7 @@ const SHARE_ICON = require('../../assets/icon-envelope.png');
 const EDIT_ICON = require('../../assets/icon-scissors.png');
 const TRASH_ICON = require('../../assets/icon-trash.png');
 import { liveUri, loadJSON, saveJSON } from '../storage';
-import { ageAllowed, ageOf, ageText, bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
+import { ageAllowed, ageOf, ageText, bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, localizeStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
 import Membership from '../components/Membership';
 import { buyBook, canOpen, usePurchases } from '../purchases';
@@ -512,6 +512,7 @@ export function Library({ mode = 'library', toBooks, toWip, onReadingOptions, on
 export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
   const storeKeep = useScrollMemory('store'); // Back returns to this spot
   const t = useT();
+  const lang = useLang(); // store books show in this language once their translation is approved and narrated
   const controls = useControls();
   const { width: winW, height: winH } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -542,7 +543,7 @@ export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
   const extra = cat ? STORIES.filter((st) => st.storeShelf && SHOWN_BOOKS.includes(st.id) && !cat.books.some((b) => b.id === st.id))
     .map((st, i) => ({ id: st.id, title: st.title, author: st.author || null, blurb: st.blurb || null, shelf_id: st.storeShelf, sort: i, access: 'free', bundled: true, featured: false })) : [];
   // membership only, no single books (Jörg, 29 Oct 2026): a book once marked 'paid' is a members' book
-  const shown = cat ? { ...cat, books: [...cat.books.map((b) => (b.access === 'paid' ? { ...b, access: 'member' } : b)).filter((b) => (SHOWN_BOOKS.includes(b.id) || !b.bundled) && !STORIES.some((st) => st.id === b.id && st.libraryOnly)), ...extra] } : null; // plus every book published from the Store Manager
+  const shown = cat ? { ...cat, books: [...cat.books.map((b) => localizeStoreBook(b.access === 'paid' ? { ...b, access: 'member' } : b, lang)).filter((b) => (SHOWN_BOOKS.includes(b.id) || !b.bundled) && !STORIES.some((st) => st.id === b.id && st.libraryOnly)), ...extra] } : null; // plus every book published from the Store Manager
   // (web preview only, #pay-demo: two books shown as a members' book and a single book to buy)
   if (shown && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash === '#pay-demo') {
     shown.books = shown.books.map((b) => (b.id === 'rough-lives' ? { ...b, access: 'member' } : b));
@@ -558,7 +559,7 @@ export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
     const st = bundledStory(b.id);
     if (st) return openStory(st, rect);
     setFetching(b.id);
-    try { openStory(await loadStoreBook(b), rect); } catch (e) { toast && toast(t(e.message)); }
+    try { openStory(await loadStoreBook(b, lang), rect); } catch (e) { toast && toast(t(e.message)); }
     setFetching(null);
   };
   return (

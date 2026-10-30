@@ -1,5 +1,5 @@
-# Puts the store's narration service (supabase/functions/narrate) into Supabase and gives it the
-# ElevenLabs key. Runs when the function changes, or by hand (Actions → Store functions → Run).
+# Puts the store's narration and translation services (supabase/functions/narrate, translate) into Supabase
+# and gives them the ElevenLabs and Anthropic keys. Runs when the function changes, or by hand (Actions → Store functions → Run).
 # Needs the SUPABASE_ACCESS_TOKEN secret (Supabase → Account → Access Tokens). Never prints keys.
 name: Store functions
 on:
@@ -22,12 +22,18 @@ jobs:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           mkdir -p out
           REF=$(echo "$SUPABASE_URL" | sed -E 's#^https://([a-z0-9]+)\.supabase\.co/?$#\1#')
           if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then echo "SUPABASE_ACCESS_TOKEN secret is missing" | tee out/store.txt; exit 0; fi
           ( npx --yes supabase@2 functions deploy narrate --project-ref "$REF" --use-api 2>&1 | tail -5 ) | tee out/store.txt
+          ( npx --yes supabase@2 functions deploy translate --project-ref "$REF" --use-api 2>&1 | tail -5 ) | tee -a out/store.txt
           ( npx --yes supabase@2 secrets set "ELEVENLABS_API_KEY=$ELEVENLABS_API_KEY" --project-ref "$REF" 2>&1 | grep -v ELEVENLABS | tail -3 ) | tee -a out/store.txt
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            ( npx --yes supabase@2 secrets set "ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY" --project-ref "$REF" 2>&1 | grep -v ANTHROPIC | tail -3 ) | tee -a out/store.txt
+            echo "anthropic key: set" | tee -a out/store.txt
+          else echo "anthropic key: MISSING (add the ANTHROPIC_API_KEY secret in GitHub, then run this again)" | tee -a out/store.txt; fi
       - name: Save report
         if: always()
         run: |

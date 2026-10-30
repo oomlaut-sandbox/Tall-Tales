@@ -49,6 +49,26 @@ create policy "admins delete books" on storage.objects for delete to authenticat
 alter table public.books add column if not exists min_age int check (min_age between 0 and 18);
 alter table public.books add column if not exists max_age int check (max_age between 0 and 18);
 
+-- Six languages for store books (30 Oct 2026): each language's state, title and synopsis for the store
+-- ({ "de": { "status": "translating|review|narrating|ready|failed", "note", "title", "blurb", "coverTitle" }, … }).
+-- The words themselves live in the book's content.json. A language shows to families only when "ready".
+alter table public.books add column if not exists langs jsonb not null default '{}'::jsonb;
+
+-- Changes one language's entry without touching the others (the translation and narration services
+-- work on several languages at once). Only the store owner, or the services themselves, may use it.
+create or replace function public.set_book_lang(book_id text, lang text, patch jsonb) returns void
+language plpgsql security definer set search_path = '' as $$
+begin
+  if not (public.is_store_admin() or coalesce(auth.role(), '') = 'service_role') then
+    raise exception 'Only the store owner can do this.';
+  end if;
+  update public.books
+    set langs = coalesce(langs, '{}'::jsonb) || jsonb_build_object(lang, coalesce(langs -> lang, '{}'::jsonb) || patch)
+    where id = book_id;
+end $$;
+revoke all on function public.set_book_lang(text, text, jsonb) from public, anon;
+grant execute on function public.set_book_lang(text, text, jsonb) to authenticated, service_role;
+
 -- Make yourself the owner: put your sign-in email between the quotes.
 insert into public.store_admins (user_id)
   select id from auth.users where lower(email) = lower('YOUR-EMAIL-HERE')

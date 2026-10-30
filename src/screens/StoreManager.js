@@ -9,7 +9,7 @@ import { colors, fonts } from '../theme';
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import CoverArt from '../components/CoverArt';
 import { ageText, coverFor, storageUrl } from '../catalog';
-import { addShelf, loadAllForManager, removeFromStore, startNarration, updateBook, updateShelf } from '../storeAdmin';
+import { LANG_NAMES, addShelf, approveTranslation, loadAllForManager, loadStoreContent, removeFromStore, saveTranslation, startNarration, startTranslation, updateBook, updateShelf, withdrawTranslation } from '../storeAdmin';
 
 const NARRATION = { none: 'No narration yet', working: 'Narration being made…', ready: 'Narration ready', failed: 'Narration failed' };
 
@@ -22,6 +22,135 @@ function Choice({ options, value, onChange }) {
         </Pressable>
       ))}
     </View>
+  );
+}
+
+// ── Languages (30 Oct 2026) ─────────────────────────────────────────────────────────────────────────
+// Each store book in German, French, Spanish, Japanese and Arabic: made by the translation service when
+// the book is published, read over (and corrected) here, then approved, which makes its narration.
+// Families only see a language once it is ready; until then the book shows and reads in English.
+const LANG_STATUS = {
+  translating: 'Being translated…', review: 'Ready for you to read over', narrating: 'Approved, narration being made…',
+  ready: 'Ready: families see and hear it', failed: 'Something went wrong',
+};
+const busyLang = (st) => st === 'translating' || st === 'narrating';
+const langSummary = (b) => {
+  const v = Object.values(b.langs || {});
+  if (b.bundled || !v.length) return null;
+  const ready = v.filter((x) => x.status === 'ready').length, review = v.filter((x) => x.status === 'review').length;
+  return [ready ? `${ready + 1} of 6 languages` : null, review ? `${review} to read over` : null].filter(Boolean).join(', ') || null;
+};
+
+function LangReview({ book, lang, onDone, toast }) {
+  const [c, setC] = useState(null); // content.json
+  const [ed, setEd] = useState(null); // { title, coverTitle, credits, blurb, pages: { pid: words } }
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  useEffect(() => {
+    loadStoreContent(book.id).then((cc) => {
+      const L = (cc.langs || {})[lang] || {};
+      setC(cc);
+      setEd({ title: L.title || '', coverTitle: L.coverTitle || '', credits: L.credits || '', blurb: L.blurb || '', pages: { ...(L.pages || {}) } });
+    }).catch((e) => setErr(e.message));
+  }, [book.id, lang]);
+  if (err) return <Text style={styles.err}>{err}</Text>;
+  if (!c || !ed) return <ActivityIndicator color={colors.ink} />;
+  const rtl = lang === 'ar';
+  const field = (value, onChange, opts = {}) => (
+    <TextInput value={value} onChangeText={onChange} multiline={!!opts.multi} allowFontScaling={false}
+      style={[styles.input, opts.multi && { minHeight: 70 }, rtl && { textAlign: 'right', writingDirection: 'rtl' }]} />
+  );
+  const set = (k) => (v) => setEd((e) => ({ ...e, [k]: v }));
+  const setPage = (pid) => (v) => setEd((e) => ({ ...e, pages: { ...e.pages, [pid]: v } }));
+  const pages = (c.pages || []).filter((p) => p.text && p.text.trim());
+  const missing = pages.filter((p) => !(ed.pages[p.pid] || '').trim()).length + (ed.title.trim() ? 0 : 1);
+  const run = async (fn, note) => { setBusy(true); try { await fn(); toast(note); onDone(); } catch (e) { toast(`Couldn’t do it. ${e.message}`); } setBusy(false); };
+  const ready = (book.langs || {})[lang]?.status === 'ready';
+  return (
+    <View style={styles.review}>
+      <Text style={styles.note}>The English is in grey above each line. Change anything that doesn’t sound right; it’s narrated exactly as written here.</Text>
+      <Text style={styles.label}>Title</Text>
+      <Text style={styles.en}>{c.title}</Text>
+      {field(ed.title, set('title'))}
+      {c.coverTitle && c.coverTitle.text ? (
+        <>
+          <Text style={styles.label}>Title on the cover</Text>
+          <Text style={styles.en}>{c.coverTitle.text}</Text>
+          {field(ed.coverTitle, set('coverTitle'))}
+        </>
+      ) : null}
+      {ed.credits || c.writer || c.artist ? (
+        <>
+          <Text style={styles.label}>Credits on the title page</Text>
+          {field(ed.credits, set('credits'))}
+        </>
+      ) : null}
+      {book.blurb ? (
+        <>
+          <Text style={styles.label}>Synopsis</Text>
+          <Text style={styles.en}>{book.blurb}</Text>
+          {field(ed.blurb, set('blurb'), { multi: true })}
+        </>
+      ) : null}
+      {pages.map((p, i) => (
+        <View key={p.pid} style={{ gap: 6 }}>
+          <Text style={styles.label}>Page {i + 1}</Text>
+          <Text style={styles.en}>{p.text}</Text>
+          {field(ed.pages[p.pid] || '', setPage(p.pid), { multi: true })}
+        </View>
+      ))}
+      <View style={[styles.choices, { marginTop: 10 }]}>
+        <Pressable disabled={busy || missing > 0} onPress={() => run(() => approveTranslation(book.id, lang, ed), `${LANG_NAMES[lang]} approved. Making the narration…`)}
+          style={[styles.pill, { backgroundColor: colors.green }, (busy || missing > 0) && { opacity: 0.4 }]} accessibilityRole="button">
+          <Text style={styles.pillText}>{ready ? 'Save and narrate again' : 'Approve and narrate'}</Text>
+        </Pressable>
+        <Pressable disabled={busy} onPress={() => run(() => saveTranslation(book.id, lang, ed), 'Saved.')} style={[styles.pill, busy && { opacity: 0.4 }]} accessibilityRole="button">
+          <Text style={styles.pillText}>Save for later</Text>
+        </Pressable>
+      </View>
+      {missing > 0 ? <Text style={styles.note}>{missing === 1 ? 'One line is' : `${missing} lines are`} still empty.</Text> : null}
+      {ready ? (
+        <Pressable disabled={busy} onPress={() => run(() => withdrawTranslation(book.id, lang), `${LANG_NAMES[lang]} is hidden from families.`)} style={[styles.pill, { backgroundColor: colors.deepRed }]} accessibilityRole="button">
+          <Text style={styles.pillText}>Hide this language from families</Text>
+        </Pressable>
+      ) : null}
+    </View>
+  );
+}
+
+function Languages({ book, onChanged, toast }) {
+  const [openLang, setOpenLang] = useState(null);
+  const langs = book.langs || {};
+  const doTr = async (force) => { try { await startTranslation(book.id, null, force); toast('Translating…'); onChanged(); } catch (e) { toast(`Couldn’t start it. ${e.message}`); } };
+  return (
+    <>
+      <Text style={styles.label}>Languages</Text>
+      <Text style={styles.note}>Families see the book in their language once you approve the translation and its narration is made. Until then it’s in English.</Text>
+      {Object.entries(LANG_NAMES).map(([l, name]) => {
+        const L = langs[l] || {};
+        const st = L.status;
+        return (
+          <View key={l} style={styles.langRow}>
+            <Pressable disabled={!st || busyLang(st) || (st === 'failed' && !L.title)} onPress={() => setOpenLang((o) => (o === l ? null : l))} style={styles.langHead} accessibilityRole="button" accessibilityState={{ expanded: openLang === l }}>
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Text style={styles.rowTitle}>{name}{L.title ? `: ${L.title}` : ''}</Text>
+                <Text style={[styles.rowSub, st === 'review' && { color: '#9a4b00' }, st === 'failed' && { color: '#b00000' }]}>{st ? LANG_STATUS[st] || st : 'Not translated yet'}{st === 'failed' && L.note ? `: ${L.note}` : ''}</Text>
+              </View>
+              {busyLang(st) ? <ActivityIndicator color={colors.ink} /> : st && !(st === 'failed' && !L.title) ? <Text style={styles.chev}>{openLang === l ? '–' : st === 'review' ? 'Read' : '+'}</Text> : null}
+            </Pressable>
+            {openLang === l ? <LangReview book={book} lang={l} toast={toast} onDone={() => { setOpenLang(null); onChanged(); }} /> : null}
+          </View>
+        );
+      })}
+      <View style={styles.choices}>
+        <Pressable onPress={() => doTr(false)} style={[styles.pill, { backgroundColor: colors.blue }]} accessibilityRole="button">
+          <Text style={styles.pillText}>{Object.keys(langs).length ? 'Translate what changed' : 'Translate'}</Text>
+        </Pressable>
+        {Object.keys(langs).length ? (
+          <Pressable onPress={() => doTr(true)} style={styles.pill} accessibilityRole="button"><Text style={styles.pillText}>Translate everything again</Text></Pressable>
+        ) : null}
+      </View>
+    </>
   );
 }
 
@@ -45,7 +174,7 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
   };
   const art = !book.bundled && book.cover_title ? { uri: storageUrl(book.cover_path), title: book.cover_title } : null;
   const cover = coverFor(book);
-  const status = [book.published ? 'In the store' : 'Hidden', book.featured ? 'Featured' : null, (shelves.find((s) => s.id === book.shelf_id) || {}).title, book.bundled ? 'Inside the app' : NARRATION[book.narration_status] || null].filter(Boolean).join(' · ');
+  const status = [book.published ? 'In the store' : 'Hidden', book.featured ? 'Featured' : null, (shelves.find((s) => s.id === book.shelf_id) || {}).title, book.bundled ? 'Inside the app' : NARRATION[book.narration_status] || null, langSummary(book)].filter(Boolean).join(' · ');
   return (
     <View style={styles.row}>
       <Pressable onPress={() => setOpen((o) => !o)} style={styles.rowHead} accessibilityRole="button" accessibilityState={{ expanded: open }}>
@@ -102,6 +231,7 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
                 style={[styles.pill, { backgroundColor: colors.blue }]} accessibilityRole="button">
                 <Text style={styles.pillText}>{book.narration_status === 'ready' ? 'Make the narration again' : 'Make the narration'}</Text>
               </Pressable>
+              <Languages book={book} onChanged={onChanged} toast={toast} />
               {confirmRemove ? (
                 <View style={{ gap: 10, marginTop: 24 }}>
                   <Text style={styles.note}>Take “{book.title}” out of the Book Store for good? The book stays in your own library on this phone.</Text>
@@ -170,7 +300,7 @@ export default function StoreManager({ u, openMenu, toast, demo }) {
   };
   useEffect(() => { load(false); }, []);
   // while a narration is being made, check back every few seconds
-  const working = data && data.books.some((b) => b.narration_status === 'working');
+  const working = data && data.books.some((b) => b.narration_status === 'working' || Object.values(b.langs || {}).some((x) => busyLang(x.status)));
   useEffect(() => { if (!working) return undefined; const t = setInterval(() => load(false), 5000); return () => clearInterval(t); }, [working]);
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
@@ -239,4 +369,8 @@ const styles = StyleSheet.create({
   note: { fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, color: '#333' },
   pill: { backgroundColor: '#6b6b6b', borderRadius: 22, height: 44, paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
   pillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 },
+  langRow: { backgroundColor: '#d4d4d4', borderRadius: 12, overflow: 'hidden' },
+  langHead: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12, paddingVertical: 10 },
+  review: { paddingHorizontal: 12, paddingBottom: 14, gap: 8 },
+  en: { fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, color: '#666' },
 });
