@@ -359,8 +359,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   }, [aboutOpen]);
   useEffect(() => {
     if (drawTipShown.current || !startMode || !coverOpen || aboutOpen || guide) return undefined;
-    const tm = setTimeout(() => { drawTipShown.current = true; setDrawTip(true); }, 1000);
-    return () => clearTimeout(tm);
+    let on = true; // (not if a grown-up ticked 'Don't show this again': Jörg, 30 Oct 2026)
+    const tm = setTimeout(() => { loadJSON('drawTip', {}).then((x) => { if (on && !(x && x.off)) { drawTipShown.current = true; setDrawTip(true); } }).catch(() => {}); }, 1000);
+    return () => { on = false; clearTimeout(tm); };
   }, [startMode, coverOpen, aboutOpen, guide]);
   const [toolsTip, setToolsTip] = useState(true); // no title yet: a speech bubble says where the tools will be
   useEffect(() => {
@@ -1084,7 +1085,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           {/* the hint is a speech bubble near the bottom that goes away after a while (tap it to close it sooner) */}
           {/* (no bubble before there's a title: Jörg, 26 Oct 2026) */}
           {/* a new book, on its cover: a hint about paper drawings (Jörg, 27 Oct 2026) */}
-          {drawTip && !kbUp && !imgAsk && !hardAsk ? <Toast message={tr('Pssst, here’s a hint. Taking photos of your paper drawings is a fun way to build a Coro book.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 150 }} ms={0} button={tr('Got it!')} icon="camera" onDismiss={() => setDrawTip(false)} /> : null}
+          {drawTip && !kbUp && !imgAsk && !hardAsk ? <Toast message={tr('Pssst, here’s a hint. Taking photos of your paper drawings is a fun way to build a Coro book.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 150 }} ms={0} check={tr('Don’t show this again')} button={tr('Got it!')} icon="camera" onDismiss={(ticked) => { setDrawTip(false); if (ticked) saveJSON('drawTip', { off: true }); }} /> : null}
           {coverTitling && coverTip && !kbUp ? <Toast message={tr('Tap the title or the author to type. Drag them anywhere on the cover.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 74 }} onDismiss={() => setCoverTip(false)} /> : null}
           {/* Done: bottom right, lined up with the cover's right edge */}
           {/* a new book: 'Start writing' goes on to page 1 (nobody is stuck on the cover) */}
