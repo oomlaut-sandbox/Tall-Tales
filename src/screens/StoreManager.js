@@ -136,7 +136,7 @@ function Languages({ book, onChanged, toast }) {
                 <Text style={styles.rowTitle}>{name}{L.title ? `: ${L.title}` : ''}</Text>
                 <Text style={[styles.rowSub, st === 'review' && { color: '#9a4b00' }, st === 'failed' && { color: '#b00000' }]}>{st ? LANG_STATUS[st] || st : 'Not translated yet'}{st === 'failed' && L.note ? `: ${L.note}` : ''}</Text>
               </View>
-              {busyLang(st) ? <ActivityIndicator color={colors.ink} /> : st && !(st === 'failed' && !L.title) ? <Text style={styles.chev}>{openLang === l ? '–' : st === 'review' ? 'Read' : '+'}</Text> : null}
+              {busyLang(st) ? <ActivityIndicator color={colors.ink} /> : st && !(st === 'failed' && !L.title) ? (st === 'review' && openLang !== l ? <Text style={styles.readTag}>Read over</Text> : <Text style={styles.chev}>{openLang === l ? '–' : '+'}</Text>) : null}
             </Pressable>
             {openLang === l ? <LangReview book={book} lang={l} toast={toast} onDone={() => { setOpenLang(null); onChanged(); }} /> : null}
           </View>
@@ -378,4 +378,5 @@ const styles = StyleSheet.create({
   langHead: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12, paddingVertical: 10 },
   review: { paddingHorizontal: 12, paddingBottom: 14, gap: 8 },
   en: { fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, color: '#666' },
+  readTag: { backgroundColor: colors.green, color: colors.white, fontFamily: fonts.uiBold, fontSize: 13, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 14, overflow: 'hidden' },
 });
