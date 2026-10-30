@@ -430,7 +430,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
           <Tile key={pr.id} u={u} plain title={pr.title} sub={t('From your teacher')} label={t('{title}, a book prompt from your teacher', { title: pr.title })}
             glyph={<Image source={PROMPT_ICON} style={{ width: '34%', height: '34%', tintColor: '#d8d3c8' }} resizeMode="contain" />} onPress={() => onPrompt(pr, me)} />
         )) : null}
-        {ws ? wip.map((s) => (
+        {ws ? wip.filter((s) => !s.owner || !me || !getProfiles().classroom || s.owner === me.id /* a classmate's prompt book: theirs alone (it reaches everyone in the Class Library once approved) */).map((s) => (
           <Tile key={s.id} spotId={s.id} u={u} cover={s.pages[0] && s.pages[0].image} coverArt={s.cover} title={s.title} sub={classSub(s)} selecting={selecting} selected={picked.includes(s.id)} onPress={() => (selecting ? toggle(s.id) : onEdit(s))} />
         )) : null}
         {ws && (wip.length || waiting.length) ? <View style={{ width: '100%', height: 48 }} /> : null}
