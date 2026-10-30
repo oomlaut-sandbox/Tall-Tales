@@ -494,4 +494,18 @@ export default {
     ja: 'しっている ことばの ほんやくは、でるまえに たしかめて もらっても いいですよ。',
     ar: 'يسعدنا أن تراجع الترجمة بلغة تعرفها قبل نشرها.',
   },
+  'If a year’s share comes to less than $25, it carries over to the next year.': {
+    de: 'Liegt dein Anteil in einem Jahr unter 25 $, wird er ins nächste Jahr übertragen.',
+    fr: 'Si votre part de l’année est inférieure à 25 $, elle est reportée à l’année suivante.',
+    es: 'Si tu parte del año es menor de 25 $, pasa al año siguiente.',
+    ja: '1年の ぶんが 25ドルに とどかない ときは、つぎの 年に くりこします。',
+    ar: 'إذا كانت حصتك في سنة ما أقل من 25 دولارًا، فإنها تُرحَّل إلى السنة التالية.',
+  },
+  'For now, the program is open to artists living in Canada.': {
+    de: 'Vorerst steht das Programm Künstlerinnen und Künstlern offen, die in Kanada leben.',
+    fr: 'Pour l’instant, le programme est ouvert aux artistes qui vivent au Canada.',
+    es: 'Por ahora, el programa está abierto a artistas que viven en Canadá.',
+    ja: 'いまは、カナダに すんでいる さっかさんが さんか できます。',
+    ar: 'البرنامج مفتوح حاليًا للفنانين المقيمين في كندا.',
+  },
 };

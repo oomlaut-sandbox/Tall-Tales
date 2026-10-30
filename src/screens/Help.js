@@ -166,6 +166,7 @@ const ALL_HELP = [
   // The Coro Artist Community (Jörg, 30 Oct 2026): how artists send a book, how it's sold and how they're paid
   { section: 'Coro Artist Community', title: 'How the program works', store: true, text: [
     'Coro’s Book Store sells picture books by independent authors and illustrators, young and old. Families buy each book on its own, usually for $1.99, members too.',
+    'For now, the program is open to artists living in Canada.',
     'Half of what Coro earns from each sale goes to the book’s artist.',
     'Every artist’s book is written and illustrated by people, without AI. Only the translations into Coro’s other languages are made with the help of AI, once, and then checked by a person.',
   ] },
@@ -182,6 +183,7 @@ const ALL_HELP = [
     'Before your book goes into the store, we agree on it in writing: its price, and that half of what Coro receives for each copy goes to you.',
     'Apple keeps its share of each sale first, and some countries take out sales tax; half of what is left is yours.',
     'We pay once a year, in January for the year before, with a statement showing how many copies of each book were sold.',
+    'If a year’s share comes to less than $25, it carries over to the next year.',
     'You keep the rights to your story and pictures, and you can take your book out of the store with 30 days’ notice.',
   ] },
   { section: 'Coro Artist Community', title: 'Your book in six languages', store: true, text: [
