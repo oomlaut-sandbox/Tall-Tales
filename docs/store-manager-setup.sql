@@ -58,6 +58,10 @@ alter table public.books add column if not exists max_age int check (max_age bet
 -- The words themselves live in the book's content.json. A language shows to families only when "ready".
 alter table public.books add column if not exists langs jsonb not null default '{}'::jsonb;
 
+-- How a book was made (shown on its card as Process, including any use of AI). From docs/catalog-setup.sql, here too
+-- so it's never missing: without it the app's catalog and Store Manager fall back to fewer columns (30 Oct 2026).
+alter table public.books add column if not exists process text;
+
 -- Changes one language's entry without touching the others (the translation and narration services
 -- work on several languages at once). Only the store owner, or the services themselves, may use it.
 create or replace function public.set_book_lang(book_id text, lang text, patch jsonb) returns void
