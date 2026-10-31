@@ -297,6 +297,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     if (wordsRef.current && wordsRef.current.measureInWindow) wordsRef.current.measureInWindow((x, y, w, h) => go(w ? { x, y, w, h } : null));
     else go(null);
   };
+  // Advanced page editor: a words button on each picture (Jörg, 30 Oct 2026), so a page of two pictures (no words
+  // square) can still have words: they go on that picture, and the words editor opens
+  const wordsChip = (which) => (controls.advancedPages && over !== which ? (
+    <Pressable onPress={() => { update({ textOn: which }); openWords(); }} hitSlop={6} accessibilityRole="button"
+      accessibilityLabel={tr('Words on this picture')} style={styles.chipIcon}><Image source={CHOICE_ICONS.text} style={styles.chipImg} /></Pressable>
+  ) : null);
   const closeWords = () => {
     const done = () => { setEditing(false); setPlaceOpen(false); setPageDone(true); sayStep(); };
     if (!fromRect.current || !zoomTo) return done();
@@ -745,6 +751,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               <View style={styles.artBtns}>
                 <Text style={styles.chip}>{tr('Change image')}</Text>
                 <Pressable onPress={() => setPhotoEdit('page')} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Edit photo')} style={styles.chipIcon}><Image source={CHOICE_ICONS.crop} style={styles.chipImg} /></Pressable>
+                {wordsChip('top')}
                 <Pressable onPress={removeImage} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Remove image')} style={styles.chipIcon}><Image source={CHOICE_ICONS.trash} style={styles.chipImg} /></Pressable>
               </View>
             </>
@@ -762,6 +769,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <View style={[styles.artBtns, { bottom: 12 }]}>
               <Text style={styles.chip}>{tr('Change image')}</Text>
               <Pressable onPress={() => setPhotoEdit('page2')} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Edit photo')} style={styles.chipIcon}><Image source={CHOICE_ICONS.crop} style={styles.chipImg} /></Pressable>
+              {wordsChip('bottom')}
               <Pressable onPress={removeImage2} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Remove the second image')} style={styles.chipIcon}><Image source={CHOICE_ICONS.trash} style={styles.chipImg} /></Pressable>
             </View>
           ) : (
