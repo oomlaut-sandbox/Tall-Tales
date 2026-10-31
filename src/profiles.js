@@ -29,7 +29,8 @@ export const PROFILE_COLORS = [ // in this order on the screen: rust, olive, mus
   ['orange', require('../assets/avatar-mustard.jpg')],
   ['grey', require('../assets/avatar-blue.jpg')],
 ];
-// more avatars, in the Explore more avatars box (Jörg, 26 Oct 2026; more on the way)
+// more avatars, in the Explore more avatars box (Jörg, 26 Oct 2026; more on the way; three grey ones taken out 31 Oct 2026:
+// a profile that had one shows the rust felt)
 export const MORE_AVATARS = [
   ['unicorn', require('../assets/avatar-unicorn.jpg')],
   ['elephant', require('../assets/avatar-elephant.jpg')],
@@ -43,10 +44,7 @@ export const MORE_AVATARS = [
   ['coro-green', require('../assets/avatar-coro-green.jpg')],
   ['coro-red', require('../assets/avatar-coro-red.jpg')],
   ['coro-headphones', require('../assets/avatar-coro-headphones.jpg')],
-  ['coro-writing', require('../assets/avatar-coro-writing.jpg')],
   ['coro-blue', require('../assets/avatar-coro-blue.jpg')],
-  ['coro-reading', require('../assets/avatar-coro-reading.jpg')],
-  ['coro-cheer', require('../assets/avatar-coro-cheer.jpg')],
 ];
 export const feltFor = (color) => ([...PROFILE_COLORS, ...MORE_AVATARS].find(([c]) => c === (color === 'pink' ? 'grey' : color)) || PROFILE_COLORS[0])[1]; // (red if unknown or brown, as before)
 
