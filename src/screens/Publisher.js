@@ -310,38 +310,26 @@ function LookIcon({ look, ink }) {
 }
 
 // ---- Quick Book (31 Oct 2026): a new book made from up to 60 pictures at once ----
-// the two layouts as a little open book: a picture, then words (alt), or a picture on both pages (every)
-function QuickLayoutIcon({ every }) {
-  const Pic = () => (
-    <View style={{ flex: 1, backgroundColor: '#8f9aa3', overflow: 'hidden' }}>
-      <View style={{ position: 'absolute', right: 6, top: 6, width: 8, height: 8, borderRadius: 4, backgroundColor: '#f2e3b3' }} />
-      <View style={{ position: 'absolute', left: -6, right: -6, bottom: -10, height: 22, borderRadius: 14, backgroundColor: '#5c6b5a' }} />
-    </View>
-  );
-  const Words = () => (
-    <View style={{ flex: 1, backgroundColor: '#f4f0e8', justifyContent: 'center', paddingHorizontal: 6, gap: 4 }}>
-      {[1, 0.85, 1, 0.6].map((w, k) => <View key={k} style={{ height: 2, width: `${w * 100}%`, borderRadius: 1, backgroundColor: '#8a8a8a' }} />)}
-    </View>
-  );
-  return (
-    <View style={{ width: 84, height: 50, flexDirection: 'row', gap: 2, borderRadius: 3, overflow: 'hidden', backgroundColor: '#cfcfcf', padding: 2 }}>
-      <Pic />
-      {every ? <Pic /> : <Words />}
-    </View>
-  );
-}
+// the two layouts, two squares each in white line art (a picture, then words; or two pictures) on a grey square tile
+// (Jörg, 31 Oct 2026)
+const QUICK_ICONS = { alt: require('../../assets/quick-alt.png'), every: require('../../assets/quick-every.png') };
 // the white speech bubble when a new book opens: Quick Book, its two layouts, and a word about words over pictures
 function QuickBookAsk({ tr, winW, winH, onCancel, onGo }) {
   const [layout, setLayout] = useState(null); // 'alt' | 'every' (chosen before the pictures)
   const [off, setOff] = useState(false); // Don't show this message again
   const tileW = Math.min(150, (Math.min(460, winW - 40) - 52 - 12) / 2);
-  const Tile = ({ v, label }) => {
+  const Tile = ({ v, label, rec }) => {
     const on = layout === v;
     return (
-      <Pressable onPress={() => setLayout(v)} accessibilityRole="radio" accessibilityState={{ selected: on }} accessibilityLabel={label}
-        style={{ width: tileW, alignItems: 'center', gap: 10, paddingVertical: 14, paddingHorizontal: 8, borderRadius: 14, borderWidth: 3, borderColor: on ? colors.green : '#e2e2e2', backgroundColor: on ? '#eef4ec' : '#f6f6f6' }}>
-        <QuickLayoutIcon every={v === 'every'} />
-        <Text style={{ color: '#1f1f1f', fontFamily: fonts.uiBold, fontSize: 14, lineHeight: 18, textAlign: 'center' }}>{label}</Text>
+      <Pressable onPress={() => setLayout(v)} accessibilityRole="radio" accessibilityState={{ selected: on }} accessibilityLabel={rec ? `${label} ${rec}` : label}
+        style={{ width: tileW, alignItems: 'center', gap: 10 }}>
+        <View style={{ alignSelf: 'stretch', aspectRatio: 150 / 110, borderRadius: 14, borderWidth: 3, borderColor: on ? colors.green : 'transparent', backgroundColor: on ? '#3d3d3d' : '#4a4a4a', alignItems: 'center', justifyContent: 'center' }}>
+          <Image source={QUICK_ICONS[v]} style={{ width: '70%', aspectRatio: 2 }} resizeMode="contain" accessibilityIgnoresInvertColors />
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          <Text style={{ color: '#1f1f1f', fontFamily: fonts.uiBold, fontSize: 14, lineHeight: 18, textAlign: 'center' }}>{label}</Text>
+          {rec ? <Text style={{ color: colors.green, fontFamily: fonts.ui, fontSize: 12, lineHeight: 16, marginTop: 2 }}>{rec}</Text> : null}
+        </View>
       </Pressable>
     );
   };
@@ -353,7 +341,7 @@ function QuickBookAsk({ tr, winW, winH, onCancel, onGo }) {
           <Text style={{ color: '#1f1f1f', fontFamily: 'EBGaramond_500Medium', fontSize: 20, lineHeight: 27, marginTop: 8 }}>{tr('Choose up to {n} pictures from your photos. Coro puts them into a book, and you just add the words.', { n: QUICK_MAX })}</Text>
           <Text style={{ color: '#3a3a3a', fontFamily: fonts.uiBold, fontSize: 15, marginTop: 22 }}>{tr('How should the pages go?')}</Text>
           <View accessibilityRole="radiogroup" style={{ flexDirection: 'row', gap: 12, marginTop: 12, justifyContent: 'center' }}>
-            <Tile v="alt" label={tr('Picture, then words')} />
+            <Tile v="alt" label={tr('Picture, then words')} rec={tr('(Recommended)')} />
             <Tile v="every" label={tr('A picture on every page')} />
           </View>
           <Text style={{ color: '#555', fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, marginTop: 16 }}>{tr('Words over a picture need the Advanced page editor. It comes with Coro Family, and a grown-up turns it on in Settings.')}</Text>
