@@ -89,7 +89,7 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
   return (
     <View ref={scrimRef} style={[styles.scrim, { paddingBottom: covered }, (flat || wide) && { alignItems: 'center' }, flat && { paddingTop: 8 }]}
       onLayout={() => scrimRef.current && scrimRef.current.measureInWindow((x, y, w, h) => setFrame({ y, h: h || winH }))}>
-      <View style={[styles.card, flat ? styles.cardFlat : wide && styles.cardWide]}>
+      <View style={[styles.card, flat ? [styles.cardFlat, { maxWidth: Math.min(560, winW / 2) }] /* sideways: never more than half the screen (31 Oct 2026) */ : wide && styles.cardWide]}>
         {/* a grown-up holding a child's hand, so even little ones can see this is for a grown-up */}
         <Image source={GROWNUP} style={[{ position: 'absolute', top: 18, right: 18, width: 48, height: 48, tintColor: '#8a8a8a' }, flat && { top: 12, right: 14, width: 34, height: 34 }]} resizeMode="contain" accessibilityIgnoresInvertColors />
         {flat ? null : <Text style={styles.kicker}>{t('For grown-ups')}</Text>}
@@ -116,6 +116,8 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
             </Pressable>
           ))}
         </View>
+        {/* the times-table question: a word that a passcode can take its place (Jörg, 31 Oct 2026) */}
+        {coded ? null : <Text style={[styles.lang, { fontSize: 13, lineHeight: 18, color: 'rgba(215,215,215,0.7)', marginTop: flat ? -2 : 0 }]}>{t('Grown-ups can use a four-digit passcode instead of this question. Turn it on in Settings, under Parental controls.')}</Text>}
       </View>
     </View>
   );

@@ -827,6 +827,7 @@ const T = {
   'Doodle': { de: 'Kritzelei', fr: 'Gribouillage', es: 'Garabato', ja: 'らくがき', ar: "رسمة" },
   'There are no drawings in My Notes yet.': { de: 'In Meine Notizen gibt es noch keine Zeichnungen.', fr: 'Il n’y a pas encore de dessins dans Mes notes.', es: 'Todavía no hay dibujos en Mis notas.', ja: 'わたしのメモに まだ えが ありません。', ar: "لا توجد رسومات في ملاحظاتي بعد." },
   'Layout (scroll right)': { de: 'Anordnung (nach rechts wischen)', fr: 'Mise en page (faites défiler vers la droite)', es: 'Diseño (desliza a la derecha)', ja: 'レイアウト（みぎへ スクロール）', ar: "التخطيط (مرّر جانبًا)" },
+  'Grown-ups can use a four-digit passcode instead of this question. Turn it on in Settings, under Parental controls.': { de: 'Erwachsene können statt dieser Frage einen vierstelligen Code verwenden. Schalte ihn in den Einstellungen unter Kindersicherung ein.', fr: 'Les adultes peuvent utiliser un code à quatre chiffres au lieu de cette question. Activez-le dans Réglages, sous Contrôle parental.', es: 'Los adultos pueden usar un código de cuatro cifras en lugar de esta pregunta. Actívalo en Ajustes, en Control parental.', ja: 'おとなは この しつもんの かわりに 4けたの パスコードを つかえます。せっていの「保護者のせってい」で オンにできます。', ar: "يمكن للكبار استخدام رمز من أربعة أرقام بدل هذا السؤال. شغّله من الإعدادات، ضمن الرقابة الأبوية." },
   'About Coro': { de: 'Über Coro', fr: 'À propos d’Coro', es: 'Acerca de Coro', ja: 'Coroについて', ar: "عن Coro" },
 };
 
