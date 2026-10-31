@@ -37,7 +37,7 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
         <View style={styles.col}>
           {/* the title and words across the full width, then the book spread underneath with lots of room */}
           <Text style={styles.heading}>{t('Create and share stories')}</Text>
-          <Text style={styles.lead}>{t('Here are some examples of books you can make together… {n} to be exact ;) Your photos and drawings, your words, your voice.', { n: IDEA_COUNT })}</Text>
+          <Text style={styles.lead}>{t('Here are some examples of books you can make together. Your photos and drawings, your words, your voice.', { n: IDEA_COUNT })}</Text>
           {/* the shadow sits on an outer box (iOS clips a shadow on a box that clips its picture) */}
           <View style={[styles.spreadShadow, { width: spreadW, height: Math.round(spreadW * 600 / 1200) }]}>
             <View style={styles.spread}><Image source={SPREAD} style={{ width: '100%', height: '100%' }} resizeMode="cover" accessibilityIgnoresInvertColors /></View>

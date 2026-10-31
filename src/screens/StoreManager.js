@@ -483,7 +483,7 @@ function TracksSection({ toast, demo }) {
   return (
     <View style={{ gap: 10, marginTop: 10 }}>
       <Text style={styles.shelf}>Music and Sounds</Text>
-      <Text style={styles.note}>Pieces for the tape player and Music and Sounds, added without an app update. New ones start hidden. A piece plays from the internet the first time and is then kept on the phone. The pieces built into the app aren’t listed here.</Text>
+      <Text style={styles.note}>Pieces for the tape player and Music and Sounds, added without an app update. New ones start hidden. A piece plays from the internet the first time and is then kept on the phone. The pieces built into the app can be hidden or shown again below.</Text>
       <BuiltinTracks toast={toast} demo={demo} />
       {err ? <Text style={styles.err}>{err}</Text> : null}
       {!tracks && !err ? <ActivityIndicator color={colors.white} /> : null}

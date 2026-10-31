@@ -88,6 +88,14 @@ export const IDEA_SECTIONS = [
     { title: 'Words I can sign', text: 'A photo of each sign your child is learning, with the word.', how: 'Record yourself saying each word.' },
     { title: 'Getting ready for surgery or a procedure', text: 'What will happen, step by step, and what comes after (ice cream!).', how: 'Ask the care team which steps to show.' },
   ] },
+  // last: books for the grown-ups (Jörg, 31 Oct 2026)
+  { title: 'For grown-ups', intro: 'Picture books aren’t just for kids. A few to make for the grown-ups in your life.', ideas: [
+    { title: 'An anniversary book', text: 'The first date, the wedding, the homes, the trips, and the little habits only the two of you know.', how: 'One photo for each year together. Record it as a pair and play it on the day.' },
+    { title: 'A book for your coworkers', text: 'A thank-you to a team: the big project, the late nights, the inside jokes, and a page for each person.', how: 'Share it as a PDF at the end of a project or on someone’s last day.' },
+    { title: 'Our bucket list', text: 'The places to see and the things to try, one wish on each page.', how: 'Add the photo when a wish comes true, and watch the book fill up over the years.' },
+    { title: 'A memory book for someone you love', text: 'For a parent or grandparent whose memory is fading: familiar faces, places and names.', how: 'Big photos and few words. Record each page in a voice they know, so they can listen any time.' },
+    { title: 'A wedding or party book', text: 'The day itself: the guests, the speeches, the cake, the dancing.', how: 'Choose the best photos with Quick Book, then add a line for each page.' },
+  ] },
 ];
 
 export const IDEA_COUNT = IDEA_SECTIONS.reduce((n, s) => n + s.ideas.length, 0);

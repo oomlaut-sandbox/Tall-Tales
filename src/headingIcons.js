@@ -25,4 +25,5 @@ export const HEADING_ICONS = {
   'Messages and keepsakes': require('../assets/heading-icons/messages-and-keepsakes.png'),
   'Together with others': require('../assets/heading-icons/together-with-others.png'),
   'Communication support': require('../assets/heading-icons/communication-support.png'),
+  'For grown-ups': require('../assets/heading-icons/grown-ups.png'),
 };
