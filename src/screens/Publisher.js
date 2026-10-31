@@ -102,7 +102,8 @@ const CHOICE_ICONS = { // the icons before the words in the pop-up choices (the 
 
 const MAX_PX = 1600;
 const TOOLBOX_H = 92; // the cover editor's black glass tools box (two rows of buttons)
-const MAX_PAGES = 40; // a soft limit, so books stay quick to open, print and share
+const MAX_PAGES = 60; // a soft limit, so books stay quick to open, print and share (60: a whole Quick Book, 31 Oct 2026)
+const QUICK_MAX = 60; // Quick Book: up to 60 pictures at once
 const FULL = 'Books can have up to {n} pages. That’s a long story!'; // shown with tr(FULL, { n: MAX_PAGES })
 
 const blank = () => ({ pid: newPageId(), text: '', uri: null, w: 1, h: 1 });
@@ -307,6 +308,73 @@ function LookIcon({ look, ink }) {
   );
 }
 
+// ---- Quick Book (31 Oct 2026): a new book made from up to 60 pictures at once ----
+// the two layouts as a little open book: a picture, then words (alt), or a picture on both pages (every)
+function QuickLayoutIcon({ every }) {
+  const Pic = () => (
+    <View style={{ flex: 1, backgroundColor: '#8f9aa3', overflow: 'hidden' }}>
+      <View style={{ position: 'absolute', right: 6, top: 6, width: 8, height: 8, borderRadius: 4, backgroundColor: '#f2e3b3' }} />
+      <View style={{ position: 'absolute', left: -6, right: -6, bottom: -10, height: 22, borderRadius: 14, backgroundColor: '#5c6b5a' }} />
+    </View>
+  );
+  const Words = () => (
+    <View style={{ flex: 1, backgroundColor: '#f4f0e8', justifyContent: 'center', paddingHorizontal: 6, gap: 4 }}>
+      {[1, 0.85, 1, 0.6].map((w, k) => <View key={k} style={{ height: 2, width: `${w * 100}%`, borderRadius: 1, backgroundColor: '#8a8a8a' }} />)}
+    </View>
+  );
+  return (
+    <View style={{ width: 84, height: 50, flexDirection: 'row', gap: 2, borderRadius: 3, overflow: 'hidden', backgroundColor: '#cfcfcf', padding: 2 }}>
+      <Pic />
+      {every ? <Pic /> : <Words />}
+    </View>
+  );
+}
+// the white speech bubble when a new book opens: Quick Book, its two layouts, and a word about words over pictures
+function QuickBookAsk({ tr, winW, winH, onCancel, onGo }) {
+  const [layout, setLayout] = useState(null); // 'alt' | 'every' (chosen before the pictures)
+  const [off, setOff] = useState(false); // Don't show this message again
+  const tileW = Math.min(150, (Math.min(460, winW - 40) - 52 - 12) / 2);
+  const Tile = ({ v, label }) => {
+    const on = layout === v;
+    return (
+      <Pressable onPress={() => setLayout(v)} accessibilityRole="radio" accessibilityState={{ selected: on }} accessibilityLabel={label}
+        style={{ width: tileW, alignItems: 'center', gap: 10, paddingVertical: 14, paddingHorizontal: 8, borderRadius: 14, borderWidth: 3, borderColor: on ? colors.green : '#e2e2e2', backgroundColor: on ? '#eef4ec' : '#f6f6f6' }}>
+        <QuickLayoutIcon every={v === 'every'} />
+        <Text style={{ color: '#1f1f1f', fontFamily: fonts.uiBold, fontSize: 14, lineHeight: 18, textAlign: 'center' }}>{label}</Text>
+      </Pressable>
+    );
+  };
+  return (
+    <View style={[StyleSheet.absoluteFill, { zIndex: 65, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }]}>
+      <View style={{ width: '100%', maxWidth: 460 }}>
+        <ScrollView style={{ maxHeight: winH * 0.84, backgroundColor: colors.white, borderRadius: 26 }} contentContainerStyle={{ paddingHorizontal: 26, paddingTop: 30, paddingBottom: 30 }} bounces={false}>
+          <Text style={{ color: '#1f1f1f', fontFamily: fonts.uiBold, fontSize: 22, lineHeight: 28 }}>{tr('Quick Book')}</Text>
+          <Text style={{ color: '#1f1f1f', fontFamily: 'EBGaramond_500Medium', fontSize: 20, lineHeight: 27, marginTop: 8 }}>{tr('Choose up to {n} pictures from your photos. Coro puts them into a book, and you just add the words.', { n: QUICK_MAX })}</Text>
+          <Text style={{ color: '#3a3a3a', fontFamily: fonts.uiBold, fontSize: 15, marginTop: 22 }}>{tr('How should the pages go?')}</Text>
+          <View accessibilityRole="radiogroup" style={{ flexDirection: 'row', gap: 12, marginTop: 12, justifyContent: 'center' }}>
+            <Tile v="alt" label={tr('Picture, then words')} />
+            <Tile v="every" label={tr('A picture on every page')} />
+          </View>
+          <Text style={{ color: '#555', fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, marginTop: 16 }}>{tr('Words over a picture need the Advanced page editor. It comes with Coro Family, and a grown-up turns it on in Settings.')}</Text>
+          <Pressable onPress={() => setOff((x) => !x)} accessibilityRole="checkbox" accessibilityState={{ checked: off }} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 22 }}>
+            <View style={{ width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: '#555', backgroundColor: off ? '#1f1f1f' : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
+              {off ? <Text style={{ color: colors.white, fontSize: 14, lineHeight: 16, fontFamily: fonts.uiBold }}>✓</Text> : null}
+            </View>
+            <Text style={{ color: '#3a3a3a', fontFamily: fonts.ui, fontSize: 15, flexShrink: 1 }}>{tr('Don’t show this message again')}</Text>
+          </Pressable>
+          <View style={{ flexDirection: 'row', gap: 10, marginTop: 26, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+            <Pressable onPress={() => onCancel(off)} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: '#d6d6d6', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: '#1f1f1f', fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('No thanks')}</Text></Pressable>
+            {/* (only once a layout is chosen) */}
+            <Pressable onPress={() => layout && onGo(layout, off)} disabled={!layout} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: colors.green, opacity: layout ? 1 : 0.4, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityState={{ disabled: !layout }}><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('Choose pictures')}</Text></Pressable>
+          </View>
+        </ScrollView>
+        {/* the speech bubble's point */}
+        <View style={{ marginLeft: '14%', width: 0, height: 0, borderTopWidth: 22, borderRightWidth: 22, borderTopColor: colors.white, borderRightColor: 'transparent' }} />
+      </View>
+    </View>
+  );
+}
+
 export default function Publisher({ u, initial, fontKey, openMenu, toast, onChange, onDone, storeAdmin, onIdeas }) {
   const tr = useT(); // everything a child or parent reads here, in the app's language (the store owner's Publish stays English)
   const insets = useSafeAreaInsets();
@@ -461,7 +529,11 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       r = await ImagePicker.launchImageLibraryAsync(opts);
     }
     if (r.canceled || !r.assets || !r.assets[0]) return null;
-    const a = r.assets[0];
+    return keepAsset(r.assets[0]);
+  };
+  // a picture from the photos: made no bigger than MAX_PX, and a copy kept in the story's folder
+  // (k: a number for each picture of a Quick Book, so pictures kept in the same moment get their own names)
+  const keepAsset = async (a, k) => {
     let src = a.uri, w = a.width || 1, h = a.height || 1;
     if (Math.max(w, h) > MAX_PX) {
       try {
@@ -469,7 +541,39 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         src = r2.uri; w = r2.width; h = r2.height;
       } catch (e) { /* keep the original if resizing fails */ }
     }
-    return { uri: await keepPicture(draft.id, src), w, h };
+    return { uri: k == null ? await keepPicture(draft.id, src) : await keepFile(src, `stories/${draft.id}`, `img-${Date.now()}-${k}.jpg`), w, h };
+  };
+  // ---- Quick Book: up to 60 pictures, chosen in order, become the book's pages (Jörg, 31 Oct 2026) ----
+  // alt: a picture, then its words page, for each picture; every: two pictures to a spread (words can go over them
+  // with the Advanced page editor). Then on to the cover, as for any new book.
+  const [importing, setImporting] = useState(null); // { n, of } while the pictures come in
+  const quickBook = async (layout) => {
+    let r;
+    try {
+      r = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'images', allowsMultipleSelection: true, selectionLimit: QUICK_MAX, orderedSelection: true, quality: 1 });
+    } catch (e) { toast(tr('Couldn’t open your photos. Check that Coro is allowed to use Photos in Settings.')); return; }
+    if (!r || r.canceled || !r.assets || !r.assets.length) return;
+    const assets = r.assets.slice(0, QUICK_MAX);
+    setImporting({ n: 0, of: assets.length });
+    const pics = [];
+    for (let k = 0; k < assets.length; k += 1) {
+      try { pics.push(await keepAsset(assets[k], k)); } catch (e) { /* that one is left out */ }
+      setImporting({ n: k + 1, of: assets.length });
+    }
+    setImporting(null);
+    if (!pics.length) { toast(tr('Those pictures couldn’t be brought in. Try again.')); return; }
+    const pages = [];
+    if (layout === 'every') {
+      for (let k = 0; k < pics.length; k += 2) {
+        const a = pics[k], b = pics[k + 1];
+        pages.push({ ...blank(), uri: a.uri, w: a.w, h: a.h, ...(b ? { uri2: b.uri, w2: b.w, h2: b.h } : null) });
+      }
+    } else pics.forEach((a) => pages.push({ ...blank(), uri: a.uri, w: a.w, h: a.h }));
+    setDraft((d) => ({ ...d, pages: pages.slice(0, MAX_PAGES) }));
+    setI(0);
+    setAboutOpen(false); // (on to the cover, then 'Start writing')
+    sayStep();
+    toast(tr('Your Quick Book has {n} pictures. Make a cover, then add your words.', { n: pics.length }), 5000);
   };
 
   // ---- The Cover Editor: a square like the words editor. Add a picture, then (if wanted) the title,
@@ -510,6 +614,16 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     const tm = setTimeout(() => { loadJSON('tourAsk', {}).then((x) => { if (on && !(x && x.off)) { tourAsked.current = true; setTourAsk(true); } }).catch(() => {}); }, 1000);
     return () => { on = false; clearTimeout(tm); setTourAsk(false); };
   }, [aboutOpen]);
+  // Quick Book: asked once a new book opens, after the 'quick peek' bubble (not for a teacher's book prompt)
+  const [quickAsk, setQuickAsk] = useState(false);
+  const quickAsked = useRef(false);
+  useEffect(() => {
+    if (!aboutOpen || tourAsk || tourPlay || quickAsked.current || draft.promptId) return undefined;
+    let on = true;
+    const tm = setTimeout(() => { loadJSON('quickBook', {}).then((x) => { if (on && !(x && x.off)) { quickAsked.current = true; setQuickAsk(true); } }).catch(() => {}); }, 1700);
+    return () => { on = false; clearTimeout(tm); };
+  }, [aboutOpen, tourAsk, tourPlay]);
+  const closeQuick = (off) => { setQuickAsk(false); if (off) saveJSON('quickBook', { off: true }); };
   useEffect(() => {
     if (drawTipShown.current || !startMode || !coverOpen || aboutOpen || guide) return undefined;
     let on = true; // (not if a grown-up ticked 'Don't show this again': Jörg, 30 Oct 2026)
@@ -681,6 +795,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   useBackStep(guide, () => closeGuide());
   useBackStep(tourAsk && aboutOpen, () => closeTour(false)); // the 'quick peek?' bubble: like No thanks
   useBackStep(tourPlay, () => setTourPlay(false));
+  useBackStep(quickAsk && aboutOpen, () => closeQuick(false));
   useBackStep(drawTip, () => setDrawTip(false)); // the 'Pssst' hint: like Got it!
   useBackStep(coverTip, () => setCoverTip(false));
   // A new book, a few seconds into page 1 after the cover: 'Your work automatically saves…' (with Don't show this
@@ -1188,6 +1303,20 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             </View>
             {/* the speech bubble's point */}
             <View style={{ marginLeft: '14%', width: 0, height: 0, borderTopWidth: 22, borderRightWidth: 22, borderTopColor: colors.white, borderRightColor: 'transparent' }} />
+          </View>
+        </View>
+      ) : null}
+      {quickAsk && aboutOpen && !tourAsk && !tourPlay ? (
+        <QuickBookAsk tr={tr} winW={winW} winH={winH} onCancel={closeQuick} onGo={(layout, off) => { closeQuick(off); setTimeout(() => quickBook(layout), 300); }} />
+      ) : null}
+      {importing ? (
+        // the pictures coming in, one by one
+        <View style={[StyleSheet.absoluteFill, { zIndex: 70, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }]} accessibilityLiveRegion="polite">
+          <View style={{ backgroundColor: colors.white, borderRadius: 26, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 30, width: '100%', maxWidth: 360, alignItems: 'center', gap: 16 }}>
+            <Text style={{ color: '#1f1f1f', fontFamily: fonts.uiBold, fontSize: 18, textAlign: 'center' }}>{tr('Bringing in your pictures… {n} of {total}', { n: importing.n, total: importing.of })}</Text>
+            <View style={{ alignSelf: 'stretch', height: 8, borderRadius: 4, backgroundColor: '#e2e2e2', overflow: 'hidden' }}>
+              <View style={{ width: `${Math.round((100 * importing.n) / Math.max(1, importing.of))}%`, height: 8, borderRadius: 4, backgroundColor: colors.green }} />
+            </View>
           </View>
         </View>
       ) : null}

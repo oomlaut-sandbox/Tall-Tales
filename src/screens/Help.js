@@ -105,12 +105,21 @@ const ALL_HELP = [
     'After writing a page, choose Design a cover. Add a picture, then the title if you like.',
     'Drag the title anywhere on the cover. Change its size, colour and font with the buttons under the cover.',
   ] },
+  // Quick Book and the Advanced page editor (Jörg, 31 Oct 2026)
+  { section: 'Making books', title: 'Quick Book', text: [
+    'When you start a new book, Quick Book can make it from up to 60 pictures from your photos. First choose how the pages go: a picture, then words, or a picture on every page.',
+    'Coro brings the pictures in, in the order you picked them. Then add a cover and your words, and tweak any picture with Edit photo.',
+  ] },
+  { section: 'Making books', title: 'Advanced page editor', text: [
+    'The Advanced page editor is for more experienced artists and creators. It puts the words over a picture, and lets you choose where they go, how they look and how big they are.',
+    'It comes with Coro Family. A grown-up turns it on in Settings, under Parental controls. Then tap Text over image in the words editor.',
+  ] },
   { section: 'Making books', title: 'Pages, printing and sharing', text: [
     'Tap Pages in the bottom bar to see every page. Move pages up or down, or delete them.',
     'From there you can also share the book as a PDF, print it, or delete the whole book. Printing and sharing ask a grown-up first.',
   ] },
   { section: 'Making books', title: 'How long can a book be?', text: [
-    'A book can have up to 40 pages, each with a picture and words. A few sentences a page reads best; longer text gets smaller to fit.',
+    'A book can have up to 60 pages, each with a picture and words. A few sentences a page reads best; longer text gets smaller to fit.',
     'Pictures are kept sharp but small, so a whole book is usually 15 to 25 MB. Recordings take about 1 MB a minute.',
     'My Notes has room for 60 pages.',
   ] },
