@@ -52,6 +52,10 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, am
     shade: flip.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.25, 0] }),
   }).current;
   const [phase, setPhase] = useState(closing ? 1 : 0); // 0 fade + move, 1 flipping, 2 landed (flat); closing: 3 shut
+  // a book's own cover photo (made in the app) takes a moment to load: until it's there, the flying cover isn't shown
+  // (the cover on the shelf underneath stays in view), so it never flashes grey as it's tapped (Jörg, 31 Oct 2026)
+  const [coverReady, setCoverReady] = useState(() => closing || !(cover && cover.uri));
+  useEffect(() => { if (coverReady) return undefined; const tm = setTimeout(() => setCoverReady(true), 300); return () => clearTimeout(tm); }, []);
   // only one thing ever happens to the shut book: it opens again or it goes back to the shelf (never both, never twice)
   const decided = useRef(null); // null | 'open' | 'leave'
   const shut = useRef(!closing); // the closing swing has finished
@@ -229,7 +233,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, am
         </View>
       ) : null}
       {/* the cover */}
-      <Animated.View pointerEvents="none" style={{ position: 'absolute', left: tx, top: ty, width: s, height: s, transform: move, opacity: phase === 2 ? 0 : phase === 4 ? back.current.fade : 1 }}>
+      <Animated.View pointerEvents="none" style={{ position: 'absolute', left: tx, top: ty, width: s, height: s, transform: move, opacity: !coverReady || phase === 2 ? 0 : phase === 4 ? back.current.fade : 1 }}>
         {/* its shadow while it glides in, on a still shape (never on the turning cover), gone as the turn begins */}
         <Animated.View style={[StyleSheet.absoluteFill, styles.shadow, { backgroundColor: '#828282', opacity: A.plateOut }]} />
         {/* nothing inside the turning cover clips (no overflow hidden): clipping under a 3D turn makes iOS redraw
@@ -237,7 +241,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, am
         <Animated.View style={[{ width: s, height: s, backgroundColor: '#828282' }, leaf]}>
           <Animated.View style={[StyleSheet.absoluteFill, { opacity: frontOp, backgroundColor: '#828282' }]}>
             {/* a cloth hardcover made in Coro: upright, the book opens upward, so its spine turns to the top (Jörg, 27 Oct 2026) */}
-            {cover ? <Image source={cover} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s, transform: !L.wide && story && story.cover && (story.cover.hard || /hardcovers/.test(String(story.cover.uri || ''))) ? [{ rotate: '90deg' }] : [] }} resizeMode="cover" /> : null}
+            {cover ? <Image source={cover} onLoad={() => setCoverReady(true)} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s, transform: !L.wide && story && story.cover && (story.cover.hard || /hardcovers/.test(String(story.cover.uri || ''))) ? [{ rotate: '90deg' }] : [] }} resizeMode="cover" /> : null}
             {/* Amber light: the cover warmed like the pictures inside */}
             {cover && amber ? <AmberTint /> : null}
           </Animated.View>
