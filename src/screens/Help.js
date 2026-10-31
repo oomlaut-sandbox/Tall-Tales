@@ -113,7 +113,7 @@ const ALL_HELP = [
   ] },
   { section: 'Making books', title: 'Advanced page editor', text: [
     'The Advanced page editor is for more experienced artists and creators. It puts the words over a picture, and lets you choose where they go, how they look and how big they are.',
-    'It comes with Coro Family. A grown-up turns it on in Settings, under Parental controls. Then tap Text over image in the words editor, choose, and tap Done: now drag the words to where you want them on the picture.',
+    'It comes with Coro Family. A grown-up turns it on in Settings, under Parental controls. Then tap Text options in the words editor, choose, and tap Done: now drag the words to where you want them on the picture.',
   ] },
   { section: 'Making books', title: 'Pages, printing and sharing', text: [
     'Tap Pages in the bottom bar to see every page. Move pages up or down, or delete them.',

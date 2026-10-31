@@ -1234,7 +1234,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <Animated.View style={{ width: winW - 2 * GAP, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: zoom }}>
             {page.text.trim() && (advanced || page.textOn) /* the Advanced page editor (Settings), or a page already set that way */ ? (
               <Pressable onPress={() => { Keyboard.dismiss(); setPlaceOpen((o) => !o); }} hitSlop={8} accessibilityRole="button" accessibilityState={{ expanded: placeOpen }} style={[styles.donePill, { backgroundColor: '#3d3d3d', flexDirection: 'row', alignItems: 'center', gap: 10 }]}>
-                <Text style={styles.donePillText}>{placeOpen ? tr('Hide choices') : tr('Text over image')}</Text>
+                <Text style={styles.donePillText}>{tr('Text options')}</Text>{/* (the arrow shows whether they're open: Jörg, 31 Oct 2026) */}
                 {/* an arrow in a circle: down while the choices are closed, up while they're open (Jörg, 31 Oct 2026) */}
                 <View style={{ width: 20, height: 20, borderRadius: 10, borderWidth: 1.5, borderColor: colors.white, alignItems: 'center', justifyContent: 'center' }}>
                   <View style={{ width: 6.5, height: 6.5, borderRightWidth: 1.6, borderBottomWidth: 1.6, borderColor: colors.white, transform: [{ translateY: placeOpen ? 1.5 : -1.5 }, { rotate: placeOpen ? '-135deg' : '45deg' }] }} />
