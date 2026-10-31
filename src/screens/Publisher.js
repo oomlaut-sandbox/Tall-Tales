@@ -59,7 +59,7 @@ function AboutPage({ tr, insets, onNext, onSkip, onQuick }) {
   };
   return (
     <>
-    <ScrollView contentContainerStyle={{ alignItems: 'center', paddingTop: insets.top + 56, paddingBottom: 40, paddingHorizontal: 24 }} keyboardShouldPersistTaps="handled">
+    <ScrollView contentContainerStyle={{ alignItems: 'center', paddingTop: insets.top + 56, paddingBottom: onQuick ? 70 : 40, paddingHorizontal: 24 }} keyboardShouldPersistTaps="handled">
       <View style={{ width: colW, gap: 18 }}>
         <Text style={styles.aboutTitle}>{tr('What’s your book about?')}</Text>
         <Text style={styles.aboutLead}>{tr('Pick one, or say it in your own words. You can change everything later.')}</Text>
@@ -78,15 +78,16 @@ function AboutPage({ tr, insets, onNext, onSkip, onQuick }) {
           <ChoiceLabel icon="cover" text={tr('Next, let’s make a cover')} style={styles.choiceBtnText} />
         </Pressable>
         <Pressable onPress={onSkip} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'center', marginTop: 6 }}><Text style={styles.aboutSkip}>{tr('Skip')}</Text></Pressable>
-        {/* Quick Book, any time: its bubble again, even after Don't show this message again (Jörg, 31 Oct 2026) */}
-        {onQuick ? (
-          <Pressable onPress={onQuick} hitSlop={10} accessibilityRole="link" style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 26 }}>
-            <Image source={CHOICE_ICONS.photo} style={{ width: 18, height: 18, tintColor: '#d6d6d6' }} resizeMode="contain" accessibilityIgnoresInvertColors />
-            <Text style={[styles.aboutSkip, { textDecorationLine: 'underline' }]}>{tr('Quick Book')}</Text>
-          </Pressable>
-        ) : null}
       </View>
     </ScrollView>
+    {/* Quick Book, any time: its bubble again, even after Don't show this message again (Jörg, 31 Oct 2026). Pinned to
+        the bottom right corner, so it's always in view (in German the page is longer and it was scrolled out of sight) */}
+    {onQuick ? (
+      <Pressable onPress={onQuick} hitSlop={10} accessibilityRole="link" style={{ position: 'absolute', right: 24 + insets.right, bottom: 14, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(30,30,30,0.85)', borderRadius: 16, paddingHorizontal: 10 }}>
+        <Image source={CHOICE_ICONS.photo} style={{ width: 18, height: 18, tintColor: '#d6d6d6' }} resizeMode="contain" accessibilityIgnoresInvertColors />
+        <Text style={[styles.aboutSkip, { textDecorationLine: 'underline' }]}>{tr('Quick Book')}</Text>
+      </Pressable>
+    ) : null}
     {/* (Coro lying in the corner was tried here and taken away again: Jörg, 26 Oct 2026) */}
     </>
   );
