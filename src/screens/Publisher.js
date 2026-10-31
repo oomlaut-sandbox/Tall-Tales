@@ -506,6 +506,26 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   // or, with edit2, the bottom picture's words (text2 and its own place, look and size). wp is the page as the
   // editor sees it, wupdate the change it makes.
   const [edit2, setEdit2] = useState(false);
+  // dragging the words on the picture right in the words editor (Jörg, 31 Oct 2026): a drag moves them, a tap still
+  // types (the drag is taken from the text box once the finger has moved a little)
+  const [edLive, setEdLive] = useState(null);
+  const edRef = useRef({ at: DEFAULT_AT, W: 1, set: () => {} });
+  const edFrom = useRef(DEFAULT_AT);
+  const edPan = useMemo(() => {
+    const clamp = (v) => Math.min(0.97, Math.max(0.03, v));
+    const to = (g) => ({ x: clamp(edFrom.current.x + g.dx / edRef.current.W), y: clamp(edFrom.current.y + g.dy / edRef.current.W) });
+    const far = (g) => Math.abs(g.dx) + Math.abs(g.dy) > 8;
+    return PanResponder.create({
+      onStartShouldSetPanResponder: () => false,
+      onMoveShouldSetPanResponderCapture: (_, g) => far(g),
+      onMoveShouldSetPanResponder: (_, g) => far(g),
+      onPanResponderTerminationRequest: () => false,
+      onPanResponderGrant: () => { edFrom.current = edRef.current.at || DEFAULT_AT; },
+      onPanResponderMove: (_, g) => setEdLive(to(g)),
+      onPanResponderRelease: (_, g) => { const v = to(g); setEdLive(null); edRef.current.set(v); },
+      onPanResponderTerminate: () => setEdLive(null),
+    });
+  }, []);
   const both = !!(page && page.both && page.textOn === 'top' && page.uri2);
   const wp = edit2 && both ? secondOf(page) : page;
   const wupdate = edit2 && both ? (patch) => update(Object.fromEntries(Object.entries(patch).filter(([k]) => SECOND_KEYS[k]).map(([k, v]) => [SECOND_KEYS[k], v]))) : update;
@@ -1171,7 +1191,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   // they can be seen as they'll be (Jörg, 30 Oct 2026)
                   <>
                     <Image source={{ uri: overPic }} style={StyleSheet.absoluteFill} resizeMode="cover" />
-                    <WordsOver boxW={W} boxH={W} at={wp.textAt} look={wp.textLook || 'light'}>
+                    <WordsOver boxW={W} boxH={W} at={edLive || wp.textAt} look={wp.textLook || 'light'} handlers={(edRef.current = { at: wp.textAt || DEFAULT_AT, W, set: (textAt) => wupdate({ textAt }) }, edPan.panHandlers)}>
                       {/* the words drawn invisibly give the box its size (a text box doesn't always grow with its
                           words); the text box lies exactly over them */}
                       <View>
@@ -1253,7 +1273,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                       </PlaceTile>
                     ))}
                   </PlaceGroup>
-                  <Text style={styles.placeNote}>{tr('After Done, drag the text to move it on the image.')}</Text>
+                  <Text style={styles.placeNote}>{tr('Drag the text to move it on the image, here or after Done.')}</Text>
                 </>
               ) : null}
             </Animated.View>
