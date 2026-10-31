@@ -213,4 +213,5 @@ export default {
   'Delete this playlist?': { de: 'Diese Playlist löschen?', fr: 'Supprimer cette liste ?', es: '¿Borrar esta lista?', ja: 'この プレイリストを けしますか？', ar: 'حذف قائمة التشغيل هذه؟' },
   'The books stay in My Library.': { de: 'Die Bücher bleiben in Meiner Bibliothek.', fr: 'Les livres restent dans Ma bibliothèque.', es: 'Los libros se quedan en Mi biblioteca.', ja: '本は「わたしの本だな」に のこります。', ar: 'تبقى الكتب في مكتبتي.' },
   'Delete this recording?': { de: 'Diese Aufnahme löschen?', fr: 'Supprimer cet enregistrement ?', es: '¿Borrar esta grabación?', ja: 'この ろくおんを けしますか？', ar: 'حذف هذا التسجيل؟' },
+  'Where': { de: 'Wo', fr: 'Où', es: 'Dónde', ja: 'どこに', ar: 'أين' },
 };

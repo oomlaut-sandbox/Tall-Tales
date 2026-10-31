@@ -256,6 +256,57 @@ function EmptyPicture({ side, plain }) {
   );
 }
 
+// ---- Words on a picture: its tiles (31 Oct 2026) ----
+function PlaceGroup({ title, children }) {
+  return (
+    <View style={{ gap: 8 }}>
+      <Text style={styles.placeLabel}>{title}</Text>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>{children}</View>
+    </View>
+  );
+}
+function PlaceTile({ label, on, off, onPress, children }) {
+  return (
+    <Pressable onPress={onPress} disabled={off} hitSlop={4} accessibilityRole="radio" accessibilityLabel={label} accessibilityState={{ selected: !!on, disabled: !!off }}
+      style={[styles.placeTile, on && styles.placeTileOn, off && { opacity: 0.35 }]}>
+      <View style={{ height: 34, alignItems: 'center', justifyContent: 'center' }}>{children}</View>
+      <Text numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.8} style={styles.placeTileText}>{label}</Text>
+    </Pressable>
+  );
+}
+// a page of two squares (stacked, or side by side when sideways): the picture square(s) grey, the words as lines
+function WhereIcon({ where, wide }) {
+  const sq = 15, gap = 2;
+  const Lines = ({ light }) => (
+    <View style={{ position: 'absolute', left: 3, right: 3, top: sq / 2 - 3, gap: 2 }}>
+      {[1, 0.7].map((w, k) => <View key={k} style={{ height: 1.6, width: `${w * 100}%`, alignSelf: 'center', borderRadius: 1, backgroundColor: light ? '#ffffff' : '#2a2a2a' }} />)}
+    </View>
+  );
+  const Sq = ({ pic, words }) => (
+    <View style={{ width: sq, height: sq, borderRadius: 2, backgroundColor: pic ? '#8f9aa3' : '#e8e4dc', overflow: 'hidden' }}>
+      {words ? <Lines light={pic} /> : null}
+    </View>
+  );
+  return (
+    <View style={{ flexDirection: wide ? 'row' : 'column', gap }}>
+      <Sq pic words={where === 'top'} />
+      <Sq pic={where === 'bottom'} words={where === null || where === 'bottom'} />
+    </View>
+  );
+}
+// a little picture with "Aa" in the look
+function LookIcon({ look, ink }) {
+  const L = wordsLook(look, ink);
+  return (
+    <View style={{ width: 40, height: 30, borderRadius: 4, backgroundColor: '#7d8a93', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+      <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 11, backgroundColor: '#5c6b5a' }} />
+      <View style={{ backgroundColor: L.panel || 'transparent', borderRadius: 3, paddingHorizontal: 4, paddingVertical: 1 }}>
+        <Text style={[{ fontFamily: 'EBGaramond_500Medium', fontSize: 15, lineHeight: 18 }, wordsOverText(look, ink)]}>Aa</Text>
+      </View>
+    </View>
+  );
+}
+
 export default function Publisher({ u, initial, fontKey, openMenu, toast, onChange, onDone, storeAdmin, onIdeas }) {
   const tr = useT(); // everything a child or parent reads here, in the app's language (the store owner's Publish stays English)
   const insets = useSafeAreaInsets();
@@ -1024,48 +1075,41 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           })()}
           {/* words over a picture (30 Oct 2026): where the words go, their look and size. The words square stays the default */}
           {placeOpen ? (
+            // Words on a picture (31 Oct 2026): three groups, each choice a tile with a small picture of what it does:
+            // WHERE the words go, their LOOK, and their SIZE (the look and size only once they're on a picture)
             <Animated.View style={[styles.placeBox, { width: winW - 2 * GAP, opacity: zoom }]}>
-              <Text style={styles.placeLabel}>{tr('Words on')}</Text>
-              <View style={styles.placeRow}>
+              <PlaceGroup title={tr('Where')}>
                 {[[null, 'Words page'], ['top', wide ? 'Left picture' : 'Top picture'], ['bottom', wide ? 'Right picture' : 'Bottom picture']].map(([v, label]) => {
                   const off = (v === 'top' && !page.uri) || (v === 'bottom' && !page.uri2);
-                  const on = (page.textOn || null) === v;
                   return (
-                    <Pressable key={label} disabled={off} onPress={() => update({ textOn: v, ...(v && !page.textAt ? { textAt: DEFAULT_AT } : null) })}
-                      style={[styles.placeChip, on && styles.placeChipOn, off && { opacity: 0.35 }]} accessibilityRole="radio" accessibilityState={{ selected: on, disabled: off }}>
-                      <Text style={styles.placeChipText}>{tr(label)}</Text>
-                    </Pressable>
+                    <PlaceTile key={label} label={tr(label)} on={(page.textOn || null) === v} off={off}
+                      onPress={() => update({ textOn: v, ...(v && !page.textAt ? { textAt: DEFAULT_AT } : null) })}>
+                      <WhereIcon where={v} wide={wide} />
+                    </PlaceTile>
                   );
                 })}
-              </View>
-              {!page.uri2 ? <Text style={styles.placeNote}>{tr('To put the words on a second picture, add one first: tap the plus on the words page.')}</Text> : null}
+              </PlaceGroup>
+              {!page.uri2 && !page.textOn ? <Text style={styles.placeNote}>{tr('To put the words on a second picture, add one first: tap the plus on the words page.')}</Text> : null}
               {page.textOn ? (
                 <>
-                  <Text style={styles.placeLabel}>{tr('Look')}</Text>
-                  <View style={styles.placeRow}>
-                    {WORD_LOOKS.map(([v, label]) => (
-                      <Pressable key={v} onPress={() => update({ textLook: v })} style={[styles.placeChip, (page.textLook || 'light') === v && styles.placeChipOn]} accessibilityRole="radio" accessibilityState={{ selected: (page.textLook || 'light') === v }}>
-                        <Text style={styles.placeChipText}>{tr(label)}</Text>
-                      </Pressable>
-                    ))}
-                  </View>
-                  {(page.textLook || 'light') === 'plain' ? (
-                    <View style={styles.placeRow}>
-                      {[['dark', 'Dark words'], ['white', 'White words']].map(([v, label]) => (
-                        <Pressable key={v} onPress={() => update({ textInk: v })} style={[styles.placeChip, (page.textInk || 'dark') === v && styles.placeChipOn]} accessibilityRole="radio" accessibilityState={{ selected: (page.textInk || 'dark') === v }}>
-                          <Text style={styles.placeChipText}>{tr(label)}</Text>
-                        </Pressable>
-                      ))}
-                    </View>
-                  ) : null}
-                  <Text style={styles.placeLabel}>{tr('Size')}</Text>
-                  <View style={styles.placeRow}>
+                  <PlaceGroup title={tr('Look')}>
+                    {[['light', null, 'Light panel'], ['dark', null, 'Dark panel'], ['shadow', null, 'Shadow'], ['plain', 'dark', 'Dark words'], ['plain', 'white', 'White words']].map(([look, ink, label]) => {
+                      const cur = page.textLook || 'light';
+                      const on = cur === look && (look !== 'plain' || (page.textInk || 'dark') === ink);
+                      return (
+                        <PlaceTile key={label} label={tr(label)} on={on} onPress={() => update({ textLook: look, ...(ink ? { textInk: ink } : null) })}>
+                          <LookIcon look={look} ink={ink} />
+                        </PlaceTile>
+                      );
+                    })}
+                  </PlaceGroup>
+                  <PlaceGroup title={tr('Size')}>
                     {WORD_SIZES.map(([v, label]) => (
-                      <Pressable key={label} onPress={() => update({ textSize: v })} style={[styles.placeChip, (page.textSize || 1) === v && styles.placeChipOn]} accessibilityRole="radio" accessibilityState={{ selected: (page.textSize || 1) === v }}>
-                        <Text style={styles.placeChipText}>{tr(label)}</Text>
-                      </Pressable>
+                      <PlaceTile key={label} label={tr(label)} on={(page.textSize || 1) === v} onPress={() => update({ textSize: v })}>
+                        <Text style={{ color: colors.white, fontFamily: 'EBGaramond_500Medium', fontSize: Math.round(17 * v), lineHeight: 28 }}>Aa</Text>
+                      </PlaceTile>
                     ))}
-                  </View>
+                  </PlaceGroup>
                   <Text style={styles.placeNote}>{tr('After Done, drag the words to move them on the picture.')}</Text>
                 </>
               ) : null}
@@ -1480,9 +1524,12 @@ const styles = StyleSheet.create({
   fontPill: { height: 32, borderRadius: 16, paddingHorizontal: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.14)' },
   fontPillOn: { backgroundColor: colors.green },
   fontPillText: { color: colors.white, fontSize: 14 },
-  placeBox: { backgroundColor: 'rgba(12,12,12,0.86)', borderRadius: 18, padding: 14, gap: 8, marginBottom: 12 },
+  placeBox: { backgroundColor: 'rgba(12,12,12,0.86)', borderRadius: 18, padding: 14, gap: 14, marginBottom: 12 },
   placeLabel: { color: '#a8a39a', fontFamily: fonts.uiBold, fontSize: 12, letterSpacing: 0.6, textTransform: 'uppercase', marginTop: 2 },
   placeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  placeTile: { width: 60, minHeight: 72, borderRadius: 14, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'flex-start', paddingTop: 8, paddingBottom: 6, paddingHorizontal: 4, gap: 4, borderWidth: 2, borderColor: 'transparent' },
+  placeTileOn: { backgroundColor: '#2f4a30', borderColor: colors.green },
+  placeTileText: { color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 11, lineHeight: 13, textAlign: 'center' },
   placeChip: { backgroundColor: '#454545', borderRadius: 17, height: 34, paddingHorizontal: 14, justifyContent: 'center' },
   placeChipOn: { backgroundColor: colors.green },
   placeChipText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 14 },
