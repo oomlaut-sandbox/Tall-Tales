@@ -6,7 +6,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Bar, Burger, WithBar } from '../components/Chrome';
+import { Bar, Burger, Toast, WithBar } from '../components/Chrome';
+import { loadJSON, saveJSON } from '../storage';
 import { colors } from '../theme';
 import { useT } from '../i18n';
 import { withTap } from '../haptics';
@@ -55,9 +56,12 @@ export default function Garden({ u, openMenu, toast, onHome }) {
     Animated.timing(fade, { toValue: 0, duration: 1600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(({ finished }) => { if (finished) setPrev(null); });
   };
   // a couple of seconds in: a word that the Garden is a beta (the same speech bubble as the library's)
+  // its own bubble, which goes away with the Garden; 'Don't show this message again' (Jörg, 31 Oct 2026)
+  const [hello, setHello] = useState(false);
   useEffect(() => {
-    const id = setTimeout(() => toast && toast(t('Welcome to the garden, a relaxing space where you can enjoy simple games and puzzles. Check back later for more. And remember, nothing beats going outside in nature. For real, go outside. (If you’re looking for your way back to My Workspace, tap on the gate.)'), 0) /* (stays until it's tapped closed: Jörg, 27 Oct 2026) */, 2200);
-    return () => clearTimeout(id);
+    let on = true, id;
+    loadJSON('gardenTip', {}).catch(() => ({})).then((v) => { if (on && !(v && v.off)) id = setTimeout(() => on && setHello(true), 2200); });
+    return () => { on = false; clearTimeout(id); };
   }, []);
   // birdsong by day; at night the crickets take over (one fades out as the other comes up). Both start silent and
   // come up very slowly; they go quiet when you leave (Jörg, 26 Oct 2026)
@@ -100,6 +104,8 @@ export default function Garden({ u, openMenu, toast, onHome }) {
   }
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} vertical={v} /></Bar>}>
+      {hello ? <Toast message={t('Welcome to the garden, a relaxing space where you can enjoy simple games and puzzles. Check back later for more. And remember, nothing beats going outside in nature. For real, go outside. (If you’re looking for your way back to My Workspace, tap on the gate.)')} ms={0} check={t('Don’t show this message again')} button={t('Got it!')}
+        onDismiss={(ticked) => { setHello(false); if (ticked) saveJSON('gardenTip', { off: true }).catch(() => {}); }} /> : null}
       <View style={{ flex: 1, backgroundColor: MAP_BG, overflow: 'hidden' }} onLayout={(e) => setArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
         {map}
         {game === 'pebbles' && area ? <Pebbles area={area} onBack={() => setGame(null)} /> : null}
