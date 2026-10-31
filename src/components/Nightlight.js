@@ -74,7 +74,7 @@ export const SUN_SOLID = require('../../assets/icon-sun-solid.png');
 const ORB_PICS = { moon: require('../../assets/nightlight-moon.jpg'), earth: require('../../assets/nightlight-earth.jpg') };
 const ORB_ICONS = {
   sun: [SUN_OUTLINE, SUN_SOLID],
-  moon: [require('../../assets/icon-moon-outline.png'), require('../../assets/icon-moon.png')], // (the moon logo of the black bar, and its fine outline)
+  moon: [require('../../assets/icon-nl-moon-outline.png'), require('../../assets/icon-nl-moon-solid.png')], // a plain circle, filled in when it's on (Jörg, 31 Oct 2026)
   earth: [require('../../assets/icon-earth-outline.png'), require('../../assets/icon-earth-solid.png')],
 };
 const ORB_NAMES = { sun: 'Sun', moon: 'Moon', earth: 'Earth' };
@@ -455,8 +455,7 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
         <Pressable key={k} onPress={withTap(() => pickOrb(k))} disabled={locked} hitSlop={10} accessibilityRole="radio" accessibilityState={{ selected: orb === k }} accessibilityLabel={t(ORB_NAMES[k])}
           style={{ width: ORB_IC, height: ORB_IC }}>
           <Animated.Image source={ORB_ICONS[k][0]} style={{ position: 'absolute', width: ORB_IC, height: ORB_IC, tintColor: 'rgba(244,226,207,0.6)', opacity: Animated.subtract(1, fades[k]) }} resizeMode="contain" />
-          {/* (the moon logo is drawn a little bigger than its outline: shown at 226/246, as in the Listen Only choice) */}
-          <Animated.Image source={ORB_ICONS[k][1]} style={{ position: 'absolute', left: k === 'moon' ? ORB_IC * 10 / 246 : 0, top: k === 'moon' ? ORB_IC * 10 / 246 : 0, width: k === 'moon' ? ORB_IC * 226 / 246 : ORB_IC, height: k === 'moon' ? ORB_IC * 226 / 246 : ORB_IC, tintColor: 'rgba(244,226,207,0.85)', opacity: fades[k] }} resizeMode="contain" />
+          <Animated.Image source={ORB_ICONS[k][1]} style={{ position: 'absolute', width: ORB_IC, height: ORB_IC, tintColor: 'rgba(244,226,207,0.85)', opacity: fades[k] }} resizeMode="contain" />
         </Pressable>
       ))}
     </View>
