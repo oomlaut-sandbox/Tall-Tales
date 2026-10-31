@@ -483,7 +483,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const secondPic = !!(page && page.uri2 && (!(page.text || '').trim() || page.textOn));
   const controls = useControls(); // (the Advanced page editor: Settings → Parental controls)
   const purchases = usePurchases();
-  const advanced = !!controls.advancedPages && purchases.member; // (members only: Jörg, 31 Oct 2026)
+  const advanced = !!controls.advancedPages && (purchases.member || !!storeAdmin); // (members only, and the store owner for testing: Jörg, 31 Oct 2026)
   const [pageAsk, setPageAsk] = useState(null); // 'Delete page {n}?' (its words and pictures go too: asked first, 31 Oct 2026)
   const [placeOpen, setPlaceOpen] = useState(false); // the words editor's 'Text over image' choices
 
