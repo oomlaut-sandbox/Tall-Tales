@@ -20,6 +20,7 @@ import GrownupCodeCard from '../components/GrownupCodeCard';
 import { LANGS, useT } from '../i18n';
 import { lockedControls, quickSafeControls, DEFAULT_CONTROLS, STORE_ON } from '../controls';
 import { usePurchases } from '../purchases';
+import { pickTextFile } from '../textFile';
 import { MAX_CLASS, PROFILE_COLORS, activeProfile, addProfile, canAdd, endClassroom, inClass, getProfiles, onProfiles as watchProfiles, setClassroom } from '../profiles';
 import { hapticsOn, onHaptics, tap } from '../haptics';
 const LOCK_ICON = require('../../assets/heading-icons/grown-ups.png'); // (the lock, before Use Quick and Safe Kid)
@@ -86,6 +87,20 @@ export default function Settings({ storeAdmin, u, openMenu, lang, setLang, bookL
   const [added, setAdded] = useState(null);
   const [importTo, setImportTo] = useState(null); // which class the list goes into (the first, until another is chosen)
   // make a profile for every name on the list, up to 30 in the class (names already there are skipped)
+  // a class list from a file (.csv or .txt): one student a line; a line's cells (first name, last name…) make one
+  // name, and a heading line such as 'Name' or 'First name, Last name' is left out. The names fill the box above,
+  // so they can be checked before they're added (Jörg, 31 Oct 2026)
+  const fromFile = async () => {
+    let txt = null;
+    try { txt = await pickTextFile(); } catch (e) { txt = null; }
+    if (txt == null) return;
+    const lines = String(txt).replace(/^\uFEFF/, '').split(/\r\n|\r|\n/)
+      .map((l) => l.split(/[,;\t]/).map((c) => c.trim().replace(/^"(.*)"$/, '$1').trim()).filter(Boolean).join(' '))
+      .filter(Boolean);
+    if (lines.length && /\bname\b|\bnom\b|\bnombre\b|名前/i.test(lines[0]) && lines[0].split(' ').length <= 4) lines.shift();
+    if (!lines.length) { if (toast) toast(t('No names were found in that file.')); return; }
+    setNames((cur) => [cur.trim(), ...lines].filter(Boolean).join('\n')); setAdded(null);
+  };
   const importNames = async () => {
     const cl = getProfiles().classes || [];
     const to = (cl.find((c) => c.id === importTo) || cl[0] || {}).id;
@@ -255,6 +270,9 @@ export default function Settings({ storeAdmin, u, openMenu, lang, setLang, bookL
                   {/* the class list: paste the names (from a spreadsheet or an email) and each one gets a profile */}
                   <Text style={[styles.cardTitle, { marginTop: 8 }]}>{t('Add students from a list')}</Text>
                   <Text style={styles.small}>{t('Paste your class list: one name per line, or separated by commas. Each name gets its own profile, up to {n} in the class.', { n: MAX_CLASS })}</Text>
+                  <Pressable onPress={fromFile} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'flex-start' }}>
+                    <Text style={[styles.small, { color: '#e2e2e2', textDecorationLine: 'underline' }]}>{t('Or choose a file (.csv or .txt)')}</Text>
+                  </Pressable>
                   <TextInput value={names} onChangeText={(v) => { setNames(v); setAdded(null); }} multiline placeholder={t('Ava\nLeo\nMia')} placeholderTextColor="#8a8a8a"
                     allowFontScaling={false} style={[styles.input, { height: 120, paddingTop: 10, textAlignVertical: 'top' }]} accessibilityLabel={t('Add students from a list')} />
                   {/* with several classes: which one the names go into */}

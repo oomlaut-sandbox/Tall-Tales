@@ -831,6 +831,8 @@ const T = {
   '(Recommended)': { de: '(Empfohlen)', fr: '(Recommandé)', es: '(Recomendado)', ja: '（おすすめ）', ar: "(مُوصى به)" },
   'End classroom mode?': { de: 'Klassenmodus beenden?', fr: 'Quitter le mode classe ?', es: '¿Salir del modo aula?', ja: 'クラスモードを おわりますか？', ar: "إنهاء وضع الصف؟" },
   'Your class folders and every student’s profile, notebook and books are kept. Turn classroom mode on again in Settings to see them.': { de: 'Deine Klassenordner und das Profil, das Notizbuch und die Bücher jedes Kindes bleiben erhalten. Schalte den Klassenmodus in den Einstellungen wieder ein, um sie zu sehen.', fr: 'Vos dossiers de classe, ainsi que le profil, le carnet et les livres de chaque élève, sont conservés. Réactivez le mode classe dans Réglages pour les retrouver.', es: 'Tus carpetas de clase y el perfil, el cuaderno y los libros de cada alumno se conservan. Vuelve a activar el modo aula en Ajustes para verlos.', ja: 'クラスの フォルダと、せいと ひとりひとりの プロフィール・ノート・本は のこります。もういちど みるには、せっていで クラスモードを オンにしてください。', ar: "تبقى مجلدات صفوفك وملف كل طالب ودفتره وكتبه محفوظة. شغّل وضع الصف مرة أخرى من الإعدادات لتراها." },
+  'Or choose a file (.csv or .txt)': { de: 'Oder wähle eine Datei (.csv oder .txt)', fr: 'Ou choisissez un fichier (.csv ou .txt)', es: 'O elige un archivo (.csv o .txt)', ja: 'または ファイルを えらぶ（.csv か .txt）', ar: "أو اختر ملفًا (‎.csv أو ‎.txt)" },
+  'No names were found in that file.': { de: 'In dieser Datei wurden keine Namen gefunden.', fr: 'Aucun nom n’a été trouvé dans ce fichier.', es: 'No se encontraron nombres en ese archivo.', ja: 'その ファイルに なまえが ありませんでした。', ar: "لم يُعثر على أسماء في هذا الملف." },
   'About Coro': { de: 'Über Coro', fr: 'À propos d’Coro', es: 'Acerca de Coro', ja: 'Coroについて', ar: "عن Coro" },
 };
 
