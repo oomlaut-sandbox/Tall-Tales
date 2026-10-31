@@ -22,7 +22,12 @@ export default function Splash({ onDone }) {
   // and if no picture comes within two seconds the start page simply fades up
   const [seen, setSeen] = useState(false);
   const seenRef = useRef(false);
-  const onFrame = () => { seenRef.current = true; setSeen(true); };
+  // (31 Oct 2026) the film shows only once it's really moving: until then the dark launch grey, never the light felt
+  // of a first picture waiting to play; then it fades in quickly
+  const show = useRef(new Animated.Value(0)).current;
+  const shown = useRef(false);
+  const onFrame = () => { seenRef.current = true; setTimeout(() => playing(), 450); /* (in case the time updates never come) */ };
+  const playing = () => { if (shown.current) return; shown.current = true; setSeen(true); Animated.timing(show, { toValue: 1, duration: 180, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(); };
   const done = useRef(false);
   const end = () => { if (done.current) return; done.current = true; setGone(true); onDone && onDone(); };
   const fadeUp = (ms) => { setTimeout(end, ms + 600); /* never stuck over the start page */ Animated.timing(fade, { toValue: 0, duration: ms, easing: Easing.inOut(Easing.sin), useNativeDriver: true }).start(end); };
@@ -42,6 +47,8 @@ export default function Splash({ onDone }) {
   useEffect(() => {
     const subs = [];
     try { subs.push(player.addListener('playToEnd', () => finish())); } catch (e) {}
+    try { player.timeUpdateEventInterval = 0.05; subs.push(player.addListener('timeUpdate', ({ currentTime }) => { if (currentTime > 0.04) { seenRef.current = true; playing(); } })); } catch (e) {}
+    try { subs.push(player.addListener('playingChange', ({ isPlaying }) => { if (isPlaying) setTimeout(() => { let t = 0; try { t = player.currentTime || 0; } catch (e) {} if (t > 0.01) playing(); }, 60); })); } catch (e) {}
     try { subs.push(player.addListener('statusChange', ({ status }) => { if (status === 'readyToPlay') { try { player.play(); } catch (e) {} } if (status === 'error') finish(true); })); } catch (e) {}
     if (reduceMotion()) { const q = setTimeout(() => finish(true), 250); return () => clearTimeout(q); } // Reduce Motion: no film by itself, straight to the start page
     const safety = setTimeout(() => finish(), 7000); // never stuck on it
@@ -51,7 +58,7 @@ export default function Splash({ onDone }) {
   if (gone) return null;
   return (
     <Animated.View style={[StyleSheet.absoluteFill, { zIndex: 500, backgroundColor: seen ? BG : '#3b3b3b', opacity: fade }]}>
-      <VideoView player={player} style={StyleSheet.absoluteFill} contentFit={W > H ? 'contain' : 'cover'} /* sideways: the whole upright clip, on its own grey felt colour */ onFirstFrameRender={onFrame} nativeControls={false} allowsFullscreen={false} allowsPictureInPicture={false} />
+      <Animated.View style={[StyleSheet.absoluteFill, { opacity: show }]}><VideoView player={player} style={StyleSheet.absoluteFill} contentFit={W > H ? 'contain' : 'cover'} /* sideways: the whole upright clip, on its own grey felt colour */ onFirstFrameRender={onFrame} nativeControls={false} allowsFullscreen={false} allowsPictureInPicture={false} /></Animated.View>
       {black ? <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#000' }]} /> : null}
       <Pressable style={StyleSheet.absoluteFill} pointerEvents={leaving.current ? 'none' : 'auto'} onPress={() => finish()} accessibilityRole="button" accessibilityLabel="Skip" />
     </Animated.View>
