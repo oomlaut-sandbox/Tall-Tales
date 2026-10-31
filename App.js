@@ -565,14 +565,18 @@ function Root() {
             <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setIncoming(null)}>
               <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 28 }}>
                 <View style={{ width: '100%', maxWidth: 400, backgroundColor: '#000', borderRadius: 24, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26 }}>
-                  <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 20 }}>{t('{names} read “{title}” for you', { names, title })}</Text>
-                  <Text style={{ color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, marginTop: 12 }}>{t('Add their voice to this book on this phone? Pages they didn’t record are read by the narrator.')}</Text>
+                  {/* a book made in Coro comes whole, with or without voices (31 Oct 2026) */}
+                  <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 20 }}>{incoming.book ? t('Someone sent you “{title}”', { title }) : t('{names} read “{title}” for you', { names, title })}</Text>
+                  <Text style={{ color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, marginTop: 12 }}>{incoming.book ? (names ? t('Add the book to My Library, read in {names}’s voice?', { names }) : t('Add the book to My Library?')) : t('Add their voice to this book on this phone? Pages they didn’t record are read by the narrator.')}</Text>
                   <View style={{ flexDirection: 'row', gap: 10, marginTop: 26, justifyContent: 'flex-end' }}>
                     <Pressable onPress={() => setIncoming(null)} style={{ height: 44, borderRadius: 22, paddingHorizontal: 20, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 }}>{t('Not now')}</Text></Pressable>
                     <Pressable onPress={async () => {
                       const data = incoming; setIncoming(null);
                       const res = await importVoices(data);
-                      if (res.ok) { go('library'); toast(t('{names}’s voice is ready in “{title}”.', { names, title }), 5000); }
+                      if (res.book) loadUserStories().then(setUserStories).catch(() => {});
+                      if (res.ok && res.book) { go('library'); toast(t('“{title}” is in My Library.', { title }), 5000); }
+                      else if (res.ok) { go('library'); toast(t('{names}’s voice is ready in “{title}”.', { names, title }), 5000); }
+                      else if (res.reason === 'nobook') toast(t('This file has only the voices for “{title}”, and the book isn’t on this phone. Ask for it to be sent again from the newest Coro.', { title }), 7000);
                       else if (res.reason === 'full') toast(t('There’s room for three readers on this phone. Remove one first: tap the voice on the reading bar, then the scissors.'), 6000);
                       else toast(t('That file couldn’t be opened.'));
                     }} style={{ height: 44, borderRadius: 22, paddingHorizontal: 22, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 }}>{t('Add')}</Text></Pressable>

@@ -9,6 +9,24 @@ const serial = (fn) => (queue = queue.then(fn, fn));
 
 export const newPageId = () => `pg${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 
+// one book as it's saved (its own picture files), for sending it to someone (voiceShare)
+export async function savedStory(id) {
+  const list = await loadJSON('stories', []);
+  const s = list.find((x) => x.id === id);
+  return s ? liveStory(s) : null;
+}
+// a book someone sent (voiceShare): added to this phone's books, finished, as it was made (the same id, so the
+// voices that came with it find it). Its pictures are already in this book's own folder.
+export function addReceivedStory(story) {
+  return serial(async () => {
+    const list = await loadJSON('stories', []);
+    const i = list.findIndex((x) => x.id === story.id);
+    const saved = { ...story, published: true };
+    if (i >= 0) list[i] = saved; else list.push(saved);
+    await saveJSON('stories', list);
+    return list.map(fromSaved);
+  });
+}
 export async function loadUserStories() {
   const list = await loadJSON('stories', []);
   return list.map(fromSaved);
