@@ -7,6 +7,7 @@ import { Animated, Easing, Image, Pressable, ScrollView, StyleSheet, Text, View 
 import { colors, fonts } from '../theme';
 import { BubbleIcon, PersonIcon, Slider } from './Chrome';
 import { withTap } from '../haptics';
+const EDIT_ICON = require('../../assets/icon-scissors.png');
 
 
 // the face: a dark circle with the reader's photo (or the first letter of their name), or the narrator's speech bubble
@@ -52,6 +53,7 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
         {/* Edit (the readers: photos, a new reader), under the voices; left out when locked */}
         {onEdit ? (
           <Pressable onPress={withTap(() => close(onEdit))} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Edit readers')} style={styles.editPill}>
+            <Image source={EDIT_ICON} style={{ width: 16, height: 16, tintColor: colors.white }} resizeMode="contain" accessibilityIgnoresInvertColors />{/* the app's edit icon (scissors), as on Edit everywhere (31 Oct 2026) */}
             <Text style={styles.editText}>{tr('Edit')}</Text>
           </Pressable>
         ) : null}
@@ -77,7 +79,7 @@ export default function VoicePick({ options, value, onPick, onClose, tr, anchor,
 const styles = StyleSheet.create({
   box: { position: 'absolute', width: 250, backgroundColor: '#000000', /* solid black, nothing shows through (Jörg, 27 Oct 2026) */ borderRadius: 26, boxShadow: '0 16px 40px rgba(0,0,0,0.6)' },
   extra: { marginTop: 16, paddingTop: 24, paddingHorizontal: 6, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: 'rgba(255,255,255,0.18)', gap: 6 },
-  editPill: { alignSelf: 'flex-start', marginTop: 10, marginLeft: 8, height: 34, borderRadius: 17, paddingHorizontal: 18, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' },
+  editPill: { alignSelf: 'flex-start', marginTop: 10, marginLeft: 8, height: 34, borderRadius: 17, paddingHorizontal: 18, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8 },
   editText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 14 },
   edit: { position: 'absolute', top: 30, right: 20, padding: 2 }, // (in line with the bigger title)
   title: { color: 'rgba(255,255,255,0.7)', fontFamily: fonts.uiBold, fontSize: 14, marginLeft: 6, marginBottom: 6 },
