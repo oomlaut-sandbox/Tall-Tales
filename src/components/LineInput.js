@@ -15,7 +15,7 @@ const LineInput = forwardRef(function LineInput({ style, onChangeText, ...rest }
   return (
     <TextInput ref={ref} {...rest} multiline scrollEnabled={false} submitBehavior="blurAndSubmit" allowFontScaling={false}
       onChangeText={onChangeText ? (v) => onChangeText(v.replace(/\n/g, '')) : undefined}
-      style={[keep, { height, lineHeight, paddingTop: Math.max(0, (height - lineHeight) / 2), paddingBottom: 0, includeFontPadding: false, textAlignVertical: 'top' }]} />
+      style={[keep, { height, lineHeight, paddingTop: Math.max(0, (height - lineHeight) / 2), paddingBottom: 0, includeFontPadding: false, textAlignVertical: 'top', outlineWidth: 0 /* (no white ring on the web preview either: Jörg, 31 Oct 2026) */ }]} />
   );
 });
 export default LineInput;
