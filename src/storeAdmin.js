@@ -221,6 +221,16 @@ export async function loadTracksForManager() {
   if (error) throw new Error(error.message);
   return data || [];
 }
+// the pieces built into the app: which ones the Store Manager hides
+export async function loadHiddenBuiltins() {
+  const { data, error } = await supabase.from('builtin_tracks').select('id,hidden');
+  if (error) throw new Error(error.message);
+  return (data || []).filter((r) => r.hidden).map((r) => r.id);
+}
+export async function setBuiltinHidden(id, hidden) {
+  const { error } = await supabase.from('builtin_tracks').upsert({ id, hidden: !!hidden });
+  if (error) throw new Error(error.message);
+}
 export async function updateTrackRow(id, patch) {
   const { error } = await supabase.from('tracks').update(patch).eq('id', id);
   if (error) throw new Error(error.message);

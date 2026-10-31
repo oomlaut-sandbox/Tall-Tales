@@ -568,8 +568,9 @@ export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
             <Text style={styles.shelfTitle}>{(sh.langs && sh.langs[lang]) || t(sh.title) /* the shelf's own translation (Store Manager), or the app's */}</Text>
             <View style={[styles.shelfGrid, { columnGap: gridGap(winW) }]}>
               {sh.books.map((b) => (
-                // covers only: the title and author are in the details box that opens on a tap
-                <Tile key={b.id} lean={sh.id === 'featured'} u={u} ear={false} cover={coverFor(b)} coverArt={coverArtFor(b)} label={sh.id === 'featured' ? t('{title}, featured', { title: b.title }) : b.title}
+                // the cover and its title (two lines at most, like My Library: Jörg, 31 Oct 2026); the author and the rest
+                // are in the details box that opens on a tap
+                <Tile key={b.id} lean={sh.id === 'featured'} u={u} ear={false} cover={coverFor(b)} coverArt={coverArtFor(b)} title={b.title} label={sh.id === 'featured' ? t('{title}, featured', { title: b.title }) : b.title}
                   badge={<Badge book={b} />}
                   onPress={(rect) => setOpen({ book: b, rect })} />
               ))}

@@ -13,7 +13,8 @@ import { Bar, Burger, WithBar } from '../components/Chrome';
 import { DESK_FELT } from '../look';
 import { createAudioPlayer } from 'expo-audio';
 import { pickFile, cleanName } from '../myMusic';
-import { addTrackFile, deleteTrackRow, loadTracksForManager, replaceTrackFile, translateTrack, updateTrackRow } from '../storeAdmin';
+import { addTrackFile, deleteTrackRow, loadHiddenBuiltins, loadTracksForManager, replaceTrackFile, setBuiltinHidden, translateTrack, updateTrackRow } from '../storeAdmin';
+import { BUILTIN_TRACKS, setHiddenBuiltins } from '../ambient';
 import { supabase } from '../account';
 import CoverArt from '../components/CoverArt';
 import { ageText, coverFor, storageUrl } from '../catalog';
@@ -416,6 +417,43 @@ function TrackRow({ track, tracks, onChanged, toast }) {
   );
 }
 
+// the pieces built into the app: each can be hidden (left out of the player for everyone) or shown again
+// (Jörg, 31 Oct 2026)
+function BuiltinTracks({ toast, demo }) {
+  const [hidden, setHidden] = useState(null);
+  const [err, setErr] = useState('');
+  useEffect(() => { if (demo) { setHidden([]); return; } loadHiddenBuiltins().then(setHidden).catch((e) => setErr(e.message)); }, []);
+  const flip = async (id) => {
+    const hide = !hidden.includes(id);
+    try {
+      if (!demo) await setBuiltinHidden(id, hide);
+      const next = hide ? [...hidden, id] : hidden.filter((x) => x !== id);
+      setHidden(next); setHiddenBuiltins(next);
+      toast(hide ? 'Hidden for everyone.' : 'Shown in the app again.');
+    } catch (e) { toast(`Couldn’t change it. ${e.message}`); }
+  };
+  return (
+    <View style={{ gap: 8, marginTop: 6 }}>
+      <Text style={[styles.rowTitle, { marginTop: 4 }]}>Built into the app</Text>
+      {err ? <Text style={styles.err}>{err}</Text> : null}
+      {!hidden && !err ? <ActivityIndicator color={colors.white} /> : null}
+      {hidden ? BUILTIN_TRACKS.map((x) => {
+        const off = hidden.includes(x.id);
+        return (
+          <View key={x.id} style={[styles.row, { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12, paddingVertical: 8 }]}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.rowTitle}>{x.name}</Text>
+              <Text style={styles.rowSub}>{x.kind === 'sound' ? 'Sound' : 'Music'} · {off ? 'Hidden' : 'Shown'}</Text>
+            </View>
+            <Pressable onPress={() => flip(x.id)} style={[styles.chip, !off && { backgroundColor: colors.green }]} accessibilityRole="switch" accessibilityState={{ checked: !off }}><Text style={styles.chipText}>{off ? 'Hidden' : 'Shown'}</Text></Pressable>
+          </View>
+        );
+      }) : null}
+      <Text style={styles.rowTitle}>Added in the Store Manager</Text>
+    </View>
+  );
+}
+
 function TracksSection({ toast, demo }) {
   const [tracks, setTracks] = useState(null);
   const [err, setErr] = useState('');
@@ -439,6 +477,7 @@ function TracksSection({ toast, demo }) {
     <View style={{ gap: 10, marginTop: 10 }}>
       <Text style={styles.shelf}>Music and Sounds</Text>
       <Text style={styles.note}>Pieces for the tape player and Music and Sounds, added without an app update. New ones start hidden. A piece plays from the internet the first time and is then kept on the phone. The pieces built into the app aren’t listed here.</Text>
+      <BuiltinTracks toast={toast} demo={demo} />
       {err ? <Text style={styles.err}>{err}</Text> : null}
       {!tracks && !err ? <ActivityIndicator color={colors.white} /> : null}
       {tracks ? tracks.map((x) => <TrackRow key={`${x.id}-${x.version}`} track={x} tracks={tracks} onChanged={load} toast={toast} />) : null}

@@ -5,7 +5,7 @@
 // musician; one can be the featured musician (Music and Sounds). The pieces built into the app are untouched.
 import { supabase } from './account';
 import { downloadKeep, liveUri, loadJSON, saveJSON } from './storage';
-import { TRACKS, addTrack, removeTrack, setTrackFetcher, updateTrack } from './ambient';
+import { TRACKS, addTrack, removeTrack, setHiddenBuiltins, setTrackFetcher, updateTrack } from './ambient';
 
 const listeners = new Set();
 const emit = () => listeners.forEach((fn) => { try { fn(); } catch (e) {} });
@@ -56,7 +56,13 @@ export async function startRemoteTracks() {
   if (started) return; started = true;
   try { kept = (await loadJSON('remoteTrackFiles', {})) || {}; Object.keys(kept).forEach((id) => { if (kept[id] && kept[id].busy) delete kept[id]; }); } catch (e) { kept = {}; }
   try { const cached = await loadJSON('remoteTracks', []); if (Array.isArray(cached) && cached.length) apply(cached); } catch (e) {}
+  try { const h = await loadJSON('hiddenBuiltins', []); if (Array.isArray(h) && h.length) setHiddenBuiltins(h); } catch (e) {}
   if (!supabase) return;
+  // the built-in pieces hidden in the Store Manager (Jörg, 31 Oct 2026)
+  try {
+    const { data, error } = await supabase.from('builtin_tracks').select('id').eq('hidden', true);
+    if (!error) { const ids = (data || []).map((r) => r.id); setHiddenBuiltins(ids); saveJSON('hiddenBuiltins', ids).catch(() => {}); }
+  } catch (e) { /* offline: as before */ }
   try {
     const { data, error } = await supabase.from('tracks').select('id,kind,name,langs,artist,artist_note,artist_link,file,version,sort,featured,fade').eq('hidden', false).order('sort');
     if (error) return;

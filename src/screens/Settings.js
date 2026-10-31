@@ -14,7 +14,7 @@ import { DESK_FELT, DESK_BG, IS_TABLET, BandFill } from '../look';
 
 const IDEAS_FELT = require('../../assets/ideas-felt.png'); // the mossy green stitched felt (Ideas and Support), 1100 × 805
 const BAND_FELT = require('../../assets/band-settings.jpg'); // Jörg's grey stitched felt banner
-import { Bar, Burger, MusicIcon, Option, WithBar, ChoiceLabel } from '../components/Chrome';
+import { Bar, Burger, ConfirmBox, MusicIcon, Option, WithBar, ChoiceLabel } from '../components/Chrome';
 import ReadingOptionsSection from '../components/ReadingOptionsSection';
 import GrownupCodeCard from '../components/GrownupCodeCard';
 import { LANGS, useT } from '../i18n';
@@ -103,6 +103,7 @@ export default function Settings({ storeAdmin, u, openMenu, lang, setLang, bookL
   const [gardenBox, setGardenBox] = useState(null); // the Garden's felt card, once measured
   useEffect(() => onHaptics(setHap), []);
   const ps = usePurchases();
+  const [endAsk, setEndAsk] = useState(false); // 'End classroom mode?' (Jörg, 31 Oct 2026)
   const set = (patch) => setControls({ ...controls, ...patch });
   // (the child's age is its own setting: Lock and Unlock everything keep it)
   // the nightlight's clock and alarm, and the Garden, are kept whatever preset is chosen (and don't count when comparing)
@@ -266,10 +267,12 @@ export default function Settings({ storeAdmin, u, openMenu, lang, setLang, bookL
                     <Text style={styles.pillText}>{t('Add these students')}</Text>
                   </Pressable>
                   {added != null ? <Text style={styles.small}>{added === 1 ? t('1 student added.') : t('{n} students added.', { n: added })}</Text> : null}
-                  <Pressable onPress={endClassroom} style={[styles.pill, { backgroundColor: '#5f5f5f' }]} accessibilityRole="button">
+                  <Pressable onPress={() => setEndAsk(true)} style={[styles.pill, { backgroundColor: '#5f5f5f' }]} accessibilityRole="button">
                     <Text style={styles.pillText}>{t('End classroom mode')}</Text>
                   </Pressable>
                   <Text style={styles.small}>{t('The students’ profiles stay. Without a classroom, up to six profiles can be added.')}</Text>
+                  {endAsk ? <ConfirmBox modal danger={false} title={t('End classroom mode?')} message={t('Your class folders and every student’s profile, notebook and books are kept. Turn classroom mode on again in Settings to see them.')} confirm={t('End classroom mode')} cancel={t('Cancel')}
+                    onConfirm={() => { setEndAsk(false); endClassroom(); }} onCancel={() => setEndAsk(false)} /> : null}
                 </>
               ) : (
                 <>

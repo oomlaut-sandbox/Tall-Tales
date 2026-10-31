@@ -95,6 +95,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
   const { width: winW, height: winH } = useWindowDimensions();
   const room = s.classroom; // classroom mode: class folders, each with up to 30 students
   const classes = s.classes || [];
+  const [endAsk, setEndAsk] = useState(false); // 'End classroom mode?'
   const [openCls, setOpenCls] = useState(null); // the class folder that's open (classroom mode)
   const cls = room ? (classes.find((c) => c.id === openCls) || null) : null;
   const folders = !!room && !cls; // the classes themselves, as folders
@@ -450,8 +451,11 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
           </Pressable>
         </Modal>
       ) : null}
+      {/* ending classroom mode: asked first, saying that nothing is lost (Jörg, 31 Oct 2026) */}
+      {endAsk ? <ConfirmBox modal danger={false} title={t('End classroom mode?')} message={t('Your class folders and every student’s profile, notebook and books are kept. Turn classroom mode on again in Settings to see them.')} confirm={t('End classroom mode')} cancel={t('Cancel')}
+        onConfirm={() => { setEndAsk(false); endClassroom(); setOpenCls(null); }} onCancel={() => setEndAsk(false)} /> : null}
       <ParentGate visible={!!gate} reason={t('Changing profiles is for grown-ups.')}
-        onPass={() => { const g = gate; setGate(null); if (g === 'add') openForm(null); else if (g === 'select') { setEditing(false); setSelecting(true); } else if (g === 'class') setClassForm({ name: '' }); else if (g === 'endclass') { endClassroom(); setOpenCls(null); } else setEditing(true); }} onCancel={() => setGate(null)} />
+        onPass={() => { const g = gate; setGate(null); if (g === 'add') openForm(null); else if (g === 'select') { setEditing(false); setSelecting(true); } else if (g === 'class') setClassForm({ name: '' }); else if (g === 'endclass') setEndAsk(true); else setEditing(true); }} onCancel={() => setGate(null)} />
     </WithBar>
   );
 }

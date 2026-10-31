@@ -143,3 +143,17 @@ create policy "admins delete tracks" on storage.objects for delete to authentica
 insert into public.store_admins (user_id)
   select id from auth.users where lower(email) = lower('YOUR-EMAIL-HERE')
 on conflict do nothing;
+
+-- The pieces built into the app (Jörg, 31 Oct 2026): the Store Manager can hide any of them for everyone.
+-- One row per built-in piece that has been switched (its id in the app, e.g. 'crickets').
+create table if not exists public.builtin_tracks (
+  id text primary key,
+  hidden boolean not null default false
+);
+alter table public.builtin_tracks enable row level security;
+drop policy if exists "everyone reads builtin tracks" on public.builtin_tracks;
+create policy "everyone reads builtin tracks" on public.builtin_tracks for select using (true);
+drop policy if exists "admins write builtin tracks" on public.builtin_tracks;
+create policy "admins write builtin tracks" on public.builtin_tracks for all using (public.is_store_admin()) with check (public.is_store_admin());
+grant select on public.builtin_tracks to anon, authenticated;
+grant insert, update, delete on public.builtin_tracks to authenticated;

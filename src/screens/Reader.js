@@ -1221,7 +1221,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       {/* Listen Only, first: the screen dims and a small dark box asks: Daydream (the sun) or the nightlight (the moon) */}
       {boxUp && nightEnabled ? <ListenChoice area={wide ? { left: 0, top: 0, width: winW - BL.rightW, height: winH } : { left: 0, top: 0, width: winW, height: winH - barH }} center={wide ? { left: BL.leftW, width: winW - BL.leftW - BL.rightW } : null}
         onDay={() => pickScene('day')} onNight={() => pickScene('night')} onCancel={cancelListen} onGone={() => setBoxUp(false)} tr={tr} /> : null}
-      {listenTip && nightOn ? <Toast tone={listenTip === 'night' ? 'amber' : undefined} message={tr(listenTip === 'day' ? 'Tap the sun icon to close Listen Only mode.' : 'Tap the moon icon to close Listen Only mode.')} ms={0}
+      {listenTip && nightOn ? <Toast tone={listenTip === 'night' ? 'amber' : undefined} message={tr(listenTip === 'day' ? 'Tap the sun icon to close Listen Only mode.' : 'Tap the moon in the menu bar to close Listen Only mode.')} ms={0}
         check={tr('Don’t show this message again')} button={tr('Got it!')}
         onDismiss={(ticked) => { const sc = listenTip; setListenTip(null); if (ticked) loadJSON('listenTipOff', {}).catch(() => ({})).then((off) => saveJSON('listenTipOff', { ...(off || {}), [sc]: true })).catch(() => {}); }} /> : null}
       {nightOn ? (

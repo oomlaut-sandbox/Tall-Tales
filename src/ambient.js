@@ -23,6 +23,9 @@ export const TRACKS = [
   { id: 'ambient-drift', kind: 'music', name: 'Night clouds', src: require('../assets/ambient/ambient-drift.mp3') }, // slow ambient pads (ElevenLabs, evened out)
   { id: 'shruti-box', kind: 'music', name: 'Shruti box', src: require('../assets/ambient/shruti-box.mp3') }, // a breathing reed drone (ElevenLabs, evened out)
 ];
+// the pieces built into the app (the Store Manager can hide any of them: Jörg, 31 Oct 2026)
+export const BUILTIN_TRACKS = TRACKS.slice();
+const BUILTIN_IDS = new Set(TRACKS.map((x) => x.id));
 export const SOUNDS = TRACKS.filter((x) => x.kind === 'sound');
 export const MUSIC = TRACKS.filter((x) => x.kind === 'music');
 export const SLEEP_TIMES = [0, 15, 30, 60]; // minutes (0: keep playing)
@@ -189,6 +192,13 @@ export function updateTrack(tr) {
 // called the first time a piece from the Store Manager plays, so it's kept on the phone for next time (offline too)
 let fetchTrack = null;
 export function setTrackFetcher(fn) { fetchTrack = fn; }
+// built-in pieces hidden in the Store Manager: left out of the player's lists (a wake-up sound already chosen still
+// plays); the rest keep their order
+export function setHiddenBuiltins(ids) {
+  const H = new Set((ids || []).filter((id) => BUILTIN_IDS.has(id)));
+  for (const [kind, list] of [['sound', SOUNDS], ['music', MUSIC]]) list.splice(0, list.length, ...TRACKS.filter((x) => x.kind === kind && !H.has(x.id)));
+  if (H.has(state.music)) chooseAmbient('music', null); else if (H.has(state.sound)) chooseAmbient('sound', null); else set({});
+}
 export function removeTrack(id) {
   for (const list of [TRACKS, SOUNDS, MUSIC]) { const i = list.findIndex((x) => x.id === id); if (i >= 0) list.splice(i, 1); }
   if (state.music === id) chooseAmbient('music', null); else if (state.sound === id) chooseAmbient('sound', null); else set({});

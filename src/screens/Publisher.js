@@ -322,7 +322,7 @@ function LookIcon({ look, ink }) {
 const QUICK_ICONS = { alt: require('../../assets/quick-alt.png'), every: require('../../assets/quick-every.png') };
 // the white speech bubble when a new book opens: Quick Book, its two layouts, and a word about words over pictures
 function QuickBookAsk({ tr, winW, winH, onCancel, onGo }) {
-  const [layout, setLayout] = useState(null); // 'alt' | 'every' (chosen before the pictures)
+  const [layout, setLayout] = useState('alt'); // 'alt' | 'every' (chosen before the pictures; Picture, then words to start: Jörg, 31 Oct 2026)
   const [off, setOff] = useState(false); // Don't show this message again
   const tileW = Math.min(150, (Math.min(460, winW - 40) - 52 - 12) / 2);
   const Tile = ({ v, label, rec }) => {
