@@ -68,6 +68,7 @@ const ALL_HELP = [
   { section: 'Bedtime', title: 'Listen Only and the nightlight', text: [
     'Tap the moon on the black bar while a book is open, then choose Daydream (the sun) or the Nightlight (the moon). The book reads by itself while the screen slowly changes.',
     'In the Nightlight, slide the fine line under the sun to dim it: the moon moves across until only a warm glow is left.',
+    'Under the line, tap the moon or the Earth to see them glow instead of the sun. The line and the eclipse are only for the sun.',
     'Tap the sleep timer to stop the story after 15, 30 or 60 minutes. The music fades out and the moon covers the sun.',
     'Tap the lock beside the moon so little hands can’t change anything. To unlock, tap the lock again and answer the grown-up question.',
     'The screen stays on while the nightlight shows, so keep the phone plugged in at night. Grown-ups can switch the nightlight off in Settings.',
@@ -94,7 +95,7 @@ const ALL_HELP = [
     'Open My Workspace (on the notebook’s first page or in the menu) and tap the blue book under Let’s make a book.',
     'Tap the picture square to add a picture: choose one from your photos, or take a photo (of a drawing, say). Taking a photo asks a grown-up first.',
     'Tap the words square to type the words for that page. Two or three sentences reads best.',
-    'When a page is done, tap the green tick and choose Add another page. Tap the cover button on the bottom bar to give your book a title and add who wrote and illustrated it.',
+    'When a page is done, tap Done under the words and choose Add another page. Tap the cover button on the bottom bar to give your book a title and add who wrote and illustrated it.',
     'Everything saves on its own. Save for later keeps the book in My Books in Progress, in My Workspace. Finish my book puts it in My Book Collection, in My Library.',
   ] },
   { section: 'Making books', title: 'My Workspace', text: [
@@ -112,7 +113,7 @@ const ALL_HELP = [
   ] },
   { section: 'Making books', title: 'Advanced page editor', text: [
     'The Advanced page editor is for more experienced artists and creators. It puts the words over a picture, and lets you choose where they go, how they look and how big they are.',
-    'It comes with Coro Family. A grown-up turns it on in Settings, under Parental controls. Then tap Text over image in the words editor.',
+    'It comes with Coro Family. A grown-up turns it on in Settings, under Parental controls. Then tap Text over image in the words editor, choose, and tap Done: now drag the words to where you want them on the picture.',
   ] },
   { section: 'Making books', title: 'Pages, printing and sharing', text: [
     'Tap Pages in the bottom bar to see every page. Move pages up or down, or delete them.',
@@ -149,13 +150,13 @@ const ALL_HELP = [
   ] },
   { section: 'Books', title: 'Things to share and the Message Board', text: [
     'Things to share is in My Workspace, under My Notes. It holds a note from us, the Abc sheet (tap a letter to hear it) and sheets other families send you.',
-    'The Message Board at the bottom of My Workspace is for sticky notes and photos, with Book Playlists pinned in its corner. Tap the pin to add one, and tap a note or photo to see it big or take it down.',
+    'The Message Board at the bottom of My Workspace is for sticky notes, photos and doodles from My Notes, with Book Playlists pinned in its corner. Tap the pin to add one, and tap a note or photo to see it big or take it down.',
   ] },
   { section: 'Books', title: 'The Book Store', store: true, text: [
     'The Book Store has new books to discover. Tap a cover to see what it’s about, then Read now.',
   ] },
   { section: 'Books', title: 'Membership and buying books', store: true, text: [
-    'Coro Family, the membership, is for making books: as many as you like, with every page, voice and drawing tool, for $3.99 a month or $29.99 a year, and the first 7 days are free. In the Book Store, some books are free, with a new free book every month. Books by artists are bought one at a time, members too, and half of what Coro earns from each goes to its artist.',
+    'Coro Family, the membership, is for making books: as many as you like, with every page, voice and drawing tool and the Advanced page editor for words over pictures, for $3.99 a month or $29.99 a year, and the first 7 days are free. In the Book Store, some books are free, with a new free book every month. Books by artists are bought one at a time, members too, and half of what Coro earns from each goes to its artist.',
     'Buying is for grown-ups: the app asks a grown-up question first, and payment goes through your Apple ID. Cancel the membership any time in your App Store account settings. On a new phone, use Restore Purchases on the membership screen.',
   ] },
   { section: 'Grown-ups', title: 'Settings and parental controls', text: [
