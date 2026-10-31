@@ -35,11 +35,11 @@ function Choice({ label, on, onPress, disabled }) {
   );
 }
 
-function Toggle({ label, value, onChange }) {
+function Toggle({ label, value, onChange, disabled }) {
   return (
     <View style={styles.row}>
       <Text style={styles.rowText}>{label}</Text>
-      <Switch accessibilityLabel={label} value={value} onValueChange={(v) => { tap(); onChange(v); }} trackColor={{ true: colors.green, false: '#555' }} thumbColor={colors.white} ios_backgroundColor="#555" />
+      <Switch accessibilityLabel={label} value={value} disabled={disabled} onValueChange={(v) => { tap(); onChange(v); }} trackColor={{ true: colors.green, false: '#555' }} thumbColor={colors.white} ios_backgroundColor="#555" />
     </View>
   );
 }
@@ -157,7 +157,9 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
                 <Toggle label={t('Show My Notes')} value={controls.notebook} onChange={(v) => set({ notebook: v })} />
                 <Toggle label={t('Show Let’s make a book')} value={controls.create} onChange={(v) => set({ create: v })} />
                 {/* the Advanced page editor: off to start, so the book maker stays simple for kids (Jörg, 30 Oct 2026) */}
-                {controls.create ? <Toggle label={t('Advanced page editor')} value={!!controls.advancedPages} onChange={(v) => set({ advancedPages: v })} /> : null}
+                {/* members only: everyone sees it, only Coro Family members can switch it on (Jörg, 31 Oct 2026) */}
+                {controls.create ? <Toggle label={t('Advanced page editor')} value={!!controls.advancedPages && ps.member} disabled={!ps.member} onChange={(v) => set({ advancedPages: v })} /> : null}
+                {controls.create && !ps.member ? <Pressable onPress={onJoin} hitSlop={8} accessibilityRole="link"><Text style={styles.link}>{t('Comes with Coro Family. Join to turn it on.')}</Text></Pressable> : null}
                 {controls.create ? <Text style={styles.small}>{t('Put the words on a picture, and choose their look, size and place. Off: the book maker stays simple, with the words on their own page.')}</Text> : null}
                 <Toggle label={t('Show Ideas and Help')} value={controls.help} onChange={(v) => set({ help: v })} />
                 <Toggle label={t('Recording own voice')} value={controls.recording} onChange={(v) => set({ recording: v })} />

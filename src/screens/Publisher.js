@@ -21,6 +21,7 @@ import { COVER_COLORS, bylineLook, bylineStyle, coverBoxes, coverTitleLook, titl
 import { creditsLine } from '../userStories';
 import { playKey } from '../sound';
 import { useControls } from '../controls';
+import { usePurchases } from '../purchases';
 import { classOf, deleteUserStory, dropPicture, keepPicture, newPageId, overOf, saveUserStory } from '../userStories';
 import StoryGuide from '../components/StoryGuide';
 import ParentGate from '../components/ParentGate';
@@ -431,7 +432,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   };
   // Advanced page editor: a words button on each picture (Jörg, 30 Oct 2026), so a page of two pictures (no words
   // square) can still have words: they go on that picture, and the words editor opens
-  const wordsChip = (which) => (controls.advancedPages && over !== which ? (
+  const wordsChip = (which) => (advanced && over !== which ? (
     <Pressable onPress={() => { update({ textOn: which }); openWords(); }} hitSlop={6} accessibilityRole="button"
       accessibilityLabel={tr('Text over this image')} style={styles.chipIcon}><Image source={CHOICE_ICONS.text} style={styles.chipImg} /></Pressable>
   ) : null);
@@ -481,6 +482,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const over = wordsOverOn(page);
   const secondPic = !!(page && page.uri2 && (!(page.text || '').trim() || page.textOn));
   const controls = useControls(); // (the Advanced page editor: Settings → Parental controls)
+  const purchases = usePurchases();
+  const advanced = !!controls.advancedPages && purchases.member; // (members only: Jörg, 31 Oct 2026)
   const [pageAsk, setPageAsk] = useState(null); // 'Delete page {n}?' (its words and pictures go too: asked first, 31 Oct 2026)
   const [placeOpen, setPlaceOpen] = useState(false); // the words editor's 'Text over image' choices
 
@@ -1234,7 +1237,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           ) : null}
           {/* under the page: 'Text over image' (left), and a green Done pill (right) */}
           <Animated.View style={{ width: winW - 2 * GAP, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: zoom }}>
-            {page.text.trim() && (controls.advancedPages || page.textOn) /* the Advanced page editor (Settings), or a page already set that way */ ? (
+            {page.text.trim() && (advanced || page.textOn) /* the Advanced page editor (Settings), or a page already set that way */ ? (
               <Pressable onPress={() => { Keyboard.dismiss(); setPlaceOpen((o) => !o); }} hitSlop={8} accessibilityRole="button" accessibilityState={{ expanded: placeOpen }} style={[styles.donePill, { backgroundColor: '#3d3d3d', flexDirection: 'row', alignItems: 'center', gap: 10 }]}>
                 <Text style={styles.donePillText}>{placeOpen ? tr('Hide choices') : tr('Text over image')}</Text>
                 {/* an arrow in a circle: down while the choices are closed, up while they're open (Jörg, 31 Oct 2026) */}
