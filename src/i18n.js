@@ -798,7 +798,6 @@ const T = {
   'Dreamy harp': { de: 'Träumerische Harfe', fr: 'Harpe rêveuse', es: 'Arpa de ensueño', ja: 'ゆめみる ハープ', ar: "قيثارة حالمة" },
   'Night clouds': { de: 'Nachtwolken', fr: 'Nuages de nuit', es: 'Nubes de noche', ja: 'よるの くも', ar: "غيوم الليل" },
   'Shruti box': { de: 'Shruti-Box', fr: 'Shruti box', es: 'Shruti box', ja: 'シュルティボックス', ar: "صندوق شروتي" },
-  'AM Radio': { de: 'Mittelwellenradio', fr: 'Radio AM', es: 'Radio AM', ja: 'AMラジオ', ar: "راديو AM" },
   'Music and Sounds': { de: 'Musik und Klänge', fr: 'Musique et sons', es: 'Música y sonidos', ja: 'おんがくと しぜんの音', ar: "الموسيقى والأصوات" },
   'Record': { de: 'Aufnahme', fr: 'Enregistrer', es: 'Grabar', ja: 'ろくおん', ar: "تسجيل" },
   'Sounds': { de: 'Klänge', fr: 'Sons', es: 'Sonidos', ja: 'しぜんの音', ar: "الأصوات" },

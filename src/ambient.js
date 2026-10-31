@@ -22,7 +22,6 @@ export const TRACKS = [
   { id: 'dreamy-harp', kind: 'music', name: 'Dreamy harp', src: require('../assets/ambient/dreamy-harp.mp3') },
   { id: 'ambient-drift', kind: 'music', name: 'Night clouds', src: require('../assets/ambient/ambient-drift.mp3') }, // slow ambient pads (ElevenLabs, evened out)
   { id: 'shruti-box', kind: 'music', name: 'Shruti box', src: require('../assets/ambient/shruti-box.mp3') }, // a breathing reed drone (ElevenLabs, evened out)
-  { id: 'am-radio', kind: 'music', name: 'AM Radio', src: require('../assets/ambient/am-radio.mp3') }, // an old AM radio tuning in to a sung country lullaby (ElevenLabs, ci/song.js, take B: Jörg, 31 Oct 2026)
 ];
 export const SOUNDS = TRACKS.filter((x) => x.kind === 'sound');
 export const MUSIC = TRACKS.filter((x) => x.kind === 'music');
