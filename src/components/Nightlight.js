@@ -28,6 +28,7 @@ import DaydreamVideo from './Daydream';
 
 const SUN = require('../../assets/nightlight-sun.png');
 const CORONA = require('../../assets/nightlight-corona.png');
+const DIAMOND = require('../../assets/nightlight-diamond.png'); // the diamond ring: a thin, tilted bead of light at the moon's edge (Jörg, 31 Oct 2026)
 const CREAM = '#f4e2cf';
 const BASE = '#1e1e20'; // the popup's dark grey (a deep, quiet grey at night)
 const GRAIN = require('../../assets/noise.png'); // a fine grain over the alarm popup, so it feels like a real object
@@ -289,6 +290,9 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
   const firedOn = useRef(null);
   const riseTimer = useRef(null);
   const volTimer = useRef(null);
+  const ringFade = useRef(new Animated.Value(0)).current; // the diamond ring (see the sun below)
+  const ringOn = (eclipse || 0) >= 0.985;
+  useEffect(() => { Animated.timing(ringFade, { toValue: ringOn ? 1 : 0, duration: ringOn ? 1400 : 350, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(); }, [ringOn]);
   const before = useRef(0); // the eclipse before the alarm (Snooze brings it back)
   const eRef = useRef(eclipse); eRef.current = eclipse;
   const onEclipseRef = useRef(onEclipse); onEclipseRef.current = onEclipse;
@@ -387,6 +391,9 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
   const moonX = e <= 0 ? offX : e < 0.04 ? offX + (edgeX - offX) * (e / 0.04) : edgeX * (1 - (e - 0.04) / 0.96);
   const sunOpacity = 1; // the sun itself never dims: the moon passing in front of it is the dimmer
   const coronaOpacity = Math.max(0, Math.min(1, (e - 0.82) / 0.18));
+  // the diamond ring (its picture was drawn for a moon 127 across its middle, 520 wide, the bead at its centre)
+  const ringD = moonD * (520 / 254), ringA = (-14 * Math.PI) / 180, ringR = moonD / 2 - moonD * 0.012;
+  const ringDX = ringR * Math.cos(ringA), ringDY = ringR * Math.sin(ringA);
   const faceColor = e > 0.6 ? 'rgba(244,226,207,0.7)' : 'rgba(0,0,0,0.62)';
 
   const sunBlock = (
@@ -396,6 +403,10 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
       </Animated.View>
       {coronaOpacity > 0 ? <Image source={CORONA} style={{ position: 'absolute', width: S, height: S, opacity: coronaOpacity }} resizeMode="contain" /> : null}
       <View style={{ position: 'absolute', width: moonD, height: moonD, borderRadius: moonD / 2, backgroundColor: '#050506', transform: [{ translateX: moonX }] }} />
+      {/* the diamond ring: once the moon is all the way home, a last bead of sunlight in front of its right edge,
+          leaning with its curve, with soft rays; it fades in as the moon settles and goes as soon as it moves */}
+      <Animated.Image source={DIAMOND} resizeMode="contain" accessibilityIgnoresInvertColors
+        style={{ position: 'absolute', width: ringD, height: ringD, opacity: ringFade, transform: [{ translateX: moonX + ringDX }, { translateY: ringDY }] }} />
       {showFace && controls.clock ? <View style={{ position: 'absolute' }}><ClockFace size={S * 0.5} now={now} color={faceColor} /></View> : null}
     </Animated.View>
   );
