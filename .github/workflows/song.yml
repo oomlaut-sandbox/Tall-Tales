@@ -1,0 +1,37 @@
+# Makes the radio lullaby (ci/song.js) with ElevenLabs. Saves it to the song-output branch.
+name: Radio lullaby
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Only these (comma separated ids)'
+        required: false
+        default: ''
+permissions:
+  contents: write
+jobs:
+  song:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Generate
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ONLY: ${{ github.event.inputs.only }}
+        run: node ci/song.js 2>&1 | tee /tmp/song.txt
+      - name: Save
+        if: always()
+        run: |
+          cp -r song-out /tmp/song-out 2>/dev/null || mkdir -p /tmp/song-out
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          git checkout -q --orphan song-output
+          git rm -rfq --cached . > /dev/null
+          rm -rf ./* .gitignore 2>/dev/null || true
+          cp -r /tmp/song-out song; cp /tmp/song.txt report.txt
+          git add -f song report.txt
+          git commit -qm "Radio lullaby"
+          git push -qf origin song-output
