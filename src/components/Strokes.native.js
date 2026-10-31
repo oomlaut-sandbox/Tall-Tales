@@ -97,15 +97,16 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
   const tooth = useImage(TOOTH);
   const k = (TILE * width) / 512;
   const tex = (img) => <ImageShader image={img} tx="repeat" ty="repeat" rect={{ x: 0, y: 0, width: 512, height: 512 }} transform={[{ scale: k }]} />;
+  const parts = useMemo(() => byLayer(live ? [...(strokes || []), live] : strokes).map((part) => ({ part, runs: runsOf(drawOrder(part), width) })), [strokes, live, width]); // (worked out once per change)
   return (
     <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width, height }}>
       <Canvas style={{ width, height }}>
         {/* the drawing on its own layer: the eraser rubs down to the paper, and the tooth only marks what's drawn */}
         {/* behind the lines first, then everything else, each on its own layer (the eraser only rubs its own layer) */}
-        {byLayer(live ? [...(strokes || []), live] : strokes).map((part, n) => (part.length ? (
+        {parts.map(({ part, runs }, n) => (part.length ? (
         <Group key={n} layer={part.a < 1 ? <Paint opacity={part.a} /> : true}>
           {/* fills under the lines, the eraser rubbing out what came before it (see drawOrder) */}
-          {runsOf(drawOrder(part), width).map((r, i) => (r.tex > 0 ? (
+          {runs.map((r, i) => (r.tex > 0 ? (
             <Group key={i} layer>
               {r.list.map((st, j) => <One key={j} st={st} width={width} height={height} />)}
               {tooth ? <Rect x={0} y={0} width={width} height={height} blendMode="srcATop" opacity={TOOTH_OF[r.tex]}>{tex(tooth)}</Rect> : null}
@@ -156,12 +157,18 @@ async function drawStamp(canvas, st, px) {
   }
 }
 // an imported photo onto a canvas (the exported picture, the eyedropper): filling w × h, cropped from its middle
-const photoCache = {};
+// (only the last few photos are kept decoded, so a long drawing session doesn't fill the phone's memory: 31 Oct 2026)
+const photoCache = new Map();
+const PHOTO_KEEP = 3;
 async function drawPhotoStroke(canvas, st, w, h) {
   const u = liveUri(st.ph);
   try {
-    if (!(u in photoCache)) photoCache[u] = Skia.Image.MakeImageFromEncoded(Skia.Data.fromBytes(await new File(u).bytes()));
-    const img = photoCache[u];
+    let img = photoCache.get(u);
+    if (img === undefined) {
+      img = Skia.Image.MakeImageFromEncoded(Skia.Data.fromBytes(await new File(u).bytes()));
+      photoCache.set(u, img);
+      while (photoCache.size > PHOTO_KEEP) { const k = photoCache.keys().next().value; const old = photoCache.get(k); photoCache.delete(k); try { if (old && old.dispose) old.dispose(); } catch (e) {} }
+    } else { photoCache.delete(u); photoCache.set(u, img); } // (most recently used last)
     if (!img) return;
     const iw = img.width(), ih = img.height(), k = Math.min(iw / w, ih / h), sw = w * k, sh = h * k;
     const p = Skia.Paint(); p.setAntiAlias(true);

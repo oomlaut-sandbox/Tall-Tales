@@ -1077,6 +1077,12 @@ function LayerAlpha({ n, value, onChange, t }) {
   );
 }
 
+function LiveStrokes({ bus, strokes, width, height, noPaper }) {
+  const [live, setLive] = useState(bus.v);
+  useEffect(() => { bus.subs.add(setLive); return () => { bus.subs.delete(setLive); }; }, [bus]);
+  return <StrokesView strokes={strokes} live={live} width={width} height={height} noPaper={noPaper} />;
+}
+
 export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone, onNext, draftKey }) {
   useHideBack(); // no back button over the drawing editor (Jörg, 27 Oct 2026)
   const t = useT();
@@ -1099,7 +1105,11 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
     return () => { on = false; sub.remove(); };
   }, []);
   useEffect(() => { const tm = setTimeout(saveDraft, 3000); return () => clearTimeout(tm); }, [strokes]);
-  const [live, setLive] = useState(null);
+  // the line being drawn lives in its own small piece (LiveStrokes), so the rest of the editor (colours, tools,
+  // layers) isn't redrawn on every frame while drawing (31 Oct 2026)
+  const liveBus = useRef(null);
+  if (!liveBus.current) { const subs = new Set(); liveBus.current = { v: null, subs, set(v) { this.v = v; subs.forEach((f) => f(v)); } }; }
+  const setLive = (v) => liveBus.current.set(v);
   const [pen, setPen] = useState('#1e2324'); // charcoal to start
   const [brush, setBrush] = useState('ink');
   const [shape, setShape] = useState(null); // Shapes: drag on the page to draw a circle, square, triangle, star or heart
@@ -1374,7 +1384,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
     <Animated.View style={{ transform: [{ translateX: zX }, { translateY: zY }, { scale: zS }] }}>
     <View {...pad.panHandlers} onPointerDown={onPen} onPointerMove={onPen} style={[styles.drawPaper, { width: W, height: tall ? W * 2 : W }]}>
       {photo ? <Image source={{ uri: photo }} style={StyleSheet.absoluteFill} resizeMode="cover" pointerEvents="none" /> : null}
-      <StrokesView strokes={strokes} live={live} width={W} height={tall ? W * 2 : W} noPaper={!!photo} />
+      <LiveStrokes bus={liveBus.current} strokes={strokes} width={W} height={tall ? W * 2 : W} noPaper={!!photo} />
       {/* Mirror: a faint line down the middle, where the two sides meet */}
       {mirror ? <View pointerEvents="none" style={{ position: 'absolute', left: W / 2 - 0.5, top: 0, bottom: 0, borderLeftWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(0,0,0,0.22)' }} /> : null}
     </View>
