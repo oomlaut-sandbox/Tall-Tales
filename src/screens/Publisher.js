@@ -368,7 +368,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       accessibilityLabel={tr('Text over this image')} style={styles.chipIcon}><Image source={CHOICE_ICONS.text} style={styles.chipImg} /></Pressable>
   ) : null);
   const closeWords = () => {
-    const done = () => { setEditing(false); setPlaceOpen(false); setPageDone(true); sayStep(); };
+    // words over a picture: Done just closes the editor and saves, so the words can be dragged on the picture
+    // straight away (no 'What's next?' box: Jörg, 31 Oct 2026)
+    const done = () => { setEditing(false); setPlaceOpen(false); if (!page.textOn) setPageDone(true); sayStep(); };
     if (!fromRect.current || !zoomTo) return done();
     Animated.timing(zoom, { toValue: 0, duration: 260, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(done);
   };
@@ -1529,7 +1531,7 @@ const styles = StyleSheet.create({
   fontPillOn: { backgroundColor: colors.green },
   fontPillText: { color: colors.white, fontSize: 14 },
   placeBox: { backgroundColor: 'rgba(12,12,12,0.86)', borderRadius: 18, padding: 12, gap: 10, marginBottom: 12 },
-  placeLabel: { color: '#a8a39a', fontFamily: fonts.uiBold, fontSize: 12, letterSpacing: 0.6, textTransform: 'uppercase', marginTop: 2 },
+  placeLabel: { color: '#a8a39a', fontFamily: fonts.uiBold, fontSize: 14, marginTop: 2 }, // sentence case, not capitals (Jörg, 31 Oct 2026)
   placeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   placeTile: { width: 44, height: 40, borderRadius: 10, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: 'transparent' },
   placeTileOn: { backgroundColor: '#2f4a30', borderColor: colors.green },
