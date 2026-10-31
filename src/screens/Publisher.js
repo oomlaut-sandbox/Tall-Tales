@@ -948,6 +948,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               { translateY: zoom.interpolate({ inputRange: [0, 1], outputRange: [f.y + f.h / 2 - (t.y + t.h / 2), 0] }) },
               { scale: zoom.interpolate({ inputRange: [0, 1], outputRange: [f.w / t.w, 1] }) },
             ] : [];
+            // the picture the words are on (Words on a picture), if any: the editor shows them on it
+            const overPic = page.textOn === 'top' ? page.uri : page.textOn === 'bottom' ? page.uri2 : null;
             return (
               <Animated.View
                 ref={editRef} collapsable={false}
@@ -962,17 +964,37 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   setTimeout(() => (editRef.current && editRef.current.measureInWindow
                     ? editRef.current.measureInWindow((x, y, w, h) => grow(w ? { x, y, w, h } : null)) : grow(null)), 0);
                 }}
-                style={[styles.editorPage, { width: W, maxHeight: W, opacity: f && !t ? 0 : 1, transform: move }]}>
-                <TextInput
-                  value={page.text}
-                  onChangeText={(text) => { if (text.length > (page.text || '').length) playKey(); update({ text }); }}
-                  placeholder={tr('Type the words for this page. Two or three sentences reads best.')}
-                  placeholderTextColor="#666"
-                  multiline
-                  autoFocus
-                  style={[styles.editorInput, { fontFamily: bookFont(writeFont).family, outlineWidth: 0 }]}
-                  accessibilityLabel={tr('Words for page {n}', { n: i + 1 })}
-                />
+                style={[styles.editorPage, { width: W, maxHeight: W, opacity: f && !t ? 0 : 1, transform: move }, overPic ? { height: W, padding: 0, overflow: 'hidden' } : null]}>
+                {overPic ? (
+                  // words on a picture: written right on that picture, in the look and size chosen for them, so
+                  // they can be seen as they'll be (Jörg, 30 Oct 2026)
+                  <>
+                    <Image source={{ uri: overPic }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+                    <WordsOver boxW={W} boxH={W} at={page.textAt} look={page.textLook || 'light'}>
+                      <TextInput
+                        value={page.text}
+                        onChangeText={(text) => { if (text.length > (page.text || '').length) playKey(); update({ text }); }}
+                        placeholder={tr('Type the words for this page. Two or three sentences reads best.')}
+                        placeholderTextColor={wordsLook(page.textLook || 'light', page.textInk).color === '#1c1c1c' ? '#666' : 'rgba(255,255,255,0.7)'}
+                        multiline
+                        autoFocus
+                        style={[{ fontFamily: bookFont(writeFont).family, fontSize: wordsOverSize(W, page.textSize || 1), lineHeight: wordsOverSize(W, page.textSize || 1) * 1.45, minWidth: W * 0.5, maxWidth: W * 0.84 - 8, padding: 0, outlineWidth: 0 }, wordsOverText(page.textLook || 'light', page.textInk)]}
+                        accessibilityLabel={tr('Words for page {n}', { n: i + 1 })}
+                      />
+                    </WordsOver>
+                  </>
+                ) : (
+                  <TextInput
+                    value={page.text}
+                    onChangeText={(text) => { if (text.length > (page.text || '').length) playKey(); update({ text }); }}
+                    placeholder={tr('Type the words for this page. Two or three sentences reads best.')}
+                    placeholderTextColor="#666"
+                    multiline
+                    autoFocus
+                    style={[styles.editorInput, { fontFamily: bookFont(writeFont).family, outlineWidth: 0 }]}
+                    accessibilityLabel={tr('Words for page {n}', { n: i + 1 })}
+                  />
+                )}
               </Animated.View>
             );
           })()}
