@@ -1195,6 +1195,28 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 const T = cover.title; const by = coverSel === 'byline' && T.bx != null;
                 const curColor = (by ? bylineLook(T).color : T.color) || '#ffffff';
                 const a = (by ? T.balign || T.align : T.align) || 'center'; const nextA = { left: 'center', center: 'right', right: 'left' }[a];
+                // Text Color: a compact picker in this same box, under the cover, so the words and the picture stay in
+                // view while choosing (Jörg, 30 Oct 2026): two rows of colours that scroll sideways, and a tick to close
+                if (coverTool === 'color') {
+                  const half = Math.ceil(COVER_COLORS.length / 2);
+                  return (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }} accessibilityLabel={tr('Text Color')}>
+                      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flex: 1 }} contentContainerStyle={{ paddingVertical: 4, paddingHorizontal: 4 }}>
+                        <View style={{ gap: 8 }}>
+                          {[COVER_COLORS.slice(0, half), COVER_COLORS.slice(half)].map((row, r) => (
+                            <View key={r} style={{ flexDirection: 'row', gap: 8 }}>
+                              {row.map(([hex, name]) => (
+                                <Pressable key={hex} onPress={() => setCoverTitle(by ? { bColor: hex } : { color: hex })} accessibilityRole="button" accessibilityLabel={name} accessibilityState={{ selected: curColor === hex }}
+                                  style={[styles.swatch, { width: 28, height: 28, borderRadius: 14, backgroundColor: hex }, curColor === hex && styles.swatchOn]} />
+                              ))}
+                            </View>
+                          ))}
+                        </View>
+                      </ScrollView>
+                      <Pressable onPress={() => setCoverTool(null)} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Done')}><DoneTick size={34} /></Pressable>
+                    </View>
+                  );
+                }
                 return (
                   <>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -1252,7 +1274,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           {/* Done: bottom right, lined up with the cover's right edge */}
           {/* a new book: 'Start writing' goes on to page 1 (nobody is stuck on the cover) */}
           {!kbUp && winW > winH ? <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { position: 'absolute', right: GAP + (wide ? 0 : insets.right), bottom: GAP + 40, marginBottom: 0 }]}>{/* as far from the bar as from the right edge */}<Text style={styles.donePillText}>{startMode ? tr('Start writing') : tr('Done')}</Text></Pressable> : null}
-          {coverTool && cover && cover.title ? (() => {
+          {coverTool === 'font' && cover && cover.title ? (() => {
             const T = cover.title; const by = coverSel === 'byline' && T.bx != null;
             const curColor = (by ? bylineLook(T).color : T.color) || '#ffffff';
             const curFont = (by ? bylineLook(T).font : T.font) || 'serif';
@@ -1374,7 +1396,7 @@ const styles = StyleSheet.create({
   coverShadow: { marginBottom: 14, backgroundColor: '#2f5f9e', shadowColor: '#000', shadowOffset: { width: 3, height: 8 }, shadowOpacity: 0.55, shadowRadius: 14, elevation: 10 },
   coverSquare: { backgroundColor: '#7d7d7d', overflow: 'hidden', marginBottom: 14, shadowColor: '#000', shadowOffset: { width: 2, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10 },
   toolOn: { backgroundColor: colors.green },
-  toolBox: { height: TOOLBOX_H, marginTop: 10, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.72)', paddingHorizontal: 10, paddingVertical: 8 }, // the black glass box
+  toolBox: { height: TOOLBOX_H, marginTop: 10, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.72)', paddingHorizontal: 10, paddingVertical: 8, justifyContent: 'center' }, // the black glass box
   toolBtn: { width: 40, height: 34, borderRadius: 17, backgroundColor: '#4a4a4a', alignItems: 'center', justifyContent: 'center' },
   toolChip: { height: 34, borderRadius: 17, paddingHorizontal: 12, backgroundColor: '#4a4a4a', alignItems: 'center', justifyContent: 'center', flexShrink: 1 },
   swatches: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', gap: 8, marginTop: 22 },
