@@ -1194,7 +1194,6 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               {coverTitling && cover && cover.title ? (() => {
                 const T = cover.title; const by = coverSel === 'byline' && T.bx != null;
                 const curColor = (by ? bylineLook(T).color : T.color) || '#ffffff';
-                const w = (by ? T.bw : T.w) || 1; const setW = (v) => setCoverTitle(by ? { bw: v } : { w: v });
                 const a = (by ? T.balign || T.align : T.align) || 'center'; const nextA = { left: 'center', center: 'right', right: 'left' }[a];
                 return (
                   <>
@@ -1208,6 +1207,20 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                     <Pressable onPress={() => setCoverTool('font')} style={styles.toolBtn} accessibilityRole="button" accessibilityLabel={tr('Title font')}>
                       <Text style={[styles.donePillText, { fontSize: 15, fontFamily: bookFont((by ? bylineLook(T).font : T.font) || 'serif').bold || bookFont((by ? bylineLook(T).font : T.font) || 'serif').family }]}>Aa</Text>
                     </Pressable>
+                    {/* left / centre / right (the box's width: drag its side handles on the cover) */}
+                    <Pressable onPress={() => setCoverTitle(by ? { balign: nextA } : { align: nextA })} style={[styles.toolBtn, { alignItems: a === 'left' ? 'flex-start' : a === 'right' ? 'flex-end' : 'center', paddingHorizontal: 10 }]} accessibilityLabel={tr('Text alignment')}>
+                      {[16, 10, 14].map((len, i) => <View key={i} style={{ width: len, height: 2, borderRadius: 1, backgroundColor: colors.white, marginVertical: 1.5 }} />)}
+                    </Pressable>
+                  </View>
+                  {/* the second row, only when there's a name to put on the cover: the author line on or off, and once
+                      it's there, which words the tools above change (the title or the author line) */}
+                  {creditsLine(draft.writer, draft.artist) || (T.byline && T.bx != null) ? (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10 }}>
+                    {T.byline && T.bx != null ? [['title', tr('Title')], ['byline', tr('Author')]].map(([k, label]) => (
+                      <Pressable key={k} onPress={() => setCoverSel(k)} accessibilityRole="radio" accessibilityState={{ selected: coverSel === k }} style={[styles.toolChip, coverSel === k && { backgroundColor: colors.green }]}>
+                        <Text numberOfLines={1} style={[styles.donePillText, { fontSize: 13 }]}>{label}</Text>
+                      </Pressable>
+                    )) : null}
                     <View style={{ flex: 1 }} />
                     {/* the author / illustrator on the cover too: only if they want it (and gave a name) */}
                     {creditsLine(draft.writer, draft.artist) ? (
@@ -1217,21 +1230,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                       </Pressable>
                     ) : null}
                   </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8 }}>
-                    {/* which words the tools change: the title or the author line */}
-                    {T.byline && T.bx != null ? [['title', tr('Title')], ['byline', tr('Author')]].map(([k, label]) => (
-                      <Pressable key={k} onPress={() => setCoverSel(k)} accessibilityRole="radio" accessibilityState={{ selected: coverSel === k }} style={[styles.toolChip, coverSel === k && { backgroundColor: colors.green }]}>
-                        <Text numberOfLines={1} style={[styles.donePillText, { fontSize: 13 }]}>{label}</Text>
-                      </Pressable>
-                    )) : null}
-                    <View style={{ flex: 1 }} />
-                    {/* the text box: narrower or wider (the words wrap inside it), then left / centre / right */}
-                    <Pressable onPress={() => setW(Math.max(0.3, Math.round((w - 0.1) * 100) / 100))} style={styles.toolBtn} accessibilityLabel={tr('Narrower text box')}><Text style={[styles.donePillText, { fontSize: 13 }]}>{'›‹'}</Text></Pressable>
-                    <Pressable onPress={() => setW(Math.min(1, Math.round((w + 0.1) * 100) / 100))} style={styles.toolBtn} accessibilityLabel={tr('Wider text box')}><Text style={[styles.donePillText, { fontSize: 13 }]}>{'‹›'}</Text></Pressable>
-                    <Pressable onPress={() => setCoverTitle(by ? { balign: nextA } : { align: nextA })} style={[styles.toolBtn, { alignItems: a === 'left' ? 'flex-start' : a === 'right' ? 'flex-end' : 'center', paddingHorizontal: 10 }]} accessibilityLabel={tr('Text alignment')}>
-                      {[16, 10, 14].map((len, i) => <View key={i} style={{ width: len, height: 2, borderRadius: 1, backgroundColor: colors.white, marginVertical: 1.5 }} />)}
-                    </Pressable>
-                  </View>
+                  ) : null}
                   </>
                 ); })() : null}
               </View>
