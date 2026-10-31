@@ -16,6 +16,7 @@ const IDEAS_FELT = require('../../assets/ideas-felt.png'); // the mossy green st
 const BAND_FELT = require('../../assets/band-settings.jpg'); // Jörg's grey stitched felt banner
 import { Bar, Burger, MusicIcon, Option, PlayGlyph, WithBar, ChoiceLabel } from '../components/Chrome';
 import ReadingOptionsSection from '../components/ReadingOptionsSection';
+import GrownupCodeCard from '../components/GrownupCodeCard';
 import { LANGS, useT } from '../i18n';
 import { lockedControls, quickSafeControls, DEFAULT_CONTROLS, STORE_ON } from '../controls';
 import { usePurchases } from '../purchases';
@@ -148,6 +149,8 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
                 </View>
                 <Text style={styles.small}>{STORE_ON ? t('Each book has an age rating. Books rated for older children are hidden in My Library and the Book Store.') : t('Books rated for older children are hidden.')}</Text>
               </View>
+              {/* the optional grown-up passcode, instead of the times-table question (Jörg, 30 Oct 2026) */}
+              <GrownupCodeCard styles={styles} />
               <View style={styles.card}>
                 <Text style={styles.p}>{t('Choose exactly what your child can see and do. Settings always asks the grown-up question first.')}</Text>
                 {STORE_ON ? <Toggle label={t('Show the Book Store')} value={controls.store} onChange={(v) => set({ store: v })} /> : null}

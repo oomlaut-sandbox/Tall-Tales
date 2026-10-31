@@ -5,6 +5,8 @@ import { Image, Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View
 import { colors, fonts } from '../theme';
 
 import { LANGS, LangContext, NUMBER_WORDS, useLang, useT } from '../i18n';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import { checkGrownupCode, setGrownupCode, useGrownupCode } from '../grownupCode';
 
 const GROWNUP = require('../../assets/icon-grownup.png');
 
@@ -15,8 +17,12 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
   const [q, setQ] = useState({ a: 7, b: 8 });
   const [answer, setAnswer] = useState('');
   const [wrong, setWrong] = useState(false);
+  // a grown-up passcode set in Settings: asked for instead of the times-table question (Jörg, 30 Oct 2026)
+  const coded = useGrownupCode();
+  const [forgotMsg, setForgotMsg] = useState(null);
   useEffect(() => {
     if (visible) {
+      setForgotMsg(null);
       setQ({ a: 6 + Math.floor(Math.random() * 4), b: 6 + Math.floor(Math.random() * 4) });
       setAnswer('');
       setWrong(false);
@@ -36,8 +42,21 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
   // how much of this layer the keyboard covers
   const covered = kbTop != null && frame ? Math.max(0, frame.y + frame.h - kbTop) : 0;
   const check = () => {
-    if (parseInt(answer, 10) === q.a * q.b) onPass();
+    if (coded ? checkGrownupCode(answer) : parseInt(answer, 10) === q.a * q.b) onPass();
     else { setWrong(true); setAnswer(''); }
+  };
+  // Forgot the passcode: Sign in with Apple asks for Face ID or the device's own passcode; that turns it off
+  const forgot = async () => {
+    setForgotMsg(null);
+    try {
+      if (!(await AppleAuthentication.isAvailableAsync())) { setForgotMsg(t('This needs Sign in with Apple, on an iPhone or iPad.')); return; }
+      await AppleAuthentication.signInAsync({ requestedScopes: [] });
+      await setGrownupCode(null);
+      onPass();
+    } catch (e) {
+      if (e && e.code === 'ERR_REQUEST_CANCELED') return;
+      setForgotMsg(t('That didn’t work. Try again.'));
+    }
   };
   // sideways the keyboard takes most of the screen: a compact box (the question, then the answer field and
   // the two buttons on one line), centred in the space above the keyboard and no wider than it needs to be
@@ -47,11 +66,12 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
       value={answer}
       onChangeText={(t) => { setAnswer(t.replace(/\D/g, '')); setWrong(false); }}
       keyboardType="number-pad"
-      maxLength={3}
+      maxLength={coded ? 4 : 3}
+      secureTextEntry={coded}
       autoFocus
       onSubmitEditing={check}
       allowFontScaling={false} style={[styles.input, flat ? { flex: 1, minWidth: 0, fontSize: 20, height: 40 } : { marginTop: 16 }]}
-      accessibilityLabel={t('Answer')}
+      accessibilityLabel={coded ? t('Grown-up passcode') : t('Answer')}
     />
   );
   const wide = !flat && Math.min(winW, winH) >= 600; // iPad: a compact box in the middle (iPhone unchanged)
@@ -64,12 +84,18 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
         {/* a grown-up holding a child's hand, so even little ones can see this is for a grown-up */}
         <Image source={GROWNUP} style={[{ position: 'absolute', top: 18, right: 18, width: 48, height: 48, tintColor: '#8a8a8a' }, flat && { top: 12, right: 14, width: 34, height: 34 }]} resizeMode="contain" accessibilityIgnoresInvertColors />
         {flat ? null : <Text style={styles.kicker}>{t('For grown-ups')}</Text>}
-        <Text style={[styles.title, { paddingRight: flat ? 40 : 52 }, flat && { fontSize: 19 }]}>{t('What is {a} times {b}?', { a: words[q.a], b: words[q.b] })}</Text>
+        <Text style={[styles.title, { paddingRight: flat ? 40 : 52 }, flat && { fontSize: 19 }]}>{coded ? t('Enter the grown-up passcode') : t('What is {a} times {b}?', { a: words[q.a], b: words[q.b] })}</Text>
         {reason && !flat ? <Text style={styles.body}>{t(reason)}</Text> : null}
         {flat ? (
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 2 }}>{input}{cancelBtn}{goBtn}</View>
         ) : input}
         {wrong ? <Text style={styles.wrong}>{t('That’s not quite right. Try again.')}</Text> : null}
+        {coded ? (
+          <Pressable onPress={forgot} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'flex-start' }}>
+            <Text style={[styles.lang, { fontSize: 14, color: 'rgba(225,225,225,0.8)', textDecorationLine: 'underline' }]}>{t('Forgot the passcode?')}</Text>
+          </Pressable>
+        ) : null}
+        {forgotMsg ? <Text style={styles.wrong}>{forgotMsg}</Text> : null}
         {flat ? null : <View style={styles.row}>{cancelBtn}{goBtn}</View>}
         {/* the languages, as on the start page: a grown-up who can't read the question can always switch (it's
             never locked out by the wrong language, whatever the parental controls say) */}
