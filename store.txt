@@ -1,0 +1,23 @@
+Uploading asset (narrate): supabase/functions/narrate/index.ts
+Uploading asset (narrate): supabase/functions/_shared/books.ts
+Deployed Functions on project ehszrhwfckwlvpplslcw: narrate
+You can inspect your deployment in the Dashboard: https://supabase.com/dashboard/project/ehszrhwfckwlvpplslcw/functions
+Uploading asset (translate): supabase/functions/_shared/books.ts
+Deployed Functions on project ehszrhwfckwlvpplslcw: translate
+You can inspect your deployment in the Dashboard: https://supabase.com/dashboard/project/ehszrhwfckwlvpplslcw/functions
+Uploading asset (book-access): supabase/functions/_shared/books.ts
+Deployed Functions on project ehszrhwfckwlvpplslcw: book-access
+You can inspect your deployment in the Dashboard: https://supabase.com/dashboard/project/ehszrhwfckwlvpplslcw/functions
+Deployed Functions on project ehszrhwfckwlvpplslcw: open-book
+You can inspect your deployment in the Dashboard: https://supabase.com/dashboard/project/ehszrhwfckwlvpplslcw/functions
+│
+◇  Setting secrets...
+Finished supabase secrets set.
+│
+◇  Setting secrets...
+Finished supabase secrets set.
+anthropic key: set
+│
+◇  Setting secrets...
+Finished supabase secrets set.
+revenuecat secret key: set
