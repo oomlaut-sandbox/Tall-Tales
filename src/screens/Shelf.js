@@ -4,7 +4,7 @@ import { TitleIcon } from '../titleIcons';
 import React, { useEffect, useRef, useState } from 'react';
 import { useScrollMemory } from '../nav';
 import { clearTileSpot, setTileSpot } from '../tileSpots';
-import { Animated, Easing, Image, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, PixelRatio, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, sectionBox, sectionTitle, SECTION_GAP } from '../theme';
 import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG, BandFill } from '../look';
@@ -58,6 +58,7 @@ export function BookSpine() {
 }
 const hasOwnSpine = (c) => !!(c && (c.hard || /hardcovers/.test(String(c.uri || '')))); // a cloth hardcover already has one
 
+const TITLE_SCALE_MAX = 1.4; // (larger text still fits its two lines)
 function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onPress, onLongPress, plus, glyph, option, cutout, selecting, selected, badge, label, ear: showEar = false }) { // cutout: a picture on a see-through background, sitting straight on the felt (no square, no shadow) // (no dog-ears on the covers)
   const t = useT();
   const { width: winW } = useWindowDimensions();
@@ -105,8 +106,12 @@ function Tile({ lean = false, spotId, plain, u, cover, coverArt, title, sub, onP
         ) : null}
       </View>
       </View>
-      {title ? <Text style={[styles.tileTitle, (plus || glyph || option) && styles.tileOption]}>{title}</Text> : null}{/* 'Make a book' is an app option, so it's in Helvetica */}
-      {sub ? <Text style={styles.tileSub}>{sub}</Text> : null}
+      {/* a book's title always has room for two lines and never more (longer ones end in …), so every row of the
+          grid lines up the same (Jörg, 31 Oct 2026); the app's own tiles (Make a book…) are as before */}
+      {title ? (plus || glyph || option
+        ? <Text style={[styles.tileTitle, styles.tileOption]}>{title}</Text>
+        : <Text numberOfLines={2} ellipsizeMode="tail" maxFontSizeMultiplier={TITLE_SCALE_MAX} style={[styles.tileTitle, { height: Math.ceil(2 * 23 * Math.min(PixelRatio.getFontScale(), TITLE_SCALE_MAX)) }]}>{title}</Text>) : null}{/* 'Make a book' is an app option, so it's in Helvetica */}
+      {sub ? <Text numberOfLines={1} ellipsizeMode="tail" style={styles.tileSub}>{sub}</Text> : null}
     </Pressable>
   );
 }
