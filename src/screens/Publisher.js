@@ -44,7 +44,7 @@ const ABOUT = [
   ['else', 'Something else', null, () => HEADING_ICONS['Making books']],
 ];
 const CORO_LYING = require('../../assets/coro-lying.png'); // Jörg's Coro lying down, cut out (dark backgrounds only)
-function AboutPage({ tr, insets, onNext, onSkip }) {
+function AboutPage({ tr, insets, onNext, onSkip, onQuick }) {
   const [pick, setPick] = useState(null);
   const [words, setWords] = useState('');
   const inputRef = useRef(null);
@@ -78,6 +78,13 @@ function AboutPage({ tr, insets, onNext, onSkip }) {
           <ChoiceLabel icon="cover" text={tr('Next, let’s make a cover')} style={styles.choiceBtnText} />
         </Pressable>
         <Pressable onPress={onSkip} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'center', marginTop: 6 }}><Text style={styles.aboutSkip}>{tr('Skip')}</Text></Pressable>
+        {/* Quick Book, any time: its bubble again, even after Don't show this message again (Jörg, 31 Oct 2026) */}
+        {onQuick ? (
+          <Pressable onPress={onQuick} hitSlop={10} accessibilityRole="link" style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 26 }}>
+            <Image source={CHOICE_ICONS.photo} style={{ width: 18, height: 18, tintColor: '#d6d6d6' }} resizeMode="contain" accessibilityIgnoresInvertColors />
+            <Text style={[styles.aboutSkip, { textDecorationLine: 'underline' }]}>{tr('Quick Book')}</Text>
+          </Pressable>
+        ) : null}
       </View>
     </ScrollView>
     {/* (Coro lying in the corner was tried here and taken away again: Jörg, 26 Oct 2026) */}
@@ -1265,7 +1272,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         // (it stops at the black bar, which stays in view, like the Cover Editor: Jörg, 26 Oct 2026)
         <View style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk, overflow: 'hidden' }, wide ? { right: BL.rightW } : { bottom: BL.barH }]}>
           <DeskFelt spot="publisher-about" overlay />
-          <AboutPage tr={tr} insets={insets} onSkip={() => setAboutOpen(false)}
+          <AboutPage tr={tr} insets={insets} onSkip={() => setAboutOpen(false)} onQuick={draft.promptId ? null : () => setQuickAsk(true)}
             onNext={({ about, aboutWords, title }) => { setDraft((d) => ({ ...d, about, aboutWords, title: d.title.trim() ? d.title : title })); setAboutOpen(false); }} />
         </View>
       ) : null}
