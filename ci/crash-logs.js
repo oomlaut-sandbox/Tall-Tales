@@ -61,7 +61,8 @@ const json = (r) => { try { return JSON.parse(r.body); } catch { return {}; } };
   const groups = json(await get(`/v1/apps/${appId}/subscriptionGroups?include=subscriptions&limit=10`));
   say(`subscription groups: ${(groups.data || []).length}`);
   for (const g of groups.data || []) {
-    say(`- group "${g.attributes.referenceName}"`);
+    const gl = json(await get(`/v1/subscriptionGroups/${g.id}/subscriptionGroupLocalizations?limit=10`));
+    say(`- group "${g.attributes.referenceName}" | display names: ${(gl.data || []).map((x) => `${x.attributes.locale}=${x.attributes.state}`).join(', ') || 'none'}`);
     const subsIn = json(await get(`/v1/subscriptionGroups/${g.id}/subscriptions?limit=20`));
     for (const sb of subsIn.data || []) {
       const a = sb.attributes || {};
@@ -70,6 +71,9 @@ const json = (r) => { try { return JSON.parse(r.body); } catch { return {}; } };
       const loc = json(await get(`/v1/subscriptions/${sb.id}/subscriptionLocalizations?limit=5`));
       const prices = json(await get(`/v1/subscriptions/${sb.id}/prices?filter[territory]=USA&include=subscriptionPricePoint&limit=5`));
       const pp = (prices.included || []).map((x) => x.attributes && x.attributes.customerPrice).filter(Boolean).join('/') || '?';
+      const shot = json(await get(`/v1/subscriptions/${sb.id}/appStoreReviewScreenshot`));
+      const locs = (loc.data || []).map((x) => `${x.attributes.locale}=${x.attributes.state}`).join(',');
+      say(`  review screenshot: ${shot.data ? 'yes' : 'no'} | localizations: ${locs}`);
       say(`  ${a.productId}: ${a.state} | ${a.subscriptionPeriod} | US $${pp} | free trial: ${offers} | names: ${(loc.data || []).length}`);
     }
   }
