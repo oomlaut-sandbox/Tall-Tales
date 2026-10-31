@@ -14,7 +14,7 @@ import { tokenize, cleanWord } from '../story';
 import { recordingDone } from '../rating';
 import { AMBER, Fade, PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
 import { FLAP_PERSPECTIVE, flapTables } from '../flapStrips';
-import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
+import { FlapPeel, SnapUnder, snapshot, supportsCurl } from '../components/Curl';
 import { bookLayout } from '../components/BookFrame';
 import { artGesture } from '../components/ZoomArt';
 
@@ -851,7 +851,22 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     };
     const t = setTimeout(take, 500);
     return () => clearTimeout(t);
-  }, [idx, size, prefs.textScale, prefs.font, !!prefs.amber, !!flipPair]); // (Amber light on or off: fresh pictures, so the next page never turns in the old colour)
+  }, [idx, size, prefs.textScale, prefs.font, !!prefs.amber, !!flipPair]);
+  // A book's own photos (books made in the app, store books) can take a moment to be drawn: a picture of the next or
+  // the previous page taken before its photo was there turned with an empty or half-drawn picture, a flash
+  // (Jörg, 31 Oct 2026). So once that page's photo has really been drawn, its picture for the turn is taken again.
+  // (The books inside the app draw their pictures at once and aren't affected.)
+  const retakeT = useRef({});
+  const retake = (which) => {
+    if (!supportsCurl || !size || flipPair) return;
+    const gen = cacheGen.current, amber = !!prefs.amber, at = which === 'next' ? idx + 1 : idx - 1;
+    clearTimeout(retakeT.current[which]);
+    retakeT.current[which] = setTimeout(async () => {
+      if (gen !== cacheGen.current || st.current.turning) return;
+      const img = await snapshot(which === 'next' ? refs.next : refs.prev);
+      if (img && gen === cacheGen.current) cache.current[at] = { img, amber };
+    }, 120); // (a beat after it's drawn on screen)
+  }; // (Amber light on or off: fresh pictures, so the next page never turns in the old colour)
 
   /* ---------- render ---------- */
   const W = size?.w || 0, H = size?.h || 0;
@@ -868,8 +883,8 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   });
   const showHot = false; // Interactive mode is switched off for now
   const layers = [];
-  const prevEl = idx > 0 ? <PageView key={`p${idx - 1}`} ref={refs.prev} {...pageProps(idx - 1)} /> : null;
-  const nextEl = idx < pages.length - 1 ? <PageView key={`p${idx + 1}`} ref={refs.next} {...pageProps(idx + 1)} /> : null;
+  const prevEl = idx > 0 ? <PageView key={`p${idx - 1}`} ref={refs.prev} {...pageProps(idx - 1)} onArtLoad={() => retake('prev')} /> : null;
+  const nextEl = idx < pages.length - 1 ? <PageView key={`p${idx + 1}`} ref={refs.next} {...pageProps(idx + 1)} onArtLoad={() => retake('next')} /> : null;
   const curEl = (
     <PageView key={`p${idx}`} ref={refs.cur} {...pageProps(idx)} zoomable={!listen} highlight={hl} onWord={listen ? undefined : onWord}
       showHotspots={showHot} onHotspot={onHotspot} bubble={bubble} />
@@ -886,6 +901,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       <View style={{ position: 'absolute', left: wideTurn ? -W / 2 : 0, top: wideTurn ? 0 : -artH, width: W, height: H }}><PageView key={`p${b}`} {...pageProps(b)} seeThrough /></View>
     </View>
   );
+  const ownPhotos = useMemo(() => pages.some((pg) => (pg.image && pg.image.uri) || (pg.image2 && pg.image2.uri)), [pages]); // (a book with its own photos)
   const pageLayers = () => [abs(prevEl, `w${idx - 1}`), abs(nextEl, `w${idx + 1}`), abs(curEl, `w${idx}`)];
   const peeling = !!(flipPair && size && flipT && peel);
   if (flipPair && size && flipT && peel) {
@@ -893,7 +909,11 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     const { a, b } = flipPair;
     const view = (i, k) => <PageView key={k} {...pageProps(i)} />;
     layers.push(...pageLayers());
-    layers.push(underB(b, flipT.artH, wide));
+    // a book with its own photos (made in the app, or from the store): page b underneath is drawn from its picture,
+    // which is already there, instead of a fresh copy whose photos would have to load mid-turn (the flashes:
+    // Jörg, 31 Oct 2026). The books inside the app turn exactly as before.
+    if (ownPhotos && peel.back) layers.push(<View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}><SnapUnder image={peel.back} width={W} height={H} clip={wide ? { x: W / 2, y: 0, w: W / 2, h: H } : { x: 0, y: flipT.artH, w: W, h: H - flipT.artH }} /></View>);
+    else layers.push(underB(b, flipT.artH, wide));
   } else if (flipPair && size && wide) {
     // Sideways iPad: the words page (right) turns over the spine like a real book's page. Its back
     // shows the next page's picture, which ends up on the left.

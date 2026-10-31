@@ -76,7 +76,7 @@ export function AmberTint() {
 }
 
 export const PageView = forwardRef(function PageView(
-  { page, width, height, bottomInset = 0, textScale = 1, fontKey = 'serif', highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary, onShare, zoomable, amber, seeThrough },
+  { page, width, height, bottomInset = 0, textScale = 1, fontKey = 'serif', highlight = -1, onWord, showHotspots, onHotspot, bubble, end, onReadAgain, onLibrary, onShare, zoomable, amber, seeThrough, onArtLoad },
   ref,
 ) {
   const t = useT();
@@ -155,7 +155,7 @@ export const PageView = forwardRef(function PageView(
             <Text style={[storyStyle, styles.endTitle]}>{t('The End')}</Text>
           </View>
         ) : (
-          page?.image ? (zoomable ? <ZoomArt source={page.image} width={artW} height={artH} /> : <Image source={page.image} style={styles.fill} resizeMode="cover" />) : null
+          page?.image ? (zoomable ? <ZoomArt source={page.image} width={artW} height={artH} /> : <Image source={page.image} style={styles.fill} resizeMode="cover" onLoad={page.image.uri ? onArtLoad : undefined} />) : null
         )}
         {showHotspots
           ? spots.map((h, i) => (
@@ -181,7 +181,7 @@ export const PageView = forwardRef(function PageView(
       <View style={[styles.textBox, { paddingHorizontal: L.padX, paddingTop: L.padY, paddingBottom: L.padY + bottomInset }, clear && { backgroundColor: amber ? AMBER.paper : colors.paper } /* the words keep their paper when the rest is see-through */]}>
         <Felt opacity={0.7} />
         {/* a page of two pictures: the second fills the words square */}
-        {!end && page?.image2 && (!(page.text || '').trim() || over) ? <Image source={page.image2} style={styles.fill} resizeMode="cover" /> : null}
+        {!end && page?.image2 && (!(page.text || '').trim() || over) ? <Image source={page.image2} style={styles.fill} resizeMode="cover" onLoad={page.image2.uri ? onArtLoad : undefined} /> : null}
         {over === 'bottom' ? overWords(L.textW, L.textH + bottomInset) : null}
         {L.wide ? <Fade edge="left" size={Math.round(L.textW * 0.09)} max={0.13} /> : <Fade edge="top" size={Math.round(L.textH * 0.09)} max={0.13} />}
         {/* the spine: a thin dark grey line where the two squares meet */}

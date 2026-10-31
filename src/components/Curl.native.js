@@ -92,6 +92,16 @@ export function liftMatrix(M, nx, ny, t, textH) {
 // upright frame's size (W = the page height, H = twice that) and the pictures are turned to match.
 // matte: plain paper (no sheen on the lifted page, softer shadows), for the notebook.
 // round: the pages' corner radius (the notebook's pages are rounded), so the flat part keeps clean corners.
+// The next page under a peel, from its picture (already drawn), only where it shows (the words side): a book's own
+// photos never have to load during a turn (Jörg, 31 Oct 2026)
+export function SnapUnder({ image, width: W, height: H, clip }) {
+  if (!image || !W || !H) return null;
+  return (
+    <Canvas style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} pointerEvents="none">
+      <Group clip={rect(clip.x, clip.y, clip.w, clip.h)}><Image image={image} x={0} y={0} width={W} height={H} fit="fill" /></Group>
+    </Canvas>
+  );
+}
 export function FlapPeel({ width: W, height: H, artH, t, corner, front, back, ox = 0, oy = 0, canvasW, canvasH, sideways, matte, round = 0 }) {
   if (!front || !back || !W || !H) return null;
   const CW = canvasW || W, CH = canvasH || H;
