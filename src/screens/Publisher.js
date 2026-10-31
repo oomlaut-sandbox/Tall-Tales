@@ -257,11 +257,12 @@ function EmptyPicture({ side, plain }) {
 }
 
 // ---- Words on a picture: its tiles (31 Oct 2026) ----
+// (one row each, small icons and no words, so the picture keeps its room: Jörg, 31 Oct 2026; VoiceOver reads each one's name)
 function PlaceGroup({ title, children }) {
   return (
-    <View style={{ gap: 8 }}>
-      <Text style={styles.placeLabel}>{title}</Text>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>{children}</View>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      <Text style={[styles.placeLabel, { width: 58, marginTop: 0 }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{title}</Text>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, flex: 1 }}>{children}</View>
     </View>
   );
 }
@@ -269,14 +270,13 @@ function PlaceTile({ label, on, off, onPress, children }) {
   return (
     <Pressable onPress={onPress} disabled={off} hitSlop={4} accessibilityRole="radio" accessibilityLabel={label} accessibilityState={{ selected: !!on, disabled: !!off }}
       style={[styles.placeTile, on && styles.placeTileOn, off && { opacity: 0.35 }]}>
-      <View style={{ height: 34, alignItems: 'center', justifyContent: 'center' }}>{children}</View>
-      <Text numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.8} style={styles.placeTileText}>{label}</Text>
+      {children}
     </Pressable>
   );
 }
 // a page of two squares (stacked, or side by side when sideways): the picture square(s) grey, the words as lines
 function WhereIcon({ where, wide }) {
-  const sq = 15, gap = 2;
+  const sq = 12, gap = 2;
   const Lines = ({ light }) => (
     <View style={{ position: 'absolute', left: 3, right: 3, top: sq / 2 - 3, gap: 2 }}>
       {[1, 0.7].map((w, k) => <View key={k} style={{ height: 1.6, width: `${w * 100}%`, alignSelf: 'center', borderRadius: 1, backgroundColor: light ? '#ffffff' : '#2a2a2a' }} />)}
@@ -298,10 +298,10 @@ function WhereIcon({ where, wide }) {
 function LookIcon({ look, ink }) {
   const L = wordsLook(look, ink);
   return (
-    <View style={{ width: 40, height: 30, borderRadius: 4, backgroundColor: '#7d8a93', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-      <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 11, backgroundColor: '#5c6b5a' }} />
+    <View style={{ width: 32, height: 24, borderRadius: 3, backgroundColor: '#7d8a93', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+      <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 8, backgroundColor: '#5c6b5a' }} />
       <View style={{ backgroundColor: L.panel || 'transparent', borderRadius: 3, paddingHorizontal: 4, paddingVertical: 1 }}>
-        <Text style={[{ fontFamily: 'EBGaramond_500Medium', fontSize: 15, lineHeight: 18 }, wordsOverText(look, ink)]}>Aa</Text>
+        <Text style={[{ fontFamily: 'EBGaramond_500Medium', fontSize: 12, lineHeight: 14 }, wordsOverText(look, ink)]}>Aa</Text>
       </View>
     </View>
   );
@@ -365,7 +365,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   // square) can still have words: they go on that picture, and the words editor opens
   const wordsChip = (which) => (controls.advancedPages && over !== which ? (
     <Pressable onPress={() => { update({ textOn: which }); openWords(); }} hitSlop={6} accessibilityRole="button"
-      accessibilityLabel={tr('Words on this picture')} style={styles.chipIcon}><Image source={CHOICE_ICONS.text} style={styles.chipImg} /></Pressable>
+      accessibilityLabel={tr('Text over this image')} style={styles.chipIcon}><Image source={CHOICE_ICONS.text} style={styles.chipImg} /></Pressable>
   ) : null);
   const closeWords = () => {
     const done = () => { setEditing(false); setPlaceOpen(false); setPageDone(true); sayStep(); };
@@ -412,7 +412,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const secondPic = !!(page && page.uri2 && (!(page.text || '').trim() || page.textOn));
   const controls = useControls(); // (the Advanced page editor: Settings → Parental controls)
   const [pageAsk, setPageAsk] = useState(null); // 'Delete page {n}?' (its words and pictures go too: asked first, 31 Oct 2026)
-  const [placeOpen, setPlaceOpen] = useState(false); // the words editor's 'Words on a picture' choices
+  const [placeOpen, setPlaceOpen] = useState(false); // the words editor's 'Text over image' choices
 
   // Autosave shortly after every change.
   useEffect(() => {
@@ -1106,20 +1106,20 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   <PlaceGroup title={tr('Size')}>
                     {WORD_SIZES.map(([v, label]) => (
                       <PlaceTile key={label} label={tr(label)} on={(page.textSize || 1) === v} onPress={() => update({ textSize: v })}>
-                        <Text style={{ color: colors.white, fontFamily: 'EBGaramond_500Medium', fontSize: Math.round(17 * v), lineHeight: 28 }}>Aa</Text>
+                        <Text style={{ color: colors.white, fontFamily: 'EBGaramond_500Medium', fontSize: Math.round(14 * v), lineHeight: 22 }}>Aa</Text>
                       </PlaceTile>
                     ))}
                   </PlaceGroup>
-                  <Text style={styles.placeNote}>{tr('After Done, drag the words to move them on the picture.')}</Text>
+                  <Text style={styles.placeNote}>{tr('After Done, drag the text to move it on the image.')}</Text>
                 </>
               ) : null}
             </Animated.View>
           ) : null}
-          {/* under the page: 'Words on a picture' (left), and a green Done pill (right) */}
+          {/* under the page: 'Text over image' (left), and a green Done pill (right) */}
           <Animated.View style={{ width: winW - 2 * GAP, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: zoom }}>
             {page.text.trim() && (controls.advancedPages || page.textOn) /* the Advanced page editor (Settings), or a page already set that way */ ? (
               <Pressable onPress={() => { Keyboard.dismiss(); setPlaceOpen((o) => !o); }} hitSlop={8} accessibilityRole="button" accessibilityState={{ expanded: placeOpen }} style={[styles.donePill, { backgroundColor: '#3d3d3d' }]}>
-                <Text style={styles.donePillText}>{placeOpen ? tr('Hide choices') : tr('Words on a picture')}</Text>
+                <Text style={styles.donePillText}>{placeOpen ? tr('Hide choices') : tr('Text over image')}</Text>
               </Pressable>
             ) : <View />}
             <Pressable onPress={closeWords} hitSlop={8} accessibilityRole="button" style={styles.donePill}><Text style={styles.donePillText}>{tr('Done')}</Text></Pressable>
@@ -1524,10 +1524,10 @@ const styles = StyleSheet.create({
   fontPill: { height: 32, borderRadius: 16, paddingHorizontal: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.14)' },
   fontPillOn: { backgroundColor: colors.green },
   fontPillText: { color: colors.white, fontSize: 14 },
-  placeBox: { backgroundColor: 'rgba(12,12,12,0.86)', borderRadius: 18, padding: 14, gap: 14, marginBottom: 12 },
+  placeBox: { backgroundColor: 'rgba(12,12,12,0.86)', borderRadius: 18, padding: 12, gap: 10, marginBottom: 12 },
   placeLabel: { color: '#a8a39a', fontFamily: fonts.uiBold, fontSize: 12, letterSpacing: 0.6, textTransform: 'uppercase', marginTop: 2 },
   placeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  placeTile: { width: 60, minHeight: 72, borderRadius: 14, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'flex-start', paddingTop: 8, paddingBottom: 6, paddingHorizontal: 4, gap: 4, borderWidth: 2, borderColor: 'transparent' },
+  placeTile: { width: 44, height: 40, borderRadius: 10, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: 'transparent' },
   placeTileOn: { backgroundColor: '#2f4a30', borderColor: colors.green },
   placeTileText: { color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 11, lineHeight: 13, textAlign: 'center' },
   placeChip: { backgroundColor: '#454545', borderRadius: 17, height: 34, paddingHorizontal: 14, justifyContent: 'center' },
