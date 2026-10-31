@@ -481,13 +481,13 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
         })() : null}
       </ScrollView>
       {folderOpen ? <Folder narrator={narrator} toast={toast} canSend={controls.sharing !== false} onClose={() => { const y = folderY.current; setFolderOpen(false); requestAnimationFrame(() => scrollRef.current && scrollRef.current.scrollTo({ y, animated: false })); }} /* back to the same spot (Jörg, 29 Oct 2026) */ /> : null}
-      {confirm ? (
+      {confirm && !gate ? ( /* (hidden while the grown-up question is asked: it sat on top of the passcode, 31 Oct 2026) */
         <ConfirmBox title={chosen.length === 1 ? t('Delete “{title}”?', { title: chosen[0].title }) : t('Delete {n} books?', { n: chosen.length })}
           message={[mineCount ? t('Books you made, with their pictures and recordings, are deleted for good.') : '', chosen.length > mineCount ? t('Built-in books can be brought back later.') : ''].filter(Boolean).join(' ') || null}
           confirm={t('Delete')} cancel={t('Keep')} onConfirm={() => setGate('delete')} onCancel={() => setConfirm(false)} />
       ) : null}
       <ParentGate visible={!!gate} reason={gate === 'share' ? t('Sharing sends an invitation to Coro by message or email.') : t('Deleting books from the library.')}
-        onCancel={() => setGate(null)}
+        onCancel={() => { if (gate === 'delete') setConfirm(false); setGate(null); }}
         onPass={() => {
           const g = gate; setGate(null);
           if (g === 'share' && chosen[0]) onShare(chosen[0]);
