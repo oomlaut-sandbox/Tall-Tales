@@ -96,11 +96,11 @@ const ALL_HELP = [
     'Tap the picture square to add a picture: choose one from your photos, or take a photo (of a drawing, say). Taking a photo asks a grown-up first.',
     'Tap the words square to type the words for that page. Two or three sentences reads best.',
     'When a page is done, tap the green tick and choose Add another page. Tap the title in the bottom bar to name your book and add who wrote and illustrated it.',
-    'Everything saves on its own. Save and Exit keeps the book in Books I’m still making, in My Workspace. Finish and publish to library puts it in My Book Collection, in My Library.',
+    'Everything saves on its own. Save and Exit keeps the book in My Books in Progress, in My Workspace. Finish and publish to library puts it in My Book Collection, in My Library.',
   ] },
   { section: 'Making books', title: 'My Workspace', text: [
-    'My Workspace is where you make things: who is reading, Let’s make a book, Books I’m still making, My Notes, Things to share and the Message Board.',
-    'Tap a book in Books I’m still making to carry on where you left off.',
+    'My Workspace is where you make things: who is reading, Let’s make a book, My Books in Progress, My Notes, Things to share and the Message Board.',
+    'Tap a book in My Books in Progress to carry on where you left off.',
   ] },
   { section: 'Making books', title: 'Designing a cover', text: [
     'After writing a page, choose Design a cover. Add a picture, then the title if you like.',

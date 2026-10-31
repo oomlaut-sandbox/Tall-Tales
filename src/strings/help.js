@@ -246,7 +246,7 @@ export default {
     de: 'Tippe auf Auswählen, um Bücher zum Teilen oder Löschen auszuwählen (in Mein Arbeitsplatz die Bücher, an denen du noch arbeitest). Bücher, die mit der App kamen, holst du mit „Entfernte Bücher zeigen“ zurück.',
     fr: 'Touchez Choisir pour sélectionner des livres à partager ou à supprimer (dans Mon espace de travail, les livres que vous faites encore). Les livres fournis avec l’application peuvent revenir avec « Afficher les livres retirés ».',
     es: 'Toca Elegir para seleccionar libros y compartirlos o borrarlos (en Mi espacio de trabajo, los libros que aún estás haciendo). Los libros que venían con la app se pueden recuperar con «Mostrar libros quitados».',
-    ja: '「えらぶ」をタップすると、シェアやさくじょする本をえらべます（「わたしの さぎょうば」では、まだ つくっている 本）。アプリについていた本は「けした本を見せる」でもどせます。', ar: "اضغط «تحديد» لاختيار كتب لمشاركتها أو حذفها (وفي «مساحة عملي»، الكتب التي ما زلت تصنعها). يمكن إعادة الكتب التي جاءت مع التطبيق من خلال «إظهار الكتب المحذوفة»." },
+    ja: '「えらぶ」をタップすると、シェアやさくじょする本をえらべます（「わたしの さぎょうば」では、つくりかけの 本）。アプリについていた本は「けした本を見せる」でもどせます。', ar: "اضغط «تحديد» لاختيار كتب لمشاركتها أو حذفها (وفي «مساحة عملي»، الكتب التي ما زلت تصنعها). يمكن إعادة الكتب التي جاءت مع التطبيق من خلال «إظهار الكتب المحذوفة»." },
   'The Book Store has new books to discover. Tap a cover to see what it’s about, then Read now.': {
     de: 'Im Buchladen gibt es neue Bücher zu entdecken. Tippe auf einen Umschlag, um zu sehen, worum es geht, und dann auf Jetzt lesen.',
     fr: 'La Librairie propose de nouveaux livres à découvrir. Touchez une couverture pour voir de quoi parle le livre, puis Lire.',

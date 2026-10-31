@@ -424,7 +424,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
         {!selecting && !ws ? <View style={{ width: '100%', height: onReadingOptions ? 48 : 70 }} /> : null}
         {/* Work in Progress: the books being made (saved with Save and Exit, not yet published); a tap carries on in
             the book maker. 'Finish and publish to library' moves a book up into My Book Collection (Jörg, 28 Oct 2026) */}
-        {ws && (wip.length || waiting.length) ? <Text onLayout={(e) => { wipY.current = e.nativeEvent.layout.y; toWipNow(); }} style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('Books I’m still making')}</Text> : null}
+        {ws && (wip.length || waiting.length) ? <Text onLayout={(e) => { wipY.current = e.nativeEvent.layout.y; toWipNow(); }} style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('My Books in Progress')}</Text> : null}
         {/* the teacher's book prompts, ready to start: a dark square with the prompt's title (classroom.js) */}
         {ws && !selecting && onPrompt ? waiting.map((pr) => (
           <Tile key={pr.id} u={u} plain title={pr.title} sub={t('From your teacher')} label={t('{title}, a book prompt from your teacher', { title: pr.title })}
