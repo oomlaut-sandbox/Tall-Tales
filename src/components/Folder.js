@@ -13,6 +13,7 @@ import { speakTracked, stopSpeech } from '../speech';
 import { LETTERS } from '../narration/samples';
 import { StrokesView } from './Strokes';
 import ParentGate from './ParentGate';
+import { ConfirmBox } from './Chrome';
 import { loadFolder, onFolder, removeSheet } from '../folder';
 import { loadNotebook } from '../notebook';
 import { shareSheet } from '../sheetShare';
@@ -175,15 +176,8 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
 
       {/* throwing a sheet away */}
       {sure ? (
-        <View style={[StyleSheet.absoluteFill, styles.openBack]}>
-          <View style={styles.sureBox}>
-            <Text style={styles.sureText}>{t('Throw this sheet away?')}</Text>
-            <View style={{ flexDirection: 'row', gap: 10, marginTop: 24, justifyContent: 'flex-end' }}>
-              <Pressable onPress={withTap(async () => { const id = sure.id; setSure(null); setOpen(null); await removeSheet(id); })} style={[styles.pill, { backgroundColor: '#b3261e' }]}><Text style={styles.pillText}>{t('Remove')}</Text></Pressable>
-              <Pressable onPress={() => setSure(null)} style={[styles.pill, { backgroundColor: '#3a3a3a' }]}><Text style={styles.pillText}>{t('Keep')}</Text></Pressable>
-            </View>
-          </View>
-        </View>
+        <ConfirmBox message={t('Throw this sheet away?')} confirm={t('Remove')} cancel={t('Keep')}
+          onConfirm={withTap(async () => { const id = sure.id; setSure(null); setOpen(null); await removeSheet(id); })} onCancel={() => setSure(null)} />
       ) : null}
 
       {/* sending: which notebook page? */}
@@ -225,7 +219,7 @@ const styles = StyleSheet.create({
   sendPill: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 46, borderRadius: 23, paddingHorizontal: 22, backgroundColor: '#3a3a3a', marginTop: 36 },
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
   pillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
-  closePill: { backgroundColor: colors.deepRed, marginTop: 22 }, // a dark red pill
+  closePill: { backgroundColor: colors.pillGrey, marginTop: 22 }, // a grey pill (red is only for throwing away: 31 Oct 2026)
   closeText: { color: '#8a8a8a', fontFamily: fonts.ui, fontSize: 15 },
   sureBox: { width: '100%', maxWidth: 400, backgroundColor: 'rgba(0,0,0,0.86)', borderRadius: 24, paddingHorizontal: 24, paddingTop: 26, paddingBottom: 22 },
   sureText: { color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24 },

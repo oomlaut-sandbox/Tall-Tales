@@ -84,8 +84,8 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
     />
   );
   const wide = !flat && Math.min(winW, winH) >= 600; // iPad: a compact box in the middle (iPhone unchanged)
-  const cancelBtn = <Pressable onPress={onCancel} style={[styles.btn, flat && styles.btnFlat]}><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75} style={styles.btnText}>{t('Cancel')}</Text></Pressable>;
-  const goBtn = <Pressable onPress={check} style={[styles.btn, flat && styles.btnFlat, { backgroundColor: colors.deepRed }]}><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75} style={styles.btnText}>{t('Continue')}</Text></Pressable>;
+  const cancelBtn = <Pressable onPress={onCancel} accessibilityRole="button" style={[styles.btn, flat && styles.btnFlat]}><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75} style={styles.btnText}>{t('Cancel')}</Text></Pressable>;
+  const goBtn = <Pressable onPress={check} accessibilityRole="button" style={[styles.btn, flat && styles.btnFlat, { backgroundColor: colors.green }]}><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75} style={styles.btnText}>{t('Continue')}</Text></Pressable>;
   return (
     <View ref={scrimRef} style={[styles.scrim, { paddingBottom: covered }, (flat || wide) && { alignItems: 'center' }, flat && { paddingTop: 8 }]}
       onLayout={() => scrimRef.current && scrimRef.current.measureInWindow((x, y, w, h) => setFrame({ y, h: h || winH }))}>

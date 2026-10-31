@@ -262,9 +262,9 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
                 <View style={{ gap: 10, marginTop: 24 }}>
                   <Text style={styles.note}>{book.bundled ? `Take “${book.title}” out of the Book Store? It’s inside the app, so it stays in the app itself; this only removes it from the store’s shelves.` : `Take “${book.title}” out of the Book Store for good? Its pages, narration and translations are deleted from the store. The book stays in your own library on this phone.`}</Text>
                   <View style={{ flexDirection: 'row', gap: 10 }}>
+                    <Pressable onPress={() => setConfirmRemove(false)} style={[styles.pill, { flex: 1 }]} accessibilityRole="button"><Text style={styles.pillText}>Keep</Text></Pressable>
                     <Pressable onPress={async () => { try { await removeFromStore(book.id, book.bundled); toast('Taken out of the Book Store.'); onChanged(); } catch (e) { toast(`Couldn’t remove it. ${e.message}`); } }}
-                      style={[styles.pill, { flex: 1, backgroundColor: colors.deepRed }]}><Text style={styles.pillText}>Remove</Text></Pressable>
-                    <Pressable onPress={() => setConfirmRemove(false)} style={[styles.pill, { flex: 1 }]}><Text style={styles.pillText}>Keep it</Text></Pressable>
+                      style={[styles.pill, { flex: 1, backgroundColor: colors.danger }]} accessibilityRole="button"><Text style={styles.pillText}>Remove</Text></Pressable>
                   </View>
                 </View>
               ) : (

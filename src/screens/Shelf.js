@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, sectionBox, sectionTitle, SECTION_GAP } from '../theme';
 import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG, BandFill } from '../look';
 import ReadingOptionsSection from '../components/ReadingOptionsSection';
-import { Bar, BarMeta, Burger, DogEar, IDLE, Option, Panel, PlayGlyph, PlaylistIcon, WithBar, slotStyle } from '../components/Chrome';
+import { Bar, BarMeta, Burger, ConfirmBox, DogEar, IDLE, Option, Panel, PlayGlyph, PlaylistIcon, WithBar, slotStyle } from '../components/Chrome';
 import { activeProfile, feltFor, getProfiles, onProfiles as onProfilesChange } from '../profiles';
 import { onPrompts, promptsFor } from '../classroom';
 const SHARE_ICON = require('../../assets/icon-envelope.png');
@@ -483,17 +483,9 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
       </ScrollView>
       {folderOpen ? <Folder narrator={narrator} toast={toast} canSend={controls.sharing !== false} onClose={() => { const y = folderY.current; setFolderOpen(false); requestAnimationFrame(() => scrollRef.current && scrollRef.current.scrollTo({ y, animated: false })); }} /* back to the same spot (Jörg, 29 Oct 2026) */ /> : null}
       {confirm ? (
-        <View style={styles.confirm}>
-          <Text style={styles.confirmText}>
-            {chosen.length === 1 ? t('Delete “{title}”?', { title: chosen[0].title }) : t('Delete {n} books?', { n: chosen.length })}
-            {mineCount ? ' ' + t('Stories you made, with their pictures and recordings, are deleted for good.') : ''}
-            {chosen.length > mineCount ? ' ' + t('Built-in books can be brought back later.') : ''}
-          </Text>
-          <View style={{ flexDirection: 'row', gap: 10 }}>
-            <Pressable onPress={() => setGate('delete')} style={[styles.actBtn, { backgroundColor: colors.deepRed }]} accessibilityRole="button"><Text style={styles.actText}>{t('Delete')}</Text></Pressable>
-            <Pressable onPress={() => setConfirm(false)} style={[styles.actBtn, { backgroundColor: '#333' }]} accessibilityRole="button"><Text style={styles.actText}>{t('Keep')}</Text></Pressable>
-          </View>
-        </View>
+        <ConfirmBox title={chosen.length === 1 ? t('Delete “{title}”?', { title: chosen[0].title }) : t('Delete {n} books?', { n: chosen.length })}
+          message={[mineCount ? t('Stories you made, with their pictures and recordings, are deleted for good.') : '', chosen.length > mineCount ? t('Built-in books can be brought back later.') : ''].filter(Boolean).join(' ') || null}
+          confirm={t('Delete')} cancel={t('Keep')} onConfirm={() => setGate('delete')} onCancel={() => setConfirm(false)} />
       ) : null}
       <ParentGate visible={!!gate} reason={gate === 'share' ? t('Sharing sends an invitation to Coro by message or email.') : t('Deleting books from the library.')}
         onCancel={() => setGate(null)}

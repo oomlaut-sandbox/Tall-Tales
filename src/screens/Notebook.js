@@ -709,27 +709,27 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
       </Panel>
 
       {newAsk ? (
-        <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
-          <View style={styles.choice}>
+        <Pressable onPress={() => setNewAsk(false)} accessible={false} style={[StyleSheet.absoluteFill, styles.choiceBack]}>{/* (tapping outside: the same as Cancel) */}
+          <Pressable onPress={() => {}} accessible={false} style={styles.choice}>
             <Text style={styles.choiceTitle}>{t('Add a new page')}</Text>
             <Pressable onPress={() => addPage('note')} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.notes} text={t('Notes page')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => addPage('sketch')} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={t('Sketch page')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => setNewAsk(false)} style={[styles.choiceBtn, { marginTop: 8 }]} accessibilityRole="button"><ChoiceLabel icon="cancel" text={t('Cancel')} style={styles.choiceBtnText} /></Pressable>
-          </View>
-        </View>
+          </Pressable>
+        </Pressable>
       ) : null}
 
       {picAsk && page ? (
-        <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
-          <View style={styles.choice}>
+        <Pressable onPress={() => setPicAsk(false)} accessible={false} style={[StyleSheet.absoluteFill, styles.choiceBack]}>{/* (tapping outside: the same as Cancel) */}
+          <Pressable onPress={() => {}} accessible={false} style={styles.choice}>
             <Text style={styles.choiceTitle}>{page.uri || page.strokes.length ? t('Change the picture') : t('Add a picture')}</Text>
             <Pressable onPress={() => { setPicAsk(false); choosePhoto('library'); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.photo} text={t('Choose a photo')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => { setPicAsk(false); setCamGate(true); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={'camera'} text={t('Take a photo')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => { setPicAsk(false); setDrawing('top'); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={page.uri ? t('Draw on the photo') : page.strokes.length ? t('Keep drawing') : t('Make a drawing')} style={styles.choiceBtnText} /></Pressable>
             {page.uri ? <Pressable onPress={() => { setPicAsk(false); dropNotebookPicture(page.uri); update({ uri: null, w: 1, h: 1 }); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.trash} text={t('Remove the photo')} style={styles.choiceBtnText} /></Pressable> : null}
             <Pressable onPress={() => setPicAsk(false)} style={[styles.choiceBtn, { marginTop: 8 }]} accessibilityRole="button"><ChoiceLabel icon="cancel" text={t('Cancel')} style={styles.choiceBtnText} /></Pressable>
-          </View>
-        </View>
+          </Pressable>
+        </Pressable>
       ) : null}
       {outAsk ? (() => {
         const r = outRange || { from: 0, to: pages.length - 1 };

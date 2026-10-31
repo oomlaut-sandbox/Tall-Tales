@@ -20,7 +20,19 @@ export const colors = {
   blue: '#006aea',
   white: '#ffffff',
   muted: '#bdbdbd',
+  // (31 Oct 2026) one of each, everywhere:
+  danger: '#a5121d', // deleting, removing, throwing away (the same deep red as deepRed)
+  pillGrey: '#3a3a3a', // grey pills: Cancel, Keep, Close
+  chipGrey: '#4a4a4a', // small choice chips and icon buttons
+  scrim: 'rgba(0,0,0,0.6)', // behind every pop-up box
+  textSoft: '#d6d6d6', // secondary words on dark
+  textFaint: '#bdbdbd', // small notes on dark
 };
+// a pop-up box (black glass), its title, and its buttons (31 Oct 2026: one look for all of them)
+export const POPUP = { backgroundColor: 'rgba(0,0,0,0.86)', borderRadius: 24, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 30 };
+export const POPUP_TITLE = { fontFamily: 'PlusJakartaSans_700Bold', fontSize: 20, lineHeight: 26, color: '#ffffff' };
+export const PILL_H = 46; // buttons in pop-up boxes
+export const SCREEN_TITLE = { fontFamily: 'PlusJakartaSans_700Bold', fontSize: 32, color: '#ffffff', transform: [{ translateY: -3 }] };
 
 // Coro's type (Jörg, 24 Oct 2026): Plus Jakarta Sans everywhere in the app, each weight its own font
 // (a custom font can't be made bold with fontWeight, so a bold style uses uiBold, and so on)

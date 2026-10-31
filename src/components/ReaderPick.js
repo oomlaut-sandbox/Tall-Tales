@@ -9,6 +9,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { MAX_READERS, addReader, getReaders, removeReader, setReaderPhoto } from '../recordings';
 import { VoiceFace } from './VoicePick';
+import { ConfirmBox } from './Chrome';
 
 
 // edit: opened from the scissors in 'Who reads this book?': the same box for changing photos or adding a reader,
@@ -129,18 +130,9 @@ export default function ReaderPick({ initial, onCancel, onStart, edit = false, o
             const who = (list.find((x) => x.id === pick) || {}).name || '';
             const nm = who === 'Me' && pick === 'me' ? tr('Me') : who;
             return (
-              <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setSure(false)}>
-                <View style={styles.sureBack}>
-                  <View style={styles.sureBox}>
-                    <Text style={styles.sureText}>{tr('Remove {name} and all of {name}’s recordings?', { name: nm })}</Text>
-                    <View style={{ flexDirection: 'row', gap: 10, marginTop: 26 }}>
-                      <Pressable onPress={withTap(async () => { setSure(false); await removeReader(pick); const l = await getReaders(); setList(l); setPick(l[0] ? l[0].id : null); if (!l.length) setAdding(true); })}
-                        style={[styles.pill, { backgroundColor: '#b3261e', marginLeft: 'auto' }]} accessibilityRole="button"><Text style={styles.pillText}>{tr('Remove')}</Text></Pressable>
-                      <Pressable onPress={withTap(() => setSure(false))} style={[styles.pill, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text style={styles.pillText}>{tr('Keep')}</Text></Pressable>
-                    </View>
-                  </View>
-                </View>
-              </Modal>
+              <ConfirmBox modal message={tr('Remove {name} and all of {name}’s recordings?', { name: nm })} confirm={tr('Remove')} cancel={tr('Keep')}
+                onConfirm={withTap(async () => { setSure(false); await removeReader(pick); const l = await getReaders(); setList(l); setPick(l[0] ? l[0].id : null); if (!l.length) setAdding(true); })}
+                onCancel={withTap(() => setSure(false))} />
             );
           })() : null}
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 36 }}>

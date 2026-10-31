@@ -919,8 +919,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <View style={{ gap: 10, marginTop: 44 }}>
             <Text style={styles.warn}>{tr('Delete “{title}”, its pictures and any voice recordings? This can’t be undone.', { title: draft.title.trim() || tr('Untitled story') })}</Text>
             <View style={{ flexDirection: 'row', gap: 10 }}>
-              <Pressable onPress={deleteStory} style={[styles.wide, { backgroundColor: colors.deepRed }]}><Text style={styles.wideText}>{tr('Delete book')}</Text></Pressable>
-              <Pressable onPress={() => setConfirmDelete(false)} style={styles.wide}><Text style={styles.wideText}>{tr('Keep it')}</Text></Pressable>
+              <Pressable onPress={() => setConfirmDelete(false)} style={styles.wide} accessibilityRole="button"><Text style={styles.wideText}>{tr('Keep')}</Text></Pressable>
+              <Pressable onPress={deleteStory} style={[styles.wide, { backgroundColor: colors.danger }]} accessibilityRole="button"><Text style={styles.wideText}>{tr('Delete book')}</Text></Pressable>
             </View>
           </View>
         ) : (
@@ -1362,8 +1362,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         </KeyboardAvoidingView>
       ) : null}
       {pageDone ? (
-        <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
-          <View style={styles.choice}>
+        <Pressable onPress={() => setPageDone(false)} accessible={false} style={[StyleSheet.absoluteFill, styles.choiceBack]}>{/* (tapping outside: the same as Cancel) */}
+          <Pressable onPress={() => {}} accessible={false} style={styles.choice}>
             <Text style={styles.choiceTitle}>{tr('What’s next?')}</Text>
             <Pressable onPress={addPage} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.page} text={tr('Add another page')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Keep working on this page')} style={styles.choiceBtnText} /></Pressable>
@@ -1374,12 +1374,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await save(), null, 'wip'); } catch (e) { toast(tr('Couldn’t save the story. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.save} text={tr('Save and Exit')} style={styles.choiceBtnText} /></Pressable>
             {/* Finish last, in green, with extra room around it */}
             <Pressable onPress={() => { setPageDone(false); if (classBook) handIn(); else finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 18, marginBottom: 8 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={classBook ? tr('Hand in to my teacher') : tr('Finish and publish to library')} style={styles.choiceBtnText} /></Pressable>
-          </View>
-        </View>
+          </Pressable>
+        </Pressable>
       ) : null}
       {imgAsk ? (
-        <View style={[StyleSheet.absoluteFill, styles.choiceBack]}>
-          <View style={styles.choice}>
+        <Pressable onPress={() => setImgAsk(null)} accessible={false} style={[StyleSheet.absoluteFill, styles.choiceBack]}>{/* (tapping outside: the same as Cancel) */}
+          <Pressable onPress={() => {}} accessible={false} style={styles.choice}>
             <Text style={styles.choiceTitle}>{photoOf(imgAsk) ? tr('Picture') : tr('Add a picture')}</Text>
             {photoOf(imgAsk) ? <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setPhotoEdit(t); }} style={[styles.choiceBtn, { backgroundColor: colors.green }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.crop} text={tr('Edit photo')} style={styles.choiceBtnText} /></Pressable> : null}
             <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); placeImage(t, 'library'); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.photo} text={tr('Choose a picture')} style={styles.choiceBtnText} /></Pressable>
@@ -1389,8 +1389,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             {/* the cover only: just the title on a hardcover (cloth, leather…) of their choice */}
             {imgAsk === 'cover' ? <Pressable onPress={() => { setImgAsk(null); setHardAsk(true); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.text} text={tr('Text only cover')} style={styles.choiceBtnText} /></Pressable> : null}
             <Pressable onPress={() => setImgAsk(null)} style={[styles.choiceBtn, { marginTop: 14 }]} accessibilityRole="button"><ChoiceLabel icon="cancel" text={tr('Cancel')} style={styles.choiceBtnText} /></Pressable>
-          </View>
-        </View>
+          </Pressable>
+        </Pressable>
       ) : null}
       {hardAsk ? (
         // Text only cover: a large black glass box of hardcover looks to choose from (Jörg's pictures are on the way)

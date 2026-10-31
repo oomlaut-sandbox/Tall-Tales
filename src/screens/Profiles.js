@@ -12,7 +12,7 @@ import { Animated, Easing, Image, Modal, Pressable, ScrollView, StyleSheet, Text
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, DESK_BG } from '../look';
-import { Bar, Burger, WithBar, barGeo } from '../components/Chrome';
+import { Bar, Burger, ConfirmBox, WithBar, barGeo } from '../components/Chrome';
 import ParentGate from '../components/ParentGate';
 import { useT } from '../i18n';
 import { useControls, DEFAULT_CONTROLS } from '../controls';
@@ -387,17 +387,8 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
               {form.id ? (
                 sure ? (
                   // are you sure? a solid black box popping up over everything
-                  <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setSure(false)}>
-                    <View style={styles.sureBack}>
-                      <View style={styles.sureBox}>
-                        <Text style={styles.sureText}>{t('Remove {name}? Their notebook and badges stay on this phone, but nobody will see them.', { name: form.name || '?' })}</Text>
-                        <View style={{ flexDirection: 'row', gap: 10, marginTop: 26 }}>
-                          <Pressable onPress={() => { setSure(false); removeProfile(form.id); setForm(null); }} style={[styles.pill, styles.pillFit, { backgroundColor: '#b3261e', marginLeft: 'auto' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Remove')}</Text></Pressable>
-                          <Pressable onPress={() => setSure(false)} style={[styles.pill, styles.pillFit, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.pillText}>{t('Keep')}</Text></Pressable>
-                        </View>
-                      </View>
-                    </View>
-                  </Modal>
+                  <ConfirmBox modal message={t('Remove {name}? Their notebook and badges stay on this phone, but nobody will see them.', { name: form.name || '?' })}
+                    confirm={t('Remove')} cancel={t('Keep')} onConfirm={() => { setSure(false); removeProfile(form.id); setForm(null); }} onCancel={() => setSure(false)} />
                 ) : null
               ) : null}
             </View>
