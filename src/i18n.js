@@ -822,6 +822,10 @@ const T = {
   'Sun': { de: 'Sonne', fr: 'Soleil', es: 'Sol', ja: 'たいよう', ar: "الشمس" },
   'Moon': { de: 'Mond', fr: 'Lune', es: 'Luna', ja: 'つき', ar: "القمر" },
   'Earth': { de: 'Erde', fr: 'Terre', es: 'Tierra', ja: 'ちきゅう', ar: "الأرض" },
+  'A doodle from My Notes': { de: 'Eine Kritzelei aus Meine Notizen', fr: 'Un gribouillage de Mes notes', es: 'Un garabato de Mis notas', ja: 'わたしのメモの らくがき', ar: "رسمة من ملاحظاتي" },
+  'Choose a doodle': { de: 'Wähle eine Kritzelei', fr: 'Choisis un gribouillage', es: 'Elige un garabato', ja: 'らくがきを えらぶ', ar: "اختر رسمة" },
+  'Doodle': { de: 'Kritzelei', fr: 'Gribouillage', es: 'Garabato', ja: 'らくがき', ar: "رسمة" },
+  'There are no drawings in My Notes yet.': { de: 'In Meine Notizen gibt es noch keine Zeichnungen.', fr: 'Il n’y a pas encore de dessins dans Mes notes.', es: 'Todavía no hay dibujos en Mis notas.', ja: 'わたしのメモに まだ えが ありません。', ar: "لا توجد رسومات في ملاحظاتي بعد." },
   'About Coro': { de: 'Über Coro', fr: 'À propos d’Coro', es: 'Acerca de Coro', ja: 'Coroについて', ar: "عن Coro" },
 };
 

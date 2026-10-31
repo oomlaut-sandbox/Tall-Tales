@@ -1,5 +1,5 @@
 // The corkboard at the bottom of My Library: yellow sticky notes and photos, pinned anywhere.
-// Each pin: { id, kind: 'note' | 'photo', text?, uri?, x, y (0..1, where its middle sits on the board), rot (degrees) }
+// Each pin: { id, kind: 'note' | 'photo' | 'doodle' (a drawing from My Notes, a small square), text?, uri?, x, y (0..1, where its middle sits on the board), rot (degrees) }
 import { deleteFile, keepFile, loadJSON, saveJSON } from './storage';
 import { onScopeChange } from './scope';
 
@@ -44,11 +44,11 @@ export async function pinNote(text) {
   return cache;
 }
 
-export async function pinPhoto(uri) {
+export async function pinPhoto(uri, kind = 'photo') {
   if (!cache) await loadPins();
   let kept = uri;
-  try { kept = await keepFile(uri, 'corkboard', `pin-${Date.now()}.jpg`); } catch (e) {}
-  const p = { id: `p${Date.now().toString(36)}`, kind: 'photo', uri: kept, ...spot() };
+  try { kept = await keepFile(uri, 'corkboard', `pin-${Date.now()}.${kind === 'doodle' ? 'png' : 'jpg'}`); } catch (e) {}
+  const p = { id: `p${Date.now().toString(36)}`, kind, uri: kept, ...spot() };
   const next = [...cache, p];
   if (next.length > MAX_PINS) { const gone = next.shift(); if (gone.uri) deleteFile(gone.uri); }
   cache = next;

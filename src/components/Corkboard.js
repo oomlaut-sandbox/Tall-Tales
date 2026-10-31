@@ -13,10 +13,13 @@ import ParentGate from './ParentGate';
 import { CameraIcon, ChoiceLabel } from './Chrome';
 
 // the icons before the words, the same line icons as the app's other pop-ups (Jörg, 28 Oct 2026)
-const PIN_ICONS = { note: require('../../assets/heading-icons/sticky-note.png') /* a note with its corner curling up (Jörg, 29 Oct 2026) */, photo: require('../../assets/heading-icons/family-and-memories.png') };
+const PIN_ICONS = { doodle: require('../../assets/heading-icons/my-notebook.png'), note: require('../../assets/heading-icons/sticky-note.png') /* a note with its corner curling up (Jörg, 29 Oct 2026) */, photo: require('../../assets/heading-icons/family-and-memories.png') };
 const PinIcon = ({ src }) => (src ? <Image source={src} style={{ width: 22, height: 22, tintColor: colors.white }} resizeMode="contain" accessibilityIgnoresInvertColors /> : <View style={{ width: 22, alignItems: 'center' }}><CameraIcon size={19} color={colors.white} weight={1.6} /></View>);
 import { inSheet, loadPins, pinNote, pinPhoto, unpin } from '../corkboard';
 import { onScopeChange } from '../scope';
+import { loadNotebook } from '../notebook';
+import { StrokesView, strokesToImage } from './Strokes';
+const PAPER = '#f4f2ed'; // My Notes' white pages
 
 const CORK = require('../../assets/cork.jpg');
 const PIN_ICON = require('../../assets/icon-pin.png');
@@ -26,8 +29,15 @@ const HAND = 'SpecialElite_400Regular'; // the typewriter, like My Notes
 
 function Pin({ p, W }) {
   const t = useT();
-  const s = Math.round(W * (p.kind === 'note' ? 0.26 : 0.28));
+  const s = Math.round(W * (p.kind === 'note' ? 0.26 : p.kind === 'doodle' ? 0.22 : 0.28));
   const head = <Image source={PIN_HEAD} style={{ position: 'absolute', top: -s * 0.02, left: s / 2 - 4, width: 8, height: 8, zIndex: 2 }} />;
+  // a doodle from My Notes: a small square of the page, with a thin white edge (Jörg, 31 Oct 2026)
+  if (p.kind === 'doodle') return (
+    <View style={[styles.polaroid, { width: s, height: s, padding: s * 0.04 }]}>
+      {head}
+      <Image source={{ uri: p.uri }} style={{ flex: 1, alignSelf: 'stretch' }} resizeMode="cover" />
+    </View>
+  );
   return p.kind === 'note' ? (
     <View style={[styles.note, { width: s, height: s }]}>
       {head}
@@ -49,6 +59,26 @@ export default function Corkboard({ width, toast, onPlaylists }) {
   const [writing, setWriting] = useState(null); // the sticky note being written
   const [open, setOpen] = useState(null); // a pin shown big
   const [camGate, setCamGate] = useState(false);
+  // a doodle from My Notes: every drawn square (a note page's picture square, a sketch page's two squares)
+  const [doodles, setDoodles] = useState(null);
+  const chooseDoodle = async () => {
+    try {
+      const nb = await loadNotebook();
+      const list = [];
+      nb.pages.forEach((pg) => {
+        if (pg.kind === 'sketch') {
+          if ((pg.strokes || []).length) list.push({ key: `${pg.pid}-1`, strokes: pg.strokes, photo: null });
+          if ((pg.strokes2 || []).length) list.push({ key: `${pg.pid}-2`, strokes: pg.strokes2, photo: null });
+        } else if ((pg.strokes || []).length || pg.uri) list.push({ key: pg.pid, strokes: pg.strokes || [], photo: pg.uri || null });
+      });
+      if (!list.length) return toast && toast(t('There are no drawings in My Notes yet.'));
+      setDoodles(list);
+    } catch (e) { if (toast) toast(t('That didn’t work. Try again.')); }
+  };
+  const pinDoodle = async (d) => {
+    setDoodles(null);
+    try { const uri = await strokesToImage(d.strokes, 700, PAPER, d.photo); setPins(await pinPhoto(uri, 'doodle')); } catch (e) { if (toast) toast(t('That didn’t work. Try again.')); }
+  };
   useEffect(() => {
     loadPins().then(setPins);
     return onScopeChange(() => loadPins().then(setPins)); // another child's board
@@ -104,11 +134,11 @@ export default function Corkboard({ width, toast, onPlaylists }) {
           );
         })() : null}
         {pins.map((p) => {
-          const s = width * (p.kind === 'note' ? 0.26 : 0.28);
+          const s = width * (p.kind === 'note' ? 0.26 : p.kind === 'doodle' ? 0.22 : 0.28);
           // (a pin from before the sheet, sitting over it: shown just above it instead)
           if (onPlaylists && inSheet(p.x, p.y)) p = { ...p, y: 0.38 };
           return (
-            <Pressable key={p.id} onPress={withTap(() => setOpen(p))} accessibilityRole="button" accessibilityLabel={p.kind === 'note' ? p.text : t('Photo')}
+            <Pressable key={p.id} onPress={withTap(() => setOpen(p))} accessibilityRole="button" accessibilityLabel={p.kind === 'note' ? p.text : p.kind === 'doodle' ? t('Doodle') : t('Photo')}
               style={{ position: 'absolute', left: p.x * width - s / 2, top: p.y * H - s / 2, transform: [{ rotate: `${p.rot || 0}deg` }] }}>
               <Pin p={p} W={width} />
             </Pressable>
@@ -138,8 +168,32 @@ export default function Corkboard({ width, toast, onPlaylists }) {
               <Pressable onPress={withTap(() => { setAsk(false); setCamGate(true); })} style={styles.choice} accessibilityRole="button">
                 <PinIcon /><Text style={styles.choiceText}>{t('Take a photo')}</Text>
               </Pressable>
+              <Pressable onPress={withTap(() => { setAsk(false); chooseDoodle(); })} style={styles.choice} accessibilityRole="button">
+                <PinIcon src={PIN_ICONS.doodle} /><Text style={styles.choiceText}>{t('A doodle from My Notes')}</Text>
+              </Pressable>
               <Pressable onPress={() => setAsk(false)} hitSlop={8} style={{ alignSelf: 'center', marginTop: 10 }}><ChoiceLabel icon="cancel" text={t('Cancel')} style={styles.cancel} /></Pressable>
             </View>
+          </Pressable>
+        </Modal>
+      ) : null}
+
+      {/* choosing a doodle: every drawn square in My Notes, small */}
+      {doodles ? (
+        <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setDoodles(null)}>
+          <Pressable style={styles.back} onPress={() => setDoodles(null)}>
+            <Pressable onPress={() => {}} style={[styles.box, { maxWidth: 420 }]}>
+              <Text style={styles.boxTitle}>{t('Choose a doodle')}</Text>
+              <ScrollView style={{ maxHeight: 420 }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+                {doodles.map((d) => (
+                  <Pressable key={d.key} onPress={withTap(() => pinDoodle(d))} accessibilityRole="button" accessibilityLabel={t('Doodle')}
+                    style={{ width: 92, height: 92, backgroundColor: PAPER, borderRadius: 3, overflow: 'hidden' }}>
+                    {d.photo ? <Image source={{ uri: d.photo }} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
+                    <StrokesView strokes={d.strokes} width={92} height={92} noPaper={!!d.photo} />
+                  </Pressable>
+                ))}
+              </ScrollView>
+              <Pressable onPress={() => setDoodles(null)} hitSlop={8} style={{ alignSelf: 'center', marginTop: 14 }}><ChoiceLabel icon="cancel" text={t('Cancel')} style={styles.cancel} /></Pressable>
+            </Pressable>
           </Pressable>
         </Modal>
       ) : null}
