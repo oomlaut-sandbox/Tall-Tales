@@ -1,6 +1,6 @@
 // The reader: page curl, read-aloud with highlighting, learn-to-read, interactive pictures.
 import { getAmbient, onRecordRequest, setAmbientPlayer } from '../ambient';
-import { AlarmClockIcon, IDLE, LockIcon, MusicIcon, PlaylistIcon, barGeo, slotStyle, useAmbientPlaying } from '../components/Chrome';
+import { AlarmClockIcon, ConfirmBox, IDLE, LockIcon, MusicIcon, PlaylistIcon, barGeo, slotStyle, useAmbientPlaying } from '../components/Chrome';
 const MOON_NUDGE = 0.4; // (in u) the crescent's optical nudge in its slot
 import { isRestricted, useControls } from '../controls';
 import { useLang, useT } from '../i18n';
@@ -169,6 +169,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   useEffect(() => { if (REC_DEMO) setTimeout(() => toast(tr('Pssst… Record the whole book at once. We’ll do the rest.'), 6000), 1500); }, []);
   const [recView, setRecView] = useState('main'); // main | list | settings | help
   const [recList, setRecList] = useState([]);
+  const [recDel, setRecDel] = useState(null); // 'Delete this recording?' (asked first: 31 Oct 2026)
   const [playView, setPlayView] = useState('main'); // 'main' | 'voices' inside Playback Options
   const [speedDraft, setSpeedDraft] = useState(null); // speed while the slider is being dragged
   const [volDraft, setVolDraft] = useState(null); // the sound effects volume while its slider is moving
@@ -1200,6 +1201,10 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
           area={wide ? { left: 0, top: 0, width: winW - BL.rightW, height: winH } : { left: 0, top: 0, width: winW, height: winH - barH }} />
         </Animated.View>
       ) : null}
+      {recDel ? (
+        <ConfirmBox title={tr('Delete this recording?')} confirm={tr('Delete')} cancel={tr('Keep')}
+          onConfirm={async () => { const r = recDel; setRecDel(null); await removeRecording(story.id, r.pid, r.reader); openRecList(); }} onCancel={() => setRecDel(null)} />
+      ) : null}
       {trimRec ? <TrimEditor rec={trimRec} title={tr('Page {n}', { n: trimRec.page + 1 })} onCancel={() => setTrimRec(null)}
         onSave={async (start, end) => { await setTrim(story.id, trimRec.pid, start, end, trimRec.reader || 'me'); setTrimRec(null); openRecList(); }} /> : null}
       {voiceBox ? <VoicePick options={boxOptions} value={boxValue} tr={tr} onPick={pickVoice} speed={speedOf(prefs)} onSpeed={(v) => setPrefs((p) => ({ ...p, rate: v, rateFor: narratorOf(p) }))} onClose={() => setVoiceBox(false)} extra={<>{modeRows(() => setVoiceBox(false))}{lookRows}</>} extraTitle={tr('Reading Options')} onEdit={controls.recording ? () => setEditReaders(true) : null}
@@ -1297,7 +1302,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
               {/* Trim: the trim editor (a box in the middle of the screen) */}
               <Pressable style={styles.rowBtn} onPress={() => { stopReading(); stopVoice(); setTrimRec(r); }}><Text style={styles.rowBtnText}>{tr('Trim')}</Text></Pressable>
               {/* delete: a small trash can */}
-              <Pressable hitSlop={10} onPress={async () => { stopVoice(); await removeRecording(story.id, r.pid, r.reader); openRecList(); }} accessibilityRole="button" accessibilityLabel={tr('Delete')} style={{ paddingHorizontal: 4 }}>
+              <Pressable hitSlop={10} onPress={() => { stopVoice(); setRecDel(r); }} accessibilityRole="button" accessibilityLabel={tr('Delete')} style={{ paddingHorizontal: 4 }}>
                 <Image source={TRASH} style={{ width: 20, height: 20, tintColor: '#bdbdbd' }} resizeMode="contain" />
               </Pressable>
               </View>
@@ -1407,8 +1412,8 @@ const styles = StyleSheet.create({
   recBoxTime: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 14, fontVariant: ['tabular-nums'], minWidth: 34, textAlign: 'left' },
   back: { color: '#bdbdbd', fontFamily: fonts.uiBold, fontSize: 15 },
   backRow: { flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: 'flex-start', marginTop: 34 },
-  backCircle: { width: 26, height: 26, borderRadius: 13, borderWidth: 1.5, borderColor: '#bdbdbd', alignItems: 'center', justifyContent: 'center' },
-  backChevron: { width: 8, height: 8, borderLeftWidth: 1.75, borderBottomWidth: 1.75, borderColor: '#bdbdbd', transform: [{ translateX: 1.5 }, { rotate: '45deg' }] },
+  backCircle: { width: 26, height: 26, borderRadius: 13, borderWidth: 1.5, borderColor: '#d6d6d6', alignItems: 'center', justifyContent: 'center' },
+  backChevron: { width: 8, height: 8, borderLeftWidth: 1.75, borderBottomWidth: 1.75, borderColor: '#d6d6d6', transform: [{ translateX: 1.5 }, { rotate: '45deg' }] },
   setting: { gap: 8, paddingTop: 10, paddingBottom: 8 },
   printBtn: { alignItems: 'center', gap: 6 },
   printIc: { width: 64, height: 64, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' },

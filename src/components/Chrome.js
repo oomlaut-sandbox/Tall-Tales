@@ -526,7 +526,7 @@ export function ChoiceLabel({ icon, text, style }) {
         : icon === 'cover' ? <View style={{ width: 20, height: 20, alignItems: 'center', justifyContent: 'center' }}><CoverIcon size={17} weight={1.9} color={color} /></View> /* the bar's own cover icon (Jörg, 28 Oct 2026) */
         : typeof icon === 'string' ? <LineIcon kind={icon} size={20} color={color} />
         : icon ? <Image source={icon} style={{ width: 22, height: 22, tintColor: color }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
-      <Text style={[style, { flexShrink: 1 }]} numberOfLines={1}>{text}</Text>
+      <Text style={[style, { flexShrink: 1 }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{text}</Text>{/* (long words in other languages shrink a little rather than being cut off) */}
     </View>
   );
 }

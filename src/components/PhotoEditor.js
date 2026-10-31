@@ -66,7 +66,7 @@ export default function PhotoEditor({ src, edit: given, tr, insets, onDone, onCa
     if (out) onDraw(out, e);
   };
   const Chip = ({ on, label, onPress, a11y, icon }) => (
-    <Pressable onPress={onPress} style={[styles.chip, on && { backgroundColor: colors.green }, icon && { paddingHorizontal: 0 }]} accessibilityRole="button" accessibilityLabel={a11y || label} accessibilityState={{ selected: !!on }}>
+    <Pressable hitSlop={6} onPress={onPress} style={[styles.chip, on && { backgroundColor: colors.green }, icon && { paddingHorizontal: 0 }]} accessibilityRole="button" accessibilityLabel={a11y || label} accessibilityState={{ selected: !!on }}>
       {icon ? <ChoiceLabel icon={icon} text={label} style={styles.chipText} /> : <Text numberOfLines={1} style={styles.chipText}>{label}</Text>}
     </Pressable>
   );

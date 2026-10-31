@@ -164,8 +164,11 @@ export const PageView = forwardRef(function PageView(
             ))
           : null}
         {bubble ? (
-          <View pointerEvents="none" style={[styles.bubble, { left: Math.max(8, Math.min(artW - 220, bubble.left - 110)), top: Math.max(8, bubble.top - 70) }]}>
-            <Text style={styles.bubbleText}>{bubble.say}</Text>
+          // a speech bubble over the tapped spot, with the same room around its words as every bubble (30 above and
+          // below, 26 at the sides) and a small point down to the spot (31 Oct 2026)
+          <View pointerEvents="none" style={[styles.bubble, { left: Math.max(8, Math.min(artW - 240, bubble.left - 120)), top: Math.max(8, bubble.top - 112) }]}>
+            <View style={styles.bubbleBox}><Text style={styles.bubbleText}>{bubble.say}</Text></View>
+            <View style={styles.bubblePoint} />
           </View>
         ) : null}
         {/* Amber light: the picture warmed (a soft amber laid over it, multiplied) and a little dimmer */}
@@ -219,8 +222,10 @@ const styles = StyleSheet.create({
   titleWords: { fontWeight: '700' },
   hl: { color: colors.wordRed },
   hot: { position: 'absolute', width: 46, height: 46, borderRadius: 23, borderWidth: 3, borderColor: 'rgba(255,255,255,0.9)', backgroundColor: 'rgba(255,255,255,0.12)' },
-  bubble: { position: 'absolute', width: 220, alignItems: 'center' },
-  bubbleText: { backgroundColor: colors.white, color: colors.ink, fontFamily: fonts.story, fontSize: 22, paddingHorizontal: 14, paddingVertical: 6, overflow: 'hidden' },
+  bubble: { position: 'absolute', width: 240, alignItems: 'center' },
+  bubbleBox: { backgroundColor: colors.white, borderRadius: 24, paddingHorizontal: 26, paddingTop: 30, paddingBottom: 30, maxWidth: 240 },
+  bubbleText: { color: colors.ink, fontFamily: fonts.story, fontSize: 22, lineHeight: 26, textAlign: 'center' },
+  bubblePoint: { width: 0, height: 0, borderTopWidth: 14, borderLeftWidth: 10, borderRightWidth: 10, borderTopColor: colors.white, borderLeftColor: 'transparent', borderRightColor: 'transparent' },
   endArt: { backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' },
   endTitle: { textAlign: 'center' },
   endBtn: { flexDirection: 'row', alignItems: 'center', gap: 14 },

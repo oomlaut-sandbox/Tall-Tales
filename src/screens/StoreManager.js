@@ -401,7 +401,7 @@ export default function StoreManager({ u, openMenu, toast, demo }) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#1c1c1c' }, // dark, on the charcoal felt like the rest of the app (Jörg, 30 Oct 2026)
   band: { backgroundColor: 'rgba(0,0,0,0.55)', paddingBottom: 30, paddingHorizontal: 24 },
-  title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 32 },
+  title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 32, transform: [{ translateY: -3 }] }, // (level with the other screens' titles)
   body: { padding: 20, paddingBottom: 60, gap: 26 },
   intro: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#cfcac0' },
   err: { fontFamily: fonts.ui, fontSize: 15, color: '#ff8a7e' },

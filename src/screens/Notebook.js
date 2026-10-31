@@ -1632,7 +1632,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
         {shapesOpen ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
             {SHAPES.map(([k, glyph, name]) => (
-              <Pressable key={k} onPress={() => { setShape((x) => (x === k ? null : k)); setStamp(null); setErase(false); setBucket(false); setMore(false); }} style={[styles.tool, shape === k && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t(name)} accessibilityState={{ selected: shape === k }}>
+              <Pressable hitSlop={6} key={k} onPress={() => { setShape((x) => (x === k ? null : k)); setStamp(null); setErase(false); setBucket(false); setMore(false); }} style={[styles.tool, shape === k && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t(name)} accessibilityState={{ selected: shape === k }}>
                 <Text style={[styles.toolText, { fontSize: 20, lineHeight: 24 }]}>{glyph}</Text>
               </Pressable>
             ))}

@@ -173,7 +173,7 @@ export default function TeacherDesk({ u, openMenu, toast, stories, onList, openS
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#1c1c1c' },
   band: { backgroundColor: 'rgba(0,0,0,0.55)', paddingBottom: 26, paddingHorizontal: 24, gap: 6 },
-  title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 32 },
+  title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 32, transform: [{ translateY: -3 }] }, // (level with the other screens' titles)
   sub: { color: '#cfcac0', fontFamily: fonts.ui, fontSize: 15 },
   body: { padding: 20, paddingBottom: 80, gap: 14 },
   h: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 21, marginTop: 14 },

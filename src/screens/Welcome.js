@@ -521,7 +521,7 @@ function P2Visual({ w, lang, voice, t }) {
     await p; clearInterval(tick); setLit(-1);
   };
   const chip = (k, label) => (
-    <Pressable key={k} onPress={withTap(() => { setMode(k); if (k === 'read') read(); })} style={{ height: 32, borderRadius: 16, paddingHorizontal: 12, justifyContent: 'center', backgroundColor: mode === k ? colors.green : 'rgba(0,0,0,0.07)' }}>
+    <Pressable hitSlop={6} key={k} onPress={withTap(() => { setMode(k); if (k === 'read') read(); })} style={{ height: 32, borderRadius: 16, paddingHorizontal: 12, justifyContent: 'center', backgroundColor: mode === k ? colors.green : 'rgba(0,0,0,0.07)' }}>
       <Text style={{ color: mode === k ? '#fff' : INK, fontFamily: F.semi, fontSize: 13 }}>{label}</Text>
     </Pressable>
   );
@@ -617,7 +617,7 @@ function ProfileForm({ t, controls, setControls, kids, onSaved }) {
       {label(t('Age'))}
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
         {[2, 3, 4, 5, 6, 7, 8, 9, 10].map((a) => (
-          <Pressable key={a} onPress={() => setAge(a)} style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: age === a ? colors.green : 'rgba(0,0,0,0.06)' }}>
+          <Pressable hitSlop={6} key={a} onPress={() => setAge(a)} accessibilityRole="radio" accessibilityState={{ selected: age === a }} accessibilityLabel={String(a)} style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: age === a ? colors.green : 'rgba(0,0,0,0.06)' }}>
             <Text style={{ color: age === a ? '#fff' : INK, fontFamily: F.bold, fontSize: 16 }}>{a}</Text>
           </Pressable>
         ))}

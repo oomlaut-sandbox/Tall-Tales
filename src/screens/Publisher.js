@@ -13,7 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { BOOK_FONTS, bookFont, colors, fonts } from '../theme';
 import WordsOver, { DEFAULT_AT, WORD_LOOKS, WORD_SIZES, wordsLook, wordsOverOn, wordsOverSize, wordsOverText } from '../components/WordsOver';
-import { Bar, Burger, CoverIcon, DogEar, DoneTick, Panel, PageShape, PagesIcon, Toast, ChoiceLabel } from '../components/Chrome';
+import { Bar, Burger, ConfirmBox, CoverIcon, DogEar, DoneTick, Panel, PageShape, PagesIcon, Toast, ChoiceLabel } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, DESK_BG } from '../look';
@@ -360,6 +360,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const over = wordsOverOn(page);
   const secondPic = !!(page && page.uri2 && (!(page.text || '').trim() || page.textOn));
   const controls = useControls(); // (the Advanced page editor: Settings → Parental controls)
+  const [pageAsk, setPageAsk] = useState(null); // 'Delete page {n}?' (its words and pictures go too: asked first, 31 Oct 2026)
   const [placeOpen, setPlaceOpen] = useState(false); // the words editor's 'Words on a picture' choices
 
   // Autosave shortly after every change.
@@ -895,7 +896,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               <View style={{ flexDirection: 'row', gap: 8 }}>
               <Pressable onPress={() => move(k, -1)} disabled={k === 0} hitSlop={6} style={[styles.pbtn, k === 0 && { opacity: 0.3 }]} accessibilityLabel={tr('Move page {n} up', { n: k + 1 })}><Text style={styles.pbtnText}>↑</Text></Pressable>
               <Pressable onPress={() => move(k, 1)} disabled={k === draft.pages.length - 1} hitSlop={6} style={[styles.pbtn, k === draft.pages.length - 1 && { opacity: 0.3 }]} accessibilityLabel={tr('Move page {n} down', { n: k + 1 })}><Text style={styles.pbtnText}>↓</Text></Pressable>
-              <Pressable onPress={() => removePage(k)} hitSlop={6} style={styles.pbtn} accessibilityLabel={tr('Delete page {n}', { n: k + 1 })}><Text style={styles.pbtnText}>✕</Text></Pressable>
+              <Pressable onPress={() => setPageAsk(k)} hitSlop={6} style={styles.pbtn} accessibilityRole="button" accessibilityLabel={tr('Delete page {n}', { n: k + 1 })}><Image source={CHOICE_ICONS.trash} style={{ width: 18, height: 18, tintColor: colors.white }} resizeMode="contain" /></Pressable>
               </View>
               </View>
             </View>
@@ -1273,17 +1274,17 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 return (
                   <>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Pressable onPress={() => (by ? setCoverTitle({ bs: Math.max(0.025, (T.bs || T.size * 0.42) - 0.008) }) : setCoverTitle({ size: Math.max(0.05, T.size - 0.015) }))} style={styles.toolBtn} accessibilityLabel={tr('Smaller title')}><Text style={[styles.donePillText, { fontSize: 13 }]}>A</Text></Pressable>
-                    <Pressable onPress={() => (by ? setCoverTitle({ bs: Math.min(0.12, (T.bs || T.size * 0.42) + 0.008) }) : setCoverTitle({ size: Math.min(0.24, T.size + 0.015) }))} style={styles.toolBtn} accessibilityLabel={tr('Bigger title')}><Text style={[styles.donePillText, { fontSize: 20 }]}>A</Text></Pressable>
+                    <Pressable hitSlop={6} onPress={() => (by ? setCoverTitle({ bs: Math.max(0.025, (T.bs || T.size * 0.42) - 0.008) }) : setCoverTitle({ size: Math.max(0.05, T.size - 0.015) }))} style={styles.toolBtn} accessibilityLabel={tr('Smaller title')}><Text style={[styles.donePillText, { fontSize: 13 }]}>A</Text></Pressable>
+                    <Pressable hitSlop={6} onPress={() => (by ? setCoverTitle({ bs: Math.min(0.12, (T.bs || T.size * 0.42) + 0.008) }) : setCoverTitle({ size: Math.min(0.24, T.size + 0.015) }))} style={styles.toolBtn} accessibilityLabel={tr('Bigger title')}><Text style={[styles.donePillText, { fontSize: 20 }]}>A</Text></Pressable>
                     {/* text colour: one button; the colours open in their own box */}
-                    <Pressable onPress={() => setCoverTool('color')} style={styles.toolBtn} accessibilityRole="button" accessibilityLabel={tr('Text Color')}>
+                    <Pressable hitSlop={6} onPress={() => setCoverTool('color')} style={styles.toolBtn} accessibilityRole="button" accessibilityLabel={tr('Text Color')}>
                       <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: curColor, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.85)' }} />
                     </Pressable>
-                    <Pressable onPress={() => setCoverTool('font')} style={styles.toolBtn} accessibilityRole="button" accessibilityLabel={tr('Title font')}>
+                    <Pressable hitSlop={6} onPress={() => setCoverTool('font')} style={styles.toolBtn} accessibilityRole="button" accessibilityLabel={tr('Title font')}>
                       <Text style={[styles.donePillText, { fontSize: 15, fontFamily: bookFont((by ? bylineLook(T).font : T.font) || 'serif').bold || bookFont((by ? bylineLook(T).font : T.font) || 'serif').family }]}>Aa</Text>
                     </Pressable>
                     {/* left / centre / right (the box's width: drag its side handles on the cover) */}
-                    <Pressable onPress={() => setCoverTitle(by ? { balign: nextA } : { align: nextA })} style={[styles.toolBtn, { alignItems: a === 'left' ? 'flex-start' : a === 'right' ? 'flex-end' : 'center', paddingHorizontal: 10 }]} accessibilityLabel={tr('Text alignment')}>
+                    <Pressable hitSlop={6} onPress={() => setCoverTitle(by ? { balign: nextA } : { align: nextA })} style={[styles.toolBtn, { alignItems: a === 'left' ? 'flex-start' : a === 'right' ? 'flex-end' : 'center', paddingHorizontal: 10 }]} accessibilityLabel={tr('Text alignment')}>
                       {[16, 10, 14].map((len, i) => <View key={i} style={{ width: len, height: 2, borderRadius: 1, backgroundColor: colors.white, marginVertical: 1.5 }} />)}
                     </Pressable>
                   </View>
@@ -1292,7 +1293,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   {creditsLine(draft.writer, draft.artist) || (T.byline && T.bx != null) ? (
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10 }}>
                     {T.byline && T.bx != null ? [['title', tr('Title')], ['byline', tr('Author')]].map(([k, label]) => (
-                      <Pressable key={k} onPress={() => setCoverSel(k)} accessibilityRole="radio" accessibilityState={{ selected: coverSel === k }} style={[styles.toolChip, coverSel === k && { backgroundColor: colors.green }]}>
+                      <Pressable hitSlop={6} key={k} onPress={() => setCoverSel(k)} accessibilityRole="radio" accessibilityState={{ selected: coverSel === k }} style={[styles.toolChip, coverSel === k && { backgroundColor: colors.green }]}>
                         <Text numberOfLines={1} style={[styles.donePillText, { fontSize: 13 }]}>{label}</Text>
                       </Pressable>
                     )) : null}
@@ -1341,7 +1342,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                       <Pressable key={hex} onPress={() => setCoverTitle(by ? { bColor: hex } : { color: hex })} accessibilityLabel={name} accessibilityState={{ selected: curColor === hex }}
                         style={[styles.swatch, { width: 34, height: 34, borderRadius: 17, backgroundColor: hex }, curColor === hex && styles.swatchOn]} />
                     )) : Object.entries(BOOK_FONTS).map(([k, f]) => (
-                      <Pressable key={k} onPress={() => setCoverTitle(by ? { bFont: k } : { font: k })} style={[styles.fontChip, curFont === k && { backgroundColor: colors.green }]}>
+                      <Pressable hitSlop={6} key={k} onPress={() => setCoverTitle(by ? { bFont: k } : { font: k })} style={[styles.fontChip, curFont === k && { backgroundColor: colors.green }]}>
                         <Text style={[styles.donePillText, { fontFamily: f.bold || f.family, fontWeight: f.bold ? undefined : '700', fontSize: 15 }]}>{tr(f.label)}</Text>
                       </Pressable>
                     ))}
@@ -1360,6 +1361,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             </View>
           ) : null}
         </KeyboardAvoidingView>
+      ) : null}
+      {pageAsk != null ? (
+        <ConfirmBox title={tr('Delete page {n}?', { n: pageAsk + 1 })} message={tr('Its words, pictures and recordings go too.')} confirm={tr('Delete')} cancel={tr('Keep')}
+          onConfirm={() => { const k = pageAsk; setPageAsk(null); removePage(k); }} onCancel={() => setPageAsk(null)} />
       ) : null}
       {pageDone ? (
         <Pressable onPress={() => setPageDone(false)} accessible={false} style={[StyleSheet.absoluteFill, styles.choiceBack]}>{/* (tapping outside: the same as Cancel) */}

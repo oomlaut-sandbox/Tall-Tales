@@ -34,7 +34,7 @@ const AVATAR_NAMES = {
 
 function Choice({ label, on, onPress }) {
   return (
-    <Pressable onPress={onPress} accessibilityRole="radio" accessibilityState={{ selected: on }} style={[styles.choice, on && styles.choiceOn]}>
+    <Pressable hitSlop={6} onPress={onPress} accessibilityRole="radio" accessibilityState={{ selected: on }} style={[styles.choice, on && styles.choiceOn]}>
       <Text style={[styles.choiceText, on && { color: colors.white }]}>{label}</Text>
     </Pressable>
   );
@@ -220,7 +220,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
           {room && !folders && shown.length ? (
             <View style={{ flexDirection: 'row', gap: 8, alignSelf: 'flex-end', marginTop: -6 }}>
               {[['grid', t('Grid')], ['list', t('List')]].map(([k, label]) => (
-                <Pressable key={k} onPress={() => setView(k)} accessibilityRole="tab" accessibilityState={{ selected: view === k }} style={[styles.choice, view === k && styles.choiceOn]}>
+                <Pressable hitSlop={6} key={k} onPress={() => setView(k)} accessibilityRole="tab" accessibilityState={{ selected: view === k }} style={[styles.choice, view === k && styles.choiceOn]}>
                   <Text style={styles.choiceText}>{label}</Text>
                 </Pressable>
               ))}

@@ -8,7 +8,8 @@ import { Animated, Easing, Image, LayoutAnimation, Platform, Pressable, ScrollVi
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, DESK_BG, IS_TABLET, BandFill } from '../look';
-import { Bar, Burger, PlaylistIcon, WithBar } from '../components/Chrome';
+import { Bar, Burger, ConfirmBox, PlaylistIcon, WithBar } from '../components/Chrome';
+const TRASH = require('../../assets/icon-trash.png');
 import { useT } from '../i18n';
 import { loadPlaylists, newPlaylist, savePlaylists } from '../playlists';
 import { sharePlaylist } from '../invite';
@@ -67,6 +68,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
   const loaded = useRef(false);
   useEffect(() => { if (lists && loaded.current) savePlaylists(lists); if (lists) loaded.current = true; }, [lists]);
   const [edit, setEdit] = useState(null); // the playlist being changed (its id)
+  const [delAsk, setDelAsk] = useState(null); // 'Delete this playlist?' (asked first: 31 Oct 2026)
   const [adding, setAdding] = useState(false); // choosing books to add
   const byId = (id) => shelf.find((s) => s.id === id);
   const set = (id, patch) => setLists((l) => l.map((p) => (p.id === id ? { ...p, ...patch } : p)));
@@ -121,14 +123,14 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
                       <Text style={styles.pillText}>{t('Play')}</Text>
                     </Pressable>
                     <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
-                      <Pressable onPress={() => set(p.id, { listen: !p.listen })} style={[styles.chip, p.listen && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.listen }}>
+                      <Pressable hitSlop={6} onPress={() => set(p.id, { listen: !p.listen })} style={[styles.chip, p.listen && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.listen }}>
                         <Text style={[styles.chipText, p.listen && { color: colors.white }]}>{t('Listen Only Mode')}</Text>
                       </Pressable>
-                      <Pressable onPress={() => set(p.id, { shuffle: !p.shuffle })} style={[styles.chip, p.shuffle && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.shuffle }}>
+                      <Pressable hitSlop={6} onPress={() => set(p.id, { shuffle: !p.shuffle })} style={[styles.chip, p.shuffle && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.shuffle }}>
                         <Text style={[styles.chipText, p.shuffle && { color: colors.white }]}>{t('Shuffle')}</Text>
                       </Pressable>
                       {/* Loop: after the last book it starts again from the first */}
-                      <Pressable onPress={() => set(p.id, { loop: !p.loop })} style={[styles.chip, p.loop && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.loop }}>
+                      <Pressable hitSlop={6} onPress={() => set(p.id, { loop: !p.loop })} style={[styles.chip, p.loop && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.loop }}>
                         <Text style={[styles.chipText, p.loop && { color: colors.white }]}>{t('Loop')}</Text>
                       </Pressable>
                     </View>
@@ -193,14 +195,14 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
                       <Text numberOfLines={2} style={[styles.bookName, { flex: 1, fontSize: 15 }]}>{s.title}</Text>
                       <Pressable onPress={() => move(pl, pl.books.indexOf(s.id), -1)} disabled={k === 0} hitSlop={6} style={[styles.pbtn, k === 0 && { opacity: 0.3 }]} accessibilityLabel={t('Move up')}><Text style={styles.pbtnText}>↑</Text></Pressable>
                       <Pressable onPress={() => move(pl, pl.books.indexOf(s.id), 1)} disabled={k === books(pl).length - 1} hitSlop={6} style={[styles.pbtn, k === books(pl).length - 1 && { opacity: 0.3 }]} accessibilityLabel={t('Move down')}><Text style={styles.pbtnText}>↓</Text></Pressable>
-                      <Pressable onPress={() => set(pl.id, { books: pl.books.filter((x) => x !== s.id) })} hitSlop={6} style={styles.pbtn} accessibilityLabel={t('Take out')}><Text style={styles.pbtnText}>✕</Text></Pressable>
+                      <Pressable onPress={() => set(pl.id, { books: pl.books.filter((x) => x !== s.id) })} hitSlop={6} style={styles.pbtn} accessibilityRole="button" accessibilityLabel={t('Take out')}><Image source={TRASH} style={{ width: 16, height: 16, tintColor: colors.white }} resizeMode="contain" /></Pressable>
                     </View>
                   )) : <Text style={styles.small}>{t('No books yet.')}</Text>}
                   <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
                     <Pressable onPress={() => setAdding(true)} style={[styles.pill, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text style={styles.pillText}>+  {t('Add books')}</Text></Pressable>
                     <Pressable onPress={() => setEdit(null)} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Save')}</Text></Pressable>
                   </View>
-                  <Pressable onPress={() => { setLists((l) => l.filter((p) => p.id !== pl.id)); setEdit(null); }} accessibilityRole="button"
+                  <Pressable onPress={() => setDelAsk(pl.id)} accessibilityRole="button"
                     style={{ alignSelf: 'flex-start', backgroundColor: colors.deepRed, height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', marginTop: 6 }}>
                     <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 }}>{t('Delete this playlist')}</Text>
                   </Pressable>
@@ -211,6 +213,10 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
             </View>
           </View>
         </View>
+      ) : null}
+      {delAsk ? (
+        <ConfirmBox title={t('Delete this playlist?')} message={t('The books stay in My Library.')} confirm={t('Delete')} cancel={t('Keep')}
+          onConfirm={() => { const id = delAsk; setDelAsk(null); setLists((l) => l.filter((p) => p.id !== id)); setEdit(null); }} onCancel={() => setDelAsk(null)} />
       ) : null}
     </WithBar>
   );

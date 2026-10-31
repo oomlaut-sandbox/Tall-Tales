@@ -57,7 +57,7 @@ export default function About({ u, openMenu, onSecret, onBack }) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   band: { backgroundColor: colors.red, paddingBottom: 30, paddingHorizontal: 24, zIndex: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 10, elevation: 10 }, // same drop shadow as the other banners
-  title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 32 },
+  title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 32, transform: [{ translateY: -3 }] }, // (level with the other screens' titles)
   reg: { color: colors.white, fontFamily: fonts.ui, fontSize: 13, lineHeight: 15, marginTop: 4, marginLeft: 1 }, // small raised ®
   tagline: { color: colors.white, fontFamily: 'EBGaramond_400Regular_Italic', fontSize: 20, marginTop: 6 }, // the real italic (iPhone doesn't slant a font by itself)
   body: { paddingHorizontal: 24, paddingTop: 36, gap: 16 },

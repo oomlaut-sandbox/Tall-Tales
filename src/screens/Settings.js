@@ -28,7 +28,7 @@ const MODES = [['self', 'Read Yourself'], ['learn', 'Learn to Read'], ['auto', '
 
 function Choice({ label, on, onPress, disabled }) {
   return (
-    <Pressable onPress={onPress} disabled={disabled} accessibilityRole="radio" accessibilityState={{ selected: on, disabled }}
+    <Pressable hitSlop={6} onPress={onPress} disabled={disabled} accessibilityRole="radio" accessibilityState={{ selected: on, disabled }}
       style={[styles.choice, on && styles.choiceOn, disabled && { opacity: 0.4 }]}>
       <Text style={[styles.choiceText, on && { color: colors.white }]}>{label}</Text>
     </Pressable>
