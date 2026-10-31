@@ -110,8 +110,8 @@ const CHOICE_ICONS = { // the icons before the words in the pop-up choices (the 
 
 const MAX_PX = 1600;
 const TOOLBOX_H = 92; // the cover editor's black glass tools box (two rows of buttons)
-const MAX_PAGES = 60; // a soft limit, so books stay quick to open, print and share (60: a whole Quick Book, 31 Oct 2026)
-const QUICK_MAX = 60; // Quick Book: up to 60 pictures at once
+const MAX_PAGES = 64; // a soft limit, so books stay quick to open, print and share (64: a whole Quick Book, 31 Oct 2026)
+const QUICK_MAX = 64; // Quick Book: up to 64 pictures at once (31 Oct 2026)
 const FULL = 'Books can have up to {n} pages. That’s a long story!'; // shown with tr(FULL, { n: MAX_PAGES })
 
 const blank = () => ({ pid: newPageId(), text: '', uri: null, w: 1, h: 1 });
@@ -301,7 +301,7 @@ function LookIcon({ look, ink }) {
   return <Image source={LOOK_ICONS[look === 'plain' ? `plain-${ink || 'dark'}` : look]} style={{ width: 30, height: 30 }} resizeMode="contain" accessibilityIgnoresInvertColors />;
 }
 
-// ---- Quick Book (31 Oct 2026): a new book made from up to 60 pictures at once ----
+// ---- Quick Book (31 Oct 2026): a new book made from up to 64 pictures at once ----
 // the two layouts, two squares each in white line art (a picture, then words; or two pictures) on a grey square tile
 // (Jörg, 31 Oct 2026)
 const QUICK_ICONS = { alt: require('../../assets/quick-alt.png'), every: require('../../assets/quick-every.png') };
@@ -561,7 +561,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     }
     return { uri: k == null ? await keepPicture(draft.id, src) : await keepFile(src, `stories/${draft.id}`, `img-${Date.now()}-${k}.jpg`), w, h };
   };
-  // ---- Quick Book: up to 60 pictures, chosen in order, become the book's pages (Jörg, 31 Oct 2026) ----
+  // ---- Quick Book: up to 64 pictures, chosen in order, become the book's pages (Jörg, 31 Oct 2026) ----
   // alt: a picture, then its words page, for each picture; every: two pictures to a spread (words can go over them
   // with the Advanced page editor). Then on to the cover, as for any new book.
   const [importing, setImporting] = useState(null); // { n, of } while the pictures come in

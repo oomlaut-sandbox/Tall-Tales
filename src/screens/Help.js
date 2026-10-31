@@ -108,7 +108,7 @@ const ALL_HELP = [
   ] },
   // Quick Book and the Advanced page editor (Jörg, 31 Oct 2026)
   { section: 'Making books', title: 'Quick Book', text: [
-    'When you start a new book, Quick Book can make it from up to 60 pictures from your photos. First choose how the pages go: a picture, then words, or a picture on every page.',
+    'When you start a new book, Quick Book can make it from up to 64 pictures from your photos. First choose how the pages go: a picture, then words, or a picture on every page.',
     'Coro brings the pictures in, in the order you picked them. Then add a cover and your words, and tweak any picture with Edit photo.',
   ] },
   { section: 'Making books', title: 'Advanced page editor', text: [
@@ -120,7 +120,7 @@ const ALL_HELP = [
     'From there you can also share the book as a PDF, print it, or delete the whole book. Printing and sharing ask a grown-up first.',
   ] },
   { section: 'Making books', title: 'How long can a book be?', text: [
-    'A book can have up to 60 pages, each with a picture and words. A few sentences a page reads best; longer text gets smaller to fit.',
+    'A book can have up to 64 pages, each with a picture and words. A few sentences a page reads best; longer text gets smaller to fit.',
     'Pictures are kept sharp but small, so a whole book is usually 15 to 25 MB. Recordings take about 1 MB a minute.',
     'My Notes has room for 60 pages.',
   ] },
