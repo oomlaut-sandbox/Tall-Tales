@@ -79,7 +79,7 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
       secureTextEntry={coded}
       autoFocus
       onSubmitEditing={check}
-      allowFontScaling={false} style={[styles.input, flat ? { flex: 1, minWidth: 0, fontSize: 20, height: 40 } : { marginTop: 16 }]}
+      allowFontScaling={false} style={[styles.input, flat ? { flex: 1, minWidth: 90, fontSize: 20, height: 40 } : { marginTop: 16 }]}
       accessibilityLabel={coded ? t('Grown-up passcode') : t('Answer')}
     />
   );
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   btn: { flex: 1, backgroundColor: colors.tile, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
   cardFlat: { width: '100%', maxWidth: 560, paddingHorizontal: 20, paddingTop: 14, paddingBottom: 16, gap: 10, borderRadius: 16 },
   cardWide: { width: 460, borderRadius: 20 },
-  btnFlat: { flex: 0, flexGrow: 0, flexShrink: 0, width: 128, height: 40, paddingHorizontal: 12 }, // a set width: on iPad 'auto' shrank them to dots
+  btnFlat: { flex: 0, flexGrow: 0, flexShrink: 0, flexBasis: 'auto', width: 116, minWidth: 116, height: 40, paddingHorizontal: 12 }, // a set width: on iPad 'auto' shrank them to dots
   btnText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 },
   langs: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 12, rowGap: 6, marginTop: 10 },
   lang: { fontFamily: fonts.ui, fontSize: 12 },
