@@ -28,7 +28,7 @@ import DaydreamVideo from './Daydream';
 
 const SUN = require('../../assets/nightlight-sun.png');
 const CORONA = require('../../assets/nightlight-corona.png');
-const DIAMOND = require('../../assets/nightlight-diamond.png'); // the diamond ring: a thin, tilted bead of light at the moon's edge (Jörg, 31 Oct 2026)
+const DIAMOND = require('../../assets/nightlight-diamond.png'); // the diamond ring: a thin, tilted bead of light at the moon's edge, with a small soft glow that stays within the ring (no haze bulging out: Jörg, 31 Oct 2026)
 const CREAM = '#f4e2cf';
 const BASE = '#1e1e20'; // the popup's dark grey (a deep, quiet grey at night)
 const GRAIN = require('../../assets/noise.png'); // a fine grain over the alarm popup, so it feels like a real object
