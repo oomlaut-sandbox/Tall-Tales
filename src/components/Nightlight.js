@@ -316,7 +316,7 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
   const sunE = orb === 'sun' ? (eclipse || 0) : frozenE.current; // (what the sun shows)
   const ringFade = useRef(new Animated.Value(0)).current; // the diamond ring (see the sun below)
   const ringOn = sunE >= 0.985;
-  useEffect(() => { Animated.timing(ringFade, { toValue: ringOn ? 1 : 0, duration: ringOn ? 1400 : 350, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(); }, [ringOn]);
+  useEffect(() => { Animated.timing(ringFade, { toValue: ringOn ? 1 : 0, duration: ringOn ? 350 : 300, easing: Easing.out(Easing.quad) /* quick, as the slider lands (Jörg, 31 Oct 2026) */, useNativeDriver: true }).start(); }, [ringOn]);
   const before = useRef(0); // the eclipse before the alarm (Snooze brings it back)
   const soundRef = useRef(alarmSound); soundRef.current = alarmSound;
   const rampEclipse = (to, steps) => {
