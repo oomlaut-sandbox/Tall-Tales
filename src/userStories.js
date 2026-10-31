@@ -90,7 +90,9 @@ export function saveUserStory(draft, { publish = false, handIn = false } = {}) {
       if (i >= 0) list[i] = saved; else list.push(saved);
     }
     await saveJSON('stories', list);
-    await pruneRecordings(draft.id, pages.map((p) => p.pid));
+    // recordings go only with pages that were deleted: never the title page's, nor a page that's empty for a
+    // moment while it's being edited (31 Oct 2026)
+    await pruneRecordings(draft.id, [`title-${draft.id}`, ...draft.pages.map((p) => p.pid)]);
     if (pages.length) markFirst('firstBook'); // a badge in My Notes
     return list.map(fromSaved);
   });
@@ -111,9 +113,9 @@ export function deleteUserStory(id) {
   return serial(async () => {
     const list = await loadJSON('stories', []);
     const s = list.find((x) => x.id === id);
-    if (s) { s.pages.forEach((p) => [p.uri, p.uri2, p.src, p.src2].forEach((x) => x && deleteFile(liveUri(x)))); if (s.cover) [s.cover.uri, s.cover.src].forEach((x) => x && deleteFile(liveUri(x))); }
     const next = list.filter((x) => x.id !== id);
-    await saveJSON('stories', next);
+    await saveJSON('stories', next); // (the list first, then the files: never a saved book pointing at deleted pictures)
+    if (s) { s.pages.forEach((p) => [p.uri, p.uri2, p.src, p.src2].forEach((x) => x && deleteFile(liveUri(x)))); if (s.cover) [s.cover.uri, s.cover.src].forEach((x) => x && deleteFile(liveUri(x))); }
     await pruneRecordings(id, []);
     return next.map(fromSaved);
   });
