@@ -1083,6 +1083,7 @@ function LiveStrokes({ bus, strokes, width, height, noPaper }) {
   return <StrokesView strokes={strokes} live={live} width={width} height={height} noPaper={noPaper} />;
 }
 
+const SAVE_ICON = require('../../assets/heading-icons/save-exit.png'); // an arrow into a tray, as in the book maker's Save for later
 export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone, onNext, draftKey }) {
   useHideBack(); // no back button over the drawing editor (Jörg, 27 Oct 2026)
   const t = useT();
@@ -1392,11 +1393,11 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
     {doneAsk ? (
       <View style={[StyleSheet.absoluteFill, styles.choiceBack, { zIndex: 80 }]}>
         <View style={styles.choice}>
-          <Text style={[styles.choiceTitle, { lineHeight: 28 }]}>{t('Do you want to print or share your drawing now, or save it and start the next page?')}</Text>
+          <Text style={[styles.choiceTitle, { lineHeight: 28 }]}>{t('Do you want to print or share your drawing now, or save it and close?')}</Text>
           <Pressable disabled={outBusy} onPress={() => setOutFor('share')} style={[styles.choiceBtn, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.share} text={t('Share')} style={styles.choiceBtnText} /></Pressable>
           <Pressable disabled={outBusy} onPress={() => setOutFor('print')} style={[styles.choiceBtn, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.print} text={t('Print')} style={styles.choiceBtnText} /></Pressable>
           <Pressable onPress={() => setDoneAsk(false)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon="cancel" text={t('Cancel')} style={styles.choiceBtnText} /></Pressable>
-          <Pressable onPress={() => { setDoneAsk(false); dropDraft(); (onNext || onDone)(strokes); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 8 }]} accessibilityRole="button"><ChoiceLabel icon="next" text={t('Next page')} style={styles.choiceBtnText} /></Pressable>
+          <Pressable onPress={() => { setDoneAsk(false); dropDraft(); onDone(strokes); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 8 }]} accessibilityRole="button"><ChoiceLabel icon={SAVE_ICON} text={t('Save and close')} style={styles.choiceBtnText} /></Pressable>{/* (saves the drawing and closes the drawing tools: Jörg, 31 Oct 2026) */}
         </View>
       </View>
     ) : null}

@@ -835,6 +835,7 @@ const T = {
   'No names were found in that file.': { de: 'In dieser Datei wurden keine Namen gefunden.', fr: 'Aucun nom n’a été trouvé dans ce fichier.', es: 'No se encontraron nombres en ese archivo.', ja: 'その ファイルに なまえが ありませんでした。', ar: "لم يُعثر على أسماء في هذا الملف." },
   'Text options': { de: 'Textoptionen', fr: 'Options du texte', es: 'Opciones de texto', ja: 'もじの せってい', ar: "خيارات النص" },
   'Both pictures': { de: 'Beide Bilder', fr: 'Les deux images', es: 'Ambas imágenes', ja: 'りょうほうの え', ar: "الصورتان كلتاهما" },
+  'Save and close': { de: 'Speichern und schließen', fr: 'Enregistrer et fermer', es: 'Guardar y cerrar', ja: 'ほぞんして とじる', ar: "احفظ وأغلق" },
   'About Coro': { de: 'Über Coro', fr: 'À propos d’Coro', es: 'Acerca de Coro', ja: 'Coroについて', ar: "عن Coro" },
 };
 
