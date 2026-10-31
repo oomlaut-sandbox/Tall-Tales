@@ -826,6 +826,7 @@ const T = {
   'Choose a doodle': { de: 'Wähle eine Kritzelei', fr: 'Choisis un gribouillage', es: 'Elige un garabato', ja: 'らくがきを えらぶ', ar: "اختر رسمة" },
   'Doodle': { de: 'Kritzelei', fr: 'Gribouillage', es: 'Garabato', ja: 'らくがき', ar: "رسمة" },
   'There are no drawings in My Notes yet.': { de: 'In Meine Notizen gibt es noch keine Zeichnungen.', fr: 'Il n’y a pas encore de dessins dans Mes notes.', es: 'Todavía no hay dibujos en Mis notas.', ja: 'わたしのメモに まだ えが ありません。', ar: "لا توجد رسومات في ملاحظاتي بعد." },
+  'Layout (scroll right)': { de: 'Anordnung (nach rechts wischen)', fr: 'Mise en page (faites défiler vers la droite)', es: 'Diseño (desliza a la derecha)', ja: 'レイアウト（みぎへ スクロール）', ar: "التخطيط (مرّر جانبًا)" },
   'About Coro': { de: 'Über Coro', fr: 'À propos d’Coro', es: 'Acerca de Coro', ja: 'Coroについて', ar: "عن Coro" },
 };
 

@@ -1032,7 +1032,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       <Panel floating open={pagesOpen} side="right" title={tr('Pages')} portraitWidth="94%" bottom={wide ? 0 : barH} inset={wide ? BL.rightW : 0} onClose={() => setPagesOpen(false)}>
         <ScrollView style={{ maxHeight: Math.max(380, winH * 0.55) }} contentContainerStyle={{ gap: 14, paddingBottom: 6 }}>
           {/* Layout: the whole book at a glance, the cover and then every spread as it will look (Jörg, 27 Oct 2026) */}
-          <Text style={styles.layoutHead}>{tr('Layout')}</Text>
+          <Text style={styles.layoutHead}>{tr('Layout (scroll right)')}</Text>{/* (it scrolls sideways: Jörg, 31 Oct 2026) */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 14, paddingBottom: 4 }}>
             <Pressable onPress={() => { setPagesOpen(false); openCover(); }} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')} style={{ alignItems: 'center', gap: 6 }}>
               <View style={[styles.spreadPage, { backgroundColor: '#2f5f9e' }]}>
@@ -1704,7 +1704,7 @@ const styles = StyleSheet.create({
   sub: { color: colors.muted, fontFamily: fonts.ui, fontSize: 12, marginTop: 2 },
   btn: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15, paddingHorizontal: 3 },
   finish: { backgroundColor: colors.green, paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' }, // a solid green pill
-  layoutHead: { color: '#bdbdbd', fontFamily: fonts.uiBold, fontSize: 12, letterSpacing: 0.8, textTransform: 'uppercase' },
+  layoutHead: { color: '#bdbdbd', fontFamily: fonts.uiBold, fontSize: 14 }, // sentence case, like the other group names (31 Oct 2026)
   spreadPage: { width: 58, height: 58, backgroundColor: '#d9d9d9', borderRadius: 4, overflow: 'hidden' },
   spreadNum: { color: '#d6d6d6', fontFamily: fonts.uiSemiBold, fontSize: 12 },
   prow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, backgroundColor: '#2a2a2a', padding: 12, borderWidth: 2, borderColor: 'transparent', borderRadius: 16 },
