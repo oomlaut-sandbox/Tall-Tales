@@ -688,7 +688,7 @@ let bubbleNow = null, bubbleSeq = 0;
 const bubbleSubs = new Set();
 const tellBubble = () => bubbleSubs.forEach((f) => f(bubbleNow));
 
-export function Toast({ message, area, onDismiss, center, ms = BUBBLE_MS, button, check, icon }) { // icon: a small picture above the words // check: a 'don't show again' box (onDismiss gets whether it was ticked) // button: a green pill that closes it (then ms 0: it stays until then)
+export function Toast({ message, area, onDismiss, center, ms = BUBBLE_MS, button, check, icon, tone }) { // tone 'amber': a warm, dim bubble for the nightlight (Jörg, 30 Oct 2026) // icon: a small picture above the words // check: a 'don't show again' box (onDismiss gets whether it was ticked) // button: a green pill that closes it (then ms 0: it stays until then)
   const dismiss = useRef(onDismiss);
   dismiss.current = onDismiss;
   const mine = useRef(null);
@@ -697,13 +697,15 @@ export function Toast({ message, area, onDismiss, center, ms = BUBBLE_MS, button
     if (!message) return undefined;
     const id = ++bubbleSeq;
     mine.current = id;
-    bubbleNow = { id, message, area, center, ms, button, check, icon, onDismiss: (ticked) => dismiss.current && dismiss.current(ticked) };
+    bubbleNow = { id, message, area, center, ms, button, check, icon, tone, onDismiss: (ticked) => dismiss.current && dismiss.current(ticked) };
     tellBubble();
     return () => { if (bubbleNow && bubbleNow.id === id) { bubbleNow = null; tellBubble(); } };
   }, [message, areaKey, center]);
   return null;
 }
 
+// the nightlight's bubble: deep amber paper and dark brown words, soft on eyes in the dark
+const BUBBLE_AMBER = { bg: '#c9a06a', ink: '#2e1d10', box: '#5a3d22' };
 export function BubbleHost({ defaultArea }) {
   const tr = useT();
   const [b, setB] = useState(bubbleNow);
@@ -732,16 +734,16 @@ export function BubbleHost({ defaultArea }) {
           shaped like Jörg's bubble (rounded box, a small straight point at the bottom left), with a soft shadow.
           (center: in the middle of the given area instead, e.g. the picture page while recording.) */}
       <Pressable onPress={close} accessibilityRole="button" accessibilityHint={tr('Closes the message')} style={styles.bubbleWrap}>
-        <View style={styles.bubble}>
+        <View style={[styles.bubble, b.tone === 'amber' && { backgroundColor: BUBBLE_AMBER.bg }]}>
           {b.icon === 'camera' ? <View style={{ alignItems: 'center', marginTop: 6, marginBottom: 26 }}><CameraIcon /></View> : null}{/* well clear of the words */}
           {/* a ● in the message is drawn in the record button's red */}
-          <Text style={styles.toast}>{String(message).split('●').map((part, i) => (i ? [<Text key={i} style={{ color: colors.highlight }}>●</Text>, part] : part))}</Text>
+          <Text style={[styles.toast, b.tone === 'amber' && { color: BUBBLE_AMBER.ink }]}>{String(message).split('●').map((part, i) => (i ? [<Text key={i} style={{ color: colors.highlight }}>●</Text>, part] : part))}</Text>
           {b.check ? (
             <Pressable onPress={() => setTicked((x) => !x)} accessibilityRole="checkbox" accessibilityState={{ checked: ticked }} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 20 }}>
-              <View style={{ width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: '#555', backgroundColor: ticked ? '#1f1f1f' : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: b.tone === 'amber' ? BUBBLE_AMBER.box : '#555', backgroundColor: ticked ? (b.tone === 'amber' ? BUBBLE_AMBER.ink : '#1f1f1f') : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
                 {ticked ? <Text style={{ color: colors.white, fontSize: 14, lineHeight: 16, fontFamily: fonts.uiBold }}>✓</Text> : null}
               </View>
-              <Text style={{ color: '#3a3a3a', fontFamily: fonts.ui, fontSize: 15 }}>{b.check}</Text>
+              <Text style={{ color: b.tone === 'amber' ? BUBBLE_AMBER.ink : '#3a3a3a', fontFamily: fonts.ui, fontSize: 15 }}>{b.check}</Text>
             </Pressable>
           ) : null}
           {b.button ? (
@@ -750,7 +752,7 @@ export function BubbleHost({ defaultArea }) {
             </Pressable>
           ) : null}
         </View>
-        <View style={styles.bubbleTail} />
+        <View style={[styles.bubbleTail, b.tone === 'amber' && { borderTopColor: BUBBLE_AMBER.bg }]} />
       </Pressable>
     </View>
   );
