@@ -8,7 +8,7 @@ import { ReadingOptionsContent } from './PlaybackPanel';
 import { hapticsOn, onHaptics, setHapticsOn, tap } from '../haptics';
 import { useT } from '../i18n';
 
-const ICON = require('../../assets/heading-icons/reading.png');
+const ICON = require('../../assets/heading-icons/reading-options.png'); // a simple book: a square, one line down the middle (Jörg, 31 Oct 2026)
 
 // open / onToggle: given by Settings (one category open at a time); otherwise the box keeps its own
 export default function ReadingOptionsSection({ prefs, setPrefs, toast, onPlaylists, style, open, onToggle }) {

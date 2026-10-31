@@ -47,7 +47,7 @@ function Toggle({ label, value, onChange }) {
 // the little line icons beside the category headings (in the style of Ideas and Support's)
 const SET_ICONS = {
   parental: require('../../assets/heading-icons/grown-ups.png'),
-  reading: require('../../assets/heading-icons/reading.png'),
+  reading: require('../../assets/heading-icons/reading-options.png'),
   music: require('../../assets/heading-icons/music-and-sounds.png'),
   profiles: require('../../assets/heading-icons/profiles.png'),
   languages: require('../../assets/heading-icons/languages.png'),
