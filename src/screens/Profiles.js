@@ -215,7 +215,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
             : selecting ? (picked.length ? t('{n} selected', { n: picked.length }) : t('Tap profiles to select them.'))
             : shown.length
             ? (editing ? t('Tap a profile to change its name, character or age.') : t('Who is reading? Tap your name.'))
-            : t('Give each reader their own notebook, badges, playlists and settings: children and grown-ups. A child’s age decides which books they see.')}</Text>
+            : t('Give each reader their own notes, badges, Book Playlists and settings: children and grown-ups. A child’s age decides which books they see.')}</Text>
           {/* Grid or List (the names, A to Z) */}
           {room && !folders && shown.length ? (
             <View style={{ flexDirection: 'row', gap: 8, alignSelf: 'flex-end', marginTop: -6 }}>

@@ -1,7 +1,7 @@
 // Translations for notebook (English source string -> { de, fr, es, ja }). Merged into the main table in src/i18n.js.
 export default {
   // ---- My Notes ----
-  'Your notebook is full ({n} pages). Delete a page to make room.': { de: 'Dein Notizbuch ist voll ({n} Seiten). Lösche eine Seite, dann ist wieder Platz.', fr: 'Ton carnet est plein ({n} pages). Supprime une page pour faire de la place.', es: 'Tu cuaderno está lleno ({n} páginas). Borra una página para hacer sitio.', ja: 'ノートが いっぱいです（{n}ページ）。ページを けすと、また かけるよ。', ar: "دفترك ممتلئ ({n} صفحة). احذف صفحة لتفسح مكانًا." },
+  'My Notes is full ({n} pages). Delete a page to make room.': { de: 'Meine Notizen sind voll ({n} Seiten). Lösche eine Seite, dann ist wieder Platz.', fr: 'Mes notes sont pleines ({n} pages). Supprime une page pour faire de la place.', es: 'Mis notas están llenas ({n} páginas). Borra una página para hacer sitio.', ja: 'わたしのメモが いっぱいです（{n}ページ）。ページを けすと、また かけるよ。', ar: '«ملاحظاتي» ممتلئة ({n} صفحة). احذف صفحة لتفسح مكانًا.' },
   'Page deleted.': { de: 'Seite gelöscht.', fr: 'Page supprimée.', es: 'Página borrada.', ja: 'ページを けしました。', ar: "حُذفت الصفحة." },
   'or a drawing': { de: 'oder ein Bild malen', fr: 'ou un dessin', es: 'o un dibujo', ja: 'または え', ar: "أو رسمة" },
   'Change the picture': { de: 'Bild ändern', fr: 'Changer l’image', es: 'Cambiar la imagen', ja: 'えを かえる', ar: "تغيير الصورة" },
@@ -9,14 +9,14 @@ export default {
   'Draw on the photo': { de: 'Auf das Foto malen', fr: 'Dessiner sur la photo', es: 'Dibujar en la foto', ja: 'しゃしんに かく', ar: "ارسم على الصورة" },
   'Keep drawing': { de: 'Weitermalen', fr: 'Continuer le dessin', es: 'Seguir dibujando', ja: 'つづきを かく', ar: "تابع الرسم" },
   'Make a drawing': { de: 'Ein Bild malen', fr: 'Faire un dessin', es: 'Hacer un dibujo', ja: 'えを かく', ar: "ارسم رسمة" },
-  'My notes · Page {n}': { de: 'Meine Notizen · Seite {n}', fr: 'Mes notes · Page {n}', es: 'Mis notas · Página {n}', ja: 'わたしの メモ · {n}ページ', ar: "ملاحظاتي · الصفحة {n}" },
+  'My Notes · Page {n}': { de: 'Meine Notizen · Seite {n}', fr: 'Mes notes · Page {n}', es: 'Mis notas · Página {n}', ja: 'わたしの メモ · {n}ページ', ar: 'ملاحظاتي · الصفحة {n}' },
   'Write anything: what you read, what you saw today, a story idea…': { de: 'Schreib, was du willst: was du gelesen hast, was du heute gesehen hast, eine Idee für eine Geschichte …', fr: 'Écris ce que tu veux : ce que tu as lu, ce que tu as vu aujourd’hui, une idée d’histoire…', es: 'Escribe lo que quieras: lo que leíste, lo que viste hoy, una idea para un cuento…', ja: 'なんでも かいてね。よんだ こと、きょう みた こと、おはなしの アイデア…', ar: "اكتب أي شيء: ما قرأته، ما رأيته اليوم، فكرة لقصة…" },
   'Sketch · Page {n}': { de: 'Skizze · Seite {n}', fr: 'Croquis · Page {n}', es: 'Dibujo · Página {n}', ja: 'スケッチ · {n}ページ', ar: "رسم سريع · الصفحة {n}" },
   'Drawing · Page {n}': { de: 'Bild · Seite {n}', fr: 'Dessin · Page {n}', es: 'Dibujo · Página {n}', ja: 'え · {n}ページ', ar: "رسمة · الصفحة {n}" },
   'Draw on the top page': { de: 'Auf die obere Seite malen', fr: 'Dessiner sur la page du haut', es: 'Dibujar en la página de arriba', ja: 'うえの ページに かく', ar: "ارسم على الصفحة العليا" },
   'Draw on the bottom page': { de: 'Auf die untere Seite malen', fr: 'Dessiner sur la page du bas', es: 'Dibujar en la página de abajo', ja: 'したの ページに かく', ar: "ارسم على الصفحة السفلى" },
   'Notes for this page': { de: 'Notizen für diese Seite', fr: 'Notes pour cette page', es: 'Notas de esta página', ja: 'この ページの メモ', ar: "ملاحظات لهذه الصفحة" },
-  'Close the notebook': { de: 'Notizbuch schließen', fr: 'Fermer le carnet', es: 'Cerrar el cuaderno', ja: 'ノートを とじる', ar: "إغلاق الدفتر" },
+  'Close My Notes': { de: 'Meine Notizen schließen', fr: 'Fermer Mes notes', es: 'Cerrar Mis notas', ja: 'わたしのメモを とじる', ar: 'إغلاق «ملاحظاتي»' },
   'Add a page': { de: 'Seite hinzufügen', fr: 'Ajouter une page', es: 'Añadir una página', ja: 'ページを ふやす', ar: "إضافة صفحة" },
   'Previous page': { de: 'Vorige Seite', fr: 'Page précédente', es: 'Página anterior', ja: 'まえの ページ', ar: "الصفحة السابقة" },
   'Delete page': { de: 'Seite löschen', fr: 'Supprimer la page', es: 'Borrar la página', ja: 'ページを けす', ar: "حذف الصفحة" },

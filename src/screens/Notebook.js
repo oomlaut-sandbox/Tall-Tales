@@ -320,7 +320,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
 
   const addPage = (kind) => {
     setNewAsk(false); setPagesOpen(false);
-    if (pages.length >= MAX_PAGES) return toast(t('Your notebook is full ({n} pages). Delete a page to make room.', { n: MAX_PAGES }));
+    if (pages.length >= MAX_PAGES) return toast(t('My Notes is full ({n} pages). Delete a page to make room.', { n: MAX_PAGES }));
     const p = kind === 'sketch' ? blankSketch() : blankNote();
     const at = Math.max(0, i - FIRST_PAGE + 1); // right after the page you're on
     setNb((n) => ({ ...n, pages: [...n.pages.slice(0, at), p, ...n.pages.slice(at)] }));
@@ -524,7 +524,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           </Pressable>
         </>
       ) : null}
-      <Pressable onPress={async () => { if (i === COVER_SPREAD && !intro) { closeRef.current(); return; } clearTimeout(timer.current); if (latest.current) await saveNotebook(latest.current); onDone(); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Close the notebook')}>
+      <Pressable onPress={async () => { if (i === COVER_SPREAD && !intro) { closeRef.current(); return; } clearTimeout(timer.current); if (latest.current) await saveNotebook(latest.current); onDone(); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Close My Notes')}>
         <DoneTick size={34} />
       </Pressable>
     </View>
@@ -781,7 +781,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
             <DeskFelt spot="notebook2" overlay />
           </View>
           <View style={{ flex: 1, alignItems: 'center', paddingTop: insets.top + 34 }}>
-            <View style={styles.editorHead}><Text style={styles.editorTitle}>{t('My notes · Page {n}', { n: i + 1 })}</Text></View>
+            <View style={styles.editorHead}><Text style={styles.editorTitle}>{t('My Notes · Page {n}', { n: i + 1 })}</Text></View>
             <View style={[styles.editorPage, { width: winW - 2 * GAP, maxHeight: winW - 2 * GAP }]}>
               <TextInput value={page.text} onChangeText={(text) => { if (text.length > (page.text || '').length) playKey(); update({ text }); }}
                 placeholder={t('Write anything: what you read, what you saw today, a story idea…')} placeholderTextColor="#666"
@@ -918,7 +918,7 @@ function AboutSpread({ side, wide }) {
         <Fade edge={wide ? 'left' : 'top'} size={Math.round(side * 0.1)} max={0.2} />
         <Spine wide={wide} />
         <Text style={{ fontFamily: TYPE, fontSize: side * 0.06, color: '#2b2b2b', marginBottom: side * 0.04 }}>{t('My Notes')}</Text>
-        <Text style={{ fontFamily: TYPE, fontSize: side * 0.038, lineHeight: side * 0.058, color: '#3a3a3a' }}>{t('This notebook is all yours. Jot down ideas for stories, add photos, and draw on the sketch pages. Collect badges as you read. Everything saves by itself, and you can print or share your pages any time.')}</Text>
+        <Text style={{ fontFamily: TYPE, fontSize: side * 0.038, lineHeight: side * 0.058, color: '#3a3a3a' }}>{t('My Notes is all yours. Jot down ideas for books, add photos, and draw on the sketch pages. Collect badges as you read. Everything saves by itself, and you can print or share your pages any time.')}</Text>
       </View>
     </View>
   );

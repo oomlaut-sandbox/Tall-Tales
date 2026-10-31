@@ -1116,7 +1116,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       {tourPlay ? <TourVideo tr={tr} onClose={() => setTourPlay(false)} /> : null}
       {/* the teacher's prompt, or their note on a book sent back (classroom.js) */}
       {teacherMsg && !coverOpen && !aboutOpen && !editing ? <Toast message={teacherMsg.k === 'note' ? tr('A note from your teacher: {note}', { note: teacherMsg.text }) : tr('From your teacher: {note}', { note: teacherMsg.text })} area={{ left: GAP - 6, right: GAP - 6, bottom: 150 }} ms={0} button={tr('OK')} onDismiss={() => setTeacherMsg(null)} /> : null}
-      {saveTip && !editing && !drawFor && !photoEdit && !coverOpen && !tourPlay ? <Toast message={tr('Your work automatically saves as you go. And you can come back and edit your book anytime from your Library.')} ms={0}
+      {saveTip && !editing && !drawFor && !photoEdit && !coverOpen && !tourPlay ? <Toast message={tr('Your work saves as you go. Find your book again in My Workspace, under My Books in Progress.')} ms={0}
         check={tr('Don’t show this again')} button={tr('Keep going')} onDismiss={(ticked) => { setSaveTip(false); if (ticked) saveJSON('saveTip', { off: true }); }} /> : null}
       {tourAsk && aboutOpen ? (
         // 'Want a quick little tour?': a large white bubble over What's your book about? (Jörg, 27 Oct 2026)

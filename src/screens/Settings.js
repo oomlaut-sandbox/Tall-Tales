@@ -155,17 +155,17 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
                 <Text style={styles.p}>{t('Choose exactly what your child can see and do. Settings always asks the grown-up question first.')}</Text>
                 {STORE_ON ? <Toggle label={t('Show the Book Store')} value={controls.store} onChange={(v) => set({ store: v })} /> : null}
                 <Toggle label={t('Show My Notes')} value={controls.notebook} onChange={(v) => set({ notebook: v })} />
-                <Toggle label={t('Show Make a Book')} value={controls.create} onChange={(v) => set({ create: v })} />
+                <Toggle label={t('Show Let’s make a book')} value={controls.create} onChange={(v) => set({ create: v })} />
                 {/* the Advanced page editor: off to start, so the book maker stays simple for kids (Jörg, 30 Oct 2026) */}
                 {controls.create ? <Toggle label={t('Advanced page editor')} value={!!controls.advancedPages} onChange={(v) => set({ advancedPages: v })} /> : null}
                 {controls.create ? <Text style={styles.small}>{t('Put the words on a picture, and choose their look, size and place. Off: the book maker stays simple, with the words on their own page.')}</Text> : null}
-                <Toggle label={t('Ideas, Support and About')} value={controls.help} onChange={(v) => set({ help: v })} />
+                <Toggle label={t('Show Ideas and Help')} value={controls.help} onChange={(v) => set({ help: v })} />
                 <Toggle label={t('Recording own voice')} value={controls.recording} onChange={(v) => set({ recording: v })} />
                 <Toggle label={t('Read in family voices when there are some')} value={controls.familyVoices !== false} onChange={(v) => set({ familyVoices: v })} />
                 <Toggle label={t('Sharing and printing')} value={controls.sharing} onChange={(v) => set({ sharing: v })} />
                 <Toggle label={t('Let my child change the language')} value={controls.language} onChange={(v) => set({ language: v })} />
                 <Toggle label={t('Let my child switch profiles')} value={controls.profiles !== false} onChange={(v) => set({ profiles: v })} />
-                <Toggle label={t('Let my child change playback')} value={controls.playback} onChange={(v) => set({ playback: v })} />
+                <Toggle label={t('Let my child change Reading Options')} value={controls.playback} onChange={(v) => set({ playback: v })} />
                 <Text style={[styles.cardTitle, { marginTop: 8 }]}>{t('Always play like this')}</Text>
                 <View style={styles.choices}>
                   <Choice label={t('Your child can choose')} on={!controls.playMode} onPress={() => set({ playMode: null })} />
@@ -209,7 +209,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
           <Section id="profiles" icon={SET_ICONS.profiles} title={t('Profiles')} open={openSec} setOpen={setOpenSec}>
               {/* Profiles: one for each child (their own notebook, badges, playlists and settings) */}
               <View style={styles.card}>
-                <Text style={styles.small}>{t('Everyone can have their own profile, children and grown-ups, with their own notebook, badges, playlists and settings.')}</Text>
+                <Text style={styles.small}>{t('Everyone can have their own profile, children and grown-ups, with their own notes, badges, Book Playlists and settings.')}</Text>
                 <Pressable onPress={onProfiles} style={[styles.pill, { backgroundColor: '#5f5f5f' }]} accessibilityRole="button">
                   <Text style={styles.pillText}>{t('Manage profiles')}</Text>
                 </Pressable>

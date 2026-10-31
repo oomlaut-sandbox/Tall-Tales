@@ -22,12 +22,12 @@ const SEARCH_FELT = require('../../assets/search-felt.png'); // Jörg's grey sti
 // Each topic: a title, the section it belongs to, and its steps or paragraphs.
 const ALL_HELP = [
   { section: 'Getting started', title: 'Opening the app', text: [
-    'When the app opens you’ll see your leather notebook on the felt. Tap it, or swipe it up, to open it.',
-    'Inside are two choices: My Workspace and Read a book (My Library). Tap one to go there.',
+    'When the app opens you’ll see the Coro book on the felt. Tap it, or swipe it up, to open it.',
+    'Inside are two choices: Make a book (My Workspace) and Read a book (My Library). Tap one to go there.',
     'The menu button (three lines) in the bottom bar takes you anywhere in the app.',
   ] },
   { section: 'Getting started', title: 'Profiles for each child', text: [
-    'Everyone can have their own profile, children and grown-ups, with their own notebook, badges, playlists and settings. Grown-ups add and change them in Settings, under Profiles. To switch, tap your picture beside My Notes in My Library.',
+    'Everyone can have their own profile, children and grown-ups, with their own notes, badges, Book Playlists and settings. Grown-ups add and change them in Settings, under Profiles. To switch, tap your picture at the top of My Library or My Workspace.',
   ] },
   { section: 'Reading', title: 'Reading a book', text: [
     'Open My Library and tap a book. Its cover opens and the first page appears.',
@@ -37,7 +37,7 @@ const ALL_HELP = [
   ] },
   { section: 'Reading', title: 'Hearing the story read aloud', text: [
     'Tap the play button in the bottom bar and the narrator reads the page. Each word lights up as it’s spoken.',
-    'Open Reading Options (under your books in My Library, or in Settings) to choose how the book plays: Page by Page, the whole book, Learn to Read or Read Yourself.',
+    'Open Reading Options (under your books in My Library, or in Settings) to choose how the book plays: Read Yourself, Learn to Read, Auto Play, Page by Page Play or Listen Only.',
     'Under Voices you can choose Fatima or Henry. Tap a voice to hear a short sample.',
   ] },
   { section: 'Reading', title: 'Learn to Read', text: [
@@ -67,8 +67,8 @@ const ALL_HELP = [
     'Open Reading Options and choose Book Playlists to line up several books that play one after another. Turn on Loop to start again from the beginning, and share a playlist with family.',
   ] },
   { section: 'Bedtime', title: 'Listen Only and the nightlight', text: [
-    'Tap the moon on the black bar while a book is open. The book reads by itself and the screen slowly fades to a soft, glowing sunset sun.',
-    'Slide the fine line under the sun to dim it: the moon moves across until only a warm glow is left.',
+    'Tap the moon on the black bar while a book is open, then choose Daydream (the sun) or the Nightlight (the moon). The book reads by itself while the screen slowly changes.',
+    'In the Nightlight, slide the fine line under the sun to dim it: the moon moves across until only a warm glow is left.',
     'Tap the sleep timer to stop the story after 15, 30 or 60 minutes. The music fades out and the moon covers the sun.',
     'Tap the lock beside the moon so little hands can’t change anything. To unlock, tap the lock again and answer the grown-up question.',
     'The screen stays on while the nightlight shows, so keep the phone plugged in at night. Grown-ups can switch the nightlight off in Settings.',
@@ -95,7 +95,7 @@ const ALL_HELP = [
     'Open My Workspace (on the notebook’s first page or in the menu) and tap the blue book under Let’s make a book.',
     'Tap the picture square to add a picture: choose one from your photos, or take a photo (of a drawing, say). Taking a photo asks a grown-up first.',
     'Tap the words square to type the words for that page. Two or three sentences reads best.',
-    'When a page is done, tap the green tick and choose Add another page. Tap the title in the bottom bar to name your book and add who wrote and illustrated it.',
+    'When a page is done, tap the green tick and choose Add another page. Tap the cover button on the bottom bar to give your book a title and add who wrote and illustrated it.',
     'Everything saves on its own. Save and Exit keeps the book in My Books in Progress, in My Workspace. Finish and publish to library puts it in My Book Collection, in My Library.',
   ] },
   { section: 'Making books', title: 'My Workspace', text: [
@@ -115,29 +115,29 @@ const ALL_HELP = [
     'Pictures are kept sharp but small, so a whole book is usually 15 to 25 MB. Recordings take about 1 MB a minute.',
     'My Notes has room for 60 pages.',
   ] },
-  { section: 'My Notes', title: 'Your notebook', text: [
+  { section: 'My Notes', title: 'My Notes', text: [
     'My Notes is in My Workspace. Tap it to open it.',
     'The first page is the inside cover with “My Notes”. Turn the page to see your badges, then your own pages.',
     'Turn the pages by tapping the bottom-right corner or swiping left or up; tap the bottom-left corner or swipe right or down to go back. On the last page, the bottom-right corner adds a page: a Notes page (a picture or drawing with your notes below) or a Sketch page (two squares to draw on).',
   ] },
   { section: 'My Notes', title: 'Drawing and notes', text: [
     'Tap a picture square to make a drawing, choose a photo or take one. You can also draw on top of a photo.',
-    'The drawing tools lie in the tray at the bottom: the eraser, a pencil, an ink pen, a watercolour brush, the smudge tool and the paint roller. Tap a tool to pick it up, and tap it again to choose a thin, medium or thick line.',
+    'The drawing tools lie in the tray at the bottom: the eraser, a pencil, a fountain pen, a watercolour brush, the smudge tool and the paint roller. Tap a tool to pick it up, and tap it again to choose a thin, medium or thick line.',
     'Pick a colour from the paint splotches. The + has every colour, bright and earthy, and Mix, Shapes and Mirror. The paint roller fills a shape: tap inside it. The smudge tool softly blurs what you’ve drawn.',
     'Undo and Redo are at the top, beside the green tick for Done. The bin clears the page.',
     'Tap the lined square to write notes.',
   ] },
   { section: 'My Notes', title: 'Printing and sharing pages', text: [
     'Tap the envelope to share pages as a PDF, or the printer to print them. Pick the pages (or All pages); a grown-up is asked first.',
-    'In Pages, each page also has its own printer and a trash can.',
+    'In Pages, each page also has its own printer and a bin.',
   ] },
   { section: 'My Notes', title: 'Badges', text: [
     'Badges are earned by reading: finishing books, reading several days in a row, reading at bedtime, and firsts like your first recording, first drawing and first book made.',
     'Badges you haven’t earned yet are grey. Tap any badge to see how to earn it.',
   ] },
   { section: 'Books', title: 'My Library', text: [
-    'My Library is your Book Collection: the books you’ve finished, then the books that come with the app.',
-    'Tap Select to choose books to share or delete (in My Workspace, the books you’re still making). Books that came with the app can be brought back with “Show removed books”.',
+    'My Library is My Book Collection: the books you’ve finished, then the books that come with the app.',
+    'Tap Select to choose books to share or delete (in My Workspace, My Books in Progress). Books that came with the app can be brought back with “Show removed books”.',
   ] },
   { section: 'Books', title: 'Things to share and the Message Board', text: [
     'Things to share is in My Workspace, under My Notes. It holds a note from us, the Abc sheet (tap a letter to hear it) and sheets other families send you.',
@@ -152,8 +152,8 @@ const ALL_HELP = [
   ] },
   { section: 'Grown-ups', title: 'Settings and parental controls', text: [
     'Settings is the last item in the menu. It always asks the grown-up question first.',
-    'Language: choose English, Deutsch, Français, Español or 日本語 for the app. Members can also read books in a different language from the app’s. The languages are also listed at the top of the start page: tap one to switch.',
-    'Parental controls: choose exactly what your child can see and do. Hide My Notes, Make a Book or Ideas and Support; switch off recording, sharing and printing; keep the language fixed; and make every book play one way (for example, always Page by Page).',
+    'Language: choose English, Deutsch, Français, Español, 日本語 or العربية for the app. Members can also read books in a different language from the app’s. The languages are also listed at the top of the start page: tap one to switch.',
+    'Parental controls: choose exactly what your child can see and do. Hide My Notes, Let’s make a book, or Ideas and Help; switch off recording, sharing and printing; keep the language fixed; and make every book play one way (for example, always Page by Page).',
     'Quick and Safe Kid is the recommended setup for a child reading alone: only My Library and My Notes, every book read aloud a page at a time, and nothing to buy, share, print, record or change.',
     'Your child’s age: every book has an age rating, and books rated for older children are hidden.',
     'Lock everything leaves only My Library and its books, read the way you chose. Unlock everything brings it all back.',
@@ -203,18 +203,18 @@ const ALL_HELP = [
     'We trust parents and caregivers to know best. That’s why Coro gives you the tools to shape each reader’s own experience: profiles, ages, parental controls and more.',
   ] },
   { section: 'Accessibility', title: 'Listening and reading along', text: [
-    'Any book can read itself aloud: tap Play on the bar. Words light up as they’re read. Tap any word to hear it on its own.',
+    'Books from the Book Store can read themselves aloud: tap Play on the bar. Words light up as they’re read. Tap any word to hear it on its own.',
     'Books you make are read in a recorded voice. Record each page yourself, or ask someone who loves the reader.',
   ] },
   { section: 'Accessibility', title: 'Text size and fonts', text: [
     'In a book, open Reading Options to make the words bigger and choose a clear font.',
-    'Menus and settings follow your device’s text size: Settings → Accessibility → Display & Text Size → Larger Text.',
+    'Menus and settings follow your device’s text size: in your iPhone’s Settings app, Accessibility → Display & Text Size → Larger Text.',
   ] },
   { section: 'Accessibility', title: 'VoiceOver', text: [
-    'Every button has a spoken name, and the words on each page are read out as it turns. Turn on VoiceOver in Settings → Accessibility → VoiceOver.',
+    'Every button has a spoken name, and the words on each page are read out as it turns. Turn on VoiceOver in your iPhone’s Settings app: Accessibility → VoiceOver.',
   ] },
   { section: 'Accessibility', title: 'Reduce Motion and the nightlight', text: [
-    'With Reduce Motion on (Settings → Accessibility → Motion), Coro swaps sliding and bouncing for gentle fades, and skips the opening film. Page turns stay as they are.',
+    'With Reduce Motion on (in your iPhone’s Settings app: Accessibility → Motion), Coro swaps sliding and bouncing for gentle fades, and skips the opening film. Page turns stay as they are.',
     'At bedtime, Listen Only turns the screen into a nightlight that dims slowly.',
   ] },
   { section: 'Teachers and Educators', title: 'Classroom folders', text: [
@@ -224,7 +224,7 @@ const ALL_HELP = [
     'To end classroom mode, open Settings again. The students’ profiles stay.',
   ] },
   { section: 'Teachers and Educators', title: 'The Teacher’s Desk', text: [
-    'Open the Teacher’s Desk in Settings, under Teachers and Educators. Everything stays on this iPad: no accounts, nothing online.',
+    'Open the Teacher’s Desk in Settings, under Teachers and Educators. Everything stays on this device: no accounts, nothing online.',
     'Book prompts: write a title, a few lines of instructions and how many pages. Each student finds it in My Workspace as a ready-started book.',
     'When a book is ready, the student taps Hand in to my teacher. On the Teacher’s Desk, read it, leave a note, then send it back or approve it. Students see your note when they open the book.',
     'Approved books go into the Class Library, in My Library for the whole class. Print them all as one class book, or share it as a PDF.',
@@ -278,7 +278,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
             {/* a text box (multiline, one line only) with its line placed exactly in the middle by padding: the
                 one-line iPhone field centres its words its own way and kept putting them low */}
             <TextInput ref={searchRef} value={q} onChangeText={(v) => setQ(v.replace(/\n/g, ''))} placeholder={t('Search Help')} placeholderTextColor="#666"
-              style={styles.search} allowFontScaling={false} multiline scrollEnabled={false} submitBehavior="blurAndSubmit" returnKeyType="search" accessibilityLabel={t('Search ideas and support')} />
+              style={styles.search} allowFontScaling={false} multiline scrollEnabled={false} submitBehavior="blurAndSubmit" returnKeyType="search" accessibilityLabel={t('Search Help')} />
           </Pressable>
           {/* About lives here now (it left the main menu) */}
           {onWelcome ? <Pressable onPress={onWelcome} accessibilityRole="button" style={[styles.aboutPill, { marginTop: 10 }]}><Text style={styles.aboutText}>{t('Watch the welcome again')}</Text></Pressable> : null}

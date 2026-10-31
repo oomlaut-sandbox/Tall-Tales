@@ -153,7 +153,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
           {open === 'welcome' ? (
             <View style={[styles.paper, { width: big, padding: big * 0.08, paddingBottom: big * 0.1 }]}>
               <Text style={[styles.hand, { fontSize: 24, marginBottom: 14 }]}>{name ? t('Hello, {name}!', { name }) : t('Hello!')}</Text>
-              <Text style={styles.letterText}>{t('This folder is yours. Sheets live here: things to keep, and little things to play with.')}</Text>
+              <Text style={styles.letterText}>{t('Things to share is yours. Sheets live here: things to keep, and little things to play with.')}</Text>
               <Text style={styles.letterText}>{t('The Abc sheet is a good place to start. Tap a letter and listen.')}</Text>
               <Text style={styles.letterText}>{t('When someone sends you a drawing or a note, it will be waiting here for you.')}</Text>
               <Text style={styles.letterText}>{t('Happy reading!')}</Text>
@@ -195,7 +195,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
                   </Pressable>
                 ))}
               </ScrollView>
-            ) : <Text style={[styles.letterText, { color: '#ddd', marginTop: 12 }]}>{t('Your notebook has no pages to send yet.')}</Text>}
+            ) : <Text style={[styles.letterText, { color: '#ddd', marginTop: 12 }]}>{t('My Notes has no pages to send yet.')}</Text>}
             <Pressable onPress={() => setPicking(null)} style={[styles.pill, { backgroundColor: '#3a3a3a', alignSelf: 'flex-end', marginTop: 18 }]}><Text style={styles.pillText}>{t('Cancel')}</Text></Pressable>
           </View>
         </View>
