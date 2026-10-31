@@ -695,11 +695,19 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       if (fa && fb) pics = { front: fa, back: fb, corner: st.current.wide ? (corner === 'top' ? 'right' : 'left') : corner };
     }
     peelOn.current = !!pics;
+    flipPics.current = pics ? { dir, i, fa: pics.front, fb: pics.back, amber: !!st.current.amber } : null;
     setPeel(pics);
     setProgress(dir > 0 ? 0 : 1);
     setFlipPair({ a, b: a + 1, dir });
   };
+  // the picture of the page just left is kept for turning straight back to it (Jörg, 31 Oct 2026: turning back in a
+  // book made in the app waited while that page's picture was taken again, holding the old page on screen)
+  const flipPics = useRef(null);
+  const ownPhotosRef = useRef(false);
+  const carry = useRef(null);
   const endFlip = (dir, commit) => {
+    const fp = flipPics.current; flipPics.current = null;
+    if (commit && fp && ownPhotosRef.current) carry.current = { at: fp.i, img: dir > 0 ? fp.fa : fp.fb, amber: fp.amber }; // (books with their own photos only: the books inside the app turn as before)
     if (commit) { stepPage(dir); setHl(-1); setBubble(null); }
     // let the new page draw underneath before taking the turning layers away
     setTimeout(() => { setFlipPair(null); setPeel(null); peelOn.current = false; busy.current = false; }, 40);
@@ -842,9 +850,12 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     cache.current = {};
     const gen = ++cacheGen.current, amber = !!prefs.amber;
     if (!supportsCurl || !size || flipPair) return;
+    // the page just turned away from: its picture from the turn, ready at once (no new picture needed)
+    const c = carry.current; carry.current = null;
+    if (c && c.img && c.amber === amber && (c.at === idx - 1 || c.at === idx + 1)) cache.current[c.at] = { img: c.img, amber };
     const take = async () => {
-      const n = refs.next.current ? await snapshot(refs.next) : null;
-      const p = refs.prev.current ? await snapshot(refs.prev) : null;
+      const n = refs.next.current && !cache.current[idx + 1] ? await snapshot(refs.next) : null;
+      const p = refs.prev.current && !cache.current[idx - 1] ? await snapshot(refs.prev) : null;
       if (gen !== cacheGen.current) return; // the page or the light changed meanwhile
       if (n) cache.current[idx + 1] = { img: n, amber };
       if (p) cache.current[idx - 1] = { img: p, amber };
@@ -902,6 +913,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     </View>
   );
   const ownPhotos = useMemo(() => pages.some((pg) => (pg.image && pg.image.uri) || (pg.image2 && pg.image2.uri)), [pages]); // (a book with its own photos)
+  ownPhotosRef.current = ownPhotos;
   const pageLayers = () => [abs(prevEl, `w${idx - 1}`), abs(nextEl, `w${idx + 1}`), abs(curEl, `w${idx}`)];
   const peeling = !!(flipPair && size && flipT && peel);
   if (flipPair && size && flipT && peel) {
