@@ -5,6 +5,7 @@
 import { loadJSON, saveJSON, saveJSONFor } from './storage';
 import { currentProfile, setScope } from './scope';
 import { DEFAULT_CONTROLS } from './controls';
+import { classLocked, locked } from './classroom';
 
 export const MAX_PROFILES = 6;
 // Teachers and Educators (Jörg, 26 Oct 2026): a classroom folder holds up to 30 students' profiles. Books are shared
@@ -61,7 +62,7 @@ export const activeProfile = () => state.list.find((p) => p.id === state.active)
 // at launch, before anything else is read: the child whose things the app shows
 export async function loadProfiles() {
   const s = await loadJSON('profiles', null);
-  if (s && Array.isArray(s.list)) state = { classroom: s.classroom || null, classes: s.classes || [], list: s.list, active: s.list.some((p) => p.id === s.active) ? s.active : (s.list[0] ? s.list[0].id : 'main') };
+  if (s && Array.isArray(s.list)) state = { classroom: s.classroom || null, classes: s.classes || [], mainUsed: !!(s.mainUsed || s.list.some((p) => p.id === 'main')), list: s.list, active: s.list.some((p) => p.id === s.active) ? s.active : (s.list[0] ? s.list[0].id : 'main') };
   // two profiles that got the same id (a class list added before ids had a running count): each gets its own
   { const seen = new Set(); let fixed = false;
     const list = state.list.map((p, k) => { if (!seen.has(p.id)) { seen.add(p.id); return p; } fixed = true; const id = `k${Date.now().toString(36)}d${k}`; seen.add(id); return { ...p, id }; });
@@ -83,10 +84,14 @@ export function switchProfile(id) {
 export async function addProfile({ name, color, age, photo, cls }) {
   if (!canAdd(cls)) return null;
   // (a list of names is added within the same millisecond: a running count and a random part keep every id its own)
-  const id = state.list.length === 0 ? 'main' : `k${Date.now().toString(36)}${(seq += 1).toString(36)}${Math.random().toString(36).slice(2, 5)}`;
+  // ('main' only for the very first profile ever: one made after all were removed starts fresh, never with the
+  // removed child's notes: 31 Oct 2026)
+  const id = state.list.length === 0 && !state.mainUsed ? 'main' : `k${Date.now().toString(36)}${(seq += 1).toString(36)}${Math.random().toString(36).slice(2, 5)}`;
   const p = { id, name: (name || '').trim() || 'Reader', color: color || PROFILE_COLORS[state.list.length % PROFILE_COLORS.length][0], ...(photo ? { photo } : {}), ...(cls ? { cls } : {}) };
-  if (id !== 'main') await saveJSONFor(id, 'controls', { ...DEFAULT_CONTROLS, childAge: age ?? null });
-  state = { ...state, list: [...state.list, p], active: state.list.length === 0 ? id : state.active };
+  // a student joining a class that's locked is locked too
+  const lockNow = cls ? await classLocked(cls).catch(() => false) : false;
+  if (id !== 'main' || lockNow) await saveJSONFor(id, 'controls', lockNow ? locked({ ...DEFAULT_CONTROLS, childAge: age ?? null }, true) : { ...DEFAULT_CONTROLS, childAge: age ?? null });
+  state = { ...state, list: [...state.list, p], active: state.list.length === 0 ? id : state.active, ...(id === 'main' ? { mainUsed: true } : null) };
   setScope(state.active);
   save(); emit();
   return p;

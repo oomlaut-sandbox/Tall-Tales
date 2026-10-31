@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, Dimensions, Linking, Modal, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { importVoices, readVoicesFile } from './src/voiceShare';
-import { SHEET_KIND, sheetPhotoFile } from './src/sheetShare';
+import { SHEET_KIND, sheetPhotoFile, unpackSheetPage } from './src/sheetShare';
 import { addSheet } from './src/folder';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { StatusBar } from 'expo-status-bar';
@@ -551,7 +551,7 @@ function Root() {
                   <Pressable onPress={async () => {
                     const d = incoming; setIncoming(null);
                     try {
-                      await addSheet({ kind: 'page', from: d.from || '', page: d.page }, d.photo ? sheetPhotoFile(d.photo) : null);
+                      await addSheet({ kind: 'page', from: typeof d.from === 'string' ? d.from.slice(0, 60) : '', page: await unpackSheetPage(d) }, typeof d.photo === 'string' ? sheetPhotoFile(d.photo) : null);
                       go('workspace'); toast(t('It’s in Things to share.'));
                     } catch (e) { toast(t('That file couldn’t be opened.')); }
                   }} style={{ height: 44, borderRadius: 22, paddingHorizontal: 22, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 }}>{t('Add')}</Text></Pressable>

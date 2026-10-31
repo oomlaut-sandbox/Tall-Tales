@@ -65,7 +65,7 @@ export function liveUri(uri) {
 
 export function deleteFile(uri) {
   try {
-    const f = new File(uri);
+    const f = new File(liveUri(uri)); // (a path saved before an app update still finds its file)
     if (f.exists) f.delete();
   } catch (e) {}
 }

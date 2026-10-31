@@ -11,7 +11,7 @@ import { useHideBack } from '../nav';
 import { useT } from '../i18n';
 import StripCover from '../components/StripCover';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, Image, KeyboardAvoidingView, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { AppState, Animated, Easing, Image, KeyboardAvoidingView, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -796,7 +796,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
 
       {drawing && page ? (
         <DrawEditor insets={insets} photo={page.kind === 'sketch' ? null : page.uri} strokes={drawing === 'bottom' ? page.strokes2 || [] : page.strokes}
-          title={page.kind === 'sketch' ? t('Sketch · Page {n}', { n: i + 1 }) : t('Drawing · Page {n}', { n: i + 1 })}
+          title={page.kind === 'sketch' ? t('Sketch · Page {n}', { n: i + 1 }) : t('Drawing · Page {n}', { n: i + 1 })} draftKey={`notes:${i}:${drawing}`}
           onDone={(strokes) => { update(drawing === 'bottom' ? { strokes2: strokes } : { strokes }); setDrawing(false); if (strokes.length) markFirst('firstDrawing'); }}
           onNext={(strokes) => { update(drawing === 'bottom' ? { strokes2: strokes } : { strokes }); setDrawing(false); if (strokes.length) markFirst('firstDrawing'); setTimeout(next, 350); }} />
       ) : null}
@@ -1077,13 +1077,28 @@ function LayerAlpha({ n, value, onChange, t }) {
   );
 }
 
-export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone, onNext }) {
+export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone, onNext, draftKey }) {
   useHideBack(); // no back button over the drawing editor (Jörg, 27 Oct 2026)
   const t = useT();
   const { width: winW, height: winH } = useWindowDimensions();
   const wideScreen = winW > winH * 1.1; // sideways: the page on the left, the tools on the right
   const TOOLS_W = 270;
   const [strokes, setStrokes] = useState(start || []);
+  const [cleared, setCleared] = useState(null); // the drawing before Clear, so Undo can bring it back (31 Oct 2026)
+  // A draft while drawing (31 Oct 2026): kept every few seconds and when the app goes to the background, so a
+  // drawing isn't lost if the phone closes the app; it opens again here, and goes once the drawing is done.
+  const draftRef = useRef(null);
+  draftRef.current = strokes;
+  const saveDraft = () => { if (draftKey && inkOf(draftRef.current).length) saveJSON('drawDraft', { key: draftKey, strokes: draftRef.current, at: Date.now() }).catch(() => {}); };
+  const dropDraft = () => { if (draftKey) saveJSON('drawDraft', {}).catch(() => {}); };
+  useEffect(() => {
+    if (!draftKey) return undefined;
+    let on = true;
+    loadJSON('drawDraft', {}).catch(() => ({})).then((d) => { if (on && d && d.key === draftKey && inkOf(d.strokes).length) setStrokes(d.strokes); });
+    const sub = AppState.addEventListener('change', (st) => { if (st !== 'active') saveDraft(); });
+    return () => { on = false; sub.remove(); };
+  }, []);
+  useEffect(() => { const tm = setTimeout(saveDraft, 3000); return () => clearTimeout(tm); }, [strokes]);
   const [live, setLive] = useState(null);
   const [pen, setPen] = useState('#1e2324'); // charcoal to start
   const [brush, setBrush] = useState('ink');
@@ -1151,8 +1166,9 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
       const a = r.assets[0];
       let uri = a.uri;
       try { const w = a.width || 0, h = a.height || 0; uri = (await ImageManipulator.manipulateAsync(uri, [{ resize: w >= h ? { width: Math.min(2000, w || 2000) } : { height: Math.min(2000, h || 2000) } }], { compress: 0.88, format: ImageManipulator.SaveFormat.JPEG })).uri; } catch (e) {}
-      let kept = uri;
+      let kept = null;
       try { kept = await keepFile(uri, 'drawings', `photo-${Date.now()}.jpg`); } catch (e) {}
+      if (!kept) { toastHere(t('That didn’t work. Try again.')); return; } // (never the picker's passing copy, which the phone clears later)
       add({ ph: kept, ly: layer });
     } catch (e) { toastHere(t('Couldn’t open your photos. Check that Coro is allowed to use Photos in Settings.')); }
   };
@@ -1371,7 +1387,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
           <Pressable disabled={outBusy} onPress={() => setOutFor('share')} style={[styles.choiceBtn, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.share} text={t('Share')} style={styles.choiceBtnText} /></Pressable>
           <Pressable disabled={outBusy} onPress={() => setOutFor('print')} style={[styles.choiceBtn, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.print} text={t('Print')} style={styles.choiceBtnText} /></Pressable>
           <Pressable onPress={() => setDoneAsk(false)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon="cancel" text={t('Cancel')} style={styles.choiceBtnText} /></Pressable>
-          <Pressable onPress={() => { setDoneAsk(false); (onNext || onDone)(strokes); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 8 }]} accessibilityRole="button"><ChoiceLabel icon="next" text={t('Next page')} style={styles.choiceBtnText} /></Pressable>
+          <Pressable onPress={() => { setDoneAsk(false); dropDraft(); (onNext || onDone)(strokes); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 8 }]} accessibilityRole="button"><ChoiceLabel icon="next" text={t('Next page')} style={styles.choiceBtnText} /></Pressable>
         </View>
       </View>
     ) : null}
@@ -1492,7 +1508,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   );
   const hasInk = inkOf(strokes).length > 0; // (not counting the layers' transparency)
   const binEl = (
-    <Pressable onPress={() => { setStrokes([]); setRedo([]); }} disabled={!hasInk} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Clear the drawing')} accessibilityState={{ disabled: !hasInk }}
+    <Pressable onPress={() => { setCleared(strokes); setStrokes([]); setRedo([]); }} disabled={!hasInk} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Clear the drawing')} accessibilityState={{ disabled: !hasInk }}
       style={[styles.plusBtn, !hasInk && { opacity: 0.35 }]}>
       <Image source={TRASH} style={{ width: 22, height: 22, tintColor: colors.white }} resizeMode="contain" />
     </Pressable>
@@ -1500,15 +1516,18 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   const headEl = (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
       <Text numberOfLines={1} style={[styles.editorTitle, { flex: 1 }]}>{title}</Text>
-      <Pressable onPress={() => { const last = strokes[strokes.length - 1]; if (!last || isMeta(last)) return; setStrokes(strokes.slice(0, -1)); setRedo((r) => [...r, last]); }} disabled={!hasInk}
-        style={[styles.tool, !hasInk && { opacity: 0.35 }]} accessibilityRole="button" accessibilityLabel={t('Undo')} accessibilityState={{ disabled: !hasInk }}>
+      <Pressable onPress={() => {
+        if (!hasInk && cleared) { setStrokes(cleared); setCleared(null); return; } // undo Clear: the whole drawing comes back
+        const last = strokes[strokes.length - 1]; if (!last || isMeta(last)) return; setStrokes(strokes.slice(0, -1)); setRedo((r) => [...r, last]);
+      }} disabled={!hasInk && !cleared}
+        style={[styles.tool, !hasInk && !cleared && { opacity: 0.35 }]} accessibilityRole="button" accessibilityLabel={t('Undo')} accessibilityState={{ disabled: !hasInk && !cleared }}>
         <UndoIcon />
       </Pressable>
       <Pressable onPress={() => { const back = redo[redo.length - 1]; if (!back) return; setRedo(redo.slice(0, -1)); setStrokes((s2) => [...s2, back]); }} disabled={!redo.length}
         style={[styles.tool, !redo.length && { opacity: 0.35 }]} accessibilityRole="button" accessibilityLabel={t('Redo')} accessibilityState={{ disabled: !redo.length }}>
         <UndoIcon flip />
       </Pressable>
-      <Pressable onPress={() => (hasInk ? setDoneAsk(true) : onDone([]))} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Done')}><DoneTick size={38} /></Pressable>
+      <Pressable onPress={() => { if (hasInk) setDoneAsk(true); else { dropDraft(); onDone([]); } }} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Done')}><DoneTick size={38} /></Pressable>
     </View>
   );
   // the tools in a tray, like real ones on a desk (the one in your hand stands up higher): an eraser, a pencil, a

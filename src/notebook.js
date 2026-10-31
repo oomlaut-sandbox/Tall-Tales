@@ -3,7 +3,8 @@
 //   'note':   a square for a photo or a drawing (or both: drawing on a photo), and a square of typed notes
 //   'sketch': two square pages to draw on (strokes: the top one, strokes2: the bottom one)
 // { pages: [{ pid, kind, text, uri, w, h, strokes: [...] }] }
-import { deleteFile, keepFile, liveUri, loadJSON, saveJSON } from './storage';
+import { deleteFile, keepFile, liveUri, loadJSON, saveJSONFor } from './storage';
+import { currentProfile } from './scope';
 import { newPageId } from './userStories';
 
 const KEY = 'notebook';
@@ -19,7 +20,9 @@ export async function loadNotebook() {
   return { pages: pages.length ? pages : [blankNote()] };
 }
 
-export const saveNotebook = (nb) => serial(() => saveJSON(KEY, { pages: nb.pages }));
+// (whose notes these are is decided when the save is asked for, not when it runs: a save still waiting when the
+// profile changes goes to the right child: 31 Oct 2026)
+export const saveNotebook = (nb) => { const who = currentProfile(); return serial(() => saveJSONFor(who, KEY, { pages: nb.pages })); };
 
 export const keepNotebookPicture = (uri) => keepFile(uri, 'notebook', `img-${Date.now()}.jpg`);
 export const dropNotebookPicture = (uri) => deleteFile(liveUri(uri));

@@ -1416,7 +1416,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           onDraw={async (out, edit) => { const t = photoEdit; await photoDone(t, out, edit); setDrawStart([{ ph: out.uri, ly: 1 }]); setDrawFor(t); }} /* the photo, as set up, on layer 1 of a new drawing (Jörg, 29 Oct 2026) */ />
       ) : null}
       {drawFor ? (
-        <DrawEditor key={drawStart ? 'photo' : 'plain'} strokes={drawStart || undefined} insets={insets} title={drawFor === 'cover' ? tr('Drawing · Cover') : tr('Drawing · Page {n}', { n: i + 1 })}
+        <DrawEditor key={drawStart ? 'photo' : 'plain'} strokes={drawStart || undefined} insets={insets} draftKey={`book:${draft.id}:${drawFor}:${drawFor === 'cover' ? 0 : i}`} title={drawFor === 'cover' ? tr('Drawing · Cover') : tr('Drawing · Page {n}', { n: i + 1 })}
           onDone={(strokes) => { const t = drawFor; setDrawFor(null); setDrawStart(null); placeDrawing(t, strokes); }}
           onNext={async (strokes) => { // Next page: save the drawing, then on to the next page (a new one after the last)
             const t = drawFor; setDrawFor(null); setDrawStart(null); await placeDrawing(t, strokes);

@@ -1,9 +1,12 @@
 // The corkboard at the bottom of My Library: yellow sticky notes and photos, pinned anywhere.
 // Each pin: { id, kind: 'note' | 'photo', text?, uri?, x, y (0..1, where its middle sits on the board), rot (degrees) }
 import { deleteFile, keepFile, loadJSON, saveJSON } from './storage';
+import { onScopeChange } from './scope';
 
 export const MAX_PINS = 12;
 let cache = null;
+// each child has their own: a new profile starts from its own file, never the last child's (31 Oct 2026)
+onScopeChange(() => { cache = null; });
 
 // every board comes with one yellow note already pinned (once: taken down, it stays down) (Jörg, 29 Oct 2026)
 const STARTER = { id: 'starter', kind: 'note', text: 'Make, read and share books', seed: 1, x: 0.7, y: 0.56, rot: 3 };
@@ -34,7 +37,9 @@ function spot() {
 export async function pinNote(text) {
   if (!cache) await loadPins();
   const p = { id: `p${Date.now().toString(36)}`, kind: 'note', text: text.trim(), ...spot() };
-  cache = [...cache, p].slice(-MAX_PINS);
+  const next = [...cache, p];
+  while (next.length > MAX_PINS) { const gone = next.shift(); if (gone.uri) deleteFile(gone.uri); } // (an old photo pin taken down has its picture deleted too)
+  cache = next;
   await save();
   return cache;
 }

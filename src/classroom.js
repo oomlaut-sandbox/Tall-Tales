@@ -37,7 +37,12 @@ export const promptsFor = (profile, stories) => (!profile || !profile.cls ? [] :
 // Controls are kept per profile (scope.js), so the lock is written to every student in the class, and to whoever
 // is using the iPad now (the teacher). Its state is kept for the class ('classLocks', shared by everyone).
 export const isLocked = (c) => !!c && c.store === false && c.sharing === false;
-export const locked = (c, on) => ({ ...c, store: !on, sharing: !on });
+// locking keeps each child's own choices, and unlocking gives them back (not simply everything on: 31 Oct 2026)
+export const locked = (c, on) => {
+  if (on) return c.beforeLock ? { ...c, store: false, sharing: false } : { ...c, store: false, sharing: false, beforeLock: { store: c.store !== false, sharing: c.sharing !== false } };
+  const { beforeLock, ...rest } = c;
+  return { ...rest, store: beforeLock ? beforeLock.store : true, sharing: beforeLock ? beforeLock.sharing : true };
+};
 export async function classLocked(cls) { const m = await loadJSON('classLocks', {}); return !!(m && m[cls]); }
 export async function setClassLock(cls, on, studentIds, controls, setControls) {
   for (const id of studentIds) {

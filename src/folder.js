@@ -3,8 +3,11 @@
 // grown-up opens the file they were sent. Each child has their own folder.
 // { sheets: [{ id, kind: 'page', from, date, page: { kind: 'note' | 'sketch', text, uri, strokes, strokes2 } }] }
 import { deleteFile, keepFile, loadJSON, saveJSON } from './storage';
+import { onScopeChange } from './scope';
 
 let cache = null;
+// each child has their own: a new profile starts from its own file, never the last child's (31 Oct 2026)
+onScopeChange(() => { cache = null; });
 const listeners = new Set();
 const emit = () => listeners.forEach((fn) => { try { fn(cache); } catch (e) {} });
 export function onFolder(fn) { listeners.add(fn); return () => listeners.delete(fn); }
