@@ -976,7 +976,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                       {/* the words drawn invisibly give the box its size (a text box doesn't always grow with its
                           words); the text box lies exactly over them */}
                       <View>
-                        <Text style={[overType, { opacity: 0 }]}>{(page.text || tr('Type the words for this page. Two or three sentences reads best.')) + '\n'}</Text>
+                        <Text style={[overType, { opacity: 0 }]}>{(page.text || tr('Type the words for this page. Two or three sentences reads best.')) + (/\n$/.test(page.text || '') ? ' ' : '')/* (a new empty line keeps its room) */}</Text>
                         <TextInput
                           value={page.text}
                           onChangeText={(text) => { if (text.length > (page.text || '').length) playKey(); update({ text }); }}
