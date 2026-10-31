@@ -155,7 +155,16 @@ export const PageView = forwardRef(function PageView(
             <Text style={[storyStyle, styles.endTitle]}>{t('The End')}</Text>
           </View>
         ) : (
-          page?.image ? (zoomable ? <ZoomArt source={page.image} width={artW} height={artH} /> : <Image source={page.image} style={styles.fill} resizeMode="cover" onLoad={page.image.uri ? onArtLoad : undefined} />) : null
+          // a book's own photo (made in the app): the plain picture always stays, and the zoomable one goes on top of it once
+          // this is the page being read. Before, the page that had been waiting underneath swapped its picture for the
+          // zoomable one the moment a turn landed, and that new picture took a moment to load: a white frame right after
+          // every turn (Jörg, 31 Oct 2026). The books inside the app draw their pictures at once and are as before.
+          page?.image ? (page.image.uri ? (
+            <>
+              <Image source={page.image} style={styles.fill} resizeMode="cover" onLoad={onArtLoad} />
+              {zoomable ? <ZoomArt source={page.image} width={artW} height={artH} /> : null}
+            </>
+          ) : (zoomable ? <ZoomArt source={page.image} width={artW} height={artH} /> : <Image source={page.image} style={styles.fill} resizeMode="cover" />)) : null
         )}
         {showHotspots
           ? spots.map((h, i) => (
