@@ -315,8 +315,8 @@ function QuickBookAsk({ tr, winW, winH, onCancel, onGo }) {
     return (
       <Pressable onPress={() => setLayout(v)} accessibilityRole="radio" accessibilityState={{ selected: on }} accessibilityLabel={rec ? `${label} ${rec}` : label}
         style={{ width: tileW, alignItems: 'center', gap: 10 }}>
-        <View style={{ alignSelf: 'stretch', aspectRatio: 150 / 110, borderRadius: 14, borderWidth: 3, borderColor: on ? colors.green : 'transparent', backgroundColor: on ? '#3d3d3d' : '#4a4a4a', alignItems: 'center', justifyContent: 'center' }}>
-          <Image source={QUICK_ICONS[v]} style={{ width: '70%', aspectRatio: 2 }} resizeMode="contain" accessibilityIgnoresInvertColors />
+        <View style={{ width: tileW, height: Math.round(tileW * 110 / 150), overflow: 'hidden', borderRadius: 14, borderWidth: 3, borderColor: on ? colors.green : 'transparent', backgroundColor: on ? '#3d3d3d' : '#4a4a4a', alignItems: 'center', justifyContent: 'center' }}>
+          <Image source={QUICK_ICONS[v]} style={{ width: Math.round(tileW * 0.7), height: Math.round(tileW * 0.35) }} resizeMode="contain" accessibilityIgnoresInvertColors />{/* (a set size: '70%' with an aspect ratio drew it huge on the iPhone, 31 Oct 2026) */}
         </View>
         <View style={{ alignItems: 'center' }}>
           <Text style={{ color: '#1f1f1f', fontFamily: fonts.uiBold, fontSize: 14, lineHeight: 18, textAlign: 'center' }}>{label}</Text>
