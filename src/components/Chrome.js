@@ -705,7 +705,8 @@ export function Toast({ message, area, onDismiss, center, ms = BUBBLE_MS, button
 }
 
 // the nightlight's bubble: deep amber paper and dark brown words, soft on eyes in the dark
-const BUBBLE_AMBER = { bg: '#c9a06a', ink: '#2e1d10', box: '#5a3d22' };
+const BUBBLE_AMBER = { bg: '#b38957', ink: '#2b1a0c', box: '#4a3220' }; // on kraft paper (Jörg's picture); bg: the paper's colour, for the point
+const KRAFT = require('../../assets/bubble-kraft.jpg');
 export function BubbleHost({ defaultArea }) {
   const tr = useT();
   const [b, setB] = useState(bubbleNow);
@@ -734,7 +735,8 @@ export function BubbleHost({ defaultArea }) {
           shaped like Jörg's bubble (rounded box, a small straight point at the bottom left), with a soft shadow.
           (center: in the middle of the given area instead, e.g. the picture page while recording.) */}
       <Pressable onPress={close} accessibilityRole="button" accessibilityHint={tr('Closes the message')} style={styles.bubbleWrap}>
-        <View style={[styles.bubble, b.tone === 'amber' && { backgroundColor: BUBBLE_AMBER.bg }]}>
+        <View style={[styles.bubble, b.tone === 'amber' && { backgroundColor: BUBBLE_AMBER.bg, overflow: 'hidden' }]}>
+          {b.tone === 'amber' ? <Image source={KRAFT} style={StyleSheet.absoluteFill} resizeMode="cover" accessibilityIgnoresInvertColors /> : null}
           {b.icon === 'camera' ? <View style={{ alignItems: 'center', marginTop: 6, marginBottom: 26 }}><CameraIcon /></View> : null}{/* well clear of the words */}
           {/* a ● in the message is drawn in the record button's red */}
           <Text style={[styles.toast, b.tone === 'amber' && { color: BUBBLE_AMBER.ink }]}>{String(message).split('●').map((part, i) => (i ? [<Text key={i} style={{ color: colors.highlight }}>●</Text>, part] : part))}</Text>
