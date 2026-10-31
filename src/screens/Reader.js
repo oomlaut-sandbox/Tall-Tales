@@ -876,6 +876,15 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   const abs = (el, k, style) => (el ? <Animated.View key={k} style={[StyleSheet.absoluteFill, style]}>{el}</Animated.View> : null);
   // The three pages (before, now, after), each kept under its own page number: when a turn lands, the page that was
   // waiting underneath simply becomes the current one (it isn't built again, so its picture never blinks)
+  // Page b under a turn, only where it can be seen: its words side. Its picture side always lies under page a's
+  // picture (or the turning leaf) until the turn ends, and a fresh copy of a's picture on top of it flashed b's
+  // picture through while it loaded (Jörg, 30 Oct 2026). So b's picture side is clipped away and the real page a
+  // (already loaded) shows there instead.
+  const underB = (b, artH, wideTurn) => (
+    <View key="fb" pointerEvents="none" style={wideTurn ? { position: 'absolute', left: W / 2, top: 0, width: W / 2, height: H, overflow: 'hidden' } : { position: 'absolute', left: 0, right: 0, top: artH, bottom: 0, overflow: 'hidden' }}>
+      <View style={{ position: 'absolute', left: wideTurn ? -W / 2 : 0, top: wideTurn ? 0 : -artH, width: W, height: H }}><PageView key={`p${b}`} {...pageProps(b)} seeThrough /></View>
+    </View>
+  );
   const pageLayers = () => [abs(prevEl, `w${idx - 1}`), abs(nextEl, `w${idx + 1}`), abs(curEl, `w${idx}`)];
   const peeling = !!(flipPair && size && flipT && peel);
   if (flipPair && size && flipT && peel) {
@@ -883,12 +892,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     const { a, b } = flipPair;
     const view = (i, k) => <PageView key={k} {...pageProps(i)} />;
     layers.push(...pageLayers());
-    layers.push(
-      <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}><PageView key={`p${b}`} {...pageProps(b)} seeThrough /></View>,
-      wide
-        ? <View key="fat" pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: W / 2, height: H, overflow: 'hidden' }}><PageView key={`t${a}`} {...pageProps(a)} seeThrough /></View>
-        : <View key="fat" pointerEvents="none" style={[styles.half, { top: 0, height: flipT.artH }]}><PageView key={`t${a}`} {...pageProps(a)} seeThrough /></View>,
-    );
+    layers.push(underB(b, flipT.artH, wide));
   } else if (flipPair && size && wide) {
     // Sideways iPad: the words page (right) turns over the spine like a real book's page. Its back
     // shows the next page's picture, which ends up on the left.
@@ -901,8 +905,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     const backOp = flipP.interpolate({ inputRange: [0, 0.4999, 0.5, 1], outputRange: [0, 0, 1, 1] });
     const shade = flipP.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.22, 0] });
     layers.push(
-      <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}><PageView key={`p${b}`} {...pageProps(b)} seeThrough /></View>,
-      <View key="fal" pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: half, height: H, overflow: 'hidden' }}><PageView key={`l${a}`} {...pageProps(a)} seeThrough /></View>,
+      underB(b, 0, true),
       <Animated.View key="leaf" pointerEvents="none" style={{ position: 'absolute', left: half, top: 0, width: half, height: H, transformOrigin: 'left', transform: [{ perspective: 2400 }, { rotateY: turn }] }}>
         <Animated.View style={{ ...StyleSheet.absoluteFillObject, overflow: 'hidden', opacity: frontOp, backfaceVisibility: 'hidden' }}>
           <View style={{ position: 'absolute', left: -half, top: 0, width: W, height: H }}>{view(a, `r${a}`)}</View>
@@ -925,8 +928,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     // would lose the rest of a swipe). The turning layers are drawn on top.
     layers.push(...pageLayers());
     layers.push(
-      <View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}><PageView key={`p${b}`} {...pageProps(b)} seeThrough /></View>,
-      <View key="fat" pointerEvents="none" style={[styles.half, { top: 0, height: artH }]}><PageView key={`t${a}`} {...pageProps(a)} seeThrough /></View>,
+      underB(b, artH, false),
       <Animated.View key="sh1" pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: artH, height: textH * 0.6, opacity: shadow }}>
         <Fade edge="top" size={textH * 0.6} max={0.32} />
       </Animated.View>,
