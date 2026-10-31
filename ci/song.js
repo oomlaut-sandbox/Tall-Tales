@@ -31,8 +31,8 @@ const plan = (seedStyle) => ({
   ],
 });
 const SONGS = [
-  ['song-a', plan(['like a Patsy Cline style ballad, but a lullaby'])],
-  ['song-b', plan(['Appalachian, front-porch, like an old Carter Family recording'])],
+  ['song-a', plan(['a tender 1950s country ballad, slow and dreamy'])],
+  ['song-b', plan(['Appalachian front-porch folk, old-time string band feel'])],
 ];
 const save = async (id, res, kind) => {
   if (!res.ok) { console.log(`FAIL ${kind} ${id} ${res.status} ${(await res.text()).slice(0, 400)}`); return false; }
