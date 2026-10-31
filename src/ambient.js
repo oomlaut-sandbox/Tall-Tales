@@ -82,6 +82,7 @@ async function sync(kind) {
   if (c.id === want && c.player) { try { c.player.play(); ramp(c, 0, volFor(kind), 800); } catch (e) {} return; }
   const t = TRACKS.find((x) => x.id === want);
   if (!t) return;
+  if (t.remote && fetchTrack) { try { fetchTrack(t); } catch (e) {} }
   try {
     await setAudioModeAsync({ playsInSilentMode: true });
     if (my !== c.seq) return;
@@ -89,8 +90,9 @@ async function sync(kind) {
     const p = createAudioPlayer(t.src);
     c.player = p;
     c.id = want;
-    p.loop = true;
+    p.loop = !t.fade;
     p.volume = 0;
+    if (t.fade) fadeLoop(c, p, kind, () => c.player === p && state.playing && !held && state[kind] === want);
     applyRate(p);
     p.play();
     ramp(c, 0, volFor(kind), 1200); // fades in
@@ -106,6 +108,22 @@ async function sync(kind) {
     } catch (e) {}
     [250, 700, 1500].forEach((ms) => setTimeout(() => { try { if (still() && !p.playing) p.play(); } catch (e) {} }, ms));
   } catch (e) { release(c); }
+}
+// a piece marked "fade between repeats" (Store Manager): near its end it fades out, then starts again, fading in
+function fadeLoop(c, p, kind, still) {
+  let out = false;
+  try {
+    const sub = p.addListener('playbackStatusUpdate', (st) => {
+      if (!still()) { try { sub.remove(); } catch (e) {} return; }
+      const d = st.duration || 0, at = st.currentTime || 0;
+      if (!out && d > 4 && at > d - 2.2) { out = true; ramp(c, volFor(kind), 0, 1800); }
+      if (st.didJustFinish || (d > 0 && at >= d - 0.05 && !st.playing)) {
+        out = false;
+        try { p.seekTo(0); p.play(); } catch (e) {}
+        ramp(c, 0, volFor(kind), 1800);
+      }
+    });
+  } catch (e) {}
 }
 const syncAll = () => { sync('sound'); sync('music'); };
 
@@ -161,6 +179,17 @@ export function addTrack(tr) {
   TRACKS.push(tr); (tr.kind === 'sound' ? SOUNDS : MUSIC).push(tr);
   set({});
 }
+// A piece's name to show: the family's own as they named it, one from the Store Manager in this language (its own
+// translations), the app's own through the app's translations
+export const trackLabel = (x, t) => (x.mine ? x.name : x.remote ? ((x.names || {})[t && t.lang] || x.name) : t(x.name));
+// a piece from the Store Manager changed (a new file, a new name): swapped in place, without touching what's chosen
+export function updateTrack(tr) {
+  for (const list of [TRACKS, SOUNDS, MUSIC]) { const i = list.findIndex((x) => x.id === tr.id); if (i >= 0) list[i] = tr; }
+  set({});
+}
+// called the first time a piece from the Store Manager plays, so it's kept on the phone for next time (offline too)
+let fetchTrack = null;
+export function setTrackFetcher(fn) { fetchTrack = fn; }
 export function removeTrack(id) {
   for (const list of [TRACKS, SOUNDS, MUSIC]) { const i = list.findIndex((x) => x.id === id); if (i >= 0) list.splice(i, 1); }
   if (state.music === id) chooseAmbient('music', null); else if (state.sound === id) chooseAmbient('sound', null); else set({});

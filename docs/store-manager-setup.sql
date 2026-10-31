@@ -97,6 +97,48 @@ drop policy if exists "admins delete sold books" on storage.objects;
 create policy "admins delete sold books" on storage.objects for delete to authenticated
   using (bucket_id = 'sold-books' and public.is_store_admin());
 
+-- Music and sounds for the tape player (31 Oct 2026): added, named, ordered, shown or hidden in the Store Manager,
+-- without an app update. The files live in the public "tracks" folder. A track can name its musician (artist,
+-- artist_note, artist_link), and one can be the featured musician on the Music and Sounds page.
+create table if not exists public.tracks (
+  id text primary key,
+  kind text not null default 'music' check (kind in ('music', 'sound')),
+  name text not null,
+  langs jsonb not null default '{}'::jsonb,      -- the name in other languages: { de: '…', fr: '…' }
+  artist text, artist_note text, artist_link text,
+  file text,                                    -- its path in the "tracks" folder
+  version int not null default 1,               -- goes up when the file is replaced (phones fetch it again)
+  size_kb int,
+  sort int not null default 100,
+  hidden boolean not null default true,         -- new tracks start hidden until shown
+  featured boolean not null default false,
+  fade boolean not null default false,          -- fade out and in between repeats
+  created_at timestamptz not null default now()
+);
+alter table public.tracks enable row level security;
+drop policy if exists "everyone reads shown tracks" on public.tracks;
+create policy "everyone reads shown tracks" on public.tracks for select using (not hidden);
+drop policy if exists "admins read tracks" on public.tracks;
+create policy "admins read tracks" on public.tracks for select using (public.is_store_admin());
+drop policy if exists "admins write tracks" on public.tracks;
+create policy "admins write tracks" on public.tracks for all using (public.is_store_admin()) with check (public.is_store_admin());
+grant select on public.tracks to anon, authenticated;
+grant insert, update, delete on public.tracks to authenticated;
+
+insert into storage.buckets (id, name, public) values ('tracks', 'tracks', true) on conflict (id) do nothing;
+drop policy if exists "admins read tracks folder" on storage.objects;
+create policy "admins read tracks folder" on storage.objects for select to authenticated
+  using (bucket_id = 'tracks' and public.is_store_admin());
+drop policy if exists "admins upload tracks" on storage.objects;
+create policy "admins upload tracks" on storage.objects for insert to authenticated
+  with check (bucket_id = 'tracks' and public.is_store_admin());
+drop policy if exists "admins update tracks" on storage.objects;
+create policy "admins update tracks" on storage.objects for update to authenticated
+  using (bucket_id = 'tracks' and public.is_store_admin());
+drop policy if exists "admins delete tracks" on storage.objects;
+create policy "admins delete tracks" on storage.objects for delete to authenticated
+  using (bucket_id = 'tracks' and public.is_store_admin());
+
 -- Make yourself the owner: put your sign-in email between the quotes.
 insert into public.store_admins (user_id)
   select id from auth.users where lower(email) = lower('YOUR-EMAIL-HERE')

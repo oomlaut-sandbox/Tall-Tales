@@ -70,6 +70,14 @@ export function deleteFile(uri) {
   } catch (e) {}
 }
 
+// A file from the internet, kept in the app's own folder (music from the Store Manager: it then plays offline too)
+export async function downloadKeep(url, folder, filename) {
+  const target = new File(dir(folder), filename);
+  try { if (target.exists) target.delete(); } catch (e) {}
+  const out = await File.downloadFileAsync(url, target);
+  return (out && out.uri) || target.uri;
+}
+
 // A file's bytes, for uploading (Book Store publishing).
 export async function readBytes(uri) {
   return new File(uri).bytes();

@@ -11,6 +11,10 @@ import { PRICES } from '../prices';
 const BOOK_PRICES = ['$0.99', '$1.99', '$2.99', '$3.99', '$4.99']; // what an artist's book can cost (App Store price points)
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import { DESK_FELT } from '../look';
+import { createAudioPlayer } from 'expo-audio';
+import { pickFile, cleanName } from '../myMusic';
+import { addTrackFile, deleteTrackRow, loadTracksForManager, replaceTrackFile, translateTrack, updateTrackRow } from '../storeAdmin';
+import { supabase } from '../account';
 import CoverArt from '../components/CoverArt';
 import { ageText, coverFor, storageUrl } from '../catalog';
 import { LANG_NAMES, addShelf, productIdFor, setAccess, translateShelf, approveTranslation, loadAllForManager, loadStoreContent, removeFromStore, saveTranslation, startNarration, startTranslation, updateBook, updateShelf, withdrawTranslation } from '../storeAdmin';
@@ -315,6 +319,139 @@ function ShelfRow({ shelf, shelves, onChanged, toast }) {
   );
 }
 
+// ---- Music and sounds for the tape player (31 Oct 2026): see remoteTracks.js ----
+let preview = null; // one piece playing at a time, to listen before showing it
+const stopPreview = () => { try { if (preview) { preview.pause(); preview.remove(); } } catch (e) {} preview = null; };
+const trackUrl = (path) => { try { return supabase.storage.from('tracks').getPublicUrl(path).data.publicUrl; } catch (e) { return null; } };
+
+function TrackRow({ track, tracks, onChanged, toast }) {
+  const [open, setOpen] = useState(false);
+  const [f, setF] = useState({ name: track.name, artist: track.artist || '', artist_note: track.artist_note || '', artist_link: track.artist_link || '' });
+  const [langs, setLangs] = useState(track.langs || {});
+  const [sure, setSure] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  useEffect(() => { setLangs(track.langs || {}); }, [track.langs]);
+  useEffect(() => () => { if (playing) stopPreview(); }, [playing]);
+  const save = async (patch, note) => { try { await updateTrackRow(track.id, patch); if (note) toast(note); onChanged(); } catch (e) { toast(`Couldn’t save. ${e.message}`); } };
+  const field = (k, label, ph) => (
+    <TextInput value={f[k]} onChangeText={(v) => setF((x) => ({ ...x, [k]: v }))} placeholder={ph} placeholderTextColor="#777" allowFontScaling={false}
+      onBlur={() => (f[k] || '') !== (track[k] || '') && save({ [k]: f[k].trim() || (k === 'name' ? track.name : null) }, 'Saved.')}
+      style={styles.input} accessibilityLabel={label} autoCapitalize={k === 'artist_link' ? 'none' : 'sentences'} />
+  );
+  const move = async (dir) => {
+    const i = tracks.findIndex((x) => x.id === track.id), j = i + dir;
+    if (j < 0 || j >= tracks.length) return;
+    const other = tracks[j];
+    try { await updateTrackRow(track.id, { sort: other.sort === track.sort ? other.sort + dir : other.sort }); await updateTrackRow(other.id, { sort: track.sort }); onChanged(); } catch (e) { toast(`Couldn’t move it. ${e.message}`); }
+  };
+  const listen = () => {
+    if (playing) { stopPreview(); setPlaying(false); return; }
+    stopPreview();
+    try { preview = createAudioPlayer({ uri: trackUrl(track.file) }); preview.play(); setPlaying(true); } catch (e) { toast('Couldn’t play it.'); }
+  };
+  const replace = async () => {
+    const file = await pickFile(); if (!file) return;
+    setBusy(true);
+    try { await replaceTrackFile(track, file.uri, file.name); toast('New file uploaded. Phones fetch it the next time it plays.'); onChanged(); } catch (e) { toast(`Couldn’t upload it. ${e.message}`); }
+    setBusy(false);
+  };
+  return (
+    <View style={styles.row}>
+      <Pressable onPress={() => setOpen((o) => !o)} style={styles.rowHead} accessibilityRole="button">
+        <View style={{ flex: 1 }}>
+          <Text style={styles.rowTitle} numberOfLines={1}>{track.name}{track.artist ? ` · ${track.artist}` : ''}</Text>
+          <Text style={styles.rowSub}>{track.kind === 'sound' ? 'Sound' : 'Music'} · {track.hidden ? 'Hidden' : 'Shown'}{track.featured ? ' · Featured musician' : ''}{track.fade ? ' · Fades between repeats' : ''}{track.size_kb ? ` · ${Math.round(track.size_kb / 102.4) / 10} MB` : ''}</Text>
+        </View>
+        <Text style={styles.chev}>{open ? '–' : '+'}</Text>
+      </Pressable>
+      <View style={[styles.choices, { paddingHorizontal: 14, paddingBottom: open ? 0 : 14 }]}>
+        <Pressable onPress={listen} style={[styles.chip, playing && { backgroundColor: colors.green }]}><Text style={styles.chipText}>{playing ? '■ Stop' : '▶ Listen'}</Text></Pressable>
+        <Pressable onPress={() => save({ hidden: !track.hidden }, track.hidden ? 'Shown in the app.' : 'Hidden.')} style={[styles.chip, !track.hidden && { backgroundColor: colors.green }]}><Text style={styles.chipText}>{track.hidden ? 'Hidden' : 'Shown'}</Text></Pressable>
+        <Pressable onPress={() => move(-1)} style={styles.chip}><Text style={styles.chipText}>▲</Text></Pressable>
+        <Pressable onPress={() => move(1)} style={styles.chip}><Text style={styles.chipText}>▼</Text></Pressable>
+      </View>
+      {open ? (
+        <View style={styles.edit}>
+          <Text style={styles.label}>Name</Text>
+          {field('name', 'Name', 'e.g. Rainy day piano')}
+          <Text style={styles.label}>Kind</Text>
+          <Choice options={[['music', 'Music'], ['sound', 'Nature sound']]} value={track.kind} onChange={(v) => save({ kind: v })} />
+          <Text style={styles.label}>Musician</Text>
+          {field('artist', 'Musician', 'Their name (optional)')}
+          {field('artist_note', 'About the musician', 'A line about them (optional)')}
+          {field('artist_link', 'Musician’s website', 'https://… (optional; opens after the grown-up question)')}
+          <View style={styles.choices}>
+            <Pressable onPress={async () => { if (!track.featured) { for (const o of tracks.filter((x) => x.featured && x.id !== track.id)) await updateTrackRow(o.id, { featured: false }).catch(() => {}); } save({ featured: !track.featured }, track.featured ? 'No longer featured.' : 'Featured on Music and Sounds.'); }}
+              style={[styles.chip, track.featured && { backgroundColor: colors.green }]}><Text style={styles.chipText}>{track.featured ? '★ Featured musician' : '☆ Feature this musician'}</Text></Pressable>
+            <Pressable onPress={() => save({ fade: !track.fade })} style={[styles.chip, track.fade && { backgroundColor: colors.green }]}><Text style={styles.chipText}>Fade between repeats</Text></Pressable>
+          </View>
+          <Text style={styles.label}>Name in the other languages</Text>
+          {Object.keys(langs).length ? Object.entries(LANG_NAMES).map(([l, name]) => (
+            <View key={l} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+              <Text style={[styles.rowSub, { width: 72, marginTop: 0 }]}>{name}</Text>
+              <TextInput value={langs[l] || ''} onChangeText={(v) => setLangs((x) => ({ ...x, [l]: v }))} allowFontScaling={false}
+                onBlur={() => (langs[l] || '') !== ((track.langs || {})[l] || '') && save({ langs: { ...(track.langs || {}), [l]: (langs[l] || '').trim() } }, 'Saved.')}
+                style={[styles.input, { flex: 1, paddingVertical: 6 }, l === 'ar' && { textAlign: 'right', writingDirection: 'rtl' }]} accessibilityLabel={`${name} name`} />
+            </View>
+          )) : <Text style={styles.note}>Not translated yet.</Text>}
+          <View style={styles.choices}>
+            <Pressable onPress={async () => { try { await translateTrack(track.id); toast('Translated.'); onChanged(); } catch (e) { toast(`Couldn’t translate it. ${e.message}`); } }} style={styles.chip}><Text style={styles.chipText}>Translate the name</Text></Pressable>
+            <Pressable onPress={replace} disabled={busy} style={[styles.chip, busy && { opacity: 0.5 }]}><Text style={styles.chipText}>{busy ? 'Uploading…' : 'Replace the file'}</Text></Pressable>
+          </View>
+          {sure ? (
+            <View style={{ gap: 10, marginTop: 14 }}>
+              <Text style={styles.note}>Take “{track.name}” out? It disappears from everyone’s player the next time the app opens.</Text>
+              <View style={{ flexDirection: 'row', gap: 10 }}>
+                <Pressable onPress={() => setSure(false)} style={[styles.pill, { flex: 1 }]}><Text style={styles.pillText}>Keep</Text></Pressable>
+                <Pressable onPress={async () => { try { stopPreview(); await deleteTrackRow(track); toast('Taken out.'); onChanged(); } catch (e) { toast(`Couldn’t remove it. ${e.message}`); } }} style={[styles.pill, { flex: 1, backgroundColor: colors.danger }]}><Text style={styles.pillText}>Remove</Text></Pressable>
+              </View>
+            </View>
+          ) : (
+            <Pressable onPress={() => setSure(true)} style={[styles.pill, { backgroundColor: colors.danger, marginTop: 14 }]}><Text style={styles.pillText}>Remove</Text></Pressable>
+          )}
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+function TracksSection({ toast, demo }) {
+  const [tracks, setTracks] = useState(null);
+  const [err, setErr] = useState('');
+  const [name, setName] = useState('');
+  const [kind, setKind] = useState('music');
+  const [adding, setAdding] = useState(false);
+  const load = async () => { if (demo) { setTracks([]); return; } try { setTracks(await loadTracksForManager()); setErr(''); } catch (e) { setErr(e.message); } };
+  useEffect(() => { load(); return () => stopPreview(); }, []);
+  const add = async () => {
+    const file = await pickFile(); if (!file) return;
+    setAdding(true);
+    try {
+      const nm = name.trim() || cleanName(file.name);
+      const sort = (tracks && tracks.length ? Math.max(...tracks.map((x) => x.sort || 0)) : 90) + 10;
+      await addTrackFile({ uri: file.uri, fname: file.name, name: nm, kind, sort });
+      setName(''); toast('Added (hidden). Listen to it, then tap Hidden to show it.'); load();
+    } catch (e) { toast(`Couldn’t add it. ${e.message}`); }
+    setAdding(false);
+  };
+  return (
+    <View style={{ gap: 10, marginTop: 10 }}>
+      <Text style={styles.shelf}>Music and Sounds</Text>
+      <Text style={styles.note}>Pieces for the tape player and Music and Sounds, added without an app update. New ones start hidden. A piece plays from the internet the first time and is then kept on the phone. The pieces built into the app aren’t listed here.</Text>
+      {err ? <Text style={styles.err}>{err}</Text> : null}
+      {!tracks && !err ? <ActivityIndicator color={colors.white} /> : null}
+      {tracks ? tracks.map((x) => <TrackRow key={`${x.id}-${x.version}`} track={x} tracks={tracks} onChanged={load} toast={toast} />) : null}
+      <View style={[styles.row, { padding: 12, gap: 8 }]}>
+        <TextInput allowFontScaling={false} value={name} onChangeText={setName} placeholder="Name, e.g. Rainy day piano (or the file’s name)" placeholderTextColor="#888" style={styles.input} />
+        <Choice options={[['music', 'Music'], ['sound', 'Nature sound']]} value={kind} onChange={setKind} />
+        <Pressable disabled={adding} onPress={add} style={[styles.pill, { backgroundColor: colors.green }, adding && { opacity: 0.5 }]}><Text style={styles.pillText}>{adding ? 'Uploading…' : 'Choose a file and add it'}</Text></Pressable>
+        <Text style={styles.rowSub}>MP3 or M4A. Only music the musician has agreed to in writing.</Text>
+      </View>
+    </View>
+  );
+}
+
 // Sample books for the web preview only (#store-demo), so the screen can be looked at before the store is set up.
 const DEMO = {
   shelves: [{ id: 'free', title: 'Free to read', sort: 10, published: true }, { id: 'new', title: 'New', sort: 20, published: true }, { id: 'bedtime', title: 'Bedtime', sort: 30, published: true }],
@@ -393,6 +530,7 @@ export default function StoreManager({ u, openMenu, toast, demo }) {
             </View>
           </View>
         ) : null}
+        {data ? <TracksSection toast={toast} demo={demo} /> : null}
       </ScrollView>
     </WithBar>
   );

@@ -212,3 +212,47 @@ export async function updateShelf(id, patch) {
   if (error) throw new Error(error.message);
   if (patch.title) await translateShelf(id).catch(() => {}); // renamed: its translations follow
 }
+
+// ---- Music and sounds for the tape player (31 Oct 2026; see remoteTracks.js) ----
+const AUDIO_TYPES = { '.mp3': 'audio/mpeg', '.m4a': 'audio/mp4', '.aac': 'audio/aac', '.wav': 'audio/wav', '.caf': 'audio/x-caf' };
+const audioExt = (fname) => { const e = (String(fname || '').match(/\.[A-Za-z0-9]+$/) || ['.mp3'])[0].toLowerCase(); return AUDIO_TYPES[e] ? e : '.mp3'; };
+export async function loadTracksForManager() {
+  const { data, error } = await supabase.from('tracks').select('*').order('sort');
+  if (error) throw new Error(error.message);
+  return data || [];
+}
+export async function updateTrackRow(id, patch) {
+  const { error } = await supabase.from('tracks').update(patch).eq('id', id);
+  if (error) throw new Error(error.message);
+}
+export async function translateTrack(id) {
+  const { error } = await supabase.functions.invoke('translate', { body: { trackId: id } });
+  if (error) throw new Error(error.message);
+}
+// a new piece from a file on the phone: uploaded, then added hidden (shown once it's checked), named in the other languages
+export async function addTrackFile({ uri, fname, name, kind = 'music', sort = 100 }) {
+  const ext = audioExt(fname || uri);
+  const id = `${slug(name).slice(0, 30)}-${Math.random().toString(36).slice(2, 6)}`;
+  const bytes = await readBytes(uri);
+  const file = `${id}/1${ext}`;
+  await upload(file, bytes, AUDIO_TYPES[ext], 'tracks');
+  const { error } = await supabase.from('tracks').insert({ id, kind, name: String(name || '').trim() || 'Untitled', file, version: 1, size_kb: Math.round(bytes.length / 1024), sort, hidden: true });
+  if (error) throw new Error(error.message);
+  translateTrack(id).catch(() => {});
+  return id;
+}
+// a new file for a piece (phones fetch it again: the version goes up)
+export async function replaceTrackFile(track, uri, fname) {
+  const ext = audioExt(fname || uri);
+  const v = (track.version || 1) + 1;
+  const bytes = await readBytes(uri);
+  const file = `${track.id}/${v}${ext}`;
+  await upload(file, bytes, AUDIO_TYPES[ext], 'tracks');
+  await updateTrackRow(track.id, { file, version: v, size_kb: Math.round(bytes.length / 1024) });
+  if (track.file && track.file !== file) supabase.storage.from('tracks').remove([track.file]).catch(() => {});
+}
+export async function deleteTrackRow(track) {
+  const { error } = await supabase.from('tracks').delete().eq('id', track.id);
+  if (error) throw new Error(error.message);
+  if (track.file) supabase.storage.from('tracks').remove([track.file]).catch(() => {});
+}

@@ -44,6 +44,9 @@ export async function keepFile(uri) {
 export function deleteFile() {}
 export const liveUri = (uri) => uri;
 
+// (web preview: music from the Store Manager simply plays from the internet)
+export async function downloadKeep(url) { return url; }
+
 // A file's bytes, for uploading (Book Store publishing).
 export async function readBytes(uri) {
   const r = await fetch(uri);

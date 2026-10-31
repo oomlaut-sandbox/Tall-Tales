@@ -12,7 +12,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { fonts } from '../theme';
-import { MUSIC, SOUNDS, TRACKS, getAmbient, onAmbient, pauseAmbient, playAmbient, setAmbientPlayer, setAmbientVolume, setSoundVolume, stepAmbient } from '../ambient';
+import { MUSIC, SOUNDS, TRACKS, getAmbient, onAmbient, pauseAmbient, playAmbient, setAmbientPlayer, setAmbientVolume, setSoundVolume, stepAmbient, trackLabel } from '../ambient';
 import { useT } from '../i18n';
 import { thunk, tick, withTap } from '../haptics';
 
@@ -88,7 +88,7 @@ export default function TapePlayer({ onMenu, area }) {
   useEffect(() => { Animated.spring(k2, { toValue: notch(MUSIC, s.music), useNativeDriver: true, friction: 6 }).start(); }, [s.music]);
   const turn = (v) => ({ transform: [{ rotate: v.interpolate({ inputRange: [0, 360], outputRange: ['0deg', '360deg'] }) }] });
   if (!s.showPlayer) return null;
-  const name = (id) => { const x = TRACKS.find((tr) => tr.id === id); return x ? (x.mine ? x.name : t(x.name)) : null; };
+  const name = (id) => { const x = TRACKS.find((tr) => tr.id === id); return x ? (trackLabel(x, t)) : null; };
   const playing = s.playing && !!(s.sound || s.music);
   // the line on a knob's face: it turns around the face's middle (cx, cy)
   const mark = (cx, cy, v) => (

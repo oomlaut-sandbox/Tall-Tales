@@ -20,7 +20,7 @@ import ParentGate from './ParentGate';
 import { useT } from '../i18n';
 import { useControls } from '../controls';
 import { fmtTime } from '../clock';
-import { TRACKS, setAmbientNight, chooseAmbient, fadeOutAmbient, setAmbientVolume, getAmbient, playAmbient } from '../ambient';
+import { TRACKS, setAmbientNight, chooseAmbient, fadeOutAmbient, setAmbientVolume, getAmbient, playAmbient, trackLabel } from '../ambient';
 import { useKeepAwake } from 'expo-keep-awake';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { thunk, tick, withTap } from '../haptics';
@@ -187,7 +187,7 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
   }, [visible]);
   if (!visible) return null;
   const size = Math.max(150, Math.min(200, wide ? area.height * 0.42 : area.width * 0.5));
-  const name = (id) => { const tr = TRACKS.find((x) => x.id === id); return tr ? (tr.mine ? tr.name : t(tr.name)) : id; };
+  const name = (id) => { const tr = TRACKS.find((x) => x.id === id); return tr ? (trackLabel(tr, t)) : id; };
   const close = () => onClose();
   // every way to wake up, in one ring: the nature sounds, the music, then the family's own
   const choices = [...WAKE_GROUPS[0], ...WAKE_GROUPS[1], ...TRACKS.filter((x) => x.mine).map((x) => x.id)];

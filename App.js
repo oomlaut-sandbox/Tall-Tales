@@ -62,6 +62,7 @@ import { fadeOutAmbient, getAmbient, onAmbient, setAmbientPlayer } from './src/a
 import { ageAllowed, ageOf } from './src/catalog';
 import { addProfile, loadProfiles, onProfiles, switchProfile } from './src/profiles';
 import { loadGrownupCode } from './src/grownupCode';
+import { startRemoteTracks } from './src/remoteTracks';
 import { playSound, setEffects, setEffectsVolume } from './src/sound';
 import { stopSpeech } from './src/speech';
 import { stopVoice } from './src/voice';
@@ -657,7 +658,8 @@ export default function App() {
   const [who, setWho] = useState(null);
   useEffect(() => {
     loadProfiles().then((s) => setWho(s.active), () => setWho('main'));
-    loadGrownupCode().catch(() => {}); // (the grown-up passcode, if one is set, is known before any grown-up question)
+    loadGrownupCode().catch(() => {});
+    startRemoteTracks().catch(() => {}); // music and sounds added in the Store Manager (31 Oct 2026) // (the grown-up passcode, if one is set, is known before any grown-up question)
     return onProfiles((s) => setWho(s.active));
   }, []);
   const assetsIn = useRef(false);

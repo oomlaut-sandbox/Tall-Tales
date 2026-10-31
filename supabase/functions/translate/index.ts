@@ -139,7 +139,22 @@ Deno.serve(async (req) => {
   const asCaller = createClient(URL_, ANON, { global: { headers: { Authorization: auth } } });
   const { data: isAdmin } = await asCaller.rpc('is_store_admin');
   if (!isAdmin) return json({ error: 'Only the store owner can do this.' }, 403);
-  const { bookId, langs, force, shelfId } = await req.json().catch(() => ({}));
+  const { bookId, langs, force, shelfId, trackId } = await req.json().catch(() => ({}));
+  // a piece of music's name (31 Oct 2026): short, done straight away; correctable in the Store Manager
+  if (trackId) {
+    const db = createClient(URL_, SERVICE);
+    const { data: tr } = await db.from('tracks').select('name,kind,langs').eq('id', trackId).maybeSingle();
+    if (!tr) return json({ error: 'No such piece.' }, 404);
+    const out: Record<string, string> = { ...(tr.langs || {}) };
+    try {
+      await Promise.all(LANGS.map(async (l) => {
+        const r = await claude(l, `(This is the name of a calm ${tr.kind === 'sound' ? 'nature sound' : 'piece of music'} in a children's bedtime app, e.g. "Crickets", "Soft piano", "AM Radio". Keep it just as short. A person's name stays as it is.)`, { title: tr.name });
+        out[l] = r.title.trim();
+      }));
+    } catch (e) { return json({ error: String((e as Error).message || e) }, 500); }
+    await db.from('tracks').update({ langs: out }).eq('id', trackId);
+    return json({ ok: true, langs: out });
+  }
   // a shelf's name (30 Oct 2026): short, so it's done straight away; the store owner can correct it in the Store Manager
   if (shelfId) {
     const db = createClient(URL_, SERVICE);

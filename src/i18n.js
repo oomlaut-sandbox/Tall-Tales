@@ -837,5 +837,7 @@ export const LangContext = createContext({ lang: 'en', setLang: () => {} });
 export const useLang = () => useContext(LangContext).lang;
 export function useT() {
   const { lang } = useContext(LangContext);
-  return (s, vars) => translate(lang, s, vars);
+  const f = (s, vars) => translate(lang, s, vars);
+  f.lang = lang; // (for names that come with their own translations, e.g. music from the Store Manager)
+  return f;
 }

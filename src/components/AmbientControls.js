@@ -1,14 +1,15 @@
 // Playback Options → Music and sounds: pick a nature sound or a piece of gentle music to play the whole time
 // the app is open, how loud, a sleep timer, and whether the little tape player shows.
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Linking, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme';
 import { Slider } from './Chrome';
-import { MUSIC, SLEEP_TIMES, SOUNDS, chooseAmbient, getAmbient, onAmbient, playAmbient, setAmbientPlayer, setAmbientRate, setAmbientVolume, setSleepTimer } from '../ambient';
+import { MUSIC, SLEEP_TIMES, SOUNDS, chooseAmbient, getAmbient, onAmbient, playAmbient, setAmbientPlayer, setAmbientRate, setAmbientVolume, setSleepTimer, trackLabel } from '../ambient';
 import { useT } from '../i18n';
 import ParentGate from './ParentGate';
 import { removeMusic } from '../myMusic';
 import MyMusicSheet from './MyMusicSheet';
+import { featuredTrack, onRemoteTracks } from '../remoteTracks';
 import { thunk, tap, withTap } from '../haptics';
 import { playSound, setEffects } from '../sound';
 
@@ -30,6 +31,11 @@ export default function AmbientControls({ prefs, setPrefs }) {
   const lastGate = useRef(null); if (gate) lastGate.current = gate;
   const [sheet, setSheet] = useState(null); // 'music' | 'sound': upload or record one
   useEffect(() => onAmbient(setS), []);
+  // the featured musician (Store Manager, 31 Oct 2026): their piece to play, a line about them, and their website
+  // (a link out of the app, so behind the grown-up question)
+  const [, bumpFeat] = useState(0);
+  useEffect(() => onRemoteTracks(() => bumpFeat((x) => x + 1)), []);
+  const feat = featuredTrack();
   // tap one to choose it (it starts playing); tap it again to switch that one off. A sound and a piece of music can play together.
   // (tapping the one already chosen while it's paused plays it, instead of switching it off)
   const pick = (kind, id) => {
@@ -51,12 +57,23 @@ export default function AmbientControls({ prefs, setPrefs }) {
           <Image source={PLAYER} style={{ width: 118, height: Math.round(118 * 562 / 440) }} resizeMode="contain" accessibilityIgnoresInvertColors />
         </Pressable>
       </View>
+      {feat ? (
+        <View style={[styles.section, { gap: 6 }]}>
+          <Text style={[styles.group, { marginTop: 0 }]}>{t('Featured musician')}</Text>
+          {feat.artist ? <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 18 }}>{feat.artist}</Text> : null}
+          {feat.artistNote ? <Text style={styles.small}>{feat.artistNote}</Text> : null}
+          <View style={[styles.chips, { marginTop: 6 }]}>
+            <Chip label={`♪ ${trackLabel(feat, t)}`} on={s.playing && s.music === feat.id} onPress={() => pick(feat.kind, feat.id)} style={styles.chipIn} />
+            {feat.artistLink ? <Chip label={t('Visit their website')} onPress={() => setGate({ reason: t('This opens a website outside Coro.'), run: () => Linking.openURL(feat.artistLink).catch(() => {}) })} style={styles.chipIn} /> : null}
+          </View>
+        </View>
+      ) : null}
       <Text style={[styles.small, { marginTop: 14 }]}>{t('Tap a sound or a piece of music to hear it. Tap it again to turn it off.')}</Text>
       {/* the music, in its own slightly lighter box */}
       <View style={styles.section}>
         <Text style={[styles.group, { marginTop: 0, marginBottom: 6 }]}>{t('Music')}</Text>
         <View style={styles.chips}>
-          {MUSIC.map((x) => <Chip key={x.id} label={x.mine ? x.name : t(x.name)} on={s.playing && s.music === x.id} onPress={() => pick('music', x.id)} style={styles.chipIn}
+          {MUSIC.map((x) => <Chip key={x.id} label={trackLabel(x, t)} on={s.playing && s.music === x.id} onPress={() => pick('music', x.id)} style={styles.chipIn}
             onLongPress={x.mine ? () => setGate({ reason: t('Remove “{name}”', { name: x.name }), run: () => removeMusic(x.id) }) : undefined} />)}
         </View>
         {/* the family's own music: upload a file or record one (behind the grown-ups' question), then name it */}
@@ -69,7 +86,7 @@ export default function AmbientControls({ prefs, setPrefs }) {
       <View style={styles.section}>
         <Text style={[styles.group, { marginTop: 0, marginBottom: 6 }]}>{t('Nature sounds')}</Text>
         <View style={styles.chips}>
-          {SOUNDS.map((x) => <Chip key={x.id} label={x.mine ? x.name : t(x.name)} on={s.playing && s.sound === x.id} onPress={() => pick('sound', x.id)} style={styles.chipIn}
+          {SOUNDS.map((x) => <Chip key={x.id} label={trackLabel(x, t)} on={s.playing && s.sound === x.id} onPress={() => pick('sound', x.id)} style={styles.chipIn}
             onLongPress={x.mine ? () => setGate({ reason: t('Remove “{name}”', { name: x.name }), run: () => removeMusic(x.id) }) : undefined} />)}
         </View>
         <Pressable onPress={() => tap() || setGate({ reason: t('Upload or record a sound'), run: () => setSheet('sound') })} style={[styles.uploadBtn, { marginTop: 14 }]} accessibilityRole="button">
