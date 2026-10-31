@@ -834,6 +834,7 @@ const T = {
   'Or choose a file (.csv or .txt)': { de: 'Oder wähle eine Datei (.csv oder .txt)', fr: 'Ou choisissez un fichier (.csv ou .txt)', es: 'O elige un archivo (.csv o .txt)', ja: 'または ファイルを えらぶ（.csv か .txt）', ar: "أو اختر ملفًا (‎.csv أو ‎.txt)" },
   'No names were found in that file.': { de: 'In dieser Datei wurden keine Namen gefunden.', fr: 'Aucun nom n’a été trouvé dans ce fichier.', es: 'No se encontraron nombres en ese archivo.', ja: 'その ファイルに なまえが ありませんでした。', ar: "لم يُعثر على أسماء في هذا الملف." },
   'Text options': { de: 'Textoptionen', fr: 'Options du texte', es: 'Opciones de texto', ja: 'もじの せってい', ar: "خيارات النص" },
+  'Both pictures': { de: 'Beide Bilder', fr: 'Les deux images', es: 'Ambas imágenes', ja: 'りょうほうの え', ar: "الصورتان كلتاهما" },
   'About Coro': { de: 'Über Coro', fr: 'À propos d’Coro', es: 'Acerca de Coro', ja: 'Coroについて', ar: "عن Coro" },
 };
 

@@ -10,6 +10,7 @@ import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } fr
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOOK_FONTS, colors, fonts } from '../theme';
 import { DeskFelt, Felt, IS_TABLET, DESK_BG } from '../look';
+import { readText } from '../components/WordsOver';
 import { tokenize, cleanWord } from '../story';
 import { recordingDone } from '../rating';
 import { AMBER, Fade, PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
@@ -131,7 +132,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   // badges (My Notes): a day with reading, and a book read all the way to The End
   useEffect(() => { markReadToday(); }, []);
   // VoiceOver: the words on the page that just turned are read out (Jörg, 27 Oct 2026)
-  useEffect(() => { const pg = pages[idx]; if (!pg) return; announce(pg.end ? tr('The End') : pg.titlePage ? (story.title || '') : (pg.text || '')); }, [idx]);
+  useEffect(() => { const pg = pages[idx]; if (!pg) return; announce(pg.end ? tr('The End') : pg.titlePage ? (story.title || '') : readText(pg)); }, [idx]);
   useEffect(() => { if (pages[idx] && pages[idx].end) { markFinished(story, story.cover || (story.pages.find((pg) => pg.image) || {}).image); if (onFinished) onFinished(); } }, [idx]);
   const [size, setSize] = useState(null); // book area {w,h}
   const [deskW, setDeskW] = useState(0); // the felt's width (the bulb sits halfway between its left edge and the book)
@@ -181,7 +182,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     setPrinting(true);
     toast(tr('Getting the book ready to print…'));
     try {
-      await printStory({ title: story.title, author: story.author, pages: story.pages.map((p) => ({ text: p.text, image: p.image, image2: p.image2, textOn: p.textOn, textAt: p.textAt, textLook: p.textLook, textInk: p.textInk, textSize: p.textSize })) }, layout, prefs.font);
+      await printStory({ title: story.title, author: story.author, pages: story.pages.map((p) => ({ text: p.text, image: p.image, image2: p.image2, textOn: p.textOn, textAt: p.textAt, textLook: p.textLook, textInk: p.textInk, textSize: p.textSize, both: p.both, text2: p.text2, textAt2: p.textAt2, textLook2: p.textLook2, textInk2: p.textInk2, textSize2: p.textSize2 })) }, layout, prefs.font);
     } catch (e) {
       toast(tr('Couldn’t print the book. Please try again.')); // plain words, never the phone's technical message
     }
@@ -323,7 +324,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   const mineHere = voice !== 'narrator' && recAll.some((x) => x.page === idx && x.reader === voice) && prefs.mode !== 'self' && !recording;
   const panelPos = wide ? { bottom: 0, inset: BL.rightW } : { bottom: barH };
   const n = story.pages.length;
-  const tokens = useMemo(() => (pages[idx] && pages[idx].text ? tokenize(pages[idx].text) : []), [pages, idx]);
+  const tokens = useMemo(() => (pages[idx] && readText(pages[idx]) ? tokenize(readText(pages[idx])) : []), [pages, idx]); // (words on both pictures: top, then bottom)
 
   useEffect(() => {
     if (!prefs.mode) setTimeout(() => setPanel('play'), 350);
@@ -447,7 +448,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       }, 900);
       return;
     }
-    const toks = tokenize(p.text);
+    const toks = tokenize(readText(p));
     setReading(true); setPaused(false); setBetween(false);
     const hlChar = (ch) => {
       for (let i = 0; i < toks.length; i++) if (toks[i].start <= ch && ch < toks[i].end + 1) { setHl(i); break; }
@@ -473,7 +474,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       const sk = other ? `${story.id}@${story.lang}` : story.id;
       // a store book brings narration in the language it opened in (narrationLang), the other languages too (30 Oct 2026)
       const ownLang = !!story.narration && (story.narrationLang || 'en') === (story.lang || 'en');
-      if (other && !ownLang && !AUDIO[voiceKey]?.[sk]?.[p.pid] && !AUDIO.lily?.[sk]?.[p.pid]) { speakTracked(p.text, { lang: story.lang, rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage }); return; }
+      if (other && !ownLang && !AUDIO[voiceKey]?.[sk]?.[p.pid] && !AUDIO.lily?.[sk]?.[p.pid]) { speakTracked(readText(p), { lang: story.lang, rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage }); return; }
       const own = ownLang ? (story.narration[voiceKey]?.[p.pid] || story.narration.lily?.[p.pid]) : null;
       const audio = own ? { uri: own.uri } : AUDIO[voiceKey]?.[sk]?.[p.pid] || AUDIO.lily?.[sk]?.[p.pid];
       const times = own ? own.words : (TIMINGS[AUDIO[voiceKey]?.[sk]?.[p.pid] ? voiceKey : 'lily']?.[sk]?.[p.pid] || {}).words;
@@ -490,13 +491,13 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
         onDone: afterPage,
         onFail: () => { // the narration file wouldn't play: read it with the phone's voice instead
           usingVoice.current = false;
-          if (st.current.idx === pageIndex) speakTracked(p.text, { lang: story.lang, rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage });
+          if (st.current.idx === pageIndex) speakTracked(readText(p), { lang: story.lang, rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage });
         },
       })) {
         usingVoice.current = true;
         return;
       }
-      speakTracked(p.text, { lang: story.lang, rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage });
+      speakTracked(readText(p), { lang: story.lang, rate: NARRATOR * speedOf(prefs), onWord: hlChar, onDone: afterPage });
     };
     if (voiceRef.current && voiceRef.current !== 'narrator') {
       getRecording(story.id, pageKey(p, pageIndex), voiceRef.current).then((rec) => {

@@ -52,7 +52,7 @@ function fromSaved(s0) {
 }
 
 // words over a picture (WordsOver.js): kept with the page, and passed on to the reader
-const OVER_KEYS = ['textOn', 'textAt', 'textLook', 'textInk', 'textSize'];
+const OVER_KEYS = ['textOn', 'textAt', 'textLook', 'textInk', 'textSize', 'both', 'text2', 'textAt2', 'textLook2', 'textInk2', 'textSize2']; // (both: words on both pictures, 31 Oct 2026)
 export const overOf = (p) => Object.fromEntries(OVER_KEYS.filter((k) => p[k] != null).map((k) => [k, p[k]]));
 
 // a class book's details (classroom.js)

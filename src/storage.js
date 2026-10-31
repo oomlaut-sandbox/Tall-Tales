@@ -15,7 +15,9 @@ if (typeof window !== 'undefined' && /garden/.test(window.location.hash)) {
 if (typeof window !== 'undefined' && /my-book/.test(window.location.hash)) {
   mem[keyFor('main', 'stories')] = JSON.stringify([{ id: 'demo-mine', title: 'Our Trip to Oma’s', writer: 'Mia', artist: 'Mia', cover: null,
     pages: [{ pid: 'd1', text: 'We sat by the lake until the sun went down.', uri: window.__demoPage || null, w: 1078, h: 1078, ...(/over-demo/.test(window.location.hash) ? { textOn: 'top', textLook: 'dark' } : null) }, // (#my-book-over-demo: its words on the picture) // (__demoPage: a family photo for the App Store screenshots)
-       { pid: 'd2', text: 'She made pancakes as big as plates!', uri: null, w: 1, h: 1 }] }]);
+       { pid: 'd2', text: 'She made pancakes as big as plates!', uri: null, w: 1, h: 1 },
+       // (#my-book-both-demo: a page with words on both its pictures)
+       ...(/both-demo/.test(window.location.hash) ? [{ pid: 'd3', text: 'The water was still.', uri: window.__demoPage || null, w: 1078, h: 1078, uri2: window.__demoPage || null, w2: 1078, h2: 1078, textOn: 'top', textLook: 'dark', both: true, text2: 'And then we jumped in!', textLook2: 'light', textAt2: { x: 0.5, y: 0.3 } }] : [])] }]);
 }
 // (#class-demo: a class, Room 4, with Ava and Leo; a book prompt; Leo's book handed in, and one approved: the classroom tools)
 if (typeof window !== 'undefined' && /class-demo/.test(window.location.hash)) {

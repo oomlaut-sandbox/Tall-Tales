@@ -8,7 +8,7 @@ import { Felt } from '../look';
 import { tokenize } from '../story';
 import { useT } from '../i18n';
 import ZoomArt from './ZoomArt';
-import WordsOver, { wordsLook, wordsOverOn, wordsOverSize, wordsOverText } from './WordsOver';
+import WordsOver, { readText, secondOf, secondWords, wordsLook, wordsOverOn, wordsOverSize, wordsOverText } from './WordsOver';
 // the end of a book: fine grey line-art icons
 const END_AGAIN = require('../../assets/icon-again-line.png');
 const END_LIBRARY = require('../../assets/icon-home.png'); // My Library: the same house as on the bars
@@ -80,7 +80,11 @@ export const PageView = forwardRef(function PageView(
   ref,
 ) {
   const t = useT();
-  const words = useMemo(() => (page && page.text ? tokenize(page.text) : []), [page]);
+  // (words on both pictures: the top words, then the bottom ones, read and highlighted as one: 31 Oct 2026)
+  const src = useMemo(() => readText(page), [page]);
+  const words = useMemo(() => (src ? tokenize(src) : []), [src]);
+  const t2 = secondWords(page);
+  const n1 = useMemo(() => (t2 ? tokenize((page.text || '').trim()).length : words.length), [page, t2, words]);
   // bottomInset: room kept clear at the bottom for the reader's see-through control bar
   const L = useMemo(() => { const l = pageLayout(width, height); return { ...l, textH: l.textH - bottomInset }; }, [width, height, bottomInset]);
   const { artW, artH } = L;
@@ -102,16 +106,16 @@ export const PageView = forwardRef(function PageView(
     }));
   }, [page, artW, artH]);
 
-  const renderWords = (baseStyle, hlStyle) => {
+  const renderWords = (baseStyle, hlStyle, from = 0, to = words.length) => {
             const word = (w, i, last, shown) => (
               <Text key={i} onPress={onWord ? () => onWord(i, w.word) : undefined} style={i === highlight ? hlStyle : null}>
-                {shown ?? w.word}{i < last ? (page && page.text && /\n/.test(page.text.slice(w.end, words[i + 1] ? words[i + 1].start : w.end)) ? '\n' : ' ') : ''}{/* poems keep their line breaks */}
+                {shown ?? w.word}{i < last ? (src && /\n/.test(src.slice(w.end, words[i + 1] ? words[i + 1].start : w.end)) ? '\n' : ' ') : ''}{/* poems keep their line breaks */}
               </Text>
             );
             // A title page ("Title. Written and illustrated by …"): the title in bold on its own
             // line(s), a space, then the author line in small regular type. Word positions stay the same,
             // so narration highlighting still lines up.
-            const k = page?.titlePage ? words.findIndex((w) => /\.$/.test(w.word)) : -1;
+            const k = page?.titlePage && !t2 ? words.findIndex((w) => /\.$/.test(w.word)) : -1;
             if (k >= 0 && k < words.length - 1) {
               return (
                 <View style={{ alignItems: 'center' }}>
@@ -126,16 +130,18 @@ export const PageView = forwardRef(function PageView(
                 </View>
               );
             }
-            return <Text style={baseStyle}>{words.map((w, i) => word(w, i, words.length - 1))}</Text>;
+            return <Text style={baseStyle}>{words.slice(from, to).map((w, j) => word(w, from + j, to - 1))}</Text>;
           };
   // the words over a picture: the page's words, in the look chosen for them
-  const overWords = (bw, bh) => {
-    if (!over) return null;
-    const ofs = wordsOverSize(Math.min(bw, bh), page.textSize || 1, textScale * font.size);
-    const look = page.textLook || 'light';
+  // (second: the words on the bottom picture, when there are words on both)
+  const overWords = (bw, bh, second = false) => {
+    if (second ? !t2 : !over) return null;
+    const p = second ? secondOf(page) : page;
+    const ofs = wordsOverSize(Math.min(bw, bh), p.textSize || 1, textScale * font.size);
+    const look = p.textLook || 'light';
     return (
-      <WordsOver boxW={bw} boxH={bh} at={page.textAt} look={look}>
-        {renderWords([{ fontFamily: font.family, fontSize: ofs, lineHeight: ofs * 1.45 }, wordsOverText(look, page.textInk)], { color: wordsLook(look, page.textInk).hl })}
+      <WordsOver boxW={bw} boxH={bh} at={p.textAt} look={look}>
+        {renderWords([{ fontFamily: font.family, fontSize: ofs, lineHeight: ofs * 1.45 }, wordsOverText(look, p.textInk)], { color: wordsLook(look, p.textInk).hl }, second ? n1 : 0, second ? words.length : n1)}
       </WordsOver>
     );
   };
@@ -192,6 +198,7 @@ export const PageView = forwardRef(function PageView(
         {/* a page of two pictures: the second fills the words square */}
         {!end && page?.image2 && (!(page.text || '').trim() || over) ? <Image source={page.image2} style={styles.fill} resizeMode="cover" onLoad={page.image2.uri ? onArtLoad : undefined} /> : null}
         {over === 'bottom' ? overWords(L.textW, L.textH + bottomInset) : null}
+        {t2 ? overWords(L.textW, L.textH + bottomInset, true) : null}
         {L.wide ? <Fade edge="left" size={Math.round(L.textW * 0.09)} max={0.13} /> : <Fade edge="top" size={Math.round(L.textH * 0.09)} max={0.13} />}
         {/* the spine: a thin dark grey line where the two squares meet */}
         <View pointerEvents="none" style={L.wide ? styles.spineV : styles.spine} />
@@ -208,7 +215,7 @@ export const PageView = forwardRef(function PageView(
               ))}
             </View>
           </View>
-        ) : over ? null : (
+        ) : over || t2 ? null : (
           renderWords(storyStyle, styles.hl)
         )}
       </View>

@@ -97,9 +97,12 @@ async function translate(bookId: string, langs: string[], force: boolean, before
   const cr = creditsOf(content); if (cr) en.credits = cr;
   if (row && row.blurb) en.blurb = row.blurb;
   for (const p of content.pages || []) if (p.text && p.text.trim()) en[`page:${p.pid}`] = p.text.trim();
+  // words on both pictures (31 Oct 2026): the bottom picture's words, as '<pid>#2'
+  const two = (p: any) => (p.both && p.textOn === 'top' && p.image2 && p.text2 && p.text2.trim() ? p.text2.trim() : '');
+  for (const p of content.pages || []) if (two(p)) en[`page:${p.pid}#2`] = two(p);
   const fp: Record<string, string> = {};
   for (const [k, v] of Object.entries(en)) fp[k] = await fingerprint(v);
-  const book = (content.pages || []).filter((p: any) => p.text && p.text.trim()).map((p: any, i: number) => `Page ${i + 1}: ${p.text.trim()}`).join('\n');
+  const book = (content.pages || []).filter((p: any) => (p.text && p.text.trim()) || two(p)).map((p: any, i: number) => `Page ${i + 1}: ${[(p.text || '').trim(), two(p)].filter(Boolean).join(' / ')}`).join('\n');
   content.langs = content.langs || {};
   const results = await Promise.all(langs.map(async (lang) => {
     try {

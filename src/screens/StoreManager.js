@@ -71,8 +71,8 @@ function LangReview({ book, lang, onDone, toast }) {
   );
   const set = (k) => (v) => setEd((e) => ({ ...e, [k]: v }));
   const setPage = (pid) => (v) => setEd((e) => ({ ...e, pages: { ...e.pages, [pid]: v } }));
-  const pages = (c.pages || []).filter((p) => p.text && p.text.trim());
-  const missing = pages.filter((p) => !(ed.pages[p.pid] || '').trim()).length + (ed.title.trim() ? 0 : 1);
+  const pages = (c.pages || []).filter((p) => (p.text && p.text.trim()) || (p.both && (p.text2 || '').trim()));
+  const missing = pages.filter((p) => (p.text || '').trim() && !(ed.pages[p.pid] || '').trim()).length + pages.filter((p) => p.both && p.textOn === 'top' && p.image2 && (p.text2 || '').trim() && !(ed.pages[`${p.pid}#2`] || '').trim()).length + (ed.title.trim() ? 0 : 1);
   const run = async (fn, note) => { setBusy(true); try { await fn(); toast(note); onDone(); } catch (e) { toast(`Couldn’t do it. ${e.message}`); } setBusy(false); };
   const ready = (book.langs || {})[lang]?.status === 'ready';
   return (
@@ -106,6 +106,13 @@ function LangReview({ book, lang, onDone, toast }) {
           <Text style={styles.label}>Page {i + 1}</Text>
           <Text style={styles.en}>{p.text}</Text>
           {field(ed.pages[p.pid] || '', setPage(p.pid), { multi: true })}
+          {/* words on both pictures: the bottom picture's words too (31 Oct 2026) */}
+          {p.both && p.textOn === 'top' && p.image2 && (p.text2 || '').trim() ? (
+            <>
+              <Text style={styles.en}>{p.text2}</Text>
+              {field(ed.pages[`${p.pid}#2`] || '', setPage(`${p.pid}#2`), { multi: true })}
+            </>
+          ) : null}
         </View>
       ))}
       <View style={[styles.choices, { marginTop: 10 }]}>

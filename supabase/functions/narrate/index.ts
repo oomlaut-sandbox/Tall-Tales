@@ -73,7 +73,10 @@ async function narrate(bookId: string, lang: string) {
     const content = JSON.parse(await dl.data.text());
     const L = en ? null : content.langs && content.langs[lang];
     if (!en && !(L && L.pages)) throw new Error('This language has no translation yet.');
-    const pages = (content.pages || []).map((p: any) => ({ pid: p.pid, text: en ? p.text : L.pages[p.pid] })).filter((p: any) => p.text && p.text.trim());
+    // words on both pictures (31 Oct 2026): read as one page, the top words then the bottom ones (as the app joins them)
+    const join = (a: string, b: string) => { const t1 = (a || '').trim(), t2 = (b || '').trim(); return t2 ? (t1 ? `${t1}\n${t2}` : t2) : (a || ''); };
+    const second = (p: any) => (p.both && p.textOn === 'top' && p.image2 ? (en ? p.text2 : L.pages[`${p.pid}#2`]) || '' : '');
+    const pages = (content.pages || []).map((p: any) => ({ pid: p.pid, text: join(en ? p.text : L.pages[p.pid], second(p)) })).filter((p: any) => p.text && p.text.trim());
     // the title page too ("Title. Written by …"), worded exactly as the app shows it (src/catalog.js), so the
     // narrator reads it first, like the books inside the app (30 Oct 2026)
     const title = ((en ? content.title : L.title || content.title) || '').trim();

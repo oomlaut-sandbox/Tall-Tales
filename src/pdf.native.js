@@ -11,6 +11,7 @@ import { SpecialElite_400Regular } from '@expo-google-fonts/special-elite';
 import { PlusJakartaSans_500Medium } from '@expo-google-fonts/plus-jakarta-sans';
 import { strokesToImage } from './components/Strokes';
 import { bookFont } from './theme';
+import { secondOf, secondWords } from './components/WordsOver';
 
 const FONT_FILES = { serif: EBGaramond_400Regular, typewriter: SpecialElite_400Regular, coro: PlusJakartaSans_500Medium };
 
@@ -105,12 +106,14 @@ export async function buildStoryHtml(story0, layout = 'stacked', fontKey = 'seri
   story.pages.forEach((p, i) => {
     const pic = pics[i];
     const ov = overOf(p, i);
+    // words on both pictures (31 Oct 2026): the second words on the bottom (right) picture
+    const two = pics2[i] && secondWords({ ...p, image2: p.image2 }) ? secondOf(p) : null;
     if (layout === 'spreads') {
       if (pic) out.push(`<div class="pg full"><img src="${pic}"/>${ov === 'top' ? overHtml(p, 26) : ''}</div>`);
-      if (pics2[i]) out.push(`<div class="pg full"><img src="${pics2[i]}"/>${ov === 'bottom' ? overHtml(p, 26) : ''}</div>`);
-      if (p.text && p.text.trim() && !ov) out.push(`<div class="pg words"><p>${esc(p.text)}</p></div>`);
-    } else if (ov) {
-      out.push(`<div class="pg"><div class="book${layout === 'landscape' ? ' row' : ''}"><div class="sq">${pic ? `<img src="${pic}"/>` : ''}${ov === 'top' ? overHtml(p, 18) : ''}</div><div class="sq">${pics2[i] ? `<img src="${pics2[i]}"/>` : ''}${ov === 'bottom' ? overHtml(p, 18) : ''}</div></div><div class="num">${i + 1}</div></div>`);
+      if (pics2[i]) out.push(`<div class="pg full"><img src="${pics2[i]}"/>${ov === 'bottom' ? overHtml(p, 26) : ''}${two ? overHtml(two, 26) : ''}</div>`);
+      if (p.text && p.text.trim() && !ov && !two) out.push(`<div class="pg words"><p>${esc(p.text)}</p></div>`);
+    } else if (ov || two) {
+      out.push(`<div class="pg"><div class="book${layout === 'landscape' ? ' row' : ''}"><div class="sq">${pic ? `<img src="${pic}"/>` : ''}${ov === 'top' ? overHtml(p, 18) : ''}</div><div class="sq">${pics2[i] ? `<img src="${pics2[i]}"/>` : ''}${ov === 'bottom' ? overHtml(p, 18) : ''}${two ? overHtml(two, 18) : ''}</div></div><div class="num">${i + 1}</div></div>`);
     } else {
       out.push(`<div class="pg"><div class="book${layout === 'landscape' ? ' row' : ''}"><div class="sq">${pic ? `<img src="${pic}"/>` : ''}</div>${pics2[i] ? `<div class="sq"><img src="${pics2[i]}"/></div>` : `<div class="sq txt">${p.text ? `<p>${esc(p.text)}</p>` : ''}</div>`}</div><div class="num">${i + 1}</div></div>`);
     }

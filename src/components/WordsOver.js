@@ -9,12 +9,31 @@
 //                                or the words alone (no shadow), dark or white (textInk)
 //   textInk   'dark' | 'white'   (plain only)
 //   textSize  0.8 | 1 | 1.25     smaller, as is, larger
+//   both      true               words on both pictures (Jörg, 31 Oct 2026): the page's words on the top (left)
+//                                picture, and text2 on the bottom (right) one, with their own textAt2, textLook2,
+//                                textInk2 and textSize2. They read aloud top, then bottom, as one page.
 import React, { useState } from 'react';
 import { View } from 'react-native';
 
 export const WORD_LOOKS = [['light', 'Light panel'], ['dark', 'Dark panel'], ['shadow', 'Shadow'], ['plain', 'No shadow']];
 export const WORD_SIZES = [[0.8, 'Small'], [1, 'Medium'], [1.25, 'Large']];
 export const DEFAULT_AT = { x: 0.5, y: 0.66 }; // (clear of the book maker's picture buttons along the bottom)
+
+// words on the second picture too (both): its words, or ''
+export function secondWords(page) {
+  if (!page || !page.both || page.textOn !== 'top' || !(page.uri2 || page.image2)) return '';
+  return (page.text2 || '').trim();
+}
+// the page's words as they're read aloud (and highlighted): the top words, then the bottom ones
+export function readText(page) {
+  const t2 = secondWords(page);
+  if (!t2) return (page && page.text) || '';
+  const t1 = ((page.text || '').trim());
+  return t1 ? `${t1}\n${t2}` : t2;
+}
+// the second words' own settings, as a page of their own (to draw or edit them like the first)
+export const secondOf = (p) => ({ ...p, text: p.text2 || '', textOn: 'bottom', textAt: p.textAt2, textLook: p.textLook2, textInk: p.textInk2, textSize: p.textSize2 });
+export const SECOND_KEYS = { text: 'text2', textAt: 'textAt2', textLook: 'textLook2', textInk: 'textInk2', textSize: 'textSize2' };
 
 // does this page draw its words over a picture? (only with words, and only on a picture that's there)
 export function wordsOverOn(page) {

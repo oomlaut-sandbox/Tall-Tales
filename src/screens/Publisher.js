@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { BOOK_FONTS, bookFont, colors, fonts } from '../theme';
-import WordsOver, { DEFAULT_AT, WORD_LOOKS, WORD_SIZES, wordsLook, wordsOverOn, wordsOverSize, wordsOverText } from '../components/WordsOver';
+import WordsOver, { DEFAULT_AT, SECOND_KEYS, WORD_LOOKS, WORD_SIZES, secondOf, secondWords, wordsLook, wordsOverOn, wordsOverSize, wordsOverText } from '../components/WordsOver';
 import { Bar, Burger, ConfirmBox, CoverIcon, DogEar, DoneTick, Panel, PageShape, PagesIcon, Toast, ChoiceLabel } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
@@ -298,8 +298,8 @@ function WhereIcon({ where, wide }) {
   );
   return (
     <View style={{ flexDirection: wide ? 'row' : 'column', gap }}>
-      <Sq pic words={where === 'top'} />
-      <Sq pic={where === 'bottom'} words={where === null || where === 'bottom'} />
+      <Sq pic words={where === 'top' || where === 'both'} />
+      <Sq pic={where === 'bottom' || where === 'both'} words={where === null || where === 'bottom' || where === 'both'} />
     </View>
   );
 }
@@ -420,15 +420,21 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const fromRect = useRef(null);
   const zoom = useRef(new Animated.Value(1)).current; // 0 = where the square is on the page, 1 = in the editor
   const [zoomTo, setZoomTo] = useState(null); // the editor square's spot on screen
-  const openWords = () => {
+  const openWords = (second) => {
+    setEdit2(second === true); // (a tap's event is never 'true': only openWords(true) opens the bottom picture's words)
     const go = (r) => { fromRect.current = r; zoom.setValue(r ? 0 : 1); setZoomTo(null); setEditing(true); };
     if (wordsRef.current && wordsRef.current.measureInWindow) wordsRef.current.measureInWindow((x, y, w, h) => go(w ? { x, y, w, h } : null));
     else go(null);
   };
   // Advanced page editor: a words button on each picture (Jörg, 30 Oct 2026), so a page of two pictures (no words
   // square) can still have words: they go on that picture, and the words editor opens
-  const wordsChip = (which) => (advanced && over !== which ? (
-    <Pressable onPress={() => { update({ textOn: which }); openWords(); }} hitSlop={6} accessibilityRole="button"
+  // (words already on the other picture: this one gets words too, both pictures (31 Oct 2026))
+  const wordsChip = (which) => (advanced && over !== which && !(both && (page.text2 || '').trim() && which === 'bottom') ? (
+    <Pressable onPress={() => {
+      if (secondPic && page.uri && over === 'top' && which === 'bottom') { update({ both: true, textAt2: page.textAt2 || DEFAULT_AT }); openWords(true); return; }
+      if (secondPic && page.uri && over === 'bottom' && which === 'top') { update(bothFromBottom(page)); openWords(); return; }
+      update({ textOn: which, both: false }); openWords();
+    }} hitSlop={6} accessibilityRole="button"
       accessibilityLabel={tr('Text over this image')} style={styles.chipIcon}><Image source={CHOICE_ICONS.text} style={styles.chipImg} /></Pressable>
   ) : null);
   const closeWords = () => {
@@ -511,6 +517,15 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   }, [saved]);
 
   const update = (patch) => setDraft((d) => ({ ...d, pages: d.pages.map((p, k) => (k === i ? { ...p, ...patch } : p)) }));
+  // Words on both pictures (Jörg, 31 Oct 2026): the words editor writes either the page's words (on the top picture)
+  // or, with edit2, the bottom picture's words (text2 and its own place, look and size). wp is the page as the
+  // editor sees it, wupdate the change it makes.
+  const [edit2, setEdit2] = useState(false);
+  const both = !!(page && page.both && page.textOn === 'top' && page.uri2);
+  const wp = edit2 && both ? secondOf(page) : page;
+  const wupdate = edit2 && both ? (patch) => update(Object.fromEntries(Object.entries(patch).filter(([k]) => SECOND_KEYS[k]).map(([k, v]) => [SECOND_KEYS[k], v]))) : update;
+  // both pictures: the words that were on the bottom picture move to its second words, and the top picture's are new
+  const bothFromBottom = (p) => ({ both: true, textOn: 'top', text: '', text2: p.text || '', textAt2: p.textAt || DEFAULT_AT, textLook2: p.textLook, textInk2: p.textInk, textSize2: p.textSize, textAt: DEFAULT_AT });
 
   // Choose a square photo, keep a copy in the story's folder: { uri, w, h }, or null if cancelled.
   // source: 'library' (the phone's photos) or 'camera' (take a photo, e.g. of a drawing; only after the grown-up check)
@@ -773,7 +788,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const removeImage2 = () => {
     if (page.uri2) dropLater(page.uri2);
     if (page.src2 && page.src2 !== page.uri2) dropLater(page.src2);
-    update({ uri2: null, w2: 1, h2: 1, src2: null, edit2: null, ...(page.textOn === 'bottom' ? { textOn: null } : null) });
+    update({ uri2: null, w2: 1, h2: 1, src2: null, edit2: null, both: false, ...(page.textOn === 'bottom' ? { textOn: null } : null) });
   };
   // ---- Edit photo: crop, layout and look (the original is kept as src; the page shows the finished picture) ----
   const [photoEdit, setPhotoEdit] = useState(null); // 'page' | 'page2' | 'cover'
@@ -980,6 +995,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <MakerWords page={page} boxW={side} boxH={side} onMove={(textAt) => update({ textAt })} onTap={openWords} />
           </View>
         ) : null}
+        {/* words on both pictures: the bottom picture's words too */}
+        {both && (page.text2 || '').trim() ? (
+          <View pointerEvents="box-none" style={{ position: 'absolute', width: side, height: side, left: wide ? side : 0, top: wide ? 0 : side }}>
+            <MakerWords page={secondOf(page)} boxW={side} boxH={side} onMove={(textAt2) => update({ textAt2 })} onTap={() => openWords(true)} />
+          </View>
+        ) : null}
         <DogEar u={u} under={colors.earUnder} onPress={next} label={tr('Next page')} />
         {/* the page count in a small grey box, top left of the picture page ('Saved' takes its place for a moment after each change) */}
         <View pointerEvents="none" style={[styles.countBox, { top: 12, left: 12 }]}>
@@ -1120,7 +1141,18 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <View style={[styles.editor, { flex: 1, paddingTop: insets.top + 34 }]}>
           <Animated.View style={[styles.editorHead, { opacity: zoom }]}>
             {/* the words are the second page of each pair (the picture is the first): page 2, 4, 6 … */}
-            <Text style={styles.editorTitle}>{tr('Page {n}', { n: page.textOn === 'top' && page.uri ? i * 2 + 1 : i * 2 + 2 })}</Text>
+            <Text style={styles.editorTitle}>{tr('Page {n}', { n: wp.textOn === 'top' && wp.uri ? i * 2 + 1 : i * 2 + 2 })}</Text>
+            {/* words on both pictures: which picture's words are being written (Jörg, 31 Oct 2026) */}
+            {both ? (
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                {[[false, wide ? 'Left picture' : 'Top picture'], [true, wide ? 'Right picture' : 'Bottom picture']].map(([two, label]) => (
+                  <Pressable key={label} onPress={() => { setEdit2(two); if (two && !page.textAt2) update({ textAt2: DEFAULT_AT }); }} accessibilityRole="radio" accessibilityState={{ selected: edit2 === two }}
+                    style={{ height: 34, borderRadius: 17, paddingHorizontal: 14, justifyContent: 'center', backgroundColor: edit2 === two ? colors.green : '#3d3d3d' }}>
+                    <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 14 }}>{tr(label)}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            ) : null}
           </Animated.View>
           {(() => {
             const W = winW - 2 * GAP;
@@ -1131,9 +1163,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               { scale: zoom.interpolate({ inputRange: [0, 1], outputRange: [f.w / t.w, 1] }) },
             ] : [];
             // the picture the words are on (Words on a picture), if any: the editor shows them on it
-            const overPic = page.textOn === 'top' ? page.uri : page.textOn === 'bottom' ? page.uri2 : null;
-            const ofs = wordsOverSize(W, page.textSize || 1);
-            const overType = [{ fontFamily: bookFont(writeFont).family, fontSize: ofs, lineHeight: ofs * 1.45, width: W * 0.84 - 8 - (wordsLook(page.textLook || 'light').panel ? W * 0.035 * 2.8 : 0) }, wordsOverText(page.textLook || 'light', page.textInk)];
+            const overPic = wp.textOn === 'top' ? wp.uri : wp.textOn === 'bottom' ? wp.uri2 : null;
+            const ofs = wordsOverSize(W, wp.textSize || 1);
+            const overType = [{ fontFamily: bookFont(writeFont).family, fontSize: ofs, lineHeight: ofs * 1.45, width: W * 0.84 - 8 - (wordsLook(wp.textLook || 'light').panel ? W * 0.035 * 2.8 : 0) }, wordsOverText(wp.textLook || 'light', wp.textInk)];
             return (
               <Animated.View
                 ref={editRef} collapsable={false}
@@ -1154,16 +1186,16 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   // they can be seen as they'll be (Jörg, 30 Oct 2026)
                   <>
                     <Image source={{ uri: overPic }} style={StyleSheet.absoluteFill} resizeMode="cover" />
-                    <WordsOver boxW={W} boxH={W} at={page.textAt} look={page.textLook || 'light'}>
+                    <WordsOver boxW={W} boxH={W} at={wp.textAt} look={wp.textLook || 'light'}>
                       {/* the words drawn invisibly give the box its size (a text box doesn't always grow with its
                           words); the text box lies exactly over them */}
                       <View>
-                        <Text style={[overType, { opacity: 0 }]}>{(page.text || tr('Type the words for this page. Two or three sentences reads best.')) + (/\n$/.test(page.text || '') ? ' ' : '')/* (a new empty line keeps its room) */}</Text>
+                        <Text style={[overType, { opacity: 0 }]}>{(wp.text || tr('Type the words for this page. Two or three sentences reads best.')) + (/\n$/.test(wp.text || '') ? ' ' : '')/* (a new empty line keeps its room) */}</Text>
                         <TextInput
-                          value={page.text}
-                          onChangeText={(text) => { if (text.length > (page.text || '').length) playKey(); update({ text }); }}
+                          value={wp.text}
+                          onChangeText={(text) => { if (text.length > (wp.text || '').length) playKey(); wupdate({ text }); }}
                           placeholder={tr('Type the words for this page. Two or three sentences reads best.')}
-                          placeholderTextColor={wordsLook(page.textLook || 'light', page.textInk).color === '#1c1c1c' ? '#666' : 'rgba(255,255,255,0.7)'}
+                          placeholderTextColor={wordsLook(wp.textLook || 'light', wp.textInk).color === '#1c1c1c' ? '#666' : 'rgba(255,255,255,0.7)'}
                           multiline
                           autoFocus
                           scrollEnabled={false}
@@ -1175,8 +1207,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   </>
                 ) : (
                   <TextInput
-                    value={page.text}
-                    onChangeText={(text) => { if (text.length > (page.text || '').length) playKey(); update({ text }); }}
+                    value={wp.text}
+                    onChangeText={(text) => { if (text.length > (wp.text || '').length) playKey(); wupdate({ text }); }}
                     placeholder={tr('Type the words for this page. Two or three sentences reads best.')}
                     placeholderTextColor="#666"
                     multiline
@@ -1194,25 +1226,36 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             // WHERE the words go, their LOOK, and their SIZE (the look and size only once they're on a picture)
             <Animated.View style={[styles.placeBox, { width: winW - 2 * GAP, opacity: zoom }]}>
               <PlaceGroup title={tr('Where')}>
-                {[[null, 'Words page'], ['top', wide ? 'Left picture' : 'Top picture'], ['bottom', wide ? 'Right picture' : 'Bottom picture']].map(([v, label]) => {
-                  const off = (v === 'top' && !page.uri) || (v === 'bottom' && !page.uri2);
+                {/* the words page only while there's no second picture; with two pictures, both can have words (Jörg, 31 Oct 2026) */}
+                {[...(page.uri2 ? [] : [[null, 'Words page']]), ['top', wide ? 'Left picture' : 'Top picture'], ['bottom', wide ? 'Right picture' : 'Bottom picture'], ...(page.uri2 ? [['both', 'Both pictures']] : [])].map(([v, label]) => {
+                  const off = (v === 'top' && !page.uri) || (v === 'bottom' && !page.uri2) || (v === 'both' && !(page.uri && page.uri2));
+                  const on = v === 'both' ? both : v === null ? !page.textOn : (page.textOn === v && !both);
+                  const pick = () => {
+                    if (v === 'both') {
+                      if (page.textOn === 'bottom') { update(bothFromBottom(page)); setEdit2(false); return; }
+                      update({ textOn: 'top', both: true, ...(!page.textAt ? { textAt: DEFAULT_AT } : null), ...(!page.textAt2 ? { textAt2: DEFAULT_AT } : null) });
+                      setEdit2(!!(page.text || '').trim()); // (the top words are there: on to the bottom picture's)
+                      return;
+                    }
+                    setEdit2(false);
+                    update({ textOn: v, both: false, ...(v && !page.textAt ? { textAt: DEFAULT_AT } : null) });
+                  };
                   return (
-                    <PlaceTile key={label} label={tr(label)} on={(page.textOn || null) === v} off={off}
-                      onPress={() => update({ textOn: v, ...(v && !page.textAt ? { textAt: DEFAULT_AT } : null) })}>
+                    <PlaceTile key={label} label={tr(label)} on={on} off={off} onPress={pick}>
                       <WhereIcon where={v} wide={wide} />
                     </PlaceTile>
                   );
                 })}
               </PlaceGroup>
-              {!page.uri2 && !page.textOn ? <Text style={styles.placeNote}>{tr('To put the words on a second picture, add one first: tap the plus on the words page.')}</Text> : null}
-              {page.textOn ? (
+              {!wp.uri2 && !wp.textOn ? <Text style={styles.placeNote}>{tr('To put the words on a second picture, add one first: tap the plus on the words page.')}</Text> : null}
+              {wp.textOn ? (
                 <>
                   <PlaceGroup title={tr('Look')}>
                     {[['light', null, 'Light panel'], ['dark', null, 'Dark panel'], ['shadow', null, 'Shadow'], ['plain', 'dark', 'Dark words'], ['plain', 'white', 'White words']].map(([look, ink, label]) => {
-                      const cur = page.textLook || 'light';
-                      const on = cur === look && (look !== 'plain' || (page.textInk || 'dark') === ink);
+                      const cur = wp.textLook || 'light';
+                      const on = cur === look && (look !== 'plain' || (wp.textInk || 'dark') === ink);
                       return (
-                        <PlaceTile key={label} label={tr(label)} on={on} onPress={() => update({ textLook: look, ...(ink ? { textInk: ink } : null) })}>
+                        <PlaceTile key={label} label={tr(label)} on={on} onPress={() => wupdate({ textLook: look, ...(ink ? { textInk: ink } : null) })}>
                           <LookIcon look={look} ink={ink} />
                         </PlaceTile>
                       );
@@ -1220,7 +1263,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   </PlaceGroup>
                   <PlaceGroup title={tr('Size')}>
                     {WORD_SIZES.map(([v, label]) => (
-                      <PlaceTile key={label} label={tr(label)} on={(page.textSize || 1) === v} onPress={() => update({ textSize: v })}>
+                      <PlaceTile key={label} label={tr(label)} on={(wp.textSize || 1) === v} onPress={() => wupdate({ textSize: v })}>
                         <Text style={{ color: colors.white, fontFamily: 'EBGaramond_500Medium', fontSize: Math.round(14 * v), lineHeight: 22 }}>Aa</Text>
                       </PlaceTile>
                     ))}
@@ -1232,7 +1275,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           ) : null}
           {/* under the page: 'Text over image' (left), and a green Done pill (right) */}
           <Animated.View style={{ width: winW - 2 * GAP, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: zoom }}>
-            {page.text.trim() && (advanced || page.textOn) /* the Advanced page editor (Settings), or a page already set that way */ ? (
+            {wp.text.trim() && (advanced || wp.textOn) /* the Advanced page editor (Settings), or a page already set that way */ ? (
               <Pressable onPress={() => { Keyboard.dismiss(); setPlaceOpen((o) => !o); }} hitSlop={8} accessibilityRole="button" accessibilityState={{ expanded: placeOpen }} style={[styles.donePill, { backgroundColor: '#3d3d3d', flexDirection: 'row', alignItems: 'center', gap: 10 }]}>
                 <Text style={styles.donePillText}>{tr('Text options')}</Text>{/* (the arrow shows whether they're open: Jörg, 31 Oct 2026) */}
                 {/* an arrow in a circle: down while the choices are closed, up while they're open (Jörg, 31 Oct 2026) */}
