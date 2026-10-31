@@ -69,6 +69,15 @@ function FineSlider({ value, onChange, width, label }) {
 // views, the ring came out slightly square and the rays off-centre on the phone)
 const SUN_OUTLINE = require('../../assets/icon-sun-outline.png');
 export const SUN_SOLID = require('../../assets/icon-sun-solid.png');
+// the moon and the Earth, for the nightlight instead of the sun (Jörg, 31 Oct 2026): each picture is cropped so its
+// sphere is exactly as big as, and exactly where, the others' (0.46 of the picture, in the middle)
+const ORB_PICS = { moon: require('../../assets/nightlight-moon.jpg'), earth: require('../../assets/nightlight-earth.jpg') };
+const ORB_ICONS = {
+  sun: [SUN_OUTLINE, SUN_SOLID],
+  moon: [require('../../assets/icon-moon-outline.png'), require('../../assets/icon-moon-solid.png')],
+  earth: [require('../../assets/icon-earth-outline.png'), require('../../assets/icon-earth-solid.png')],
+};
+const ORB_NAMES = { sun: 'Sun', moon: 'Moon', earth: 'Earth' };
 export function SunIcon({ size = 18, color = 'rgba(244,226,207,0.6)' }) {
   return <Image source={SUN_OUTLINE} style={{ width: size, height: size, tintColor: color }} resizeMode="contain" />;
 }
@@ -290,12 +299,25 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
   const firedOn = useRef(null);
   const riseTimer = useRef(null);
   const volTimer = useRef(null);
-  const ringFade = useRef(new Animated.Value(0)).current; // the diamond ring (see the sun below)
-  const ringOn = (eclipse || 0) >= 0.985;
-  useEffect(() => { Animated.timing(ringFade, { toValue: ringOn ? 1 : 0, duration: ringOn ? 1400 : 350, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(); }, [ringOn]);
-  const before = useRef(0); // the eclipse before the alarm (Snooze brings it back)
+  // the sun (the default: the only one with the slider and the eclipse), the moon or the Earth. Each dissolves
+  // gently into the next; leaving the sun keeps its eclipse as it was while it fades away, then clears it (so the
+  // moon or the Earth shows in full, and the sleep timer can still dim them)
   const eRef = useRef(eclipse); eRef.current = eclipse;
   const onEclipseRef = useRef(onEclipse); onEclipseRef.current = onEclipse;
+  const [orb, setOrb] = useState('sun');
+  const fades = useRef({ sun: new Animated.Value(1), moon: new Animated.Value(0), earth: new Animated.Value(0) }).current;
+  const frozenE = useRef(0);
+  const pickOrb = (o) => {
+    if (o === orb) return;
+    if (orb === 'sun') { frozenE.current = eRef.current; if (onEclipseRef.current) onEclipseRef.current(0); }
+    setOrb(o);
+    Object.keys(fades).forEach((k) => Animated.timing(fades[k], { toValue: k === o ? 1 : 0, duration: 1600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start());
+  };
+  const sunE = orb === 'sun' ? (eclipse || 0) : frozenE.current; // (what the sun shows)
+  const ringFade = useRef(new Animated.Value(0)).current; // the diamond ring (see the sun below)
+  const ringOn = sunE >= 0.985;
+  useEffect(() => { Animated.timing(ringFade, { toValue: ringOn ? 1 : 0, duration: ringOn ? 1400 : 350, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(); }, [ringOn]);
+  const before = useRef(0); // the eclipse before the alarm (Snooze brings it back)
   const soundRef = useRef(alarmSound); soundRef.current = alarmSound;
   const rampEclipse = (to, steps) => {
     clearInterval(riseTimer.current);
@@ -384,20 +406,21 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
   // the eclipse: the moon slides in from the left (the same way the slider goes); the sun dims; at the very end only
   // the corona glows
   const e = Math.max(0, Math.min(1, eclipse));
+  const se = Math.max(0, Math.min(1, sunE)); // the sun's own eclipse (kept as it was while the sun fades away)
   const moonD = S * 0.31;
   // the moon: off screen on the left at the start; the first touch of the slider brings it to the sun's edge, and
   // the rest of the slider carries it across, so it moves into the light as soon as you slide
   const edgeX = -(S * 0.36 + moonD / 2), offX = -(area.width / 2 + moonD);
-  const moonX = e <= 0 ? offX : e < 0.04 ? offX + (edgeX - offX) * (e / 0.04) : edgeX * (1 - (e - 0.04) / 0.96);
+  const moonX = se <= 0 ? offX : se < 0.04 ? offX + (edgeX - offX) * (se / 0.04) : edgeX * (1 - (se - 0.04) / 0.96);
   const sunOpacity = 1; // the sun itself never dims: the moon passing in front of it is the dimmer
-  const coronaOpacity = Math.max(0, Math.min(1, (e - 0.82) / 0.18));
+  const coronaOpacity = Math.max(0, Math.min(1, (se - 0.82) / 0.18));
   // the diamond ring (its picture was drawn for a moon 127 across its middle, 520 wide, the bead at its centre)
   const ringD = moonD * (520 / 254), ringA = (-14 * Math.PI) / 180, ringR = moonD / 2 - moonD * 0.012;
   const ringDX = ringR * Math.cos(ringA), ringDY = ringR * Math.sin(ringA);
-  const faceColor = e > 0.6 ? 'rgba(244,226,207,0.7)' : 'rgba(0,0,0,0.62)';
+  const faceColor = se > 0.6 ? 'rgba(244,226,207,0.7)' : 'rgba(0,0,0,0.62)';
 
-  const sunBlock = (
-    <Animated.View pointerEvents="none" style={{ width: S, height: S, alignItems: 'center', justifyContent: 'center', transform: [{ scale }] }}>
+  const sunOnly = (
+    <Animated.View pointerEvents="none" style={{ width: S, height: S, alignItems: 'center', justifyContent: 'center', opacity: fades.sun, transform: [{ scale }] }}>
       <Animated.View style={{ position: 'absolute', width: S, height: S, opacity: Animated.multiply(glow, sunOpacity) }}>
         <Image source={SUN} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
       </Animated.View>
@@ -410,10 +433,43 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
       {showFace && controls.clock ? <View style={{ position: 'absolute' }}><ClockFace size={S * 0.5} now={now} color={faceColor} /></View> : null}
     </Animated.View>
   );
+  // the sun, the moon and the Earth in the same square, their spheres the same size in the same place; the moon and
+  // the Earth dim only for the sleep timer (and come back for the alarm)
+  const sunBlock = day ? sunOnly : (
+    <View pointerEvents="none" style={{ width: S, height: S, alignItems: 'center', justifyContent: 'center' }}>
+      {['moon', 'earth'].map((k) => (
+        <Animated.View key={k} style={{ position: 'absolute', width: S, height: S, opacity: fades[k] }}>
+          <Image source={ORB_PICS[k]} style={{ width: S, height: S, opacity: orb === k ? 1 - e : 1 }} resizeMode="contain" accessibilityIgnoresInvertColors />
+        </Animated.View>
+      ))}
+      <View style={{ position: 'absolute', width: S, height: S, alignItems: 'center', justifyContent: 'center' }}>{sunOnly}</View>
+    </View>
+  );
+  // under the slider: the sun (in its place, as before), then the moon and the Earth to its right. The one showing is
+  // solid; the icons dissolve from outline to solid
+  const ORB_IC = 18, ORB_GAP = 22;
+  const orbRow = (
+    <View style={{ marginTop: 4, flexDirection: 'row', alignItems: 'center', gap: ORB_GAP }} accessibilityRole="radiogroup">
+      {/* (two empty places on the left keep the sun exactly in the middle, where it always was) */}
+      <View style={{ width: ORB_IC }} /><View style={{ width: ORB_IC }} />
+      {['sun', 'moon', 'earth'].map((k) => (
+        <Pressable key={k} onPress={withTap(() => pickOrb(k))} disabled={locked} hitSlop={10} accessibilityRole="radio" accessibilityState={{ selected: orb === k }} accessibilityLabel={t(ORB_NAMES[k])}
+          style={{ width: ORB_IC, height: ORB_IC }}>
+          <Animated.Image source={ORB_ICONS[k][0]} style={{ position: 'absolute', width: ORB_IC, height: ORB_IC, tintColor: 'rgba(244,226,207,0.6)', opacity: Animated.subtract(1, fades[k]) }} resizeMode="contain" />
+          <Animated.Image source={ORB_ICONS[k][1]} style={{ position: 'absolute', width: ORB_IC, height: ORB_IC, tintColor: 'rgba(244,226,207,0.85)', opacity: fades[k] }} resizeMode="contain" />
+        </Pressable>
+      ))}
+    </View>
+  );
   const info = (
     <View pointerEvents="box-none" style={{ alignItems: 'center' }}>
-      {day ? null : <FineSlider value={e} onChange={onEclipse} width={sliderW} label={t('Nightlight brightness')} />}
-      {day ? null : <View style={{ marginTop: 4 }}><SunIcon /></View>}
+      {/* the slider is the sun's (the eclipse): it fades away for the moon and the Earth, keeping its place */}
+      {day ? null : (
+        <Animated.View pointerEvents={orb === 'sun' ? 'auto' : 'none'} accessibilityElementsHidden={orb !== 'sun'} importantForAccessibility={orb === 'sun' ? 'auto' : 'no-hide-descendants'} style={{ opacity: fades.sun }}>
+          <FineSlider value={e} onChange={onEclipse} width={sliderW} label={t('Nightlight brightness')} />
+        </Animated.View>
+      )}
+      {day ? null : orbRow}
       <Text style={[styles.small, { marginTop: day ? 10 : 64 }]}>{t('Now playing')}</Text>
       {title ? (
         <>

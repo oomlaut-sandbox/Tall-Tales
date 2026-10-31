@@ -819,6 +819,9 @@ const T = {
   'Your Quick Book has {n} pictures. Make a cover, then add your words.': { de: 'Dein Schnellbuch hat {n} Bilder. Mach ein Cover und schreib dann deine Wörter dazu.', fr: 'Ton livre express a {n} images. Fais une couverture, puis ajoute tes mots.', es: 'Tu libro rápido tiene {n} imágenes. Haz una portada y luego añade tus palabras.', ja: 'クイックブックに えが{n}まい はいったよ。ひょうしを つくって、ことばを かこう。', ar: "في كتابك السريع {n} صورة. اصنع غلافًا، ثم أضف كلماتك." },
   'Those pictures couldn’t be brought in. Try again.': { de: 'Die Bilder konnten nicht geladen werden. Versuch es noch einmal.', fr: 'Ces images n’ont pas pu être ajoutées. Réessaie.', es: 'No se pudieron traer esas imágenes. Inténtalo de nuevo.', ja: 'えを いれられませんでした。もういちど やってみてね。', ar: "تعذّر إحضار هذه الصور. حاول مرة أخرى." },
   'Comes with Coro Family. Join to turn it on.': { de: 'Gehört zu Coro Family. Werde Mitglied, um ihn einzuschalten.', fr: 'Inclus dans Coro Family. Abonnez-vous pour l’activer.', es: 'Viene con Coro Family. Únete para activarlo.', ja: 'Coro Familyに ふくまれます。メンバーになると オンにできます。', ar: "يأتي مع Coro Family. اشترك لتشغيله." },
+  'Sun': { de: 'Sonne', fr: 'Soleil', es: 'Sol', ja: 'たいよう', ar: "الشمس" },
+  'Moon': { de: 'Mond', fr: 'Lune', es: 'Luna', ja: 'つき', ar: "القمر" },
+  'Earth': { de: 'Erde', fr: 'Terre', es: 'Tierra', ja: 'ちきゅう', ar: "الأرض" },
   'About Coro': { de: 'Über Coro', fr: 'À propos d’Coro', es: 'Acerca de Coro', ja: 'Coroについて', ar: "عن Coro" },
 };
 
