@@ -228,9 +228,10 @@ const ALL_HELP = [
   ] },
   { section: 'Teachers and Educators', title: 'Classroom folders', text: [
     'A classroom folder holds up to 30 student profiles. Set it up in Settings, under Teachers and Educators: give your class a name, then add each student in Profiles.',
+    'To add the whole class at once, paste your class list in Settings, or choose it as a file (.csv or .txt, saved from a spreadsheet).',
     'Students tap their name to start. Each one keeps their own notebook, badges and settings.',
     'Books are shared by the whole class, so students can make a book together, or each make their own.',
-    'To end classroom mode, open Settings again. The students’ profiles stay.',
+    'To end classroom mode, open Settings again. The class folders and every student’s profile, notebook and books are kept, and come back when classroom mode is turned on again.',
   ] },
   { section: 'Teachers and Educators', title: 'The Teacher’s Desk', text: [
     'Open the Teacher’s Desk in Settings, under Teachers and Educators. Everything stays on this device: no accounts, nothing online.',
