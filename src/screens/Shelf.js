@@ -1,6 +1,6 @@
 // My Library and Book Store.
 import { LinearGradient } from 'expo-linear-gradient';
-import { TitleIcon, TITLE_ICONS } from '../titleIcons';
+import { TitleIcon } from '../titleIcons';
 import React, { useEffect, useRef, useState } from 'react';
 import { useScrollMemory } from '../nav';
 import { clearTileSpot, setTileSpot } from '../tileSpots';
@@ -9,14 +9,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, sectionBox, sectionTitle, SECTION_GAP } from '../theme';
 import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG, BandFill } from '../look';
 import ReadingOptionsSection from '../components/ReadingOptionsSection';
-import { Bar, BarMeta, Burger, ConfirmBox, DogEar, IDLE, Option, Panel, PlayGlyph, PlaylistIcon, WithBar, slotStyle } from '../components/Chrome';
+import { Bar, Burger, ConfirmBox, DogEar, IDLE, WithBar, slotStyle } from '../components/Chrome';
 import { activeProfile, feltFor, getProfiles, onProfiles as onProfilesChange } from '../profiles';
 import { onPrompts, promptsFor } from '../classroom';
 const SHARE_ICON = require('../../assets/icon-envelope.png');
 const EDIT_ICON = require('../../assets/icon-scissors.png');
 const TRASH_ICON = require('../../assets/icon-trash.png');
 const PROMPT_ICON = require('../../assets/heading-icons/sticky-note.png'); // a book prompt from the teacher (classroom.js)
-import { liveUri, loadJSON, saveJSON } from '../storage';
+import { liveUri, saveJSON } from '../storage';
 import { ageAllowed, ageOf, ageText, bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, localizeStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
 import Membership from '../components/Membership';
@@ -219,7 +219,6 @@ const CREATE_TILE = require('../../assets/tile-create.jpg'); // Jörg's blue fel
 const PLAYLISTS_FELT = require('../../assets/tile-playlists-felt.jpg');
 const PLAYLISTS_STACK = require('../../assets/tile-playlists-stack.png'); // Jörg's stack of cloth books, cut out (29 Oct 2026) // five felt books, stacked (the Playlists tile)
 const PLAYLISTS_TILE = require('../../assets/tile-playlists.jpg'); // Jörg's stack of felt books, behind the Playlists sign
-const TIP_CORO = require('../../assets/welcome/coro-wave.png'); // Coro in the library's welcome bubble (a reading pose is coming from Jörg)
 let libTipSeen = false; // the library's welcome shows once each time the app is opened
 const NOTEBOOK_COVER = require('../../assets/leather-cover.jpg');
 
@@ -324,14 +323,9 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
   const mineCount = chosen.filter((s) => s.mine).length;
   // the library's welcome: Coro's speech bubble, about two seconds after My Library first opens (once each time the app
   // is opened), until "Don't show this again" is ticked. It stays until closed.
-  const [tip, setTip] = useState(false);
-  const [bookGo, setBookGo] = useState(libTipSeen); // the blue book opens once the welcome bubble is out of the way
-  const [noMore, setNoMore] = useState(false);
+  const [bookGo, setBookGo] = useState(libTipSeen); // the blue book opens
   // (the welcome bubble no longer shows in My Library: Jörg, 26 Oct 2026; the blue book simply opens)
   useEffect(() => { setBookGo(true); }, []);
-  const { width: tipW, height: tipH } = useWindowDimensions();
-  const tipWide = tipW > tipH; // sideways: the bar runs down the right side
-  const closeTip = () => { setTip(false); setBookGo(true); if (noMore) saveJSON('tipLibrary', { hide: true }); };
   return (
     <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => (selecting ? (
         <Bar u={u} vertical={v}>
@@ -398,7 +392,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
         {ws && !selecting && controls.create ? (
           <View style={styles.makeBox}>
             <Text style={[styles.section, { marginTop: 0, paddingLeft: ((winW - 40) * ((100 - COLS(winW) * TILE[COLS(winW)]) / (COLS(winW) - 1))) / 200 }]} accessibilityRole="header">{t('Let’s make a book')}</Text>{/* (in line with the left page once the book is open: half the gap in) */}
-            <MakeBookSpread winW={winW} inner={winW - 40 - 2 * MAKE_BOX_PAD - 2} onPress={onCreate} t={t} go={bookGo && !tip} wait={500} />
+            <MakeBookSpread winW={winW} inner={winW - 40 - 2 * MAKE_BOX_PAD - 2} onPress={onCreate} t={t} go={bookGo} wait={500} />
           </View>
         ) : null}
         {ws ? <View style={{ width: '100%', height: 30 }} /> : null}{/* (the workspace: room under Let's make a book) */}
@@ -494,23 +488,6 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
           if (g === 'share' && chosen[0]) onShare(chosen[0]);
           if (g === 'delete') { onDelete(chosen); stop(); }
         }} />
-      {tip && !selecting ? (
-        <View style={styles.tipWrap} pointerEvents="box-none">
-          <View style={styles.tipBubble}>
-            <Text style={styles.tipTitle}>{t('Everything in one place.')}</Text>
-            <Text style={styles.tipText}>{t('Welcome to your library. The books you make live here first, with a few picture books to read together. Make sure you use your profile. Use your Notebook to collect and share ideas.')}</Text>
-            <Pressable onPress={() => setNoMore((x) => !x)} style={styles.tipCheckRow} accessibilityRole="checkbox" accessibilityState={{ checked: noMore }} hitSlop={6}>
-              <View style={[styles.tipBox, noMore && styles.tipBoxOn]}>{noMore ? <Text style={styles.tipTick}>✓</Text> : null}</View>
-              <Text style={styles.tipCheck}>{t('Don’t show this message again')}</Text>
-            </Pressable>
-            {/* Let's go! on the left; the mascot on the right once the new one is drawn */}
-            <View style={styles.tipFoot}>
-              <Pressable onPress={closeTip} style={styles.tipOk} accessibilityRole="button"><Text style={styles.tipOkText}>{t('Let’s go!')}</Text></Pressable>
-              {SHOW_MASCOT ? <Image source={TIP_CORO} style={styles.tipCoro} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
-            </View>
-          </View>
-        </View>
-      ) : null}
     </WithBar>
   );
 }
@@ -788,20 +765,6 @@ function Badge({ book }) {
 const CARD_GREY = '#bdbdbd', CARD_INK = '#222222';
 
 const styles = StyleSheet.create({
-  tipWrap: { position: 'absolute', left: 16, right: 16, bottom: 24, alignItems: 'flex-start', zIndex: 60 },
-  tipBubble: { width: '100%', maxWidth: 420, alignSelf: 'center', backgroundColor: '#f4f1ea', borderRadius: 22, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 24, gap: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 12, elevation: 10 },
-  tipTail: { marginLeft: 46, width: 0, height: 0, borderLeftWidth: 12, borderRightWidth: 12, borderTopWidth: 14, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: '#f4f1ea' },
-  tipFoot: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: 14 },
-  tipCoro: { width: 120, height: 116, marginTop: 6, marginRight: 10 },
-  tipTitle: { fontFamily: fonts.uiBold, fontSize: 19, color: '#2b2b2b' },
-  tipText: { fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, color: '#2b2b2b' },
-  tipCheckRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 2 },
-  tipBox: { width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: '#7a7a7a', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.white },
-  tipBoxOn: { backgroundColor: colors.green, borderColor: colors.green },
-  tipTick: { color: colors.white, fontWeight: '700', fontSize: 14, lineHeight: 16 },
-  tipCheck: { fontFamily: fonts.ui, fontSize: 14, color: '#3a3a3a' },
-  tipOk: { marginLeft: -4, backgroundColor: colors.green, borderRadius: 20, paddingHorizontal: 24, height: 40, alignItems: 'center', justifyContent: 'center' },
-  tipOkText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 },
   screen: { flex: 1, backgroundColor: DESK_BG }, // same dark grey as reading
   // a generous gap between the felt title band and the first row of books
   grid: { padding: 20, paddingTop: 42, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 22 },
@@ -824,7 +787,6 @@ const styles = StyleSheet.create({
   confirmText: { color: colors.white, fontFamily: fonts.ui, fontSize: 16, lineHeight: 22 },
   actBtn: { flex: 1, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, // pills
   actText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
-  cancelPill: { backgroundColor: '#d4312a', paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' },
   whoName: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
   whoSub: { color: 'rgba(235,235,235,0.6)', fontFamily: fonts.ui, fontSize: 12, marginTop: 1 },
   barBtn: { paddingVertical: 10, paddingHorizontal: 6 },

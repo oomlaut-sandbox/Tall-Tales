@@ -220,7 +220,6 @@ const styles = StyleSheet.create({
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
   pillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
   closePill: { backgroundColor: colors.pillGrey, marginTop: 22 }, // a grey pill (red is only for throwing away: 31 Oct 2026)
-  closeText: { color: '#8a8a8a', fontFamily: fonts.ui, fontSize: 15 },
   sureBox: { width: '100%', maxWidth: 400, backgroundColor: 'rgba(0,0,0,0.86)', borderRadius: 24, paddingHorizontal: 24, paddingTop: 26, paddingBottom: 22 },
   sureText: { color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24 },
 });

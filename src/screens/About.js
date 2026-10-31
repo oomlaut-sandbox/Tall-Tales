@@ -2,11 +2,11 @@
 import { TitleIcon } from '../titleIcons';
 import { useScrollMemory } from '../nav';
 import React from 'react';
-import { Pressable, Image, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { IS_TABLET, BandFill } from '../look';
-import { Bar, BarMeta, Burger, WithBar } from '../components/Chrome';
+import { Bar, Burger, WithBar } from '../components/Chrome';
 import { useT } from '../i18n';
 
 const BAND_FELT = require('../../assets/band-about.jpg');

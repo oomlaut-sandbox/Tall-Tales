@@ -4,6 +4,7 @@
 import { supabase } from './account';
 import { loadJSON, saveJSON } from './storage';
 import { STORIES } from './story';
+import { creditsLine } from './userStories';
 
 const KEY = 'catalog.v1';
 
@@ -125,9 +126,7 @@ export async function loadStoreBook(book, lang = 'en', appUserId = null) {
       for (const [pid, info] of Object.entries(times)) narration[v][pid] = { uri: fresh(base(`${nDir}/${v}/${pid}.mp3`)), words: info.words };
     } catch (e) {}
   }));
-  const credits = [c.writer, c.artist].some((x) => x && x.trim())
-    ? (() => { const w = (c.writer || '').trim(), a = (c.artist || '').trim(); if (w && a) return w.toLowerCase() === a.toLowerCase() ? `Written and illustrated by ${w}.` : `Written by ${w} and illustrated by ${a}.`; return w ? `Written by ${w}.` : `Illustrated by ${a}.`; })()
-    : '';
+  const credits = creditsLine(c.writer, c.artist); // (the same words as books made in the app)
   // the cover is always in the public folder (a book for sale too: the store shows it to everyone)
   const coverImg = c.cover ? { uri: files ? storageUrl(`${book.content_path || book.id}/${c.cover}`) : fresh(base(c.cover)) } : null;
   const words = (p) => (L ? (L.pages[p.pid] != null ? L.pages[p.pid] : p.text || '') : p.text || '');

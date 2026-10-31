@@ -4,7 +4,7 @@
 import LineInput from '../components/LineInput';
 import { useScrollMemory } from '../nav';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Image, LayoutAnimation, Platform, Pressable, ScrollView, UIManager, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, LayoutAnimation, Platform, Pressable, ScrollView, UIManager, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, DESK_BG, IS_TABLET, BandFill } from '../look';
@@ -234,7 +234,6 @@ const styles = StyleSheet.create({
   small: { fontFamily: fonts.ui, fontSize: 13, lineHeight: 18, color: '#bdbdbd' },
   editTab: { backgroundColor: '#e8a317', borderRadius: 14, paddingHorizontal: 14, paddingVertical: 6 }, // an orangey yellow tab
   editTabText: { fontFamily: fonts.uiBold, fontSize: 15, color: '#1a1a1a' },
-  donePill: { backgroundColor: colors.green, paddingHorizontal: 11, paddingVertical: 7, borderRadius: 16, overflow: 'hidden' },
   donePillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15, paddingHorizontal: 3 },
   link: { fontFamily: fonts.ui, fontSize: 15, color: colors.white, textDecorationLine: 'underline' },
   card: { backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 14, padding: 16, gap: 12 },

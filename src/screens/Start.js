@@ -8,7 +8,6 @@
 // only My Library or the Book Store take you to another screen.
 import StripCover from '../components/StripCover';
 import { LANGS, LangContext, useT } from '../i18n';
-import { activeProfile } from '../profiles';
 import { useControls } from '../controls';
 import React, { useContext, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';

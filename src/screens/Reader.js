@@ -1,6 +1,6 @@
 // The reader: page curl, read-aloud with highlighting, learn-to-read, interactive pictures.
-import { getAmbient, onRecordRequest, setAmbientPlayer } from '../ambient';
-import { AlarmClockIcon, ConfirmBox, IDLE, LockIcon, MusicIcon, PlaylistIcon, barGeo, slotStyle, useAmbientPlaying } from '../components/Chrome';
+import { onRecordRequest } from '../ambient';
+import { AlarmClockIcon, ConfirmBox, IDLE, LockIcon, PlaylistIcon, barGeo, slotStyle } from '../components/Chrome';
 const MOON_NUDGE = 0.4; // (in u) the crescent's optical nudge in its slot
 import { isRestricted, useControls } from '../controls';
 import { useLang, useT } from '../i18n';
@@ -9,8 +9,8 @@ import { Animated, Easing, Image, PanResponder, Platform, Pressable, ScrollView,
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOOK_FONTS, colors, fonts } from '../theme';
-import { DESK_FELT, DeskFelt, Felt, IS_TABLET, DESK_BG } from '../look';
-import { tokenize, cleanWord, syllablesFor } from '../story';
+import { DeskFelt, Felt, IS_TABLET, DESK_BG } from '../look';
+import { tokenize, cleanWord } from '../story';
 import { recordingDone } from '../rating';
 import { AMBER, Fade, PageView, TEXT_SIZES, pageLayout } from '../components/PageView';
 import { FLAP_PERSPECTIVE, flapTables } from '../flapStrips';
@@ -36,7 +36,7 @@ function PeelLayer({ start, ...props }) {
 }
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { Toast, BackRing, LineIcon, BulbIcon, Bar, BarMeta, HomeButton, BubbleIcon, HeadphonesIcon, MoonIcon, PageShape, Burger, GlassesIcon, ChevronIcon, DiamondIcon, DogEar, DotIcon, ListIcon, MENU_ICON, NoteIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, SIDE_MENU_TOP, TextIcon, sideTop } from '../components/Chrome';
+import { Toast, BackRing, LineIcon, BulbIcon, BubbleIcon, HeadphonesIcon, MoonIcon, PageShape, Burger, GlassesIcon, DogEar, DotIcon, ListIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, TextIcon, sideTop } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.

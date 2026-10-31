@@ -2,7 +2,7 @@
 // text size, book font and sound effects. Inside a book the reader shows its own panel (with Print too).
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { BOOK_FONTS, colors, fonts } from '../theme';
+import { BOOK_FONTS, fonts } from '../theme';
 import { BubbleIcon, Option, Panel, PlaylistIcon, Slider } from './Chrome';
 import { TEXT_SIZES } from './PageView';
 import { MODES, NARRATORS, Seg, narratorOf, speedOf } from '../screens/Reader';

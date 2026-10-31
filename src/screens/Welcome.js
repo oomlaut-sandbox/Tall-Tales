@@ -6,10 +6,10 @@
 //         then they set up a profile for each child (and why), then hand the phone over: the kid path, by name.
 import LineInput from '../components/LineInput';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, Image, PanResponder, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions, Platform, KeyboardAvoidingView } from 'react-native';
+import { Animated, Easing, Image, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, Platform, KeyboardAvoidingView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { createAudioPlayer } from 'expo-audio';
-import { colors, fonts } from '../theme';
+import { colors } from '../theme';
 import { NUMBER_WORDS, useLang, useT } from '../i18n';
 import { withTap } from '../haptics';
 import { DogEar } from '../components/Chrome';

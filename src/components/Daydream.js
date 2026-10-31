@@ -2,7 +2,7 @@
 // like a zen screensaver for the listener. Swipe left or right for the next video.
 // Each one is silent (the story and the music are what you hear): a seamlessly looping video, or a still picture.
 import React, { useEffect, useRef } from 'react';
-import { AppState, Animated, Easing, Image, PanResponder, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { AppState, Animated, Easing, PanResponder, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 
 // the backgrounds, in order: the first is the default; swipe left or right for the others (add more here)

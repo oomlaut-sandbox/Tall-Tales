@@ -3,7 +3,7 @@
 import { TitleIcon } from '../titleIcons';
 import { useScrollMemory } from '../nav';
 import React from 'react';
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, IS_TABLET, DESK_BG, BandFill } from '../look';

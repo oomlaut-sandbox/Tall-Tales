@@ -3,7 +3,7 @@
 // a new piece in the Music list to choose like any other.
 import LineInput from './LineInput';
 import React, { useEffect, useRef, useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { AudioModule, RecordingPresets, createAudioPlayer, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { colors, fonts } from '../theme';
 import { useT } from '../i18n';

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, Image, Dimensions, Linking, Modal, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, Linking, Modal, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { importVoices, readVoicesFile } from './src/voiceShare';
 import { SHEET_KIND, sheetPhotoFile, unpackSheetPage } from './src/sheetShare';
 import { addSheet } from './src/folder';
@@ -25,7 +25,6 @@ import { onUserChange } from './src/account';
 import ParentGate from './src/components/ParentGate';
 import Reader from './src/screens/Reader';
 import Publisher, { draftFrom } from './src/screens/Publisher';
-import CoverTest from './src/screens/CoverTest';
 import Help from './src/screens/Help';
 import Welcome from './src/screens/Welcome';
 import Intro from './src/screens/Intro';
@@ -49,10 +48,9 @@ import { SHOWN_BOOKS, STORIES, localizeStory } from './src/story';
 import { shareInvite } from './src/invite';
 import { deleteUserStory, loadUserStories } from './src/userStories';
 import TeacherDesk from './src/screens/TeacherDesk';
-import { shareStoryPdf } from './src/pdf';
 import { loadJSON, loadJSONFor, saveJSON, saveJSONFor } from './src/storage';
 import { TITLE_ICONS } from './src/titleIcons';
-import { BulbIcon, CircleIcon, GearIcon, InfoIcon, LibraryIcon, MusicIcon, PersonIcon, MENU_ICON, Option, Panel, PlayGlyph, PlusIcon, StoreIcon, Toast, BubbleHost, setGoHome, setGoSettings, HomeIcon, BackRing } from './src/components/Chrome';
+import { BulbIcon, LibraryIcon, PersonIcon, MENU_ICON, Option, Panel, Toast, BubbleHost, setGoHome, setGoSettings, HomeIcon, BackRing } from './src/components/Chrome';
 import { setVolumeBubble } from './src/volume';
 import { DESK_FELT, DESK_IPAD_NOW, DeskFelt, Felt, IS_TABLET, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
@@ -487,7 +485,6 @@ function Root() {
         {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} onWelcome={WELCOME_ON ? () => setWelcome(true) : null}
           onIntro={() => { setSplash(true); setIntroWho(null); setIntroAsk(true); setCoverOpen(false); setStartKey((n) => n + 1); go('start'); }} />}
         {screen === 'ideas' && <IdeaRoom u={u} openMenu={openMenu} onMake={() => openPublisher(null)} onHelp={() => go('help')} />}
-        {screen === 'covertest' && <CoverTest u={u} openMenu={openMenu} />}
         {screen === 'about' && <About u={u} openMenu={openMenu} onBack={() => go('help')} onSecret={() => {
           // the store owner: straight to the Store Manager when signed in, otherwise to the sign-in first
           if (storeAdmin) go('storeManager');

@@ -4,15 +4,15 @@ import LineInput from '../components/LineInput';
 import { TitleIcon } from '../titleIcons';
 import { useScrollMemory } from '../nav';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { colors, fonts } from '../theme';
-import { Felt, IS_TABLET, Stitch, BandFill } from '../look';
+import { IS_TABLET, BandFill } from '../look';
 import { useT } from '../i18n';
 
 const BAND_FELT = require('../../assets/band-profile.jpg');
-import { Bar, BarMeta, Burger, Toast, WithBar } from '../components/Chrome';
+import { Bar, Burger, Toast, WithBar } from '../components/Chrome';
 import {
   accountsReady, appleAvailable, currentUser, deleteAccount, onUserChange, sendEmailCode, signInWithApple, signOut, updateProfile, verifyEmailCode,
 } from '../account';

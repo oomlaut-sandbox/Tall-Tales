@@ -6,7 +6,6 @@ import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, Vi
 import { colors, fonts } from '../theme';
 import { PRICES, PRIVACY_URL, TERMS_URL } from '../prices';
 import { useT } from '../i18n';
-import { STORE_ON } from '../controls'; // (no longer changes the wording here)
 import { joinMembership, planPrice, purchasesReady, restorePurchases, retryPurchases, usePurchases } from '../purchases';
 
 export default function Membership({ visible, onClose, toast }) {

@@ -7,14 +7,13 @@ import { STORE_ON } from '../controls';
 import { VIDEOS } from './Intro';
 import { FilmBox } from '../components/FilmPlayer';
 import React, { useMemo, useRef, useState } from 'react';
-import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, fonts, sectionTitle, boxTitle, sectionBox, SECTION_GAP } from '../theme';
+import { colors, fonts, boxTitle, sectionBox, SECTION_GAP } from '../theme';
 import { DESK_FELT, IS_TABLET, DESK_BG, BandFill } from '../look';
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import { useLang, useT } from '../i18n';
-import { IDEA_COUNT } from '../ideas';
 
 const BAND_FELT = require('../../assets/band-profile.jpg'); // the yellow-orange felt banner
 const SEARCH_FELT = require('../../assets/search-felt.png'); // Jörg's grey stitched felt strip, cut out with a shadow

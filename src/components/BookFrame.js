@@ -6,7 +6,7 @@
 // screen that is clearly wider than tall (an iPad held sideways) they sit side by side.
 import { DeskFelt, DESK_BG } from '../look';
 import React from 'react';
-import { Image, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme';
 import { Felt } from '../look';

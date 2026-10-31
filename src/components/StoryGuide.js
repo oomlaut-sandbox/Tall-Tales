@@ -1,7 +1,6 @@
 // Quick guide for making a story. Shown the first time, and from the "?" button.
 import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { BlurView } from 'expo-blur';
 import { colors, fonts } from '../theme';
 import { useT } from '../i18n';
 

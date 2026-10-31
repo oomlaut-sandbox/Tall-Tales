@@ -4,7 +4,7 @@
 // and ends on the start page (Make a book, Read a book). (No Skip: Jörg, 27 Oct 2026.)
 import LineInput from '../components/LineInput';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Easing, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_BG, DeskFelt } from '../look';

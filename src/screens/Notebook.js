@@ -16,11 +16,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { colors, fonts, MAX_WIDTH } from '../theme';
-import { Bar, Burger, DogEar, DoneTick, Panel, Toast, barGeo, ChoiceLabel } from '../components/Chrome';
+import { Bar, Burger, DoneTick, Panel, Toast, barGeo, ChoiceLabel } from '../components/Chrome';
 import { keepFile, loadJSON, saveJSON } from '../storage';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
-import { DESK_FELT, DeskFelt, Felt, DESK_BG, IS_TABLET } from '../look';
+import { DESK_FELT, DeskFelt, DESK_BG, IS_TABLET } from '../look';
 import ParentGate from '../components/ParentGate';
 import { StrokesView, colourAt, pagePixels } from '../components/Strokes';
 import { EarArt } from '../components/Ear';
@@ -28,7 +28,7 @@ import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
 import ToolPic from '../components/ToolPic';
 import { STAMPS, stampWidth } from '../stamps';
 const SHOW_STAMPS = false; // the stamps are the felt mascot: away until Jörg's hand-drawn one arrives (drawings that have them still show them)
-import { BRUSHES, GREYS, DRAW_LAYERS, PENS, PENS_BRIGHT, SHAPES, wheelColour, SIZES, makeFill, FILL_G, mixColours, near, shapePts, withMirrors, inkOf, isMeta, layerAlpha, withLayerAlpha } from '../strokes';
+import { GREYS, DRAW_LAYERS, PENS, PENS_BRIGHT, SHAPES, wheelColour, SIZES, makeFill, FILL_G, mixColours, shapePts, withMirrors, inkOf, isMeta, layerAlpha, withLayerAlpha } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
 import { STORIES } from '../story';
@@ -1120,7 +1120,6 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   const [smudgeK, setSmudgeK] = useState(1); // the smudge: gentle (0.5), as it was (1) or strong (1.8)
   const [bucket, setBucket] = useState(false); // the paint bucket: a tap fills the shape with the colour
   const [area, setArea] = useState(null);
-  const [palette, setPalette] = useState('earthy'); // the earthy colours or the bright ones
   const [mixing, setMixing] = useState(false); // Mix: a tapped colour is mixed into the pen's colour, like paint
   const [mirror, setMirror] = useState(false);
   const [stamp, setStamp] = useState(null); // a stamp in hand: put a finger down to place it, slide to move it, lift to stick it

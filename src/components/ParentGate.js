@@ -1,7 +1,7 @@
 // A simple grown-up check before anything leaves the app (Apple's Kids category requires one).
 import LineInput from './LineInput';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Image, Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Image, Keyboard, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme';
 
 import { LANGS, LangContext, NUMBER_WORDS, useLang, useT } from '../i18n';
