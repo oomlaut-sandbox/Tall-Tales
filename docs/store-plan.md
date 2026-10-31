@@ -19,10 +19,10 @@ Things agreed with Jörg for when we build the store publishing pipeline. Not st
 
 ## Memberships and purchases (prices decided by Jörg, 18 Oct 2026)
 - Free to download, with three free books (marked 'free' in the Store Manager).
-- Membership: $4.99 a month or $39.99 a year (USD; Apple sets other countries), 7-day free trial on both.
+- Membership (Coro Family): $3.99 a month or $29.99 a year (USD; Apple sets other countries), 7-day free trial on both (prices since 29 Oct 2026).
   Unlocks every book. Raise for new members later as the library grows (e.g. $6.99 / $49.99 at 30+ books);
   existing members keep their price.
-- Single books: $2.99 each, to keep (books marked 'paid'; members can read them too).
+- Artist books: usually $1.99 each, to keep (books marked 'paid'; members buy them too: 30 Oct 2026).
 - Launch target (Jörg, 18 Oct 2026): 12 books — 3 free + 9 for members — then a steady 1–2 new books a month,
   with a few ready before launch. (Now: Different, The Rough Lives of Animals, Two Snakes Walk into a Bar;
   pictures saved for a third in book-art/third-book.)
@@ -34,10 +34,10 @@ Things agreed with Jörg for when we build the store publishing pipeline. Not st
 1. App Store Connect → Business: accept the Paid Apps Agreement, add banking and tax. Apply for the
    App Store Small Business Program (15% instead of 30%).
 2. App Store Connect → the app → Subscriptions: a group "Coro Reader Membership" with
-   - oomlaut.member.monthly — $4.99, 1 month, introductory offer: free for 1 week
-   - oomlaut.member.yearly — $39.99, 1 year, introductory offer: free for 1 week
+   - oomlaut.member.monthly — $3.99, 1 month, introductory offer: free for 1 week
+   - oomlaut.member.yearly — $29.99, 1 year, introductory offer: free for 1 week
 3. App Store Connect → In-App Purchases (non-consumable), one per paid book:
-   oomlaut.book.<book id with - turned into _>, $2.99 (e.g. oomlaut.book.rough_lives)
+   oomlaut.book.<book id with - turned into _>, usually $1.99 (e.g. oomlaut.book.rough_lives)
 4. RevenueCat (free account): add the iOS app (bundle id com.oomlaut.reader) with an App Store Connect
    in-app purchase key; import the products; make an entitlement "member" with both subscriptions; make the
    default offering with the monthly and annual packages.
