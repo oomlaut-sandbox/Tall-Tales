@@ -287,8 +287,10 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
     loop.start();
     return () => loop.stop();
   }, []);
-  const scale = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.96, 1.04] });
-  const glow = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.86, 1] });
+  // (the breath's top was too big and bright: it now swells only up to the size it used to have at rest, and stays a
+  // little softer: Jörg, 31 Oct 2026)
+  const scale = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] });
+  const glow = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.82, 0.92] });
 
   // the wake-up alarm: the moon slides away very slowly (sunrise, about three minutes) and the chosen sound or music
   // fades in even more slowly (about four minutes). A pill-shaped Snooze pops up: the sound fades out, the moon comes

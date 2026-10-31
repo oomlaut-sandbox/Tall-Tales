@@ -927,10 +927,10 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     // Jörg, 31 Oct 2026). The books inside the app turn exactly as before.
     if (ownPhotos && peel.back) layers.push(<View key="fb" pointerEvents="none" style={StyleSheet.absoluteFill}><SnapUnder image={peel.back} width={W} height={H} clip={wide ? { x: W / 2, y: 0, w: W / 2, h: H } : { x: 0, y: flipT.artH, w: W, h: H - flipT.artH }} /></View>);
     else layers.push(underB(b, flipT.artH, wide));
-    // turning BACK in a book with its own photos: as the leaf lifts off the picture square it uncovers page a's
-    // picture (the page being turned back to), drawn from its picture, not page b's, which stayed showing there
-    // until the turn ended and then jumped (Jörg, 31 Oct 2026: 'it holds the old image for a long time')
-    if (ownPhotos && flipPair.dir < 0 && peel.front) layers.push(<View key="fa" pointerEvents="none" style={StyleSheet.absoluteFill}><SnapUnder image={peel.front} width={W} height={H} clip={wide ? { x: 0, y: 0, w: W / 2, h: H } : { x: 0, y: 0, w: W, h: flipT.artH }} /></View>);
+    // turning BACK (every book): as the leaf lifts off the picture square it uncovers page a's picture (the page
+    // being turned back to), drawn from its picture, not page b's, which stayed showing there until the turn ended
+    // and then jumped (Jörg, 31 Oct 2026: 'it holds the old image for a long time'; the books inside the app did it too)
+    if (flipPair.dir < 0 && peel.front) layers.push(<View key="fa" pointerEvents="none" style={StyleSheet.absoluteFill}><SnapUnder image={peel.front} width={W} height={H} clip={wide ? { x: 0, y: 0, w: W / 2, h: H } : { x: 0, y: 0, w: W, h: flipT.artH }} /></View>);
   } else if (flipPair && size && wide) {
     // Sideways iPad: the words page (right) turns over the spine like a real book's page. Its back
     // shows the next page's picture, which ends up on the left.
