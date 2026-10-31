@@ -938,7 +938,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           <View style={[styles.editor, { flex: 1, paddingTop: insets.top + 34 }]}>
           <Animated.View style={[styles.editorHead, { opacity: zoom }]}>
             {/* the words are the second page of each pair (the picture is the first): page 2, 4, 6 … */}
-            <Text style={styles.editorTitle}>{tr('Page {n}', { n: i * 2 + 2 })}</Text>
+            <Text style={styles.editorTitle}>{tr('Page {n}', { n: page.textOn === 'top' && page.uri ? i * 2 + 1 : i * 2 + 2 })}</Text>
           </Animated.View>
           {(() => {
             const W = winW - 2 * GAP;
@@ -950,6 +950,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             ] : [];
             // the picture the words are on (Words on a picture), if any: the editor shows them on it
             const overPic = page.textOn === 'top' ? page.uri : page.textOn === 'bottom' ? page.uri2 : null;
+            const ofs = wordsOverSize(W, page.textSize || 1);
+            const overType = [{ fontFamily: bookFont(writeFont).family, fontSize: ofs, lineHeight: ofs * 1.45, width: W * 0.84 - 8 - (wordsLook(page.textLook || 'light').panel ? W * 0.035 * 2.8 : 0) }, wordsOverText(page.textLook || 'light', page.textInk)];
             return (
               <Animated.View
                 ref={editRef} collapsable={false}
@@ -971,16 +973,22 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   <>
                     <Image source={{ uri: overPic }} style={StyleSheet.absoluteFill} resizeMode="cover" />
                     <WordsOver boxW={W} boxH={W} at={page.textAt} look={page.textLook || 'light'}>
-                      <TextInput
-                        value={page.text}
-                        onChangeText={(text) => { if (text.length > (page.text || '').length) playKey(); update({ text }); }}
-                        placeholder={tr('Type the words for this page. Two or three sentences reads best.')}
-                        placeholderTextColor={wordsLook(page.textLook || 'light', page.textInk).color === '#1c1c1c' ? '#666' : 'rgba(255,255,255,0.7)'}
-                        multiline
-                        autoFocus
-                        style={[{ fontFamily: bookFont(writeFont).family, fontSize: wordsOverSize(W, page.textSize || 1), lineHeight: wordsOverSize(W, page.textSize || 1) * 1.45, minWidth: W * 0.5, maxWidth: W * 0.84 - 8, padding: 0, outlineWidth: 0 }, wordsOverText(page.textLook || 'light', page.textInk)]}
-                        accessibilityLabel={tr('Words for page {n}', { n: i + 1 })}
-                      />
+                      {/* the words drawn invisibly give the box its size (a text box doesn't always grow with its
+                          words); the text box lies exactly over them */}
+                      <View>
+                        <Text style={[overType, { opacity: 0 }]}>{(page.text || tr('Type the words for this page. Two or three sentences reads best.')) + '\n'}</Text>
+                        <TextInput
+                          value={page.text}
+                          onChangeText={(text) => { if (text.length > (page.text || '').length) playKey(); update({ text }); }}
+                          placeholder={tr('Type the words for this page. Two or three sentences reads best.')}
+                          placeholderTextColor={wordsLook(page.textLook || 'light', page.textInk).color === '#1c1c1c' ? '#666' : 'rgba(255,255,255,0.7)'}
+                          multiline
+                          autoFocus
+                          scrollEnabled={false}
+                          style={[overType, StyleSheet.absoluteFill, { padding: 0, outlineWidth: 0 }]}
+                          accessibilityLabel={tr('Words for page {n}', { n: i + 1 })}
+                        />
+                      </View>
                     </WordsOver>
                   </>
                 ) : (
