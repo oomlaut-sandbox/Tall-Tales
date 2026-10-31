@@ -1,0 +1,7 @@
+Key ID: 10 chars, looks right (10 letters/digits)
+Issuer ID: 36 chars, looks right (UUID)
+Key file: 258 chars, 7 lines, BEGIN line present, END line present
+Key file parses: ec prime256v1
+Apple /v1/apps: HTTP 200 1 found (6822165068)
+Apple /v1/bundleIds: HTTP 200 1 found (com.oomlaut.reader)
+Apple /v1/certificates: HTTP 200 1 found

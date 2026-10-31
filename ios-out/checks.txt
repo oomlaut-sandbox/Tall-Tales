@@ -1,0 +1,10 @@
+secret EXPO_TOKEN: set
+secret ASC_API_KEY_P8: set
+secret ASC_KEY_ID: set
+secret ASC_ISSUER_ID: set
+secret APPLE_TEAM_ID: set
+app id: 6822165068
+search field: centred (a one-line text box as tall as the pill, its line placed in the middle by padding)
+accounts: on
+purchases: on
+commit f0f91fcea519dd41893d02caccee8ae0f17f94e7 at Sat Oct 31 18:00:37 UTC 2026
