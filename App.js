@@ -322,6 +322,7 @@ function Root() {
   // where the book maker was opened from: it goes back there when done (My Library when the book was opened from there or from reading it; My Workspace otherwise) (Jörg, 29 Oct 2026)
   const makerFrom = useRef('workspace');
   const openPublisher = (story) => { makerFrom.current = screen === 'library' || screen === 'reader' ? 'library' : 'workspace'; setDraft(draftFrom(story)); go('publisher'); };
+  // (no limit for the store owner, signed in: Jörg's own testing, 31 Oct 2026)
   // a new book: free up to FREE_BOOKS made books; after that it's Coro Family (asked of a grown-up). Only once
   // purchases are switched on: until then everyone can keep making books.
   const [moreGate, setMoreGate] = useState(false);
@@ -330,7 +331,7 @@ function Root() {
   // the collapsible Reading Options box under the books: what it needs to show the choices in place
   const readingBox = controls.playback && !controls.playMode ? { prefs, setPrefs, toast, onPlaylists: () => go('playlists') } : null;
   const newBook = () => {
-    if (purchasesReady && !purchases.member && userStories.length >= FREE_BOOKS) { setMoreGate(true); return; }
+    if (purchasesReady && !purchases.member && !storeAdmin && userStories.length >= FREE_BOOKS) { setMoreGate(true); return; }
     openPublisher(null);
   };
 
@@ -389,7 +390,7 @@ function Root() {
               return;
             }
             if (t.startsWith('intro-')) { setIntroWho(t.slice(6)); return; } // the intro's answer: its journey takes over
-            if (t === 'make') { if (purchasesReady && !purchases.member && userStories.length >= FREE_BOOKS) { go('library'); setMoreGate(true); } else openPublisher(null); return; } // Make a book: straight to the book maker
+            if (t === 'make') { if (purchasesReady && !purchases.member && !storeAdmin && userStories.length >= FREE_BOOKS) { go('library'); setMoreGate(true); } else openPublisher(null); return; } // Make a book: straight to the book maker
             go(t); }} openMenu={coverOpen ? openMenu : () => toast(t('Start by opening the book.'))} onHome={coverOpen ? undefined : () => toast(t('Start by opening the book.'))} closed={!coverOpen} onOpened={() => setCoverOpen(true)} onClosed={() => setCoverOpen(false)} onPeek={(t) => setPeek(t || 'library')} />
           </View>
         )}

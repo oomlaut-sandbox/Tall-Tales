@@ -445,13 +445,12 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
       <View style={{ position: 'absolute', width: S, height: S, alignItems: 'center', justifyContent: 'center' }}>{sunOnly}</View>
     </View>
   );
-  // under the slider: the sun (in its place, as before), then the moon and the Earth to its right. The one showing is
+  // under the slider: the sun, the moon and the Earth, centred together. The one showing is
   // solid; the icons dissolve from outline to solid
   const ORB_IC = 18, ORB_GAP = 22;
   const orbRow = (
     <View style={{ marginTop: 4, flexDirection: 'row', alignItems: 'center', gap: ORB_GAP }} accessibilityRole="radiogroup">
-      {/* (two empty places on the left keep the sun exactly in the middle, where it always was) */}
-      <View style={{ width: ORB_IC }} /><View style={{ width: ORB_IC }} />
+      {/* (the three icons centred as a set under the slider: Jörg, 31 Oct 2026) */}
       {['sun', 'moon', 'earth'].map((k) => (
         <Pressable key={k} onPress={withTap(() => pickOrb(k))} disabled={locked} hitSlop={10} accessibilityRole="radio" accessibilityState={{ selected: orb === k }} accessibilityLabel={t(ORB_NAMES[k])}
           style={{ width: ORB_IC, height: ORB_IC }}>
