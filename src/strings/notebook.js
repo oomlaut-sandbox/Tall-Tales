@@ -67,9 +67,8 @@ export default {
   'Send a new code': { de: 'Neuen Code senden', fr: 'Envoyer un nouveau code', es: 'Enviar un código nuevo', ja: 'あたらしい コードを おくる', ar: "أرسل رمزًا جديدًا" },
   'Use a different email': { de: 'Andere E-Mail verwenden', fr: 'Utiliser une autre adresse e-mail', es: 'Usar otro correo', ja: 'べつの メールを つかう', ar: "استخدم بريدًا إلكترونيًا آخر" },
   'Profile': { de: 'Profil', fr: 'Profil', es: 'Perfil', ja: 'プロフィール', ar: "الملف الشخصي" },
-  'Parents, sign into your Coro account.': { de: 'Eltern: Meldet euch bei eurem Coro-Konto an.', fr: 'Parents, connectez-vous à votre compte Coro.', es: 'Padres: inicien sesión en su cuenta de Coro.', ja: 'おうちの かたへ: Coro の アカウントに サインインしてください。', ar: "أيها الوالدان، سجّلا الدخول إلى حساب Coro." },
+  'Grown-ups, sign in to your Coro account.': { de: 'Erwachsene: Meldet euch bei eurem Coro-Konto an.', fr: 'Les grands, connectez-vous à votre compte Coro.', es: 'Adultos: inicien sesión en su cuenta de Coro.', ja: 'おとなの かたへ: Coro の アカウントに サインインしてください。', ar: 'أيها الكبار، سجّلوا الدخول إلى حساب Coro.' },
   'Fill': { de: 'Füllen', fr: 'Remplir', es: 'Rellenar', ja: 'ぬる', ar: "تعبئة" },
   'Character': { de: 'Figur', fr: 'Personnage', es: 'Personaje', ja: 'キャラクター', ar: "الشخصية" },
-  'Tap a child to change their name, character or age.': { de: 'Tippe auf ein Kind, um Name, Figur oder Alter zu ändern.', fr: 'Touchez un enfant pour changer son prénom, son personnage ou son âge.', es: 'Toca a un niño para cambiar su nombre, personaje o edad.', ja: 'こどもを タップして、なまえ・キャラクター・ねんれいを かえます。', ar: "اضغط على طفل لتغيير اسمه أو شخصيته أو عمره." },
   'Who is reading?': { de: 'Wer liest?', fr: 'Qui lit ?', es: '¿Quién lee?', ja: 'だれが よむ？', ar: "من يقرأ؟" },
 };

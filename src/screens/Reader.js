@@ -99,7 +99,7 @@ export const MODES = [
   [<TextIcon text="Aa" />, 'learn', 'Learn to Read', 'Says a word when you touch it'],
   [<PlayGlyph count={2} />, 'auto', 'Auto Play', 'Reads the full story with audio'],
   [<PlayGlyph />, 'page', 'Page by Page Play', 'Reads a page at a time with audio'],
-  [<HeadphonesIcon />, 'listen', 'Listen Only', 'Audio only, plays with Nightlight'],
+  [<HeadphonesIcon />, 'listen', 'Listen Only', 'Audio only, with Daydream or the Nightlight'],
   // ['✦', 'interactive', 'Interactive', 'Image interaction with touch'],  (hidden for now; hotspot code kept)
 ];
 
@@ -288,7 +288,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     setVoice(id); setBookVoice(story.id, id);
     if (was) restartInVoice.current = true;
   };
-  const [shareGate, setShareGate] = useState(false); // 'Share Book' on the last page, behind the parent gate
+  const [shareGate, setShareGate] = useState(false); // 'Share book' on the last page, behind the parent gate
   const [peel, setPeel] = useState(null); // {front, back, corner}: pictures for the paper peel
   const peelOn = useRef(false);
   const cache = useRef({}); // page index -> picture of that page
@@ -1029,7 +1029,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       {/* share this book (an envelope, Jörg, 28 Oct 2026): upright in the felt's bottom right corner, sideways above the
           scissors (or above Back in books that can't be edited) */}
       {controls.sharing && !nightOn ? (
-        <Pressable onPress={withTap(() => setShareGate(true))} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Share Book')}
+        <Pressable onPress={withTap(() => setShareGate(true))} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Share book')}
           style={wide ? { position: 'absolute', zIndex: 6, left: bulbL - 1, bottom: backBottom + barGeo(u).step * (onEdit ? 2 : 1) - 1 }
             : { position: 'absolute', zIndex: 6, right: Math.max(7, bulbL - 3), bottom: Math.max(4, ((winH - topH - barH - BL.bookH) / 2 - 22) / 2) } /* halfway between the page and the bar */}>
           <Image source={ENVELOPE} style={{ width: 22, height: 22, tintColor: '#ffffff' }} resizeMode="contain" />
@@ -1168,7 +1168,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
         <Pressable onPress={() => setRecTip(false)} accessibilityRole="button" accessibilityLabel={tr('Close')}
           style={{ position: 'absolute', zIndex: 60, maxWidth: 300, right: wide ? BL.rightW + 12 : 12, bottom: wide ? 90 : barH + 12 }}>
           <View style={{ backgroundColor: 'rgba(0,0,0,0.9)', borderRadius: 20, paddingHorizontal: 22, paddingVertical: 22 }}>
-            <Text style={{ color: colors.white, fontFamily: fonts.ui, fontSize: 16, lineHeight: 22 }}>{tr('Record yourself reading this Coro book and share it or enjoy it on your own. Books made in-app do not come with automatic narrator options.')}</Text>
+            <Text style={{ color: colors.white, fontFamily: fonts.ui, fontSize: 16, lineHeight: 22 }}>{tr('Record yourself reading this book, then share it or enjoy it together. Books you make are read in your own voice.')}</Text>
           </View>
           {!wide ? <View style={{ position: 'absolute', bottom: -9, right: 55, width: 0, height: 0, borderLeftWidth: 10, borderRightWidth: 10, borderTopWidth: 10, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: 'rgba(0,0,0,0.9)' }} /> : null}
         </Pressable>
@@ -1273,12 +1273,12 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       <View style={[StyleSheet.absoluteFill, { zIndex: 90 }]}>
       <Pressable style={StyleSheet.absoluteFill} onPress={() => { setPanel(null); recordingSoon.current = false; }} accessibilityLabel={tr('Close')} />
       <View style={[styles.recPop, wide ? { right: BL.rightW + 10, bottom: Math.max(16, insets.bottom) } : { right: 12, bottom: barH + 10 }]}>
-        <Text style={styles.recPopTitle}>{tr('Recording Options')}</Text>
+        <Text style={styles.recPopTitle}>{tr('Recording options')}</Text>
         <ScrollView style={{ maxHeight: winH * 0.6 }} contentContainerStyle={{ gap: 8 }} bounces={false}>
         {recView === 'main' ? (
           <>
-            <RecRow glyph={<DotIcon />} title={tr('Start Recording')} sub={tr('Read this story in your own voice, starting on page {n}', { n: Math.min(idx + 1, n) })} disabled={idx >= n} onPress={askToRecord} />
-            <RecRow glyph={<ListIcon />} title={tr('Your Recordings')} sub={tr('Listen to or remove the pages you recorded')} onPress={openRecList} />
+            <RecRow glyph={<DotIcon />} title={tr('Start recording')} sub={tr('Read this story in your own voice, starting on page {n}', { n: Math.min(idx + 1, n) })} disabled={idx >= n} onPress={askToRecord} />
+            <RecRow glyph={<ListIcon />} title={tr('Your recordings')} sub={tr('Listen to or remove the pages you recorded')} onPress={openRecList} />
             <RecRow glyph={<TextIcon text="?" />} title={tr('Help')} sub={tr('How recording works')} onPress={() => setRecView('help')} />
           </>
         ) : null}
@@ -1308,11 +1308,11 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
               </View>
             </View>
             </React.Fragment>
-          )) : <Text style={styles.help}>{tr('Nothing recorded yet. Tap Start Recording to read this story in your own voice.')}</Text>
+          )) : <Text style={styles.help}>{tr('Nothing recorded yet. Tap Start recording to read this book in your own voice.')}</Text>
         ) : null}
         {recView === 'help' ? (
           <>
-            <Text style={styles.help}>{tr('Tap Start Recording and read the page out loud. Turn the page and keep reading: each page saves on its own.')}</Text>
+            <Text style={styles.help}>{tr('Tap Start recording and read the page out loud. Turn the page and keep reading: each page saves on its own.')}</Text>
             <Text style={styles.help}>{tr('Tap the red button to stop. Your recordings stay on this phone, and the story will read back in your voice.')}</Text>
           </>
         ) : null}
@@ -1467,7 +1467,7 @@ function ListenChoice({ area, center, onDay, onNight, onCancel, onGone, tr }) {
         <Animated.View pointerEvents={picked ? 'none' : 'auto'} style={{ alignItems: 'flex-end', opacity: pop, transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1] }) }] }}>
           <View onStartShouldSetResponder={() => true} style={{ width: side, height: side, borderRadius: 30, backgroundColor: '#2b2b2d', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.6)' }}>{/* (a touch on the box itself never cancels) */}
             {/* what this is: Listening Only mode (nothing plays until Daydream or Nightlight is chosen) */}
-            <Text style={{ color: 'rgba(255,255,255,0.92)', fontFamily: fonts.uiMedium, fontSize: 15, lineHeight: 18, letterSpacing: 0.3, textAlign: 'center', marginTop: M }}>{tr('Listening Only mode')}</Text>
+            <Text style={{ color: 'rgba(255,255,255,0.92)', fontFamily: fonts.uiMedium, fontSize: 15, lineHeight: 18, letterSpacing: 0.3, textAlign: 'center', marginTop: M }}>{tr('Listen Only')}</Text>
             {/* the dividing line and the two icons sit exactly in the middle of the box */}
             <View pointerEvents="none" style={{ position: 'absolute', left: side / 2 - 0.55, top: (side - side * 0.42) / 2, width: 1.1, height: side * 0.42, backgroundColor: ink }} />{/* the same fine stroke as the sun and the moon */}
             {[['day', tr('Daydream')], ['night', tr('Nightlight')]].map(([id, label], k) => (

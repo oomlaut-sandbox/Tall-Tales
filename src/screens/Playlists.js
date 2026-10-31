@@ -108,7 +108,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
                       <View style={{ flex: 1, minWidth: 0 }}>
                         <Text numberOfLines={1} style={styles.cardTitle}>{nameOf(p)}</Text>
-                        <Text style={styles.small}>{bs.length === 1 ? t('1 book') : t('{n} books', { n: bs.length })}{p.shuffle ? ` · ${t('Shuffle')}` : ''}{p.listen ? ` · ${t('Listen Only Mode')}` : ''}{p.loop ? ` · ${t('Loop')}` : ''}</Text>
+                        <Text style={styles.small}>{bs.length === 1 ? t('1 book') : t('{n} books', { n: bs.length })}{p.shuffle ? ` · ${t('Shuffle')}` : ''}{p.listen ? ` · ${t('Listen Only')}` : ''}{p.loop ? ` · ${t('Loop')}` : ''}</Text>
                       </View>
                       <Pressable onPress={() => { setEdit(p.id); setAdding(false); }} hitSlop={8} accessibilityRole="button"><View style={styles.editTab}><Text style={styles.editTabText}>{t('Edit')}</Text></View></Pressable>
                     </View>
@@ -124,7 +124,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
                     </Pressable>
                     <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
                       <Pressable hitSlop={6} onPress={() => set(p.id, { listen: !p.listen })} style={[styles.chip, p.listen && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.listen }}>
-                        <Text style={[styles.chipText, p.listen && { color: colors.white }]}>{t('Listen Only Mode')}</Text>
+                        <Text style={[styles.chipText, p.listen && { color: colors.white }]}>{t('Listen Only')}</Text>
                       </Pressable>
                       <Pressable hitSlop={6} onPress={() => set(p.id, { shuffle: !p.shuffle })} style={[styles.chip, p.shuffle && styles.chipOn]} accessibilityRole="switch" accessibilityState={{ checked: !!p.shuffle }}>
                         <Text style={[styles.chipText, p.shuffle && { color: colors.white }]}>{t('Shuffle')}</Text>

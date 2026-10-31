@@ -191,7 +191,7 @@ export const PageView = forwardRef(function PageView(
             <Text style={storyStyle}>{t('Thank you for reading.')}</Text>
             {/* stacked: a fine grey line-art icon (no box) and the words beside it */}
             <View style={{ gap: 12, marginTop: 20, alignSelf: 'center' }}>
-              {[[END_AGAIN, 'Read Again', onReadAgain], [END_SHARE, 'Share Book', onShare], [END_LIBRARY, 'My Library', onLibrary]].filter(([, , fn]) => !!fn).map(([g, label, fn]) => (
+              {[[END_AGAIN, 'Read again', onReadAgain], [END_SHARE, 'Share book', onShare], [END_LIBRARY, 'My Library', onLibrary]].filter(([, , fn]) => !!fn).map(([g, label, fn]) => (
                 <Pressable key={label} onPress={fn} style={styles.endBtn} accessibilityRole="button">
                   <Image source={g} style={styles.endIc} resizeMode="contain" />
                   <Text style={styles.endBtnText}>{t(label)}</Text>

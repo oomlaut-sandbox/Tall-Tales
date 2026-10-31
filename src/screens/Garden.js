@@ -104,7 +104,7 @@ export default function Garden({ u, openMenu, toast, onHome }) {
   }
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} vertical={v} /></Bar>}>
-      {hello ? <Toast message={t('Welcome to the garden, a relaxing space where you can enjoy simple games and puzzles. Check back later for more. And remember, nothing beats going outside in nature. For real, go outside. (If you’re looking for your way back to My Workspace, tap on the gate.)')} ms={0} check={t('Don’t show this message again')} button={t('Got it!')}
+      {hello ? <Toast message={t('Welcome to the Garden: simple games and puzzles to relax with, and more on the way. And remember, nothing beats being outside in nature. For real, go outside! (To get back to My Workspace, tap the gate.)')} ms={0} check={t('Don’t show this message again')} button={t('Got it!')}
         onDismiss={(ticked) => { setHello(false); if (ticked) saveJSON('gardenTip', { off: true }).catch(() => {}); }} /> : null}
       <View style={{ flex: 1, backgroundColor: MAP_BG, overflow: 'hidden' }} onLayout={(e) => setArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
         {map}

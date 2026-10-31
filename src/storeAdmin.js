@@ -65,7 +65,7 @@ export async function publishToStore(story, onStep = () => {}) {
   // only the pages whose English changed
   const before = existing ? await loadStoreContent(id, existing.access).catch(() => null) : null;
   const content = {
-    id, title: story.title || 'Untitled story', writer: story.writer || '', artist: story.artist || '', author,
+    id, title: story.title || 'Untitled book', writer: story.writer || '', artist: story.artist || '', author,
     cover: coverUri ? 'cover.jpg' : null, coverTitle: (story.cover && story.cover.title) || null, pages: outPages,
     ...(before && before.langs ? { langs: before.langs } : {}),
   };

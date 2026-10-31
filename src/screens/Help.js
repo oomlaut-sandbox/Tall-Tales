@@ -80,7 +80,7 @@ const ALL_HELP = [
   ] },
   { section: 'Your voice', title: 'Recording yourself reading', text: [
     'A grown-up can record their own voice reading each page, so the book plays in a familiar voice. Up to three people can record each book (Mom, Opa…).',
-    'Open a book, tap the red button, then Start Recording. Pick who’s reading, or add a new reader with their name and a photo. Read the page, then turn it to keep going: each page saves on its own. Tap the red button to stop.',
+    'Open a book, tap the red button, then Start recording. Pick who’s reading, or add a new reader with their name and a photo. Read the page, then turn it to keep going: each page saves on its own. Tap the red button to stop.',
     'Your Recordings lists every page by reader: play it, trim the start and end, or delete it.',
   ] },
   { section: 'Your voice', title: 'Choosing a voice', text: [
@@ -96,7 +96,7 @@ const ALL_HELP = [
     'Tap the picture square to add a picture: choose one from your photos, or take a photo (of a drawing, say). Taking a photo asks a grown-up first.',
     'Tap the words square to type the words for that page. Two or three sentences reads best.',
     'When a page is done, tap the green tick and choose Add another page. Tap the cover button on the bottom bar to give your book a title and add who wrote and illustrated it.',
-    'Everything saves on its own. Save and Exit keeps the book in My Books in Progress, in My Workspace. Finish and publish to library puts it in My Book Collection, in My Library.',
+    'Everything saves on its own. Save for later keeps the book in My Books in Progress, in My Workspace. Finish my book puts it in My Book Collection, in My Library.',
   ] },
   { section: 'Making books', title: 'My Workspace', text: [
     'My Workspace is where you make things: who is reading, Let’s make a book, My Books in Progress, My Notes, Things to share and the Message Board.',
@@ -151,6 +151,7 @@ const ALL_HELP = [
     'Buying is for grown-ups: the app asks a grown-up question first, and payment goes through your Apple ID. Cancel the membership any time in your App Store account settings. On a new phone, use Restore Purchases on the membership screen.',
   ] },
   { section: 'Grown-ups', title: 'Settings and parental controls', text: [
+    'We trust parents and caregivers to know best. That’s why Coro gives you the tools to shape each reader’s own experience: profiles, ages, parental controls and more.',
     'Settings is the last item in the menu. It always asks the grown-up question first.',
     'Language: choose English, Deutsch, Français, Español, 日本語 or العربية for the app. Members can also read books in a different language from the app’s. The languages are also listed at the top of the start page: tap one to switch.',
     'Parental controls: choose exactly what your child can see and do. Hide My Notes, Let’s make a book, or Ideas and Help; switch off recording, sharing and printing; keep the language fixed; and make every book play one way (for example, always Page by Page).',
@@ -200,7 +201,6 @@ const ALL_HELP = [
   ] },
   { section: 'Artificial Intelligence', title: 'Process descriptions', text: [
     'Every book in the Book Store says how it was made, including any use of AI, in its Process description. Different was made entirely by hand; The Rough Lives of Animals was drawn by hand and then rendered in 3D with AI tools, as an example of an open process.',
-    'We trust parents and caregivers to know best. That’s why Coro gives you the tools to shape each reader’s own experience: profiles, ages, parental controls and more.',
   ] },
   { section: 'Accessibility', title: 'Listening and reading along', text: [
     'Books from the Book Store can read themselves aloud: tap Play on the bar. Words light up as they’re read. Tap any word to hear it on its own.',

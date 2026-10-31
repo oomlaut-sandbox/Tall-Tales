@@ -118,7 +118,7 @@ export default function TapePlayer({ onMenu, area }) {
         {/* at night (the nightlight is on) the felt is turned down to a dark grey */}
 
         {/* the felt line at the top right closes the player */}
-        <Pressable onPress={withTap(() => setAmbientPlayer(false))} hitSlop={10} style={at(1400, 100, 300, 220)} accessibilityRole="button" accessibilityLabel={t('Close Audio Player')} />
+        <Pressable onPress={withTap(() => setAmbientPlayer(false))} hitSlop={10} style={at(1400, 100, 300, 220)} accessibilityRole="button" accessibilityLabel={t('Close audio player')} />
         <Pressable onPress={withTap(playAmbient)} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} accessibilityRole="button" accessibilityLabel={t('Play')} />
         <Pressable onPress={withTap(pauseAmbient)} style={at(1360, 562, 230, 250)} accessibilityRole="button" accessibilityLabel={t('Pause')} />
         {/* (the night felt's windows sit a little lower; its names start a little further in) */}
@@ -136,7 +136,7 @@ export default function TapePlayer({ onMenu, area }) {
       </View>
     </View>
     {/* a small Close under the player's bottom right corner (day and night), floating: the player stays centred */}
-    <Pressable onPress={withTap(() => setAmbientPlayer(false))} hitSlop={14} style={{ position: 'absolute', top: '100%', right: 6, marginTop: 12 }} accessibilityRole="button" accessibilityLabel={t('Close Audio Player')}>
+    <Pressable onPress={withTap(() => setAmbientPlayer(false))} hitSlop={14} style={{ position: 'absolute', top: '100%', right: 6, marginTop: 12 }} accessibilityRole="button" accessibilityLabel={t('Close audio player')}>
       <Text style={styles.close}>{t('Close')}</Text>
     </Pressable>
     </View>

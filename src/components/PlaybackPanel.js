@@ -37,7 +37,7 @@ export function ReadingOptionsContent({ prefs, setPrefs, toast, onPlaylists, onC
         ))}
         <Option glyph={<BubbleIcon />} title={tr('Voices')} sub={tr('Narrator: {name}', { name: (NARRATORS.find(([k]) => k === narratorOf(prefs)) || NARRATORS[0])[1] })} onPress={() => setView('voices')} />
         {/* what the voices can do: narration and translations for store books; your own books, your own voice */}
-        <Text style={styles.note}>{tr('Advanced voiceover narration and translations work only in Coro books from the Book Store. Books you make yourself are read in a recording of the author, or of someone they love, like a parent or grandparent.')}</Text>
+        <Text style={styles.note}>{tr('Books from the Book Store have a narrator and come in other languages. Books you make are read in your own voice, or the voice of someone who loves the reader, like a parent or grandparent.')}</Text>
         {onPlaylists ? <Option glyph={<PlaylistIcon />} title={tr('Book Playlists')} sub={tr('Books read one after another')} onPress={() => { close(); onPlaylists(); }} /> : null}
         <View style={styles.setting}>
           <Text style={styles.help}>{tr('Playback speed')}</Text>

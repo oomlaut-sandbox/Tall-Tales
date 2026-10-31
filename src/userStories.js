@@ -36,7 +36,7 @@ function fromSaved(s0) {
   const credits = creditsLine(s.writer, s.artist);
   const coverImg = s.cover && s.cover.uri ? { uri: s.cover.uri } : (bodyPages[0] && bodyPages[0].image) || null;
   // Every book opens like 'Different': the cover, a blank back of the cover, and a title page with the credits.
-  const titlePage = { pid: `title-${s.id}`, titlePage: true, text: `${(s.title || 'Untitled story').replace(/\.+$/, '')}.${credits ? ` ${credits}` : ''}`, image: coverImg, w: 1600, h: 1600 };
+  const titlePage = { pid: `title-${s.id}`, titlePage: true, text: `${(s.title || 'Untitled book').replace(/\.+$/, '')}.${credits ? ` ${credits}` : ''}`, image: coverImg, w: 1600, h: 1600 };
   return {
     id: s.id,
     title: s.title,
@@ -45,7 +45,7 @@ function fromSaved(s0) {
     author: [s.writer, s.artist].filter((x) => x && x.trim()).filter((x, i, a) => a.indexOf(x) === i).join(' and ') || undefined,
     mine: true,
     ...classOf(s), // a class book (classroom.js): its class, its student, its prompt, handed in or not, the teacher's note
-    published: !!s.published, // finished with 'Finish and publish to library': in My Book Collection; until then in Work in Progress (Jörg, 28 Oct 2026)
+    published: !!s.published, // finished with 'Finish my book': in My Book Collection; until then in Work in Progress (Jörg, 28 Oct 2026)
     cover: s.cover && s.cover.uri ? s.cover : null, // made in the Cover Editor (picture and, if wanted, the title)
     pages: [titlePage, ...bodyPages],
   };
@@ -85,7 +85,7 @@ export function saveUserStory(draft, { publish = false, handIn = false } = {}) {
     if (!started) {
       if (i >= 0) list.splice(i, 1);
     } else {
-      const saved = { id: draft.id, title: draft.title.trim() || 'Untitled story', writer: (draft.writer || '').trim(), artist: (draft.artist || '').trim(), pages, cover: draft.cover && draft.cover.uri ? draft.cover : null, published: !!(publish || (i >= 0 && list[i].published)),
+      const saved = { id: draft.id, title: draft.title.trim() || 'Untitled book', writer: (draft.writer || '').trim(), artist: (draft.artist || '').trim(), pages, cover: draft.cover && draft.cover.uri ? draft.cover : null, published: !!(publish || (i >= 0 && list[i].published)),
         ...classOf(i >= 0 ? list[i] : null), ...classOf(draft), ...(handIn ? { handIn: 'in' } : null) }; // (handed in: waiting on the Teacher's Desk)
       if (i >= 0) list[i] = saved; else list.push(saved);
     }

@@ -130,7 +130,7 @@ export function draftFrom(story) {
   return d;
 }
 
-// The empty picture square: Jörg's light grey Polaroid with "Add Image" in white in the middle of its blue
+// The empty picture square: Jörg's light grey Polaroid with 'Add picture' in white in the middle of its blue
 // square (measured from the picture: the blue runs 28.3%–71.1% across and 24.3%–68.4% down).
 const POLAROID = require('../../assets/polaroid.jpg');
 // the hardcover looks for a text only cover: [key, picture, name] (Jörg will send the pictures)
@@ -231,13 +231,13 @@ function BoxHandles({ W, get, set, sizeMin, sizeMax, color }) {
 
 function EmptyPicture({ side, plain }) {
   const tr = useT();
-  // the cover editor: no Polaroid; the blue cloth book cover fills the square, 'Add Image' in white (Jörg, 26 Oct 2026)
+  // the cover editor: no Polaroid; the blue cloth book cover fills the square, 'Add picture' in white (Jörg, 26 Oct 2026)
   if (plain) {
     const f = Math.max(16, Math.round(side * 0.055));
     return (
       <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#2f5f9e', alignItems: 'center', justifyContent: 'center', padding: side * 0.12 }]}>
         <Image source={BLUE_CLOTH} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
-        <Text style={{ textAlign: 'center', color: colors.white, fontFamily: fonts.uiBold, fontSize: f, lineHeight: f * 1.24 }}>{tr('Add Image')}</Text>
+        <Text style={{ textAlign: 'center', color: colors.white, fontFamily: fonts.uiBold, fontSize: f, lineHeight: f * 1.24 }}>{tr('Add picture')}</Text>
       </View>
     );
   }
@@ -250,7 +250,7 @@ function EmptyPicture({ side, plain }) {
       <Image source={POLAROID} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
       <View style={{ position: 'absolute', left: BLUE.l * side + m, top: BLUE.t * side + m, width: bw - 2 * m, height: bh - 2 * m, alignItems: 'center', justifyContent: 'center' }}>
         <Text style={{ width: '100%', textAlign: 'center', color: colors.white, fontFamily: fonts.uiBold, fontSize: fs, lineHeight: fs * 1.24 }}
-          textBreakStrategy="balanced" lineBreakStrategyIOS="standard">{tr('Add Image')}</Text>
+          textBreakStrategy="balanced" lineBreakStrategyIOS="standard">{tr('Add picture')}</Text>
       </View>
     </View>
   );
@@ -708,7 +708,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       if (!list.some((x) => x.id === latest.current.id)) { toast(tr('Add a picture or some words first.')); return; }
       toast(tr('Handed in. Your teacher will have a look.'));
       onDone(list, null, 'wip');
-    } catch (e) { toast(tr('Couldn’t save the story. Try again.')); }
+    } catch (e) { toast(tr('Couldn’t save the book. Try again.')); }
   };
   // the teacher's words when the book opens: the prompt's instructions (a new book), or the note on a book sent back
   const [teacherMsg, setTeacherMsg] = useState(() => (initial && initial.handIn === 'back' && initial.note ? { k: 'note', text: initial.note }
@@ -722,12 +722,12 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     try {
       const list = await save({ publish: true });
       const hasPages = latest.current.pages.some((p) => p.text.trim() || p.uri || p.uri2);
-      toast(hasPages ? tr('Added to My Book Collection.') : tr('Nothing to save yet, so no story was added.'));
+      toast(hasPages ? tr('Added to My Book Collection.') : tr('Nothing to save yet, so no book was added.'));
       // a book you make is read in a real voice, never the phone's: invite the author to record it now (Jörg, 26 Oct 2026)
       if (hasPages && list.some((x) => x.id === latest.current.id)) { setRecordAsk({ list, id: latest.current.id }); return; }
       onDone(list, null, 'published');
     } catch (e) {
-      toast(tr('Couldn’t save the story. Try again.'));
+      toast(tr('Couldn’t save the book. Try again.'));
     }
   };
 
@@ -736,7 +736,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     const list = await deleteUserStory(draft.id);
     draft.pages.forEach((p) => { if (p.uri) dropPicture(p.uri); if (p.uri2) dropPicture(p.uri2); }); // (after the book is gone)
     toDrop.current.forEach((u) => dropPicture(u)); toDrop.current = [];
-    toast(tr('“{title}” deleted.', { title: draft.title.trim() || tr('Untitled story') }));
+    toast(tr('“{title}” deleted.', { title: draft.title.trim() || tr('Untitled book') }));
     onDone(list);
   };
 
@@ -760,15 +760,15 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <DeskFelt spot="publisher1" />
       <View style={[styles.bookShadow, wide ? { width: side * 2, height: side } : { width: side, height: side * 2 }]}>
       <View style={[styles.page, wide && { flexDirection: 'row' }]}>
-        <Pressable onPress={pickImage} style={[styles.art, { width: side, height: side }]} accessibilityRole="button" accessibilityLabel={page.uri ? tr('Change image') : tr('Add image')}>
+        <Pressable onPress={pickImage} style={[styles.art, { width: side, height: side }]} accessibilityRole="button" accessibilityLabel={page.uri ? tr('Change picture') : tr('Add picture')}>
           {page.uri ? (
             <>
               <Image source={{ uri: page.uri }} style={styles.fill} resizeMode="cover" />
               <View style={styles.artBtns}>
-                <Text style={styles.chip}>{tr('Change image')}</Text>
+                <Text style={styles.chip}>{tr('Change picture')}</Text>
                 <Pressable onPress={() => setPhotoEdit('page')} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Edit photo')} style={styles.chipIcon}><Image source={CHOICE_ICONS.crop} style={styles.chipImg} /></Pressable>
                 {wordsChip('top')}
-                <Pressable onPress={removeImage} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Remove image')} style={styles.chipIcon}><Image source={CHOICE_ICONS.trash} style={styles.chipImg} /></Pressable>
+                <Pressable onPress={removeImage} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Remove picture')} style={styles.chipIcon}><Image source={CHOICE_ICONS.trash} style={styles.chipImg} /></Pressable>
               </View>
             </>
           ) : (
@@ -776,17 +776,17 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           )}
           {!wide ? <Fade edge="bottom" size={Math.round(side * 0.1)} max={0.22} /> : null}
         </Pressable>
-        <Pressable onPress={secondPic || over === 'top' ? () => setImgAsk('page2') : openWords} accessibilityRole="button" accessibilityLabel={secondPic ? tr('Change the second image') : over === 'top' ? tr('Add another image page') : tr('Words for page {n}', { n: i + 1 })} ref={wordsRef} collapsable={false} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>{/* the whole words square opens the editor */}
+        <Pressable onPress={secondPic || over === 'top' ? () => setImgAsk('page2') : openWords} accessibilityRole="button" accessibilityLabel={secondPic ? tr('Change the second picture') : over === 'top' ? tr('Add another picture page') : tr('Words for page {n}', { n: i + 1 })} ref={wordsRef} collapsable={false} style={[styles.textBox, { width: side, height: side, paddingHorizontal: side * 0.09, paddingVertical: side * 0.06 }]}>{/* the whole words square opens the editor */}
           {/* a second picture instead of words: a page of two pictures */}
           {secondPic ? <Image source={{ uri: page.uri2 }} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" /> : null}
           {!wide ? <Fade edge="top" size={Math.round(side * 0.09)} max={0.13} /> : null}
           <Spine wide={wide} />
           {secondPic ? (
             <View style={[styles.artBtns, { bottom: 12 }]}>
-              <Text style={styles.chip}>{tr('Change image')}</Text>
+              <Text style={styles.chip}>{tr('Change picture')}</Text>
               <Pressable onPress={() => setPhotoEdit('page2')} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Edit photo')} style={styles.chipIcon}><Image source={CHOICE_ICONS.crop} style={styles.chipImg} /></Pressable>
               {wordsChip('bottom')}
-              <Pressable onPress={removeImage2} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Remove the second image')} style={styles.chipIcon}><Image source={CHOICE_ICONS.trash} style={styles.chipImg} /></Pressable>
+              <Pressable onPress={removeImage2} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Remove the second picture')} style={styles.chipIcon}><Image source={CHOICE_ICONS.trash} style={styles.chipImg} /></Pressable>
             </View>
           ) : (
             <>
@@ -798,11 +798,11 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               </View> : <View style={{ flex: 1 }} /> /* the words are on the picture above: this square is free for a picture */}
               {/* no words yet: a small grey plus in the bottom corner offers a second picture instead */}
               {!page.text.trim() || over === 'top' ? (
-                <Pressable onPress={() => setImgAsk('page2')} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Add another image page')}
+                <Pressable onPress={() => setImgAsk('page2')} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Add another picture page')}
                   style={{ position: 'absolute', left: side * 0.07, bottom: side * 0.07, flexDirection: 'row', alignItems: 'center', gap: side * 0.02 }}>
                   {/* a small grey plus, then the words */}
                   <Text style={{ fontFamily: fonts.uiMedium, fontSize: Math.max(18, Math.round(side * 0.07)), lineHeight: Math.max(18, Math.round(side * 0.07)) * 1.05, color: '#777' }}>+</Text>
-                  <Text numberOfLines={2} style={{ fontFamily: fonts.ui, fontSize: Math.max(12, Math.round(side * 0.04)), lineHeight: Math.max(12, Math.round(side * 0.04)) * 1.25, color: '#555', maxWidth: side * 0.56, flexShrink: 1 }}>{tr('Add another image page')}{/* two lines when the words are long (never cut short with …) */}</Text>
+                  <Text numberOfLines={2} style={{ fontFamily: fonts.ui, fontSize: Math.max(12, Math.round(side * 0.04)), lineHeight: Math.max(12, Math.round(side * 0.04)) * 1.25, color: '#555', maxWidth: side * 0.56, flexShrink: 1 }}>{tr('Add another picture page')}{/* two lines when the words are long (never cut short with …) */}</Text>
                 </Pressable>
               ) : null}
             </>
@@ -918,7 +918,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           </View>
         ) : confirmDelete ? (
           <View style={{ gap: 10, marginTop: 44 }}>
-            <Text style={styles.warn}>{tr('Delete “{title}”, its pictures and any voice recordings? This can’t be undone.', { title: draft.title.trim() || tr('Untitled story') })}</Text>
+            <Text style={styles.warn}>{tr('Delete “{title}”, its pictures and any voice recordings? This can’t be undone.', { title: draft.title.trim() || tr('Untitled book') })}</Text>
             <View style={{ flexDirection: 'row', gap: 10 }}>
               <Pressable onPress={() => setConfirmDelete(false)} style={styles.wide} accessibilityRole="button"><Text style={styles.wideText}>{tr('Keep')}</Text></Pressable>
               <Pressable onPress={deleteStory} style={[styles.wide, { backgroundColor: colors.danger }]} accessibilityRole="button"><Text style={styles.wideText}>{tr('Delete book')}</Text></Pressable>
@@ -939,7 +939,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               </Pressable>
             ) : null}
             <Pressable onPress={() => { setPdfChoice(null); setConfirmDelete(true); }} style={[styles.stackPill, { backgroundColor: colors.deepRed }]} accessibilityRole="button">
-              <ChoiceLabel icon={CHOICE_ICONS.trash} text={tr('Delete Book')} style={styles.wideText} />
+              <ChoiceLabel icon={CHOICE_ICONS.trash} text={tr('Delete book')} style={styles.wideText} />
             </Pressable>
           </View>
         )}
@@ -1089,7 +1089,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Text style={styles.choiceTitle}>{tr('Give your book a title')}</Text>
             <LineInput value={draft.title} onChangeText={(title) => setDraft((d) => ({ ...d, title }))} placeholder={tr('Type the title')} placeholderTextColor="#8a8a8a" autoFocus style={styles.field} accessibilityLabel={tr('Book title')}
               returnKeyType="done" onSubmitEditing={() => finish(true)} />
-            <Pressable onPress={() => (classBook ? handIn() : finish(true))} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 10 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={classBook ? tr('Hand in to my teacher') : tr('Finish and publish to library')} style={styles.choiceBtnText} /></Pressable>
+            <Pressable onPress={() => (classBook ? handIn() : finish(true))} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 10 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={classBook ? tr('Hand in to my teacher') : tr('Finish my book')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => setTitleBox(false)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Keep working')} style={styles.choiceBtnText} /></Pressable>
           </View>
         </KeyboardAvoidingView>
@@ -1117,7 +1117,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       {/* the teacher's prompt, or their note on a book sent back (classroom.js) */}
       {teacherMsg && !coverOpen && !aboutOpen && !editing ? <Toast message={teacherMsg.k === 'note' ? tr('A note from your teacher: {note}', { note: teacherMsg.text }) : tr('From your teacher: {note}', { note: teacherMsg.text })} area={{ left: GAP - 6, right: GAP - 6, bottom: 150 }} ms={0} button={tr('OK')} onDismiss={() => setTeacherMsg(null)} /> : null}
       {saveTip && !editing && !drawFor && !photoEdit && !coverOpen && !tourPlay ? <Toast message={tr('Your work saves as you go. Find your book again in My Workspace, under My Books in Progress.')} ms={0}
-        check={tr('Don’t show this again')} button={tr('Keep going')} onDismiss={(ticked) => { setSaveTip(false); if (ticked) saveJSON('saveTip', { off: true }); }} /> : null}
+        check={tr('Don’t show this message again')} button={tr('Keep going')} onDismiss={(ticked) => { setSaveTip(false); if (ticked) saveJSON('saveTip', { off: true }); }} /> : null}
       {tourAsk && aboutOpen ? (
         // 'Want a quick little tour?': a large white bubble over What's your book about? (Jörg, 27 Oct 2026)
         <View style={[StyleSheet.absoluteFill, { zIndex: 65, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }]}>
@@ -1129,7 +1129,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 <View style={{ width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: '#555', backgroundColor: tourOff ? '#1f1f1f' : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
                   {tourOff ? <Text style={{ color: colors.white, fontSize: 14, lineHeight: 16, fontFamily: fonts.uiBold }}>✓</Text> : null}
                 </View>
-                <Text style={{ color: '#3a3a3a', fontFamily: fonts.ui, fontSize: 15, flexShrink: 1 }}>{tr('Please don’t show this again')}</Text>
+                <Text style={{ color: '#3a3a3a', fontFamily: fonts.ui, fontSize: 15, flexShrink: 1 }}>{tr('Don’t show this message again')}</Text>
               </Pressable>
               <View style={{ flexDirection: 'row', gap: 10, marginTop: 28, justifyContent: 'flex-end' }}>
                 <Pressable onPress={() => closeTour(false)} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: '#d6d6d6', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: '#1f1f1f', fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('No thanks')}</Text></Pressable>
@@ -1254,7 +1254,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 if (coverTool === 'color') {
                   const half = Math.ceil(COVER_COLORS.length / 2);
                   return (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }} accessibilityLabel={tr('Text Color')}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }} accessibilityLabel={tr('Text colour')}>
                       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flex: 1 }} contentContainerStyle={{ paddingVertical: 4, paddingHorizontal: 4 }}>
                         <View style={{ gap: 8 }}>
                           {[COVER_COLORS.slice(0, half), COVER_COLORS.slice(half)].map((row, r) => (
@@ -1277,7 +1277,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                     <Pressable hitSlop={6} onPress={() => (by ? setCoverTitle({ bs: Math.max(0.025, (T.bs || T.size * 0.42) - 0.008) }) : setCoverTitle({ size: Math.max(0.05, T.size - 0.015) }))} style={styles.toolBtn} accessibilityLabel={tr('Smaller title')}><Text style={[styles.donePillText, { fontSize: 13 }]}>A</Text></Pressable>
                     <Pressable hitSlop={6} onPress={() => (by ? setCoverTitle({ bs: Math.min(0.12, (T.bs || T.size * 0.42) + 0.008) }) : setCoverTitle({ size: Math.min(0.24, T.size + 0.015) }))} style={styles.toolBtn} accessibilityLabel={tr('Bigger title')}><Text style={[styles.donePillText, { fontSize: 20 }]}>A</Text></Pressable>
                     {/* text colour: one button; the colours open in their own box */}
-                    <Pressable hitSlop={6} onPress={() => setCoverTool('color')} style={styles.toolBtn} accessibilityRole="button" accessibilityLabel={tr('Text Color')}>
+                    <Pressable hitSlop={6} onPress={() => setCoverTool('color')} style={styles.toolBtn} accessibilityRole="button" accessibilityLabel={tr('Text colour')}>
                       <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: curColor, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.85)' }} />
                     </Pressable>
                     <Pressable hitSlop={6} onPress={() => setCoverTool('font')} style={styles.toolBtn} accessibilityRole="button" accessibilityLabel={tr('Title font')}>
@@ -1323,7 +1323,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
           {/* the hint is a speech bubble near the bottom that goes away after a while (tap it to close it sooner) */}
           {/* (no bubble before there's a title: Jörg, 26 Oct 2026) */}
           {/* a new book, on its cover: a hint about paper drawings (Jörg, 27 Oct 2026) */}
-          {drawTip && !kbUp && !imgAsk && !hardAsk ? <Toast message={tr('Pssst, here’s a hint. Taking photos of your paper drawings is a fun way to build a Coro book.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 150 }} ms={0} check={tr('Don’t show this again')} button={tr('Got it!')} icon="camera" onDismiss={(ticked) => { setDrawTip(false); if (ticked) saveJSON('drawTip', { off: true }); }} /> : null}
+          {drawTip && !kbUp && !imgAsk && !hardAsk ? <Toast message={tr('Pssst, here’s a hint. Taking photos of your paper drawings is a fun way to build a Coro book.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 150 }} ms={0} check={tr('Don’t show this message again')} button={tr('Got it!')} icon="camera" onDismiss={(ticked) => { setDrawTip(false); if (ticked) saveJSON('drawTip', { off: true }); }} /> : null}
           {coverTitling && coverTip && !kbUp ? <Toast message={tr('Tap the title or the author to type. Drag them anywhere on the cover.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 74 }} onDismiss={() => setCoverTip(false)} /> : null}
           {/* Done: bottom right, lined up with the cover's right edge */}
           {/* a new book: 'Start writing' goes on to page 1 (nobody is stuck on the cover) */}
@@ -1336,7 +1336,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               // Text Color (or the fonts): a black glass box of its own over the editor; tap outside or Done to close
               <Pressable style={[StyleSheet.absoluteFill, styles.choiceBack, { zIndex: 70 }]} onPress={() => setCoverTool(null)}>
                 <Pressable onPress={() => {}} style={[styles.choice, { backgroundColor: 'rgba(0,0,0,0.88)', maxWidth: 380 }]}>
-                  <Text style={styles.choiceTitle}>{coverTool === 'color' ? tr('Text Color') : tr('Font')}</Text>
+                  <Text style={styles.choiceTitle}>{coverTool === 'color' ? tr('Text colour') : tr('Font')}</Text>
                   <ScrollView style={{ maxHeight: winH * 0.5 }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', gap: coverTool === 'color' ? 10 : 8, justifyContent: 'center', paddingVertical: 6 }}>
                     {coverTool === 'color' ? COVER_COLORS.map(([hex, name]) => (
                       <Pressable key={hex} onPress={() => setCoverTitle(by ? { bColor: hex } : { color: hex })} accessibilityLabel={name} accessibilityState={{ selected: curColor === hex }}
@@ -1374,11 +1374,11 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Keep working on this page')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => openCover(true)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon="cover" text={cover && cover.uri ? tr('Edit the cover') : tr('Design a cover')} style={styles.choiceBtnText} /></Pressable>
             {/* leave the book maker for now; what's been made so far stays saved */}
-            <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await save()); } catch (e) { toast(tr('Couldn’t save the story. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon="cancel" text={tr('Cancel book editor')} style={styles.choiceBtnText} /></Pressable>
+            <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await save()); } catch (e) { toast(tr('Couldn’t save the book. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon="cancel" text={tr('Close the book maker')} style={styles.choiceBtnText} /></Pressable>
             {/* Save and Exit: saved as it is, into Work in Progress in My Library (Jörg, 28 Oct 2026) */}
-            <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await save(), null, 'wip'); } catch (e) { toast(tr('Couldn’t save the story. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.save} text={tr('Save and Exit')} style={styles.choiceBtnText} /></Pressable>
+            <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await save(), null, 'wip'); } catch (e) { toast(tr('Couldn’t save the book. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.save} text={tr('Save for later')} style={styles.choiceBtnText} /></Pressable>
             {/* Finish last, in green, with extra room around it */}
-            <Pressable onPress={() => { setPageDone(false); if (classBook) handIn(); else finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 18, marginBottom: 8 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={classBook ? tr('Hand in to my teacher') : tr('Finish and publish to library')} style={styles.choiceBtnText} /></Pressable>
+            <Pressable onPress={() => { setPageDone(false); if (classBook) handIn(); else finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 18, marginBottom: 8 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={classBook ? tr('Hand in to my teacher') : tr('Finish my book')} style={styles.choiceBtnText} /></Pressable>
           </Pressable>
         </Pressable>
       ) : null}

@@ -125,7 +125,7 @@ export default function Settings({ u, openMenu, lang, setLang, bookLang, setBook
               {/* the recommended one-tap setup for a child reading alone */}
               <View style={[styles.card, { borderWidth: 2, borderColor: quick ? colors.green : 'transparent' }]}>
                 <Text style={[styles.cardTitle, { fontSize: 18 }]}>{t('Quick and Safe Kid')}</Text>
-                <Text style={styles.small}>{t('Recommended for a child reading alone')}</Text>
+                <Text style={styles.small}>{t('Recommended when your child reads by themselves')}</Text>
                 <Text style={styles.p}>{t('The simplest, most foolproof setup: only My Library and My Notes. Every book reads itself aloud a page at a time, and your child turns the page when ready. Nothing can be bought, shared, printed, recorded or changed. With your child’s age set, only books rated for that age.')}</Text>
                 {quick ? (
                   <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>{/* a big red Turn off beside it (Jörg, 27 Oct 2026): everything back on, the age and bedtime kept */}

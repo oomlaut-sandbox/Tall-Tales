@@ -44,10 +44,10 @@ export default function AmbientControls({ prefs, setPrefs }) {
           <Text style={[styles.small, { marginTop: 5 }]}>{t('Relaxing sounds and gentle music that keep playing while you use the app. Lovely at bedtime.')}</Text>{/* its top lines up with the top of the player picture */}
           {/* opens the Audio Player over the page; its bottom lines up with the bottom of the player picture */}
           <Pressable onPress={withTap(() => setAmbientPlayer(true))} style={[styles.openBtn, { marginTop: 0, marginBottom: 10 }]} accessibilityRole="button">
-            <Text style={styles.openText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{t('Open Audio Player')}</Text>
+            <Text style={styles.openText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{t('Open audio player')}</Text>
           </Pressable>
         </View>
-        <Pressable onPress={() => setAmbientPlayer(true)} accessibilityRole="button" accessibilityLabel={t('Open Audio Player')} style={{ marginRight: 4 }}>
+        <Pressable onPress={() => setAmbientPlayer(true)} accessibilityRole="button" accessibilityLabel={t('Open audio player')} style={{ marginRight: 4 }}>
           <Image source={PLAYER} style={{ width: 118, height: Math.round(118 * 562 / 440) }} resizeMode="contain" accessibilityIgnoresInvertColors />
         </Pressable>
       </View>

@@ -372,7 +372,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
       ))}>
       {ws ? <Band icon="make" color={colors.blue} felt="store" title={selecting ? t('Select books') : t('My Workspace')} /> : null}{/* blue for now (Jörg, 29 Oct 2026) */}
       {!ws ? <Band icon="library" color={colors.green} felt="library" title={selecting ? t('Select books') : t('My Library')}
-        sub={selecting ? (picked.length ? t('{n} selected', { n: picked.length }) : t('Tap books to select them')) : t('Your stories, ready to read')} /> : null}
+        sub={selecting ? (picked.length ? t('{n} selected', { n: picked.length }) : t('Tap books to select them')) : t('Your books, ready to read')} /> : null}
       {/* pulled up past the corkboard at the very bottom: a speech bubble invites you on to the Garden (once per pull),
           only once a grown-up has unlocked it in Settings → The Garden */}
       <ScrollView ref={scrollRef} onContentSizeChange={keep.onContentSizeChange} contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]} scrollEventThrottle={64}
@@ -423,7 +423,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
         {!selecting && !ws && onReadingOptions ? <ReadingOptionsSection {...onReadingOptions} style={{ width: '100%', marginTop: 26 }} /* a little apart from the books (Jörg, 29 Oct 2026) */ /> : null}
         {!selecting && !ws ? <View style={{ width: '100%', height: onReadingOptions ? 48 : 70 }} /> : null}
         {/* Work in Progress: the books being made (saved with Save and Exit, not yet published); a tap carries on in
-            the book maker. 'Finish and publish to library' moves a book up into My Book Collection (Jörg, 28 Oct 2026) */}
+            the book maker. 'Finish my book' moves a book up into My Book Collection (Jörg, 28 Oct 2026) */}
         {ws && (wip.length || waiting.length) ? <Text onLayout={(e) => { wipY.current = e.nativeEvent.layout.y; toWipNow(); }} style={[styles.section, { marginTop: 0 }]} accessibilityRole="header">{t('My Books in Progress')}</Text> : null}
         {/* the teacher's book prompts, ready to start: a dark square with the prompt's title (classroom.js) */}
         {ws && !selecting && onPrompt ? waiting.map((pr) => (
@@ -484,7 +484,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
       {folderOpen ? <Folder narrator={narrator} toast={toast} canSend={controls.sharing !== false} onClose={() => { const y = folderY.current; setFolderOpen(false); requestAnimationFrame(() => scrollRef.current && scrollRef.current.scrollTo({ y, animated: false })); }} /* back to the same spot (Jörg, 29 Oct 2026) */ /> : null}
       {confirm ? (
         <ConfirmBox title={chosen.length === 1 ? t('Delete “{title}”?', { title: chosen[0].title }) : t('Delete {n} books?', { n: chosen.length })}
-          message={[mineCount ? t('Stories you made, with their pictures and recordings, are deleted for good.') : '', chosen.length > mineCount ? t('Built-in books can be brought back later.') : ''].filter(Boolean).join(' ') || null}
+          message={[mineCount ? t('Books you made, with their pictures and recordings, are deleted for good.') : '', chosen.length > mineCount ? t('Built-in books can be brought back later.') : ''].filter(Boolean).join(' ') || null}
           confirm={t('Delete')} cancel={t('Keep')} onConfirm={() => setGate('delete')} onCancel={() => setConfirm(false)} />
       ) : null}
       <ParentGate visible={!!gate} reason={gate === 'share' ? t('Sharing sends an invitation to Coro by message or email.') : t('Deleting books from the library.')}
@@ -501,7 +501,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
             <Text style={styles.tipText}>{t('Welcome to your library. The books you make live here first, with a few picture books to read together. Make sure you use your profile. Use your Notebook to collect and share ideas.')}</Text>
             <Pressable onPress={() => setNoMore((x) => !x)} style={styles.tipCheckRow} accessibilityRole="checkbox" accessibilityState={{ checked: noMore }} hitSlop={6}>
               <View style={[styles.tipBox, noMore && styles.tipBoxOn]}>{noMore ? <Text style={styles.tipTick}>✓</Text> : null}</View>
-              <Text style={styles.tipCheck}>{t('Don’t show this again')}</Text>
+              <Text style={styles.tipCheck}>{t('Don’t show this message again')}</Text>
             </Pressable>
             {/* Let's go! on the left; the mascot on the right once the new one is drawn */}
             <View style={styles.tipFoot}>

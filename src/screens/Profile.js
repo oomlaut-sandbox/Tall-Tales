@@ -148,7 +148,7 @@ export default function Profile({ u, openMenu, toast }) {
         </View>
       </ScrollView>
       {/* for grown-ups: a speech bubble at the bottom (tap it to put it away) */}
-      {accountsReady && step === 'start' && !user && !loading && tip ? <Toast message={t('Parents, sign into your Coro account.')} onDismiss={() => setTip(false)} /> : null}
+      {accountsReady && step === 'start' && !user && !loading && tip ? <Toast message={t('Grown-ups, sign in to your Coro account.')} onDismiss={() => setTip(false)} /> : null}
     </WithBar>
   );
 }
