@@ -16,7 +16,7 @@ const SHARE_ICON = require('../../assets/icon-envelope.png');
 const EDIT_ICON = require('../../assets/icon-scissors.png');
 const TRASH_ICON = require('../../assets/icon-trash.png');
 const PROMPT_ICON = require('../../assets/heading-icons/sticky-note.png'); // a book prompt from the teacher (classroom.js)
-import { liveUri, saveJSON } from '../storage';
+import { liveUri } from '../storage';
 import { ageAllowed, ageOf, ageText, bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, localizeStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
 import Membership from '../components/Membership';

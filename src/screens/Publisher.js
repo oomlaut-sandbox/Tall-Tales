@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { BOOK_FONTS, bookFont, colors, fonts } from '../theme';
-import WordsOver, { DEFAULT_AT, SECOND_KEYS, WORD_LOOKS, WORD_SIZES, secondOf, secondWords, wordsLook, wordsOverOn, wordsOverSize, wordsOverText } from '../components/WordsOver';
+import WordsOver, { DEFAULT_AT, SECOND_KEYS, WORD_SIZES, secondOf, wordsLook, wordsOverOn, wordsOverSize, wordsOverText } from '../components/WordsOver';
 import { Bar, Burger, ConfirmBox, CoverIcon, DogEar, DoneTick, Panel, PageShape, PagesIcon, Toast, ChoiceLabel } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
@@ -283,37 +283,22 @@ function PlaceTile({ label, on, off, onPress, children }) {
     </Pressable>
   );
 }
-// a page of two squares (stacked, or side by side when sideways): the picture square(s) grey, the words as lines
+// the Where and Look tiles' icons: white line art, like the app's other icons (Jörg, 31 Oct 2026). Where: the page's
+// two squares (stacked, or side by side when sideways), a hill for a picture, lines for the words. Look: the
+// picture as a square, with Aa in each look.
+const WHERE_ICONS = {
+  words: [require('../../assets/where-words.png'), require('../../assets/where-words-wide.png')],
+  top: [require('../../assets/where-top.png'), require('../../assets/where-top-wide.png')],
+  bottom: [require('../../assets/where-bottom.png'), require('../../assets/where-bottom-wide.png')],
+  both: [require('../../assets/where-both.png'), require('../../assets/where-both-wide.png')],
+};
 function WhereIcon({ where, wide }) {
-  const sq = 12, gap = 2;
-  const Lines = ({ light }) => (
-    <View style={{ position: 'absolute', left: 3, right: 3, top: sq / 2 - 3, gap: 2 }}>
-      {[1, 0.7].map((w, k) => <View key={k} style={{ height: 1.6, width: `${w * 100}%`, alignSelf: 'center', borderRadius: 1, backgroundColor: light ? '#ffffff' : '#2a2a2a' }} />)}
-    </View>
-  );
-  const Sq = ({ pic, words }) => (
-    <View style={{ width: sq, height: sq, borderRadius: 2, backgroundColor: pic ? '#8f9aa3' : '#e8e4dc', overflow: 'hidden' }}>
-      {words ? <Lines light={pic} /> : null}
-    </View>
-  );
-  return (
-    <View style={{ flexDirection: wide ? 'row' : 'column', gap }}>
-      <Sq pic words={where === 'top' || where === 'both'} />
-      <Sq pic={where === 'bottom' || where === 'both'} words={where === null || where === 'bottom' || where === 'both'} />
-    </View>
-  );
+  return <Image source={WHERE_ICONS[where || 'words'][wide ? 1 : 0]} style={{ width: 30, height: 30 }} resizeMode="contain" accessibilityIgnoresInvertColors />;
 }
-// a little picture with "Aa" in the look
+const LOOK_ICONS = { light: require('../../assets/look-light.png'), dark: require('../../assets/look-dark.png'), shadow: require('../../assets/look-shadow.png'),
+  'plain-dark': require('../../assets/look-plain-dark.png'), 'plain-white': require('../../assets/look-plain-white.png') };
 function LookIcon({ look, ink }) {
-  const L = wordsLook(look, ink);
-  return (
-    <View style={{ width: 32, height: 24, borderRadius: 3, backgroundColor: '#7d8a93', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-      <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 8, backgroundColor: '#5c6b5a' }} />
-      <View style={{ backgroundColor: L.panel || 'transparent', borderRadius: 3, paddingHorizontal: 4, paddingVertical: 1 }}>
-        <Text style={[{ fontFamily: 'EBGaramond_500Medium', fontSize: 12, lineHeight: 14 }, wordsOverText(look, ink)]}>Aa</Text>
-      </View>
-    </View>
-  );
+  return <Image source={LOOK_ICONS[look === 'plain' ? `plain-${ink || 'dark'}` : look]} style={{ width: 30, height: 30 }} resizeMode="contain" accessibilityIgnoresInvertColors />;
 }
 
 // ---- Quick Book (31 Oct 2026): a new book made from up to 60 pictures at once ----
