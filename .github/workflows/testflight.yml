@@ -57,12 +57,12 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          node -e 'const u=process.env.SUPABASE_URL,k=process.env.SUPABASE_ANON_KEY; if(u&&k){require("fs").writeFileSync("src/supabaseConfig.json",JSON.stringify({url:u.trim(),anonKey:k.trim()}));console.log("accounts: on")}else console.log("accounts: secrets not set yet")' | tee -a ios-out/checks.txt
+          node -e 'const u=process.env.SUPABASE_URL,k=process.env.SUPABASE_ANON_KEY; if(u&&k){require("fs").writeFileSync("src/supabaseConfig.json",JSON.stringify({url:u.trim(),anonKey:k.trim()}));console.log("accounts: on")}else{console.log("accounts: SECRETS MISSING (SUPABASE_URL / SUPABASE_ANON_KEY): a build without them would ship without the Book Store; stopping");process.exit(1)}' | tee -a ios-out/checks.txt
       - name: Purchases (RevenueCat's public iOS key, if the secret exists)
         env:
           REVENUECAT_IOS_KEY: ${{ secrets.REVENUECAT_IOS_KEY }}
         run: |
-          node -e 'const k=process.env.REVENUECAT_IOS_KEY; if(k){require("fs").writeFileSync("src/purchasesConfig.json",JSON.stringify({iosKey:k.trim()}));console.log("purchases: on")}else console.log("purchases: secret not set yet")' | tee -a ios-out/checks.txt
+          node -e 'const k=process.env.REVENUECAT_IOS_KEY; if(k){require("fs").writeFileSync("src/purchasesConfig.json",JSON.stringify({iosKey:k.trim()}));console.log("purchases: on")}else{console.log("purchases: SECRET MISSING (REVENUECAT_IOS_KEY): a build without it would ship without memberships; stopping");process.exit(1)}' | tee -a ios-out/checks.txt
       - name: Send an existing build to TestFlight
         if: contains(github.event.head_commit.message, '[submit]')
         timeout-minutes: 80

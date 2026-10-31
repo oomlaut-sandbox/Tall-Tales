@@ -265,6 +265,19 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const [pagesOpen, setPagesOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [pdfChoice, setPdfChoice] = useState(null); // 'share' | 'print' | null: choosing a layout
+  // Saving (31 Oct 2026): pictures that were replaced or removed are deleted only once the book has been saved
+  // without them (if a save never happened, the saved book would point at a deleted picture); and leaving the
+  // book maker saves any change still waiting.
+  const toDrop = useRef([]);
+  const dirty = useRef(false);
+  const dropLater = (u) => { if (u) toDrop.current.push(u); };
+  const save = async (opts) => {
+    const list = await saveUserStory(latest.current, opts);
+    dirty.current = false;
+    const gone = toDrop.current; toDrop.current = [];
+    gone.forEach((u) => dropPicture(u));
+    return list;
+  };
   // the store owner can send a finished book to the Book Store (see storeAdmin.js)
   const admin = !!storeAdmin; // the app checks this once, for the menu and here
   const [publishing, setPublishing] = useState(false);
@@ -273,7 +286,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     setPublishing(true); setPagesOpen(false);
     try {
       clearTimeout(timer.current);
-      await saveUserStory(latest.current);
+      await save();
       const r = await publishToStore(latest.current, (step) => toast(step));
       toast(r.narration || 'Sent to the Book Store. It stays hidden until you show it in the Store Manager; the narration is being made now.');
     } catch (e) {
@@ -353,17 +366,18 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   useEffect(() => {
     if (first.current) { first.current = false; return; }
     setSaved(false);
+    dirty.current = true;
     clearTimeout(timer.current);
     timer.current = setTimeout(async () => {
-      try { onChange(await saveUserStory(latest.current)); setSaved(true); } catch (e) {}
+      try { onChange(await save()); setSaved(true); } catch (e) {}
     }, 700);
   }, [draft]);
-  useEffect(() => () => clearTimeout(timer.current), []);
+  useEffect(() => () => { clearTimeout(timer.current); if (dirty.current) save().catch(() => {}); }, []); // (leaving: the last change is saved)
   // After each step (a page written, a picture or drawing placed, the cover finished): save right away and say so
   // in a short speech bubble, so nothing is ever lost (Jörg, 28 Oct 2026)
   const sayStep = () => setTimeout(async () => {
     clearTimeout(timer.current);
-    try { onChange(await saveUserStory(latest.current)); setSaved(true); toast(tr('Saved'), 1300); } catch (e) {}
+    try { onChange(await save()); setSaved(true); toast(tr('Saved'), 1300); } catch (e) {}
   }, 150);
   // 'Saved' fades in quietly after each save, then away again
   const savedFade = useRef(new Animated.Value(0)).current;
@@ -469,8 +483,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     try {
       const ph = given || await choosePhoto(source);
       if (!ph) return;
-      if (cover && cover.uri) dropPicture(cover.uri);
-      if (cover && cover.src && cover.src !== cover.uri) dropPicture(cover.src);
+      if (cover && cover.uri) dropLater(cover.uri);
+      if (cover && cover.src && cover.src !== cover.uri) dropLater(cover.src);
       setCover({ ...ph, title: cover ? cover.title || null : null });
       if (!(cover && cover.title)) setCoverAsk(true);
     } catch (e) {
@@ -563,14 +577,14 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       const ph = given || await choosePhoto(source);
       if (!ph) return;
       if (target === 'page2') {
-        if (page.uri2) dropPicture(page.uri2);
-        if (page.src2 && page.src2 !== page.uri2) dropPicture(page.src2);
+        if (page.uri2) dropLater(page.uri2);
+        if (page.src2 && page.src2 !== page.uri2) dropLater(page.src2);
         update({ uri2: ph.uri, w2: ph.w, h2: ph.h, src2: null, edit2: null });
         sayStep();
         return;
       }
-      if (page.uri) dropPicture(page.uri);
-      if (page.src && page.src !== page.uri) dropPicture(page.src);
+      if (page.uri) dropLater(page.uri);
+      if (page.src && page.src !== page.uri) dropLater(page.src);
       update({ ...ph, src: null, edit: null });
       sayStep();
     } catch (e) {
@@ -586,13 +600,13 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     try { const a = Asset.fromModule(src); await a.downloadAsync(); let uri = a.localUri || a.uri; try { uri = await keepPicture(draft.id, uri); } catch (e) {} pickCover('library', { uri, w: a.width || 1600, h: a.height || 1600, hard: true }); } catch (e) {}
   };
   const removeImage = () => {
-    if (page.uri) dropPicture(page.uri);
-    if (page.src && page.src !== page.uri) dropPicture(page.src);
+    if (page.uri) dropLater(page.uri);
+    if (page.src && page.src !== page.uri) dropLater(page.src);
     update({ uri: null, w: 1, h: 1, src: null, edit: null });
   };
   const removeImage2 = () => {
-    if (page.uri2) dropPicture(page.uri2);
-    if (page.src2 && page.src2 !== page.uri2) dropPicture(page.src2);
+    if (page.uri2) dropLater(page.uri2);
+    if (page.src2 && page.src2 !== page.uri2) dropLater(page.src2);
     update({ uri2: null, w2: 1, h2: 1, src2: null, edit2: null, ...(page.textOn === 'bottom' ? { textOn: null } : null) });
   };
   // ---- Edit photo: crop, layout and look (the original is kept as src; the page shows the finished picture) ----
@@ -635,7 +649,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     if (!cur) return;
     let made = null;
     if (out) { try { made = { uri: await keepPicture(draft.id, out.uri), w: out.w, h: out.h }; } catch (e) {} }
-    if (made && cur.uri !== cur.src) dropPicture(cur.uri); // the last edit's picture (never the original)
+    if (made && cur.uri !== cur.src) dropLater(cur.uri); // the last edit's picture (never the original)
     const pic = made || { uri: cur.uri };
     if (t === 'cover') setCover({ ...cover, uri: pic.uri, w: pic.w || cover.w, h: pic.h || cover.h, src: cur.src, edit });
     else if (t === 'page2') update({ uri2: pic.uri, w2: pic.w || page.w2, h2: pic.h || page.h2, src2: cur.src, edit2: edit });
@@ -673,8 +687,8 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
 
   const removePage = (k) => {
     const p = draft.pages[k];
-    if (p.uri) dropPicture(p.uri);
-    if (p.uri2) dropPicture(p.uri2);
+    if (p.uri) dropLater(p.uri);
+    if (p.uri2) dropLater(p.uri2);
     setDraft((d) => {
       const pages = d.pages.filter((_, n) => n !== k);
       return { ...d, pages: pages.length ? pages : [blank()] };
@@ -689,7 +703,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const handIn = async () => {
     setPageDone(false); setTitleBox(false); clearTimeout(timer.current);
     try {
-      const list = await saveUserStory(latest.current, { handIn: true });
+      const list = await save({ handIn: true });
       if (!list.some((x) => x.id === latest.current.id)) { toast(tr('Add a picture or some words first.')); return; }
       toast(tr('Handed in. Your teacher will have a look.'));
       onDone(list, null, 'wip');
@@ -705,7 +719,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     setTitleBox(false);
     clearTimeout(timer.current);
     try {
-      const list = await saveUserStory(latest.current, { publish: true });
+      const list = await save({ publish: true });
       const hasPages = latest.current.pages.some((p) => p.text.trim() || p.uri || p.uri2);
       toast(hasPages ? tr('Added to My Book Collection.') : tr('Nothing to save yet, so no story was added.'));
       // a book you make is read in a real voice, never the phone's: invite the author to record it now (Jörg, 26 Oct 2026)
@@ -717,9 +731,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   };
 
   const deleteStory = async () => {
-    clearTimeout(timer.current);
-    draft.pages.forEach((p) => { if (p.uri) dropPicture(p.uri); if (p.uri2) dropPicture(p.uri2); });
+    clearTimeout(timer.current); dirty.current = false;
     const list = await deleteUserStory(draft.id);
+    draft.pages.forEach((p) => { if (p.uri) dropPicture(p.uri); if (p.uri2) dropPicture(p.uri2); }); // (after the book is gone)
+    toDrop.current.forEach((u) => dropPicture(u)); toDrop.current = [];
     toast(tr('“{title}” deleted.', { title: draft.title.trim() || tr('Untitled story') }));
     onDone(list);
   };
@@ -1354,9 +1369,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Keep working on this page')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => openCover(true)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon="cover" text={cover && cover.uri ? tr('Edit the cover') : tr('Design a cover')} style={styles.choiceBtnText} /></Pressable>
             {/* leave the book maker for now; what's been made so far stays saved */}
-            <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await saveUserStory(latest.current)); } catch (e) { toast(tr('Couldn’t save the story. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon="cancel" text={tr('Cancel book editor')} style={styles.choiceBtnText} /></Pressable>
+            <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await save()); } catch (e) { toast(tr('Couldn’t save the story. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon="cancel" text={tr('Cancel book editor')} style={styles.choiceBtnText} /></Pressable>
             {/* Save and Exit: saved as it is, into Work in Progress in My Library (Jörg, 28 Oct 2026) */}
-            <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await saveUserStory(latest.current), null, 'wip'); } catch (e) { toast(tr('Couldn’t save the story. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.save} text={tr('Save and Exit')} style={styles.choiceBtnText} /></Pressable>
+            <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await save(), null, 'wip'); } catch (e) { toast(tr('Couldn’t save the story. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.save} text={tr('Save and Exit')} style={styles.choiceBtnText} /></Pressable>
             {/* Finish last, in green, with extra room around it */}
             <Pressable onPress={() => { setPageDone(false); if (classBook) handIn(); else finish(); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 18, marginBottom: 8 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.done} text={classBook ? tr('Hand in to my teacher') : tr('Finish and publish to library')} style={styles.choiceBtnText} /></Pressable>
           </View>

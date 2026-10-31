@@ -12,7 +12,7 @@ try { Purchases = require('react-native-purchases').default; } catch (e) { Purch
 
 export const purchasesReady = !!(config.iosKey && Purchases);
 
-let state = { ready: false, member: false, owned: [], plans: null };
+let state = { ready: false, member: false, owned: [], plans: null, trial: null, offline: false };
 const listeners = new Set();
 const set = (patch) => { state = { ...state, ...patch }; listeners.forEach((fn) => fn(state)); };
 const fromInfo = (info) => ({
@@ -20,22 +20,49 @@ const fromInfo = (info) => ({
   owned: ((info && info.nonSubscriptionTransactions) || []).map((t) => t.productIdentifier),
 });
 
-let started = false;
-export async function startPurchases() {
-  if (started || !purchasesReady) return;
-  started = true;
-  try {
+// (31 Oct 2026) What's known about this family and the plans load separately, and loading tries again later
+// (when the app comes back, or the membership screen opens) if the App Store couldn't be reached at first.
+// trial: whether this Apple ID can still have the free week, for each plan (people who had it see no trial).
+let configured = false;
+let loading = null;
+async function load() {
+  if (!configured) {
     Purchases.configure({ apiKey: config.iosKey });
     Purchases.addCustomerInfoUpdateListener((info) => set(fromInfo(info)));
-    const info = await Purchases.getCustomerInfo();
-    set({ ready: true, ...fromInfo(info) });
-    const offerings = await Purchases.getOfferings();
-    const cur = offerings && offerings.current;
-    if (cur) set({ plans: { monthly: cur.monthly || null, yearly: cur.annual || null } });
-  } catch (e) {
-    set({ ready: false });
+    configured = true;
+  }
+  if (!state.ready) {
+    try { const info = await Purchases.getCustomerInfo(); set({ ready: true, offline: false, ...fromInfo(info) }); } catch (e) { set({ offline: true }); }
+  }
+  if (!state.plans) {
+    try {
+      const offerings = await Purchases.getOfferings();
+      const cur = offerings && offerings.current;
+      if (cur) set({ plans: { monthly: cur.monthly || null, yearly: cur.annual || null }, offline: false });
+    } catch (e) { set({ offline: true }); }
+  }
+  if (state.plans && !state.trial) {
+    try {
+      const ids = ['monthly', 'yearly'].map((k) => state.plans[k] && state.plans[k].product.identifier).filter(Boolean);
+      const el = await Purchases.checkTrialOrIntroductoryPriceEligibility(ids);
+      const NOT = [1, 3]; // INELIGIBLE, NO_INTRO_OFFER_EXISTS
+      const ok = (k) => { const id = state.plans[k] && state.plans[k].product.identifier; const r = id && el && el[id]; return !(r && NOT.includes(r.status)); };
+      set({ trial: { monthly: ok('monthly'), yearly: ok('yearly') } });
+    } catch (e) {}
   }
 }
+export function startPurchases() {
+  if (!purchasesReady) return Promise.resolve();
+  if (loading) return loading;
+  loading = load().catch(() => {}).finally(() => { loading = null; });
+  return loading;
+}
+// try again if something is still missing (the app came back, or the membership screen opened)
+export function retryPurchases() { if (purchasesReady && (!state.ready || !state.plans || !state.trial)) startPurchases(); }
+try {
+  const { AppState } = require('react-native');
+  AppState.addEventListener('change', (st) => { if (st === 'active') retryPurchases(); });
+} catch (e) {}
 
 export function usePurchases() {
   const [s, setS] = useState(state);

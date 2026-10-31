@@ -78,12 +78,17 @@ function PhotoPic({ st, width, height }) {
   if (!img) return null;
   return <SkImage image={img} x={0} y={0} width={width} height={height} fit="cover" />;
 }
+// (each kind is its own component, so the hooks never change between kinds when strokes shift places in the
+// list, e.g. a fill put in front of a photo: that crashed the editor: 31 Oct 2026)
+const Ink = React.memo(function Ink({ st, width }) {
+  const layers = useMemo(() => layersFor(st, width), [st, width]);
+  return <>{layers.filter((L) => L.alpha).map((L, i) => <Layer key={i} L={L} color={st.c} />)}</>;
+});
 const One = React.memo(function One({ st, width, height }) {
   if (st.ph) return <PhotoPic st={st} width={width} height={height || width} />;
   if (st.stp) return st.m ? <><StampPic st={{ ...st, m: 0 }} width={width} /><StampPic st={mirrored(st)} width={width} /></> : <StampPic st={st} width={width} />;
   if (st.sm) return <Smudge st={st} width={width} />;
-  const layers = useMemo(() => layersFor(st, width), [st, width]);
-  return <>{layers.filter((L) => L.alpha).map((L, i) => <Layer key={i} L={L} color={st.c} />)}</>;
+  return <Ink st={st} width={width} />;
 });
 
 // noPaper: on a photo (no paper grain over the photo; the tooth still shows in what's drawn)

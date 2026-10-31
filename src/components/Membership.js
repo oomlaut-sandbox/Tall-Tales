@@ -1,20 +1,23 @@
 // The membership screen (for grown-ups; the store asks the grown-up question first). Two plans, yearly
 // picked to start with, a 7-day free trial, Restore Purchases, and the renewal terms Apple asks for.
 // Until purchases are switched on (see purchases.native.js) it shows the prices and says it's coming soon.
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme';
 import { PRICES, PRIVACY_URL, TERMS_URL } from '../prices';
 import { useT } from '../i18n';
 import { STORE_ON } from '../controls'; // (no longer changes the wording here)
-import { joinMembership, planPrice, purchasesReady, restorePurchases, usePurchases } from '../purchases';
+import { joinMembership, planPrice, purchasesReady, restorePurchases, retryPurchases, usePurchases } from '../purchases';
 
 export default function Membership({ visible, onClose, toast }) {
   const t = useT();
   const s = usePurchases();
   const [plan, setPlan] = useState('yearly');
   const [busy, setBusy] = useState(null); // 'join' | 'restore'
+  useEffect(() => { if (visible) retryPurchases(); }, [visible]); // (opening it tries the App Store again if it wasn't reached)
   if (!visible) return null;
+  // the free week only for an Apple ID that can still have it (unknown: shown, as Apple decides at purchase)
+  const trial = !s.trial || s.trial[plan] !== false;
   const live = purchasesReady && s.ready && !!s.plans;
   const join = async () => {
     setBusy('join');
@@ -55,11 +58,12 @@ export default function Membership({ visible, onClose, toast }) {
             <Plan id="monthly" title={t('Monthly')} price={planPrice(s, 'monthly')} per={t(' / month')} />
           </View>
           <Pressable onPress={join} disabled={!live || !!busy} accessibilityRole="button" style={[styles.join, (!live || busy) && { opacity: 0.5 }]}>
-            {busy === 'join' ? <ActivityIndicator color={colors.white} /> : <Text style={styles.joinText}>{t('Try {n} days free', { n: PRICES.trialDays })}</Text>}
+            {busy === 'join' ? <ActivityIndicator color={colors.white} /> : <Text style={styles.joinText}>{trial ? t('Try {n} days free', { n: PRICES.trialDays }) : t('Join Coro Family')}</Text>}
           </Pressable>
-          {!live ? <Text style={styles.soon}>{t('Memberships are being set up and arrive in the next update.')}</Text> : null}
+          {!live ? <Text style={styles.soon}>{purchasesReady && s.offline ? t('Coro can’t reach the App Store right now. Check the internet and try again.') : t('Memberships are being set up and arrive in the next update.')}</Text> : null}
           <Text style={styles.small}>
-            {t('Free for {n} days, then {price} a {period}. Payment is charged to your Apple ID. The membership renews automatically unless it’s cancelled at least 24 hours before the end of the period. You can manage or cancel it any time in your App Store account settings.', { n: PRICES.trialDays, price: planPrice(s, plan), period: t(plan === 'yearly' ? 'year' : 'month') })}
+            {trial ? t('Free for {n} days, then {price} a {period}. Payment is charged to your Apple ID. The membership renews automatically unless it’s cancelled at least 24 hours before the end of the period. You can manage or cancel it any time in your App Store account settings.', { n: PRICES.trialDays, price: planPrice(s, plan), period: t(plan === 'yearly' ? 'year' : 'month') })
+              : t('{price} a {period}. Payment is charged to your Apple ID. The membership renews automatically unless it’s cancelled at least 24 hours before the end of the period. You can manage or cancel it any time in your App Store account settings.', { price: planPrice(s, plan), period: t(plan === 'yearly' ? 'year' : 'month') })}
           </Text>
           <View style={styles.links}>
             <Pressable onPress={restore} disabled={!purchasesReady || !!busy} hitSlop={8}><Text style={[styles.link, !purchasesReady && { opacity: 0.5 }]}>{busy === 'restore' ? t('Restoring…') : t('Restore Purchases')}</Text></Pressable>

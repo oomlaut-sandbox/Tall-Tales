@@ -2,8 +2,9 @@
 import { PRICES } from './prices';
 
 export const purchasesReady = false;
-const state = { ready: false, member: false, owned: [], plans: null };
+const state = { ready: false, member: false, owned: [], plans: null, trial: null, offline: false };
 export const startPurchases = async () => {};
+export const retryPurchases = () => {};
 export const usePurchases = () => state;
 export const canOpen = (s, book) => book.access === 'free';
 export const planPrice = (s, plan) => PRICES[plan];

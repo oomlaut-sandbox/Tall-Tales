@@ -9,11 +9,24 @@ function dir(name) {
   return d;
 }
 
+// Safe saving (31 Oct 2026): each save also refreshes a backup copy (name.bak.json, at most every few seconds),
+// and a file that can't be read is never quietly treated as empty: the backup is used instead, and the damaged
+// file is put aside (name.damaged-<time>.json) rather than written over, so nothing is lost for good.
+const bakAt = {};
+async function readJSONAsync(f) {
+  if (!f.exists) return { none: true };
+  try { return { ok: true, v: JSON.parse(await f.text()) }; } catch (e) { return { bad: true }; }
+}
 async function rawLoad(name, fallback) {
   try {
-    const f = new File(dir('data'), `${name}.json`);
-    if (!f.exists) return fallback;
-    return JSON.parse(await f.text());
+    const d = dir('data');
+    const f = new File(d, `${name}.json`);
+    const main = await readJSONAsync(f);
+    if (main.ok) return main.v;
+    const bak = await readJSONAsync(new File(d, `${name}.bak.json`));
+    if (main.bad) { try { f.move(new File(d, `${name}.damaged-${Date.now()}.json`)); } catch (e) {} }
+    if (bak.ok) { try { new File(d, `${name}.json`).write(JSON.stringify(bak.v)); } catch (e) {} return bak.v; }
+    return fallback;
   } catch (e) {
     return fallback;
   }
@@ -21,8 +34,12 @@ async function rawLoad(name, fallback) {
 
 async function rawSave(name, value) {
   try {
-    const f = new File(dir('data'), `${name}.json`);
-    f.write(JSON.stringify(value));
+    const d = dir('data');
+    const text = JSON.stringify(value);
+    if (text === undefined) return;
+    new File(d, `${name}.json`).write(text);
+    const now = Date.now();
+    if (!bakAt[name] || now - bakAt[name] > 4000) { bakAt[name] = now; new File(d, `${name}.bak.json`).write(text); }
   } catch (e) {}
 }
 

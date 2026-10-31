@@ -17,7 +17,7 @@ export async function loadGrownupCode() {
     const v = await loadJSON('grownupCode', null).catch(() => null);
     code = v && v.h ? v.h : null; loaded = true; tell();
   }
-  return !!code;
+  return loaded ? !!code : null; // null: not known yet
 }
 export const hasGrownupCode = () => !!code;
 export const checkGrownupCode = (s) => !!code && scramble(String(s || '')) === code;
@@ -29,5 +29,5 @@ export async function setGrownupCode(s) {
 export function useGrownupCode() {
   const [, bump] = useState(0);
   useEffect(() => { const fn = () => bump((x) => x + 1); subs.add(fn); loadGrownupCode().catch(() => {}); return () => { subs.delete(fn); }; }, []);
-  return !!code;
+  return loaded ? !!code : null; // null: not known yet
 }

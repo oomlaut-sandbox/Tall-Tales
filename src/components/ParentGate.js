@@ -20,6 +20,11 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
   // a grown-up passcode set in Settings: asked for instead of the times-table question (Jörg, 30 Oct 2026)
   const coded = useGrownupCode();
   const [forgotMsg, setForgotMsg] = useState(null);
+  // after 3 wrong passcodes, a 30-second wait (so it can't simply be guessed)
+  const tries = useRef(0);
+  const [waitUntil, setWaitUntil] = useState(0);
+  const [, tick] = useState(0);
+  useEffect(() => { if (!waitUntil) return undefined; const iv = setInterval(() => { if (Date.now() >= waitUntil) { setWaitUntil(0); tries.current = 0; } tick((x) => x + 1); }, 1000); return () => clearInterval(iv); }, [waitUntil]);
   useEffect(() => {
     if (visible) {
       setForgotMsg(null);
@@ -38,12 +43,16 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
     const hide = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setKbTop(null));
     return () => { show.remove(); hide.remove(); };
   }, []);
-  if (!visible) return null;
+  if (!visible || coded === null) return null; // (the passcode isn't known yet: a moment, never the times-table question instead)
   // how much of this layer the keyboard covers
   const covered = kbTop != null && frame ? Math.max(0, frame.y + frame.h - kbTop) : 0;
   const check = () => {
-    if (coded ? checkGrownupCode(answer) : parseInt(answer, 10) === q.a * q.b) onPass();
-    else { setWrong(true); setAnswer(''); }
+    if (waitUntil) return;
+    if (coded ? checkGrownupCode(answer) : parseInt(answer, 10) === q.a * q.b) { tries.current = 0; onPass(); }
+    else {
+      setWrong(true); setAnswer('');
+      if (coded && ++tries.current >= 3) setWaitUntil(Date.now() + 30000);
+    }
   };
   // Forgot the passcode: Sign in with Apple asks for Face ID or the device's own passcode; that turns it off
   const forgot = async () => {
@@ -89,7 +98,8 @@ export default function ParentGate({ visible, reason, onPass, onCancel }) {
         {flat ? (
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 2 }}>{input}{cancelBtn}{goBtn}</View>
         ) : input}
-        {wrong ? <Text style={styles.wrong}>{t('That’s not quite right. Try again.')}</Text> : null}
+        {waitUntil ? <Text style={styles.wrong}>{t('Too many tries. Wait {n} seconds.', { n: Math.max(1, Math.ceil((waitUntil - Date.now()) / 1000)) })}</Text>
+          : wrong ? <Text style={styles.wrong}>{t('That’s not quite right. Try again.')}</Text> : null}
         {coded ? (
           <Pressable onPress={forgot} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'flex-start' }}>
             <Text style={[styles.lang, { fontSize: 14, color: 'rgba(225,225,225,0.8)', textDecorationLine: 'underline' }]}>{t('Forgot the passcode?')}</Text>

@@ -2,14 +2,13 @@
 // them all by themselves (Auto Play), one book after the next. Each child has their own playlists;
 // "Bedtime" is there from the start.
 import LineInput from '../components/LineInput';
-import { TitleIcon } from '../titleIcons';
 import { useScrollMemory } from '../nav';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, LayoutAnimation, Platform, Pressable, ScrollView, UIManager, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { DESK_FELT, DESK_BG, IS_TABLET, BandFill } from '../look';
-import { Bar, Burger, WithBar } from '../components/Chrome';
+import { Bar, Burger, PlaylistIcon, WithBar } from '../components/Chrome';
 import { useT } from '../i18n';
 import { loadPlaylists, newPlaylist, savePlaylists } from '../playlists';
 import { sharePlaylist } from '../invite';
@@ -90,7 +89,7 @@ export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
         {/* Jörg's brown felt banner (phone); its soft bottom edge shows the desk, so the colour only fills the status bar strip */}
         {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: insets.top + 2, backgroundColor: BAND_COLOR }} /> : null}
         {true ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: IS_TABLET ? 0 : insets.top, bottom: 0, overflow: 'hidden' }}><BandFill source={BAND_FELT} /></View> : null}
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="playlists" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Book Playlists')}</Text></View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}><View style={{ marginRight: 14, transform: [{ translateY: -3 }] }}><PlaylistIcon size={28} weight={3} /></View>{/* the same icon as Book Playlists in the menus (Jörg, 31 Oct 2026) */}<Text style={[styles.title, { flexShrink: 1 }]}>{t('Book Playlists')}</Text></View>
       </View>
       <ScrollView {...keep} contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
         <View style={styles.col}>

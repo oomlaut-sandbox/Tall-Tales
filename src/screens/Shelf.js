@@ -20,7 +20,7 @@ import { liveUri, loadJSON, saveJSON } from '../storage';
 import { ageAllowed, ageOf, ageText, bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, localizeStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
 import Membership from '../components/Membership';
-import { appUserId, buyBook, canOpen, usePurchases } from '../purchases';
+import { appUserId, buyBook, canOpen, purchasesReady, restorePurchases, usePurchases } from '../purchases';
 import { PRICES } from '../prices';
 import { useLang, useT } from '../i18n';
 import { useControls } from '../controls';
@@ -539,6 +539,12 @@ export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
   const [pay, setPay] = useState(null); // { kind: 'join' | 'buy', book } waiting for the grown-up question
   const [member, setMember] = useState(false); // the membership screen
   const [buying, setBuying] = useState(null);
+  const [restoring, setRestoring] = useState(false);
+  const restore = async () => {
+    setRestoring(true);
+    try { const r = await restorePurchases(); toast && toast(r === 'restored' ? t('Your purchases are back.') : t('No earlier purchases were found for this Apple ID.')); } catch (e) { toast && toast(t(e.message)); }
+    setRestoring(false);
+  };
   const passed = async () => {
     const p = pay; setPay(null);
     if (!p) return;
@@ -598,6 +604,12 @@ export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
         ))}
         {/* Reading Options under the books, in black glass (as in My Library) */}
         {onReadingOptions ? <ReadingOptionsSection {...onReadingOptions} style={{ marginHorizontal: 20, marginTop: 10 }} /> : null}
+        {/* Restore Purchases: books bought before (or on another device) come back here too, not only from the membership screen (31 Oct 2026) */}
+        {purchasesReady ? (
+          <Pressable onPress={restore} disabled={restoring} hitSlop={10} accessibilityRole="button" style={{ alignSelf: 'center', paddingVertical: 8 }}>
+            <Text style={{ fontFamily: fonts.ui, fontSize: 14, color: '#bdbdbd', textDecorationLine: 'underline' }}>{restoring ? t('Restoring…') : t('Restore Purchases')}</Text>
+          </Pressable>
+        ) : null}
       </ScrollView>
       {open ? (
         <BookCard key={open.book.id} u={u} book={open.book} rect={open.rect} sideways={sideways}
