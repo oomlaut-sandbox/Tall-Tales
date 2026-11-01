@@ -872,6 +872,17 @@ export function DoneTick({ size = 34 }) {
     </View>
   );
 }
+// The book maker's button (1 Nov 2026): a green square with a white tick, a little bigger than the bar's other
+// icons; it opens 'What's next?' (the circle tick means Done elsewhere, so this one looks different)
+export function DoneSquare({ size = 28 }) {
+  const w = Math.max(2.2, size * 0.085);
+  return (
+    <View style={{ width: size, height: size, borderRadius: size * 0.16, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: size * 0.46, height: size * 0.26, borderLeftWidth: w, borderBottomWidth: w, borderColor: colors.white, borderBottomLeftRadius: w / 2,
+        transform: [{ translateY: -size * 0.05 }, { rotate: '-45deg' }] }} />
+    </View>
+  );
+}
 // the book's cover: a closed book seen from the front, its spine on the left, a little picture on it
 export function CoverIcon({ size = 28, color = colors.white, weight }) {
   const w = weight || Math.max(1.6, size * 0.07); // the same thin stroke as the house and the note

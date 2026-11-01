@@ -13,7 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { BOOK_FONTS, bookFont, colors, fonts } from '../theme';
 import WordsOver, { DEFAULT_AT, SECOND_KEYS, WORD_SIZES, secondOf, wordsLook, wordsOverOn, wordsOverSize, wordsOverText } from '../components/WordsOver';
-import { Bar, Burger, ConfirmBox, CoverIcon, DogEar, DoneTick, Panel, PageShape, PagesIcon, Toast, ChoiceLabel } from '../components/Chrome';
+import { Bar, Burger, ConfirmBox, CoverIcon, DogEar, DoneSquare, DoneTick, Panel, PageShape, PagesIcon, Toast, ChoiceLabel } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, DESK_BG } from '../look';
@@ -426,7 +426,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const closeWords = () => {
     // words over a picture: Done just closes the editor and saves, so the words can be dragged on the picture
     // straight away (no 'What's next?' box: Jörg, 31 Oct 2026)
-    const done = () => { setEditing(false); setPlaceOpen(false); if (!page.textOn) setPageDone(true); sayStep(); };
+    const done = () => { setEditing(false); setPlaceOpen(false); sayStep(); }; // (no 'What's next?' after each page: the green square in the bar opens it, 1 Nov 2026)
     if (!fromRect.current || !zoomTo) return done();
     Animated.timing(zoom, { toValue: 0, duration: 260, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start(done);
   };
@@ -1031,7 +1031,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ alignItems: 'center', gap: 18, opacity: barFade, marginBottom: 26 }}>
               <Pressable onPress={() => openCover()} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><CoverIcon size={23} /></Pressable>
               <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Pages')}><PagesIcon size={24} /></Pressable>
-              <Pressable onPress={() => finish()} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Finish and save the book')}><DoneTick size={34} /></Pressable>
+              <Pressable onPress={() => setPageDone(true) /* 'What's next?' only from here, never after each page (Jörg, 1 Nov 2026) */} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('What’s next?')}><DoneSquare size={29} /></Pressable>
               </Animated.View>
             </View>
           </Bar>
@@ -1045,7 +1045,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ marginLeft: 'auto', flexShrink: 0, flexDirection: 'row', alignItems: 'center', gap: 22, opacity: barFade }}>
         <Pressable onPress={() => openCover()} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><CoverIcon size={23} /></Pressable>
         <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Pages')}><PagesIcon size={24} /></Pressable>
-        <Pressable onPress={() => finish()} hitSlop={8} accessibilityRole="button" accessibilityLabel={tr('Finish and save the book')}><DoneTick size={34} /></Pressable>
+        <Pressable onPress={() => setPageDone(true) /* 'What's next?' only from here, never after each page (Jörg, 1 Nov 2026) */} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('What’s next?')}><DoneSquare size={29} /></Pressable>
         </Animated.View>
       </Bar>
       </View>
@@ -1599,8 +1599,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             <Pressable onPress={addPage} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.page} text={tr('Add another page')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => setPageDone(false)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Keep working on this page')} style={styles.choiceBtnText} /></Pressable>
             <Pressable onPress={() => openCover(true)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon="cover" text={cover && cover.uri ? tr('Edit the cover') : tr('Design a cover')} style={styles.choiceBtnText} /></Pressable>
-            {/* leave the book maker for now; what's been made so far stays saved */}
-            <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await save()); } catch (e) { toast(tr('Couldn’t save the book. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon="cancel" text={tr('Close the book maker')} style={styles.choiceBtnText} /></Pressable>
+            {/* (no 'Close the book maker' here any more: Save for later does that, 1 Nov 2026) */}
             {/* Save and Exit: saved as it is, into Work in Progress in My Library (Jörg, 28 Oct 2026) */}
             <Pressable onPress={async () => { setPageDone(false); clearTimeout(timer.current); try { onDone(await save(), null, 'wip'); } catch (e) { toast(tr('Couldn’t save the book. Try again.')); } }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.save} text={tr('Save for later')} style={styles.choiceBtnText} /></Pressable>
             {/* Finish last, in green, with extra room around it */}

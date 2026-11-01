@@ -26,6 +26,10 @@ const SOUNDS = [
   ['wood-chimes-a', 'Hollow wooden wind chimes knocking softly in a gentle breeze: warm, low, round wooden clonks, slow and sparse, no metal, no bells, very calm, no music, seamless loop.'],
   ['wood-chimes-b', 'Bamboo wind chimes clacking gently and slowly on a quiet porch, soft hollow wooden tones, a few at a time with pauses, no metal chimes, peaceful, no music, seamless loop.'],
   ['wood-chimes-c', 'A large set of deep wooden tube chimes moving very slowly in a light wind, soft resonant hollow knocks, calm and meditative, no metal, no bells, no music, seamless loop.'],
+  // three gentler campfires to choose from (Jörg, 1 Nov 2026)
+  ['campfire-a', 'A tiny campfire that has burned down to glowing embers late at night: a soft, warm, low murmur of embers with only an occasional faint tick, very gentle and sleepy, no loud pops, no wind, no voices, no music, seamless loop.'],
+  ['campfire-b', 'A small fire in a wood stove heard from across a cosy cabin room: muffled, soft, slow crackling and a quiet warm hiss, far away and calm, no sharp pops, no voices, no music, seamless loop.'],
+  ['campfire-c', 'A quiet little campfire by a lake on a still night: slow, soft, gentle crackles spaced out with calm pauses, faint lapping water far away, warm and soothing for falling asleep, no loud pops, no voices, no music, seamless loop.'],
   ['brook', 'A babbling brook: clear water trickling softly over smooth stones in a quiet forest, steady and soothing, no birds, no music, seamless loop.'],
   ['forest-birds', 'Birds singing softly in a peaceful forest in the early morning: gentle distant birdsong, leaves rustling lightly in a breeze, calm and relaxing, no music, seamless loop.'],
   ['rain', 'Soft steady rain falling on a roof and leaves, cosy and calm, no thunder, no wind gusts, no music, seamless loop.'],
