@@ -92,7 +92,7 @@ function AboutPage({ tr, insets, onNext, onSkip, onQuick }) {
     </>
   );
 }
-import { strokesToImage } from '../components/Strokes';
+import { pagePixels, strokesToImage } from '../components/Strokes';
 const CHOICE_ICONS = { // the icons before the words in the pop-up choices (the app's own set)
   photo: require('../../assets/heading-icons/family-and-memories.png'),
   draw: require('../../assets/heading-icons/making-books.png'),
@@ -588,11 +588,16 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         pages.push({ ...blank(), uri: a.uri, w: a.w, h: a.h, ...(b ? { uri2: b.uri, w2: b.w, h2: b.h } : null) });
       }
     } else pics.forEach((a) => pages.push({ ...blank(), uri: a.uri, w: a.w, h: a.h }));
-    setDraft((d) => ({ ...d, pages: pages.slice(0, MAX_PAGES) }));
+    // the first picture goes on the cover too (its own copy), so the cover that comes next isn't empty: a tester chose
+    // one picture and then couldn't tell where it had gone (Jörg, 1 Nov 2026)
+    let front = null;
+    try { front = { uri: await keepFile(pics[0].uri, `stories/${draft.id}`, `cover-${Date.now()}.jpg`), w: pics[0].w, h: pics[0].h }; } catch (e) {}
+    setDraft((d) => ({ ...d, pages: pages.slice(0, MAX_PAGES), ...(front && !d.cover ? { cover: { ...front, title: null } } : null) }));
+    if (front) setCoverAsk(true);
     setI(0);
     setAboutOpen(false); // (on to the cover, then 'Start writing')
     sayStep();
-    toast(tr('Your Quick Book has {n} pictures. Make a cover, then add your words.', { n: pics.length }), 5000);
+    toast(tr('Your pictures are on the pages, and the first one is on the cover too. Change it if you like.'), 6000);
   };
 
   // ---- The Cover Editor: a square like the words editor. Add a picture, then (if wanted) the title,
@@ -673,6 +678,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       if (cover && cover.uri) dropLater(cover.uri);
       if (cover && cover.src && cover.src !== cover.uri) dropLater(cover.src);
       setCover({ ...ph, title: cover ? cover.title || null : null });
+      if (cover && cover.title && !cover.title.colorSet) autoTitle(ph.uri, cover.title.y);
       if (!(cover && cover.title)) setCoverAsk(true);
     } catch (e) {
       toast(tr('Couldn’t open your photos. Check that Coro is allowed to use Photos in Settings.'));
@@ -692,8 +698,25 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
   const coverYes = () => {
     setCoverAsk(false); setCoverTitling(true);
     setCover({ ...cover, title: { text: draft.title.trim() || tr('My Story'), x: 0.5, y: 0.2, size: 0.11, color: '#7a1414', font: 'serif' } }); // dark red, in the serif, to start with (Jörg, 27 Oct 2026; was white)
+    if (cover && cover.uri) autoTitle(cover.uri, 0.2); // (white instead when the picture is dark there)
   };
   const setCoverTitle = (patch) => setDraft((d) => ({ ...d, cover: { ...d.cover, title: { ...d.cover.title, ...patch } } }));
+  // (1 Nov 2026, from a tester) until a colour is picked, the title takes white or the dark red, whichever stands out
+  // from the picture where the title sits (the band of the picture around it, light or dark)
+  const autoTitle = async (uri, y) => {
+    try {
+      const px = uri ? await pagePixels([], 24, 1, uri) : null;
+      if (!px) return;
+      const r0 = Math.max(0, Math.floor((y - 0.09) * px.rows)), r1 = Math.min(px.rows - 1, Math.ceil((y + 0.09) * px.rows));
+      let sum = 0, n = 0;
+      for (let r = r0; r <= r1; r += 1) for (let c = 0; c < px.cols; c += 1) {
+        const k = (r * px.cols + c) * 4, d = px.data;
+        sum += (0.2126 * d[k] + 0.7152 * d[k + 1] + 0.0722 * d[k + 2]) / 255; n += 1;
+      }
+      const L = n ? sum / n : 1;
+      setDraft((d) => (d.cover && d.cover.title && !d.cover.title.colorSet ? { ...d, cover: { ...d.cover, title: { ...d.cover.title, color: L < 0.55 ? '#ffffff' : '#7a1414' } } } : d));
+    } catch (e) {}
+  };
   // dragging the title around the square
   const coverSize = useRef(1);
   // The cover square fits the room it has: on a phone held sideways, and above the keyboard while typing
@@ -717,7 +740,11 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     onMoveShouldSetPanResponderCapture: (_, g) => Math.abs(g.dx) + Math.abs(g.dy) > 6, // win over the text box while dragging
     onPanResponderTerminationRequest: () => false,
     onPanResponderGrant: () => { setCoverTip(false); const t = latest.current.cover && latest.current.cover.title; dragFrom.current = t ? { x: t.x, y: t.y } : null; },
-    onPanResponderRelease: (_, g) => { setCoverSel('title'); if (Math.abs(g.dx) + Math.abs(g.dy) < 6) setTitleEditing(true); }, // a tap: type in it
+    onPanResponderRelease: (_, g) => {
+      setCoverSel('title');
+      if (Math.abs(g.dx) + Math.abs(g.dy) < 6) { setTitleEditing(true); return; } // a tap: type in it
+      const c = latest.current.cover; if (c && c.title && !c.title.colorSet && c.uri) autoTitle(c.uri, c.title.y); // moved: stand out where it is now
+    },
     onPanResponderMove: (_, g) => {
       if (!dragFrom.current) return;
       const W = coverSize.current;
@@ -1490,7 +1517,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                           {[COVER_COLORS.slice(0, half), COVER_COLORS.slice(half)].map((row, r) => (
                             <View key={r} style={{ flexDirection: 'row', gap: 8 }}>
                               {row.map(([hex, name]) => (
-                                <Pressable key={hex} onPress={() => setCoverTitle(by ? { bColor: hex } : { color: hex })} accessibilityRole="button" accessibilityLabel={name} accessibilityState={{ selected: curColor === hex }}
+                                <Pressable key={hex} onPress={() => setCoverTitle(by ? { bColor: hex } : { color: hex, colorSet: true })} accessibilityRole="button" accessibilityLabel={name} accessibilityState={{ selected: curColor === hex }}
                                   style={[styles.swatch, { width: 28, height: 28, borderRadius: 14, backgroundColor: hex }, curColor === hex && styles.swatchOn]} />
                               ))}
                             </View>
@@ -1569,7 +1596,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   <Text style={styles.choiceTitle}>{coverTool === 'color' ? tr('Text colour') : tr('Font')}</Text>
                   <ScrollView style={{ maxHeight: winH * 0.5 }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', gap: coverTool === 'color' ? 10 : 8, justifyContent: 'center', paddingVertical: 6 }}>
                     {coverTool === 'color' ? COVER_COLORS.map(([hex, name]) => (
-                      <Pressable key={hex} onPress={() => setCoverTitle(by ? { bColor: hex } : { color: hex })} accessibilityLabel={name} accessibilityState={{ selected: curColor === hex }}
+                      <Pressable key={hex} onPress={() => setCoverTitle(by ? { bColor: hex } : { color: hex, colorSet: true })} accessibilityLabel={name} accessibilityState={{ selected: curColor === hex }}
                         style={[styles.swatch, { width: 34, height: 34, borderRadius: 17, backgroundColor: hex }, curColor === hex && styles.swatchOn]} />
                     )) : Object.entries(BOOK_FONTS).map(([k, f]) => (
                       <Pressable hitSlop={6} key={k} onPress={() => setCoverTitle(by ? { bFont: k } : { font: k })} style={[styles.fontChip, curFont === k && { backgroundColor: colors.green }]}>

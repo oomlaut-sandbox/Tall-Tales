@@ -80,7 +80,7 @@ const ALL_HELP = [
   ] },
   { section: 'Your voice', title: 'Recording yourself reading', text: [
     'A grown-up can record their own voice reading each page, so the book plays in a familiar voice. Up to three people can record each book (Mom, Opa…).',
-    'Open a book, tap the red button, then Start recording. Pick who’s reading, or add a new reader with their name and a photo. Read the page, then turn it to keep going: each page saves on its own. Tap the red button to stop.',
+    'Open a book, tap the red button, then Start recording. Pick who’s reading, or add a new reader with their name and a photo. Read the page, then turn it to keep going: each page saves on its own. Tap the red square to stop.',
     'Your Recordings lists every page by reader: play it, trim the start and end, or delete it.',
   ] },
   { section: 'Your voice', title: 'Choosing a voice', text: [

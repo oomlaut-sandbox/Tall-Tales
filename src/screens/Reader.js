@@ -603,6 +603,13 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
 
   useEffect(() => () => { clearInterval(meterTimer.current); if (st.current.recording) recorder.stop().catch(() => {}); }, []);
 
+  // (1 Nov 2026: pages sometimes didn't read after a turn) 'about to record' must never outlive the recording box: when
+  // the box closes some other way than its backdrop (a mode picked, the menu, a turn), reading was blocked for good
+  useEffect(() => {
+    if (panel !== 'rec' && !askReader && !recording && !pendingRec.current) recordingSoon.current = false;
+  }, [panel, askReader, recording]);
+  const readPageRef = useRef(null);
+  readPageRef.current = readPage; // (the page-turn gestures are made once: they reach the current readPage through this)
   useEffect(() => {
     // after a page turn, continue reading in Auto and Page-by-Page modes
     if (pendingRead.current || st.current.mode === 'page') {
@@ -773,7 +780,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
   };
   const beginDrag = (sd, x0, y0) => {
     busy.current = true;
-    const d = { ...sd, p: sd.dir > 0 ? 0 : 1, ready: false, ended: null };
+    const d = { ...sd, p: sd.dir > 0 ? 0 : 1, ready: false, ended: null, was: st.current.reading };
     drag.current = d;
     stopReading();
     // peel from the bottom corner on the side the finger started
@@ -840,7 +847,12 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
     }
     if (commit) playSound('swish');
     const target = commit ? (d.dir > 0 ? 1 : 0) : (d.dir > 0 ? 0 : 1);
-    runFlip(target, 240 + 420 * Math.abs(target - prog.current), () => endFlip(d.dir, commit));
+    runFlip(target, 240 + 420 * Math.abs(target - prog.current), () => {
+      endFlip(d.dir, commit);
+      // a turn started and let go: the page was being read, so it reads again (it was stopped when the turn began)
+      const m = st.current.mode;
+      if (!commit && d.was && (m === 'auto' || m === 'page')) setTimeout(() => readPageRef.current && readPageRef.current(st.current.idx), 250);
+    });
   };
 
   // Keep fresh pictures of the neighbouring pages ready, so a turn starts without a delay.

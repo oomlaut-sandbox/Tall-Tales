@@ -161,8 +161,9 @@ export function RecordButton({ onPress, active, k = 1 }) {
     return () => loop.stop();
   }, [active]);
   return (
-    <Pressable onPress={withTap(onPress, thunk)} hitSlop={8} style={[styles.ctl, { width: 44 * k, height: 44 * k }]} accessibilityRole="button" accessibilityLabel={tr('Recording options')}>
-      <Animated.View style={{ width: 34 * k, height: 34 * k, borderRadius: 17 * k, backgroundColor: colors.highlight, transform: [{ scale: pulse }] }} />
+    <Pressable onPress={withTap(onPress, thunk)} hitSlop={8} style={[styles.ctl, { width: 44 * k, height: 44 * k }]} accessibilityRole="button" accessibilityLabel={active ? tr('Stop recording') : tr('Recording options')}>
+      {/* a red circle to start; while recording, a red square to stop, gently pulsing (Jörg, 1 Nov 2026) */}
+      <Animated.View style={active ? { width: 26 * k, height: 26 * k, borderRadius: 5 * k, backgroundColor: colors.highlight, transform: [{ scale: pulse }] } : { width: 34 * k, height: 34 * k, borderRadius: 17 * k, backgroundColor: colors.highlight }} />
     </Pressable>
   );
 }
