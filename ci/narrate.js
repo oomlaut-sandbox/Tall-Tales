@@ -32,6 +32,8 @@ const VOICES = [
   // Spuds Oxley (Jörg, 1 Nov 2026): a try-out first, Different in English and German only (trial: no Learn to Read
   // words, Abc, samples or The End yet). Not in the app until he's chosen (src/screens/Reader.js NARRATORS).
   { key: 'spuds', label: 'Spuds Oxley', find: ['spuds oxley', 'spuds'], pace: 0.75, wordPace: 1, books: ['different'], langs: ['de'], trial: true },
+  // Flint (Jörg, 1 Nov 2026): the same try-out, to compare with Spuds Oxley and James
+  { key: 'flint', label: 'Flint', find: ['flint'], pace: 0.75, wordPace: 1, books: ['different'], langs: ['de'], trial: true },
 ];
 const readsBook = (v, id) => !v.books || v.books.includes(id);
 
