@@ -13297,5 +13297,5986 @@
     }
    }
   }
+ },
+ "spuds": {
+  "words": {
+   "different": {
+    "fp": "ece3b9d8bf22",
+    "file": "different.mp3"
+   },
+   "written": {
+    "fp": "3f387744e398",
+    "file": "written.mp3"
+   },
+   "and": {
+    "fp": "fcf26a845304",
+    "file": "and.mp3"
+   },
+   "illustrated": {
+    "fp": "6d216f31db6e",
+    "file": "illustrated.mp3"
+   },
+   "by": {
+    "fp": "dbe1233014e1",
+    "file": "by.mp3"
+   },
+   "jörg": {
+    "fp": "4bd99eb5e667",
+    "file": "j_f6rg.mp3"
+   },
+   "schmidt": {
+    "fp": "6d4d47dcde02",
+    "file": "schmidt.mp3"
+   },
+   "i": {
+    "fp": "9cc81d15111b",
+    "file": "i.mp3"
+   },
+   "feel": {
+    "fp": "6ba001b35a86",
+    "file": "feel.mp3"
+   },
+   "strange": {
+    "fp": "d17a79f87aec",
+    "file": "strange.mp3"
+   },
+   "odd": {
+    "fp": "96c0a4fcee5a",
+    "file": "odd.mp3"
+   },
+   "anxious": {
+    "fp": "0b2c8d0a18ca",
+    "file": "anxious.mp3"
+   },
+   "weird": {
+    "fp": "1dba6bc5dd4f",
+    "file": "weird.mp3"
+   },
+   "out": {
+    "fp": "03d0dd73fe91",
+    "file": "out.mp3"
+   },
+   "of": {
+    "fp": "f945673130ca",
+    "file": "of.mp3"
+   },
+   "place": {
+    "fp": "c64d2426ceef",
+    "file": "place.mp3"
+   },
+   "freaky": {
+    "fp": "77aad68e7e48",
+    "file": "freaky.mp3"
+   },
+   "left": {
+    "fp": "3687bac90d51",
+    "file": "left.mp3"
+   },
+   "behind": {
+    "fp": "7e7cc352c15c",
+    "file": "behind.mp3"
+   },
+   "ugly": {
+    "fp": "511a36e24ac8",
+    "file": "ugly.mp3"
+   },
+   "incompatible": {
+    "fp": "3e3fb58539d6",
+    "file": "incompatible.mp3"
+   },
+   "unique": {
+    "fp": "ae960da2feaf",
+    "file": "unique.mp3"
+   },
+   "special": {
+    "fp": "7ff2d523a6fe",
+    "file": "special.mp3"
+   },
+   "loved": {
+    "fp": "68def02ef490",
+    "file": "loved.mp3"
+   },
+   "extraordinary": {
+    "fp": "30a9979f7e9e",
+    "file": "extraordinary.mp3"
+   },
+   "small": {
+    "fp": "fc1932d9bc21",
+    "file": "small.mp3"
+   },
+   "wonders": {
+    "fp": "029108499292",
+    "file": "wonders.mp3"
+   },
+   "nature": {
+    "fp": "44526a99289c",
+    "file": "nature.mp3"
+   },
+   "poems": {
+    "fp": "4d15b6973d21",
+    "file": "poems.mp3"
+   },
+   "with": {
+    "fp": "af1205cd4b40",
+    "file": "with.mp3"
+   },
+   "drawings": {
+    "fp": "1b4636ba31c1",
+    "file": "drawings.mp3"
+   },
+   "from": {
+    "fp": "4be8f6b087f5",
+    "file": "from.mp3"
+   },
+   "the": {
+    "fp": "ff53a0a4134f",
+    "file": "the.mp3"
+   },
+   "1800s": {
+    "fp": "5f231bbb6bee",
+    "file": "1800s.mp3"
+   },
+   "a": {
+    "fp": "b3bd0cc3c638",
+    "file": "a.mp3"
+   },
+   "dandelion": {
+    "fp": "bb9a7abeb7c6",
+    "file": "dandelion.mp3"
+   },
+   "clock": {
+    "fp": "aa35b2724852",
+    "file": "clock.mp3"
+   },
+   "moon": {
+    "fp": "198f9eb5900d",
+    "file": "moon.mp3"
+   },
+   "fluff": {
+    "fp": "2a5636ed5b83",
+    "file": "fluff.mp3"
+   },
+   "light": {
+    "fp": "5332d755a1ff",
+    "file": "light.mp3"
+   },
+   "make": {
+    "fp": "5ba6224ecb13",
+    "file": "make.mp3"
+   },
+   "wish": {
+    "fp": "d182c0992a9e",
+    "file": "wish.mp3"
+   },
+   "blow": {
+    "fp": "e4009a21feed",
+    "file": "blow.mp3"
+   },
+   "off": {
+    "fp": "fd4a0a89cea2",
+    "file": "off.mp3"
+   },
+   "seeds": {
+    "fp": "db8b362ba0d4",
+    "file": "seeds.mp3"
+   },
+   "take": {
+    "fp": "1a4c3f0b7589",
+    "file": "take.mp3"
+   },
+   "flight": {
+    "fp": "53c45cdd874f",
+    "file": "flight.mp3"
+   },
+   "fern": {
+    "fp": "dba807c98a40",
+    "file": "fern.mp3"
+   },
+   "is": {
+    "fp": "ad545a94bcca",
+    "file": "is.mp3"
+   },
+   "curled": {
+    "fp": "19a6c05b0ec7",
+    "file": "curled.mp3"
+   },
+   "up": {
+    "fp": "1f6366f02d78",
+    "file": "up.mp3"
+   },
+   "tight": {
+    "fp": "ec7b8a5ef343",
+    "file": "tight.mp3"
+   },
+   "sleepy": {
+    "fp": "8b9027eb5006",
+    "file": "sleepy.mp3"
+   },
+   "little": {
+    "fp": "dbfa4be979df",
+    "file": "little.mp3"
+   },
+   "swirl": {
+    "fp": "330b2a748396",
+    "file": "swirl.mp3"
+   },
+   "then": {
+    "fp": "a81f05817d59",
+    "file": "then.mp3"
+   },
+   "slowly": {
+    "fp": "3119e242657d",
+    "file": "slowly.mp3"
+   },
+   "day": {
+    "fp": "18ae0de1d11d",
+    "file": "day.mp3"
+   },
+   "watch": {
+    "fp": "f0ebd15e4b46",
+    "file": "watch.mp3"
+   },
+   "its": {
+    "fp": "cfe819603972",
+    "file": "its.mp3"
+   },
+   "leaves": {
+    "fp": "e7330f182059",
+    "file": "leaves.mp3"
+   },
+   "unfurl": {
+    "fp": "383569a87061",
+    "file": "unfurl.mp3"
+   },
+   "snail": {
+    "fp": "2a2fb93d1ec4",
+    "file": "snail.mp3"
+   },
+   "never": {
+    "fp": "5f164b9c87e2",
+    "file": "never.mp3"
+   },
+   "rushing": {
+    "fp": "8aea984ad750",
+    "file": "rushing.mp3"
+   },
+   "it": {
+    "fp": "5cb9a46469c5",
+    "file": "it.mp3"
+   },
+   "doesn’t": {
+    "fp": "b472eda54910",
+    "file": "doesn_2019t.mp3"
+   },
+   "need": {
+    "fp": "296db13a5ed7",
+    "file": "need.mp3"
+   },
+   "to": {
+    "fp": "b795d06d3452",
+    "file": "to.mp3"
+   },
+   "worry": {
+    "fp": "73bbc02df0e7",
+    "file": "worry.mp3"
+   },
+   "takes": {
+    "fp": "027e9a4737a9",
+    "file": "takes.mp3"
+   },
+   "house": {
+    "fp": "2732db804cfa",
+    "file": "house.mp3"
+   },
+   "along": {
+    "fp": "347016d2ceff",
+    "file": "along.mp3"
+   },
+   "so": {
+    "fp": "a075c38c0015",
+    "file": "so.mp3"
+   },
+   "why": {
+    "fp": "9abae5ea5c08",
+    "file": "why.mp3"
+   },
+   "be": {
+    "fp": "cb5f404e95fb",
+    "file": "be.mp3"
+   },
+   "in": {
+    "fp": "224267fc1721",
+    "file": "in.mp3"
+   },
+   "hurry": {
+    "fp": "2182f9c1e1e7",
+    "file": "hurry.mp3"
+   },
+   "rain": {
+    "fp": "94b7cde11428",
+    "file": "rain.mp3"
+   },
+   "has": {
+    "fp": "dec45427e626",
+    "file": "has.mp3"
+   },
+   "gone": {
+    "fp": "cea119c7f688",
+    "file": "gone.mp3"
+   },
+   "away": {
+    "fp": "82cd6e182e78",
+    "file": "away.mp3"
+   },
+   "look": {
+    "fp": "188bdd7fcc25",
+    "file": "look.mp3"
+   },
+   "under": {
+    "fp": "9d590066dd3a",
+    "file": "under.mp3"
+   },
+   "all": {
+    "fp": "e99c5d969b23",
+    "file": "all.mp3"
+   },
+   "trees": {
+    "fp": "ae9b5ec84d19",
+    "file": "trees.mp3"
+   },
+   "red": {
+    "fp": "8826da5fa1fd",
+    "file": "red.mp3"
+   },
+   "hats": {
+    "fp": "e9dbe1d4987c",
+    "file": "hats.mp3"
+   },
+   "snowy": {
+    "fp": "c8981ab25371",
+    "file": "snowy.mp3"
+   },
+   "spots": {
+    "fp": "fb638fa5d192",
+    "file": "spots.mp3"
+   },
+   "as": {
+    "fp": "6cdae9815505",
+    "file": "as.mp3"
+   },
+   "tiny": {
+    "fp": "eb285ac10296",
+    "file": "tiny.mp3"
+   },
+   "you": {
+    "fp": "a5af7c4f2e43",
+    "file": "you.mp3"
+   },
+   "please": {
+    "fp": "46a4f5f243e0",
+    "file": "please.mp3"
+   },
+   "acorn": {
+    "fp": "bef6d888a138",
+    "file": "acorn.mp3"
+   },
+   "sleeps": {
+    "fp": "3f9b7c0a7a58",
+    "file": "sleeps.mp3"
+   },
+   "beneath": {
+    "fp": "3595c61820b6",
+    "file": "beneath.mp3"
+   },
+   "cap": {
+    "fp": "b35c159a7433",
+    "file": "cap.mp3"
+   },
+   "brown": {
+    "fp": "bcfcbc4331e0",
+    "file": "brown.mp3"
+   },
+   "one": {
+    "fp": "e00f16197b7c",
+    "file": "one.mp3"
+   },
+   "will": {
+    "fp": "b154d687abd9",
+    "file": "will.mp3"
+   },
+   "become": {
+    "fp": "51237112b7a3",
+    "file": "become.mp3"
+   },
+   "tallest": {
+    "fp": "34c23eb51342",
+    "file": "tallest.mp3"
+   },
+   "oak": {
+    "fp": "13de8b451606",
+    "file": "oak.mp3"
+   },
+   "town": {
+    "fp": "28e30a76a6c3",
+    "file": "town.mp3"
+   },
+   "robin": {
+    "fp": "d897d2779bb1",
+    "file": "robin.mp3"
+   },
+   "tree": {
+    "fp": "1e7e8c105bc6",
+    "file": "tree.mp3"
+   },
+   "puffs": {
+    "fp": "e3499539d578",
+    "file": "puffs.mp3"
+   },
+   "her": {
+    "fp": "c0d08795bd87",
+    "file": "her.mp3"
+   },
+   "orange": {
+    "fp": "3581220a3c7f",
+    "file": "orange.mp3"
+   },
+   "chest": {
+    "fp": "978674676345",
+    "file": "chest.mp3"
+   },
+   "she": {
+    "fp": "25277c750e53",
+    "file": "she.mp3"
+   },
+   "sings": {
+    "fp": "ef43736b9c13",
+    "file": "sings.mp3"
+   },
+   "morning": {
+    "fp": "9685a4046899",
+    "file": "morning.mp3"
+   },
+   "song": {
+    "fp": "ccb820170f95",
+    "file": "song.mp3"
+   },
+   "knows": {
+    "fp": "165200961285",
+    "file": "knows.mp3"
+   },
+   "best": {
+    "fp": "2491407a05c6",
+    "file": "best.mp3"
+   },
+   "rough": {
+    "fp": "312ea1c9037a",
+    "file": "rough.mp3"
+   },
+   "lives": {
+    "fp": "43b3a1dc3fd5",
+    "file": "lives.mp3"
+   },
+   "animals": {
+    "fp": "fca7dbc54f48",
+    "file": "animals.mp3"
+   },
+   "suddenly": {
+    "fp": "2dd278a6262f",
+    "file": "suddenly.mp3"
+   },
+   "mittens": {
+    "fp": "7994f16828dc",
+    "file": "mittens.mp3"
+   },
+   "realized": {
+    "fp": "3189354e7427",
+    "file": "realized.mp3"
+   },
+   "yarn": {
+    "fp": "4d32e2209232",
+    "file": "yarn.mp3"
+   },
+   "had": {
+    "fp": "cc27badb6781",
+    "file": "had.mp3"
+   },
+   "been": {
+    "fp": "1f14421de72e",
+    "file": "been.mp3"
+   },
+   "watching": {
+    "fp": "2d50078a2531",
+    "file": "watching.mp3"
+   },
+   "whole": {
+    "fp": "e758562be026",
+    "file": "whole.mp3"
+   },
+   "time": {
+    "fp": "663f4bd60833",
+    "file": "time.mp3"
+   },
+   "despite": {
+    "fp": "417165f03469",
+    "file": "despite.mp3"
+   },
+   "what": {
+    "fp": "d8fdc9ad0b1d",
+    "file": "what.mp3"
+   },
+   "experts": {
+    "fp": "a34b6e3219e5",
+    "file": "experts.mp3"
+   },
+   "said": {
+    "fp": "98244392663a",
+    "file": "said.mp3"
+   },
+   "gerald": {
+    "fp": "add8d68440cd",
+    "file": "gerald.mp3"
+   },
+   "remained": {
+    "fp": "8f5d7b21c4fb",
+    "file": "remained.mp3"
+   },
+   "confident": {
+    "fp": "424ea4994620",
+    "file": "confident.mp3"
+   },
+   "balloon": {
+    "fp": "c88389bad2fc",
+    "file": "balloon.mp3"
+   },
+   "unbeknownst": {
+    "fp": "eb1d0a9b579c",
+    "file": "unbeknownst.mp3"
+   },
+   "fox": {
+    "fp": "ed3488119adc",
+    "file": "fox.mp3"
+   },
+   "mouse": {
+    "fp": "4bdc07481a88",
+    "file": "mouse.mp3"
+   },
+   "moved": {
+    "fp": "93140cd8685e",
+    "file": "moved.mp3"
+   },
+   "florida": {
+    "fp": "67d7f0382590",
+    "file": "florida.mp3"
+   },
+   "march": {
+    "fp": "b51602d2c0de",
+    "file": "march.mp3"
+   },
+   "sure": {
+    "fp": "e4bdfd233925",
+    "file": "sure.mp3"
+   },
+   "it’s": {
+    "fp": "e6f1ed55eceb",
+    "file": "it_2019s.mp3"
+   },
+   "but": {
+    "fp": "9ccf0c5edcdf",
+    "file": "but.mp3"
+   },
+   "paid": {
+    "fp": "6b6ce997d3ad",
+    "file": "paid.mp3"
+   },
+   "free": {
+    "fp": "87a66d7bdc8e",
+    "file": "free.mp3"
+   },
+   "hugs": {
+    "fp": "5eefd7013c0c",
+    "file": "hugs.mp3"
+   },
+   "forty-one": {
+    "fp": "54947dfa3b2e",
+    "file": "forty_2done.mp3"
+   },
+   "introductions": {
+    "fp": "f1957894cff1",
+    "file": "introductions.mp3"
+   },
+   "at": {
+    "fp": "352cf2e2e572",
+    "file": "at.mp3"
+   },
+   "dog": {
+    "fp": "fa7ee2a3e197",
+    "file": "dog.mp3"
+   },
+   "park": {
+    "fp": "35be0764b686",
+    "file": "park.mp3"
+   },
+   "often": {
+    "fp": "d20a0f0b6bb9",
+    "file": "often.mp3"
+   },
+   "went": {
+    "fp": "b91edae95d33",
+    "file": "went.mp3"
+   },
+   "well": {
+    "fp": "a161848e0d0d",
+    "file": "well.mp3"
+   },
+   "into": {
+    "fp": "e6030da999ff",
+    "file": "into.mp3"
+   },
+   "afternoon": {
+    "fp": "a130a1f4dbf3",
+    "file": "afternoon.mp3"
+   },
+   "wolf": {
+    "fp": "48ed2bff69cc",
+    "file": "wolf.mp3"
+   },
+   "skipped": {
+    "fp": "2aa49bbe068f",
+    "file": "skipped.mp3"
+   },
+   "howl": {
+    "fp": "09f3c2d90acf",
+    "file": "howl.mp3"
+   },
+   "posted": {
+    "fp": "f5f8fb210441",
+    "file": "posted.mp3"
+   },
+   "sunset": {
+    "fp": "02c7fa6d8464",
+    "file": "sunset.mp3"
+   },
+   "instead": {
+    "fp": "715d20b9e8ee",
+    "file": "instead.mp3"
+   },
+   "two": {
+    "fp": "b53b5619fad5",
+    "file": "two.mp3"
+   },
+   "likes": {
+    "fp": "34f61d8d127e",
+    "file": "likes.mp3"
+   },
+   "both": {
+    "fp": "2e1a3dfa3e9a",
+    "file": "both.mp3"
+   },
+   "his": {
+    "fp": "b789586382eb",
+    "file": "his.mp3"
+   },
+   "mother": {
+    "fp": "d3ed6dd5eeb8",
+    "file": "mother.mp3"
+   },
+   "doris": {
+    "fp": "7d994191bdde",
+    "file": "doris.mp3"
+   },
+   "stopped": {
+    "fp": "0d62085d64af",
+    "file": "stopped.mp3"
+   },
+   "news": {
+    "fp": "d471d4854901",
+    "file": "news.mp3"
+   },
+   "honestly": {
+    "fp": "be03c8cc4189",
+    "file": "honestly.mp3"
+   },
+   "felt": {
+    "fp": "171c1c7c0c00",
+    "file": "felt.mp3"
+   },
+   "calmer": {
+    "fp": "f3610511be9b",
+    "file": "calmer.mp3"
+   },
+   "snakes": {
+    "fp": "dca4204c4736",
+    "file": "snakes.mp3"
+   },
+   "walk": {
+    "fp": "20ba979eaa28",
+    "file": "walk.mp3"
+   },
+   "bar": {
+    "fp": "ec1279c94f4d",
+    "file": "bar.mp3"
+   },
+   "walked": {
+    "fp": "0054ec174036",
+    "file": "walked.mp3"
+   },
+   "was": {
+    "fp": "1536c54d0066",
+    "file": "was.mp3"
+   },
+   "chocolate": {
+    "fp": "ed2c8af3910e",
+    "file": "chocolate.mp3"
+   },
+   "they": {
+    "fp": "8c2e0e4bf6b3",
+    "file": "they.mp3"
+   },
+   "were": {
+    "fp": "352dc07ece73",
+    "file": "were.mp3"
+   },
+   "very": {
+    "fp": "de144ca58e7f",
+    "file": "very.mp3"
+   },
+   "somewhere": {
+    "fp": "5c8401fbe999",
+    "file": "somewhere.mp3"
+   },
+   "rabbit": {
+    "fp": "8b473d0ca3b0",
+    "file": "rabbit.mp3"
+   },
+   "having": {
+    "fp": "e7d48c885054",
+    "file": "having.mp3"
+   },
+   "life": {
+    "fp": "902819f55f12",
+    "file": "life.mp3"
+   },
+   "nobody": {
+    "fp": "626d75c73d6a",
+    "file": "nobody.mp3"
+   },
+   "not": {
+    "fp": "48b2fb912b31",
+    "file": "not.mp3"
+   },
+   "even": {
+    "fp": "72cd59c28df4",
+    "file": "even.mp3"
+   },
+   "dogs": {
+    "fp": "b2d1e5adeda3",
+    "file": "dogs.mp3"
+   },
+   "met": {
+    "fp": "c65b5d28e0ea",
+    "file": "met.mp3"
+   },
+   "around": {
+    "fp": "1a576a8e013f",
+    "file": "around.mp3"
+   },
+   "until": {
+    "fp": "a2238be908e4",
+    "file": "until.mp3"
+   },
+   "could": {
+    "fp": "d0b64a0c7caa",
+    "file": "could.mp3"
+   },
+   "tell": {
+    "fp": "9cc435ae1c6e",
+    "file": "tell.mp3"
+   },
+   "where": {
+    "fp": "fefd29e21a59",
+    "file": "where.mp3"
+   },
+   "ended": {
+    "fp": "e75a1a923c00",
+    "file": "ended.mp3"
+   },
+   "other": {
+    "fp": "33a6a7566651",
+    "file": "other.mp3"
+   },
+   "began": {
+    "fp": "5710d6ef4f6d",
+    "file": "began.mp3"
+   },
+   "an": {
+    "fp": "cba71501e486",
+    "file": "an.mp3"
+   },
+   "elephant": {
+    "fp": "310730ee1636",
+    "file": "elephant.mp3"
+   },
+   "mostly": {
+    "fp": "3fc9a847d8a5",
+    "file": "mostly.mp3"
+   },
+   "made": {
+    "fp": "16d8ec0402ba",
+    "file": "made.mp3"
+   },
+   "quiet": {
+    "fp": "e71d521a1ea3",
+    "file": "quiet.mp3"
+   },
+   "can": {
+    "fp": "8c74964a5104",
+    "file": "can.mp3"
+   },
+   "hear": {
+    "fp": "f51964410fe5",
+    "file": "hear.mp3"
+   },
+   "if": {
+    "fp": "8c5684cfc21b",
+    "file": "if.mp3"
+   },
+   "stand": {
+    "fp": "a94f858f9024",
+    "file": "stand.mp3"
+   },
+   "close": {
+    "fp": "2b5211f99fb9",
+    "file": "close.mp3"
+   },
+   "hamster": {
+    "fp": "46d65a876cb8",
+    "file": "hamster.mp3"
+   },
+   "ran": {
+    "fp": "9a9a39483999",
+    "file": "ran.mp3"
+   },
+   "night": {
+    "fp": "1f6afcef2ac8",
+    "file": "night.mp3"
+   },
+   "nowhere": {
+    "fp": "62878cd82017",
+    "file": "nowhere.mp3"
+   },
+   "which": {
+    "fp": "bc0de6a2eca1",
+    "file": "which.mp3"
+   },
+   "think": {
+    "fp": "5cd1c2eceb4f",
+    "file": "think.mp3"
+   },
+   "about": {
+    "fp": "576af30e398d",
+    "file": "about.mp3"
+   },
+   "kind": {
+    "fp": "7978352531ea",
+    "file": "kind.mp3"
+   },
+   "magic": {
+    "fp": "08218f0ec2d0",
+    "file": "magic.mp3"
+   },
+   "this": {
+    "fp": "b09e08ba69ab",
+    "file": "this.mp3"
+   },
+   "bee": {
+    "fp": "54b6ea9ded50",
+    "file": "bee.mp3"
+   },
+   "shaped": {
+    "fp": "e7a35f35be97",
+    "file": "shaped.mp3"
+   },
+   "like": {
+    "fp": "ea205ebc0b6d",
+    "file": "like.mp3"
+   },
+   "bean": {
+    "fp": "4199ed5124aa",
+    "file": "bean.mp3"
+   },
+   "does": {
+    "fp": "4f3841eed09a",
+    "file": "does.mp3"
+   },
+   "know": {
+    "fp": "f123461a02cf",
+    "file": "know.mp3"
+   },
+   "flies": {
+    "fp": "170593263bc8",
+    "file": "flies.mp3"
+   },
+   "anyway": {
+    "fp": "64289b32c88c",
+    "file": "anyway.mp3"
+   },
+   "jumped": {
+    "fp": "d2396a987f98",
+    "file": "jumped.mp3"
+   },
+   "high": {
+    "fp": "bae77868596e",
+    "file": "high.mp3"
+   },
+   "he": {
+    "fp": "2930f12feb78",
+    "file": "he.mp3"
+   },
+   "forgot": {
+    "fp": "aef705104fba",
+    "file": "forgot.mp3"
+   },
+   "jumping": {
+    "fp": "7d8e2c6d384f",
+    "file": "jumping.mp3"
+   },
+   "for": {
+    "fp": "9f87f2e98dfd",
+    "file": "for.mp3"
+   },
+   "there": {
+    "fp": "be4c7d9c609b",
+    "file": "there.mp3"
+   },
+   "didn’t": {
+    "fp": "4916049c2c5a",
+    "file": "didn_2019t.mp3"
+   },
+   "matter": {
+    "fp": "f727b71dcb57",
+    "file": "matter.mp3"
+   },
+   "wolf’s": {
+    "fp": "3560bd3c998c",
+    "file": "wolf_2019s.mp3"
+   },
+   "hair": {
+    "fp": "ecdcaaeb8267",
+    "file": "hair.mp3"
+   },
+   "stands": {
+    "fp": "dac2bb35111d",
+    "file": "stands.mp3"
+   },
+   "when": {
+    "fp": "e22fdeebf0e3",
+    "file": "when.mp3"
+   },
+   "happy": {
+    "fp": "db38e053f569",
+    "file": "happy.mp3"
+   },
+   "scared": {
+    "fp": "7b066a8a64a6",
+    "file": "scared.mp3"
+   },
+   "on": {
+    "fp": "fab09b8aacc7",
+    "file": "on.mp3"
+   },
+   "tuesdays": {
+    "fp": "2b14158bea84",
+    "file": "tuesdays.mp3"
+   },
+   "are": {
+    "fp": "eb84181028f8",
+    "file": "are.mp3"
+   },
+   "asked": {
+    "fp": "28185b26afe9",
+    "file": "asked.mp3"
+   },
+   "blue": {
+    "fp": "26013bcf0dd3",
+    "file": "blue.mp3"
+   },
+   "thing": {
+    "fp": "c7dc83483d83",
+    "file": "thing.mp3"
+   },
+   "i’m": {
+    "fp": "9693d93e4945",
+    "file": "i_2019m.mp3"
+   },
+   "yet": {
+    "fp": "9f0391b46935",
+    "file": "yet.mp3"
+   },
+   "horse": {
+    "fp": "847eaf49f5c9",
+    "file": "horse.mp3"
+   },
+   "me": {
+    "fp": "c7323d2a40ac",
+    "file": "me.mp3"
+   },
+   "neither": {
+    "fp": "1a208dc79fb5",
+    "file": "neither.mp3"
+   },
+   "robot": {
+    "fp": "74febcfd3dcd",
+    "file": "robot.mp3"
+   },
+   "took": {
+    "fp": "30fe6a617444",
+    "file": "took.mp3"
+   },
+   "giant": {
+    "fp": "92f3070f2273",
+    "file": "giant.mp3"
+   },
+   "step": {
+    "fp": "eba8387e66a0",
+    "file": "step.mp3"
+   },
+   "world": {
+    "fp": "48088b1ce6a3",
+    "file": "world.mp3"
+   },
+   "gave": {
+    "fp": "99829d5a93da",
+    "file": "gave.mp3"
+   },
+   "hop": {
+    "fp": "8774b32a835e",
+    "file": "hop.mp3"
+   },
+   "beautiful": {
+    "fp": "15195f7d236f",
+    "file": "beautiful.mp3"
+   },
+   "falling": {
+    "fp": "720520654a3f",
+    "file": "falling.mp3"
+   },
+   "sun": {
+    "fp": "779bde676530",
+    "file": "sun.mp3"
+   },
+   "shining": {
+    "fp": "1549b9c5a100",
+    "file": "shining.mp3"
+   },
+   "bright": {
+    "fp": "600cb29ed40d",
+    "file": "bright.mp3"
+   },
+   "over": {
+    "fp": "1b309d233e93",
+    "file": "over.mp3"
+   },
+   "rolling": {
+    "fp": "ba9bd2361b4a",
+    "file": "rolling.mp3"
+   },
+   "hills": {
+    "fp": "cd335e22ec87",
+    "file": "hills.mp3"
+   },
+   "sky": {
+    "fp": "89e2ce3099da",
+    "file": "sky.mp3"
+   },
+   "turned": {
+    "fp": "6b161b573a38",
+    "file": "turned.mp3"
+   },
+   "grey": {
+    "fp": "99ca700e1791",
+    "file": "grey.mp3"
+   },
+   "dark": {
+    "fp": "e05554b3f47b",
+    "file": "dark.mp3"
+   },
+   "storm": {
+    "fp": "86a87d1bf0cd",
+    "file": "storm.mp3"
+   },
+   "cloud": {
+    "fp": "3bc930e38cd9",
+    "file": "cloud.mp3"
+   },
+   "appeared": {
+    "fp": "3fac1f17732e",
+    "file": "appeared.mp3"
+   },
+   "fell": {
+    "fp": "75a2db14a19f",
+    "file": "fell.mp3"
+   },
+   "raindrop": {
+    "fp": "49fa1605cc76",
+    "file": "raindrop.mp3"
+   },
+   "looked": {
+    "fp": "7d39d34f1ab6",
+    "file": "looked.mp3"
+   },
+   "fields": {
+    "fp": "4b34c8f73d54",
+    "file": "fields.mp3"
+   },
+   "below": {
+    "fp": "f8172265ac4f",
+    "file": "below.mp3"
+   },
+   "smiled": {
+    "fp": "cdff658a79ad",
+    "file": "smiled.mp3"
+   },
+   "beauty": {
+    "fp": "feb911f723d1",
+    "file": "beauty.mp3"
+   },
+   "soon": {
+    "fp": "2fbcbb8533c5",
+    "file": "soon.mp3"
+   },
+   "raindrops": {
+    "fp": "16d903b55e3a",
+    "file": "raindrops.mp3"
+   },
+   "laughed": {
+    "fp": "07c4c9850596",
+    "file": "laughed.mp3"
+   },
+   "played": {
+    "fp": "35cc6ac2a571",
+    "file": "played.mp3"
+   },
+   "came": {
+    "fp": "2564b76f8213",
+    "file": "came.mp3"
+   },
+   "swallow": {
+    "fp": "b9b611905c60",
+    "file": "swallow.mp3"
+   },
+   "how": {
+    "fp": "1ac68df29b50",
+    "file": "how.mp3"
+   },
+   "do": {
+    "fp": "13d7fad4cc83",
+    "file": "do.mp3"
+   },
+   "mean": {
+    "fp": "524cb2cb30e2",
+    "file": "mean.mp3"
+   },
+   "you’re": {
+    "fp": "ce4811fd99d4",
+    "file": "you_2019re.mp3"
+   },
+   "became": {
+    "fp": "7e1c8a8ef243",
+    "file": "became.mp3"
+   },
+   "sad": {
+    "fp": "979a2c8b426f",
+    "file": "sad.mp3"
+   },
+   "bumblebee": {
+    "fp": "ce33411471ca",
+    "file": "bumblebee.mp3"
+   },
+   "hiding": {
+    "fp": "9ff10ec5adbe",
+    "file": "hiding.mp3"
+   },
+   "old": {
+    "fp": "926596b435aa",
+    "file": "old.mp3"
+   },
+   "don’t": {
+    "fp": "2882c2c4bdb3",
+    "file": "don_2019t.mp3"
+   },
+   "afraid": {
+    "fp": "12353d53f56f",
+    "file": "afraid.mp3"
+   },
+   "alone": {
+    "fp": "8d6d9b190e89",
+    "file": "alone.mp3"
+   },
+   "i’ll": {
+    "fp": "c71454c195f7",
+    "file": "i_2019ll.mp3"
+   },
+   "ground": {
+    "fp": "c363ddf6b325",
+    "file": "ground.mp3"
+   },
+   "closer": {
+    "fp": "1ca18e569100",
+    "file": "closer.mp3"
+   },
+   "closed": {
+    "fp": "49aa17edce84",
+    "file": "closed.mp3"
+   },
+   "eyes": {
+    "fp": "3dde179cafdb",
+    "file": "eyes.mp3"
+   },
+   "bloop": {
+    "fp": "bdd507e1c66c",
+    "file": "bloop.mp3"
+   },
+   "opened": {
+    "fp": "a0d150712a3c",
+    "file": "opened.mp3"
+   },
+   "saw": {
+    "fp": "c115ef288c80",
+    "file": "saw.mp3"
+   },
+   "wasn’t": {
+    "fp": "3c6c4b72fc0a",
+    "file": "wasn_2019t.mp3"
+   },
+   "good": {
+    "fp": "c5fb38b3f320",
+    "file": "good.mp3"
+   },
+   "returned": {
+    "fp": "e580284cde8b",
+    "file": "returned.mp3"
+   },
+   "pip": {
+    "fp": "cac2ec173ded",
+    "file": "pip.mp3"
+   },
+   "turtle": {
+    "fp": "5835e6cd2dd9",
+    "file": "turtle.mp3"
+   },
+   "swam": {
+    "fp": "49c4a0e0b59c",
+    "file": "swam.mp3"
+   },
+   "pond": {
+    "fp": "05aab2480203",
+    "file": "pond.mp3"
+   },
+   "full": {
+    "fp": "19b684299a03",
+    "file": "full.mp3"
+   },
+   "stars": {
+    "fp": "19848a0661d1",
+    "file": "stars.mp3"
+   },
+   "bobbed": {
+    "fp": "c7b04b0d3a31",
+    "file": "bobbed.mp3"
+   },
+   "him": {
+    "fp": "14bc929ffc17",
+    "file": "him.mp3"
+   },
+   "boats": {
+    "fp": "86a0f5767407",
+    "file": "boats.mp3"
+   },
+   "go": {
+    "fp": "d4c3591af181",
+    "file": "go.mp3"
+   },
+   "only": {
+    "fp": "5af3923d7a9f",
+    "file": "only.mp3"
+   },
+   "twinkled": {
+    "fp": "de6cf2d87397",
+    "file": "twinkled.mp3"
+   },
+   "climbed": {
+    "fp": "9fe575da5501",
+    "file": "climbed.mp3"
+   },
+   "them": {
+    "fp": "003cf5d78e0e",
+    "file": "them.mp3"
+   },
+   "leopard": {
+    "fp": "7288981650b1",
+    "file": "leopard.mp3"
+   },
+   "sat": {
+    "fp": "e4e54602c04c",
+    "file": "sat.mp3"
+   },
+   "warm": {
+    "fp": "0ccc18a643ba",
+    "file": "warm.mp3"
+   },
+   "rock": {
+    "fp": "55a5e5fb7eb4",
+    "file": "rock.mp3"
+   },
+   "lost": {
+    "fp": "fe5cd7f9c7d3",
+    "file": "lost.mp3"
+   },
+   "next": {
+    "fp": "0e6e6f51c6fd",
+    "file": "next.mp3"
+   },
+   "man": {
+    "fp": "74bddfeba21a",
+    "file": "man.mp3"
+   },
+   "tall": {
+    "fp": "a665da62214d",
+    "file": "tall.mp3"
+   },
+   "bicycle": {
+    "fp": "eb9481ddc85d",
+    "file": "bicycle.mp3"
+   },
+   "five": {
+    "fp": "e83c30711521",
+    "file": "five.mp3"
+   },
+   "wheels": {
+    "fp": "65d0bc106aa4",
+    "file": "wheels.mp3"
+   },
+   "horn": {
+    "fp": "d8ebe56ef3cc",
+    "file": "horn.mp3"
+   },
+   "climb": {
+    "fp": "18c60c01d0dd",
+    "file": "climb.mp3"
+   },
+   "here": {
+    "fp": "da2071052d3c",
+    "file": "here.mp3"
+   },
+   "almost": {
+    "fp": "72669f2e54bd",
+    "file": "almost.mp3"
+   },
+   "touch": {
+    "fp": "53c0f6f73da3",
+    "file": "touch.mp3"
+   },
+   "held": {
+    "fp": "bc43d5761a42",
+    "file": "held.mp3"
+   },
+   "rode": {
+    "fp": "ffd8d4aba2c3",
+    "file": "rode.mp3"
+   },
+   "grew": {
+    "fp": "afc054836fb8",
+    "file": "grew.mp3"
+   },
+   "tired": {
+    "fp": "edbcd2269d87",
+    "file": "tired.mp3"
+   },
+   "soft": {
+    "fp": "97fa51688fe5",
+    "file": "soft.mp3"
+   },
+   "bed": {
+    "fp": "17311d687ef0",
+    "file": "bed.mp3"
+   },
+   "pine": {
+    "fp": "31ace948fe32",
+    "file": "pine.mp3"
+   },
+   "needles": {
+    "fp": "e0d2d170e320",
+    "file": "needles.mp3"
+   },
+   "above": {
+    "fp": "7e95606e67a1",
+    "file": "above.mp3"
+   },
+   "star": {
+    "fp": "a8960b7e0bba",
+    "file": "star.mp3"
+   },
+   "blinked": {
+    "fp": "7a5674f7332e",
+    "file": "blinked.mp3"
+   },
+   "hundred": {
+    "fp": "640cf4f7d974",
+    "file": "hundred.mp3"
+   },
+   "whispered": {
+    "fp": "986d423e0f76",
+    "file": "whispered.mp3"
+   },
+   "asleep": {
+    "fp": "5bd43d4cd616",
+    "file": "asleep.mp3"
+   },
+   "tips": {
+    "fp": "fecaf90817cf",
+    "file": "tips.mp3"
+   },
+   "authors": {
+    "fp": "72f896c5d02c",
+    "file": "authors.mp3"
+   },
+   "ideas": {
+    "fp": "92ef6d92ea9b",
+    "file": "ideas.mp3"
+   },
+   "making": {
+    "fp": "abd923d4d2ee",
+    "file": "making.mp3"
+   },
+   "your": {
+    "fp": "9550c09bf430",
+    "file": "your.mp3"
+   },
+   "own": {
+    "fp": "81199d118d50",
+    "file": "own.mp3"
+   },
+   "books": {
+    "fp": "86ee7cf7f60b",
+    "file": "books.mp3"
+   },
+   "grown-ups": {
+    "fp": "42561cb142b5",
+    "file": "grown_2dups.mp3"
+   },
+   "young": {
+    "fp": "9160cca3e87b",
+    "file": "young.mp3"
+   },
+   "alike": {
+    "fp": "2a1f834a4da4",
+    "file": "alike.mp3"
+   },
+   "every": {
+    "fp": "a81064f5057b",
+    "file": "every.mp3"
+   },
+   "family": {
+    "fp": "8d00f1f11e97",
+    "file": "family.mp3"
+   },
+   "stories": {
+    "fp": "d8ea1ecc3f0b",
+    "file": "stories.mp3"
+   },
+   "worth": {
+    "fp": "7fc426608bbe",
+    "file": "worth.mp3"
+   },
+   "keeping": {
+    "fp": "f72350bca046",
+    "file": "keeping.mp3"
+   },
+   "camera": {
+    "fp": "01d0bb23dd4a",
+    "file": "camera.mp3"
+   },
+   "few": {
+    "fp": "a3cfd0c5b371",
+    "file": "few.mp3"
+   },
+   "words": {
+    "fp": "8b0926f40ee2",
+    "file": "words.mp3"
+   },
+   "some": {
+    "fp": "7623c3ede2f0",
+    "file": "some.mp3"
+   },
+   "get": {
+    "fp": "6d6a6e99285e",
+    "file": "get.mp3"
+   },
+   "started": {
+    "fp": "692c24a88b99",
+    "file": "started.mp3"
+   },
+   "our": {
+    "fp": "05a7c52979e2",
+    "file": "our.mp3"
+   },
+   "big": {
+    "fp": "67e47d9fecd3",
+    "file": "big.mp3"
+   },
+   "adventure": {
+    "fp": "700ef147928f",
+    "file": "adventure.mp3"
+   },
+   "today": {
+    "fp": "d067c81e4af0",
+    "file": "today.mp3"
+   },
+   "woods": {
+    "fp": "f64c3714baf8",
+    "file": "woods.mp3"
+   },
+   "visit": {
+    "fp": "93cbc2e75820",
+    "file": "visit.mp3"
+   },
+   "grandma": {
+    "fp": "ce4d7cbe45bf",
+    "file": "grandma.mp3"
+   },
+   "first": {
+    "fp": "96ded7915f63",
+    "file": "first.mp3"
+   },
+   "tooth": {
+    "fp": "e1b0833ff94f",
+    "file": "tooth.mp3"
+   },
+   "photo": {
+    "fp": "320cce3964d4",
+    "file": "photo.mp3"
+   },
+   "each": {
+    "fp": "d21aa49c170e",
+    "file": "each.mp3"
+   },
+   "page": {
+    "fp": "6d74f8c0fb33",
+    "file": "page.mp3"
+   },
+   "let": {
+    "fp": "93c0b7adec3b",
+    "file": "let.mp3"
+   },
+   "child": {
+    "fp": "e71d86f9fde9",
+    "file": "child.mp3"
+   },
+   "happened": {
+    "fp": "5319233c9c84",
+    "file": "happened.mp3"
+   },
+   "we": {
+    "fp": "bbba178152b4",
+    "file": "we.mp3"
+   },
+   "part": {
+    "fp": "f365b34dd996",
+    "file": "part.mp3"
+   },
+   "collecting": {
+    "fp": "39d0e4766a33",
+    "file": "collecting.mp3"
+   },
+   "rocks": {
+    "fp": "27d52472e1c4",
+    "file": "rocks.mp3"
+   },
+   "bugs": {
+    "fp": "10f567c538b3",
+    "file": "bugs.mp3"
+   },
+   "flowers": {
+    "fp": "e87ffe2c6cd9",
+    "file": "flowers.mp3"
+   },
+   "photograph": {
+    "fp": "812e62fa100e",
+    "file": "photograph.mp3"
+   },
+   "or": {
+    "fp": "98587a56a303",
+    "file": "or.mp3"
+   },
+   "draw": {
+    "fp": "1260ee8c712d",
+    "file": "draw.mp3"
+   },
+   "find": {
+    "fp": "a65cefec4de6",
+    "file": "find.mp3"
+   },
+   "give": {
+    "fp": "97aaf751c01a",
+    "file": "give.mp3"
+   },
+   "name": {
+    "fp": "e77e1f546131",
+    "file": "name.mp3"
+   },
+   "fact": {
+    "fp": "ce15610a888f",
+    "file": "fact.mp3"
+   },
+   "real": {
+    "fp": "d1f0e6c89606",
+    "file": "real.mp3"
+   },
+   "now": {
+    "fp": "61dd3470a28e",
+    "file": "now.mp3"
+   },
+   "have": {
+    "fp": "fa99aee06d2e",
+    "file": "have.mp3"
+   },
+   "field": {
+    "fp": "fce0ecccc821",
+    "file": "field.mp3"
+   },
+   "guide": {
+    "fp": "faa2a8768ba3",
+    "file": "guide.mp3"
+   },
+   "drawing": {
+    "fp": "a0bd31e7d8cf",
+    "file": "drawing.mp3"
+   },
+   "becomes": {
+    "fp": "1a8a8dbf55ff",
+    "file": "becomes.mp3"
+   },
+   "story": {
+    "fp": "3abafe24e5af",
+    "file": "story.mp3"
+   },
+   "type": {
+    "fp": "b6c61f04a498",
+    "file": "type.mp3"
+   },
+   "their": {
+    "fp": "66d338ea4a95",
+    "file": "their.mp3"
+   },
+   "exactly": {
+    "fp": "1a8a5449cceb",
+    "file": "exactly.mp3"
+   },
+   "say": {
+    "fp": "b7e7079f6468",
+    "file": "say.mp3"
+   },
+   "lessons": {
+    "fp": "e692f907b206",
+    "file": "lessons.mp3"
+   },
+   "things": {
+    "fp": "a72d2624f355",
+    "file": "things.mp3"
+   },
+   "gentler": {
+    "fp": "08d78276b727",
+    "file": "gentler.mp3"
+   },
+   "new": {
+    "fp": "dec618a31be1",
+    "file": "new.mp3"
+   },
+   "baby": {
+    "fp": "d3458e844e67",
+    "file": "baby.mp3"
+   },
+   "school": {
+    "fp": "ff9e0a412dd5",
+    "file": "school.mp3"
+   },
+   "brushing": {
+    "fp": "42c0dd12440f",
+    "file": "brushing.mp3"
+   },
+   "teeth": {
+    "fp": "9b0d49025e85",
+    "file": "teeth.mp3"
+   },
+   "saying": {
+    "fp": "72e30c40fb19",
+    "file": "saying.mp3"
+   },
+   "goodbye": {
+    "fp": "d50ca6098fb6",
+    "file": "goodbye.mp3"
+   },
+   "use": {
+    "fp": "755a2a3e09db",
+    "file": "use.mp3"
+   },
+   "photos": {
+    "fp": "038d5efcaa7a",
+    "file": "photos.mp3"
+   },
+   "group": {
+    "fp": "6387d782ca14",
+    "file": "group.mp3"
+   },
+   "fun": {
+    "fp": "e01682716f9a",
+    "file": "fun.mp3"
+   },
+   "class": {
+    "fp": "ab74cb372bce",
+    "file": "class.mp3"
+   },
+   "book": {
+    "fp": "ef32efa344e2",
+    "file": "book.mp3"
+   },
+   "together": {
+    "fp": "d5b64ac2e16a",
+    "file": "together.mp3"
+   },
+   "makes": {
+    "fp": "9bafca567e7e",
+    "file": "makes.mp3"
+   },
+   "trip": {
+    "fp": "416181f866dc",
+    "file": "trip.mp3"
+   },
+   "favourite": {
+    "fp": "5c7b22e896e5",
+    "file": "favourite.mp3"
+   },
+   "animal": {
+    "fp": "c7080a963301",
+    "file": "animal.mp3"
+   },
+   "want": {
+    "fp": "8f81fabca312",
+    "file": "want.mp3"
+   },
+   "read": {
+    "fp": "83dda71c6003",
+    "file": "read.mp3"
+   },
+   "aloud": {
+    "fp": "853e9d8fc025",
+    "file": "aloud.mp3"
+   },
+   "record": {
+    "fp": "370c658a3651",
+    "file": "record.mp3"
+   },
+   "voice": {
+    "fp": "a2970be2f9a8",
+    "file": "voice.mp3"
+   },
+   "reading": {
+    "fp": "360942e487c1",
+    "file": "reading.mp3"
+   },
+   "years": {
+    "fp": "f11683842762",
+    "file": "years.mp3"
+   },
+   "that": {
+    "fp": "4f8fb92a3afd",
+    "file": "that.mp3"
+   },
+   "treasure": {
+    "fp": "22b588937b7b",
+    "file": "treasure.mp3"
+   },
+   "more": {
+    "fp": "525eda5927b6",
+    "file": "more.mp3"
+   },
+   "birthday": {
+    "fp": "83f9b99ac445",
+    "file": "birthday.mp3"
+   },
+   "toy’s": {
+    "fp": "f6036da110f7",
+    "file": "toy_2019s.mp3"
+   },
+   "adventures": {
+    "fp": "8cde9285f073",
+    "file": "adventures.mp3"
+   },
+   "last": {
+    "fp": "9d039bb1b172",
+    "file": "last.mp3"
+   },
+   "night’s": {
+    "fp": "e8cd75153057",
+    "file": "night_2019s.mp3"
+   },
+   "dream": {
+    "fp": "8788a8ed00eb",
+    "file": "dream.mp3"
+   },
+   "grandpa": {
+    "fp": "8d4f55087610",
+    "file": "grandpa.mp3"
+   },
+   "remembering": {
+    "fp": "9f4c92dd9b20",
+    "file": "remembering.mp3"
+   },
+   "sentences": {
+    "fp": "2b60b306d2d4",
+    "file": "sentences.mp3"
+   },
+   "plenty": {
+    "fp": "97a97218a912",
+    "file": "plenty.mp3"
+   },
+   "daylight": {
+    "fp": "7c4e9f3b1c2b",
+    "file": "daylight.mp3"
+   },
+   "pages": {
+    "fp": "d7a10c4c3241",
+    "file": "pages.mp3"
+   },
+   "square": {
+    "fp": "4e90aeb730e0",
+    "file": "square.mp3"
+   },
+   "leave": {
+    "fp": "0315bb73f94b",
+    "file": "leave.mp3"
+   },
+   "room": {
+    "fp": "bf5f3913f4a6",
+    "file": "room.mp3"
+   },
+   "edges": {
+    "fp": "55c4534eadbc",
+    "file": "edges.mp3"
+   },
+   "child’s": {
+    "fp": "b9309a58278b",
+    "file": "child_2019s.mp3"
+   },
+   "cover": {
+    "fp": "266c2e8320b9",
+    "file": "cover.mp3"
+   },
+   "published": {
+    "fp": "836357baf008",
+    "file": "published.mp3"
+   },
+   "send": {
+    "fp": "72977743b03e",
+    "file": "send.mp3"
+   },
+   "oomlaut": {
+    "fp": "06af732e4a6b",
+    "file": "oomlaut.mp3"
+   },
+   "store": {
+    "fp": "fcb48f45e6bc",
+    "file": "store.mp3"
+   },
+   "ready": {
+    "fp": "7c0e4ca5f9e2",
+    "file": "ready.mp3"
+   },
+   "oomlautcom": {
+    "fp": "f1cd90e09a4a",
+    "file": "oomlautcom.mp3"
+   },
+   "support": {
+    "fp": "88ff0525dcee",
+    "file": "support.mp3"
+   },
+   "you’ll": {
+    "fp": "b39b479b9be0",
+    "file": "you_2019ll.mp3"
+   },
+   "many": {
+    "fp": "043d46339f34",
+    "file": "many.mp3"
+   },
+   "moments": {
+    "fp": "d81088476566",
+    "file": "moments.mp3"
+   },
+   "everyday": {
+    "fp": "ea26bcede1a4",
+    "file": "everyday.mp3"
+   },
+   "routines": {
+    "fp": "74831ba8d56b",
+    "file": "routines.mp3"
+   },
+   "feelings": {
+    "fp": "02e6ad7f19ef",
+    "file": "feelings.mp3"
+   }
+  },
+  "parts": {},
+  "langs": {
+   "de": {
+    "anders": {
+     "fp": "71cf45fe43f1",
+     "file": "dfdb739259.mp3"
+    },
+    "geschrieben": {
+     "fp": "64c720fa7040",
+     "file": "a046f97409.mp3"
+    },
+    "und": {
+     "fp": "71f86d2dd70a",
+     "file": "b03a434858.mp3"
+    },
+    "illustriert": {
+     "fp": "7adea39841aa",
+     "file": "58df33116d.mp3"
+    },
+    "von": {
+     "fp": "aa341b204b03",
+     "file": "445584edc4.mp3"
+    },
+    "jörg": {
+     "fp": "4fe1754cad67",
+     "file": "e1cdcb82d4.mp3"
+    },
+    "schmidt": {
+     "fp": "e1e12dd56260",
+     "file": "ec3fdd57d0.mp3"
+    },
+    "ich": {
+     "fp": "a1f8e46cb914",
+     "file": "ac97098edb.mp3"
+    },
+    "fühle": {
+     "fp": "b2f5ec5b2e0c",
+     "file": "67fd9986a4.mp3"
+    },
+    "mich": {
+     "fp": "337c194a9156",
+     "file": "20f7faca64.mp3"
+    },
+    "seltsam": {
+     "fp": "8ad9c605b8c3",
+     "file": "82978cdf0d.mp3"
+    },
+    "komisch": {
+     "fp": "2590ccbc2287",
+     "file": "be16b5e4fe.mp3"
+    },
+    "ängstlich": {
+     "fp": "27efd2a95b85",
+     "file": "8ee108c06c.mp3"
+    },
+    "merkwürdig": {
+     "fp": "56b86126eb59",
+     "file": "96165387fd.mp3"
+    },
+    "fehl": {
+     "fp": "985b289f5c15",
+     "file": "16bd234348.mp3"
+    },
+    "am": {
+     "fp": "78af275a533d",
+     "file": "96e8155732.mp3"
+    },
+    "platz": {
+     "fp": "79f5227e4005",
+     "file": "96e0f47c3b.mp3"
+    },
+    "schräg": {
+     "fp": "3cc018b60e08",
+     "file": "0d36e8c8b6.mp3"
+    },
+    "zurückgelassen": {
+     "fp": "272ea8a1520d",
+     "file": "ae7ff35652.mp3"
+    },
+    "ausgeschlossen": {
+     "fp": "df85e7b2d080",
+     "file": "5586e74345.mp3"
+    },
+    "hässlich": {
+     "fp": "eb1e8ded0a26",
+     "file": "9b1770cc37.mp3"
+    },
+    "unpassend": {
+     "fp": "6b3c1366634e",
+     "file": "1aab0d2e04.mp3"
+    },
+    "einzigartig": {
+     "fp": "b113f3478cdb",
+     "file": "9dfb3a858a.mp3"
+    },
+    "besonders": {
+     "fp": "bca86c4f43a3",
+     "file": "4e69dab510.mp3"
+    },
+    "geliebt": {
+     "fp": "c15e063a1337",
+     "file": "7eb84e7848.mp3"
+    },
+    "außergewöhnlich": {
+     "fp": "8d986ffd0a77",
+     "file": "157372fc9b.mp3"
+    },
+    "das": {
+     "fp": "82b8129a2a97",
+     "file": "bebabb62fa.mp3"
+    },
+    "harte": {
+     "fp": "d69c44e6df72",
+     "file": "c6abffe29b.mp3"
+    },
+    "leben": {
+     "fp": "93dd454ff289",
+     "file": "572201efbe.mp3"
+    },
+    "der": {
+     "fp": "1767131241c2",
+     "file": "7d44c33cf9.mp3"
+    },
+    "tiere": {
+     "fp": "4992c11e6eb2",
+     "file": "7391820040.mp3"
+    },
+    "plötzlich": {
+     "fp": "296cdd61992d",
+     "file": "e9a2d0565f.mp3"
+    },
+    "wurde": {
+     "fp": "5c6b40de2fca",
+     "file": "dd96ba7d6e.mp3"
+    },
+    "mieze": {
+     "fp": "cc2b75e24b83",
+     "file": "2b5dbd1e7e.mp3"
+    },
+    "klar": {
+     "fp": "6c68d5fb6624",
+     "file": "2d293d366f.mp3"
+    },
+    "wollknäuel": {
+     "fp": "1971354bd49a",
+     "file": "4d37859b3c.mp3"
+    },
+    "hatte": {
+     "fp": "9987826d19e7",
+     "file": "1bfd198a02.mp3"
+    },
+    "sie": {
+     "fp": "169ece03df3a",
+     "file": "8d78e8e149.mp3"
+    },
+    "die": {
+     "fp": "7dc747d24593",
+     "file": "8f595011a3.mp3"
+    },
+    "ganze": {
+     "fp": "1e259c252350",
+     "file": "d6ae188438.mp3"
+    },
+    "zeit": {
+     "fp": "cae511bc45fb",
+     "file": "eae56ba9cd.mp3"
+    },
+    "beobachtet": {
+     "fp": "71dcf8f59d2e",
+     "file": "41e7cc708f.mp3"
+    },
+    "was": {
+     "fp": "59a121f4feca",
+     "file": "3de521d361.mp3"
+    },
+    "experten": {
+     "fp": "d5aced01960d",
+     "file": "b33f6fb231.mp3"
+    },
+    "auch": {
+     "fp": "4072dfc558ba",
+     "file": "3ae54a2721.mp3"
+    },
+    "sagten": {
+     "fp": "a92e277d585c",
+     "file": "9f30793590.mp3"
+    },
+    "gerald": {
+     "fp": "86dcc5b8902c",
+     "file": "446f6fe420.mp3"
+    },
+    "glaubte": {
+     "fp": "17a9d0c70ec1",
+     "file": "cd70e467be.mp3"
+    },
+    "fest": {
+     "fp": "1ccec32eba36",
+     "file": "3e8c4169e1.mp3"
+    },
+    "an": {
+     "fp": "855838e5d6aa",
+     "file": "de73eac0c3.mp3"
+    },
+    "den": {
+     "fp": "970268466e68",
+     "file": "0e1ddfe761.mp3"
+    },
+    "ballon": {
+     "fp": "2d671e4872df",
+     "file": "0ee1430589.mp3"
+    },
+    "fuchs": {
+     "fp": "bb9a3ea4ffd3",
+     "file": "e42d267b90.mp3"
+    },
+    "nicht": {
+     "fp": "48846866121d",
+     "file": "7535160fba.mp3"
+    },
+    "wusste": {
+     "fp": "fb68dbf29af9",
+     "file": "1aa794f5f8.mp3"
+    },
+    "maus": {
+     "fp": "f533f8a12660",
+     "file": "ee9c012f20.mp3"
+    },
+    "war": {
+     "fp": "6c6f17acad6f",
+     "file": "24a878ae01.mp3"
+    },
+    "schon": {
+     "fp": "9a4bc805407c",
+     "file": "a581021a64.mp3"
+    },
+    "im": {
+     "fp": "0d70485a70fe",
+     "file": "42a0d3068d.mp3"
+    },
+    "märz": {
+     "fp": "8cc3f917c87c",
+     "file": "8704aae678.mp3"
+    },
+    "nach": {
+     "fp": "58c3bd10d99d",
+     "file": "852cb84869.mp3"
+    },
+    "florida": {
+     "fp": "845a449166d6",
+     "file": "36a7ac9bd1.mp3"
+    },
+    "gezogen": {
+     "fp": "ababcf2aaabe",
+     "file": "0688601a36.mp3"
+    },
+    "es": {
+     "fp": "1011c049e7c6",
+     "file": "09cd68a2a7.mp3"
+    },
+    "ist": {
+     "fp": "86f4d49638b0",
+     "file": "60ae1b3bb0.mp3"
+    },
+    "klein": {
+     "fp": "cffd8fc97acf",
+     "file": "ac1ad65ace.mp3"
+    },
+    "aber": {
+     "fp": "176abb292b61",
+     "file": "329ed817c5.mp3"
+    },
+    "abbezahlt": {
+     "fp": "24cbdba31c6e",
+     "file": "2b8feaf3bd.mp3"
+    },
+    "gratis-umarmungen": {
+     "fp": "7e6b85f77ff6",
+     "file": "732d96f5ce.mp3"
+    },
+    "tag": {
+     "fp": "fcaf5ec7c6a3",
+     "file": "5e9b60f691.mp3"
+    },
+    "einundvierzig": {
+     "fp": "e580d5028f63",
+     "file": "2369c1863e.mp3"
+    },
+    "kennenlernen": {
+     "fp": "f230d20ff25e",
+     "file": "16ba4d47ce.mp3"
+    },
+    "hundepark": {
+     "fp": "c6ac70779977",
+     "file": "dda5493a52.mp3"
+    },
+    "dauerte": {
+     "fp": "3a8377243cb1",
+     "file": "0114d8f9c4.mp3"
+    },
+    "oft": {
+     "fp": "39f7853e2ee8",
+     "file": "8528b539de.mp3"
+    },
+    "bis": {
+     "fp": "56fd4c5e12aa",
+     "file": "1094cd0652.mp3"
+    },
+    "weit": {
+     "fp": "89fe443cea7b",
+     "file": "c505ee4b74.mp3"
+    },
+    "in": {
+     "fp": "fa6fa68b0a2b",
+     "file": "af10ef20dd.mp3"
+    },
+    "nachmittag": {
+     "fp": "117ad004a174",
+     "file": "d3a50a001e.mp3"
+    },
+    "wolf": {
+     "fp": "97d502aabf6d",
+     "file": "a3cb738850.mp3"
+    },
+    "ließ": {
+     "fp": "6c911482c1e7",
+     "file": "c697f419a3.mp3"
+    },
+    "heulen": {
+     "fp": "6b3bb9767101",
+     "file": "4bae6d084c.mp3"
+    },
+    "ausfallen": {
+     "fp": "06f7850ddfd1",
+     "file": "4b332af2d9.mp3"
+    },
+    "postete": {
+     "fp": "782ca3dbec69",
+     "file": "1e35c0ddaa.mp3"
+    },
+    "stattdessen": {
+     "fp": "42cdb8a30a4b",
+     "file": "9e0c6a489f.mp3"
+    },
+    "sonnenuntergang": {
+     "fp": "3e4afb26c23d",
+     "file": "8bbc9300f9.mp3"
+    },
+    "zwei": {
+     "fp": "86f9241dc8f9",
+     "file": "89f7b2e913.mp3"
+    },
+    "likes": {
+     "fp": "90ecb8db579e",
+     "file": "aecba335e8.mp3"
+    },
+    "beide": {
+     "fp": "29ec43e32064",
+     "file": "0778d73407.mp3"
+    },
+    "seiner": {
+     "fp": "d63f621b10cc",
+     "file": "4f502865e1.mp3"
+    },
+    "mutter": {
+     "fp": "4a2cb0e59f52",
+     "file": "d23498d44a.mp3"
+    },
+    "doris": {
+     "fp": "59037d882ffd",
+     "file": "c29bb8e556.mp3"
+    },
+    "schaute": {
+     "fp": "b2cfbfd1b551",
+     "file": "dd377e5402.mp3"
+    },
+    "keine": {
+     "fp": "742104fa1036",
+     "file": "4fd219ccaf.mp3"
+    },
+    "nachrichten": {
+     "fp": "4970315b153c",
+     "file": "b6c785073a.mp3"
+    },
+    "mehr": {
+     "fp": "efd5d6e3a833",
+     "file": "1960ac5a2d.mp3"
+    },
+    "ehrlich": {
+     "fp": "50a3628bb103",
+     "file": "a17c6b0bb7.mp3"
+    },
+    "gesagt": {
+     "fp": "b977d9a9776f",
+     "file": "9d63fe5454.mp3"
+    },
+    "nie": {
+     "fp": "7decc4652731",
+     "file": "9df1ac4df8.mp3"
+    },
+    "ruhiger": {
+     "fp": "d65113baf988",
+     "file": "d93c017329.mp3"
+    },
+    "tipps": {
+     "fp": "8c85f6392e0c",
+     "file": "ab37f486f8.mp3"
+    },
+    "für": {
+     "fp": "58d4e03ddbe8",
+     "file": "a9e9521dfb.mp3"
+    },
+    "autoren": {
+     "fp": "71d7a7ce6930",
+     "file": "9f3327c358.mp3"
+    },
+    "ideen": {
+     "fp": "e4cad5ae7def",
+     "file": "fc5ddb5e9a.mp3"
+    },
+    "eigene": {
+     "fp": "9a77fd65c3c1",
+     "file": "ab408d0611.mp3"
+    },
+    "bücher": {
+     "fp": "9d4d3ea1af8e",
+     "file": "5fe5e31cb4.mp3"
+    },
+    "erwachsene": {
+     "fp": "b85c37304d9f",
+     "file": "501577609f.mp3"
+    },
+    "junge": {
+     "fp": "0c22750c6deb",
+     "file": "44d139a86b.mp3"
+    },
+    "jede": {
+     "fp": "9ea7e34b8584",
+     "file": "b5e5d68c8c.mp3"
+    },
+    "familie": {
+     "fp": "bcc6a9f37719",
+     "file": "30ff757f54.mp3"
+    },
+    "hat": {
+     "fp": "8cbce770404a",
+     "file": "10e5866050.mp3"
+    },
+    "geschichten": {
+     "fp": "f59c6438da04",
+     "file": "5a3801c75d.mp3"
+    },
+    "wert": {
+     "fp": "c5fdd15738cd",
+     "file": "33441a6b2d.mp3"
+    },
+    "sind": {
+     "fp": "b0bec7ba4e6e",
+     "file": "7377a06f3b.mp3"
+    },
+    "aufbewahrt": {
+     "fp": "b79ccd2e0a61",
+     "file": "6ff3296d43.mp3"
+    },
+    "zu": {
+     "fp": "bbe4c4797f53",
+     "file": "e3abab127f.mp3"
+    },
+    "werden": {
+     "fp": "771060d10410",
+     "file": "493427aee9.mp3"
+    },
+    "du": {
+     "fp": "1286d8749fa3",
+     "file": "fa114377ef.mp3"
+    },
+    "brauchst": {
+     "fp": "f110a2910d4d",
+     "file": "1569c1b4ff.mp3"
+    },
+    "nur": {
+     "fp": "cbde160a2f61",
+     "file": "2216b5374d.mp3"
+    },
+    "eine": {
+     "fp": "fdfc1cc416c7",
+     "file": "bcc2e52af9.mp3"
+    },
+    "kamera": {
+     "fp": "3a89b02103fb",
+     "file": "8e8b64ded1.mp3"
+    },
+    "ein": {
+     "fp": "18fad67bc7f5",
+     "file": "eaa2e2ff60.mp3"
+    },
+    "paar": {
+     "fp": "a6a70beb1f56",
+     "file": "88daf395dc.mp3"
+    },
+    "worte": {
+     "fp": "1653a044bef7",
+     "file": "00e626036d.mp3"
+    },
+    "wenig": {
+     "fp": "111442a567b9",
+     "file": "9a1ca28b99.mp3"
+    },
+    "hier": {
+     "fp": "2848effc016c",
+     "file": "00cc01ace9.mp3"
+    },
+    "anfang": {
+     "fp": "47d78a996250",
+     "file": "2462660dd4.mp3"
+    },
+    "unser": {
+     "fp": "5826c0e72106",
+     "file": "7feef12d65.mp3"
+    },
+    "großes": {
+     "fp": "2dfda6fb077e",
+     "file": "d5a2d397da.mp3"
+    },
+    "abenteuer": {
+     "fp": "be290a645bce",
+     "file": "5ac11b0773.mp3"
+    },
+    "heute": {
+     "fp": "2a7661525651",
+     "file": "cedb067cba.mp3"
+    },
+    "spaziergang": {
+     "fp": "f4eb86ad7b8f",
+     "file": "808d02188a.mp3"
+    },
+    "wald": {
+     "fp": "5fedd80afc19",
+     "file": "fe541d16fb.mp3"
+    },
+    "besuch": {
+     "fp": "afbc9ebe7fa4",
+     "file": "acc59fcb2b.mp3"
+    },
+    "bei": {
+     "fp": "85b03e6d36c3",
+     "file": "fbbb118f52.mp3"
+    },
+    "oma": {
+     "fp": "73beb11aa319",
+     "file": "a77e1547e8.mp3"
+    },
+    "erste": {
+     "fp": "c6a35674f560",
+     "file": "7724da962f.mp3"
+    },
+    "wackelzahn": {
+     "fp": "5ca789cba358",
+     "file": "c4a89bcc71.mp3"
+    },
+    "mach": {
+     "fp": "4b2acfc8a3b3",
+     "file": "97483780d2.mp3"
+    },
+    "seite": {
+     "fp": "4ba1857612f4",
+     "file": "fae82c3e1f.mp3"
+    },
+    "foto": {
+     "fp": "f282176b7f5e",
+     "file": "0eb57679c4.mp3"
+    },
+    "lass": {
+     "fp": "40643d65b46d",
+     "file": "179d278234.mp3"
+    },
+    "dein": {
+     "fp": "1ba54c62aa7e",
+     "file": "2fa9937478.mp3"
+    },
+    "kind": {
+     "fp": "64c484b19ecf",
+     "file": "0ef25ae00f.mp3"
+    },
+    "erzählen": {
+     "fp": "75a5af5914b5",
+     "file": "d6145411b0.mp3"
+    },
+    "passiert": {
+     "fp": "70c34e88f135",
+     "file": "287418d4c5.mp3"
+    },
+    "zuerst": {
+     "fp": "b8fc31c2bd51",
+     "file": "dea8551b8c.mp3"
+    },
+    "haben": {
+     "fp": "bf98c6465f59",
+     "file": "e7997e6b9f.mp3"
+    },
+    "wir": {
+     "fp": "78dc42c59ba4",
+     "file": "13c6af1c2f.mp3"
+    },
+    "dann": {
+     "fp": "c4325348144f",
+     "file": "2cd3eb8290.mp3"
+    },
+    "schönsten": {
+     "fp": "181dac7fe524",
+     "file": "93ae57c0ed.mp3"
+    },
+    "sammeln": {
+     "fp": "56e188e21d0e",
+     "file": "f5b61f7bb9.mp3"
+    },
+    "steine": {
+     "fp": "0a2945766c03",
+     "file": "2b5f69f69f.mp3"
+    },
+    "käfer": {
+     "fp": "8bfa42b2fe11",
+     "file": "7e81e7b9d3.mp3"
+    },
+    "blätter": {
+     "fp": "3020ca23f676",
+     "file": "73997436c8.mp3"
+    },
+    "blumen": {
+     "fp": "d51a6fcd4ab3",
+     "file": "01c0ffb8e5.mp3"
+    },
+    "fotografiere": {
+     "fp": "c2b26090ab7f",
+     "file": "865b831b7e.mp3"
+    },
+    "oder": {
+     "fp": "fb7a495ee911",
+     "file": "4b937dbc61.mp3"
+    },
+    "male": {
+     "fp": "edaf3622c086",
+     "file": "030ef4a526.mp3"
+    },
+    "jeden": {
+     "fp": "05f0f5e1fc87",
+     "file": "6ec1af0955.mp3"
+    },
+    "fund": {
+     "fp": "a032a0cfa4e9",
+     "file": "e2d13ab782.mp3"
+    },
+    "gib": {
+     "fp": "fec5b772a54d",
+     "file": "c9f4cdcf48.mp3"
+    },
+    "ihm": {
+     "fp": "a1bbaa73b621",
+     "file": "d13a0d9e9f.mp3"
+    },
+    "einen": {
+     "fp": "61a0efb97b20",
+     "file": "e05ece0d9a.mp3"
+    },
+    "namen": {
+     "fp": "1ec52ee35ee5",
+     "file": "5738636057.mp3"
+    },
+    "tatsache": {
+     "fp": "9b7c8f732c3c",
+     "file": "ecc3ebbb78.mp3"
+    },
+    "echt": {
+     "fp": "3ea9b7dfec4a",
+     "file": "5a34630d06.mp3"
+    },
+    "ausgedacht": {
+     "fp": "b38437e25ebf",
+     "file": "6833f88719.mp3"
+    },
+    "hast": {
+     "fp": "7cb5acad9add",
+     "file": "ee2f4dbbaf.mp3"
+    },
+    "eigenes": {
+     "fp": "421811e56ced",
+     "file": "9435d85a92.mp3"
+    },
+    "naturbuch": {
+     "fp": "e6d1a002d962",
+     "file": "effaf1967f.mp3"
+    },
+    "zeichnungen": {
+     "fp": "d179e8faac8d",
+     "file": "27b510f554.mp3"
+    },
+    "zeichnung": {
+     "fp": "ba00645b023e",
+     "file": "652c740ed8.mp3"
+    },
+    "wird": {
+     "fp": "c532dd8a1cd0",
+     "file": "17d74a5fa9.mp3"
+    },
+    "einer": {
+     "fp": "2b4a7a9191f2",
+     "file": "0f9497a91a.mp3"
+    },
+    "geschichte": {
+     "fp": "e65cc64de2d5",
+     "file": "55ec108039.mp3"
+    },
+    "schreib": {
+     "fp": "8330481d8da0",
+     "file": "89115faa69.mp3"
+    },
+    "seine": {
+     "fp": "656460c80269",
+     "file": "d60b257a43.mp3"
+    },
+    "genau": {
+     "fp": "b6f36b56d787",
+     "file": "d8a5b5bc96.mp3"
+    },
+    "so": {
+     "fp": "d308de99f47f",
+     "file": "cd1b646ebd.mp3"
+    },
+    "auf": {
+     "fp": "e6b527c82ade",
+     "file": "ddf835c91b.mp3"
+    },
+    "wie": {
+     "fp": "0d30ace40390",
+     "file": "74ee6b3ace.mp3"
+    },
+    "sagt": {
+     "fp": "8c88bf29a23c",
+     "file": "dfcb6a4891.mp3"
+    },
+    "lektionen": {
+     "fp": "59ecfbef8117",
+     "file": "17418bc048.mp3"
+    },
+    "kann": {
+     "fp": "ece1af13f87f",
+     "file": "1ae4e2fc23.mp3"
+    },
+    "große": {
+     "fp": "ffe7a4c57cc0",
+     "file": "4a0f7d36b0.mp3"
+    },
+    "dinge": {
+     "fp": "5befd05271da",
+     "file": "230e79e95e.mp3"
+    },
+    "sanfter": {
+     "fp": "697af85a63b7",
+     "file": "b3f8820e31.mp3"
+    },
+    "machen": {
+     "fp": "0e938a2f92b1",
+     "file": "6bc8186ed0.mp3"
+    },
+    "neues": {
+     "fp": "24e8e73475b6",
+     "file": "08da336c09.mp3"
+    },
+    "geschwisterchen": {
+     "fp": "7f198a0bfa71",
+     "file": "8e8fe74d2d.mp3"
+    },
+    "neue": {
+     "fp": "066cd20a9200",
+     "file": "76354d7ae1.mp3"
+    },
+    "schule": {
+     "fp": "ba69b73a91a9",
+     "file": "541278ced0.mp3"
+    },
+    "zähneputzen": {
+     "fp": "8b8296a9906e",
+     "file": "1b59faf3e0.mp3"
+    },
+    "abschied": {
+     "fp": "fa5efd8d2802",
+     "file": "475c7b4c9c.mp3"
+    },
+    "nehmen": {
+     "fp": "143974b83ce2",
+     "file": "44bfde47a7.mp3"
+    },
+    "nimm": {
+     "fp": "4ad95b5b368a",
+     "file": "ded2ba8aaa.mp3"
+    },
+    "eure": {
+     "fp": "5317a597f62a",
+     "file": "46bfda728d.mp3"
+    },
+    "eigenen": {
+     "fp": "44d9b8c44a35",
+     "file": "e1ee448f09.mp3"
+    },
+    "fotos": {
+     "fp": "b45c5e7da79a",
+     "file": "eaacf214c9.mp3"
+    },
+    "damit": {
+     "fp": "7d4c52bbdb7b",
+     "file": "2a7b876279.mp3"
+    },
+    "euch": {
+     "fp": "cdb7e1a2a2a5",
+     "file": "03d0738707.mp3"
+    },
+    "handelt": {
+     "fp": "d1f54741577d",
+     "file": "318c61cc0b.mp3"
+    },
+    "spaß": {
+     "fp": "9a36a5671ded",
+     "file": "91057d0a11.mp3"
+    },
+    "gruppe": {
+     "fp": "521b5bb31eb6",
+     "file": "3192ca69cc.mp3"
+    },
+    "klasse": {
+     "fp": "652c3fd8ebab",
+     "file": "1edb38a28f.mp3"
+    },
+    "zusammen": {
+     "fp": "964a3869d970",
+     "file": "c341d8c38e.mp3"
+    },
+    "buch": {
+     "fp": "8086bfb2f7b9",
+     "file": "6799b6b402.mp3"
+    },
+    "jedes": {
+     "fp": "7c9820389e99",
+     "file": "a3b1c34a96.mp3"
+    },
+    "gestaltet": {
+     "fp": "03a1c057e907",
+     "file": "b204556fc9.mp3"
+    },
+    "klassenausflug": {
+     "fp": "214f6084caf7",
+     "file": "73020c4571.mp3"
+    },
+    "lieblingstier": {
+     "fp": "2dc82adeb931",
+     "file": "6f3049af84.mp3"
+    },
+    "einmal": {
+     "fp": "ffc7a361eca1",
+     "file": "b7ae22ea0b.mp3"
+    },
+    "will": {
+     "fp": "b00185a60ff1",
+     "file": "37d41699bd.mp3"
+    },
+    "lies": {
+     "fp": "cc699b688d80",
+     "file": "267b6efe9d.mp3"
+    },
+    "vor": {
+     "fp": "0fc91c7d23d3",
+     "file": "8e4fcaa396.mp3"
+    },
+    "deine": {
+     "fp": "956017b4ff01",
+     "file": "961fccd67c.mp3"
+    },
+    "stimme": {
+     "fp": "70f54114ae8b",
+     "file": "93f1881a93.mp3"
+    },
+    "beim": {
+     "fp": "064f4bd41bec",
+     "file": "6db57198c6.mp3"
+    },
+    "vorlesen": {
+     "fp": "ed48f8f488a0",
+     "file": "ed462b42d9.mp3"
+    },
+    "vielen": {
+     "fp": "21de5df848cd",
+     "file": "8b5e734df1.mp3"
+    },
+    "jahren": {
+     "fp": "9738cee377a6",
+     "file": "ef6d6bb4f9.mp3"
+    },
+    "diese": {
+     "fp": "b77579d68889",
+     "file": "c0ce3d0f1a.mp3"
+    },
+    "schatz": {
+     "fp": "f0f1174a3d0f",
+     "file": "0ffdad8d07.mp3"
+    },
+    "sein": {
+     "fp": "268818ca268d",
+     "file": "acdc21e7d5.mp3"
+    },
+    "noch": {
+     "fp": "c9a4f3cec043",
+     "file": "4d05f588ca.mp3"
+    },
+    "alles": {
+     "fp": "c8e394b4b206",
+     "file": "dccf7d970e.mp3"
+    },
+    "über": {
+     "fp": "03a9a2b4ee6a",
+     "file": "fcd10c8088.mp3"
+    },
+    "jedem": {
+     "fp": "bf387b982298",
+     "file": "3ac9c75e3a.mp3"
+    },
+    "geburtstag": {
+     "fp": "697f9f40fdf8",
+     "file": "f9b23cec9c.mp3"
+    },
+    "eines": {
+     "fp": "804e0acef816",
+     "file": "287f6a6d93.mp3"
+    },
+    "lieblingskuscheltiers": {
+     "fp": "48c9ac5cebf8",
+     "file": "3949276e29.mp3"
+    },
+    "haus": {
+     "fp": "a1b2c2e3d798",
+     "file": "2b4e21824e.mp3"
+    },
+    "traum": {
+     "fp": "ec94f4d35ee7",
+     "file": "8504e71374.mp3"
+    },
+    "letzter": {
+     "fp": "975cfeed323a",
+     "file": "e67ebde467.mp3"
+    },
+    "nacht": {
+     "fp": "0112391c9bd9",
+     "file": "59ac7ddf10.mp3"
+    },
+    "opa": {
+     "fp": "4397c816ea65",
+     "file": "b79259e4e4.mp3"
+    },
+    "erzählt": {
+     "fp": "0ee70904bd86",
+     "file": "6babb6123e.mp3"
+    },
+    "als": {
+     "fp": "b99a44ed3a1f",
+     "file": "d79673dae9.mp3"
+    },
+    "er": {
+     "fp": "ee1f32d96bba",
+     "file": "602c57ffb5.mp3"
+    },
+    "sätze": {
+     "fp": "994eb53dafec",
+     "file": "80ef17fd7d.mp3"
+    },
+    "pro": {
+     "fp": "9ae8a29fbfb4",
+     "file": "3b40f38967.mp3"
+    },
+    "reichen": {
+     "fp": "02cd0dd3c996",
+     "file": "93b8f2f07c.mp3"
+    },
+    "völlig": {
+     "fp": "a354a5d405d8",
+     "file": "3d2c3a6b3a.mp3"
+    },
+    "tageslicht": {
+     "fp": "adc4b52b4aa2",
+     "file": "ffa3dfb677.mp3"
+    },
+    "seiten": {
+     "fp": "6f598f07a3fe",
+     "file": "0d82a03ab7.mp3"
+    },
+    "quadratisch": {
+     "fp": "a2d9c5839a54",
+     "file": "71e4fa14aa.mp3"
+    },
+    "also": {
+     "fp": "fd2e90f071a1",
+     "file": "09706c4188.mp3"
+    },
+    "rändern": {
+     "fp": "bd09a0ab271e",
+     "file": "02c66486cb.mp3"
+    },
+    "deines": {
+     "fp": "2f771853bc34",
+     "file": "dec903b14e.mp3"
+    },
+    "kindes": {
+     "fp": "c4aac6a66693",
+     "file": "ffe49e71b8.mp3"
+    },
+    "titelbild": {
+     "fp": "82bcbe620eb6",
+     "file": "f5c94f4a5d.mp3"
+    },
+    "veröffentlichen": {
+     "fp": "fdeb33de6d6f",
+     "file": "f0f989b82b.mp3"
+    },
+    "autorinnen": {
+     "fp": "31e89203f5c6",
+     "file": "36b7127ea6.mp3"
+    },
+    "ob": {
+     "fp": "a048f629f84c",
+     "file": "15cbe07988.mp3"
+    },
+    "jung": {
+     "fp": "69788d051ead",
+     "file": "77fc76465c.mp3"
+    },
+    "alt": {
+     "fp": "21c78fe5e59e",
+     "file": "325562c769.mp3"
+    },
+    "können": {
+     "fp": "eac6920281be",
+     "file": "76176d49ac.mp3"
+    },
+    "ihre": {
+     "fp": "e991cf66663c",
+     "file": "7206a23da0.mp3"
+    },
+    "oomlaut-buchladen": {
+     "fp": "1b5ba38ad311",
+     "file": "76d92f5713.mp3"
+    },
+    "schicken": {
+     "fp": "b36d308e3006",
+     "file": "4410424b0a.mp3"
+    },
+    "wenn": {
+     "fp": "9c9b828b579a",
+     "file": "10b2ca1c80.mp3"
+    },
+    "fertig": {
+     "fp": "2f2bb680c92f",
+     "file": "54e0d1a711.mp3"
+    },
+    "erfährst": {
+     "fp": "3de6d14f78f7",
+     "file": "eb641758d7.mp3"
+    },
+    "oomlautcom": {
+     "fp": "e6c0c2a04d8c",
+     "file": "731eeaafad.mp3"
+    },
+    "geht": {
+     "fp": "9ef34c6de663",
+     "file": "b992ee013e.mp3"
+    },
+    "gefällig": {
+     "fp": "982ad1569c9b",
+     "file": "fb0a7635b7.mp3"
+    },
+    "besuche": {
+     "fp": "aa518eb9c3a7",
+     "file": "88ac2f2feb.mp3"
+    },
+    "ideenzimmer": {
+     "fp": "d05c806f97dd",
+     "file": "006b63180a.mp3"
+    },
+    "unter": {
+     "fp": "1e505e3c9aac",
+     "file": "6766177a04.mp3"
+    },
+    "hilfe": {
+     "fp": "3e8e968ce757",
+     "file": "41b24d3bcf.mp3"
+    },
+    "dort": {
+     "fp": "fcd0ed8de4bf",
+     "file": "de217d1cab.mp3"
+    },
+    "findest": {
+     "fp": "5e25c29c7100",
+     "file": "32f479016c.mp3"
+    },
+    "viele": {
+     "fp": "72c83af003a9",
+     "file": "d58b8efed1.mp3"
+    },
+    "weitere": {
+     "fp": "5a3bc3d65b5c",
+     "file": "4e3936d10c.mp3"
+    },
+    "zum": {
+     "fp": "e46be08a367b",
+     "file": "e333a30486.mp3"
+    },
+    "gemeinsamen": {
+     "fp": "72db18a515f1",
+     "file": "39b33db3b3.mp3"
+    },
+    "gestalten": {
+     "fp": "f9463755764c",
+     "file": "81a31a3429.mp3"
+    },
+    "großen": {
+     "fp": "542896640b21",
+     "file": "dd768d4635.mp3"
+    },
+    "momenten": {
+     "fp": "3f2f6dae840c",
+     "file": "51c84107f0.mp3"
+    },
+    "alltagsabläufen": {
+     "fp": "07fe9ecd40dd",
+     "file": "41832c0b14.mp3"
+    },
+    "gefühlen": {
+     "fp": "5c320c44883d",
+     "file": "8f27772a4e.mp3"
+    },
+    "familiengeschichten": {
+     "fp": "9d4c23fffe9c",
+     "file": "90b144d530.mp3"
+    }
+   },
+   "fr": {
+    "différent": {
+     "fp": "fd139b806c36",
+     "file": "a4bef72d6c.mp3"
+    },
+    "écrit": {
+     "fp": "ad7954605793",
+     "file": "2a8c762194.mp3"
+    },
+    "et": {
+     "fp": "8c10215bf2bb",
+     "file": "a5bc1d9b2a.mp3"
+    },
+    "illustré": {
+     "fp": "29e5dcaaa33b",
+     "file": "bbf465a6a8.mp3"
+    },
+    "par": {
+     "fp": "2f771b9e8141",
+     "file": "e79113f506.mp3"
+    },
+    "jörg": {
+     "fp": "dd2d3e4b674a",
+     "file": "e1cdcb82d4.mp3"
+    },
+    "schmidt": {
+     "fp": "c663628d7410",
+     "file": "ec3fdd57d0.mp3"
+    },
+    "je": {
+     "fp": "2fd5ab943f0e",
+     "file": "68d2ad23b5.mp3"
+    },
+    "me": {
+     "fp": "eacb19939e07",
+     "file": "b1c1d8736f.mp3"
+    },
+    "sens": {
+     "fp": "10af5f8b2331",
+     "file": "35b0472769.mp3"
+    },
+    "étrange": {
+     "fp": "7b23e6297db8",
+     "file": "3417f4ab1f.mp3"
+    },
+    "bizarre": {
+     "fp": "800c0a89a071",
+     "file": "6afeb9ac6b.mp3"
+    },
+    "anxieux": {
+     "fp": "fd65b8714361",
+     "file": "6931f93262.mp3"
+    },
+    "tout": {
+     "fp": "1be37f95e2bb",
+     "file": "0450a82763.mp3"
+    },
+    "drôle": {
+     "fp": "9b4f128e463a",
+     "file": "cb77c492f0.mp3"
+    },
+    "ne": {
+     "fp": "92089b538771",
+     "file": "f60d2a2f79.mp3"
+    },
+    "pas": {
+     "fp": "a1c4d544f042",
+     "file": "19c2a0dbd8.mp3"
+    },
+    "à": {
+     "fp": "03cc0a642e34",
+     "file": "c34f17a35b.mp3"
+    },
+    "ma": {
+     "fp": "02321e6c766b",
+     "file": "1382244e17.mp3"
+    },
+    "place": {
+     "fp": "eb1ef230e4fc",
+     "file": "9da8f1fa7d.mp3"
+    },
+    "loufoque": {
+     "fp": "606ad5ed6098",
+     "file": "7ec8f2356c.mp3"
+    },
+    "laissé": {
+     "fp": "28494e80de71",
+     "file": "5ae66fc3d2.mp3"
+    },
+    "derrière": {
+     "fp": "52562a5098dc",
+     "file": "274ca4ed28.mp3"
+    },
+    "mis": {
+     "fp": "c7511751a8be",
+     "file": "520104c03e.mp3"
+    },
+    "l’écart": {
+     "fp": "7bc954bef7f0",
+     "file": "efa547de4f.mp3"
+    },
+    "moche": {
+     "fp": "56f58a269e8a",
+     "file": "a0ffd4e952.mp3"
+    },
+    "incompatible": {
+     "fp": "ae7a40294115",
+     "file": "c8113f64eb.mp3"
+    },
+    "unique": {
+     "fp": "4f3a6a4e79d8",
+     "file": "58037c0078.mp3"
+    },
+    "spécial": {
+     "fp": "bff4f668d828",
+     "file": "1b9ec52ffe.mp3"
+    },
+    "aimé": {
+     "fp": "98521db9f17a",
+     "file": "96198e73d1.mp3"
+    },
+    "extraordinaire": {
+     "fp": "269bf2c84f4f",
+     "file": "c2b7169a7e.mp3"
+    },
+    "la": {
+     "fp": "edd0e236e80f",
+     "file": "3efd4c0fe1.mp3"
+    },
+    "dure": {
+     "fp": "579a51bf70df",
+     "file": "7cca7f115f.mp3"
+    },
+    "vie": {
+     "fp": "94f1e81079d9",
+     "file": "6028ed41ac.mp3"
+    },
+    "des": {
+     "fp": "1d665b385cc4",
+     "file": "e9d596e780.mp3"
+    },
+    "animaux": {
+     "fp": "1ff6d701fda8",
+     "file": "ba81cea18b.mp3"
+    },
+    "soudain": {
+     "fp": "dda77bf3b7b5",
+     "file": "0a8329a583.mp3"
+    },
+    "minette": {
+     "fp": "35db450a75b7",
+     "file": "8823cc0e93.mp3"
+    },
+    "comprit": {
+     "fp": "28f5493967b7",
+     "file": "89cd6b27d2.mp3"
+    },
+    "que": {
+     "fp": "71eb21b5142b",
+     "file": "57b5ca459e.mp3"
+    },
+    "pelote": {
+     "fp": "5092f8166edd",
+     "file": "b1fd532226.mp3"
+    },
+    "surveillait": {
+     "fp": "f1354faa7a16",
+     "file": "bf4bc416dd.mp3"
+    },
+    "depuis": {
+     "fp": "ef5ab75f503f",
+     "file": "f8cccbc8b0.mp3"
+    },
+    "le": {
+     "fp": "723dd509fb75",
+     "file": "593b743b20.mp3"
+    },
+    "début": {
+     "fp": "e843237d0bce",
+     "file": "a8f85647d2.mp3"
+    },
+    "malgré": {
+     "fp": "12d10275d83d",
+     "file": "ac8206b5f1.mp3"
+    },
+    "l’avis": {
+     "fp": "d7417fdea908",
+     "file": "cc7bc07791.mp3"
+    },
+    "experts": {
+     "fp": "f9bbde922532",
+     "file": "cfbede3cef.mp3"
+    },
+    "gérald": {
+     "fp": "a47b49040379",
+     "file": "c1d85a1027.mp3"
+    },
+    "gardait": {
+     "fp": "73ce52e99862",
+     "file": "6b0d63a3ab.mp3"
+    },
+    "confiance": {
+     "fp": "b169d3cc1c32",
+     "file": "f0f337af07.mp3"
+    },
+    "dans": {
+     "fp": "0bf7b033bc0b",
+     "file": "d2c149c49f.mp3"
+    },
+    "ballon": {
+     "fp": "a51340405f38",
+     "file": "0ee1430589.mp3"
+    },
+    "renard": {
+     "fp": "8ba391a2f94f",
+     "file": "9cc140dd81.mp3"
+    },
+    "l’ignorait": {
+     "fp": "e85436809e65",
+     "file": "77994d4a59.mp3"
+    },
+    "mais": {
+     "fp": "5321db0fe53a",
+     "file": "4f728e8f7e.mp3"
+    },
+    "souris": {
+     "fp": "cc178b94f84a",
+     "file": "9fcdb13c13.mp3"
+    },
+    "avait": {
+     "fp": "02cfd05c27db",
+     "file": "84ad507dc6.mp3"
+    },
+    "déménagé": {
+     "fp": "fb2a170ec0c3",
+     "file": "0f7f701dfc.mp3"
+    },
+    "en": {
+     "fp": "25d6a2008a50",
+     "file": "094b0fe0e3.mp3"
+    },
+    "floride": {
+     "fp": "fd0ed82b4e52",
+     "file": "689ae98f2c.mp3"
+    },
+    "au": {
+     "fp": "03551f90aecf",
+     "file": "f095160c09.mp3"
+    },
+    "mois": {
+     "fp": "37fc7f514012",
+     "file": "339528c893.mp3"
+    },
+    "de": {
+     "fp": "5732c593139b",
+     "file": "600ccd1b71.mp3"
+    },
+    "mars": {
+     "fp": "d110e9ae41a3",
+     "file": "44a07a1c8c.mp3"
+    },
+    "d’accord": {
+     "fp": "e3cba7ba4eb2",
+     "file": "b1d8a01bd1.mp3"
+    },
+    "c’est": {
+     "fp": "99b73b3dd450",
+     "file": "73b830dcc1.mp3"
+    },
+    "petit": {
+     "fp": "7066fccc6c94",
+     "file": "0f6878f15a.mp3"
+    },
+    "payé": {
+     "fp": "2a1abf85c05c",
+     "file": "d115d8c08d.mp3"
+    },
+    "câlins": {
+     "fp": "e5c4a811a494",
+     "file": "b04cff3e8f.mp3"
+    },
+    "gratuits": {
+     "fp": "b1d6e5099b13",
+     "file": "1993c1c651.mp3"
+    },
+    "quarante": {
+     "fp": "36fb164b002c",
+     "file": "dfbdd46947.mp3"
+    },
+    "unième": {
+     "fp": "594dabcca7b4",
+     "file": "aa5287d992.mp3"
+    },
+    "jour": {
+     "fp": "8eb555c71b5a",
+     "file": "18e3021e20.mp3"
+    },
+    "parc": {
+     "fp": "68b6592e4288",
+     "file": "414fad5f2f.mp3"
+    },
+    "chiens": {
+     "fp": "aa1f369b264f",
+     "file": "01bfa512a0.mp3"
+    },
+    "les": {
+     "fp": "632de292e5db",
+     "file": "cd6487de8f.mp3"
+    },
+    "présentations": {
+     "fp": "dd878d91be36",
+     "file": "7d7617cde2.mp3"
+    },
+    "duraient": {
+     "fp": "8cc03a200b42",
+     "file": "a3898b11ce.mp3"
+    },
+    "souvent": {
+     "fp": "5d3ee43f0c05",
+     "file": "b70113686a.mp3"
+    },
+    "jusqu’à": {
+     "fp": "00e87b645900",
+     "file": "0a714d26f2.mp3"
+    },
+    "l’après-midi": {
+     "fp": "ea60eac35529",
+     "file": "a6a59b6bea.mp3"
+    },
+    "loup": {
+     "fp": "17dd30a03c8f",
+     "file": "b460b91e0a.mp3"
+    },
+    "a": {
+     "fp": "5360f6b38b69",
+     "file": "86f7e437fa.mp3"
+    },
+    "sauté": {
+     "fp": "5a4e4864b4a2",
+     "file": "c1cf77d47a.mp3"
+    },
+    "hurlement": {
+     "fp": "e41b12603c1e",
+     "file": "fc7f57288b.mp3"
+    },
+    "posté": {
+     "fp": "d745edfd0c81",
+     "file": "208e0815a5.mp3"
+    },
+    "coucher": {
+     "fp": "af9b52e5a277",
+     "file": "c2a35e94a4.mp3"
+    },
+    "soleil": {
+     "fp": "7a74e4fb7f43",
+     "file": "45c8586a62.mp3"
+    },
+    "deux": {
+     "fp": "5d4d3b60bbd7",
+     "file": "503c02f0c4.mp3"
+    },
+    "j’aime": {
+     "fp": "8cbdb60d8bd9",
+     "file": "04cc4181fa.mp3"
+    },
+    "tous": {
+     "fp": "ce8d13001fcb",
+     "file": "bd73229ea0.mp3"
+    },
+    "sa": {
+     "fp": "97cfae280dee",
+     "file": "3608a6d1a0.mp3"
+    },
+    "mère": {
+     "fp": "b4ece40dedec",
+     "file": "eba4737806.mp3"
+    },
+    "doris": {
+     "fp": "e7be386a4aa0",
+     "file": "c29bb8e556.mp3"
+    },
+    "regardait": {
+     "fp": "a9376f20ef5f",
+     "file": "d716c38a3a.mp3"
+    },
+    "plus": {
+     "fp": "379e7b36362b",
+     "file": "6a8437dd00.mp3"
+    },
+    "infos": {
+     "fp": "3675109665be",
+     "file": "e06528401f.mp3"
+    },
+    "franchement": {
+     "fp": "24a199de7d09",
+     "file": "bb6255c1d3.mp3"
+    },
+    "elle": {
+     "fp": "eccf0ff97faa",
+     "file": "910a90401e.mp3"
+    },
+    "s’était": {
+     "fp": "48a3fcdafeef",
+     "file": "bb83d51881.mp3"
+    },
+    "jamais": {
+     "fp": "47486f32260a",
+     "file": "3f1e319f11.mp3"
+    },
+    "sentie": {
+     "fp": "c17298d94bc5",
+     "file": "f57870c559.mp3"
+    },
+    "aussi": {
+     "fp": "dedd012081b6",
+     "file": "4cea229072.mp3"
+    },
+    "calme": {
+     "fp": "88bbb9dbc3d6",
+     "file": "9ae14605d5.mp3"
+    },
+    "conseils": {
+     "fp": "822dbebff02a",
+     "file": "1615e5a772.mp3"
+    },
+    "pour": {
+     "fp": "894c7e03b04f",
+     "file": "03c988f582.mp3"
+    },
+    "auteurs": {
+     "fp": "cb27841c9c86",
+     "file": "4b2bb1e3e4.mp3"
+    },
+    "idées": {
+     "fp": "9a4bda6d37ae",
+     "file": "9a664fd109.mp3"
+    },
+    "créer": {
+     "fp": "f99ed3b7b1ee",
+     "file": "38d33ab331.mp3"
+    },
+    "vos": {
+     "fp": "113b9bee9fce",
+     "file": "9386abfedb.mp3"
+    },
+    "propres": {
+     "fp": "110deb093476",
+     "file": "19c0f2ed03.mp3"
+    },
+    "livres": {
+     "fp": "c5cfcb6f68d7",
+     "file": "a3b51a2408.mp3"
+    },
+    "grands": {
+     "fp": "3c3f8bdf1757",
+     "file": "3f760e4722.mp3"
+    },
+    "comme": {
+     "fp": "77c580484bf2",
+     "file": "a1537b8da3.mp3"
+    },
+    "jeunes": {
+     "fp": "f7298ccabdc5",
+     "file": "4fadbc3276.mp3"
+    },
+    "chaque": {
+     "fp": "d04b959d34c1",
+     "file": "bfd2b5aecf.mp3"
+    },
+    "famille": {
+     "fp": "086be42303d8",
+     "file": "6478d3b7c8.mp3"
+    },
+    "histoires": {
+     "fp": "357463e20b02",
+     "file": "483e2c753a.mp3"
+    },
+    "qui": {
+     "fp": "3c1d759381b7",
+     "file": "61f611a4fd.mp3"
+    },
+    "méritent": {
+     "fp": "2d9ab270bbc8",
+     "file": "6b966a1e67.mp3"
+    },
+    "d’être": {
+     "fp": "8f6c5f1b129c",
+     "file": "4b949d05ae.mp3"
+    },
+    "gardées": {
+     "fp": "88ef6a2f14d5",
+     "file": "62c9e8f77b.mp3"
+    },
+    "il": {
+     "fp": "3dab5a8540db",
+     "file": "53c1d6afa3.mp3"
+    },
+    "suffit": {
+     "fp": "0b5dbd90d4ea",
+     "file": "6cca87d4fb.mp3"
+    },
+    "d’un": {
+     "fp": "7e7fafb69cc6",
+     "file": "b1838b1181.mp3"
+    },
+    "appareil": {
+     "fp": "e156362a74de",
+     "file": "aa06165114.mp3"
+    },
+    "photo": {
+     "fp": "361f0d0b5d5a",
+     "file": "eeb35d331b.mp3"
+    },
+    "quelques": {
+     "fp": "4cd2e875ddbf",
+     "file": "5a3f8fe1bd.mp3"
+    },
+    "mots": {
+     "fp": "0e6b9582e741",
+     "file": "b22322a40b.mp3"
+    },
+    "peu": {
+     "fp": "335fcc1d26dc",
+     "file": "ca5e582478.mp3"
+    },
+    "temps": {
+     "fp": "2c0795c7e54e",
+     "file": "602ba74323.mp3"
+    },
+    "voici": {
+     "fp": "16e78a7c9330",
+     "file": "5f275dd81a.mp3"
+    },
+    "commencer": {
+     "fp": "60010c534f42",
+     "file": "2b62dec501.mp3"
+    },
+    "notre": {
+     "fp": "8eb675f54301",
+     "file": "1df85c0da1.mp3"
+    },
+    "grande": {
+     "fp": "1d2113ccc2db",
+     "file": "35272bf81d.mp3"
+    },
+    "aventure": {
+     "fp": "7cca72d9c49f",
+     "file": "0ca2722eca.mp3"
+    },
+    "du": {
+     "fp": "d1c067502206",
+     "file": "fa114377ef.mp3"
+    },
+    "une": {
+     "fp": "93ac08192900",
+     "file": "e3bae98dee.mp3"
+    },
+    "balade": {
+     "fp": "60ded8a7f9e2",
+     "file": "365f20c1d5.mp3"
+    },
+    "forêt": {
+     "fp": "b8384ae15864",
+     "file": "a0f7077cfd.mp3"
+    },
+    "visite": {
+     "fp": "e672b3c39774",
+     "file": "197849f3bb.mp3"
+    },
+    "chez": {
+     "fp": "7eca41aa9f69",
+     "file": "53cba4ca74.mp3"
+    },
+    "mamie": {
+     "fp": "cd4073487bab",
+     "file": "26cf6b5908.mp3"
+    },
+    "première": {
+     "fp": "267722299194",
+     "file": "b78f38abe2.mp3"
+    },
+    "dent": {
+     "fp": "586b6e785a17",
+     "file": "53f3a5d432.mp3"
+    },
+    "tombée": {
+     "fp": "52b214d293b6",
+     "file": "7cd378f8f1.mp3"
+    },
+    "prenez": {
+     "fp": "cb168f967c9a",
+     "file": "72cb7da262.mp3"
+    },
+    "page": {
+     "fp": "48c69e0bc406",
+     "file": "767013ce0e.mp3"
+    },
+    "laissez": {
+     "fp": "685a7cb09cc8",
+     "file": "7d1fc87415.mp3"
+    },
+    "votre": {
+     "fp": "b2a6ff8e0a81",
+     "file": "a9b717121c.mp3"
+    },
+    "enfant": {
+     "fp": "202a82750cea",
+     "file": "ae31f93bc1.mp3"
+    },
+    "raconter": {
+     "fp": "04b9b8987ea9",
+     "file": "a8b172f528.mp3"
+    },
+    "ce": {
+     "fp": "128f75513ea9",
+     "file": "b452d6b23b.mp3"
+    },
+    "s’est": {
+     "fp": "f079047dd44b",
+     "file": "b5be821b11.mp3"
+    },
+    "passé": {
+     "fp": "283cc84e84b3",
+     "file": "1a79c7314a.mp3"
+    },
+    "d’abord": {
+     "fp": "87eb02105bc3",
+     "file": "81b4c8a158.mp3"
+    },
+    "on": {
+     "fp": "1974b954e081",
+     "file": "db3d405b10.mp3"
+    },
+    "puis": {
+     "fp": "331071c62a7b",
+     "file": "b93b33dc4a.mp3"
+    },
+    "meilleur": {
+     "fp": "9aa1020de36b",
+     "file": "627841ce61.mp3"
+    },
+    "moment": {
+     "fp": "176a5775a60f",
+     "file": "b56def36af.mp3"
+    },
+    "c’était": {
+     "fp": "ae549699e535",
+     "file": "8e80e67f5d.mp3"
+    },
+    "collections": {
+     "fp": "856f1ec9b1cd",
+     "file": "fa4b9d69fd.mp3"
+    },
+    "cailloux": {
+     "fp": "b9854dc97af1",
+     "file": "132d541159.mp3"
+    },
+    "insectes": {
+     "fp": "ff51d96c55fe",
+     "file": "a657e0917e.mp3"
+    },
+    "feuilles": {
+     "fp": "84bf906c40f0",
+     "file": "1974164fcb.mp3"
+    },
+    "fleurs": {
+     "fp": "1eb0230e69b3",
+     "file": "1bdba013ca.mp3"
+    },
+    "photographiez": {
+     "fp": "17ab39edf854",
+     "file": "8af2c5014b.mp3"
+    },
+    "ou": {
+     "fp": "b1cddaf9a024",
+     "file": "d5f10c9bc8.mp3"
+    },
+    "dessinez": {
+     "fp": "f422e5ed39be",
+     "file": "62b97ca8da.mp3"
+    },
+    "trouvaille": {
+     "fp": "c22ca43dc47d",
+     "file": "d6ce371995.mp3"
+    },
+    "donnez-lui": {
+     "fp": "86c35115e09e",
+     "file": "98ab643c95.mp3"
+    },
+    "un": {
+     "fp": "d83e8d00e13f",
+     "file": "dd3bc42b2c.mp3"
+    },
+    "nom": {
+     "fp": "227291bebcad",
+     "file": "8d406e3d12.mp3"
+    },
+    "anecdote": {
+     "fp": "635be80e58ad",
+     "file": "8a0e8e91da.mp3"
+    },
+    "vraie": {
+     "fp": "7190a0d7a635",
+     "file": "87058c3885.mp3"
+    },
+    "inventée": {
+     "fp": "4985fe64cdb7",
+     "file": "e0425560d5.mp3"
+    },
+    "voilà": {
+     "fp": "35751bc7af7f",
+     "file": "107f48886b.mp3"
+    },
+    "propre": {
+     "fp": "f76d72aa7c1d",
+     "file": "f6828e551f.mp3"
+    },
+    "guide": {
+     "fp": "1bc1d9c1e916",
+     "file": "4956faddb7.mp3"
+    },
+    "nature": {
+     "fp": "cde1c9a783ee",
+     "file": "a5197f1026.mp3"
+    },
+    "dessins": {
+     "fp": "77e603afc596",
+     "file": "58a70c5dcf.mp3"
+    },
+    "dessin": {
+     "fp": "355b5fd6dd22",
+     "file": "1e7dbf7a26.mp3"
+    },
+    "devient": {
+     "fp": "cd0023ce36b1",
+     "file": "991a1e44d6.mp3"
+    },
+    "l’histoire": {
+     "fp": "0a38d8efb93b",
+     "file": "3f1562544f.mp3"
+    },
+    "écrivez": {
+     "fp": "8bf7ae9258e0",
+     "file": "6d8f2906bd.mp3"
+    },
+    "ses": {
+     "fp": "7f9fa3ec9536",
+     "file": "58db18624e.mp3"
+    },
+    "exactement": {
+     "fp": "dbf695015cb2",
+     "file": "30c9fb71b0.mp3"
+    },
+    "dit": {
+     "fp": "eea78cb4b046",
+     "file": "b46ffdd2a9.mp3"
+    },
+    "leçons": {
+     "fp": "04e16f843a3d",
+     "file": "13a0a4ad4f.mp3"
+    },
+    "histoire": {
+     "fp": "e15cb14f7774",
+     "file": "a6c3985ce0.mp3"
+    },
+    "peut": {
+     "fp": "e42853b21514",
+     "file": "9ad623be19.mp3"
+    },
+    "rendre": {
+     "fp": "a1dbe368bc27",
+     "file": "f91baba58e.mp3"
+    },
+    "moments": {
+     "fp": "bbdf369121f7",
+     "file": "4d512399fa.mp3"
+    },
+    "doux": {
+     "fp": "2abd9771e718",
+     "file": "42313de724.mp3"
+    },
+    "bébé": {
+     "fp": "3df20056e9e2",
+     "file": "bf3ccfa170.mp3"
+    },
+    "arrive": {
+     "fp": "4b44d61c68d4",
+     "file": "163001e290.mp3"
+    },
+    "nouvelle": {
+     "fp": "2dd9e9b49baf",
+     "file": "01e3f654ba.mp3"
+    },
+    "école": {
+     "fp": "0f9efc534223",
+     "file": "cd843a96bf.mp3"
+    },
+    "brossage": {
+     "fp": "37c344a86f38",
+     "file": "f94645fa63.mp3"
+    },
+    "dents": {
+     "fp": "a1acbc6d83e8",
+     "file": "084e9fe135.mp3"
+    },
+    "dire": {
+     "fp": "cbd32d77855c",
+     "file": "2419cac36f.mp3"
+    },
+    "revoir": {
+     "fp": "5ab2ddcc6630",
+     "file": "8a6e541701.mp3"
+    },
+    "utilisez": {
+     "fp": "08ff258ea256",
+     "file": "4e5717e619.mp3"
+    },
+    "photos": {
+     "fp": "d92d3ebbf31a",
+     "file": "2e58e0c1ea.mp3"
+    },
+    "parle": {
+     "fp": "b56ab6c2df1b",
+     "file": "543a226c6c.mp3"
+    },
+    "lui": {
+     "fp": "12309ca8873e",
+     "file": "843da8e914.mp3"
+    },
+    "plusieurs": {
+     "fp": "c225481b13a8",
+     "file": "a7fa66ce18.mp3"
+    },
+    "toute": {
+     "fp": "024024678f6a",
+     "file": "dc833c94af.mp3"
+    },
+    "classe": {
+     "fp": "6c902e76f0d7",
+     "file": "7e7b33d679.mp3"
+    },
+    "faire": {
+     "fp": "9f3ff31bf195",
+     "file": "9d62f39f91.mp3"
+    },
+    "livre": {
+     "fp": "02fe0e6ea536",
+     "file": "c9904cff57.mp3"
+    },
+    "ensemble": {
+     "fp": "8cf0731b7759",
+     "file": "56040ec464.mp3"
+    },
+    "crée": {
+     "fp": "91773457f876",
+     "file": "c3f321afa0.mp3"
+    },
+    "sortie": {
+     "fp": "3285e0319874",
+     "file": "092ec58085.mp3"
+    },
+    "animal": {
+     "fp": "57c7636f4c00",
+     "file": "3199ea0562.mp3"
+    },
+    "préféré": {
+     "fp": "26d3eb22f89e",
+     "file": "4df5da7e95.mp3"
+    },
+    "qu’il": {
+     "fp": "c944e5842860",
+     "file": "ceab7d8fee.mp3"
+    },
+    "veut": {
+     "fp": "0efc2d46a38c",
+     "file": "8d8801e239.mp3"
+    },
+    "tard": {
+     "fp": "8a2d06cad8d5",
+     "file": "9473d93666.mp3"
+    },
+    "lisez-le": {
+     "fp": "07e1777b2f16",
+     "file": "598461a99b.mp3"
+    },
+    "voix": {
+     "fp": "df72fae88114",
+     "file": "e918e6f334.mp3"
+    },
+    "haute": {
+     "fp": "0302a21b0a84",
+     "file": "8c6927da38.mp3"
+    },
+    "enregistrez": {
+     "fp": "c78136f23091",
+     "file": "ab0aeaaa08.mp3"
+    },
+    "lisant": {
+     "fp": "ddb12e774f2a",
+     "file": "2e9a950c9f.mp3"
+    },
+    "années": {
+     "fp": "ded24d69f7c8",
+     "file": "a836709462.mp3"
+    },
+    "cette": {
+     "fp": "4ad15186b52b",
+     "file": "85e258aba1.mp3"
+    },
+    "sera": {
+     "fp": "1fd284ae7961",
+     "file": "46a3775d2e.mp3"
+    },
+    "trésor": {
+     "fp": "d7b7d22c1c64",
+     "file": "6d9347ae30.mp3"
+    },
+    "d’autres": {
+     "fp": "0ffd051d5d21",
+     "file": "e0b89a4e46.mp3"
+    },
+    "sur": {
+     "fp": "109f6d7e366c",
+     "file": "3d54fd66df.mp3"
+    },
+    "moi": {
+     "fp": "4799456e9721",
+     "file": "55cbe7fd00.mp3"
+    },
+    "anniversaire": {
+     "fp": "df37d9df4896",
+     "file": "b8e183ff87.mp3"
+    },
+    "aventures": {
+     "fp": "629a1da03e1f",
+     "file": "3e2b5b5fe3.mp3"
+    },
+    "jouet": {
+     "fp": "026f712fbcd6",
+     "file": "3b2a9abf68.mp3"
+    },
+    "maison": {
+     "fp": "d5335e8cbd87",
+     "file": "996c8da3ca.mp3"
+    },
+    "rêve": {
+     "fp": "d759c6856896",
+     "file": "985c9c0584.mp3"
+    },
+    "nuit": {
+     "fp": "7aaa43146184",
+     "file": "b4c676a043.mp3"
+    },
+    "dernière": {
+     "fp": "fa4e138764af",
+     "file": "b8e31ee11d.mp3"
+    },
+    "papi": {
+     "fp": "eabf8bec0551",
+     "file": "183d77328d.mp3"
+    },
+    "raconte": {
+     "fp": "8128cfb10a89",
+     "file": "fd259142e4.mp3"
+    },
+    "quand": {
+     "fp": "b02aface1ba2",
+     "file": "70d2b886ed.mp3"
+    },
+    "était": {
+     "fp": "596536b49bf2",
+     "file": "8f9c603126.mp3"
+    },
+    "phrases": {
+     "fp": "2ac6f84424c2",
+     "file": "3895d1c37b.mp3"
+    },
+    "bien": {
+     "fp": "762e0c784659",
+     "file": "d4e2f60841.mp3"
+    },
+    "assez": {
+     "fp": "a4faa53eafcf",
+     "file": "168812a0d5.mp3"
+    },
+    "lumière": {
+     "fp": "a47f000736e4",
+     "file": "3803bf2d1d.mp3"
+    },
+    "pages": {
+     "fp": "98766370cbda",
+     "file": "eec6542d2e.mp3"
+    },
+    "sont": {
+     "fp": "99de13f87420",
+     "file": "540fb4a592.mp3"
+    },
+    "carrées": {
+     "fp": "08896b4c3746",
+     "file": "046f6f5cbe.mp3"
+    },
+    "bords": {
+     "fp": "d3bbcc5e7f1f",
+     "file": "c0f5d8eb5a.mp3"
+    },
+    "couverture": {
+     "fp": "4ce3969ab436",
+     "file": "cb4805bd83.mp3"
+    },
+    "être": {
+     "fp": "122e8bd20b2a",
+     "file": "6b230159f2.mp3"
+    },
+    "publié": {
+     "fp": "203e54a9be9b",
+     "file": "bf50403243.mp3"
+    },
+    "petits": {
+     "fp": "71f16f4b96a7",
+     "file": "c48a2c5407.mp3"
+    },
+    "peuvent": {
+     "fp": "f64c5f736840",
+     "file": "02b49a0c72.mp3"
+    },
+    "envoyer": {
+     "fp": "5d701a17bdf6",
+     "file": "74004a08b2.mp3"
+    },
+    "leurs": {
+     "fp": "3e6db3600239",
+     "file": "bbd970fade.mp3"
+    },
+    "librairie": {
+     "fp": "d68cc41d4568",
+     "file": "c1b2264ac0.mp3"
+    },
+    "oomlaut": {
+     "fp": "f230ab4287e4",
+     "file": "3978058e6e.mp3"
+    },
+    "est": {
+     "fp": "3ae3202e0e6b",
+     "file": "665de1f277.mp3"
+    },
+    "prêt": {
+     "fp": "4792c274c7c3",
+     "file": "1c8236ff2f.mp3"
+    },
+    "rendez-vous": {
+     "fp": "4e4cc9ea1c8a",
+     "file": "5596f59771.mp3"
+    },
+    "oomlautcom": {
+     "fp": "62b854419a66",
+     "file": "731eeaafad.mp3"
+    },
+    "savoir": {
+     "fp": "d7476135adbc",
+     "file": "35c2aca5db.mp3"
+    },
+    "comment": {
+     "fp": "114451b5e4ac",
+     "file": "118a998981.mp3"
+    },
+    "besoin": {
+     "fp": "5e43dc4fb3c4",
+     "file": "9debf9fa88.mp3"
+    },
+    "d’idées": {
+     "fp": "271740d073f9",
+     "file": "bff30028dc.mp3"
+    },
+    "visitez": {
+     "fp": "08416c4352a6",
+     "file": "aaf280e4d7.mp3"
+    },
+    "salle": {
+     "fp": "637b15c64c29",
+     "file": "08cf32d7f7.mp3"
+    },
+    "aide": {
+     "fp": "0b4c80837953",
+     "file": "d4fbaef3ef.mp3"
+    },
+    "vous": {
+     "fp": "4d631f847ab7",
+     "file": "e136abe34d.mp3"
+    },
+    "y": {
+     "fp": "98c4df1bae08",
+     "file": "95cb0bfd29.mp3"
+    },
+    "trouverez": {
+     "fp": "5bd007f7d587",
+     "file": "29e9b2dbd6.mp3"
+    },
+    "routines": {
+     "fp": "5c7f8bfc4c5c",
+     "file": "82c37c3727.mp3"
+    },
+    "quotidien": {
+     "fp": "e11509cdaa53",
+     "file": "86ba32c37d.mp3"
+    },
+    "aux": {
+     "fp": "bd93968e0f5a",
+     "file": "2288e3ab3d.mp3"
+    },
+    "émotions": {
+     "fp": "19c57449f236",
+     "file": "35b966f9e5.mp3"
+    }
+   },
+   "es": {
+    "diferente": {
+     "fp": "2a0326042681",
+     "file": "6eff61f71f.mp3"
+    },
+    "escrito": {
+     "fp": "63572ecb1605",
+     "file": "fd5e4edc5b.mp3"
+    },
+    "e": {
+     "fp": "9e6c8c18d793",
+     "file": "58e6b3a414.mp3"
+    },
+    "ilustrado": {
+     "fp": "3aaebd515c30",
+     "file": "616ab9f48c.mp3"
+    },
+    "por": {
+     "fp": "22b00d164e25",
+     "file": "0e4434960c.mp3"
+    },
+    "jörg": {
+     "fp": "620f70d19b78",
+     "file": "e1cdcb82d4.mp3"
+    },
+    "schmidt": {
+     "fp": "d03c7dbcc98f",
+     "file": "ec3fdd57d0.mp3"
+    },
+    "me": {
+     "fp": "22cf88cfac0d",
+     "file": "b1c1d8736f.mp3"
+    },
+    "siento": {
+     "fp": "00b3b096541f",
+     "file": "2ef577b634.mp3"
+    },
+    "extraño": {
+     "fp": "f9a9ec9a777a",
+     "file": "de7d2472f5.mp3"
+    },
+    "raro": {
+     "fp": "fddb1d06d564",
+     "file": "606458472e.mp3"
+    },
+    "ansioso": {
+     "fp": "f529b9863f7e",
+     "file": "1e714c3675.mp3"
+    },
+    "como": {
+     "fp": "7bdb53926d02",
+     "file": "ef70a17048.mp3"
+    },
+    "un": {
+     "fp": "156fb288d788",
+     "file": "dd3bc42b2c.mp3"
+    },
+    "bicho": {
+     "fp": "be6873b03261",
+     "file": "1ab0385998.mp3"
+    },
+    "fuera": {
+     "fp": "f814fd351909",
+     "file": "0f0308fa8c.mp3"
+    },
+    "de": {
+     "fp": "d544ea90233d",
+     "file": "600ccd1b71.mp3"
+    },
+    "lugar": {
+     "fp": "c1edc05a48c2",
+     "file": "a51f574864.mp3"
+    },
+    "estrafalario": {
+     "fp": "d33265b819f4",
+     "file": "ef276d856c.mp3"
+    },
+    "rezagado": {
+     "fp": "c3e0abc8626d",
+     "file": "a98cc04ab9.mp3"
+    },
+    "excluido": {
+     "fp": "d1809615de32",
+     "file": "874ae36305.mp3"
+    },
+    "feo": {
+     "fp": "b0a9650eca0d",
+     "file": "723d1915db.mp3"
+    },
+    "incompatible": {
+     "fp": "23ba04d517cf",
+     "file": "c8113f64eb.mp3"
+    },
+    "único": {
+     "fp": "c371b27b5610",
+     "file": "e49037b12f.mp3"
+    },
+    "especial": {
+     "fp": "70d0d26bd5df",
+     "file": "569b1c7e21.mp3"
+    },
+    "querido": {
+     "fp": "87962ddffe46",
+     "file": "201ea52a9f.mp3"
+    },
+    "extraordinario": {
+     "fp": "a66bbe18c8de",
+     "file": "608a1622b1.mp3"
+    },
+    "la": {
+     "fp": "edc849256359",
+     "file": "3efd4c0fe1.mp3"
+    },
+    "dura": {
+     "fp": "e97cb938df59",
+     "file": "2ac5220126.mp3"
+    },
+    "vida": {
+     "fp": "2a85bbe57048",
+     "file": "c303fda042.mp3"
+    },
+    "los": {
+     "fp": "61cd40a57e02",
+     "file": "71c61afd3e.mp3"
+    },
+    "animales": {
+     "fp": "871f350e5cab",
+     "file": "3685f6362f.mp3"
+    },
+    "pronto": {
+     "fp": "7af79edbf5e4",
+     "file": "2726bab396.mp3"
+    },
+    "michi": {
+     "fp": "963ead462609",
+     "file": "a75494f12f.mp3"
+    },
+    "se": {
+     "fp": "bcd26e7be5a8",
+     "file": "00762ccfa7.mp3"
+    },
+    "dio": {
+     "fp": "2d2ff8ad17ec",
+     "file": "bd40a18d86.mp3"
+    },
+    "cuenta": {
+     "fp": "1e5a2c0b4d84",
+     "file": "de7f6b3e6f.mp3"
+    },
+    "que": {
+     "fp": "fa29fc64d888",
+     "file": "57b5ca459e.mp3"
+    },
+    "el": {
+     "fp": "996fdc405114",
+     "file": "4f1ea4f09d.mp3"
+    },
+    "ovillo": {
+     "fp": "ad015f34c15c",
+     "file": "548c0a9f1f.mp3"
+    },
+    "había": {
+     "fp": "b9ae733ee340",
+     "file": "f5317be1ab.mp3"
+    },
+    "estado": {
+     "fp": "81d5633ece08",
+     "file": "3520046b26.mp3"
+    },
+    "vigilando": {
+     "fp": "9b4e19685a7f",
+     "file": "b19e3ed4cd.mp3"
+    },
+    "todo": {
+     "fp": "a7f9aaf03569",
+     "file": "05f20a7178.mp3"
+    },
+    "tiempo": {
+     "fp": "43befc5a508b",
+     "file": "a5da6d9c96.mp3"
+    },
+    "dijeran": {
+     "fp": "2b317faf601e",
+     "file": "1f2eb6975e.mp3"
+    },
+    "lo": {
+     "fp": "0011157bcabc",
+     "file": "638e8f0171.mp3"
+    },
+    "expertos": {
+     "fp": "e3938f44048c",
+     "file": "80d3f7bcd3.mp3"
+    },
+    "gerardo": {
+     "fp": "690c6ada234d",
+     "file": "7ea4912022.mp3"
+    },
+    "seguía": {
+     "fp": "bdd60f79b855",
+     "file": "b5dab84cb1.mp3"
+    },
+    "confiando": {
+     "fp": "91582240ca50",
+     "file": "1ab35733d5.mp3"
+    },
+    "en": {
+     "fp": "83208124bad6",
+     "file": "094b0fe0e3.mp3"
+    },
+    "globo": {
+     "fp": "3afad3bf5aeb",
+     "file": "31039edadd.mp3"
+    },
+    "zorro": {
+     "fp": "7b87c06531cc",
+     "file": "c7abcdc3c5.mp3"
+    },
+    "no": {
+     "fp": "d20fefcc98e5",
+     "file": "fd12863535.mp3"
+    },
+    "sabía": {
+     "fp": "d738409c8c17",
+     "file": "9dade6da7f.mp3"
+    },
+    "pero": {
+     "fp": "0e68bdb6d9b8",
+     "file": "98fc7b3476.mp3"
+    },
+    "ratón": {
+     "fp": "5559ba586a0d",
+     "file": "2d83f9e54c.mp3"
+    },
+    "mudado": {
+     "fp": "a5ffca39081f",
+     "file": "c1cbee4723.mp3"
+    },
+    "a": {
+     "fp": "6334422d64b2",
+     "file": "86f7e437fa.mp3"
+    },
+    "florida": {
+     "fp": "bae54963c45a",
+     "file": "36a7ac9bd1.mp3"
+    },
+    "marzo": {
+     "fp": "2886b337ba88",
+     "file": "4e9772fbe7.mp3"
+    },
+    "vale": {
+     "fp": "9a9c7f028db6",
+     "file": "24c4de7fef.mp3"
+    },
+    "es": {
+     "fp": "1f2b79fb6428",
+     "file": "09cd68a2a7.mp3"
+    },
+    "pequeña": {
+     "fp": "d52addc22abf",
+     "file": "1dc975aef6.mp3"
+    },
+    "está": {
+     "fp": "6f95003496ea",
+     "file": "2d10807a09.mp3"
+    },
+    "pagada": {
+     "fp": "b0aa5170ac4b",
+     "file": "142163bb44.mp3"
+    },
+    "abrazos": {
+     "fp": "0e0c7228cc11",
+     "file": "24b643f3f7.mp3"
+    },
+    "gratis": {
+     "fp": "63e467e1cbdf",
+     "file": "92fc95b03b.mp3"
+    },
+    "día": {
+     "fp": "039ef6c5744a",
+     "file": "743a04a95c.mp3"
+    },
+    "cuarenta": {
+     "fp": "e31a5f8ae692",
+     "file": "e115b86bf7.mp3"
+    },
+    "y": {
+     "fp": "31cdab699960",
+     "file": "95cb0bfd29.mp3"
+    },
+    "uno": {
+     "fp": "3d140ecc4335",
+     "file": "81b6f50734.mp3"
+    },
+    "parque": {
+     "fp": "e8379c7d4be9",
+     "file": "6aa440a467.mp3"
+    },
+    "perros": {
+     "fp": "ad0e271773d9",
+     "file": "e4fe3bcf0f.mp3"
+    },
+    "las": {
+     "fp": "73e50c1dc08e",
+     "file": "5db3d4f1d6.mp3"
+    },
+    "presentaciones": {
+     "fp": "b3dc0df9b08a",
+     "file": "e45c933bfa.mp3"
+    },
+    "solían": {
+     "fp": "2bd610ee2fa1",
+     "file": "e4de1cd59f.mp3"
+    },
+    "alargarse": {
+     "fp": "0867e994add8",
+     "file": "c1c248133e.mp3"
+    },
+    "hasta": {
+     "fp": "6d97153a0820",
+     "file": "720f754fa4.mp3"
+    },
+    "bien": {
+     "fp": "33a09f66a1c2",
+     "file": "d4e2f60841.mp3"
+    },
+    "entrada": {
+     "fp": "c0cb41b7f245",
+     "file": "a9df7a764c.mp3"
+    },
+    "tarde": {
+     "fp": "5e0b923572c8",
+     "file": "8693c78aea.mp3"
+    },
+    "lobo": {
+     "fp": "0e0dad34ec4e",
+     "file": "4a98e66035.mp3"
+    },
+    "saltó": {
+     "fp": "e1ef68649e71",
+     "file": "88d7ff39d3.mp3"
+    },
+    "aullido": {
+     "fp": "60e5d92ca608",
+     "file": "2213b05d52.mp3"
+    },
+    "publicó": {
+     "fp": "e4a17b646f76",
+     "file": "b3c93c62fc.mp3"
+    },
+    "puesta": {
+     "fp": "95ff9b584b0c",
+     "file": "7b82dc670c.mp3"
+    },
+    "sol": {
+     "fp": "c1b21d9dac2d",
+     "file": "fbb93bb966.mp3"
+    },
+    "dos": {
+     "fp": "f2efe3ee0531",
+     "file": "e67f16d28a.mp3"
+    },
+    "gusta": {
+     "fp": "ca8dc7a43c58",
+     "file": "f1d19676f9.mp3"
+    },
+    "su": {
+     "fp": "5c045a6b742a",
+     "file": "363eb224f6.mp3"
+    },
+    "madre": {
+     "fp": "608708d963a8",
+     "file": "10c4070b4a.mp3"
+    },
+    "doris": {
+     "fp": "0bfa03571755",
+     "file": "c29bb8e556.mp3"
+    },
+    "dejado": {
+     "fp": "0299394c544b",
+     "file": "5589213db0.mp3"
+    },
+    "ver": {
+     "fp": "d137c35ea090",
+     "file": "5e0b8aa15a.mp3"
+    },
+    "noticias": {
+     "fp": "e47a49c20eb7",
+     "file": "869f15a237.mp3"
+    },
+    "verdad": {
+     "fp": "390911a5b0bb",
+     "file": "762ba43a5d.mp3"
+    },
+    "nunca": {
+     "fp": "64722df19cfe",
+     "file": "21174b125e.mp3"
+    },
+    "sentido": {
+     "fp": "d8de3a8a876b",
+     "file": "4a823f3929.mp3"
+    },
+    "tan": {
+     "fp": "5254c1549b0c",
+     "file": "35ca8cf12f.mp3"
+    },
+    "tranquila": {
+     "fp": "be11915554f2",
+     "file": "3e4f92cc42.mp3"
+    },
+    "consejos": {
+     "fp": "8827266d00a8",
+     "file": "65a8da5dd8.mp3"
+    },
+    "para": {
+     "fp": "313ad5dd826e",
+     "file": "d2f9be8fe2.mp3"
+    },
+    "autores": {
+     "fp": "d2ae919e2b65",
+     "file": "b873785c25.mp3"
+    },
+    "ideas": {
+     "fp": "c781303ef3d9",
+     "file": "125baf5d44.mp3"
+    },
+    "hacer": {
+     "fp": "c55cf119c068",
+     "file": "44f7a54b02.mp3"
+    },
+    "tus": {
+     "fp": "c4fd43518792",
+     "file": "bcadbdf5ce.mp3"
+    },
+    "propios": {
+     "fp": "387299b57368",
+     "file": "88be5d193b.mp3"
+    },
+    "libros": {
+     "fp": "4f16c444c79c",
+     "file": "dddfdae9b0.mp3"
+    },
+    "adultos": {
+     "fp": "a35188460a43",
+     "file": "e599f80c74.mp3"
+    },
+    "jóvenes": {
+     "fp": "3f4f1c88052d",
+     "file": "0b49b17b12.mp3"
+    },
+    "cada": {
+     "fp": "df1d00656eb4",
+     "file": "d1137b85c2.mp3"
+    },
+    "familia": {
+     "fp": "5ca5f5fd3fca",
+     "file": "3b660a83d5.mp3"
+    },
+    "tiene": {
+     "fp": "5c9fe023a418",
+     "file": "5979ff27ce.mp3"
+    },
+    "historias": {
+     "fp": "c79f6a23d274",
+     "file": "bce41e5199.mp3"
+    },
+    "pena": {
+     "fp": "cdd5f6453835",
+     "file": "b96ab516bf.mp3"
+    },
+    "guardar": {
+     "fp": "795dad5c6c0f",
+     "file": "3c67c9b854.mp3"
+    },
+    "solo": {
+     "fp": "aa00012f360f",
+     "file": "49f25741ff.mp3"
+    },
+    "necesitas": {
+     "fp": "99279ed74302",
+     "file": "63462a0ff6.mp3"
+    },
+    "una": {
+     "fp": "ebdfad6deff5",
+     "file": "226f391867.mp3"
+    },
+    "cámara": {
+     "fp": "f1ea6cf65860",
+     "file": "dbe4368ea7.mp3"
+    },
+    "unas": {
+     "fp": "6e7fa34629ed",
+     "file": "cb3ac02a4d.mp3"
+    },
+    "pocas": {
+     "fp": "47097a65ab9f",
+     "file": "dccd4081c3.mp3"
+    },
+    "palabras": {
+     "fp": "f2e6838c8247",
+     "file": "6b05dc9812.mp3"
+    },
+    "poco": {
+     "fp": "5f18812d2f6f",
+     "file": "5aa462b02c.mp3"
+    },
+    "aquí": {
+     "fp": "60de0d944c73",
+     "file": "fe01be3cb3.mp3"
+    },
+    "tienes": {
+     "fp": "57d5bf9bb0de",
+     "file": "1145553fe6.mp3"
+    },
+    "algunas": {
+     "fp": "fbe566fd30ec",
+     "file": "f2d27a6ef7.mp3"
+    },
+    "empezar": {
+     "fp": "e24da3878ca6",
+     "file": "7f5a9bed5d.mp3"
+    },
+    "nuestra": {
+     "fp": "4fc8a3baa241",
+     "file": "487368638a.mp3"
+    },
+    "gran": {
+     "fp": "e3c7f2ed3264",
+     "file": "708d969567.mp3"
+    },
+    "aventura": {
+     "fp": "6f603ba94ddf",
+     "file": "1c7735f88a.mp3"
+    },
+    "hoy": {
+     "fp": "7914a8eca6cb",
+     "file": "ec80f56906.mp3"
+    },
+    "paseo": {
+     "fp": "dc478fdbcc1b",
+     "file": "dae2f72e04.mp3"
+    },
+    "bosque": {
+     "fp": "6d724fb38aa2",
+     "file": "641ea71f19.mp3"
+    },
+    "visita": {
+     "fp": "077de9e31eb6",
+     "file": "7927ca912a.mp3"
+    },
+    "abuela": {
+     "fp": "67f8398afeac",
+     "file": "898cea3ec0.mp3"
+    },
+    "primer": {
+     "fp": "dff66b050c98",
+     "file": "4dbbe35b5d.mp3"
+    },
+    "diente": {
+     "fp": "f859885649bb",
+     "file": "eab8675506.mp3"
+    },
+    "cae": {
+     "fp": "5a56e5bbabd7",
+     "file": "9d12d9368b.mp3"
+    },
+    "haz": {
+     "fp": "576ed81a9cae",
+     "file": "03421f302a.mp3"
+    },
+    "foto": {
+     "fp": "eb9116d11b53",
+     "file": "0eb57679c4.mp3"
+    },
+    "página": {
+     "fp": "daef888478da",
+     "file": "fe34fd93c8.mp3"
+    },
+    "deja": {
+     "fp": "2f186450b512",
+     "file": "0b3ff32874.mp3"
+    },
+    "tu": {
+     "fp": "6575c36e2476",
+     "file": "a3da4c6307.mp3"
+    },
+    "hijo": {
+     "fp": "db1df111920a",
+     "file": "cf233a5cde.mp3"
+    },
+    "cuente": {
+     "fp": "434a66ec42fd",
+     "file": "330ebe6e7f.mp3"
+    },
+    "pasó": {
+     "fp": "037c54d5a38f",
+     "file": "e8d55e9bfc.mp3"
+    },
+    "primero": {
+     "fp": "6cdce58f12fd",
+     "file": "2e146f6319.mp3"
+    },
+    "luego": {
+     "fp": "46eb1e0cc671",
+     "file": "11e6ab9f3c.mp3"
+    },
+    "mejor": {
+     "fp": "6c42059b6f60",
+     "file": "da7ca0bc14.mp3"
+    },
+    "fue": {
+     "fp": "9277b62a111b",
+     "file": "bef3a5eb2f.mp3"
+    },
+    "colecciones": {
+     "fp": "da0791daf2d8",
+     "file": "e833ce7cd6.mp3"
+    },
+    "piedras": {
+     "fp": "d2aa5f60e006",
+     "file": "52373f83dd.mp3"
+    },
+    "bichos": {
+     "fp": "b109833c3995",
+     "file": "adb7e9ab34.mp3"
+    },
+    "hojas": {
+     "fp": "13e7df249d84",
+     "file": "f9728d64f7.mp3"
+    },
+    "flores": {
+     "fp": "cc1510306b77",
+     "file": "1ee45963f8.mp3"
+    },
+    "fotografía": {
+     "fp": "b69555f81600",
+     "file": "77807b0a00.mp3"
+    },
+    "o": {
+     "fp": "59b39565249b",
+     "file": "7a81af3e59.mp3"
+    },
+    "dibuja": {
+     "fp": "dc383f8df7d9",
+     "file": "296c3223f8.mp3"
+    },
+    "hallazgo": {
+     "fp": "dd37b4828d83",
+     "file": "4ad1f9f189.mp3"
+    },
+    "dale": {
+     "fp": "74bddce8a002",
+     "file": "80b24d51bb.mp3"
+    },
+    "nombre": {
+     "fp": "3b6720396a47",
+     "file": "4832ec78c9.mp3"
+    },
+    "dato": {
+     "fp": "eb5bab42f74c",
+     "file": "16293852a0.mp3"
+    },
+    "real": {
+     "fp": "7807cccca341",
+     "file": "c9c64e071d.mp3"
+    },
+    "inventado": {
+     "fp": "078d5cc8bd64",
+     "file": "2d83270cbc.mp3"
+    },
+    "ya": {
+     "fp": "f3a5df72fdd2",
+     "file": "e92fc4e26a.mp3"
+    },
+    "propia": {
+     "fp": "bc129e01bf1e",
+     "file": "346788df49.mp3"
+    },
+    "guía": {
+     "fp": "ac90c883e52d",
+     "file": "37e717342a.mp3"
+    },
+    "campo": {
+     "fp": "2a3fcdd32ca1",
+     "file": "bdc4e01461.mp3"
+    },
+    "dibujos": {
+     "fp": "ee680e0b006e",
+     "file": "9fb6ac3bb8.mp3"
+    },
+    "dibujo": {
+     "fp": "e6a415580f7f",
+     "file": "9398c1c25a.mp3"
+    },
+    "convierte": {
+     "fp": "5137ca57d36c",
+     "file": "60a92980c9.mp3"
+    },
+    "historia": {
+     "fp": "765c14517638",
+     "file": "64c2b8d9ce.mp3"
+    },
+    "escribe": {
+     "fp": "f6ff8c0aa02a",
+     "file": "ffbbf02112.mp3"
+    },
+    "sus": {
+     "fp": "71205fcc6793",
+     "file": "f564c4b847.mp3"
+    },
+    "tal": {
+     "fp": "3d652bcecf85",
+     "file": "6eb24f54ea.mp3"
+    },
+    "dice": {
+     "fp": "81bda227e614",
+     "file": "bbe7a403b1.mp3"
+    },
+    "lecciones": {
+     "fp": "aa32453ad107",
+     "file": "84da6d67f4.mp3"
+    },
+    "cuento": {
+     "fp": "49cc69c43d11",
+     "file": "5949d2e9d8.mp3"
+    },
+    "puede": {
+     "fp": "7b1e64cd930e",
+     "file": "2a5cc4e04b.mp3"
+    },
+    "más": {
+     "fp": "f3aeb25c7017",
+     "file": "917ac70939.mp3"
+    },
+    "suaves": {
+     "fp": "9b826fd83a51",
+     "file": "c424e02d95.mp3"
+    },
+    "cosas": {
+     "fp": "bc656af33b8b",
+     "file": "522681a948.mp3"
+    },
+    "grandes": {
+     "fp": "2b4c10dc3091",
+     "file": "ad8af227e5.mp3"
+    },
+    "hermanito": {
+     "fp": "651cce11ef99",
+     "file": "8fe455781a.mp3"
+    },
+    "nuevo": {
+     "fp": "b4661da0ecf3",
+     "file": "5043f76284.mp3"
+    },
+    "colegio": {
+     "fp": "44fd9664c926",
+     "file": "a1f9819caf.mp3"
+    },
+    "lavarse": {
+     "fp": "e097acdc589b",
+     "file": "f63797cf23.mp3"
+    },
+    "dientes": {
+     "fp": "5e6fdc648d59",
+     "file": "53e4a3b7ff.mp3"
+    },
+    "decir": {
+     "fp": "794747ab8900",
+     "file": "8e5550d4d9.mp3"
+    },
+    "adiós": {
+     "fp": "80b86b5966d1",
+     "file": "01674e46d2.mp3"
+    },
+    "usa": {
+     "fp": "2c4dd2c867d9",
+     "file": "3cd0f6484b.mp3"
+    },
+    "propias": {
+     "fp": "4ce58ed45e2c",
+     "file": "fb91446e3e.mp3"
+    },
+    "fotos": {
+     "fp": "267bf650e8e1",
+     "file": "eaacf214c9.mp3"
+    },
+    "hable": {
+     "fp": "f264ffc5da46",
+     "file": "7c4a7e819a.mp3"
+    },
+    "él": {
+     "fp": "4d688f39484d",
+     "file": "b2277c5f35.mp3"
+    },
+    "grupo": {
+     "fp": "2a4153c7c205",
+     "file": "612a369860.mp3"
+    },
+    "toda": {
+     "fp": "55076e84c28b",
+     "file": "886fce65cd.mp3"
+    },
+    "clase": {
+     "fp": "28aa1480254d",
+     "file": "686bf5da3a.mp3"
+    },
+    "libro": {
+     "fp": "5aa7f03cb228",
+     "file": "7d664b804e.mp3"
+    },
+    "juntos": {
+     "fp": "73164d82a1a8",
+     "file": "c8f39e42b8.mp3"
+    },
+    "niño": {
+     "fp": "189334e51268",
+     "file": "36a2baf40d.mp3"
+    },
+    "hace": {
+     "fp": "6611a5b1f678",
+     "file": "1720fb9874.mp3"
+    },
+    "excursión": {
+     "fp": "bf4c91cf5e69",
+     "file": "bd6b2a2730.mp3"
+    },
+    "animal": {
+     "fp": "d004fc56819c",
+     "file": "3199ea0562.mp3"
+    },
+    "favorito": {
+     "fp": "6f8cfacaff6a",
+     "file": "bc912ba04f.mp3"
+    },
+    "quiere": {
+     "fp": "50829c0bd43f",
+     "file": "31e8a85b23.mp3"
+    },
+    "ser": {
+     "fp": "107420126bbc",
+     "file": "605d3374e6.mp3"
+    },
+    "mayor": {
+     "fp": "df200c0778ae",
+     "file": "e6a04b67d2.mp3"
+    },
+    "léelo": {
+     "fp": "7a1bdedad4e5",
+     "file": "f141d82d51.mp3"
+    },
+    "voz": {
+     "fp": "6108c76778d1",
+     "file": "cb83905204.mp3"
+    },
+    "alta": {
+     "fp": "b0015b81f010",
+     "file": "475b595273.mp3"
+    },
+    "graba": {
+     "fp": "78e53f754f21",
+     "file": "8c93b36470.mp3"
+    },
+    "leyendo": {
+     "fp": "91bb179d17a6",
+     "file": "215331ca87.mp3"
+    },
+    "dentro": {
+     "fp": "22aa2687e38f",
+     "file": "c3b20c913f.mp3"
+    },
+    "muchos": {
+     "fp": "e8b98f613ba2",
+     "file": "f006111cc7.mp3"
+    },
+    "años": {
+     "fp": "57986c85c145",
+     "file": "36b6586725.mp3"
+    },
+    "esa": {
+     "fp": "d406d195b235",
+     "file": "abf3c37271.mp3"
+    },
+    "será": {
+     "fp": "b2dc81787ac8",
+     "file": "6157404795.mp3"
+    },
+    "tesoro": {
+     "fp": "e254787582bf",
+     "file": "b484fa1a7e.mp3"
+    },
+    "sobre": {
+     "fp": "f3f50ba3e116",
+     "file": "639c48ee22.mp3"
+    },
+    "mí": {
+     "fp": "f63171996ebb",
+     "file": "119743a9d4.mp3"
+    },
+    "cumpleaños": {
+     "fp": "26c4ba40a21a",
+     "file": "1aea21a51f.mp3"
+    },
+    "aventuras": {
+     "fp": "f138af5e8b0c",
+     "file": "7282a9f865.mp3"
+    },
+    "juguete": {
+     "fp": "8ece102a44c3",
+     "file": "989483c02f.mp3"
+    },
+    "casa": {
+     "fp": "d722d3ed7a91",
+     "file": "81bce1f3bf.mp3"
+    },
+    "sueño": {
+     "fp": "058aecdd7821",
+     "file": "b05f8bb9b1.mp3"
+    },
+    "anoche": {
+     "fp": "adcba79f7c05",
+     "file": "b009ee4246.mp3"
+    },
+    "abuelo": {
+     "fp": "d8eb6caf2ac1",
+     "file": "8f76c681cf.mp3"
+    },
+    "recordando": {
+     "fp": "baea54d2006e",
+     "file": "55e72dcbc0.mp3"
+    },
+    "cuando": {
+     "fp": "f1106f8ee400",
+     "file": "8bdecabef6.mp3"
+    },
+    "era": {
+     "fp": "2028a0d7ee72",
+     "file": "281f09155c.mp3"
+    },
+    "pequeño": {
+     "fp": "7ee527a0b1fd",
+     "file": "f5a425f86a.mp3"
+    },
+    "algunos": {
+     "fp": "82152efbc17e",
+     "file": "ee433227fc.mp3"
+    },
+    "frases": {
+     "fp": "6a86334ae093",
+     "file": "9899179751.mp3"
+    },
+    "son": {
+     "fp": "a51f07ce8c2a",
+     "file": "f0cbc0ee7d.mp3"
+    },
+    "suficientes": {
+     "fp": "7043a166d0d9",
+     "file": "d7b6ab1837.mp3"
+    },
+    "con": {
+     "fp": "3ca1132ada77",
+     "file": "b1f6e510eb.mp3"
+    },
+    "luz": {
+     "fp": "7377dd44866d",
+     "file": "c307b63565.mp3"
+    },
+    "páginas": {
+     "fp": "f98d58d5f48b",
+     "file": "8f053a3635.mp3"
+    },
+    "cuadradas": {
+     "fp": "4262e8e5de11",
+     "file": "9c40712c58.mp3"
+    },
+    "así": {
+     "fp": "a518dc54fdfe",
+     "file": "58dee89ff6.mp3"
+    },
+    "espacio": {
+     "fp": "de3a30f06107",
+     "file": "6e1e67767d.mp3"
+    },
+    "bordes": {
+     "fp": "84993fd84b18",
+     "file": "4a67292b02.mp3"
+    },
+    "portada": {
+     "fp": "426fc2ab3075",
+     "file": "7cf6c2f5f5.mp3"
+    },
+    "publica": {
+     "fp": "bd5add2ca4f2",
+     "file": "a20021495a.mp3"
+    },
+    "pequeños": {
+     "fp": "b8ce6b81297f",
+     "file": "1100612467.mp3"
+    },
+    "pueden": {
+     "fp": "4079b17568c7",
+     "file": "b22c4c4941.mp3"
+    },
+    "enviar": {
+     "fp": "ed179760667d",
+     "file": "d22aed2166.mp3"
+    },
+    "librería": {
+     "fp": "9a2b9b023da6",
+     "file": "3091672767.mp3"
+    },
+    "oomlaut": {
+     "fp": "69cc266d7107",
+     "file": "3978058e6e.mp3"
+    },
+    "esté": {
+     "fp": "17f8625bd1b9",
+     "file": "3efacab0b2.mp3"
+    },
+    "listo": {
+     "fp": "f4edf6f80a81",
+     "file": "035fa923bf.mp3"
+    },
+    "oomlautcom": {
+     "fp": "1f7ac1ec873b",
+     "file": "731eeaafad.mp3"
+    },
+    "saber": {
+     "fp": "818903c85baf",
+     "file": "1b60697026.mp3"
+    },
+    "cómo": {
+     "fp": "d9229be993bb",
+     "file": "f72338cc0d.mp3"
+    },
+    "sala": {
+     "fp": "a7c20155f831",
+     "file": "9a2505d5dd.mp3"
+    },
+    "ayuda": {
+     "fp": "bd163036f457",
+     "file": "39b97647a7.mp3"
+    },
+    "encontrarás": {
+     "fp": "dc7147fc319c",
+     "file": "67b9146228.mp3"
+    },
+    "desde": {
+     "fp": "b790b10bc18a",
+     "file": "110176e52c.mp3"
+    },
+    "momentos": {
+     "fp": "8e097dbe31a4",
+     "file": "9c9c686579.mp3"
+    },
+    "rutinas": {
+     "fp": "0436fb03887e",
+     "file": "17b849436f.mp3"
+    },
+    "diarias": {
+     "fp": "e8c216184fae",
+     "file": "2c5cab060f.mp3"
+    },
+    "sentimientos": {
+     "fp": "abe375b02cb1",
+     "file": "303b4aac92.mp3"
+    }
+   },
+   "ja": {
+    "ちがう": {
+     "fp": "30f848ee1f6f",
+     "file": "e2f071c6b2.mp3"
+    },
+    "さくえ": {
+     "fp": "f43def97cb49",
+     "file": "8599f23450.mp3"
+    },
+    "ヨルクシュミット": {
+     "fp": "ab6286b8bcaa",
+     "file": "fa666a09d1.mp3"
+    },
+    "みんなと": {
+     "fp": "127f03e09887",
+     "file": "5679a47ef1.mp3"
+    },
+    "きもち": {
+     "fp": "564ed0124505",
+     "file": "6395a6c0ef.mp3"
+    },
+    "ふしぎな": {
+     "fp": "e6fd83b5ef88",
+     "file": "a604cd6793.mp3"
+    },
+    "へんてこな": {
+     "fp": "454c894169b8",
+     "file": "bbf14745c0.mp3"
+    },
+    "ふあんな": {
+     "fp": "00dfafe51df0",
+     "file": "4ef2143eac.mp3"
+    },
+    "みょうな": {
+     "fp": "c7a686caf595",
+     "file": "54d15d22d7.mp3"
+    },
+    "いばしょが": {
+     "fp": "e4ef60099e6a",
+     "file": "e9abe301cd.mp3"
+    },
+    "ない": {
+     "fp": "421874eabdee",
+     "file": "9fccc80054.mp3"
+    },
+    "おばけ": {
+     "fp": "37e0f2e6563e",
+     "file": "2490ced5ac.mp3"
+    },
+    "みたいな": {
+     "fp": "6da7d8887edc",
+     "file": "650ae52070.mp3"
+    },
+    "おいていかれた": {
+     "fp": "f68486a06981",
+     "file": "a95c76d6b3.mp3"
+    },
+    "なかまはずれの": {
+     "fp": "b7bac7e931b3",
+     "file": "a55464503e.mp3"
+    },
+    "じぶんが": {
+     "fp": "a614d2b1b6e9",
+     "file": "b701b93567.mp3"
+    },
+    "みにくい": {
+     "fp": "713c6a46e18b",
+     "file": "915fa54767.mp3"
+    },
+    "なにとも": {
+     "fp": "fc3124b993ee",
+     "file": "ba0ba0623d.mp3"
+    },
+    "あわない": {
+     "fp": "7ba6a7c7d657",
+     "file": "4747833564.mp3"
+    },
+    "せかいで": {
+     "fp": "db1100e9242a",
+     "file": "08214ddb9a.mp3"
+    },
+    "ひとつだけの": {
+     "fp": "f750dad6082e",
+     "file": "70b9830c30.mp3"
+    },
+    "とくべつな": {
+     "fp": "68af12c12836",
+     "file": "6f89bbf220.mp3"
+    },
+    "あいされて": {
+     "fp": "882120dc76d8",
+     "file": "01927ca1a1.mp3"
+    },
+    "いる": {
+     "fp": "b63f03c279f3",
+     "file": "c7d693c51c.mp3"
+    },
+    "とびきり": {
+     "fp": "aa427c06a867",
+     "file": "d35c17cc7d.mp3"
+    },
+    "すてきな": {
+     "fp": "c1fe815fd64a",
+     "file": "0576f70498.mp3"
+    },
+    "どうぶつたちの": {
+     "fp": "b04051ee37c5",
+     "file": "4e9c71f859.mp3"
+    },
+    "たいへんな": {
+     "fp": "8eee1fc3456b",
+     "file": "08ca274e94.mp3"
+    },
+    "まいにち": {
+     "fp": "2119407632b1",
+     "file": "aa5d184403.mp3"
+    },
+    "とつぜんミトンは": {
+     "fp": "c9692a1f2f66",
+     "file": "6fe8abbbfb.mp3"
+    },
+    "きづいたけいとだまが": {
+     "fp": "9a8be42df977",
+     "file": "4672f35252.mp3"
+    },
+    "ずっと": {
+     "fp": "28ea6d0b9222",
+     "file": "48f70ea252.mp3"
+    },
+    "こっちを": {
+     "fp": "ab1e7d6212ad",
+     "file": "2a5bb90a75.mp3"
+    },
+    "見ていたことに": {
+     "fp": "ab467562fcaa",
+     "file": "a6e8efbb11.mp3"
+    },
+    "せんもんかが": {
+     "fp": "89195a9fd050",
+     "file": "c1816ed71f.mp3"
+    },
+    "なんと言おうとジェラルドは": {
+     "fp": "35fefb9d47fa",
+     "file": "b24e43d66e.mp3"
+    },
+    "ふうせんを": {
+     "fp": "22e65a7a8eb1",
+     "file": "6eb559425b.mp3"
+    },
+    "しんじていた": {
+     "fp": "1b67de32230c",
+     "file": "8be22d39d7.mp3"
+    },
+    "キツネは": {
+     "fp": "37c7aed34d05",
+     "file": "665cd9b677.mp3"
+    },
+    "しらなかったネズミは": {
+     "fp": "24361c1ab864",
+     "file": "37d2975c97.mp3"
+    },
+    "3月に": {
+     "fp": "dee8c7c651b2",
+     "file": "ff169fea99.mp3"
+    },
+    "フロリダへ": {
+     "fp": "d913d208be8d",
+     "file": "e0c68f0799.mp3"
+    },
+    "ひっこしていたのだ": {
+     "fp": "0876a08a371d",
+     "file": "23f2eb128d.mp3"
+    },
+    "たしかに": {
+     "fp": "66f1b552f62a",
+     "file": "d6478458ca.mp3"
+    },
+    "せまいよでも": {
+     "fp": "ad0d52595b20",
+     "file": "ade5fe103d.mp3"
+    },
+    "ローンは": {
+     "fp": "ced5645bdde7",
+     "file": "7f743dcf3f.mp3"
+    },
+    "もう": {
+     "fp": "e40ad2bbdb34",
+     "file": "1b7f8e0200.mp3"
+    },
+    "ないんだ": {
+     "fp": "ea2faddd94ee",
+     "file": "9ed8c70b19.mp3"
+    },
+    "ハグ": {
+     "fp": "cd158afcc625",
+     "file": "e533e55973.mp3"
+    },
+    "むりょう41日め": {
+     "fp": "a43dff4d392b",
+     "file": "4186ccbe5c.mp3"
+    },
+    "ドッグパークの": {
+     "fp": "3fbda0ea8bc0",
+     "file": "d718e7bb8a.mp3"
+    },
+    "あいさつは": {
+     "fp": "8cd34685eaab",
+     "file": "1a0b3a0ca5.mp3"
+    },
+    "たいてい": {
+     "fp": "b3d2490f31e8",
+     "file": "94bfa27643.mp3"
+    },
+    "ごごまで": {
+     "fp": "814d066eb4bf",
+     "file": "a1fc2c0a25.mp3"
+    },
+    "つづく": {
+     "fp": "41988590b74a",
+     "file": "b0e611fda5.mp3"
+    },
+    "オオカミは": {
+     "fp": "243bad5906e7",
+     "file": "5f363cef76.mp3"
+    },
+    "とおぼえを": {
+     "fp": "d38a6e712f2a",
+     "file": "2ccd37ce98.mp3"
+    },
+    "やめてゆうひの": {
+     "fp": "ec9e1ea05334",
+     "file": "e8f5fc9c23.mp3"
+    },
+    "しゃしんを": {
+     "fp": "3f2212cdd0e8",
+     "file": "a027193ec5.mp3"
+    },
+    "とうこうしたいいねは": {
+     "fp": "cb7224aec010",
+     "file": "5e016fef92.mp3"
+    },
+    "2つどちらも": {
+     "fp": "95c8063d1a9a",
+     "file": "7ef7b3b5e6.mp3"
+    },
+    "おかあさんから": {
+     "fp": "9c1f6cdfe908",
+     "file": "47dd0e3efc.mp3"
+    },
+    "ドリスは": {
+     "fp": "5c0a2c0b22f4",
+     "file": "b2e22da50b.mp3"
+    },
+    "ニュースを": {
+     "fp": "38aa55b18c87",
+     "file": "909f853c06.mp3"
+    },
+    "見るのを": {
+     "fp": "b6d0ee4e0b0c",
+     "file": "d817102406.mp3"
+    },
+    "やめたしょうじきこんなに": {
+     "fp": "6f455c9a30d8",
+     "file": "b9237fb768.mp3"
+    },
+    "おちついたことは": {
+     "fp": "9e823b092143",
+     "file": "7fb1bc066c.mp3"
+    },
+    "なかった": {
+     "fp": "593350dd6a24",
+     "file": "ae07c1cf75.mp3"
+    },
+    "きょうの": {
+     "fp": "0e933216c87a",
+     "file": "9c51770c39.mp3"
+    },
+    "声にだして": {
+     "fp": "9964c0f47616",
+     "file": "442c3f4e5b.mp3"
+    },
+    "でやりかたを見てください": {
+     "fp": "5ce28979b151",
+     "file": "44085bf0dc.mp3"
+    },
+    "もっとアイデアがほしいときはアイデアと": {
+     "fp": "a1365d44ab7b",
+     "file": "88e97277b5.mp3"
+    },
+    "サポートの": {
+     "fp": "56b5460d654d",
+     "file": "79df5b4ea5.mp3"
+    },
+    "アイデアのへやへ大きなできごとや": {
+     "fp": "cc4ef5fc99d3",
+     "file": "c8a1dcda9b.mp3"
+    },
+    "まいにちの": {
+     "fp": "730653fe663c",
+     "file": "4017c2f8b6.mp3"
+    },
+    "しゅうかんきもちや": {
+     "fp": "ecc760441f79",
+     "file": "64165e71d8.mp3"
+    },
+    "かぞくの": {
+     "fp": "b7b61a9a3918",
+     "file": "98f2cd851c.mp3"
+    },
+    "おはなしまでいっしょに": {
+     "fp": "6d00f59b9ecc",
+     "file": "a3ad2338a6.mp3"
+    },
+    "つくれる本が": {
+     "fp": "e5c632bbda00",
+     "file": "70a6f31b37.mp3"
+    },
+    "たくさん": {
+     "fp": "abd6f2dab048",
+     "file": "1ba4f4acf0.mp3"
+    },
+    "あります": {
+     "fp": "958f2bad60d3",
+     "file": "8331810b54.mp3"
+    }
+   },
+   "ar": {
+    "مختلف": {
+     "fp": "e6ae43b6d374",
+     "file": "4aead31759.mp3"
+    },
+    "تأليف": {
+     "fp": "c51cfc9d97de",
+     "file": "cab779a007.mp3"
+    },
+    "ورسوم": {
+     "fp": "2b469aabcb71",
+     "file": "107f2a7a33.mp3"
+    },
+    "يورغ": {
+     "fp": "9e3bbf74e85c",
+     "file": "7838966ad9.mp3"
+    },
+    "شميت": {
+     "fp": "f5aeffa066f8",
+     "file": "e215ce8831.mp3"
+    },
+    "أشعر": {
+     "fp": "051fbeb9c00a",
+     "file": "54af2eb7d5.mp3"
+    },
+    "أنني": {
+     "fp": "dc8fac62c568",
+     "file": "315d17ccef.mp3"
+    },
+    "غريب": {
+     "fp": "74084d4585c5",
+     "file": "67da2a960e.mp3"
+    },
+    "عجيب": {
+     "fp": "f545bad3edc4",
+     "file": "d5bed44cce.mp3"
+    },
+    "بالقلق": {
+     "fp": "d0e4e883403e",
+     "file": "1176a30619.mp3"
+    },
+    "الأطوار": {
+     "fp": "bf53a41bc00c",
+     "file": "0ccd3df6d4.mp3"
+    },
+    "لست": {
+     "fp": "296a2182bea5",
+     "file": "d1b99c10c6.mp3"
+    },
+    "في": {
+     "fp": "e0b41ae9e7e5",
+     "file": "aef2099d89.mp3"
+    },
+    "مكاني": {
+     "fp": "69db61912bf4",
+     "file": "8058c1c729.mp3"
+    },
+    "لا": {
+     "fp": "1ee5df24df32",
+     "file": "5c528d9fa3.mp3"
+    },
+    "أشبه": {
+     "fp": "101a03b37dea",
+     "file": "f05da88566.mp3"
+    },
+    "أحدًا": {
+     "fp": "28abf07b7a7c",
+     "file": "956ddcbb4e.mp3"
+    },
+    "أنهم": {
+     "fp": "d95b37d218b0",
+     "file": "3cefb50443.mp3"
+    },
+    "تركوني": {
+     "fp": "bb1115f935cd",
+     "file": "6981785132.mp3"
+    },
+    "وراءهم": {
+     "fp": "fbee4cb2ea25",
+     "file": "e5cb2ab34e.mp3"
+    },
+    "مُستبعَد": {
+     "fp": "4859de539771",
+     "file": "2a45fd2c6f.mp3"
+    },
+    "قبيح": {
+     "fp": "d0d10ba36a77",
+     "file": "369cf2145f.mp3"
+    },
+    "أنسجم": {
+     "fp": "b91472a10160",
+     "file": "02e0f99e3d.mp3"
+    },
+    "مع": {
+     "fp": "d398cfcd47c7",
+     "file": "f3c3b73b80.mp3"
+    },
+    "أحد": {
+     "fp": "8df6164ec083",
+     "file": "29c2a914d7.mp3"
+    },
+    "فريد": {
+     "fp": "36a28ccf54b3",
+     "file": "d17a0a6b02.mp3"
+    },
+    "مميَّز": {
+     "fp": "4534ed655845",
+     "file": "de76089a96.mp3"
+    },
+    "محبوب": {
+     "fp": "5e8b7471fa90",
+     "file": "e4b77c03e2.mp3"
+    },
+    "استثنائي": {
+     "fp": "cc72ab923f6b",
+     "file": "fab8d77fba.mp3"
+    },
+    "حياة": {
+     "fp": "643b077dc4e5",
+     "file": "03360ba062.mp3"
+    },
+    "الحيوانات": {
+     "fp": "3f56a8ca709a",
+     "file": "ed7e080545.mp3"
+    },
+    "الصعبة": {
+     "fp": "e7f543f1e311",
+     "file": "6e833b4730.mp3"
+    },
+    "فجأة": {
+     "fp": "76515accc203",
+     "file": "2142eb810f.mp3"
+    },
+    "أدركت": {
+     "fp": "0b80be3bc5f7",
+     "file": "42a52b69ab.mp3"
+    },
+    "ميشا": {
+     "fp": "b8aed5ea34b2",
+     "file": "69936e71f6.mp3"
+    },
+    "أن": {
+     "fp": "36d120abf420",
+     "file": "2d0d4abdde.mp3"
+    },
+    "كرة": {
+     "fp": "09c607313ebb",
+     "file": "cc57da04fe.mp3"
+    },
+    "الصوف": {
+     "fp": "4dbba6767a32",
+     "file": "6c9e323200.mp3"
+    },
+    "كانت": {
+     "fp": "faf954adcf08",
+     "file": "2a9096ecc9.mp3"
+    },
+    "تراقبها": {
+     "fp": "8e019d743f3e",
+     "file": "ad8bbb94b3.mp3"
+    },
+    "طوال": {
+     "fp": "90414554d7af",
+     "file": "a7dc3fd76e.mp3"
+    },
+    "الوقت": {
+     "fp": "698b5e505c45",
+     "file": "ba6b401d8f.mp3"
+    },
+    "رغم": {
+     "fp": "0c1e82606b3b",
+     "file": "b4676b5410.mp3"
+    },
+    "كل": {
+     "fp": "9e2cd10ec0f4",
+     "file": "b1a93b0027.mp3"
+    },
+    "ما": {
+     "fp": "e83526de822f",
+     "file": "a62caa1e09.mp3"
+    },
+    "قاله": {
+     "fp": "389cf8919bc6",
+     "file": "56b4261260.mp3"
+    },
+    "الخبراء،": {
+     "fp": "64d7bd15eef9",
+     "file": "f20fac3e04.mp3"
+    },
+    "ظلّ": {
+     "fp": "5a2b808f4202",
+     "file": "37a7ff42c0.mp3"
+    },
+    "جيرالد": {
+     "fp": "64cba7655a12",
+     "file": "6a655be0f1.mp3"
+    },
+    "واثقًا": {
+     "fp": "a47fc916f730",
+     "file": "4eb474c59a.mp3"
+    },
+    "بالبالون": {
+     "fp": "dcc31678ceaa",
+     "file": "89d2d0f341.mp3"
+    },
+    "لم": {
+     "fp": "bce7326750af",
+     "file": "a8941dde03.mp3"
+    },
+    "يكن": {
+     "fp": "10867165938b",
+     "file": "7bdedcbd71.mp3"
+    },
+    "الثعلب": {
+     "fp": "01361f622d41",
+     "file": "538410a880.mp3"
+    },
+    "يعلم": {
+     "fp": "56f97e9abadd",
+     "file": "a13ec06e46.mp3"
+    },
+    "الفأر": {
+     "fp": "483757fdc7c5",
+     "file": "69269e3e9d.mp3"
+    },
+    "انتقل": {
+     "fp": "6007e968427e",
+     "file": "195611ddf6.mp3"
+    },
+    "إلى": {
+     "fp": "6d9a27e13d8f",
+     "file": "8ab80326e0.mp3"
+    },
+    "فلوريدا": {
+     "fp": "c088bb396015",
+     "file": "b6431bd7ca.mp3"
+    },
+    "شهر": {
+     "fp": "a78cda57251e",
+     "file": "492a5598de.mp3"
+    },
+    "مارس": {
+     "fp": "24187a393cc2",
+     "file": "452ec922a2.mp3"
+    },
+    "صحيح": {
+     "fp": "d93330bc9bd1",
+     "file": "911d3d3eea.mp3"
+    },
+    "أنه": {
+     "fp": "a1b5026cb04b",
+     "file": "281fcd37ce.mp3"
+    },
+    "صغير،": {
+     "fp": "4116368ea4ed",
+     "file": "66238ba410.mp3"
+    },
+    "لكنه": {
+     "fp": "91879f3678c6",
+     "file": "2a6b4425d3.mp3"
+    },
+    "مدفوع": {
+     "fp": "fee19ba22916",
+     "file": "ad29ae3715.mp3"
+    },
+    "بالكامل": {
+     "fp": "83da8083d9e5",
+     "file": "d24b2375ae.mp3"
+    },
+    "عناق": {
+     "fp": "b222c1b7543b",
+     "file": "605563bb2d.mp3"
+    },
+    "مجاني": {
+     "fp": "5714e633938d",
+     "file": "67c20675ca.mp3"
+    },
+    "اليوم": {
+     "fp": "214adebdbcee",
+     "file": "b76444a321.mp3"
+    },
+    "الحادي": {
+     "fp": "735a4e6567b9",
+     "file": "4498d20dc3.mp3"
+    },
+    "والأربعون": {
+     "fp": "0e66fb726037",
+     "file": "28076c642f.mp3"
+    },
+    "التعارفات": {
+     "fp": "7833947a1f2e",
+     "file": "993841190c.mp3"
+    },
+    "حديقة": {
+     "fp": "4bc84c0ab08a",
+     "file": "c4cb48eec1.mp3"
+    },
+    "الكلاب": {
+     "fp": "8e0f2d06e581",
+     "file": "78d4f2827c.mp3"
+    },
+    "تمتد": {
+     "fp": "4bd54cb62e93",
+     "file": "7788f72dac.mp3"
+    },
+    "غالبًا": {
+     "fp": "3a5c45bf18fd",
+     "file": "daec5fd2c2.mp3"
+    },
+    "حتى": {
+     "fp": "eb0a1e635532",
+     "file": "7de07dded6.mp3"
+    },
+    "العصر": {
+     "fp": "79103b104f72",
+     "file": "54735bf2cf.mp3"
+    },
+    "تخطّى": {
+     "fp": "96810b91d9f4",
+     "file": "b71a70a6ff.mp3"
+    },
+    "الذئب": {
+     "fp": "4c6f4a50edfb",
+     "file": "fb1c3a08e7.mp3"
+    },
+    "العواء": {
+     "fp": "b2e94907e5eb",
+     "file": "a51b49d223.mp3"
+    },
+    "ونشر": {
+     "fp": "646a92431392",
+     "file": "032e0eefd5.mp3"
+    },
+    "صورة": {
+     "fp": "db6153c8ccbb",
+     "file": "b941956874.mp3"
+    },
+    "الغروب": {
+     "fp": "0099705a7549",
+     "file": "fe99bb78e0.mp3"
+    },
+    "بدلًا": {
+     "fp": "d92ae9d5cb72",
+     "file": "828ac744a4.mp3"
+    },
+    "منه": {
+     "fp": "ec16fd010025",
+     "file": "0ede3236a8.mp3"
+    },
+    "إعجابان،": {
+     "fp": "0d025a2d3dc7",
+     "file": "a6aea56e90.mp3"
+    },
+    "كلاهما": {
+     "fp": "c648b2856486",
+     "file": "9dfe542dcb.mp3"
+    },
+    "من": {
+     "fp": "bae8c7a26f81",
+     "file": "aa7099e278.mp3"
+    },
+    "أمه": {
+     "fp": "cdf906ee7079",
+     "file": "4d66be2c16.mp3"
+    },
+    "توقفت": {
+     "fp": "5be6f7c278a9",
+     "file": "9238bb196f.mp3"
+    },
+    "دوريس": {
+     "fp": "7c1a1197f8aa",
+     "file": "72d6996da6.mp3"
+    },
+    "عن": {
+     "fp": "13068b22be44",
+     "file": "3848633352.mp3"
+    },
+    "مشاهدة": {
+     "fp": "bbfcc8f796aa",
+     "file": "4b0bf3050b.mp3"
+    },
+    "الأخبار،": {
+     "fp": "645b08d37784",
+     "file": "3da4e50621.mp3"
+    },
+    "وبصراحة": {
+     "fp": "7e15a90a01c1",
+     "file": "6018ee55b8.mp3"
+    },
+    "تشعر": {
+     "fp": "9b5e72dccf62",
+     "file": "fbacefae94.mp3"
+    },
+    "بهذا": {
+     "fp": "0bb2e4c319f7",
+     "file": "73e1ca8805.mp3"
+    },
+    "الهدوء": {
+     "fp": "83a9db7a7485",
+     "file": "c020b03b64.mp3"
+    },
+    "قبل": {
+     "fp": "57c05ce852e2",
+     "file": "78b26afc7d.mp3"
+    }
+   }
+  }
  }
 }
