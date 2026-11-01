@@ -29,6 +29,14 @@ const say = (s) => { log.push(s); console.log(s); };
     const subs = await api('GET', `/v1/subscriptionGroups/${g.id}/subscriptions?limit=20`);
     for (const sb of subs.j.data || []) {
       const pid = sb.attributes.productId;
+      // availability: the same countries the plan has prices in, and new countries as Apple adds them (1 Nov 2026)
+      const av = await api('GET', `/v1/subscriptions/${sb.id}/subscriptionAvailability`);
+      if (!av.j.data) {
+        const prices = await api('GET', `/v1/subscriptions/${sb.id}/prices?include=territory&limit=200`);
+        const terr = [...new Set((prices.j.data || []).map((x) => x.relationships && x.relationships.territory && x.relationships.territory.data && x.relationships.territory.data.id).filter(Boolean))];
+        const r = await api('POST', '/v1/subscriptionAvailabilities', { data: { type: 'subscriptionAvailabilities', attributes: { availableInNewTerritories: true }, relationships: { subscription: { data: { type: 'subscriptions', id: sb.id } }, availableTerritories: { data: terr.map((id) => ({ type: 'territories', id })) } } } });
+        say(`${pid}: availability ${r.status < 300 ? 'set, ' + terr.length + ' countries' : 'failed HTTP ' + r.status + ' ' + r.text.slice(0, 400)}`);
+      } else say(`${pid}: availability already set`);
       const cur = await api('GET', `/v1/subscriptions/${sb.id}/appStoreReviewScreenshot`);
       if (cur.j.data) { say(`${pid}: has a review screenshot already (${cur.j.data.attributes.assetDeliveryState && cur.j.data.attributes.assetDeliveryState.state})`); continue; }
       const res = await api('POST', '/v1/subscriptionAppStoreReviewScreenshots', { data: { type: 'subscriptionAppStoreReviewScreenshots', attributes: { fileName: 'membership.png', fileSize: file.length }, relationships: { subscription: { data: { type: 'subscriptions', id: sb.id } } } } });
