@@ -13,7 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { BOOK_FONTS, bookFont, colors, fonts } from '../theme';
 import WordsOver, { DEFAULT_AT, SECOND_KEYS, WORD_SIZES, secondOf, wordsLook, wordsOverOn, wordsOverSize, wordsOverText } from '../components/WordsOver';
-import { Bar, Burger, ConfirmBox, CoverIcon, DogEar, DoneSquare, DoneTick, Panel, PageShape, PagesIcon, Toast, ChoiceLabel } from '../components/Chrome';
+import { Bar, Burger, ConfirmBox, CoverIcon, DogEar, DoneSquare, DoneTick, NextRing, Panel, PageShape, PagesIcon, Toast, ChoiceLabel } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, DESK_BG } from '../look';
@@ -1662,6 +1662,11 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             setDraft((d) => (i === d.pages.length - 1 && d.pages.length < MAX_PAGES ? { ...d, pages: [...d.pages, blank()] } : d));
             setI((k) => Math.min(k + 1, MAX_PAGES - 1));
           }} />
+      ) : null}
+      {/* upright, from the cover on: Next in the top right corner, the same as the dog ear; Back moves to the top left
+          (App.js) (Jörg, 1 Nov 2026). Hidden while something is open on top of the page or the cover */}
+      {!wide && !aboutOpen && !editing && !pageDone && !titleBox && !pagesOpen && !photoEdit && !drawFor && !imgAsk && !picAsk && pageAsk == null && !coverTool && !recordAsk && !guide && !kbUp && !gateFor && !camGate ? (
+        <NextRing onPress={coverOpen ? finishCover : next} label={coverOpen ? tr('Next') : tr('Next page')} style={{ position: 'absolute', zIndex: 200, top: insets.top + 10, right: 12 }} />
       ) : null}
       <ParentGate visible={!!camGate} reason="Taking a photo opens the camera." onPass={() => { const t = camGate; setCamGate(null); setTimeout(() => placeImage(t, 'camera'), 250); }} onCancel={() => setCamGate(null)} />
       <StoryGuide visible={guide} onClose={closeGuide} onIdeas={onIdeas ? () => { closeGuide(); onIdeas(); } : null} area={wide ? { left: BL.leftW, right: BL.rightW } : { top: BL.topH, bottom: BL.barH }} />

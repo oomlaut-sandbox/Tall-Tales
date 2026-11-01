@@ -470,6 +470,16 @@ export function BackRing({ onPress, style, label = 'Back' }) {
   );
 }
 
+// Next: the same ring, its arrow pointing the other way (the book maker's top right: the same as the dog ear, 1 Nov 2026)
+export function NextRing({ onPress, style, label = 'Next' }) {
+  return (
+    <Pressable onPress={onPress} hitSlop={22} accessibilityRole="button" accessibilityLabel={label}
+      style={[{ width: 20, height: 20, borderRadius: 10, backgroundColor: 'rgba(0,0,0,0.32)', borderWidth: 1, borderColor: '#ffffff', alignItems: 'center', justifyContent: 'center' }, style]}>
+      <View style={{ width: 6, height: 6, borderColor: '#ffffff', borderRightWidth: 1.5, borderTopWidth: 1.5, transform: [{ translateX: -1 }, { rotate: '45deg' }] }} />
+    </Pressable>
+  );
+}
+
 // a simple little camera, drawn in lines (the bubbles' 'take a photo' hint)
 export function CameraIcon({ size = 34, color = '#2b2b2b', weight = 2.2 }) {
   const w = size, h = size * 0.7;
