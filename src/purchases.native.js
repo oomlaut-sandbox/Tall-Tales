@@ -12,7 +12,7 @@ try { Purchases = require('react-native-purchases').default; } catch (e) { Purch
 
 export const purchasesReady = !!(config.iosKey && Purchases);
 
-let state = { ready: false, member: false, owned: [], plans: null, trial: null, offline: false };
+let state = { ready: false, member: false, owned: [], plans: null, trial: null, offline: false, why: null }; // why: the App Store's own reason when the plans didn't load (long-press the message to see it)
 const listeners = new Set();
 const set = (patch) => { state = { ...state, ...patch }; listeners.forEach((fn) => fn(state)); };
 const fromInfo = (info) => ({
@@ -32,14 +32,15 @@ async function load() {
     configured = true;
   }
   if (!state.ready) {
-    try { const info = await Purchases.getCustomerInfo(); set({ ready: true, offline: false, ...fromInfo(info) }); } catch (e) { set({ offline: true }); }
+    try { const info = await Purchases.getCustomerInfo(); set({ ready: true, offline: false, ...fromInfo(info) }); } catch (e) { set({ offline: true, why: 'customer: ' + ((e && (e.readableErrorCode || e.code)) || '') + ' ' + ((e && e.message) || '') }); }
   }
   if (!state.plans) {
     try {
       const offerings = await Purchases.getOfferings();
       const cur = offerings && offerings.current;
-      if (cur) set({ plans: { monthly: cur.monthly || null, yearly: cur.annual || null }, offline: false });
-    } catch (e) { set({ offline: true }); }
+      if (cur) set({ plans: { monthly: cur.monthly || null, yearly: cur.annual || null }, offline: false, why: null });
+      else set({ offline: true, why: 'no current offering (RevenueCat: Offerings, make one the default)' });
+    } catch (e) { set({ offline: true, why: 'offerings: ' + ((e && (e.readableErrorCode || e.code)) || '') + ' ' + ((e && e.message) || '') + ((e && e.underlyingErrorMessage) ? ' / ' + e.underlyingErrorMessage : '') }); }
   }
   if (state.plans && !state.trial) {
     try {

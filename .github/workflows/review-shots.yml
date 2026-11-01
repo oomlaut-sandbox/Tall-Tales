@@ -1,0 +1,36 @@
+# Uploads the membership screen as each Coro Family plan's App Store review screenshot (only where one is
+# missing), then saves what happened to the apple-status branch. Run on demand.
+name: Review screenshots
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    env:
+      EXPO_ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      EXPO_ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Upload to App Store Connect
+        env:
+          ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+        run: |
+          printf '%s\n' "$ASC_API_KEY_P8" > asc-api-key.p8
+          node ci/review-shots.js asc-api-key.p8 "$(cat ci/asc-app-id.txt)" docs/review/membership.png || true
+          rm -f asc-api-key.p8
+      - name: Save to apple-status branch
+        run: |
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          mv ios-out /tmp/ios-out
+          git checkout --orphan apple-status
+          git rm -rfq --cached . > /dev/null
+          rm -rf ./* .gitignore 2>/dev/null || true
+          cp -r /tmp/ios-out ./ios-out
+          git add -f ios-out
+          git commit -qm "Review screenshots"
+          git push -f origin apple-status

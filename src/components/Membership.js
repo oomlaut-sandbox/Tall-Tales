@@ -59,7 +59,7 @@ export default function Membership({ visible, onClose, toast }) {
           <Pressable onPress={join} disabled={!live || !!busy} accessibilityRole="button" style={[styles.join, (!live || busy) && { opacity: 0.5 }]}>
             {busy === 'join' ? <ActivityIndicator color={colors.white} /> : <Text style={styles.joinText}>{trial ? t('Try {n} days free', { n: PRICES.trialDays }) : t('Join Coro Family')}</Text>}
           </Pressable>
-          {!live ? <Text style={styles.soon}>{purchasesReady && s.offline ? t('Coro can’t reach the App Store right now. Check the internet and try again.') : t('Memberships are being set up and arrive in the next update.')}</Text> : null}
+          {!live ? <Text style={styles.soon} onLongPress={s.why ? () => toast && toast(s.why) : undefined}>{purchasesReady && s.offline ? t('Coro can’t reach the App Store right now. Check the internet and try again.') : t('Memberships are being set up and arrive in the next update.')}</Text> : null}
           <Text style={styles.small}>
             {trial ? t('Free for {n} days, then {price} a {period}. Payment is charged to your Apple ID. The membership renews automatically unless it’s cancelled at least 24 hours before the end of the period. You can manage or cancel it any time in your App Store account settings.', { n: PRICES.trialDays, price: planPrice(s, plan), period: t(plan === 'yearly' ? 'year' : 'month') })
               : t('{price} a {period}. Payment is charged to your Apple ID. The membership renews automatically unless it’s cancelled at least 24 hours before the end of the period. You can manage or cancel it any time in your App Store account settings.', { price: planPrice(s, plan), period: t(plan === 'yearly' ? 'year' : 'month') })}
@@ -78,7 +78,7 @@ export default function Membership({ visible, onClose, toast }) {
 
 const styles = StyleSheet.create({
   scrim: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', paddingHorizontal: 20, paddingVertical: 50, zIndex: 85 },
-  card: { backgroundColor: colors.glass, borderRadius: 24, padding: 24, maxHeight: '100%', alignSelf: 'center', width: '100%', maxWidth: 480 },
+  card: { backgroundColor: '#141414', /* solid: the screen behind showed through (1 Nov 2026) */ borderRadius: 24, padding: 24, maxHeight: '100%', alignSelf: 'center', width: '100%', maxWidth: 480 },
   kicker: { color: colors.muted, fontFamily: fonts.uiBold, fontSize: 13 },
   title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 24 },
   body: { color: '#e2e2e2', fontFamily: fonts.ui, fontSize: 15, lineHeight: 21 },
