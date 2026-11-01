@@ -121,7 +121,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
         <ScrollView contentContainerStyle={{ paddingTop: 90, paddingBottom: 60, paddingHorizontal: 24, alignItems: 'center' }}>
           <Text style={styles.title}>{t('Things to share')}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 24, marginTop: 26 }}>
-            {card('welcome', t('A note from Oomlaut'), (
+            {card('welcome', t('A note from Coro'), (
               <View style={[styles.paper, { width: thumb, height: thumb * 1.25, padding: thumb * 0.1 }]}>
                 <Text style={[styles.hand, { fontSize: thumb * 0.1 }]}>{t('Hello!')}</Text>
                 {[0, 1, 2, 3, 4, 5].map((k) => <View key={k} style={{ height: 1.2, backgroundColor: '#b9b2a3', marginTop: thumb * 0.09, width: k === 5 ? '55%' : '100%' }} />)}

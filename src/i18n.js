@@ -142,7 +142,7 @@ const T = {
   'All pages': { de: 'Alle Seiten', fr: 'Toutes les pages', es: 'Todas las páginas', ja: 'ぜんぶの ページ', ar: "كل الصفحات" },
   'Print this page': { de: 'Diese Seite drucken', fr: 'Imprimer cette page', es: 'Imprimir esta página', ja: 'この ページを いんさつ', ar: "طباعة هذه الصفحة" },
   'Things to share': { de: 'Zum Teilen', fr: 'À partager', es: 'Para compartir', ja: 'シェアするもの', ar: "أشياء للمشاركة" },
-  'A note from Oomlaut': { de: 'Eine Nachricht von Oomlaut', fr: 'Un mot d’Oomlaut', es: 'Una nota de Oomlaut', ja: 'Oomlautからの てがみ', ar: "رسالة من Oomlaut" },
+  'A note from Coro': { de: 'Eine Nachricht von Coro', fr: 'Un mot de Coro', es: 'Una nota de Coro', ja: 'Coroからの てがみ', ar: 'رسالة من Coro' },
   'Abc': { de: 'Abc', fr: 'Abc', es: 'Abc', ja: 'Abc', ar: "أ ب ت" },
   'Hello!': { de: 'Hallo!', fr: 'Bonjour !', es: '¡Hola!', ja: 'こんにちは！', ar: "مرحبًا!" },
   'Hello, {name}!': { de: 'Hallo, {name}!', fr: 'Bonjour, {name} !', es: '¡Hola, {name}!', ja: 'こんにちは、{name}！', ar: "مرحبًا يا {name}!" },
