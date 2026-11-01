@@ -1,0 +1,23 @@
+press-rollers | MakingBo1947 | Making Books | 1947 | http://creativecommons.org/licenses/publicdomain/ | rights: - | 355s +8s
+press-sheets | MakingBo1947 | Making Books | 1947 | http://creativecommons.org/licenses/publicdomain/ | rights: - | 575s +10s
+typeset-hands | MakingBo1947 | Making Books | 1947 | http://creativecommons.org/licenses/publicdomain/ | rights: - | 168s +9s
+press-feed | MakingBo1947 | Making Books | 1947 | http://creativecommons.org/licenses/publicdomain/ | rights: - | 398s +8s
+bound-book | MakingBo1947 | Making Books | 1947 | http://creativecommons.org/licenses/publicdomain/ | rights: - | 625s +8s
+loc-boy | TheAmericanSceneNumber11LibraryOfCongress | The American Scene Number 11: Library of Congress | 1945 | http://creativecommons.org/publicdomain/mark/1.0/ | rights: - | 63s +10s
+loc-woman-reading | TheAmericanSceneNumber11LibraryOfCongress | The American Scene Number 11: Library of Congress | 1945 | http://creativecommons.org/publicdomain/mark/1.0/ | rights: - | 83s +9s
+loc-reading-room | TheAmericanSceneNumber11LibraryOfCongress | The American Scene Number 11: Library of Congress | 1945 | http://creativecommons.org/publicdomain/mark/1.0/ | rights: - | 123s +9s
+loc-man-pen | TheAmericanSceneNumber11LibraryOfCongress | The American Scene Number 11: Library of Congress | 1945 | http://creativecommons.org/publicdomain/mark/1.0/ | rights: - | 203s +10s
+loc-room-lamps | TheAmericanSceneNumber11LibraryOfCongress | The American Scene Number 11: Library of Congress | 1945 | http://creativecommons.org/publicdomain/mark/1.0/ | rights: - | 395s +10s
+loc-old-reader | TheAmericanSceneNumber11LibraryOfCongress | The American Scene Number 11: Library of Congress | 1945 | http://creativecommons.org/publicdomain/mark/1.0/ | rights: - | 445s +10s
+loc-manuscript | TheAmericanSceneNumber11LibraryOfCongress | The American Scene Number 11: Library of Congress | 1945 | http://creativecommons.org/publicdomain/mark/1.0/ | rights: - | 665s +10s
+loc-hand-page | TheAmericanSceneNumber11LibraryOfCongress | The American Scene Number 11: Library of Congress | 1945 | http://creativecommons.org/publicdomain/mark/1.0/ | rights: - | 693s +10s
+loc-woman-face | TheAmericanSceneNumber11LibraryOfCongress | The American Scene Number 11: Library of Congress | 1945 | http://creativecommons.org/publicdomain/mark/1.0/ | rights: - | 705s +8s
+loc-boy-truck | TheAmericanSceneNumber11LibraryOfCongress | The American Scene Number 11: Library of Congress | 1945 | http://creativecommons.org/publicdomain/mark/1.0/ | rights: - | 1185s +15s
+lib-girl-reading | Libraria1947 | Librarian, The | 1947 | http://creativecommons.org/licenses/publicdomain/ | rights: - | 36s +10s
+lib-silhouette | Libraria1947 | Librarian, The | 1947 | http://creativecommons.org/licenses/publicdomain/ | rights: - | 76s +10s
+lib-girl-2 | Libraria1947 | Librarian, The | 1947 | http://creativecommons.org/licenses/publicdomain/ | rights: - | 276s +10s
+lib-mother-kids | Libraria1947 | Librarian, The | 1947 | http://creativecommons.org/licenses/publicdomain/ | rights: - | 286s +10s
+truck-arrives | rcpl1952avbooktruckfilm | Rockingham County Library Book Truck Visits School | 1939 | - | rights: http://rightsstatements.org/vocab/CNE/1.0/ | 20s +15s
+truck-children | rcpl1952avbooktruckfilm | Rockingham County Library Book Truck Visits School | 1939 | - | rights: http://rightsstatements.org/vocab/CNE/1.0/ | 298s +14s
+truck-children-2 | rcpl1952avbooktruckfilm | Rockingham County Library Book Truck Visits School | 1939 | - | rights: http://rightsstatements.org/vocab/CNE/1.0/ | 335s +14s
+truck-kids-close | rcpl1952avbooktruckfilm | Rockingham County Library Book Truck Visits School | 1939 | - | rights: http://rightsstatements.org/vocab/CNE/1.0/ | 365s +10s
