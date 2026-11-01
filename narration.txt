@@ -1,0 +1,442 @@
+Plan: creator, characters used 62776 of 121000
+Lily: found in your voices as "Lily - Velvety Actress" (premade)
+Lily: 0 word and part clips made, 481 unchanged (481 words, 329 parts)
+Lily: different de: 2 word clips made, 67 unchanged
+Lily: different fr: 3 word clips made, 72 unchanged
+Lily: different es: 3 word clips made, 54 unchanged
+Lily: different ja: 0 word clips made, 41 unchanged
+Lily: different ar: 0 word clips made, 58 unchanged
+Lily: rough-lives de: 11 word clips made, 80 unchanged
+Lily: rough-lives fr: 9 word clips made, 89 unchanged
+Lily: rough-lives es: 17 word clips made, 93 unchanged
+Lily: rough-lives ja: 0 word clips made, 42 unchanged
+Lily: rough-lives ar: 0 word clips made, 78 unchanged
+Lily: tips de: 21 word clips made, 307 unchanged
+Lily: tips fr: 44 word clips made, 316 unchanged
+Lily: tips es: 38 word clips made, 302 unchanged
+Lily: tips ja: 0 word clips made, 13 unchanged
+Lily: sample unchanged
+Gregory Grumble: found in your voices as "Gregory Grumble - Old lovable bedtime bear. " (professional)
+Gregory Grumble: 0 word and part clips made, 481 unchanged (481 words, 329 parts)
+Gregory Grumble: different de: 2 word clips made, 67 unchanged
+Gregory Grumble: different fr: 3 word clips made, 72 unchanged
+Gregory Grumble: different es: 3 word clips made, 54 unchanged
+Gregory Grumble: different ja: 0 word clips made, 41 unchanged
+Gregory Grumble: different ar: 0 word clips made, 58 unchanged
+Gregory Grumble: rough-lives de: 11 word clips made, 80 unchanged
+Gregory Grumble: rough-lives fr: 9 word clips made, 89 unchanged
+Gregory Grumble: rough-lives es: 17 word clips made, 93 unchanged
+Gregory Grumble: rough-lives ja: 0 word clips made, 42 unchanged
+Gregory Grumble: rough-lives ar: 0 word clips made, 78 unchanged
+Gregory Grumble: tips de: 21 word clips made, 307 unchanged
+Gregory Grumble: tips fr: 44 word clips made, 316 unchanged
+Gregory Grumble: tips es: 38 word clips made, 302 unchanged
+Gregory Grumble: tips ja: 0 word clips made, 13 unchanged
+Gregory Grumble: sample unchanged
+Johnny Kid: found in your voices as "Johnny Kid - Serious and Calm Narrator" (professional)
+Johnny Kid: 0 word and part clips made, 25 unchanged (25 words, 31 parts)
+Johnny Kid: different de: 2 word clips made, 67 unchanged
+Johnny Kid: different fr: 2 word clips made, 73 unchanged
+Johnny Kid: different es: 2 word clips made, 55 unchanged
+Johnny Kid: different ja: 0 word clips made, 41 unchanged
+Johnny Kid: different ar: 0 word clips made, 58 unchanged
+Johnny Kid: sample unchanged
+Mo (Spuds Oxley): found in your voices as "Spuds Oxley - Grandpa " (professional)
+made spuds/small-wonders/sw01 (57 chars, 7.3s)
+made spuds/small-wonders/sw02 (100 chars, 12.3s)
+made spuds/small-wonders/sw03 (103 chars, 14.7s)
+made spuds/small-wonders/sw04 (101 chars, 10.8s)
+made spuds/small-wonders/sw05 (99 chars, 11.5s)
+made spuds/small-wonders/sw06 (95 chars, 11.9s)
+made spuds/small-wonders/sw07 (104 chars, 10.9s)
+made spuds/rough-lives/rl01 (27 chars, 3.0s)
+made spuds/rough-lives/rl02 (73 chars, 8.9s)
+made spuds/rough-lives/rl03 (72 chars, 8.3s)
+made spuds/rough-lives/rl04 (60 chars, 8.6s)
+made spuds/rough-lives/rl06 (38 chars, 3.6s)
+made spuds/rough-lives/rl07 (25 chars, 3.6s)
+made spuds/rough-lives/rl08 (65 chars, 6.9s)
+made spuds/rough-lives/rl09 (85 chars, 9.4s)
+made spuds/rough-lives/rl10 (77 chars, 9.1s)
+made spuds/two-snakes/ts01 (27 chars, 3.9s)
+made spuds/two-snakes/ts02 (82 chars, 9.3s)
+made spuds/two-snakes/ts03 (104 chars, 12.0s)
+made spuds/two-snakes/ts04 (117 chars, 11.8s)
+made spuds/two-snakes/ts05 (77 chars, 9.7s)
+made spuds/two-snakes/ts06 (100 chars, 9.3s)
+made spuds/two-snakes/ts07 (73 chars, 10.0s)
+made spuds/two-snakes/ts08 (86 chars, 8.7s)
+made spuds/two-snakes/ts09 (75 chars, 8.5s)
+made spuds/two-snakes/ts10 (108 chars, 11.2s)
+made spuds/two-snakes/ts11 (108 chars, 12.3s)
+made spuds/falling/f01 (49 chars, 5.4s)
+made spuds/falling/f02 (50 chars, 5.2s)
+made spuds/falling/f03 (57 chars, 6.4s)
+made spuds/falling/f04 (29 chars, 4.1s)
+made spuds/falling/f05 (75 chars, 7.8s)
+made spuds/falling/f06 (57 chars, 6.5s)
+made spuds/falling/f07 (27 chars, 3.4s)
+made spuds/falling/f08 (102 chars, 11.2s)
+made spuds/falling/f09 (38 chars, 4.2s)
+made spuds/falling/f10 (78 chars, 7.0s)
+made spuds/falling/f11 (122 chars, 13.5s)
+made spuds/falling/f12 (78 chars, 9.2s)
+made spuds/falling/f13 (89 chars, 11.5s)
+made spuds/falling/f14 (49 chars, 6.1s)
+made spuds/pip/p1 (172 chars, 17.6s)
+made spuds/pip/p2 (202 chars, 23.7s)
+made spuds/pip/p3 (165 chars, 15.7s)
+made spuds/pip/p4 (193 chars, 22.4s)
+made spuds/tips/tp01 (89 chars, 10.7s)
+made spuds/tips/tp02 (136 chars, 17.0s)
+made spuds/tips/tp03 (191 chars, 22.3s)
+made spuds/tips/tp04 (165 chars, 20.4s)
+made spuds/tips/tp05 (136 chars, 15.7s)
+made spuds/tips/tp06 (152 chars, 20.0s)
+made spuds/tips/tp07 (136 chars, 17.3s)
+made spuds/tips/tp08 (103 chars, 13.5s)
+made spuds/tips/tp09 (158 chars, 19.5s)
+made spuds/tips/tp10 (169 chars, 18.0s)
+made spuds/tips/tp11 (144 chars, 16.7s)
+made spuds/tips/tp12 (176 chars, 18.7s)
+made spuds/different@fr/d01 (46 chars, 7.8s)
+made spuds/different@fr/d02 (21 chars, 2.5s)
+made spuds/different@fr/d03 (19 chars, 2.4s)
+made spuds/different@fr/d04 (19 chars, 2.6s)
+made spuds/different@fr/d05 (19 chars, 2.6s)
+made spuds/different@fr/d06 (22 chars, 2.4s)
+made spuds/different@fr/d07 (29 chars, 3.3s)
+made spuds/different@fr/d08 (20 chars, 2.5s)
+made spuds/different@fr/d09 (27 chars, 2.7s)
+made spuds/different@fr/d10 (25 chars, 2.6s)
+made spuds/different@fr/d11 (17 chars, 2.3s)
+made spuds/different@fr/d12 (24 chars, 3.3s)
+made spuds/different@fr/d13 (18 chars, 2.9s)
+made spuds/different@fr/d14 (19 chars, 2.7s)
+made spuds/different@fr/d15 (16 chars, 2.4s)
+made spuds/different@fr/d16 (26 chars, 3.0s)
+made spuds/different@es/d01 (48 chars, 7.9s)
+made spuds/different@es/d02 (20 chars, 2.6s)
+made spuds/different@es/d03 (18 chars, 2.6s)
+made spuds/different@es/d04 (15 chars, 2.4s)
+made spuds/different@es/d05 (18 chars, 3.0s)
+made spuds/different@es/d06 (29 chars, 4.1s)
+made spuds/different@es/d07 (25 chars, 3.2s)
+made spuds/different@es/d08 (23 chars, 2.4s)
+made spuds/different@es/d09 (19 chars, 3.0s)
+made spuds/different@es/d10 (19 chars, 3.6s)
+made spuds/different@es/d11 (14 chars, 1.9s)
+made spuds/different@es/d12 (23 chars, 3.5s)
+made spuds/different@es/d13 (16 chars, 2.6s)
+made spuds/different@es/d14 (19 chars, 2.8s)
+made spuds/different@es/d15 (18 chars, 2.5s)
+made spuds/different@es/d16 (25 chars, 4.2s)
+made spuds/different@ja/d01 (20 chars, 6.0s)
+made spuds/different@ja/d02 (13 chars, 2.7s)
+made spuds/different@ja/d03 (9 chars, 2.2s)
+made spuds/different@ja/d04 (10 chars, 2.9s)
+made spuds/different@ja/d05 (9 chars, 2.3s)
+made spuds/different@ja/d06 (9 chars, 2.2s)
+made spuds/different@ja/d07 (13 chars, 3.5s)
+made spuds/different@ja/d08 (13 chars, 2.4s)
+made spuds/different@ja/d09 (12 chars, 2.6s)
+made spuds/different@ja/d10 (12 chars, 3.3s)
+made spuds/different@ja/d11 (14 chars, 3.8s)
+made spuds/different@ja/d12 (14 chars, 3.8s)
+made spuds/different@ja/d13 (16 chars, 4.5s)
+made spuds/different@ja/d14 (10 chars, 2.7s)
+made spuds/different@ja/d15 (13 chars, 3.3s)
+made spuds/different@ja/d16 (14 chars, 3.1s)
+made spuds/different@ar/d01 (29 chars, 7.8s)
+made spuds/different@ar/d02 (16 chars, 2.5s)
+made spuds/different@ar/d03 (15 chars, 2.9s)
+made spuds/different@ar/d04 (15 chars, 2.4s)
+made spuds/different@ar/d05 (12 chars, 2.2s)
+made spuds/different@ar/d06 (23 chars, 3.4s)
+made spuds/different@ar/d07 (23 chars, 3.3s)
+made spuds/different@ar/d08 (24 chars, 4.2s)
+made spuds/different@ar/d09 (24 chars, 3.8s)
+made spuds/different@ar/d10 (19 chars, 3.0s)
+made spuds/different@ar/d11 (15 chars, 2.9s)
+made spuds/different@ar/d12 (26 chars, 4.7s)
+made spuds/different@ar/d13 (15 chars, 2.6s)
+made spuds/different@ar/d14 (17 chars, 2.9s)
+made spuds/different@ar/d15 (16 chars, 2.8s)
+made spuds/different@ar/d16 (19 chars, 3.4s)
+made spuds/rough-lives@de/rl01 (26 chars, 3.0s)
+made spuds/rough-lives@de/rl02 (79 chars, 10.6s)
+made spuds/rough-lives@de/rl03 (64 chars, 7.0s)
+made spuds/rough-lives@de/rl04 (72 chars, 8.1s)
+made spuds/rough-lives@de/rl06 (44 chars, 4.5s)
+made spuds/rough-lives@de/rl07 (37 chars, 3.7s)
+made spuds/rough-lives@de/rl08 (69 chars, 8.0s)
+made spuds/rough-lives@de/rl09 (112 chars, 13.0s)
+made spuds/rough-lives@de/rl10 (77 chars, 7.9s)
+made spuds/rough-lives@fr/rl01 (24 chars, 2.6s)
+made spuds/rough-lives@fr/rl02 (70 chars, 8.4s)
+made spuds/rough-lives@fr/rl03 (67 chars, 8.0s)
+made spuds/rough-lives@fr/rl04 (76 chars, 8.2s)
+made spuds/rough-lives@fr/rl06 (43 chars, 4.5s)
+made spuds/rough-lives@fr/rl07 (41 chars, 5.1s)
+made spuds/rough-lives@fr/rl08 (74 chars, 7.4s)
+made spuds/rough-lives@fr/rl09 (106 chars, 13.1s)
+made spuds/rough-lives@fr/rl10 (93 chars, 9.1s)
+made spuds/rough-lives@es/rl01 (29 chars, 3.7s)
+made spuds/rough-lives@es/rl02 (89 chars, 10.1s)
+made spuds/rough-lives@es/rl03 (74 chars, 8.2s)
+made spuds/rough-lives@es/rl04 (68 chars, 8.4s)
+made spuds/rough-lives@es/rl06 (37 chars, 4.3s)
+made spuds/rough-lives@es/rl07 (35 chars, 5.0s)
+made spuds/rough-lives@es/rl08 (88 chars, 10.3s)
+made spuds/rough-lives@es/rl09 (87 chars, 12.3s)
+made spuds/rough-lives@es/rl10 (90 chars, 13.1s)
+made spuds/rough-lives@ja/rl01 (19 chars, 3.9s)
+made spuds/rough-lives@ja/rl02 (39 chars, 11.5s)
+made spuds/rough-lives@ja/rl03 (35 chars, 9.5s)
+made spuds/rough-lives@ja/rl04 (37 chars, 9.5s)
+made spuds/rough-lives@ja/rl06 (28 chars, 6.4s)
+made spuds/rough-lives@ja/rl07 (13 chars, 4.0s)
+made spuds/rough-lives@ja/rl08 (28 chars, 7.3s)
+made spuds/rough-lives@ja/rl09 (55 chars, 13.9s)
+made spuds/rough-lives@ja/rl10 (45 chars, 11.4s)
+made spuds/rough-lives@ar/rl01 (22 chars, 3.3s)
+made spuds/rough-lives@ar/rl02 (53 chars, 11.1s)
+made spuds/rough-lives@ar/rl03 (51 chars, 7.9s)
+made spuds/rough-lives@ar/rl04 (58 chars, 9.1s)
+made spuds/rough-lives@ar/rl06 (36 chars, 6.5s)
+made spuds/rough-lives@ar/rl07 (35 chars, 7.3s)
+made spuds/rough-lives@ar/rl08 (53 chars, 8.2s)
+made spuds/rough-lives@ar/rl09 (70 chars, 11.0s)
+made spuds/rough-lives@ar/rl10 (66 chars, 10.9s)
+made spuds/tips@de/tp01 (77 chars, 10.7s)
+made spuds/tips@de/tp02 (174 chars, 23.2s)
+made spuds/tips@de/tp03 (227 chars, 23.7s)
+made spuds/tips@de/tp04 (177 chars, 23.0s)
+made spuds/tips@de/tp05 (164 chars, 19.9s)
+made spuds/tips@de/tp06 (198 chars, 23.7s)
+made spuds/tips@de/tp07 (171 chars, 22.8s)
+made spuds/tips@de/tp08 (114 chars, 13.7s)
+made spuds/tips@de/tp09 (187 chars, 23.7s)
+made spuds/tips@de/tp10 (200 chars, 23.7s)
+made spuds/tips@de/tp11 (181 chars, 22.2s)
+made spuds/tips@de/tp12 (217 chars, 23.7s)
+made spuds/tips@fr/tp01 (114 chars, 11.3s)
+made spuds/tips@fr/tp02 (166 chars, 17.4s)
+made spuds/tips@fr/tp03 (241 chars, 23.7s)
+made spuds/tips@fr/tp04 (202 chars, 23.7s)
+made spuds/tips@fr/tp05 (153 chars, 18.0s)
+made spuds/tips@fr/tp06 (209 chars, 23.7s)
+made spuds/tips@fr/tp07 (164 chars, 17.0s)
+made spuds/tips@fr/tp08 (121 chars, 16.0s)
+made spuds/tips@fr/tp09 (181 chars, 19.9s)
+made spuds/tips@fr/tp10 (221 chars, 23.7s)
+made spuds/tips@fr/tp11 (179 chars, 23.2s)
+made spuds/tips@fr/tp12 (209 chars, 22.6s)
+made spuds/tips@es/tp01 (91 chars, 12.9s)
+made spuds/tips@es/tp02 (162 chars, 22.4s)
+made spuds/tips@es/tp03 (205 chars, 23.7s)
+made spuds/tips@es/tp04 (161 chars, 23.7s)
+made spuds/tips@es/tp05 (142 chars, 19.8s)
+made spuds/tips@es/tp06 (189 chars, 23.7s)
+made spuds/tips@es/tp07 (144 chars, 21.7s)
+made spuds/tips@es/tp08 (103 chars, 15.0s)
+made spuds/tips@es/tp09 (166 chars, 22.1s)
+made spuds/tips@es/tp10 (197 chars, 23.7s)
+made spuds/tips@es/tp11 (159 chars, 22.1s)
+made spuds/tips@es/tp12 (196 chars, 23.7s)
+made spuds/tips@ja/tp01 (44 chars, 15.2s)
+made spuds/tips@ja/tp02 (75 chars, 18.0s)
+made spuds/tips@ja/tp03 (100 chars, 23.7s)
+made spuds/tips@ja/tp04 (88 chars, 23.7s)
+made spuds/tips@ja/tp05 (55 chars, 14.0s)
+made spuds/tips@ja/tp06 (81 chars, 23.7s)
+made spuds/tips@ja/tp07 (60 chars, 17.3s)
+made spuds/tips@ja/tp08 (53 chars, 16.1s)
+made spuds/tips@ja/tp09 (82 chars, 21.0s)
+made spuds/tips@ja/tp10 (75 chars, 21.9s)
+made spuds/tips@ja/tp11 (76 chars, 19.4s)
+made spuds/tips@ja/tp12 (99 chars, 21.5s)
+Mo (Spuds Oxley): 481 word and part clips made, 0 unchanged (481 words, 329 parts)
+Mo (Spuds Oxley): different de: 27 word clips made, 42 unchanged
+Mo (Spuds Oxley): different fr: 32 word clips made, 43 unchanged
+Mo (Spuds Oxley): different es: 28 word clips made, 29 unchanged
+Mo (Spuds Oxley): different ja: 26 word clips made, 15 unchanged
+Mo (Spuds Oxley): different ar: 29 word clips made, 29 unchanged
+Mo (Spuds Oxley): rough-lives de: 77 word clips made, 14 unchanged
+Mo (Spuds Oxley): rough-lives fr: 78 word clips made, 20 unchanged
+Mo (Spuds Oxley): rough-lives es: 83 word clips made, 27 unchanged
+Mo (Spuds Oxley): rough-lives ja: 42 word clips made, 0 unchanged
+Mo (Spuds Oxley): rough-lives ar: 72 word clips made, 6 unchanged
+Mo (Spuds Oxley): tips de: 202 word clips made, 126 unchanged
+Mo (Spuds Oxley): tips fr: 210 word clips made, 150 unchanged
+Mo (Spuds Oxley): tips es: 195 word clips made, 145 unchanged
+Mo (Spuds Oxley): tips ja: 13 word clips made, 0 unchanged
+Mo (Spuds Oxley): sample made
+Mo (Spuds Oxley): The End (en) made
+Mo (Spuds Oxley): The End (de) made
+Mo (Spuds Oxley): The End (fr) made
+Mo (Spuds Oxley): The End (es) made
+Mo (Spuds Oxley): The End (ja) made
+Mo (Spuds Oxley): The End (ar) made
+Mo (Spuds Oxley): letter a made
+Mo (Spuds Oxley): letter b made
+Mo (Spuds Oxley): letter c made
+Mo (Spuds Oxley): letter d made
+Mo (Spuds Oxley): letter e made
+Mo (Spuds Oxley): letter f made
+Mo (Spuds Oxley): letter g made
+Mo (Spuds Oxley): letter h made
+Mo (Spuds Oxley): letter i made
+Mo (Spuds Oxley): letter j made
+Mo (Spuds Oxley): letter k made
+Mo (Spuds Oxley): letter l made
+Mo (Spuds Oxley): letter m made
+Mo (Spuds Oxley): letter n made
+Mo (Spuds Oxley): letter o made
+Mo (Spuds Oxley): letter p made
+Mo (Spuds Oxley): letter q made
+Mo (Spuds Oxley): letter r made
+Mo (Spuds Oxley): letter s made
+Mo (Spuds Oxley): letter t made
+Mo (Spuds Oxley): letter u made
+Mo (Spuds Oxley): letter v made
+Mo (Spuds Oxley): letter w made
+Mo (Spuds Oxley): letter x made
+Mo (Spuds Oxley): letter y made
+Mo (Spuds Oxley): letter z made
+Mo (Spuds Oxley): letter de/a made
+Mo (Spuds Oxley): letter de/ae made
+Mo (Spuds Oxley): letter de/b made
+Mo (Spuds Oxley): letter de/c made
+Mo (Spuds Oxley): letter de/d made
+Mo (Spuds Oxley): letter de/e made
+Mo (Spuds Oxley): letter de/f made
+Mo (Spuds Oxley): letter de/g made
+Mo (Spuds Oxley): letter de/h made
+Mo (Spuds Oxley): letter de/i made
+Mo (Spuds Oxley): letter de/j made
+Mo (Spuds Oxley): letter de/k made
+Mo (Spuds Oxley): letter de/l made
+Mo (Spuds Oxley): letter de/m made
+Mo (Spuds Oxley): letter de/n made
+Mo (Spuds Oxley): letter de/o made
+Mo (Spuds Oxley): letter de/oe made
+Mo (Spuds Oxley): letter de/p made
+Mo (Spuds Oxley): letter de/q made
+Mo (Spuds Oxley): letter de/r made
+Mo (Spuds Oxley): letter de/s made
+Mo (Spuds Oxley): letter de/sz made
+Mo (Spuds Oxley): letter de/t made
+Mo (Spuds Oxley): letter de/u made
+Mo (Spuds Oxley): letter de/ue made
+Mo (Spuds Oxley): letter de/v made
+Mo (Spuds Oxley): letter de/w made
+Mo (Spuds Oxley): letter de/x made
+Mo (Spuds Oxley): letter de/y made
+Mo (Spuds Oxley): letter de/z made
+Mo (Spuds Oxley): letter fr/a made
+Mo (Spuds Oxley): letter fr/b made
+Mo (Spuds Oxley): letter fr/c made
+Mo (Spuds Oxley): letter fr/d made
+Mo (Spuds Oxley): letter fr/e made
+Mo (Spuds Oxley): letter fr/f made
+Mo (Spuds Oxley): letter fr/g made
+Mo (Spuds Oxley): letter fr/h made
+Mo (Spuds Oxley): letter fr/i made
+Mo (Spuds Oxley): letter fr/j made
+Mo (Spuds Oxley): letter fr/k made
+Mo (Spuds Oxley): letter fr/l made
+Mo (Spuds Oxley): letter fr/m made
+Mo (Spuds Oxley): letter fr/n made
+Mo (Spuds Oxley): letter fr/o made
+Mo (Spuds Oxley): letter fr/p made
+Mo (Spuds Oxley): letter fr/q made
+Mo (Spuds Oxley): letter fr/r made
+Mo (Spuds Oxley): letter fr/s made
+Mo (Spuds Oxley): letter fr/t made
+Mo (Spuds Oxley): letter fr/u made
+Mo (Spuds Oxley): letter fr/v made
+Mo (Spuds Oxley): letter fr/w made
+Mo (Spuds Oxley): letter fr/x made
+Mo (Spuds Oxley): letter fr/y made
+Mo (Spuds Oxley): letter fr/z made
+Mo (Spuds Oxley): letter es/a made
+Mo (Spuds Oxley): letter es/b made
+Mo (Spuds Oxley): letter es/c made
+Mo (Spuds Oxley): letter es/d made
+Mo (Spuds Oxley): letter es/e made
+Mo (Spuds Oxley): letter es/f made
+Mo (Spuds Oxley): letter es/g made
+Mo (Spuds Oxley): letter es/h made
+Mo (Spuds Oxley): letter es/i made
+Mo (Spuds Oxley): letter es/j made
+Mo (Spuds Oxley): letter es/k made
+Mo (Spuds Oxley): letter es/l made
+Mo (Spuds Oxley): letter es/m made
+Mo (Spuds Oxley): letter es/n made
+Mo (Spuds Oxley): letter es/nn made
+Mo (Spuds Oxley): letter es/o made
+Mo (Spuds Oxley): letter es/p made
+Mo (Spuds Oxley): letter es/q made
+Mo (Spuds Oxley): letter es/r made
+Mo (Spuds Oxley): letter es/s made
+Mo (Spuds Oxley): letter es/t made
+Mo (Spuds Oxley): letter es/u made
+Mo (Spuds Oxley): letter es/v made
+Mo (Spuds Oxley): letter es/w made
+Mo (Spuds Oxley): letter es/x made
+Mo (Spuds Oxley): letter es/y made
+Mo (Spuds Oxley): letter es/z made
+Mo (Spuds Oxley): letter ja/a made
+Mo (Spuds Oxley): letter ja/i made
+Mo (Spuds Oxley): letter ja/u made
+Mo (Spuds Oxley): letter ja/e made
+Mo (Spuds Oxley): letter ja/o made
+Mo (Spuds Oxley): letter ja/ka made
+Mo (Spuds Oxley): letter ja/ki made
+Mo (Spuds Oxley): letter ja/ku made
+Mo (Spuds Oxley): letter ja/ke made
+Mo (Spuds Oxley): letter ja/ko made
+Mo (Spuds Oxley): letter ja/sa made
+Mo (Spuds Oxley): letter ja/shi made
+Mo (Spuds Oxley): letter ja/su made
+Mo (Spuds Oxley): letter ja/se made
+Mo (Spuds Oxley): letter ja/so made
+Mo (Spuds Oxley): letter ja/ta made
+Mo (Spuds Oxley): letter ja/chi made
+Mo (Spuds Oxley): letter ja/tsu made
+Mo (Spuds Oxley): letter ja/te made
+Mo (Spuds Oxley): letter ja/to made
+Mo (Spuds Oxley): letter ja/na made
+Mo (Spuds Oxley): letter ja/ni made
+Mo (Spuds Oxley): letter ja/nu made
+Mo (Spuds Oxley): letter ja/ne made
+Mo (Spuds Oxley): letter ja/no made
+Mo (Spuds Oxley): letter ja/ha made
+Mo (Spuds Oxley): letter ja/hi made
+Mo (Spuds Oxley): letter ja/fu made
+Mo (Spuds Oxley): letter ja/he made
+Mo (Spuds Oxley): letter ja/ho made
+Mo (Spuds Oxley): letter ja/ma made
+Mo (Spuds Oxley): letter ja/mi made
+Mo (Spuds Oxley): letter ja/mu made
+Mo (Spuds Oxley): letter ja/me made
+Mo (Spuds Oxley): letter ja/mo made
+Mo (Spuds Oxley): letter ja/ya made
+Mo (Spuds Oxley): letter ja/yu made
+Mo (Spuds Oxley): letter ja/yo made
+Mo (Spuds Oxley): letter ja/ra made
+Mo (Spuds Oxley): letter ja/ri made
+Mo (Spuds Oxley): letter ja/ru made
+Mo (Spuds Oxley): letter ja/re made
+Mo (Spuds Oxley): letter ja/ro made
+Mo (Spuds Oxley): letter ja/wa made
+Mo (Spuds Oxley): letter ja/wo made
+Mo (Spuds Oxley): letter ja/n made
+Mo (Spuds Oxley): sample (de) made
+Mo (Spuds Oxley): sample (fr) made
+Mo (Spuds Oxley): sample (es) made
+Mo (Spuds Oxley): sample (ja) made
+Mo (Spuds Oxley): sample (ar) made
+Flint: found in your voices as "Flint - Deep, Raspy, and Warm" (professional)
+Done: 214 new, 652 unchanged, 0 failed, 16314 characters used this run
