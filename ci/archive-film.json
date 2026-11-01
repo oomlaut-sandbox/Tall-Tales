@@ -1,14 +1,149 @@
 {
  "_note": "Real archival film for the Coro ad (1 Nov 2026). search: archive.org queries, each gets a list and contact sheets of its top films. clips: [identifier, start s, length s, name] cut from the best file.",
  "search": {
-  "t-library": "title:(library OR libraries OR librarian) AND (collection:prelinger OR collection:usnationalarchives OR collection:publicdomainmovies OR collection:ephemera)",
-  "t-books": "title:(books OR book OR reading OR readers) AND (collection:prelinger OR collection:usnationalarchives OR collection:ephemera)",
-  "t-bookmobile": "title:(bookmobile OR \"book truck\" OR \"traveling library\" OR \"county library\")",
-  "t-newsreel-books": "(title:(newsreel) OR collection:universalnewsreels) AND (books OR library OR burning)",
-  "t-congress": "title:(\"library of congress\")",
-  "t-super8": "(\"super 8\" OR super8 OR \"home movie\") AND (1970 OR 1971 OR 1972 OR 1973 OR 1974 OR 1975 OR 1976 OR 1977 OR 1978) AND (children OR kids OR family) AND mediatype:movies",
-  "t-school": "title:(\"learning to read\" OR \"reading readiness\" OR \"story hour\" OR \"storytelling\" OR \"children's books\")"
+  "u-burning": "(title:(newsreel OR universal OR movietone OR pathe) OR collection:universalnewsreels) AND (1933 OR nazi OR berlin) AND (books OR burning OR burn)",
+  "u-homecolor": "(collection:home_movies OR collection:prelinger_home_movies OR title:(\"home movie\")) AND (kodachrome OR color OR colour) AND (child OR children OR kids OR christmas OR birthday) AND mediatype:movies",
+  "u-reading-kids": "title:(\"reading\" OR \"story time\" OR \"picture book\" OR \"children's library\") AND (collection:prelinger OR collection:ephemera OR collection:home_movies)"
  },
  "perQuery": 8,
- "clips": []
+ "clips": [
+  [
+   "MakingBo1947",
+   355,
+   8,
+   "press-rollers"
+  ],
+  [
+   "MakingBo1947",
+   575,
+   10,
+   "press-sheets"
+  ],
+  [
+   "MakingBo1947",
+   168,
+   9,
+   "typeset-hands"
+  ],
+  [
+   "MakingBo1947",
+   398,
+   8,
+   "press-feed"
+  ],
+  [
+   "MakingBo1947",
+   625,
+   8,
+   "bound-book"
+  ],
+  [
+   "TheAmericanSceneNumber11LibraryOfCongress",
+   63,
+   10,
+   "loc-boy"
+  ],
+  [
+   "TheAmericanSceneNumber11LibraryOfCongress",
+   83,
+   9,
+   "loc-woman-reading"
+  ],
+  [
+   "TheAmericanSceneNumber11LibraryOfCongress",
+   123,
+   9,
+   "loc-reading-room"
+  ],
+  [
+   "TheAmericanSceneNumber11LibraryOfCongress",
+   203,
+   10,
+   "loc-man-pen"
+  ],
+  [
+   "TheAmericanSceneNumber11LibraryOfCongress",
+   395,
+   10,
+   "loc-room-lamps"
+  ],
+  [
+   "TheAmericanSceneNumber11LibraryOfCongress",
+   445,
+   10,
+   "loc-old-reader"
+  ],
+  [
+   "TheAmericanSceneNumber11LibraryOfCongress",
+   665,
+   10,
+   "loc-manuscript"
+  ],
+  [
+   "TheAmericanSceneNumber11LibraryOfCongress",
+   693,
+   10,
+   "loc-hand-page"
+  ],
+  [
+   "TheAmericanSceneNumber11LibraryOfCongress",
+   705,
+   8,
+   "loc-woman-face"
+  ],
+  [
+   "TheAmericanSceneNumber11LibraryOfCongress",
+   1185,
+   15,
+   "loc-boy-truck"
+  ],
+  [
+   "Libraria1947",
+   36,
+   10,
+   "lib-girl-reading"
+  ],
+  [
+   "Libraria1947",
+   76,
+   10,
+   "lib-silhouette"
+  ],
+  [
+   "Libraria1947",
+   276,
+   10,
+   "lib-girl-2"
+  ],
+  [
+   "Libraria1947",
+   286,
+   10,
+   "lib-mother-kids"
+  ],
+  [
+   "rcpl1952avbooktruckfilm",
+   20,
+   15,
+   "truck-arrives"
+  ],
+  [
+   "rcpl1952avbooktruckfilm",
+   298,
+   14,
+   "truck-children"
+  ],
+  [
+   "rcpl1952avbooktruckfilm",
+   335,
+   14,
+   "truck-children-2"
+  ],
+  [
+   "rcpl1952avbooktruckfilm",
+   365,
+   10,
+   "truck-kids-close"
+  ]
+ ]
 }

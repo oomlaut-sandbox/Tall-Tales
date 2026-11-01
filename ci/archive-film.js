@@ -38,7 +38,7 @@ async function bestFile(id, small) {
     try {
       const { url, meta } = await bestFile(id, false);
       ff(['-ss', String(start), '-i', url, '-t', String(len), '-an', '-c:v', 'libx264', '-crf', '14', '-pix_fmt', 'yuv420p', `${O}/clips/${name}.mp4`]);
-      fs.appendFileSync(`${O}/clips.txt`, `${name} | ${id} | ${meta.title} | ${meta.year || meta.date || '?'} | ${meta.licenseurl || '-'} | ${start}s +${len}s\n`);
+      fs.appendFileSync(`${O}/clips.txt`, `${name} | ${id} | ${meta.title} | ${meta.year || meta.date || '?'} | ${meta.licenseurl || '-'} | rights: ${String(meta.rights || meta['possible-copyright-status'] || '-').slice(0, 200)} | ${start}s +${len}s\n`);
       console.log('clip', name);
     } catch (e) { console.log('clip failed', name, e.message.slice(0, 160)); }
   }
