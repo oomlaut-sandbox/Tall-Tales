@@ -6,11 +6,17 @@ const cfg = JSON.parse(fs.readFileSync(path.join(__dirname, 'promo-scripts.json'
 (async () => {
   if (!KEY) { console.log('no ELEVENLABS_API_KEY'); process.exit(1); }
   fs.mkdirSync('out/promo', { recursive: true });
+  const mine = await fetch('https://api.elevenlabs.io/v1/voices', { headers: { 'xi-api-key': KEY } }).then((r) => r.json()).catch(() => ({}));
   for (const [name, v] of Object.entries(cfg.videos)) {
     if (v.done) continue; // (made already)
+    if (cfg._only && !cfg._only.includes(name)) continue; // (_only: just these this time, 1 Nov 2026)
+    // voiceFind: another narrator from the account's voices (e.g. 'spuds' for Mo), instead of Fatima
+    const hit = v.voiceFind && ((mine.voices || []).find((x) => (x.name || '').toLowerCase().includes(v.voiceFind)));
+    if (v.voiceFind && !hit) { console.log(name, 'voice not found'); continue; }
+    const voice = hit ? hit.voice_id : cfg.voice;
     // split: one mp3 per line (name-1.mp3, name-2.mp3, …), so a translated film can be cut to each line
     for (const [k, text] of (v.split ? v.lines.map((l, i) => [i + 1, l]) : [[0, v.lines.join(` <break time="${v.pause}" /> `)]])) {
-    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${cfg.voice}?output_format=mp3_44100_192`, {
+    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}?output_format=mp3_44100_192`, {
       method: 'POST', headers: { 'xi-api-key': KEY, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
       body: JSON.stringify({ text, model_id: cfg.model, language_code: v.lang || 'en', voice_settings: { ...(v.settings || { stability: 0.55, similarity_boost: 0.8, style: 0.15, use_speaker_boost: true }), speed: v.speed } }),
     });
