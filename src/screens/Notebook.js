@@ -346,7 +346,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
     try {
       // the library opens Apple's quick photo picker (no crop step: that older screen loaded the whole library slowly,
     // and Edit photo does the cropping now); the camera keeps its square crop (Jörg, 27 Oct 2026)
-    const opts = source === 'camera' ? { mediaTypes: 'images', quality: 0.9, allowsEditing: true, aspect: [1, 1] } : { mediaTypes: 'images', quality: 1, allowsEditing: false };
+    const opts = source === 'camera' ? { mediaTypes: 'images', quality: 0.9, allowsEditing: false } /* no iPhone square crop: it couldn't reach the bottom of an upright photo and left black bars on a sideways one (tester, 1 Nov 2026); Edit photo crops instead */ : { mediaTypes: 'images', quality: 1, allowsEditing: false };
       let r;
       if (source === 'camera') {
         const perm = await ImagePicker.requestCameraPermissionsAsync();

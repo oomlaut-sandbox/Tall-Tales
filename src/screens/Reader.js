@@ -1064,7 +1064,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
         // tap it (it's small, so the finger gets a generous area) to hear what it means
         <Pressable onPress={() => toast(tr('This red dot means you’ve recorded this page in your own voice.'))} hitSlop={20}
           accessibilityRole="button" accessibilityLabel={tr('This page has a voice recording')}
-          style={[styles.recMark, !wide ? { top: 'auto', bottom: Math.max(4, ((winH - topH - barH - BL.bookH) / 2 - 22) / 2) + 7, left: bulbL + 34 } /* upright: bottom left, beside the bulb (1 Nov 2026) */ : IS_TABLET ? { left: bulbL + 32 } : { right: 14 }]} />
+          style={[styles.recMark, !wide ? { top: 'auto', bottom: 14, left: bulbL + 4 } /* upright: bottom left */ : IS_TABLET ? { left: bulbL + 32 } : { top: 'auto', bottom: 14, right: 14 } /* (Next has the top right: 1 Nov 2026) */]} />
       ) : null}
       {/* sideways: Edit this book (white scissors) in the felt's bottom right corner, between the book and the bar,
           mirroring the bulb (the bar has no room for it there: Jörg, 27 Oct 2026) */}
@@ -1073,31 +1073,31 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
           bulb (mirroring it); sideways, in the bottom left corner, centred in the left and the bottom margins */}
       {onBackToBooks && !nightOn ? (
         <BackRing onPress={() => { stopReading(); onBackToBooks(); }} label={tr('My Book Collection')}
-          style={wide ? { position: 'absolute', zIndex: 6, left: bulbL, bottom: backBottom } : { position: 'absolute', zIndex: 6, left: bulbL, top: 8 } /* upright: Back top left, Next top right (Jörg, 1 Nov 2026) */} />
+          style={{ position: 'absolute', zIndex: 6, left: bulbL, top: 8 } /* Back top left, the bulb under it, Next top right; upright and sideways (Jörg, 1 Nov 2026) */} />
       ) : null}
       {/* upright: Next page in the top right corner, the same as the dog ear (Jörg, 1 Nov 2026) */}
-      {!wide && !nightOn && !listen && idx < pages.length - 1 && !flipPair ? (
+      {!nightOn && !listen && idx < pages.length - 1 && !flipPair ? (
         <NextRing onPress={withTap(() => flip(1))} label={tr('Next page')} style={{ position: 'absolute', zIndex: 6, right: bulbL, top: 8 }} />
       ) : null}
       {/* share this book (an envelope, Jörg, 28 Oct 2026): upright in the felt's bottom right corner, sideways above the
           scissors (or above Back in books that can't be edited) */}
       {controls.sharing && !nightOn ? (
         <Pressable onPress={withTap(() => setShareGate(true))} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Share book')}
-          style={wide ? { position: 'absolute', zIndex: 6, left: bulbL - 1, bottom: backBottom + barGeo(u).step * (onEdit ? 2 : 1) - 1 }
+          style={wide ? { position: 'absolute', zIndex: 6, left: bulbL - 1, bottom: backBottom + barGeo(u).step * (onEdit ? 1 : 0) - 1 } /* (Back moved to the top left: 1 Nov 2026) */
             : { position: 'absolute', zIndex: 6, right: Math.max(7, bulbL - 3), bottom: Math.max(4, ((winH - topH - barH - BL.bookH) / 2 - 22) / 2) } /* halfway between the page and the bar */}>
           <Image source={ENVELOPE} style={{ width: 22, height: 22, tintColor: '#ffffff' }} resizeMode="contain" />
         </Pressable>
       ) : null}
       {wide && onEdit && !nightOn ? (
         <Pressable onPress={withTap(() => { stopReading(); onEdit(); })} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Edit this book')}
-          style={{ position: 'absolute', zIndex: 6, left: bulbL - 1, bottom: backBottom + barGeo(u).step - 1 /* one bar step above Back, centre to centre */ }}>
+          style={{ position: 'absolute', zIndex: 6, left: bulbL - 1, bottom: backBottom - 1 /* where Back was, bottom left (Back moved to the top left: 1 Nov 2026) */ }}>
           <Image source={SCISSORS} style={{ width: 22, height: 22, tintColor: '#ffffff' }} resizeMode="contain" />
         </Pressable>
       ) : null}
       {/* Amber light: a very fine light bulb at the top left of the felt turns it on and off */}
       {!listen ? (
         <Pressable onPress={withTap(() => setPrefs((p) => ({ ...p, amber: !p.amber })))} hitSlop={14} accessibilityRole="switch" accessibilityState={{ checked: !!prefs.amber }}
-          accessibilityLabel={tr('Amber light')} style={[styles.bulb, { left: bulbL }, !wide && { top: 'auto', left: Math.max(7, bulbL - 3), bottom: Math.max(4, ((winH - topH - barH - BL.bookH) / 2 - 22) / 2) } /* upright: bottom left, mirroring Share, since Back has the top left (Jörg, 1 Nov 2026) */]}>
+          accessibilityLabel={tr('Amber light')} style={[styles.bulb, { left: bulbL, top: 44 } /* under Back, top left (Jörg, 1 Nov 2026) */]}>
           <BulbIcon size={20} on={!!prefs.amber} />
         </Pressable>
       ) : null}
