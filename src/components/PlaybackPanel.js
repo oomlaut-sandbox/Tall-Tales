@@ -23,7 +23,7 @@ export function ReadingOptionsContent({ prefs, setPrefs, toast, onPlaylists, onC
       {view === 'voices' ? (
       <>
         {NARRATORS.map(([k, label]) => (
-          <Option key={k} glyph={<BubbleIcon />} title={label} sub={tr(k === 'lily' ? 'Warm and gentle' : 'Pleasant older man')} selected={narratorOf(prefs) === k}
+          <Option key={k} glyph={<BubbleIcon />} title={label} sub={tr(k === 'lily' ? 'Warm and gentle' : k === 'spuds' ? 'Cozy grandpa' : 'Pleasant older man')} selected={narratorOf(prefs) === k}
             onPress={() => { setPrefs((p) => ({ ...p, narrator: k })); { const smp = SAMPLE_LANGS?.[k]?.[appLang] || SAMPLES[k]; if (smp) playVoice(smp); } toast(tr('{name} will read the stories.', { name: label })); }} />
         ))}
         <Text style={styles.help}>{tr('The voice reads the stories aloud and sounds out words in Learn to Read. Pages you recorded in your own voice still play in yours.')}</Text>

@@ -94,7 +94,7 @@ export function localizeStoreBook(book, lang) {
 // (Fatima and Henry, with word timings), fetched from the store. Shaped like the app's own books.
 // In another language: that language's words, and only that language's narration is fetched
 // (narration/<lang>/<voice>/), so a phone never downloads audio for languages it doesn't read in.
-const VOICE_KEYS = ['lily', 'gregory'];
+const VOICE_KEYS = ['lily', 'gregory', 'spuds'];
 export async function loadStoreBook(book, lang = 'en', appUserId = null) {
   // a book for sale: its files are private; the server checks the purchase and hands out short-lived links
   let files = null;

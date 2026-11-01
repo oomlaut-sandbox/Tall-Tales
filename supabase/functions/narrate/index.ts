@@ -18,10 +18,11 @@ const ANON = Deno.env.get('SUPABASE_ANON_KEY')!;
 const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const EL_KEY = (Deno.env.get('ELEVENLABS_API_KEY') || '').trim();
 const MODEL = 'eleven_multilingual_v2';
-// The same two voices and paces as the books inside the app (ci/narrate.js).
+// The same voices and paces as the books inside the app (ci/narrate.js).
 const VOICES = [
   { key: 'lily', find: ['lily'], id: 'pFZP5JQG7iQjIQuC4Bku', pace: 0.75 },
   { key: 'gregory', find: ['gregory grumble', 'grumble'], id: null as string | null, pace: 0.75 }, // (every narrator at 0.75, as in ci/narrate.js)
+  { key: 'spuds', find: ['spuds oxley', 'spuds'], id: null as string | null, pace: 0.75 }, // Mo (1 Nov 2026)
 ];
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type' };
 const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { ...cors, 'Content-Type': 'application/json' } });

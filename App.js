@@ -403,7 +403,7 @@ function Root() {
         ) : null}
         {(screen === 'library' || (screen === 'start' && peek === 'library')) && (
           <View style={{ flex: 1 }}>
-          <Library toBooks={toBooks} toWip={toWip} onReadingOptions={readingBox} u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
+          <Library toBooks={toBooks} toWip={toWip} onReadingOptions={readingBox} u={u} narrator={['gregory', 'spuds'].includes(prefs.narrator) ? prefs.narrator : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
             onNotebookOff={(rect) => {
               // the notebook stays where it is while the shelf dissolves away to plain felt; then the notebook
               // screen takes over (its own notebook is already in the same spot) and the held one is taken away
@@ -439,7 +439,7 @@ function Root() {
         {/* My Workspace (Jörg, 29 Oct 2026): who is reading, Let's make a book, Work in Progress, My Notes, Things to share, the corkboard */}
         {screen === 'workspace' && (
           <Animated.View style={{ flex: 1, opacity: libFade }}>
-          <Library mode="workspace" onPrompt={(prompt, me) => openPublisher({ prompt, owner: me && me.id, writer: (me && me.name) || '' }) /* a book prompt from the teacher (classroom.js) */} toWip={toWip} onGarden={controls.garden ? () => go('garden') : undefined} /* the Garden lies below My Workspace now (Jörg, 29 Oct 2026) */ u={u} narrator={prefs.narrator === 'gregory' ? 'gregory' : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
+          <Library mode="workspace" onPrompt={(prompt, me) => openPublisher({ prompt, owner: me && me.id, writer: (me && me.name) || '' }) /* a book prompt from the teacher (classroom.js) */} toWip={toWip} onGarden={controls.garden ? () => go('garden') : undefined} /* the Garden lies below My Workspace now (Jörg, 29 Oct 2026) */ u={u} narrator={['gregory', 'spuds'].includes(prefs.narrator) ? prefs.narrator : 'lily'} toast={toast} stories={shelf} openStory={openStory} openMenu={openMenu} onProfiles={() => go('profiles')}
             onNotebook={(rect) => {
               // the notebook stays where it is while the shelf dissolves away to plain felt; then the notebook
               // screen takes over (its own notebook is already in the same spot) and the held one is taken away

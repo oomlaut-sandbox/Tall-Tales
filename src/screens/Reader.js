@@ -51,7 +51,7 @@ export const speedOf = (prefs) => {
 };
 // Book narrators (ElevenLabs). Fatima (voice key 'lily') is the default.
 // A tiny printed page: white sheet with the picture and words squares, upright or sideways.
-export const NARRATORS = [['lily', 'Fatima'], ['gregory', 'Henry']]; // add more voices here (and in ci/narrate.js)
+export const NARRATORS = [['lily', 'Fatima'], ['gregory', 'Henry'], ['spuds', 'Mo']]; // (Mo: ElevenLabs' Spuds Oxley, 1 Nov 2026) // add more voices here (and in ci/narrate.js)
 // narrators who read only certain books (picked in that book's 'Who reads this book?' box; the book remembers it)
 const LISTEN_TIP_SEEN = {}; // Listen Only's 'how to close' bubble, shown once per launch for each scene
 // James (voice files under 'johnny') reads Different: off for now (Jörg, 26 Oct 2026). Back: [['johnny', 'James', ['different']]]
@@ -1255,7 +1255,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
           <>
             {NARRATORS.map(([k, label]) => (
               // tapping a voice chooses it and plays a short sample of it
-              <Option key={k} glyph={<BubbleIcon />} title={label} sub={tr(k === 'lily' ? 'Warm and gentle' : 'Pleasant older man')} selected={narratorOf(prefs) === k}
+              <Option key={k} glyph={<BubbleIcon />} title={label} sub={tr(k === 'lily' ? 'Warm and gentle' : k === 'spuds' ? 'Cozy grandpa' : 'Pleasant older man')} selected={narratorOf(prefs) === k}
                 onPress={() => { stopReading(); setPrefs((p) => ({ ...p, narrator: k })); { const smp = SAMPLE_LANGS?.[k]?.[appLang] || SAMPLES[k]; if (smp) playVoice(smp); } toast(tr('{name} will read the stories.', { name: label })); }} />
             ))}
             <Text style={styles.help}>{tr('The voice reads the stories aloud and sounds out words in Learn to Read. Pages you recorded in your own voice still play in yours.')}</Text>
