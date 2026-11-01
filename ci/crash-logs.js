@@ -73,7 +73,11 @@ const json = (r) => { try { return JSON.parse(r.body); } catch { return {}; } };
       const pp = (prices.included || []).map((x) => x.attributes && x.attributes.customerPrice).filter(Boolean).join('/') || '?';
       const shot = json(await get(`/v1/subscriptions/${sb.id}/appStoreReviewScreenshot`));
       const locs = (loc.data || []).map((x) => `${x.attributes.locale}=${x.attributes.state}`).join(',');
-      say(`  review screenshot: ${shot.data ? 'yes' : 'no'} | localizations: ${locs}`);
+      const av = await get(`/v1/subscriptions/${sb.id}/subscriptionAvailability`);
+      const avt = json(await get(`/v1/subscriptions/${sb.id}/subscriptionAvailability/availableTerritories?limit=200`));
+      const allp = json(await get(`/v1/subscriptions/${sb.id}/prices?limit=200`));
+      say(`  availability: HTTP ${av.status} ${json(av).data ? 'set' : 'not set'}, ${(avt.data || []).length} countries | prices in ${(allp.data || []).length} countries | review note: ${a.reviewNote ? 'yes' : 'no'} | family sharable: ${a.familySharable}`);
+      say(`  review screenshot: ${shot.data ? 'yes (' + ((shot.data.attributes.assetDeliveryState || {}).state || '?') + ')' : 'no'} | localizations: ${locs}`);
       say(`  ${a.productId}: ${a.state} | ${a.subscriptionPeriod} | US $${pp} | free trial: ${offers} | names: ${(loc.data || []).length}`);
     }
   }
