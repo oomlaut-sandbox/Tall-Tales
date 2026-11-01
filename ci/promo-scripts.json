@@ -341,10 +341,35 @@
     "So pick up a book and read it.",
     "Then make a book of your own, and join the conversation.",
     "Coro, books made together."
+   ],
+   "done": true
+  },
+  "ad-love-of-books-mo-3": {
+   "voiceFind": "spuds",
+   "speed": 0.75,
+   "pause": "0.9s",
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lines": [
+    "Here’s to the love of books.",
+    "Books are more than a story.",
+    "Books make us feel things, <break time=\"0.6s\" /> understand them, <break time=\"0.6s\" /> question them, <break time=\"0.6s\" /> cherish them.",
+    "They have a look, a feel, a smell.",
+    "They give us meaning.",
+    "They inspire, disrupt, and have a life of their own.",
+    "Good or bad or anywhere in between,",
+    "books change things.",
+    "So pick up a book and read it.",
+    "Then make a book of your own, and join the conversation.",
+    "Coro, books made together."
    ]
   }
  },
  "_only": [
-  "ad-love-of-books-mo-2"
+  "ad-love-of-books-mo-3"
  ]
 }

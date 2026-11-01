@@ -64,7 +64,7 @@ const save = async (id, res, kind) => {
       method: 'POST', headers: { 'xi-api-key': KEY, 'Content-Type': 'application/json', Accept: 'audio/mpeg' }, body: JSON.stringify(body),
     });
     // the looping sound model first; without looping if that isn't available
-    let res = await post({ text, duration_seconds: 30, prompt_influence: 0.5, loop: true, model_id: 'eleven_text_to_sound_v2' });
+    let res = await post({ text, duration_seconds: 30, prompt_influence: 0.5, loop: true, model_id: 'eleven_text_to_sound_v3' });
     if (!res.ok) { console.log(`(retrying ${id} without loop: ${res.status})`); res = await post({ text, duration_seconds: 22, prompt_influence: 0.5 }); }
     await save(id, res, 'sound');
   }

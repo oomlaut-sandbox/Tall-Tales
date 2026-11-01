@@ -46,7 +46,7 @@ const save = async (id, res, kind) => {
   for (const [id, text] of DIAL.filter(([i]) => want(i))) {
     const res = await fetch('https://api.elevenlabs.io/v1/sound-generation', {
       method: 'POST', headers: { 'xi-api-key': KEY, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
-      body: JSON.stringify({ text, duration_seconds: 16, prompt_influence: 0.55, model_id: 'eleven_text_to_sound_v2' }),
+      body: JSON.stringify({ text, duration_seconds: 16, prompt_influence: 0.55, model_id: 'eleven_text_to_sound_v3' }),
     });
     await save(id, res, 'sound');
   }

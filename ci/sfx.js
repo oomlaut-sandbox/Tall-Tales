@@ -35,7 +35,7 @@ const ONLY = (process.env.ONLY || '').split(',').filter(Boolean);
       const res = await fetch('https://api.elevenlabs.io/v1/sound-generation', {
         method: 'POST',
         headers: { 'xi-api-key': KEY, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
-        body: JSON.stringify({ text, duration_seconds: dur, prompt_influence: 0.6 }),
+        body: JSON.stringify({ text, duration_seconds: dur, prompt_influence: 0.6, model_id: 'eleven_text_to_sound_v3' }), // (v2 retires 1 Feb 2027)
       });
       if (!res.ok) { console.log(`FAIL ${name}-${n} ${res.status} ${(await res.text()).slice(0, 300)}`); continue; }
       fs.writeFileSync(`sfx-out/${name}-${n}.mp3`, Buffer.from(await res.arrayBuffer()));
