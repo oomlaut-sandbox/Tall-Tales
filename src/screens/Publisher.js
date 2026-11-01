@@ -1290,6 +1290,9 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                   <View style={{ width: 6.5, height: 6.5, borderRightWidth: 1.6, borderBottomWidth: 1.6, borderColor: colors.white, transform: [{ translateY: placeOpen ? 1.5 : -1.5 }, { rotate: placeOpen ? '-135deg' : '45deg' }] }} />
                 </View>
               </Pressable>
+            ) : !wp.textOn && page.uri ? (
+              // the picture these words go with, small, so the writer can see it while typing (Jörg, 1 Nov 2026)
+              <Image source={{ uri: page.uri }} style={{ width: 56, height: 56, borderRadius: 6, borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)', backgroundColor: '#2a2a2a' }} resizeMode="cover" accessibilityIgnoresInvertColors accessibilityLabel={tr('The picture on this page')} />
             ) : <View />}
             <Pressable onPress={closeWords} hitSlop={8} accessibilityRole="button" style={styles.donePill}><Text style={styles.donePillText}>{tr('Done')}</Text></Pressable>
           </Animated.View>
