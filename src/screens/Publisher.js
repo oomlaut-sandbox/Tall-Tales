@@ -786,6 +786,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
     // hard: a cloth hardcover (its spine turns to the top when the book is upright)
     try { const a = Asset.fromModule(src); await a.downloadAsync(); let uri = a.localUri || a.uri; try { uri = await keepPicture(draft.id, uri); } catch (e) {} pickCover('library', { uri, w: a.width || 1600, h: a.height || 1600, hard: true }); } catch (e) {}
   };
+  const [picAsk, setPicAsk] = useState(null); // 1 | 2: which picture the bin will remove, asked first (Jörg, 1 Nov 2026)
   const removeImage = () => {
     if (page.uri) dropLater(page.uri);
     if (page.src && page.src !== page.uri) dropLater(page.src);
@@ -955,7 +956,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
                 <Text style={styles.chip}>{tr('Change picture')}</Text>
                 <Pressable onPress={() => setPhotoEdit('page')} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Edit photo')} style={styles.chipIcon}><Image source={CHOICE_ICONS.crop} style={styles.chipImg} /></Pressable>
                 {wordsChip('top')}
-                <Pressable onPress={removeImage} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Remove picture')} style={styles.chipIcon}><Image source={CHOICE_ICONS.trash} style={styles.chipImg} /></Pressable>
+                <Pressable onPress={() => setPicAsk(1)} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Remove picture')} style={styles.chipIcon}><Image source={CHOICE_ICONS.trash} style={styles.chipImg} /></Pressable>
               </View>
             </>
           ) : (
@@ -973,7 +974,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
               <Text style={styles.chip}>{tr('Change picture')}</Text>
               <Pressable onPress={() => setPhotoEdit('page2')} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Edit photo')} style={styles.chipIcon}><Image source={CHOICE_ICONS.crop} style={styles.chipImg} /></Pressable>
               {wordsChip('bottom')}
-              <Pressable onPress={removeImage2} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Remove the second picture')} style={styles.chipIcon}><Image source={CHOICE_ICONS.trash} style={styles.chipImg} /></Pressable>
+              <Pressable onPress={() => setPicAsk(2)} hitSlop={6} accessibilityRole="button" accessibilityLabel={tr('Remove the second picture')} style={styles.chipIcon}><Image source={CHOICE_ICONS.trash} style={styles.chipImg} /></Pressable>
             </View>
           ) : (
             <>
@@ -1587,6 +1588,10 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
             </View>
           ) : null}
         </KeyboardAvoidingView>
+      ) : null}
+      {picAsk ? (
+        <ConfirmBox title={tr('Remove this picture?')} message={tr('The picture or drawing on this page will be gone. This can’t be undone.')} confirm={tr('Remove')} cancel={tr('Keep')}
+          onConfirm={() => { const k = picAsk; setPicAsk(null); if (k === 2) removeImage2(); else removeImage(); }} onCancel={() => setPicAsk(null)} />
       ) : null}
       {pageAsk != null ? (
         <ConfirmBox title={tr('Delete page {n}?', { n: pageAsk + 1 })} message={tr('Its words, pictures and recordings go too.')} confirm={tr('Delete')} cancel={tr('Keep')}

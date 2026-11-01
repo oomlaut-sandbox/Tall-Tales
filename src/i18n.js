@@ -476,6 +476,8 @@ const T = {
   'Untitled book': { de: 'Buch ohne Titel', fr: 'Livre sans titre', es: 'Libro sin título', ja: 'だいめいの ない 本', ar: 'كتاب بلا عنوان' },
   'My Story': { de: 'Meine Geschichte', fr: 'Mon histoire', es: 'Mi cuento', ja: 'わたしの おはなし', ar: "قصتي" },
   'Change picture': { de: 'Bild ändern', fr: 'Changer l’image', es: 'Cambiar imagen', ja: 'えを かえる', ar: 'تغيير الصورة' },
+  'Remove this picture?': { de: 'Dieses Bild entfernen?', fr: 'Retirer cette image ?', es: '¿Quitar esta imagen?', ja: 'この えを けしますか？', ar: "إزالة هذه الصورة؟" },
+  'The picture or drawing on this page will be gone. This can’t be undone.': { de: 'Das Bild oder die Zeichnung auf dieser Seite ist dann weg. Das lässt sich nicht rückgängig machen.', fr: 'L’image ou le dessin de cette page disparaîtra. Impossible de revenir en arrière.', es: 'La imagen o el dibujo de esta página desaparecerá. No se puede deshacer.', ja: 'この ページの えや しゃしんは なくなります。もとに もどせません。', ar: "ستختفي الصورة أو الرسمة من هذه الصفحة. لا يمكن التراجع عن ذلك." },
   'Remove picture': { de: 'Bild entfernen', fr: 'Retirer l’image', es: 'Quitar imagen', ja: 'えを けす', ar: 'إزالة الصورة' },
   'Change the second picture': { de: 'Zweites Bild ändern', fr: 'Changer la deuxième image', es: 'Cambiar la segunda imagen', ja: '2まいめの えを かえる', ar: 'تغيير الصورة الثانية' },
   'Remove the second picture': { de: 'Zweites Bild entfernen', fr: 'Retirer la deuxième image', es: 'Quitar la segunda imagen', ja: '2まいめの えを けす', ar: 'إزالة الصورة الثانية' },
