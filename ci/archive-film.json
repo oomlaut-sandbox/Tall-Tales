@@ -1,14 +1,13 @@
 {
  "_note": "Real archival film for the Coro ad (1 Nov 2026). search: archive.org queries, each gets a list and contact sheets of its top films. clips: [identifier, start s, length s, name] cut from the best file.",
  "search": {
-  "press": "(\"printing press\" OR \"how books are made\" OR bookbinding OR printing) AND collection:prelinger",
-  "library": "(library OR librarian) AND collection:prelinger",
-  "reading": "(reading OR books) AND collection:prelinger",
-  "bookmobile": "bookmobile",
-  "manuscript": "(manuscript OR monks OR scribe OR medieval) AND mediatype:movies AND (collection:prelinger OR collection:publicdomainmovies)",
-  "newspaper": "newspaper AND collection:prelinger",
-  "burning": "\"book burning\" AND mediatype:movies",
-  "homemovie": "(\"home movie\" OR \"home movies\") AND (child OR children OR family) AND mediatype:movies AND (collection:prelinger OR collection:home_movies)"
+  "t-library": "title:(library OR libraries OR librarian) AND (collection:prelinger OR collection:usnationalarchives OR collection:publicdomainmovies OR collection:ephemera)",
+  "t-books": "title:(books OR book OR reading OR readers) AND (collection:prelinger OR collection:usnationalarchives OR collection:ephemera)",
+  "t-bookmobile": "title:(bookmobile OR \"book truck\" OR \"traveling library\" OR \"county library\")",
+  "t-newsreel-books": "(title:(newsreel) OR collection:universalnewsreels) AND (books OR library OR burning)",
+  "t-congress": "title:(\"library of congress\")",
+  "t-super8": "(\"super 8\" OR super8 OR \"home movie\") AND (1970 OR 1971 OR 1972 OR 1973 OR 1974 OR 1975 OR 1976 OR 1977 OR 1978) AND (children OR kids OR family) AND mediatype:movies",
+  "t-school": "title:(\"learning to read\" OR \"reading readiness\" OR \"story hour\" OR \"storytelling\" OR \"children's books\")"
  },
  "perQuery": 8,
  "clips": []
