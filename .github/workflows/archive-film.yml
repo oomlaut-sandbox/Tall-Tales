@@ -1,0 +1,32 @@
+# Real archival film from archive.org for the Coro ad (ci/archive-film.json): lists, contact sheets and cut clips,
+# saved on the archive-output branch (not the app). Run by hand.
+name: Archive film
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  film:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: sudo apt-get install -y -qq ffmpeg > /dev/null
+      - name: Keep what earlier runs found
+        run: git fetch -q origin archive-output && git checkout origin/archive-output -- archive-out || true
+      - run: node ci/archive-film.js || echo failed
+      - name: Save
+        if: always()
+        run: |
+          mkdir -p archive-out && mv archive-out /tmp/archive-out
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          git checkout -q --orphan archive-output
+          git rm -rfq --cached . > /dev/null
+          rm -rf ./* .gitignore 2>/dev/null || true
+          cp -r /tmp/archive-out archive-out
+          git add -f archive-out
+          git commit -qm "Archive film"
+          git push -qf origin archive-output

@@ -1,0 +1,15 @@
+{
+ "_note": "Real archival film for the Coro ad (1 Nov 2026). search: archive.org queries, each gets a list and contact sheets of its top films. clips: [identifier, start s, length s, name] cut from the best file.",
+ "search": {
+  "press": "(\"printing press\" OR \"how books are made\" OR bookbinding OR printing) AND collection:prelinger",
+  "library": "(library OR librarian) AND collection:prelinger",
+  "reading": "(reading OR books) AND collection:prelinger",
+  "bookmobile": "bookmobile",
+  "manuscript": "(manuscript OR monks OR scribe OR medieval) AND mediatype:movies AND (collection:prelinger OR collection:publicdomainmovies)",
+  "newspaper": "newspaper AND collection:prelinger",
+  "burning": "\"book burning\" AND mediatype:movies",
+  "homemovie": "(\"home movie\" OR \"home movies\") AND (child OR children OR family) AND mediatype:movies AND (collection:prelinger OR collection:home_movies)"
+ },
+ "perQuery": 8,
+ "clips": []
+}
