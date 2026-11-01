@@ -37,7 +37,7 @@ function PeelLayer({ start, ...props }) {
 }
 import ParentGate from '../components/ParentGate';
 import { printStory } from '../pdf';
-import { Toast, BackRing, LineIcon, BulbIcon, BubbleIcon, HeadphonesIcon, MoonIcon, PageShape, Burger, GlassesIcon, DogEar, DotIcon, ListIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, TextIcon, sideTop } from '../components/Chrome';
+import { Toast, BackRing, NextRing, LineIcon, BulbIcon, BubbleIcon, HeadphonesIcon, MoonIcon, PageShape, Burger, GlassesIcon, DogEar, DotIcon, ListIcon, Option, Panel, PauseButton, PlayButton, PlayGlyph, RecordButton, Slider, TextIcon, sideTop } from '../components/Chrome';
 
 // Reading speed: 1 = the voice's natural pace. The default is moderately slow.
 // Older settings only had Normal/Slow.
@@ -1052,7 +1052,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
         // tap it (it's small, so the finger gets a generous area) to hear what it means
         <Pressable onPress={() => toast(tr('This red dot means you’ve recorded this page in your own voice.'))} hitSlop={20}
           accessibilityRole="button" accessibilityLabel={tr('This page has a voice recording')}
-          style={[styles.recMark, !wide ? { top: 'auto', bottom: 14, left: bulbL + 4 } /* upright: bottom left, clear of the back button (Jörg, 28 Oct 2026) */ : IS_TABLET ? { left: bulbL + 32 } : { right: 14 }]} />
+          style={[styles.recMark, !wide ? { top: 'auto', bottom: Math.max(4, ((winH - topH - barH - BL.bookH) / 2 - 22) / 2) + 7, left: bulbL + 34 } /* upright: bottom left, beside the bulb (1 Nov 2026) */ : IS_TABLET ? { left: bulbL + 32 } : { right: 14 }]} />
       ) : null}
       {/* sideways: Edit this book (white scissors) in the felt's bottom right corner, between the book and the bar,
           mirroring the bulb (the bar has no room for it there: Jörg, 27 Oct 2026) */}
@@ -1061,7 +1061,11 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
           bulb (mirroring it); sideways, in the bottom left corner, centred in the left and the bottom margins */}
       {onBackToBooks && !nightOn ? (
         <BackRing onPress={() => { stopReading(); onBackToBooks(); }} label={tr('My Book Collection')}
-          style={wide ? { position: 'absolute', zIndex: 6, left: bulbL, bottom: backBottom } : { position: 'absolute', zIndex: 6, right: bulbL, top: 8 }} />
+          style={wide ? { position: 'absolute', zIndex: 6, left: bulbL, bottom: backBottom } : { position: 'absolute', zIndex: 6, left: bulbL, top: 8 } /* upright: Back top left, Next top right (Jörg, 1 Nov 2026) */} />
+      ) : null}
+      {/* upright: Next page in the top right corner, the same as the dog ear (Jörg, 1 Nov 2026) */}
+      {!wide && !nightOn && !listen && idx < pages.length - 1 && !flipPair ? (
+        <NextRing onPress={withTap(() => flip(1))} label={tr('Next page')} style={{ position: 'absolute', zIndex: 6, right: bulbL, top: 8 }} />
       ) : null}
       {/* share this book (an envelope, Jörg, 28 Oct 2026): upright in the felt's bottom right corner, sideways above the
           scissors (or above Back in books that can't be edited) */}
@@ -1081,7 +1085,7 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       {/* Amber light: a very fine light bulb at the top left of the felt turns it on and off */}
       {!listen ? (
         <Pressable onPress={withTap(() => setPrefs((p) => ({ ...p, amber: !p.amber })))} hitSlop={14} accessibilityRole="switch" accessibilityState={{ checked: !!prefs.amber }}
-          accessibilityLabel={tr('Amber light')} style={[styles.bulb, { left: bulbL }]}>
+          accessibilityLabel={tr('Amber light')} style={[styles.bulb, { left: bulbL }, !wide && { top: 'auto', left: Math.max(7, bulbL - 3), bottom: Math.max(4, ((winH - topH - barH - BL.bookH) / 2 - 22) / 2) } /* upright: bottom left, mirroring Share, since Back has the top left (Jörg, 1 Nov 2026) */]}>
           <BulbIcon size={20} on={!!prefs.amber} />
         </Pressable>
       ) : null}
