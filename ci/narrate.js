@@ -29,6 +29,9 @@ const VOICES = [
   { key: 'gregory', label: 'Gregory Grumble', find: ['gregory grumble', 'grumble'], pace: 0.75, wordPace: 1 }, // (single tapped words keep the clips already made)
   // Johnny Kid (Jörg, 24 Oct 2026): only Different for now (books: the only books this voice reads)
   { key: 'johnny', label: 'Johnny Kid', find: ['johnny kid'], pace: 0.75, wordPace: 1, books: ['different'] },
+  // Spuds Oxley (Jörg, 1 Nov 2026): a try-out first, Different in English and German only (trial: no Learn to Read
+  // words, Abc, samples or The End yet). Not in the app until he's chosen (src/screens/Reader.js NARRATORS).
+  { key: 'spuds', label: 'Spuds Oxley', find: ['spuds oxley', 'spuds'], pace: 0.75, wordPace: 1, books: ['different'], langs: ['de'], trial: true },
 ];
 const readsBook = (v, id) => !v.books || v.books.includes(id);
 
@@ -320,6 +323,7 @@ async function makeWords(v, voiceId) {
     // <story>@<lang> (e.g. different@de), with word timings like the English pages.
     for (const story of stories.filter((st) => TRANSLATED.includes(st.id) && st.langs && readsBook(v, st.id))) {
       for (const [lang, L] of Object.entries(story.langs)) {
+        if (v.langs && !v.langs.includes(lang)) continue;
         const sk = `${story.id}@${lang}`;
         data[v.key][sk] = data[v.key][sk] || {};
         for (let i = 0; i < story.pages.length; i++) {
@@ -353,6 +357,7 @@ async function makeWords(v, voiceId) {
         }
       }
     }
+    if (v.trial) continue;
     await makeWords(v, voiceId);
     await makeSample(v, voiceId);
     await makeTheEnd(v, voiceId);

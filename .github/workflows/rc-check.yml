@@ -1,0 +1,29 @@
+# Reads what RevenueCat serves the app (offerings, product IDs); saved to the apple-status branch. Run on demand.
+name: RevenueCat check
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Read
+        env:
+          REVENUECAT_IOS_KEY: ${{ secrets.REVENUECAT_IOS_KEY }}
+        run: node ci/rc-check.js
+      - name: Save
+        run: |
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          mv ios-out /tmp/ios-out
+          git checkout --orphan apple-status
+          git rm -rfq --cached . > /dev/null
+          rm -rf ./* .gitignore 2>/dev/null || true
+          cp -r /tmp/ios-out ./ios-out
+          git add -f ios-out
+          git commit -qm "RevenueCat check"
+          git push -f origin apple-status
