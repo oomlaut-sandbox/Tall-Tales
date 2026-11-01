@@ -1,0 +1,3 @@
+OK sound campfire-a 470 KB
+OK sound campfire-b 470 KB
+OK sound campfire-c 470 KB
