@@ -37,7 +37,7 @@ const ALL_HELP = [
   { section: 'Reading', title: 'Hearing the story read aloud', text: [
     'Tap the play button in the bottom bar and the narrator reads the page. Each word lights up as it’s spoken.',
     'Open Reading Options (under your books in My Library, or in Settings) to choose how the book plays: Read Yourself, Learn to Read, Auto Play, Page by Page Play or Listen Only.',
-    'Under Voices you can choose Fatima, Henry or Mo. Tap a voice to hear a short sample.',
+    'Under Voices you can choose Fatima or Mo. Tap a voice to hear a short sample.',
   ] },
   { section: 'Reading', title: 'Learn to Read', text: [
     'In Learn to Read mode, tap any word to hear it, sounded out one part at a time.',
@@ -84,7 +84,7 @@ const ALL_HELP = [
     'Your Recordings lists every page by reader: play it, trim the start and end, or delete it.',
   ] },
   { section: 'Your voice', title: 'Choosing a voice', text: [
-    'The round face on the reading bar shows who reads the book. Tap it to choose Fatima, Henry, Mo or anyone in the family who recorded this book. Pages they didn’t record are read by the narrator.',
+    'The round face on the reading bar shows who reads the book. Tap it to choose Fatima, Mo or anyone in the family who recorded this book. Pages they didn’t record are read by the narrator.',
     'A grown-up can tap the scissors in that box to change a reader’s photo, add a reader or remove one (with their recordings).',
   ] },
   { section: 'Your voice', title: 'Sharing a book in your voice', text: [

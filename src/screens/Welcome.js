@@ -547,7 +547,7 @@ function P3Visual({ w, t }) {
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 22 }}>
       <View style={{ width: w * 0.58, backgroundColor: 'rgba(0,0,0,0.86)', borderRadius: 20, padding: 12, gap: 4 }}>
         <Text style={{ color: 'rgba(255,255,255,0.7)', fontFamily: F.semi, fontSize: 12, marginBottom: 4, marginLeft: 6 }}>{t('Who reads this book?')}</Text>
-        {row(null, 'Fatima')}{row(null, 'Henry')}{row(PROFILE_COLORS[3][1], t('Grandma'), true)}
+        {row(null, 'Fatima')}{row(null, 'Mo')}{row(PROFILE_COLORS[3][1], t('Grandma'), true)}
       </View>
       <Animated.View style={{ width: 54, height: 54, borderRadius: 27, backgroundColor: colors.highlight, transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.12] }) }], opacity: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 0.8] }) }} />
     </View>

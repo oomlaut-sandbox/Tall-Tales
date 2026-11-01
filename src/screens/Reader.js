@@ -51,7 +51,7 @@ export const speedOf = (prefs) => {
 };
 // Book narrators (ElevenLabs). Fatima (voice key 'lily') is the default.
 // A tiny printed page: white sheet with the picture and words squares, upright or sideways.
-export const NARRATORS = [['lily', 'Fatima'], ['gregory', 'Henry'], ['spuds', 'Mo']]; // (Mo: ElevenLabs' Spuds Oxley, 1 Nov 2026) // add more voices here (and in ci/narrate.js)
+export const NARRATORS = [['lily', 'Fatima'], ['spuds', 'Mo']]; // Henry ('gregory') is off for now, kept for later: put ['gregory', 'Henry'] back (Jörg, 1 Nov 2026) // (Mo: ElevenLabs' Spuds Oxley, 1 Nov 2026) // add more voices here (and in ci/narrate.js)
 // narrators who read only certain books (picked in that book's 'Who reads this book?' box; the book remembers it)
 const LISTEN_TIP_SEEN = {}; // Listen Only's 'how to close' bubble, shown once per launch for each scene
 // James (voice files under 'johnny') reads Different: off for now (Jörg, 26 Oct 2026). Back: [['johnny', 'James', ['different']]]
