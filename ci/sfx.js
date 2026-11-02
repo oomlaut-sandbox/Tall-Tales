@@ -28,6 +28,12 @@ const FX = [
   ['splash-b', 3.0, 'A kalimba thumb piano plucked softly: a short happy little four-note phrase going up, warm wooden tone with a gentle natural decay. Simple and organic, close, no other instruments, no voices.'],
   ['splash-c', 3.0, 'A soft wooden marimba playing two bright gentle notes, followed by one tiny hollow woodblock knock like something small popping into view. Warm, simple, organic, close, no other instruments, no voices.'],
   ['splash-d', 3.0, 'A wooden tongue drum struck softly with a felt mallet: two calm round notes, the second lower, ringing out warmly. Very simple, organic and soothing, close, no other instruments, no voices.'],
+  // more like sound bite A: three notes, five ways (Jörg, 2 Nov 2026)
+  ['xy-1', 3.0, 'Three soft notes going up step by step on a small wooden xylophone played with soft felt mallets, warm and organic, a short natural ring-out, very quiet room, no other instruments, no voices.'],
+  ['xy-2', 3.0, 'Three soft notes going down, high to low, on a small wooden xylophone played with soft felt mallets, warm and organic, a short natural ring-out, very quiet room, no other instruments, no voices.'],
+  ['xy-3', 3.0, 'Three soft notes: low, then high, then the middle note, gentle and friendly, on a small wooden xylophone played with soft felt mallets, warm and organic, a short natural ring-out, very quiet room, no other instruments, no voices.'],
+  ['xy-4', 3.0, 'Three soft notes going up, the last one held a little longer, played slowly and calmly on a deeper wooden xylophone played with soft felt mallets, warm and organic, a short natural ring-out, very quiet room, no other instruments, no voices.'],
+  ['xy-5', 3.0, 'Two quick soft notes and then a third, higher note after a tiny pause, like a little hello, on a small wooden xylophone played with soft felt mallets, warm and organic, a short natural ring-out, very quiet room, no other instruments, no voices.'],
   ['chalk-wipe', 1.0, 'Wiping an old school blackboard with a felt eraser: one soft, papery swish. Close, quiet room, natural, no music.'],
 ];
 // ONLY=name1,name2 makes just those (each three times)
