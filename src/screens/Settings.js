@@ -14,7 +14,8 @@ import { DESK_FELT, DESK_BG, IS_TABLET, BandFill } from '../look';
 
 const IDEAS_FELT = require('../../assets/ideas-felt.png'); // the mossy green stitched felt (Ideas and Support), 1100 × 805
 const BAND_FELT = require('../../assets/band-settings.jpg'); // Jörg's grey stitched felt banner
-import { Bar, Burger, ConfirmBox, MusicIcon, Option, WithBar, ChoiceLabel } from '../components/Chrome';
+import { Bar, Burger, ConfirmBox, HINT_KEYS, MusicIcon, Option, WithBar, ChoiceLabel } from '../components/Chrome';
+import { saveJSON } from '../storage';
 import ReadingOptionsSection from '../components/ReadingOptionsSection';
 import GrownupCodeCard from '../components/GrownupCodeCard';
 import { LANGS, useT } from '../i18n';
@@ -185,7 +186,7 @@ export default function Settings({ storeAdmin, u, openMenu, lang, setLang, bookL
                 {controls.create ? <Text style={styles.small}>{t('Put the words on a picture, and choose their look, size and place. Off: the book maker stays simple, with the words on their own page.')}</Text> : null}
                 <Toggle label={t('Show Ideas and Help')} value={controls.help} onChange={(v) => set({ help: v })} />
                 {/* the speech bubbles that pop up by themselves with hints and choices (on unless a grown-up turns them off: Jörg, 1 Nov 2026) */}
-                <Toggle label={t('Hint and tip bubbles')} value={controls.hints !== false} onChange={(v) => set({ hints: v })} />
+                <Toggle label={t('Hint and tip bubbles')} value={controls.hints !== false} onChange={(v) => { set({ hints: v }); if (v) HINT_KEYS.forEach((k) => { try { saveJSON(k, {}); } catch (e) {} }); /* back on: every bubble shows again, the dismissed ones too */ }} />
                 <Toggle label={t('Recording own voice')} value={controls.recording} onChange={(v) => set({ recording: v })} />
                 <Toggle label={t('Read in family voices when there are some')} value={controls.familyVoices !== false} onChange={(v) => set({ familyVoices: v })} />
                 <Toggle label={t('Sharing and printing')} value={controls.sharing} onChange={(v) => set({ sharing: v })} />

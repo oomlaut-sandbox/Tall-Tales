@@ -704,6 +704,8 @@ const tellBubble = () => bubbleSubs.forEach((f) => f(bubbleNow));
 let hintsOn = true;
 export const setHintsOn = (v) => { hintsOn = v !== false; };
 export const hintsAllowed = () => hintsOn;
+// every 'Don't show this message again' that was ticked (turning the bubbles back on brings them all back: Jörg, 1 Nov 2026)
+export const HINT_KEYS = ['saveTip', 'drawHint', 'drawTip', 'tourAsk', 'quickBook', 'gardenTip', 'listenTipOff'];
 function HintGone({ onDismiss }) {
   useEffect(() => { onDismiss && onDismiss(false); }, []);
   return null;
