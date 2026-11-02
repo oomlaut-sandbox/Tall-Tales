@@ -10,7 +10,20 @@ import { checkGrownupCode, setGrownupCode, useGrownupCode } from '../grownupCode
 
 const GROWNUP = require('../../assets/icon-grownup.png');
 
-export default function ParentGate({ visible, reason, onPass, onCancel }) {
+// Everyday gates (opening Settings, profiles, photos, deleting, unlocking the nightlight) can be switched off in Settings.
+// Buying, sharing, printing and anything that leaves the app always ask: Apple's Kids category requires it (Jörg, 1 Nov 2026).
+let everydayOn = true;
+export const setEverydayGates = (v) => { everydayOn = v !== false; };
+export const everydayGates = () => everydayOn;
+export default function ParentGate(props) {
+  if (props.everyday && !everydayOn) return <GateSkipped {...props} />;
+  return <AskGrownup {...props} />;
+}
+function GateSkipped({ visible, onPass }) {
+  useEffect(() => { if (visible) onPass && onPass(); }, [visible]);
+  return null;
+}
+function AskGrownup({ visible, reason, onPass, onCancel }) {
   const t = useT();
   const { lang, setLang } = useContext(LangContext);
   const words = NUMBER_WORDS[useLang()] || NUMBER_WORDS.en;

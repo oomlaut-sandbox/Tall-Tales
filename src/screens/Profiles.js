@@ -454,7 +454,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
       {/* ending classroom mode: asked first, saying that nothing is lost (Jörg, 31 Oct 2026) */}
       {endAsk ? <ConfirmBox modal danger={false} title={t('End classroom mode?')} message={t('Your class folders and every student’s profile, notebook and books are kept. Turn classroom mode on again in Settings to see them.')} confirm={t('End classroom mode')} cancel={t('Cancel')}
         onConfirm={() => { setEndAsk(false); endClassroom(); setOpenCls(null); }} onCancel={() => setEndAsk(false)} /> : null}
-      <ParentGate visible={!!gate} reason={t('Changing profiles is for grown-ups.')}
+      <ParentGate everyday visible={!!gate} reason={t('Changing profiles is for grown-ups.')}
         onPass={() => { const g = gate; setGate(null); if (g === 'add') openForm(null); else if (g === 'select') { setEditing(false); setSelecting(true); } else if (g === 'class') setClassForm({ name: '' }); else if (g === 'endclass') setEndAsk(true); else setEditing(true); }} onCancel={() => setGate(null)} />
     </WithBar>
   );

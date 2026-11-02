@@ -564,7 +564,7 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
           onTime={(v) => { if (v !== alarmTime) firedOn.current = null; onAlarm({ alarmTime: v }); }}
           onSound={(v) => onAlarm({ alarmSound: v })} onOn={(v) => onAlarm({ alarmOn: v })} onClose={onAlarmClose} />
       </View>
-      <ParentGate visible={gate} reason={t('Unlock the screen')} onPass={() => { setGate(false); if (onUnlock) onUnlock(); }} onCancel={() => setGate(false)} />
+      <ParentGate everyday visible={gate} reason={t('Unlock the screen')} onPass={() => { setGate(false); if (onUnlock) onUnlock(); }} onCancel={() => setGate(false)} />
     </>
   );
 }

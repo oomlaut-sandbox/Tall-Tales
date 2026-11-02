@@ -167,8 +167,14 @@ export default function Settings({ storeAdmin, u, openMenu, lang, setLang, bookL
               </View>
               {/* the optional grown-up passcode, instead of the times-table question (Jörg, 30 Oct 2026) */}
               <GrownupCodeCard styles={styles} />
+              {/* the grown-up question for everyday things can be switched off; buying, sharing, printing and links out
+                  always ask it, as Apple's Kids category requires (Jörg, 1 Nov 2026) */}
               <View style={styles.card}>
-                <Text style={styles.p}>{t('Choose exactly what your child can see and do. Settings always asks the grown-up question first.')}</Text>
+                <Toggle label={t('Grown-up question for everyday things')} value={controls.everydayGates !== false} onChange={(v) => set({ everydayGates: v })} />
+                <Text style={styles.small}>{t('Opening Settings and profiles, taking photos, deleting books and unlocking the nightlight. Buying, sharing, printing and links out of the app always ask.')}</Text>
+              </View>
+              <View style={styles.card}>
+                <Text style={styles.p}>{controls.everydayGates === false ? t('Choose exactly what your child can see and do.') : t('Choose exactly what your child can see and do. Settings always asks the grown-up question first.')}</Text>
                 {STORE_ON ? <Toggle label={t('Show the Book Store')} value={controls.store} onChange={(v) => set({ store: v })} /> : null}
                 <Toggle label={t('Show My Notes')} value={controls.notebook} onChange={(v) => set({ notebook: v })} />
                 <Toggle label={t('Show Let’s make a book')} value={controls.create} onChange={(v) => set({ create: v })} />

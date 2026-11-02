@@ -1695,7 +1695,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
       {!menuOpen /* the menu is always on top */ && !aboutOpen && !editing && !pageDone && !titleBox && !pagesOpen && !photoEdit && !drawFor && !imgAsk && !picAsk && pageAsk == null && !coverTool && !recordAsk && !guide && !kbUp && !gateFor && !camGate ? (
         <NextRing onPress={coverOpen ? finishCover : next} label={coverOpen ? tr('Next') : tr('Next page')} style={wide ? { position: 'absolute', zIndex: 200, top: Math.max(6, (winH - BL.bookH) / 4 - 10), right: BL.rightW + Math.max(2, (winW - BL.leftW - BL.rightW - BL.bookW) / 4 - 10) } : { position: 'absolute', zIndex: 200, top: insets.top + 10, right: 12 }} />
       ) : null}
-      <ParentGate visible={!!camGate} reason="Taking a photo opens the camera." onPass={() => { const t = camGate; setCamGate(null); setTimeout(() => placeImage(t, 'camera'), 250); }} onCancel={() => setCamGate(null)} />
+      <ParentGate everyday visible={!!camGate} reason="Taking a photo opens the camera." onPass={() => { const t = camGate; setCamGate(null); setTimeout(() => placeImage(t, 'camera'), 250); }} onCancel={() => setCamGate(null)} />
       <StoryGuide visible={guide} onClose={closeGuide} onIdeas={onIdeas ? () => { closeGuide(); onIdeas(); } : null} area={wide ? { left: BL.leftW, right: BL.rightW } : { top: BL.topH, bottom: BL.barH }} />
       <ParentGate visible={!!gateFor} reason={gateFor?.mode === 'print' ? tr('Printing opens your phone’s print options.') : tr('Sharing sends this story outside the app.')} onPass={() => makePdf(gateFor)} onCancel={() => setGateFor(null)} />
     </KeyboardAvoidingView>

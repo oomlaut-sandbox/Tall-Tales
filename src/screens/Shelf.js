@@ -486,7 +486,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
           message={[mineCount ? t('Books you made, with their pictures and recordings, are deleted for good.') : '', chosen.length > mineCount ? t('Built-in books can be brought back later.') : ''].filter(Boolean).join(' ') || null}
           confirm={t('Delete')} cancel={t('Keep')} onConfirm={() => setGate('delete')} onCancel={() => setConfirm(false)} />
       ) : null}
-      <ParentGate visible={!!gate} reason={gate === 'share' ? t('Sharing sends an invitation to Coro by message or email.') : t('Deleting books from the library.')}
+      <ParentGate everyday={gate === 'delete'} visible={!!gate} reason={gate === 'share' ? t('Sharing sends an invitation to Coro by message or email.') : t('Deleting books from the library.')}
         onCancel={() => { if (gate === 'delete') setConfirm(false); setGate(null); }}
         onPass={() => {
           const g = gate; setGate(null);

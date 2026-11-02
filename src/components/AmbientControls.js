@@ -64,7 +64,7 @@ export default function AmbientControls({ prefs, setPrefs }) {
           {feat.artistNote ? <Text style={styles.small}>{feat.artistNote}</Text> : null}
           <View style={[styles.chips, { marginTop: 6 }]}>
             <Chip label={`♪ ${trackLabel(feat, t)}`} on={s.playing && s.music === feat.id} onPress={() => pick(feat.kind, feat.id)} style={styles.chipIn} />
-            {feat.artistLink ? <Chip label={t('Visit their website')} onPress={() => setGate({ reason: t('This opens a website outside Coro.'), run: () => Linking.openURL(feat.artistLink).catch(() => {}) })} style={styles.chipIn} /> : null}
+            {feat.artistLink ? <Chip label={t('Visit their website')} onPress={() => setGate({ outside: true, reason: t('This opens a website outside Coro.'), run: () => Linking.openURL(feat.artistLink).catch(() => {}) })} style={styles.chipIn} /> : null}
           </View>
         </View>
       ) : null}
@@ -99,7 +99,7 @@ export default function AmbientControls({ prefs, setPrefs }) {
       {/* the question keeps its words while it fades away (they used to vanish first and the box jumped) */}
       {/* (in its own full-screen layer: inside the page it sat in the middle of the long list and jumped about) */}
       <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} visible={!!gate} transparent animationType="fade" onRequestClose={() => setGate(null)}>
-        <ParentGate visible reason={(gate || lastGate.current || {}).reason || ''} onPass={() => { const g = gate; setGate(null); if (g) setTimeout(g.run, 600); }} onCancel={() => setGate(null)} />
+        <ParentGate everyday={!((gate || lastGate.current || {}).outside)} visible reason={(gate || lastGate.current || {}).reason || ''} onPass={() => { const g = gate; setGate(null); if (g) setTimeout(g.run, 600); }} onCancel={() => setGate(null)} />
       </Modal>
       <Text style={styles.group}>{t('Volume')}</Text>
       <Slider value={vol ?? s.volume} min={0.05} max={1} step={0.05} leftLabel={t('Quieter')} rightLabel={t('Louder')} showValue={false}

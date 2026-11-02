@@ -22,7 +22,7 @@ import Profile from './src/screens/Profile';
 import StoreManager from './src/screens/StoreManager';
 import { isStoreAdmin } from './src/storeAdmin';
 import { onUserChange } from './src/account';
-import ParentGate from './src/components/ParentGate';
+import ParentGate, { setEverydayGates } from './src/components/ParentGate';
 import Reader from './src/screens/Reader';
 import Publisher, { draftFrom } from './src/screens/Publisher';
 import Help from './src/screens/Help';
@@ -116,6 +116,7 @@ function Root() {
   // the language (the phone's own at first, then whatever is chosen in Settings or on the start page)
   const [lang, setLangState] = useState(deviceLang());
   const [bookLang, setBookLangState] = useState(null); // members: books in another language (null: same as the app)
+  const [joinGate, setJoinGate] = useState(false); // Join from Settings when Settings didn't ask (buying always asks)
   const [controls, setControlsState] = useState(DEFAULT_CONTROLS); // parental controls (Settings)
   useEffect(() => {
     loadJSON('lang', null).then((l) => l && setLangState(l));
@@ -361,6 +362,7 @@ function Root() {
   // the book maker sideways (no banner): the back button in the felt's bottom left corner, centred in the left and
   // bottom margins like the reader's, where the opening menu can't cover it (Jörg, 28 Oct 2026)
   setHintsOn(controls.hints); // the hint and tip bubbles follow Settings (Jörg, 1 Nov 2026)
+  setEverydayGates(controls.everydayGates); // the grown-up question for everyday things (Settings)
   const makerCorner = (() => {
     if (!(width > height * 1.1)) return null;
     // sideways the top right corner belongs to the menu: the back button always lives bottom left (Jörg, 28 Oct 2026)
@@ -483,7 +485,7 @@ function Root() {
         {screen === 'profiles' && <Profiles u={u} openMenu={openMenu} setControls={setControls} onPicked={(id) => { setNextScreen('library'); switchProfile(id); }} onBack={(to) => go(to === 'workspace' ? 'workspace' : 'library')} />}
         {screen === 'playlists' && <Playlists u={u} openMenu={openMenu} shelf={childShelf} onPlay={playPlaylist} onDone={() => { const last = hist.current[hist.current.length - 1]; if (last && (last.screen === 'library' || last.screen === 'workspace')) goBack(); else go('workspace'); }} /* from My Library: back to the same spot (the corkboard), like the back button (Jörg, 29 Oct 2026) */ />}
         {screen === 'settings' && <Settings u={u} storeAdmin={storeAdmin} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
-          controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => setMemberOpen(true)} onProfiles={() => go('profiles')} onPlaylists={() => go('playlists')} onReadingOptions={readingOptions} onMusic={() => go('music')} onTeacherDesk={() => go('teacherDesk')} prefs={prefs} setPrefs={setPrefs} toast={toast} />}
+          controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => (controls.everydayGates === false ? setJoinGate(true) : setMemberOpen(true))} onProfiles={() => go('profiles')} onPlaylists={() => go('playlists')} onReadingOptions={readingOptions} onMusic={() => go('music')} onTeacherDesk={() => go('teacherDesk')} prefs={prefs} setPrefs={setPrefs} toast={toast} />}
         {screen === 'teacherDesk' && <TeacherDesk u={u} openMenu={openMenu} toast={toast} stories={userStories} onList={setUserStories} openStory={(s) => { readFrom.current = 'teacherDesk'; openStory(s); }} controls={controls} setControls={setControls} fontKey={prefs.font} />}
         {screen === 'garden' && <Garden u={u} openMenu={openMenu} toast={toast} onHome={() => go('workspace')} />}
         {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} onWelcome={WELCOME_ON ? () => setWelcome(true) : null}
@@ -537,8 +539,9 @@ function Root() {
             </Animated.View>
           );
         })() : null}
-        <ParentGate visible={settingsGate} reason={t('Changing settings is for grown-ups.')} onPass={() => { setSettingsGate(false); go('settings'); }} onCancel={() => setSettingsGate(false)} />
+        <ParentGate everyday visible={settingsGate} reason={t('Changing settings is for grown-ups.')} onPass={() => { setSettingsGate(false); go('settings'); }} onCancel={() => setSettingsGate(false)} />
         <Membership visible={memberOpen} onClose={() => setMemberOpen(false)} toast={toast} />
+        <ParentGate visible={joinGate} reason={t('The membership is a paid subscription.')} onPass={() => { setJoinGate(false); setMemberOpen(true); }} onCancel={() => setJoinGate(false)} />
         <ParentGate visible={moreGate} reason={t('Making more than {n} books is part of Coro Family.', { n: FREE_BOOKS })} onPass={() => { setMoreGate(false); setMemberOpen(true); }} onCancel={() => setMoreGate(false)} />
         {incoming && incoming.kind === SHEET_KIND ? (
           // a sheet someone sent: into Things to share
@@ -588,7 +591,7 @@ function Root() {
             </Modal>
           );
         })() : null}
-        <ParentGate visible={profileGate} reason={t('Your profile is for grown-ups.')} onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
+        <ParentGate everyday visible={profileGate} reason={t('Your profile is for grown-ups.')} onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
         {splash ? <Splash onDone={() => setSplash(false)} /> : null}
         {introWho ? <Intro who={introWho} onBack={() => { setIntroWho(null); setCoverOpen(true); setStartKey((n) => n + 1); }} onDone={({ who, age, name }) => {
           // a kid's age goes into their parental controls; a grown-up's first profile is made with the name and age

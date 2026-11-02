@@ -773,7 +773,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           catch (e) { toast(t(e && e.message ? e.message : 'That didn’t work. Try again.')); }
           setOutBusy(false);
         }} />
-      <ParentGate visible={camGate} reason={t('Taking a photo opens the camera.')} onPass={() => { setCamGate(false); setTimeout(() => choosePhoto('camera'), 250); }} onCancel={() => setCamGate(false)} />
+      <ParentGate everyday visible={camGate} reason={t('Taking a photo opens the camera.')} onPass={() => { setCamGate(false); setTimeout(() => choosePhoto('camera'), 250); }} onCancel={() => setCamGate(false)} />
 
       {writing && page ? (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, { zIndex: 50 }]}>

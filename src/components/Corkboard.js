@@ -230,7 +230,7 @@ export default function Corkboard({ width, toast, onPlaylists }) {
           </Pressable>
         </Modal>
       ) : null}
-      <ParentGate visible={camGate} reason={t('Taking a photo opens the camera.')} onCancel={() => setCamGate(false)} onPass={() => { setCamGate(false); setTimeout(() => getPhoto('camera'), 250); }} />
+      <ParentGate everyday visible={camGate} reason={t('Taking a photo opens the camera.')} onCancel={() => setCamGate(false)} onPass={() => { setCamGate(false); setTimeout(() => getPhoto('camera'), 250); }} />
     </View>
   );
 }
