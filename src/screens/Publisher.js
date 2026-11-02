@@ -332,7 +332,7 @@ function UploadImages({ tr, winW, insets, onSkip, onGo }) {
     <ScrollView contentContainerStyle={{ alignItems: 'center', paddingTop: insets.top + 56, paddingBottom: 40, paddingHorizontal: 20 }}>
       <View style={{ width: boxW, backgroundColor: colors.glass, borderRadius: 24, paddingHorizontal: 24, paddingTop: 28, paddingBottom: 26 }}>
         <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 22, lineHeight: 28 }}>{tr('Upload Images')}</Text>
-        <Text style={{ color: colors.white, fontFamily: 'EBGaramond_500Medium', fontSize: 20, lineHeight: 27, marginTop: 8 }}>{tr('Choose up to {n} pictures from your photos. Coro puts them into a book, and you just add the words.', { n: QUICK_MAX })}</Text>
+        <Text style={{ color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, marginTop: 8 }}>{tr('Choose up to {n} pictures from your photos. Coro puts them into a book, and you just add the words.', { n: QUICK_MAX })}</Text>
         <Text style={{ color: 'rgba(255,255,255,0.85)', fontFamily: fonts.uiBold, fontSize: 15, marginTop: 22 }}>{tr('How should the pages go?')}</Text>
         <View accessibilityRole="radiogroup" style={{ flexDirection: 'row', gap: 12, marginTop: 12, justifyContent: 'center' }}>
           <Tile v="alt" label={tr('Picture, then words')} rec={tr('(Recommended)')} />
