@@ -3,7 +3,7 @@
 // The file: JSON { kind: 'oomlaut-sheet', v: 1, from, page: { kind, text, strokes, strokes2 }, photo?: base64 jpg }
 import { Share } from 'react-native';
 import { File, Paths } from 'expo-file-system';
-import { APP_LINK } from './invite';
+import { APP_LINK, OPEN_HELP } from './invite';
 import { keepFile, liveUri } from './storage';
 
 export const SHEET_KIND = 'oomlaut-sheet';
@@ -41,7 +41,7 @@ export async function shareSheet(page, from, message) {
   const file = new File(Paths.cache, `A sheet from ${safe(from)}.oomlaut`);
   try { if (file.exists) file.delete(); } catch (e) {}
   file.write(JSON.stringify(data));
-  await Share.share({ message: `${message}\n\n${APP_LINK}`, url: file.uri }).catch(() => {});
+  await Share.share({ message: `${message}\n\n${APP_LINK}\n${OPEN_HELP}`, url: file.uri }).catch(() => {});
 }
 
 // a received sheet's photo, written out as a file (for Things to share to keep)

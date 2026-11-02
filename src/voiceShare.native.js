@@ -7,7 +7,7 @@
 import { Share } from 'react-native';
 import { File, Paths } from 'expo-file-system';
 import { addReader, getReaders, listRecordings, saveRecording, setBookVoice, setReaderPhoto, setTrim, MAX_READERS } from './recordings';
-import { inviteMessage } from './invite';
+import { OPEN_HELP, inviteMessage } from './invite';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { addReceivedStory, savedStory } from './userStories';
 import { keepFile } from './storage';
@@ -81,7 +81,7 @@ export async function shareBookWithVoices(story) {
   const file = new File(Paths.cache, `${safeName(story.title)}${names ? ` – read by ${safeName(names)}` : ''}.oomlaut`);
   try { if (file.exists) file.delete(); } catch (e) {}
   file.write(JSON.stringify({ kind: KIND, v: 2, storyId: story.id, title: story.title, readers: people, pages, ...(book ? { book } : null) }));
-  const message = `${inviteMessage(story.title)}\n\n${names ? `Tap the attached file and open it in Coro to hear it in ${names}’s voice.` : 'Tap the attached file and open it in Coro to read the book.'}`;
+  const message = `${inviteMessage(story.title)}\n\n${names ? `The attached file has the book, read in ${names}’s voice.` : 'The attached file has the book.'}\n${OPEN_HELP}`;
   await Share.share({ message, url: file.uri }).catch(() => {});
   return true;
 }
