@@ -14,7 +14,9 @@ import { keepFile } from './storage';
 
 const KIND = 'oomlaut-voices';
 
-const safeName = (s) => String(s || '').replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 60) || 'Book';
+// the file's name in plain letters only (ö → o, dashes and curly quotes → plain): some mail apps (Gmail) refuse an
+// attachment whose name has other characters (Jörg, 2 Nov 2026)
+const safeName = (s) => String(s || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[ßẞ]/g, 'ss').replace(/[\u2010-\u2015]/g, '-').replace(/[\u2018\u2019]/g, "'").replace(/[^A-Za-z0-9 ._'()-]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 60) || 'Book';
 
 // base64 → bytes (for writing the sounds and photos back out as files)
 const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -78,7 +80,7 @@ export async function shareBookWithVoices(story) {
   }
   const names = people.map((p) => p.name).join(', ');
   const book = own ? await packBook(own) : null;
-  const file = new File(Paths.cache, `${safeName(story.title)}${names ? ` – read by ${safeName(names)}` : ''}.oomlaut`);
+  const file = new File(Paths.cache, `${safeName(story.title)}${names ? ` - read by ${safeName(names)}` : ''}.oomlaut`);
   try { if (file.exists) file.delete(); } catch (e) {}
   file.write(JSON.stringify({ kind: KIND, v: 2, storyId: story.id, title: story.title, readers: people, pages, ...(book ? { book } : null) }));
   const message = `${inviteMessage(story.title)}\n\n${names ? `The attached file has the book, read in ${names}’s voice.` : 'The attached file has the book.'}\n${OPEN_HELP}`;

@@ -7,7 +7,8 @@ import { APP_LINK, OPEN_HELP } from './invite';
 import { keepFile, liveUri } from './storage';
 
 export const SHEET_KIND = 'oomlaut-sheet';
-const safe = (s) => String(s || '').replace(/[\\/:*?"<>|]+/g, ' ').trim().slice(0, 40) || 'Coro';
+// plain letters only in the file's name (Gmail refuses some others: 2 Nov 2026)
+const safe = (s) => String(s || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[ßẞ]/g, 'ss').replace(/[^A-Za-z0-9 ._'()-]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 40) || 'Coro';
 
 const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 export function fromBase64(s) {
