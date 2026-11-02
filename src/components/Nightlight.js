@@ -524,7 +524,7 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
               </View>
             ) : null}
             <View style={styles.dayBand}>
-              {wide ? <Text style={[styles.now, { fontSize: 26 }]}>{fmtTime(hm)}</Text> : null}
+              {wide ? <Text style={[styles.now, { fontSize: 36 }]}>{fmtTime(hm)}</Text> : null}
               {info}
             </View>
           </View>
@@ -576,7 +576,8 @@ const styles = StyleSheet.create({
   title: { color: 'rgba(255,255,255,0.82)', fontFamily: fonts.uiMedium, fontSize: 17, letterSpacing: 0.3, textAlign: 'center', marginTop: 6, maxWidth: 280 },
   countdown: { color: 'rgba(244,226,207,0.7)', fontFamily: fonts.uiMedium, fontSize: 22, letterSpacing: 2, marginTop: 10, fontVariant: ['tabular-nums'] },
   // the time above the sun: thin, quiet, large
-  now: { color: 'rgba(244,226,207,0.78)', fontFamily: fonts.uiMedium, fontSize: 30, letterSpacing: 1.5, textAlign: 'center' },
+  // the time: a thin Helvetica, larger (Jörg, 2 Nov 2026)
+  now: { color: 'rgba(244,226,207,0.82)', ...Platform.select({ ios: { fontFamily: 'HelveticaNeue-Thin' }, android: { fontFamily: 'sans-serif-thin' }, default: { fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif', fontWeight: '200' } }), fontSize: 44, letterSpacing: 1, textAlign: 'center' },
   small: { color: 'rgba(255,255,255,0.45)', fontFamily: fonts.ui, fontSize: 12, letterSpacing: 0.8, textTransform: 'uppercase', textAlign: 'center' },
   note: { color: 'rgba(255,255,255,0.45)', fontFamily: fonts.ui, fontSize: 12.5, textAlign: 'center', lineHeight: 17 },
   alarm: { color: 'rgba(244,226,207,0.8)', fontFamily: fonts.uiMedium, fontSize: 15, letterSpacing: 0.5 },

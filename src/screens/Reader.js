@@ -1083,8 +1083,7 @@ export default function Reader({ menuOpen = false, coverShut = false, onOpenCove
           scissors (or above Back in books that can't be edited) */}
       {controls.sharing && !nightOn ? (
         <Pressable onPress={withTap(() => setShareGate(true))} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Share book')}
-          style={wide ? { position: 'absolute', zIndex: 6, left: bulbL - 1, bottom: backBottom + barGeo(u).step * (onEdit ? 1 : 0) - 1 } /* (Back moved to the top left: 1 Nov 2026) */
-            : { position: 'absolute', zIndex: 6, right: Math.max(7, bulbL - 3), bottom: Math.max(4, ((winH - topH - barH - BL.bookH) / 2 - 22) / 2) } /* halfway between the page and the bar */}>
+          style={{ position: 'absolute', zIndex: 6, left: bulbL - 1, top: 82 } /* top left, under the bulb (Jörg, 2 Nov 2026) */}>
           <Image source={ENVELOPE} style={{ width: 22, height: 22, tintColor: '#ffffff' }} resizeMode="contain" />
         </Pressable>
       ) : null}
@@ -1098,7 +1097,7 @@ export default function Reader({ menuOpen = false, coverShut = false, onOpenCove
       {!listen ? (
         <Pressable onPress={withTap(() => setPrefs((p) => ({ ...p, amber: !p.amber })))} hitSlop={14} accessibilityRole="switch" accessibilityState={{ checked: !!prefs.amber }}
           accessibilityLabel={tr('Amber light')} style={[styles.bulb, { left: bulbL, top: 44 } /* under Back, top left (Jörg, 1 Nov 2026) */]}>
-          <BulbIcon size={20} on={!!prefs.amber} />
+          <BulbIcon size={20} on={!!prefs.amber} color="#ffffff" weight={1.7} /* solid white (Jörg, 2 Nov 2026) */ />
         </Pressable>
       ) : null}
       <View style={[styles.bookShadow, { width: BL.bookW, height: BL.bookH }]}>
