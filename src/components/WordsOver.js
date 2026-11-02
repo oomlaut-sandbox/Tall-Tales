@@ -60,6 +60,7 @@ export const wordsOverSize = (side, size = 1, fontScale = 1) => Math.round(Math.
 // Places its child (the words, as Text) over a picture of boxW × boxH, centred on `at`, at most 84% of the width.
 export default function WordsOver({ boxW, boxH, at = DEFAULT_AT, look = 'light', children, style, handlers }) {
   const [h0, setH] = useState(0);
+  const [w0, setW] = useState(0); // the words' own width: they can go right up to every edge (Jörg, 1 Nov 2026)
   // big words (a large text size, or iPhone's larger text) never run off the picture: they shrink just enough to fit
   const fit = h0 > boxH * 0.92 ? (boxH * 0.92) / h0 : 1;
   const h = h0 * fit;
@@ -67,10 +68,11 @@ export default function WordsOver({ boxW, boxH, at = DEFAULT_AT, look = 'light',
   const maxW = boxW * 0.84;
   const pad = L.panel ? Math.round(boxW * 0.035) : 0;
   const y = Math.min(boxH - h / 2 - 6, Math.max(h / 2 + 6, (at.y ?? DEFAULT_AT.y) * boxH));
-  const x = Math.min(boxW - maxW / 2, Math.max(maxW / 2, (at.x ?? DEFAULT_AT.x) * boxW));
+  const w = (w0 || maxW) * fit;
+  const x = Math.min(boxW - w / 2 - 6, Math.max(w / 2 + 6, (at.x ?? DEFAULT_AT.x) * boxW));
   return (
     <View pointerEvents="box-none" style={[{ position: 'absolute', left: x - maxW / 2, width: maxW, top: y - h0 / 2 /* (scaled about its middle) */, alignItems: 'center', opacity: h ? 1 : 0 }, style]}>
-      <View {...(handlers || {})} onLayout={(e) => setH(e.nativeEvent.layout.height)}
+      <View {...(handlers || {})} onLayout={(e) => { setH(e.nativeEvent.layout.height); setW(e.nativeEvent.layout.width); }}
         style={{ transform: fit < 1 ? [{ scale: fit }] : undefined, backgroundColor: L.panel || 'transparent', borderRadius: Math.round(boxW * 0.03), paddingHorizontal: pad * 1.4, paddingVertical: pad }}>
         {children}
       </View>
