@@ -1620,7 +1620,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
         </KeyboardAvoidingView>
       ) : null}
       {picAsk ? (
-        <ConfirmBox title={tr('Remove this picture?')} message={tr('The picture or drawing on this page will be gone. This can’t be undone.')} confirm={tr('Remove')} cancel={tr('Keep')}
+        <ConfirmBox title={tr('Delete this picture?')} message={tr('The picture or drawing on this page will be gone. This can’t be undone.')} confirm={tr('Delete')} cancel={tr('Keep')}
           onConfirm={() => { const k = picAsk; setPicAsk(null); if (k === 2) removeImage2(); else removeImage(); }} onCancel={() => setPicAsk(null)} />
       ) : null}
       {pageAsk != null ? (
