@@ -13,7 +13,6 @@ import { useReduceMotion } from '../a11y';
 import { PagePhone } from '../components/FilmPlayer';
 import AgeWheel from '../components/AgeWheel';
 
-const AGES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 // the pages of each journey
 const PAGES = {
@@ -43,14 +42,6 @@ function Box({ title, text, icon }) {
         <Text style={styles.boxText}>{text}</Text>
       </View>
     </View>
-  );
-}
-
-function Chip({ label, on, onPress }) {
-  return (
-    <Pressable onPress={onPress} accessibilityRole="radio" accessibilityState={{ selected: on }} style={[styles.chip, on && styles.chipOn]}>
-      <Text style={[styles.chipText, on && { color: colors.white }]}>{label}</Text>
-    </Pressable>
   );
 }
 
@@ -92,7 +83,7 @@ export default function Intro({ who, onDone, onBack }) {
       <Text style={styles.title}>{t('How old are you?')}</Text>
       <Text style={styles.lead}>{t('So Coro can show you the right books.')}</Text>
       {/* a finger wheel, like the nightlight alarm's, in the grey box (Jörg, 2 Nov 2026) */}
-      <View style={[styles.box, { alignItems: 'center', paddingVertical: 18 }]}>
+      <View style={[styles.box, styles.wheelBox]}>
         <AgeWheel value={age} onChange={setAge} />
       </View>
     </>
@@ -136,12 +127,13 @@ export default function Intro({ who, onDone, onBack }) {
         <Text style={styles.boxTitle}>{t('Your child’s name')}</Text>
         <LineInput value={name} onChangeText={setName} placeholder={t('Name')} placeholderTextColor="#8a8a8a" maxLength={20} autoCapitalize="words" autoCorrect={false}
           allowFontScaling={false} style={styles.input} accessibilityLabel={t('Name')} />
-        <Text style={[styles.boxTitle, { marginTop: 4 }]}>{t('Age')}</Text>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
-          {AGES.map((a) => <Chip key={a} label={String(a)} on={age === a} onPress={() => setAge(a)} />)}
-        </View>
-        <Text style={styles.small}>{t('Books rated for older children are hidden. You can add more children later in Settings.')}</Text>
       </View>
+      {/* the age: the same finger wheel as the kids' page, in a square box of its own (Jörg, 2 Nov 2026) */}
+      <View style={[styles.box, styles.wheelBox, { marginTop: 12 }]}>
+        <Text style={[styles.boxTitle, { position: 'absolute', left: 20, top: 16 }]}>{t('Age')}</Text>
+        <AgeWheel value={age} onChange={setAge} />
+      </View>
+      <Text style={[styles.small, { color: 'rgba(255,255,255,0.75)', marginTop: 10 }]}>{t('Books rated for older children are hidden. You can add more children later in Settings.')}</Text>
     </>
   );
 
@@ -178,6 +170,7 @@ const styles = StyleSheet.create({
   lead: { fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, color: '#d8d8d8', marginBottom: 12 },
   // the light grey boxes, with dark words
   box: { backgroundColor: '#d6d6d6', borderRadius: 18, paddingHorizontal: 20, paddingVertical: 18, gap: 6 },
+  wheelBox: { aspectRatio: 1, width: '100%', maxWidth: 420, alignSelf: 'center', alignItems: 'center', justifyContent: 'center', paddingVertical: 0 }, // a square, the wheel in its middle
   boxTitle: { fontFamily: fonts.uiBold, fontSize: 18, color: '#222' },
   boxText: { fontFamily: fonts.ui, fontSize: 16, lineHeight: 22, color: '#333' },
   small: { fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, color: '#555' },
