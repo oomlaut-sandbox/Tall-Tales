@@ -489,18 +489,19 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
   // in a short speech bubble, so nothing is ever lost (Jörg, 28 Oct 2026)
   const sayStep = () => setTimeout(async () => {
     clearTimeout(timer.current);
-    try { onChange(await save()); setSaved(true); toast(tr('Saved'), 1300); } catch (e) {}
+    try { onChange(await save()); flashSaved(); } catch (e) {} // (a small green 'Saved' beside the page count, not a speech bubble: Jörg, 2 Nov 2026)
   }, 150);
   // 'Saved' fades in quietly after each save, then away again
   const savedFade = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    if (!saved || first.current) return;
+  const flashSaved = () => {
+    savedFade.stopAnimation();
     Animated.sequence([
       Animated.timing(savedFade, { toValue: 1, duration: 300, useNativeDriver: true }),
       Animated.delay(1200),
       Animated.timing(savedFade, { toValue: 0, duration: 700, useNativeDriver: true }),
     ]).start();
-  }, [saved]);
+  };
+  useEffect(() => { if (saved && !first.current) flashSaved(); }, [saved]);
 
   const update = (patch) => setDraft((d) => ({ ...d, pages: d.pages.map((p, k) => (k === i ? { ...p, ...patch } : p)) }));
   // Words on both pictures (Jörg, 31 Oct 2026): the words editor writes either the page's words (on the top picture)
@@ -1037,9 +1038,14 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
         ) : null}
         <DogEar u={u} under={colors.earUnder} onPress={next} label={tr('Next page')} />
         {/* the page count in a small grey box, top left of the picture page ('Saved' takes its place for a moment after each change) */}
-        <View pointerEvents="none" style={[styles.countBox, { top: 12, left: 12 }]}>
-          <Animated.Text numberOfLines={1} style={[styles.countText, { opacity: savedFade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>{tr('Page {a} of {b}', { a: i + 1, b: draft.pages.length })}</Animated.Text>
-          <Animated.Text numberOfLines={1} style={[styles.countText, { position: 'absolute', opacity: savedFade }]}>{tr('Saved')}</Animated.Text>
+        {/* the page count, and a small green 'Saved' to its right for a moment after each save (Jörg, 2 Nov 2026) */}
+        <View pointerEvents="none" style={{ position: 'absolute', zIndex: 6, top: 12, left: 12, flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <View style={[styles.countBox, { position: 'relative' }]}>
+            <Text numberOfLines={1} style={styles.countText}>{tr('Page {a} of {b}', { a: i + 1, b: draft.pages.length })}</Text>
+          </View>
+          <Animated.View style={[styles.countBox, { position: 'relative', backgroundColor: colors.green, opacity: savedFade }]}>
+            <Text numberOfLines={1} style={styles.countText}>{tr('Saved')}</Text>
+          </Animated.View>
         </View>
         <Pressable onPress={() => setGuide(true)} style={[styles.help, { top: 10, right: 10 }]} hitSlop={8} accessibilityLabel={tr('How to make a story')}>
           <Text style={styles.helpText}>?</Text>
