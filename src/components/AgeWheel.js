@@ -14,7 +14,7 @@ const STEP = 360 / N;
 const indexOf = (v) => Math.max(0, STOPS.indexOf(v == null ? null : v));
 
 const BASE = '#d6d6d6'; // the grey box it sits in
-export default function AgeWheel({ value, onChange, size = 190 }) {
+export default function AgeWheel({ value, onChange, size = 190, onTurning }) {
   const t = useT();
   const ref = useRef(null);
   const center = useRef({ x: 0, y: 0 });
@@ -22,6 +22,7 @@ export default function AgeWheel({ value, onChange, size = 190 }) {
   const last = useRef(null);
   const idxRef = useRef(indexOf(value)); idxRef.current = indexOf(value);
   const cb = useRef(onChange); cb.current = onChange;
+  const turning = useRef(onTurning); turning.current = onTurning; // the page holds still while the dial turns
   const angleAt = (x, y) => (Math.atan2(x - center.current.x, -(y - center.current.y)) * 180) / Math.PI;
   const pan = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => true,
@@ -29,7 +30,10 @@ export default function AgeWheel({ value, onChange, size = 190 }) {
     onStartShouldSetPanResponderCapture: () => true, // (the page scrolls: a finger on the dial turns the dial)
     onMoveShouldSetPanResponderCapture: () => true,
     onPanResponderTerminationRequest: () => false,
+    onPanResponderRelease: () => { turning.current && turning.current(false); },
+    onPanResponderTerminate: () => { turning.current && turning.current(false); },
     onPanResponderGrant: (e) => {
+      turning.current && turning.current(true);
       const { pageX, pageY } = e.nativeEvent;
       acc.current = idxRef.current * STEP;
       last.current = null;

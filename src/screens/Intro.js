@@ -54,6 +54,7 @@ export default function Intro({ who, onDone, onBack }) {
   const pages = PAGES[who] || PAGES.kid;
   const [i, setI] = useState(0);
   const [age, setAge] = useState(null);
+  const [turning, setTurning] = useState(false); // a finger on the age wheel
   const [name, setName] = useState('');
   // each page slides in from the right, like turning a page
   const slide = useRef(new Animated.Value(0)).current;
@@ -84,7 +85,7 @@ export default function Intro({ who, onDone, onBack }) {
       <Text style={styles.lead}>{t('So Coro can show you the right books.')}</Text>
       {/* a finger wheel, like the nightlight alarm's, in the grey box (Jörg, 2 Nov 2026) */}
       <View style={[styles.box, styles.wheelBox]}>
-        <AgeWheel value={age} onChange={setAge} />
+        <AgeWheel value={age} onChange={setAge} onTurning={setTurning} />
       </View>
     </>
   );
@@ -131,7 +132,7 @@ export default function Intro({ who, onDone, onBack }) {
       {/* the age: the same finger wheel as the kids' page, in a square box of its own (Jörg, 2 Nov 2026) */}
       <View style={[styles.box, styles.wheelBox, { marginTop: 12 }]}>
         <Text style={[styles.boxTitle, { position: 'absolute', left: 20, top: 16 }]}>{t('Age')}</Text>
-        <AgeWheel value={age} onChange={setAge} />
+        <AgeWheel value={age} onChange={setAge} onTurning={setTurning} />
       </View>
       <Text style={[styles.small, { color: 'rgba(255,255,255,0.75)', marginTop: 10 }]}>{t('Books rated for older children are hidden. You can add more children later in Settings.')}</Text>
     </>
@@ -140,7 +141,7 @@ export default function Intro({ who, onDone, onBack }) {
   return (
     <View style={[StyleSheet.absoluteFill, styles.screen]}>
       <DeskFelt spot="intro" />
-      <ScrollView contentContainerStyle={[styles.body, { paddingTop: insets.top + 48, paddingBottom: 30 }]} keyboardShouldPersistTaps="handled">
+      <ScrollView scrollEnabled={page !== 'kidAge' && !turning} /* the age page stays put; nothing scrolls while the wheel turns (Jörg, 2 Nov 2026) */ bounces={page !== 'kidAge'} contentContainerStyle={[styles.body, { paddingTop: insets.top + 48, paddingBottom: 30 }]} keyboardShouldPersistTaps="handled">
         <Animated.View style={[styles.col, { opacity: slide.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }), transform: [{ translateX: slide.interpolate({ inputRange: [0, 1], outputRange: [0, still ? 0 : 60] }) }] }]}>
           {body}
         </Animated.View>
