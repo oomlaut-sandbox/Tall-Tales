@@ -107,9 +107,9 @@ const ALL_HELP = [
     'Drag the title anywhere on the cover. Change its size, colour and font with the buttons under the cover.',
   ] },
   // Quick Book and the Advanced page editor (Jörg, 31 Oct 2026)
-  { section: 'Making books', title: 'Quick Book', text: [
-    'When you start a new book, Quick Book can make it from up to 64 pictures from your photos. First choose how the pages go: a picture, then words, or a picture on every page.',
-    'Coro brings the pictures in, in the order you picked them. Then add a cover and your words, and tweak any picture with Edit photo.',
+  { section: 'Making books', title: 'Upload Images', text: [
+    'When you start a new book, right after the cover, Upload Images can make it from up to 64 pictures from your photos. First choose how the pages go: a picture, then words, or a picture on every page.',
+    'Coro brings the pictures in, in the order you picked them. Then add your words, and tweak any picture with Edit photo.',
   ] },
   { section: 'Making books', title: 'Advanced page editor', text: [
     'The Advanced page editor is for more experienced artists and creators. It puts the words over a picture, and lets you choose where they go, how they look and how big they are.',

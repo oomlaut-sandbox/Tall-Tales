@@ -95,7 +95,7 @@ export const IDEA_SECTIONS = [
     { title: 'Our bucket list', text: 'The places to see and the things to try, one wish on each page.', how: 'Add the photo when a wish comes true, and watch the book fill up over the years.' },
     { title: 'A memory book for someone you love', text: 'For a parent or grandparent whose memory is fading: familiar faces, places and names.', how: 'Big photos and few words. Record each page in a voice they know, so they can listen any time.' },
     { title: 'A book of poetry', text: 'Your own poems, or the ones you love, each with a picture that fits it: a photo, a drawing or a painting.', how: 'One poem a page, with its line breaks kept. Record yourself reading them aloud.' },
-    { title: 'A wedding or party book', text: 'The day itself: the guests, the speeches, the cake, the dancing.', how: 'Choose the best photos with Quick Book, then add a line for each page.' },
+    { title: 'A wedding or party book', text: 'The day itself: the guests, the speeches, the cake, the dancing.', how: 'Choose the best photos with Upload Images, then add a line for each page.' },
   ] },
 ];
 

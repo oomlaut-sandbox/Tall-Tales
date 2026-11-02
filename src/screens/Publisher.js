@@ -85,7 +85,7 @@ function AboutPage({ tr, insets, onNext, onSkip, onQuick }) {
     {onQuick ? (
       <Pressable onPress={onQuick} hitSlop={10} accessibilityRole="link" style={{ position: 'absolute', right: 24 + insets.right, bottom: 14, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(30,30,30,0.85)', borderRadius: 16, paddingHorizontal: 10 }}>
         <Image source={CHOICE_ICONS.photo} style={{ width: 18, height: 18, tintColor: '#d6d6d6' }} resizeMode="contain" accessibilityIgnoresInvertColors />
-        <Text style={[styles.aboutSkip, { textDecorationLine: 'underline' }]}>{tr('Quick Book')}</Text>
+        <Text style={[styles.aboutSkip, { textDecorationLine: 'underline' }]}>{tr('Upload Images')}</Text>
       </Pressable>
     ) : null}
     {/* (Coro lying in the corner was tried here and taken away again: Jörg, 26 Oct 2026) */}
@@ -306,54 +306,45 @@ function LookIcon({ look, ink }) {
 // the two layouts, two squares each in white line art (a picture, then words; or two pictures) on a grey square tile
 // (Jörg, 31 Oct 2026)
 const QUICK_ICONS = { alt: require('../../assets/quick-alt.png'), every: require('../../assets/quick-every.png') };
-// the white speech bubble when a new book opens: Quick Book, its two layouts, and a word about words over pictures
-function QuickBookAsk({ tr, winW, winH, onCancel, onGo }) {
-  const [layout, setLayout] = useState('alt'); // 'alt' | 'every' (chosen before the pictures; Picture, then words to start: Jörg, 31 Oct 2026)
-  const [off, setOff] = useState(false); // Don't show this message again
-  const tileW = Math.min(150, (Math.min(460, winW - 40) - 52 - 12) / 2);
+// Upload Images (2 Nov 2026; was the Quick Book bubble): a step of its own in a new book, right after the cover is
+// saved. White words in a black glass box; the two layouts as small white line drawings, the chosen one in a white
+// outline. 'No thanks' goes on to page 1.
+function UploadImages({ tr, winW, insets, onSkip, onGo }) {
+  const [layout, setLayout] = useState('alt'); // 'alt' | 'every' (Picture, then words to start)
+  const boxW = Math.min(460, winW - 40);
+  const tileW = Math.min(140, (boxW - 48 - 12) / 2);
   const Tile = ({ v, label, rec }) => {
     const on = layout === v;
     return (
       <Pressable onPress={() => setLayout(v)} accessibilityRole="radio" accessibilityState={{ selected: on }} accessibilityLabel={rec ? `${label} ${rec}` : label}
         style={{ width: tileW, alignItems: 'center', gap: 10 }}>
-        <View style={{ width: tileW, height: Math.round(tileW * 110 / 150), overflow: 'hidden', borderRadius: 14, borderWidth: 3, borderColor: on ? colors.green : 'transparent', backgroundColor: on ? '#3d3d3d' : '#4a4a4a', alignItems: 'center', justifyContent: 'center' }}>
-          <Image source={QUICK_ICONS[v]} style={{ width: Math.round(tileW * 0.7), height: Math.round(tileW * 0.35) }} resizeMode="contain" accessibilityIgnoresInvertColors />{/* (a set size: '70%' with an aspect ratio drew it huge on the iPhone, 31 Oct 2026) */}
+        <View style={{ width: tileW, height: Math.round(tileW * 0.62), borderRadius: 12, borderWidth: 1.5, borderColor: on ? colors.white : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
+          <Image source={QUICK_ICONS[v]} style={{ width: Math.round(tileW * 0.56), height: Math.round(tileW * 0.28) }} resizeMode="contain" accessibilityIgnoresInvertColors />
         </View>
         <View style={{ alignItems: 'center' }}>
-          <Text style={{ color: '#1f1f1f', fontFamily: fonts.uiBold, fontSize: 14, lineHeight: 18, textAlign: 'center' }}>{label}</Text>
-          {rec ? <Text style={{ color: colors.green, fontFamily: fonts.ui, fontSize: 12, lineHeight: 16, marginTop: 2 }}>{rec}</Text> : null}
+          <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 14, lineHeight: 18, textAlign: 'center' }}>{label}</Text>
+          {rec ? <Text style={{ color: 'rgba(255,255,255,0.65)', fontFamily: fonts.ui, fontSize: 12, lineHeight: 16, marginTop: 2 }}>{rec}</Text> : null}
         </View>
       </Pressable>
     );
   };
   return (
-    <View style={[StyleSheet.absoluteFill, { zIndex: 65, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }]}>
-      <View style={{ width: '100%', maxWidth: 460 }}>
-        <ScrollView style={{ maxHeight: winH * 0.84, backgroundColor: colors.white, borderRadius: 26 }} contentContainerStyle={{ paddingHorizontal: 26, paddingTop: 30, paddingBottom: 30 }} bounces={false}>
-          <Text style={{ color: '#1f1f1f', fontFamily: fonts.uiBold, fontSize: 22, lineHeight: 28 }}>{tr('Quick Book')}</Text>
-          <Text style={{ color: '#1f1f1f', fontFamily: 'EBGaramond_500Medium', fontSize: 20, lineHeight: 27, marginTop: 8 }}>{tr('Choose up to {n} pictures from your photos. Coro puts them into a book, and you just add the words.', { n: QUICK_MAX })}</Text>
-          <Text style={{ color: '#3a3a3a', fontFamily: fonts.uiBold, fontSize: 15, marginTop: 22 }}>{tr('How should the pages go?')}</Text>
-          <View accessibilityRole="radiogroup" style={{ flexDirection: 'row', gap: 12, marginTop: 12, justifyContent: 'center' }}>
-            <Tile v="alt" label={tr('Picture, then words')} rec={tr('(Recommended)')} />
-            <Tile v="every" label={tr('A picture on every page')} />
-          </View>
-          <Text style={{ color: '#555', fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, marginTop: 16 }}>{tr('Words over a picture need the Advanced page editor. It comes with Coro Family, and a grown-up turns it on in Settings.')}</Text>
-          <Pressable onPress={() => setOff((x) => !x)} accessibilityRole="checkbox" accessibilityState={{ checked: off }} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 22 }}>
-            <View style={{ width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: '#555', backgroundColor: off ? '#1f1f1f' : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-              {off ? <Text style={{ color: colors.white, fontSize: 14, lineHeight: 16, fontFamily: fonts.uiBold }}>✓</Text> : null}
-            </View>
-            <Text style={{ color: '#3a3a3a', fontFamily: fonts.ui, fontSize: 15, flexShrink: 1 }}>{tr('Don’t show this message again')}</Text>
-          </Pressable>
-          <View style={{ flexDirection: 'row', gap: 10, marginTop: 26, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-            <Pressable onPress={() => onCancel(off)} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: '#d6d6d6', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: '#1f1f1f', fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('No thanks')}</Text></Pressable>
-            {/* (only once a layout is chosen) */}
-            <Pressable onPress={() => layout && onGo(layout, off)} disabled={!layout} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: colors.green, opacity: layout ? 1 : 0.4, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityState={{ disabled: !layout }}><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('Choose pictures')}</Text></Pressable>
-          </View>
-        </ScrollView>
-        {/* the speech bubble's point */}
-        <View style={{ marginLeft: '14%', width: 0, height: 0, borderTopWidth: 22, borderRightWidth: 22, borderTopColor: colors.white, borderRightColor: 'transparent' }} />
+    <ScrollView contentContainerStyle={{ alignItems: 'center', paddingTop: insets.top + 56, paddingBottom: 40, paddingHorizontal: 20 }}>
+      <View style={{ width: boxW, backgroundColor: colors.glass, borderRadius: 24, paddingHorizontal: 24, paddingTop: 28, paddingBottom: 26 }}>
+        <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 22, lineHeight: 28 }}>{tr('Upload Images')}</Text>
+        <Text style={{ color: colors.white, fontFamily: 'EBGaramond_500Medium', fontSize: 20, lineHeight: 27, marginTop: 8 }}>{tr('Choose up to {n} pictures from your photos. Coro puts them into a book, and you just add the words.', { n: QUICK_MAX })}</Text>
+        <Text style={{ color: 'rgba(255,255,255,0.85)', fontFamily: fonts.uiBold, fontSize: 15, marginTop: 22 }}>{tr('How should the pages go?')}</Text>
+        <View accessibilityRole="radiogroup" style={{ flexDirection: 'row', gap: 12, marginTop: 12, justifyContent: 'center' }}>
+          <Tile v="alt" label={tr('Picture, then words')} rec={tr('(Recommended)')} />
+          <Tile v="every" label={tr('A picture on every page')} />
+        </View>
+        <Text style={{ color: 'rgba(255,255,255,0.65)', fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, marginTop: 18 }}>{tr('Words over a picture need the Advanced page editor. It comes with Coro Family, and a grown-up turns it on in Settings.')}</Text>
+        <View style={{ flexDirection: 'row', gap: 10, marginTop: 24, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+          <Pressable onPress={onSkip} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: '#3d3d3d', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('No thanks')}</Text></Pressable>
+          <Pressable onPress={() => onGo(layout)} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('Choose pictures')}</Text></Pressable>
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -591,14 +582,14 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
     } else pics.forEach((a) => pages.push({ ...blank(), uri: a.uri, w: a.w, h: a.h }));
     // the first picture goes on the cover too (its own copy), so the cover that comes next isn't empty: a tester chose
     // one picture and then couldn't tell where it had gone (Jörg, 1 Nov 2026)
+    // (the cover comes first now: the first picture goes on it only when the cover has no picture yet)
+    const bare = !(latest.current.cover && latest.current.cover.uri);
     let front = null;
-    try { front = { uri: await keepFile(pics[0].uri, `stories/${draft.id}`, `cover-${Date.now()}.jpg`), w: pics[0].w, h: pics[0].h }; } catch (e) {}
-    setDraft((d) => ({ ...d, pages: pages.slice(0, MAX_PAGES), ...(front && !d.cover ? { cover: { ...front, title: null } } : null) }));
-    if (front) setCoverAsk(true);
+    if (bare) { try { front = { uri: await keepFile(pics[0].uri, `stories/${draft.id}`, `cover-${Date.now()}.jpg`), w: pics[0].w, h: pics[0].h }; } catch (e) {} }
+    setDraft((d) => ({ ...d, pages: pages.slice(0, MAX_PAGES), ...(front ? { cover: { ...(d.cover || {}), ...front, title: d.cover ? d.cover.title || null : null } } : null) }));
     setI(0);
-    setAboutOpen(false); // (on to the cover, then 'Start writing')
     sayStep();
-    toast(tr('Your pictures are on the pages, and the first one is on the cover too. Change it if you like.'), 6000);
+    toast(front ? tr('Your pictures are on the pages, and the first one is on the cover too. Change it if you like.') : tr('Your pictures are on the pages. Now add your words.'), 6000);
   };
 
   // ---- The Cover Editor: a square like the words editor. Add a picture, then (if wanted) the title,
@@ -639,16 +630,8 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
     const tm = setTimeout(() => { loadJSON('tourAsk', {}).then((x) => { if (on && !(x && x.off) && hintsAllowed()) { tourAsked.current = true; setTourAsk(true); } }).catch(() => {}); }, 1000);
     return () => { on = false; clearTimeout(tm); setTourAsk(false); };
   }, [aboutOpen]);
-  // Quick Book: asked once a new book opens, after the 'quick peek' bubble (not for a teacher's book prompt)
-  const [quickAsk, setQuickAsk] = useState(false);
-  const quickAsked = useRef(false);
-  useEffect(() => {
-    if (!aboutOpen || tourAsk || tourPlay || quickAsked.current || draft.promptId) return undefined;
-    let on = true;
-    const tm = setTimeout(() => { loadJSON('quickBook', {}).then((x) => { if (on && !(x && x.off) && hintsAllowed()) { quickAsked.current = true; setQuickAsk(true); } }).catch(() => {}); }, 1700);
-    return () => { on = false; clearTimeout(tm); };
-  }, [aboutOpen, tourAsk, tourPlay]);
-  const closeQuick = (off) => { setQuickAsk(false); if (off) saveJSON('quickBook', { off: true }); };
+  // Upload Images: a step of its own right after the cover of a new book (Jörg, 2 Nov 2026; was the Quick Book bubble)
+  const [uploadOpen, setUploadOpen] = useState(false);
   useEffect(() => {
     if (drawTipShown.current || !startMode || !coverOpen || aboutOpen || guide) return undefined;
     let on = true; // (not if a grown-up ticked 'Don't show this again': Jörg, 30 Oct 2026)
@@ -690,7 +673,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
     setDraft((d) => (!d.title.trim() && d.cover && d.cover.title && d.cover.title.text.trim() ? { ...d, title: d.cover.title.text.trim() } : d));
     Keyboard.dismiss(); setFieldOn(false);
     setCoverOpen(false); setCoverAsk(false); setCoverTitling(false);
-    if (startMode) { setStartMode(false); setI(0); } // 'Start writing': straight to page 1
+    if (startMode) { setStartMode(false); setI(0); if (!draft.promptId && !latest.current.pages.some((p) => p.uri || p.uri2)) setUploadOpen(true); } // 'Start writing': Upload Images, then page 1
     else if (coverFromNext.current) setPageDone(true); // back to 'What's next?'
     coverFromNext.current = false;
     sayStep();
@@ -843,7 +826,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
   useBackStep(guide, () => closeGuide());
   useBackStep(tourAsk && aboutOpen, () => closeTour(false)); // the 'quick peek?' bubble: like No thanks
   useBackStep(tourPlay, () => setTourPlay(false));
-  useBackStep(quickAsk && aboutOpen, () => closeQuick(false));
+  useBackStep(uploadOpen, () => setUploadOpen(false));
   useBackStep(drawTip, () => setDrawTip(false)); // the 'Pssst' hint: like Got it!
   useBackStep(coverTip, () => setCoverTip(false));
   // A new book, a few seconds into page 1 after the cover: 'Your work automatically saves…' (with Don't show this
@@ -1358,7 +1341,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
         // (it stops at the black bar, which stays in view, like the Cover Editor: Jörg, 26 Oct 2026)
         <View style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk, overflow: 'hidden' }, wide ? { right: BL.rightW } : { bottom: BL.barH }]}>
           <DeskFelt spot="publisher-about" overlay />
-          <AboutPage tr={tr} insets={insets} onSkip={() => setAboutOpen(false)} onQuick={draft.promptId ? null : () => setQuickAsk(true)}
+          <AboutPage tr={tr} insets={insets} onSkip={() => setAboutOpen(false)} onQuick={null}
             onNext={({ about, aboutWords, title }) => { setDraft((d) => ({ ...d, about, aboutWords, title: d.title.trim() ? d.title : title })); setAboutOpen(false); }} />
         </View>
       ) : null}
@@ -1390,8 +1373,12 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
           </View>
         </View>
       ) : null}
-      {quickAsk && aboutOpen && !tourAsk && !tourPlay ? (
-        <QuickBookAsk tr={tr} winW={winW} winH={winH} onCancel={closeQuick} onGo={(layout, off) => { closeQuick(off); setTimeout(() => quickBook(layout), 300); }} />
+      {uploadOpen ? (
+        // Upload Images: after the cover of a new book, before page 1 (it stops at the black bar, like the cover)
+        <View style={[StyleSheet.absoluteFill, { zIndex: 55, backgroundColor: colors.desk, overflow: 'hidden' }, wide ? { right: BL.rightW } : { bottom: BL.barH }]}>
+          <DeskFelt spot="publisher-about" overlay />
+          <UploadImages tr={tr} winW={wide ? winW - BL.leftW - BL.rightW : winW} insets={insets} onSkip={() => setUploadOpen(false)} onGo={(layout) => { setUploadOpen(false); setTimeout(() => quickBook(layout), 300); }} />
+        </View>
       ) : null}
       {importing ? (
         // the pictures coming in, one by one
@@ -1698,7 +1685,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
       ) : null}
       {/* upright, from the cover on: Next in the top right corner, the same as the dog ear; Back moves to the top left
           (App.js) (Jörg, 1 Nov 2026). Hidden while something is open on top of the page or the cover */}
-      {!menuOpen /* the menu is always on top */ && !aboutOpen && !editing && !pageDone && !titleBox && !pagesOpen && !photoEdit && !drawFor && !imgAsk && !picAsk && pageAsk == null && !coverTool && !recordAsk && !guide && !kbUp && !gateFor && !camGate ? (
+      {!menuOpen /* the menu is always on top */ && !aboutOpen && !uploadOpen && !editing && !pageDone && !titleBox && !pagesOpen && !photoEdit && !drawFor && !imgAsk && !picAsk && pageAsk == null && !coverTool && !recordAsk && !guide && !kbUp && !gateFor && !camGate ? (
         <NextRing onPress={coverOpen ? finishCover : next} label={coverOpen ? tr('Next') : tr('Next page')} style={wide ? { position: 'absolute', zIndex: 200, top: Math.max(6, (winH - BL.bookH) / 4 - 10), right: BL.rightW + Math.max(2, (winW - BL.leftW - BL.rightW - BL.bookW) / 4 - 10) } : { position: 'absolute', zIndex: 200, top: insets.top + 10, right: 12 }} />
       ) : null}
       <ParentGate everyday visible={!!camGate} reason="Taking a photo opens the camera." onPass={() => { const t = camGate; setCamGate(null); setTimeout(() => placeImage(t, 'camera'), 250); }} onCancel={() => setCamGate(null)} />
