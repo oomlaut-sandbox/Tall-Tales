@@ -699,7 +699,20 @@ let bubbleNow = null, bubbleSeq = 0;
 const bubbleSubs = new Set();
 const tellBubble = () => bubbleSubs.forEach((f) => f(bubbleNow));
 
-export function Toast({ message, area, onDismiss, center, ms = BUBBLE_MS, button, check, icon, tone }) { // tone 'amber': a warm, dim bubble for the nightlight (Jörg, 30 Oct 2026) // icon: a small picture above the words // check: a 'don't show again' box (onDismiss gets whether it was ticked) // button: a green pill that closes it (then ms 0: it stays until then)
+// Hint and tip bubbles (the ones that pop up by themselves) can be switched off in Settings; messages that answer
+// something the person did (Saved, a problem, ...) always show (Jörg, 1 Nov 2026). App.js keeps this up to date.
+let hintsOn = true;
+export const setHintsOn = (v) => { hintsOn = v !== false; };
+export const hintsAllowed = () => hintsOn;
+function HintGone({ onDismiss }) {
+  useEffect(() => { onDismiss && onDismiss(false); }, []);
+  return null;
+}
+export function Toast(props) {
+  if (props.hint && !hintsOn) return <HintGone onDismiss={props.onDismiss} />;
+  return <ToastBubble {...props} />;
+}
+function ToastBubble({ message, area, onDismiss, center, ms = BUBBLE_MS, button, check, icon, tone }) { // tone 'amber': a warm, dim bubble for the nightlight (Jörg, 30 Oct 2026) // icon: a small picture above the words // check: a 'don't show again' box (onDismiss gets whether it was ticked) // button: a green pill that closes it (then ms 0: it stays until then)
   const dismiss = useRef(onDismiss);
   dismiss.current = onDismiss;
   const mine = useRef(null);

@@ -13,7 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { BOOK_FONTS, bookFont, colors, fonts } from '../theme';
 import WordsOver, { DEFAULT_AT, SECOND_KEYS, WORD_SIZES, secondOf, wordsLook, wordsOverOn, wordsOverSize, wordsOverText } from '../components/WordsOver';
-import { Bar, Burger, ConfirmBox, CoverIcon, DogEar, DoneSquare, DoneTick, NextRing, Panel, PageShape, PagesIcon, Toast, ChoiceLabel } from '../components/Chrome';
+import { hintsAllowed, Bar, Burger, ConfirmBox, CoverIcon, DogEar, DoneSquare, DoneTick, NextRing, Panel, PageShape, PagesIcon, Toast, ChoiceLabel } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, DESK_BG } from '../look';
@@ -635,7 +635,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
   useEffect(() => {
     if (!aboutOpen || tourAsked.current) return undefined; // (once: not again when Back returns here)
     let on = true;
-    const tm = setTimeout(() => { loadJSON('tourAsk', {}).then((x) => { if (on && !(x && x.off)) { tourAsked.current = true; setTourAsk(true); } }).catch(() => {}); }, 1000);
+    const tm = setTimeout(() => { loadJSON('tourAsk', {}).then((x) => { if (on && !(x && x.off) && hintsAllowed()) { tourAsked.current = true; setTourAsk(true); } }).catch(() => {}); }, 1000);
     return () => { on = false; clearTimeout(tm); setTourAsk(false); };
   }, [aboutOpen]);
   // Quick Book: asked once a new book opens, after the 'quick peek' bubble (not for a teacher's book prompt)
@@ -644,7 +644,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
   useEffect(() => {
     if (!aboutOpen || tourAsk || tourPlay || quickAsked.current || draft.promptId) return undefined;
     let on = true;
-    const tm = setTimeout(() => { loadJSON('quickBook', {}).then((x) => { if (on && !(x && x.off)) { quickAsked.current = true; setQuickAsk(true); } }).catch(() => {}); }, 1700);
+    const tm = setTimeout(() => { loadJSON('quickBook', {}).then((x) => { if (on && !(x && x.off) && hintsAllowed()) { quickAsked.current = true; setQuickAsk(true); } }).catch(() => {}); }, 1700);
     return () => { on = false; clearTimeout(tm); };
   }, [aboutOpen, tourAsk, tourPlay]);
   const closeQuick = (off) => { setQuickAsk(false); if (off) saveJSON('quickBook', { off: true }); };
@@ -1359,7 +1359,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
       {tourPlay ? <TourVideo tr={tr} onClose={() => setTourPlay(false)} /> : null}
       {/* the teacher's prompt, or their note on a book sent back (classroom.js) */}
       {teacherMsg && !coverOpen && !aboutOpen && !editing ? <Toast message={teacherMsg.k === 'note' ? tr('A note from your teacher: {note}', { note: teacherMsg.text }) : tr('From your teacher: {note}', { note: teacherMsg.text })} area={{ left: GAP - 6, right: GAP - 6, bottom: 150 }} ms={0} button={tr('OK')} onDismiss={() => setTeacherMsg(null)} /> : null}
-      {saveTip && !editing && !drawFor && !photoEdit && !coverOpen && !tourPlay ? <Toast message={tr('Your work saves as you go. Find your book again in My Workspace, under My Books in Progress.')} ms={0}
+      {saveTip && !editing && !drawFor && !photoEdit && !coverOpen && !tourPlay ? <Toast hint message={tr('Your work saves as you go. Find your book again in My Workspace, under My Books in Progress.')} ms={0}
         check={tr('Don’t show this message again')} button={tr('Keep going')} onDismiss={(ticked) => { setSaveTip(false); if (ticked) saveJSON('saveTip', { off: true }); }} /> : null}
       {tourAsk && aboutOpen ? (
         // 'Want a quick little tour?': a large white bubble over What's your book about? (Jörg, 27 Oct 2026)
@@ -1580,8 +1580,8 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
           {/* the hint is a speech bubble near the bottom that goes away after a while (tap it to close it sooner) */}
           {/* (no bubble before there's a title: Jörg, 26 Oct 2026) */}
           {/* a new book, on its cover: a hint about paper drawings (Jörg, 27 Oct 2026) */}
-          {drawTip && !kbUp && !imgAsk && !hardAsk ? <Toast message={tr('Pssst, here’s a hint. Taking photos of your paper drawings is a fun way to build a Coro book.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 150 }} ms={0} check={tr('Don’t show this message again')} button={tr('Got it!')} icon="camera" onDismiss={(ticked) => { setDrawTip(false); if (ticked) saveJSON('drawTip', { off: true }); }} /> : null}
-          {coverTitling && coverTip && !kbUp ? <Toast message={tr('Tap the title or the author to type. Drag them anywhere on the cover.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 74 }} onDismiss={() => setCoverTip(false)} /> : null}
+          {drawTip && !kbUp && !imgAsk && !hardAsk ? <Toast hint message={tr('Pssst, here’s a hint. Taking photos of your paper drawings is a fun way to build a Coro book.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 150 }} ms={0} check={tr('Don’t show this message again')} button={tr('Got it!')} icon="camera" onDismiss={(ticked) => { setDrawTip(false); if (ticked) saveJSON('drawTip', { off: true }); }} /> : null}
+          {coverTitling && coverTip && !kbUp ? <Toast hint message={tr('Tap the title or the author to type. Drag them anywhere on the cover.')} area={{ left: GAP - 6, right: GAP - 6, bottom: 74 }} onDismiss={() => setCoverTip(false)} /> : null}
           {/* Done: bottom right, lined up with the cover's right edge */}
           {/* a new book: 'Start writing' goes on to page 1 (nobody is stuck on the cover) */}
           {!kbUp && winW > winH ? <Pressable onPress={finishCover} hitSlop={8} accessibilityRole="button" style={[styles.donePill, { position: 'absolute', right: GAP + (wide ? 0 : insets.right), bottom: GAP + 40, marginBottom: 0 }]}>{/* as far from the bar as from the right edge */}<Text style={styles.donePillText}>{startMode ? tr('Start writing') : tr('Done')}</Text></Pressable> : null}

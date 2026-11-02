@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, sectionBox, sectionTitle, SECTION_GAP } from '../theme';
 import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG, BandFill } from '../look';
 import ReadingOptionsSection from '../components/ReadingOptionsSection';
-import { Bar, Burger, ConfirmBox, DogEar, IDLE, WithBar, slotStyle } from '../components/Chrome';
+import { Bar, Burger, ConfirmBox, DogEar, IDLE, WithBar, hintsAllowed, slotStyle } from '../components/Chrome';
 import { activeProfile, feltFor, getProfiles, onProfiles as onProfilesChange } from '../profiles';
 import { onPrompts, promptsFor } from '../classroom';
 const SHARE_ICON = require('../../assets/icon-envelope.png');
@@ -379,7 +379,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
           keep.onScroll(e); lastY.current = e.nativeEvent.contentOffset.y;
           const { contentOffset: o, layoutMeasurement: l, contentSize: c } = e.nativeEvent;
           const past = o.y + l.height - c.height;
-          if (past > 70 && !gardenAsked.current && onGarden && !selecting) { gardenAsked.current = true; toast && toast(t('Come explore the Garden'), 3500); }
+          if (past > 70 && !gardenAsked.current && onGarden && !selecting && hintsAllowed()) { gardenAsked.current = true; toast && toast(t('Come explore the Garden'), 3500); }
           else if (past < 0) gardenAsked.current = false;
           if (past > 70 && !selecting) gardenPull.current = true; // (never while picking books: Jörg, 29 Oct 2026)
         }}

@@ -50,7 +50,7 @@ import { deleteUserStory, loadUserStories } from './src/userStories';
 import TeacherDesk from './src/screens/TeacherDesk';
 import { loadJSON, loadJSONFor, saveJSON, saveJSONFor } from './src/storage';
 import { TITLE_ICONS } from './src/titleIcons';
-import { BulbIcon, LibraryIcon, PersonIcon, MENU_ICON, Option, Panel, Toast, BubbleHost, setGoHome, setGoSettings, HomeIcon, BackRing } from './src/components/Chrome';
+import { BulbIcon, LibraryIcon, PersonIcon, MENU_ICON, Option, Panel, Toast, BubbleHost, setGoHome, setGoSettings, setHintsOn, HomeIcon, BackRing } from './src/components/Chrome';
 import { setVolumeBubble } from './src/volume';
 import { DESK_FELT, DESK_IPAD_NOW, DeskFelt, Felt, IS_TABLET, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
@@ -360,6 +360,7 @@ function Root() {
   const screenInsets = useMemo(() => (sideways ? { ...insets, left: camBar } : { ...insets, top: camBar }), [insets, sideways, camBar]);
   // the book maker sideways (no banner): the back button in the felt's bottom left corner, centred in the left and
   // bottom margins like the reader's, where the opening menu can't cover it (Jörg, 28 Oct 2026)
+  setHintsOn(controls.hints); // the hint and tip bubbles follow Settings (Jörg, 1 Nov 2026)
   const makerCorner = (() => {
     if (!(width > height * 1.1)) return null;
     // sideways the top right corner belongs to the menu: the back button always lives bottom left (Jörg, 28 Oct 2026)

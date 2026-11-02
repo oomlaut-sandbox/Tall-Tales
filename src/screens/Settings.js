@@ -178,6 +178,8 @@ export default function Settings({ storeAdmin, u, openMenu, lang, setLang, bookL
                 {controls.create && !ps.member && !storeAdmin ? <Pressable onPress={onJoin} hitSlop={8} accessibilityRole="link"><Text style={styles.link}>{t('Comes with Coro Family. Join to turn it on.')}</Text></Pressable> : null}
                 {controls.create ? <Text style={styles.small}>{t('Put the words on a picture, and choose their look, size and place. Off: the book maker stays simple, with the words on their own page.')}</Text> : null}
                 <Toggle label={t('Show Ideas and Help')} value={controls.help} onChange={(v) => set({ help: v })} />
+                {/* the speech bubbles that pop up by themselves with hints and choices (on unless a grown-up turns them off: Jörg, 1 Nov 2026) */}
+                <Toggle label={t('Hint and tip bubbles')} value={controls.hints !== false} onChange={(v) => set({ hints: v })} />
                 <Toggle label={t('Recording own voice')} value={controls.recording} onChange={(v) => set({ recording: v })} />
                 <Toggle label={t('Read in family voices when there are some')} value={controls.familyVoices !== false} onChange={(v) => set({ familyVoices: v })} />
                 <Toggle label={t('Sharing and printing')} value={controls.sharing} onChange={(v) => set({ sharing: v })} />
