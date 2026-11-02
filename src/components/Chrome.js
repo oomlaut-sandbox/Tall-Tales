@@ -7,7 +7,7 @@ import { colors, fonts, POPUP, POPUP_TITLE, PILL_H } from '../theme';
 import { DeskFelt, Felt, Stitch, useLook } from '../look';
 import { useT } from '../i18n';
 import { tap, thunk, tick, withTap } from '../haptics';
-import { getAmbient, onAmbient, setAmbientPlayer } from '../ambient';
+import { getAmbient, onAmbient, setAmbientPlayer, toggleAmbientPlayer } from '../ambient';
 
 // The black bar's one layout, the same on every screen, so nothing ever jumps: the menu sits `edge` in from the
 // screen's edge (upright: the left; sideways: the top), and every icon after it sits in a slot one `step` further on
@@ -338,7 +338,7 @@ export function BarMusic({ u, vertical }) {
   const tr = useT();
   const playing = useAmbientPlaying();
   return (
-    <Pressable onPress={withTap(() => setAmbientPlayer(!getAmbient().showPlayer))} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')}
+    <Pressable onPress={withTap(() => toggleAmbientPlayer())} hitSlop={12} accessibilityRole="button" accessibilityLabel={tr('Music and Sounds')}
       style={slotStyle(u, vertical)}>
       <MusicIcon size={u * 4.9} color={playing ? colors.green : IDLE} />
     </Pressable>

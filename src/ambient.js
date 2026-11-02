@@ -206,6 +206,11 @@ export function removeTrack(id) {
 // the nightlight is showing (the Audio Player turns to dark grey felt)
 export function setAmbientNight(on) { if (!!state.night !== !!on) set({ night: !!on }); }
 export function setAmbientPlayer(show) { set({ showPlayer: !!show }); }
+// any button on the black bar closes the player first (Jörg, 2 Nov 2026); the bar's own music note then mustn't open
+// it again straight away, so the moment it was closed that way is kept
+let closedByBar = 0;
+export function closePlayerFromBar() { if (state.showPlayer) { closedByBar = Date.now(); set({ showPlayer: false }); } }
+export function toggleAmbientPlayer() { if (Date.now() - closedByBar < 900) return; set({ showPlayer: !state.showPlayer }); }
 export function setPlayerPos(pos) { set({ pos }); }
 
 // the sleep timer: after so many minutes the sound fades out slowly and stops

@@ -58,7 +58,7 @@ import Profiles from './src/screens/Profiles';
 import PlaybackPanel from './src/components/PlaybackPanel';
 import Playlists from './src/screens/Playlists';
 import { playOrder } from './src/playlists';
-import { fadeOutAmbient, getAmbient, onAmbient, setAmbientPlayer } from './src/ambient';
+import { closePlayerFromBar, fadeOutAmbient, getAmbient, onAmbient, setAmbientPlayer } from './src/ambient';
 import { ageAllowed, ageOf } from './src/catalog';
 import { addProfile, loadProfiles, onProfiles, switchProfile } from './src/profiles';
 import { loadGrownupCode } from './src/grownupCode';
@@ -374,7 +374,14 @@ function Root() {
     return { left: ML.leftW + Math.max(2, (deskW - ML.bookW) / 4 - 10), top: Math.max(6, (height - ML.bookH) / 4 - 10) };
   })();
   return (
-    <View style={styles.outer}>
+    <View style={styles.outer} onStartShouldSetResponderCapture={(e) => {
+      // a touch on the black bar (bottom upright, right side sideways) closes the Audio Player first, then does its own thing
+      if (getAmbient().showPlayer) {
+        const { pageX, pageY } = e.nativeEvent;
+        if (sideways ? pageX > width - drawerRight : pageY > height - drawerBottom) closePlayerFromBar();
+      }
+      return false;
+    }}>
       <StatusBar style="light" />
       <SafeAreaInsetsContext.Provider value={screenInsets}>
       <LookContext.Provider value={look}>
