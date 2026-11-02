@@ -338,7 +338,7 @@ function UploadImages({ tr, winW, insets, onSkip, onGo }) {
           <Tile v="alt" label={tr('Picture, then words')} rec={tr('(Recommended)')} />
           <Tile v="every" label={tr('A picture on every page')} />
         </View>
-        <Text style={{ color: 'rgba(255,255,255,0.65)', fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, marginTop: 18 }}>{tr('Words over a picture need the Advanced page editor. It comes with Coro Family, and a grown-up turns it on in Settings.')}</Text>
+        <Text style={{ color: 'rgba(255,255,255,0.65)', fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, marginTop: 18 }}>{tr('Text over image needs the Advanced page editor. It comes with Coro Family, and a grown-up turns it on in Settings.')}</Text>
         <View style={{ flexDirection: 'row', gap: 10, marginTop: 24, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
           <Pressable onPress={onSkip} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: '#3d3d3d', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('No thanks')}</Text></Pressable>
           <Pressable onPress={() => onGo(layout)} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('Choose pictures')}</Text></Pressable>
