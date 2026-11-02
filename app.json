@@ -22,6 +22,15 @@
             "LSItemContentTypes": [
               "com.oomlaut.voices"
             ]
+          },
+          {
+            "CFBundleTypeName": "Coro book (zip)",
+            "CFBundleTypeRole": "Viewer",
+            "LSHandlerRank": "Alternate",
+            "LSItemContentTypes": [
+              "public.zip-archive",
+              "com.pkware.zip-archive"
+            ]
           }
         ],
         "UTExportedTypeDeclarations": [
@@ -29,8 +38,6 @@
             "UTTypeIdentifier": "com.oomlaut.voices",
             "UTTypeDescription": "Coro voices",
             "UTTypeConformsTo": [
-              "public.json",
-              "public.text",
               "public.data",
               "public.content"
             ],
@@ -39,7 +46,6 @@
                 "oomlaut"
               ],
               "public.mime-type": [
-                "application/json",
                 "application/x-oomlaut"
               ]
             }

@@ -4,6 +4,7 @@
 import { Share } from 'react-native';
 import { File, Paths } from 'expo-file-system';
 import { APP_LINK, OPEN_HELP } from './invite';
+import { utf8, zipOne } from './zipStore';
 import { keepFile, liveUri } from './storage';
 
 export const SHEET_KIND = 'oomlaut-sheet';
@@ -39,9 +40,9 @@ export async function shareSheet(page, from, message) {
   const pics = [];
   const strokes = await packStrokes(page.strokes, pics), strokes2 = await packStrokes(page.strokes2, pics);
   const data = { kind: SHEET_KIND, v: 1, from, page: { kind: page.kind, text: page.text || '', strokes, strokes2 }, ...(photo ? { photo } : {}), ...(pics.length ? { pics } : {}) };
-  const file = new File(Paths.cache, `A sheet from ${safe(from)}.oomlaut`);
+  const file = new File(Paths.cache, `A sheet from ${safe(from)}.zip`); // (a .zip, like a shared book: 2 Nov 2026)
   try { if (file.exists) file.delete(); } catch (e) {}
-  file.write(JSON.stringify(data));
+  file.write(zipOne('sheet.oomlaut', utf8(JSON.stringify(data))));
   await Share.share({ message: `${message}\n\n${APP_LINK}\n${OPEN_HELP}`, url: file.uri }).catch(() => {});
 }
 

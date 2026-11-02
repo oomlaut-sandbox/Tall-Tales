@@ -11,6 +11,7 @@ import { OPEN_HELP, inviteMessage } from './invite';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { addReceivedStory, savedStory } from './userStories';
 import { keepFile } from './storage';
+import { fromUtf8, unzipFirst, utf8, zipOne } from './zipStore';
 
 const KIND = 'oomlaut-voices';
 
@@ -80,9 +81,10 @@ export async function shareBookWithVoices(story) {
   }
   const names = people.map((p) => p.name).join(', ');
   const book = own ? await packBook(own) : null;
-  const file = new File(Paths.cache, `${safeName(story.title)}${names ? ` - read by ${safeName(names)}` : ''}.oomlaut`);
+  // sent as a .zip with the book inside: every mail app takes a .zip (Gmail on iPhone refused Coro's own type: 2 Nov 2026)
+  const file = new File(Paths.cache, `${safeName(story.title)}${names ? ` - read by ${safeName(names)}` : ''}.zip`);
   try { if (file.exists) file.delete(); } catch (e) {}
-  file.write(JSON.stringify({ kind: KIND, v: 2, storyId: story.id, title: story.title, readers: people, pages, ...(book ? { book } : null) }));
+  file.write(zipOne('book.oomlaut', utf8(JSON.stringify({ kind: KIND, v: 2, storyId: story.id, title: story.title, readers: people, pages, ...(book ? { book } : null) }))));
   const message = `${inviteMessage(story.title)}\n\n${names ? `The attached file has the book, read in ${names}’s voice.` : 'The attached file has the book.'}\n${OPEN_HELP}`;
   await Share.share({ message, url: file.uri }).catch(() => {});
   return true;
@@ -91,7 +93,14 @@ export async function shareBookWithVoices(story) {
 // A file someone sent (opened in Coro): what's in it, for the "Add Opa's voice?" box (or a sheet).
 export async function readVoicesFile(uri) {
   try {
-    const data = JSON.parse(await new File(uri).text());
+    // a .zip (how Coro sends books since 2 Nov 2026) holds the same file inside; older .oomlaut files still open
+    let text;
+    if (/\.zip$/i.test(decodeURIComponent(uri))) {
+      const inner = unzipFirst(await new File(uri).bytes());
+      if (!inner) return null;
+      text = fromUtf8(inner.data);
+    } else text = await new File(uri).text();
+    const data = JSON.parse(text);
     if (data && data.kind === 'oomlaut-sheet' && data.page) return data; // a sheet for Things to share (see sheetShare)
     if (!data || data.kind !== KIND || !Array.isArray(data.pages)) return null;
     return data;

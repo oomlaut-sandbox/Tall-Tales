@@ -159,9 +159,10 @@ function Root() {
   const [incoming, setIncoming] = useState(null);
   useEffect(() => {
     const handle = async (url) => {
-      if (!url || !/\.oomlaut$/i.test(decodeURIComponent(url))) return;
+      if (!url || !/\.(oomlaut|zip)$/i.test(decodeURIComponent(url))) return;
       const data = await readVoicesFile(url);
       if (data) setIncoming(data);
+      else if (/\.zip$/i.test(decodeURIComponent(url))) toastRef.current && toastRef.current(t('That file isn’t a Coro book.'));
     };
     Linking.getInitialURL().then(handle).catch(() => {});
     const sub = Linking.addEventListener('url', ({ url }) => handle(url));
@@ -175,6 +176,7 @@ function Root() {
     clearTimeout(toastTimer.current);
     if (ms > 0) toastTimer.current = setTimeout(() => setMessage(''), ms + 500); // the bubble itself closes after ms (or sooner with a tap); ms 0: it stays until it's tapped
   }, []);
+  const toastRef = useRef(null); toastRef.current = toast;
   // a new reading badge: a little speech bubble (the badges are on the first page of My Notes)
   // (off for now: the bubbles were distracting. Badges are still earned and shown in My Notes: Jörg, 27 Oct 2026)
   useEffect(() => onNewBadge((fresh) => {
