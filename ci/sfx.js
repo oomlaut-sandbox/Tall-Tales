@@ -23,6 +23,11 @@ const FX = [
   ['chalk-line', 1.4, 'Drawing a long smooth line with a piece of chalk on an old school blackboard: a soft, gentle scratchy chalk sound, not squeaky. Close, quiet room, natural, no music.'],
   ['domino-down', 0.5, 'A single old ivory domino tile set down flat on a thick wool felt mat: one short, soft, muted clack of bone, muffled by the felt. Close, quiet, natural, no music.'],
   ['domino-click', 0.5, 'Two old ivory domino tiles nudged together edge to edge on a table: one small crisp clack, light and bony. Close, quiet, natural, no music.'],
+  // the opening mascot film (3 seconds): four simple, organic sound bites to choose from (Jörg, 2 Nov 2026)
+  ['splash-a', 3.0, 'A tiny, warm wooden xylophone motif: three soft notes rising gently, played with soft felt mallets, then a short natural ring-out. Simple, playful, organic, very quiet room, no other instruments, no voices.'],
+  ['splash-b', 3.0, 'A kalimba thumb piano plucked softly: a short happy little four-note phrase going up, warm wooden tone with a gentle natural decay. Simple and organic, close, no other instruments, no voices.'],
+  ['splash-c', 3.0, 'A soft wooden marimba playing two bright gentle notes, followed by one tiny hollow woodblock knock like something small popping into view. Warm, simple, organic, close, no other instruments, no voices.'],
+  ['splash-d', 3.0, 'A wooden tongue drum struck softly with a felt mallet: two calm round notes, the second lower, ringing out warmly. Very simple, organic and soothing, close, no other instruments, no voices.'],
   ['chalk-wipe', 1.0, 'Wiping an old school blackboard with a felt eraser: one soft, papery swish. Close, quiet room, natural, no music.'],
 ];
 // ONLY=name1,name2 makes just those (each three times)
