@@ -43,7 +43,7 @@ import { Toast, BackRing, NextRing, LineIcon, BulbIcon, BubbleIcon, HeadphonesIc
 // Older settings only had Normal/Slow.
 export const DEFAULT_SPEED = 0.75;
 // each narrator keeps their own speed: Henry sounds best a little quicker, 1.0 to start (Jörg, 28 Oct 2026)
-const NARRATOR_SPEED = { lily: DEFAULT_SPEED, gregory: 1.0 };
+const NARRATOR_SPEED = { lily: DEFAULT_SPEED, gregory: 1.0, spuds: 0.85 }; // Mo a touch quicker (Jörg, 1 Nov 2026)
 export const speedOf = (prefs) => {
   const who = narratorOf(prefs);
   if (prefs.rate && (prefs.rateFor || 'lily') === who) return prefs.rate;
