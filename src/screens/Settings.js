@@ -187,6 +187,10 @@ export default function Settings({ storeAdmin, u, openMenu, lang, setLang, bookL
                 <Toggle label={t('Show Ideas and Help')} value={controls.help} onChange={(v) => set({ help: v })} />
                 {/* the speech bubbles that pop up by themselves with hints and choices (on unless a grown-up turns them off: Jörg, 1 Nov 2026) */}
                 <Toggle label={t('Hint and tip bubbles')} value={controls.hints !== false} onChange={(v) => { set({ hints: v }); if (v) HINT_KEYS.forEach((k) => { try { saveJSON(k, {}); } catch (e) {} }); /* back on: every bubble shows again, the dismissed ones too */ }} />
+                {/* Reset: every hint shows again, the ones ticked 'Don't show this message again' too (Jörg, 2 Nov 2026) */}
+                {controls.hints !== false ? <Pressable onPress={() => { HINT_KEYS.forEach((k) => { try { saveJSON(k, {}); } catch (e) {} }); toast && toast(t('The hints will show again.')); }} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'flex-start', marginTop: -6 }}>
+                  <Text style={styles.link}>{t('Reset')}</Text>
+                </Pressable> : null}
                 <Toggle label={t('Recording own voice')} value={controls.recording} onChange={(v) => set({ recording: v })} />
                 <Toggle label={t('Read in family voices when there are some')} value={controls.familyVoices !== false} onChange={(v) => set({ familyVoices: v })} />
                 <Toggle label={t('Sharing and printing')} value={controls.sharing} onChange={(v) => set({ sharing: v })} />
