@@ -11,6 +11,7 @@ import { DESK_BG, DeskFelt } from '../look';
 import { useT } from '../i18n';
 import { useReduceMotion } from '../a11y';
 import { PagePhone } from '../components/FilmPlayer';
+import AgeWheel from '../components/AgeWheel';
 
 const AGES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
@@ -90,8 +91,9 @@ export default function Intro({ who, onDone, onBack }) {
     <>
       <Text style={styles.title}>{t('How old are you?')}</Text>
       <Text style={styles.lead}>{t('So Coro can show you the right books.')}</Text>
-      <View style={[styles.box, { flexDirection: 'row', flexWrap: 'wrap', gap: 10 }]}>
-        {AGES.map((a) => <Chip key={a} label={String(a)} on={age === a} onPress={() => setAge(a)} />)}
+      {/* a finger wheel, like the nightlight alarm's, in the grey box (Jörg, 2 Nov 2026) */}
+      <View style={[styles.box, { alignItems: 'center', paddingVertical: 10 }]}>
+        <AgeWheel value={age} onChange={setAge} />
       </View>
     </>
   );

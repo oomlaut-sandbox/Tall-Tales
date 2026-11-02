@@ -370,6 +370,7 @@ const T = {
   // ---- music and sounds ----
   'Music and sounds': { de: 'Musik und Klänge', fr: 'Musique et sons', es: 'Música y sonidos', ja: 'おんがくと しぜんの音', ar: "الموسيقى والأصوات" },
   'Relaxing sounds and gentle music that keep playing while you use the app. Lovely at bedtime.': { de: 'Entspannende Klänge und sanfte Musik, die weiterlaufen, während du die App benutzt. Schön zum Einschlafen.', fr: 'Des sons apaisants et une douce musique qui continuent pendant que vous utilisez l’application. Parfait au coucher.', es: 'Sonidos relajantes y música suave que siguen sonando mientras usas la app. Ideal a la hora de dormir.', ja: 'アプリをつかっているあいだ、ずっとながれる やさしい音と おんがく。ねるまえに ぴったりです。', ar: "أصوات مريحة وموسيقى هادئة تستمر في العمل أثناء استخدام التطبيق. رائعة وقت النوم." },
+  'Older': { de: 'Älter', fr: 'Plus grand', es: 'Mayor', ja: 'もっと 大きい', ar: "أكبر" },
   'Off': { de: 'Aus', fr: 'Désactivé', es: 'Apagado', ja: 'オフ', ar: "إيقاف" },
   'Nature sounds': { de: 'Naturklänge', fr: 'Sons de la nature', es: 'Sonidos de la naturaleza', ja: 'しぜんの音', ar: "أصوات الطبيعة" },
   'Music': { de: 'Musik', fr: 'Musique', es: 'Música', ja: 'おんがく', ar: "موسيقى" },
