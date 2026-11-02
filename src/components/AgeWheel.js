@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   // the same soft, lit-from-the-top-left dial as the alarm's, in the box's light grey
   wheel: { backgroundColor: BASE, alignItems: 'center', justifyContent: 'center', boxShadow: '-8px -8px 18px rgba(255,255,255,0.75), 10px 10px 22px rgba(0,0,0,0.22), inset 2px 2px 3px rgba(255,255,255,0.6), inset -3px -3px 5px rgba(0,0,0,0.08)' },
   dimple: { backgroundColor: '#cfcfcf', boxShadow: 'inset 5px 5px 8px rgba(0,0,0,0.24), inset -3px -3px 6px rgba(255,255,255,0.85)' },
-  big: { color: '#2b2b2b', fontFamily: fonts.uiBold, fontSize: 40 },
-  num: { position: 'absolute', width: 40, textAlign: 'center', color: 'rgba(40,40,40,0.5)', fontFamily: fonts.uiMedium, fontSize: 13 },
+  big: { color: '#2b2b2b', fontFamily: fonts.uiBold, fontSize: 40, userSelect: 'none' },
+  num: { position: 'absolute', userSelect: 'none', width: 40, textAlign: 'center', color: 'rgba(40,40,40,0.5)', fontFamily: fonts.uiMedium, fontSize: 13 },
   numOn: { color: '#1f1f1f', fontFamily: fonts.uiBold },
 });

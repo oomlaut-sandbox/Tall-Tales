@@ -92,7 +92,7 @@ export default function Intro({ who, onDone, onBack }) {
       <Text style={styles.title}>{t('How old are you?')}</Text>
       <Text style={styles.lead}>{t('So Coro can show you the right books.')}</Text>
       {/* a finger wheel, like the nightlight alarm's, in the grey box (Jörg, 2 Nov 2026) */}
-      <View style={[styles.box, { alignItems: 'center', paddingVertical: 10 }]}>
+      <View style={[styles.box, { alignItems: 'center', paddingVertical: 18 }]}>
         <AgeWheel value={age} onChange={setAge} />
       </View>
     </>
