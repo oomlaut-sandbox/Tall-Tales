@@ -20,6 +20,13 @@ import ParentGate from './ParentGate';
 import { useT } from '../i18n';
 import { useControls } from '../controls';
 import { fmtTime } from '../clock';
+// the big time: the numbers large, AM / PM smaller beside them, with an ordinary space (iPhone's narrow one showed as
+// a wide gap in the thin Helvetica) (Jörg, 2 Nov 2026)
+function BigTime({ hm, size, style }) {
+  const parts = fmtTime(hm).replace(/[\u202f\u00a0]/g, ' ').split(' ');
+  const main = parts[0], rest = parts.slice(1).join(' ');
+  return <Text style={[styles.now, { fontSize: size }, style]}>{main}{rest ? <Text style={{ fontSize: Math.round(size * 0.42) }}>{' ' + rest}</Text> : null}</Text>;
+}
 import { TRACKS, setAmbientNight, chooseAmbient, fadeOutAmbient, setAmbientVolume, getAmbient, playAmbient, trackLabel } from '../ambient';
 import { useKeepAwake } from 'expo-keep-awake';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -520,11 +527,11 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
             {/* upright, the time floats exactly where it sits in the nightlight (a soft shadow keeps it clear on the picture) */}
             {!wide ? (
               <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: topPad - area.height * 0.05, alignItems: 'center' }}>
-                <Text style={[styles.now, { textShadowColor: 'rgba(0,0,0,0.55)', textShadowRadius: 8, textShadowOffset: { width: 0, height: 1 } }]}>{fmtTime(hm)}</Text>
+                <BigTime hm={hm} size={wide ? 56 : 76} style={{ textShadowColor: 'rgba(0,0,0,0.55)', textShadowRadius: 8, textShadowOffset: { width: 0, height: 1 } }} />
               </View>
             ) : null}
             <View style={styles.dayBand}>
-              {wide ? <Text style={[styles.now, { fontSize: 36 }]}>{fmtTime(hm)}</Text> : null}
+              {wide ? <BigTime hm={hm} size={48} /> : null}
               {info}
             </View>
           </View>
@@ -532,7 +539,7 @@ export default function Nightlight({ title, playing, onPlay, onPause, onSleep, l
         <View pointerEvents="box-none" style={{ flex: 1, paddingTop: topPad, flexDirection: wide ? 'row' : 'column', alignItems: 'center', justifyContent: wide ? 'center' : 'flex-start', gap: wide ? 8 : 0 }}>
           <View pointerEvents="none" style={{ alignItems: 'center' }}>
             {/* the time, in fine letters above the sun */}
-            <Text style={[styles.now, { marginBottom: wide ? -S * 0.02 : S * 0.02, marginTop: wide ? 0 : -area.height * 0.05, zIndex: 1 }]}>{fmtTime(hm)}</Text>
+            <BigTime hm={hm} size={wide ? 56 : 76} style={{ marginBottom: wide ? -S * 0.02 : S * 0.02, marginTop: wide ? 0 : -area.height * 0.05, zIndex: 1 }} />
             {sunBlock}
           </View>
           <View pointerEvents="box-none" style={{ marginTop: wide ? 0 : -S * 0.04, width: wide ? area.width * 0.38 : undefined, alignItems: 'center' }}>{info}</View>
