@@ -21,5 +21,5 @@ export const TITLE_ICONS = {
 export function TitleIcon({ kind, size = 30, color, lift = -3, indent = true }) {
   const src = TITLE_ICONS[kind];
   if (!src) return null;
-  return <Image source={src} style={{ width: size, height: size, marginRight: 12, marginLeft: indent ? 22 : 0, transform: [{ translateY: lift }], ...(color ? { tintColor: color } : null) }} accessibilityIgnoresInvertColors />;
+  return <Image source={src} style={{ width: size, height: size, marginRight: 12, marginLeft: indent ? 17 : 0, transform: [{ translateY: lift }], ...(color ? { tintColor: color } : null) }} accessibilityIgnoresInvertColors />;
 }
