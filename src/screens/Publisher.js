@@ -1265,7 +1265,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
             // Words on a picture (31 Oct 2026): three groups, each choice a tile with a small picture of what it does:
             // WHERE the words go, their LOOK, and their SIZE (the look and size only once they're on a picture)
             <Animated.View style={[styles.placeBox, { width: winW - 2 * GAP, opacity: zoom }]}>
-              <PlaceGroup title={tr('Where')}>
+              <PlaceGroup title={tr('Layout')}>
                 {/* the words page only while there's no second picture; with two pictures, both can have words (Jörg, 31 Oct 2026) */}
                 {[...(page.uri2 ? [] : [[null, 'Words page']]), ['top', wide ? 'Left picture' : 'Top picture'], ['bottom', wide ? 'Right picture' : 'Bottom picture'], ...(page.uri2 ? [['both', 'Both pictures']] : [])].map(([v, label]) => {
                   const off = (v === 'top' && !page.uri) || (v === 'bottom' && !page.uri2) || (v === 'both' && !(page.uri && page.uri2));

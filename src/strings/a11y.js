@@ -213,7 +213,7 @@ export default {
   'Delete this playlist?': { de: 'Diese Playlist löschen?', fr: 'Supprimer cette liste ?', es: '¿Borrar esta lista?', ja: 'この プレイリストを けしますか？', ar: 'حذف قائمة التشغيل هذه؟' },
   'The books stay in My Library.': { de: 'Die Bücher bleiben in Meiner Bibliothek.', fr: 'Les livres restent dans Ma bibliothèque.', es: 'Los libros se quedan en Mi biblioteca.', ja: '本は「わたしの本だな」に のこります。', ar: 'تبقى الكتب في مكتبتي.' },
   'Delete this recording?': { de: 'Diese Aufnahme löschen?', fr: 'Supprimer cet enregistrement ?', es: '¿Borrar esta grabación?', ja: 'この ろくおんを けしますか？', ar: 'حذف هذا التسجيل؟' },
-  'Where': { de: 'Wo', fr: 'Où', es: 'Dónde', ja: 'どこに', ar: 'أين' },
+  'Layout': { de: 'Anordnung', fr: 'Mise en page', es: 'Diseño', ja: 'レイアウト', ar: 'التخطيط' },
   'Featured musician': { de: 'Musikerin oder Musiker im Fokus', fr: 'Musicien à l’honneur', es: 'Músico destacado', ja: 'きょうの ミュージシャン', ar: 'الموسيقي المميّز' },
   'Visit their website': { de: 'Zur Website', fr: 'Visiter son site', es: 'Visitar su web', ja: 'ウェブサイトを 見る', ar: 'زيارة موقعه' },
   'This opens a website outside Coro.': { de: 'Damit öffnet sich eine Website außerhalb von Coro.', fr: 'Cela ouvre un site web en dehors de Coro.', es: 'Esto abre una web fuera de Coro.', ja: 'Coro の そとの ウェブサイトが ひらきます。', ar: 'سيفتح هذا موقعًا خارج Coro.' },
