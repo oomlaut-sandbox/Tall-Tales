@@ -116,7 +116,7 @@ export function Seg({ value, options, onChange, stacked }) {
   );
 }
 
-export default function Reader({ coverShut = false, onOpenCover, u, story, prefs, setPrefs, openMenu, goLibrary, onCover, toast, menuRequest, landscape, setToastSpot, autoStart, startRecording, onFinished, onSettings, onPlaylists, onShown, onEdit, onBackToBooks }) { // onEdit: scissors on the bar, for a book you made (Jörg, 27 Oct 2026)
+export default function Reader({ menuOpen = false, coverShut = false, onOpenCover, u, story, prefs, setPrefs, openMenu, goLibrary, onCover, toast, menuRequest, landscape, setToastSpot, autoStart, startRecording, onFinished, onSettings, onPlaylists, onShown, onEdit, onBackToBooks }) { // onEdit: scissors on the bar, for a book you made (Jörg, 27 Oct 2026)
   const tr = useT(); // the reader's own panel, in the app's language
   const appLang = useLang();
   const controls = useControls(); // parental controls: recording, sharing and printing may be switched off
@@ -1071,12 +1071,12 @@ export default function Reader({ coverShut = false, onOpenCover, u, story, prefs
       {/* sideways: back to My Books in the felt's bottom left corner, and the scissors well above it (Jörg, 28 Oct 2026) */}
       {/* back to My Books, centred in the felt margins (Jörg, 28 Oct 2026): upright, in the right margin level with the
           bulb (mirroring it); sideways, in the bottom left corner, centred in the left and the bottom margins */}
-      {onBackToBooks && !nightOn ? (
+      {onBackToBooks && !nightOn && !menuOpen ? (
         <BackRing onPress={() => { stopReading(); onBackToBooks(); }} label={tr('My Book Collection')}
           style={{ position: 'absolute', zIndex: 6, left: bulbL, top: 8 } /* Back top left, the bulb under it, Next top right; upright and sideways (Jörg, 1 Nov 2026) */} />
       ) : null}
       {/* upright: Next page in the top right corner, the same as the dog ear (Jörg, 1 Nov 2026) */}
-      {!nightOn && !listen && idx < pages.length - 1 && !flipPair ? (
+      {!menuOpen && !nightOn && !listen && idx < pages.length - 1 && !flipPair ? (
         <NextRing onPress={withTap(() => flip(1))} label={tr('Next page')} style={{ position: 'absolute', zIndex: 6, right: bulbL, top: 8 }} />
       ) : null}
       {/* share this book (an envelope, Jörg, 28 Oct 2026): upright in the felt's bottom right corner, sideways above the

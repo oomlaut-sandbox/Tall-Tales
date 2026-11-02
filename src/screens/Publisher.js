@@ -357,7 +357,7 @@ function QuickBookAsk({ tr, winW, winH, onCancel, onGo }) {
   );
 }
 
-export default function Publisher({ u, initial, fontKey, openMenu, toast, onChange, onDone, storeAdmin, onIdeas }) {
+export default function Publisher({ menuOpen = false, u, initial, fontKey, openMenu, toast, onChange, onDone, storeAdmin, onIdeas }) {
   const tr = useT(); // everything a child or parent reads here, in the app's language (the store owner's Publish stays English)
   const insets = useSafeAreaInsets();
   const [draft, setDraft] = useState(initial);
@@ -1692,7 +1692,7 @@ export default function Publisher({ u, initial, fontKey, openMenu, toast, onChan
       ) : null}
       {/* upright, from the cover on: Next in the top right corner, the same as the dog ear; Back moves to the top left
           (App.js) (Jörg, 1 Nov 2026). Hidden while something is open on top of the page or the cover */}
-      {!aboutOpen && !editing && !pageDone && !titleBox && !pagesOpen && !photoEdit && !drawFor && !imgAsk && !picAsk && pageAsk == null && !coverTool && !recordAsk && !guide && !kbUp && !gateFor && !camGate ? (
+      {!menuOpen /* the menu is always on top */ && !aboutOpen && !editing && !pageDone && !titleBox && !pagesOpen && !photoEdit && !drawFor && !imgAsk && !picAsk && pageAsk == null && !coverTool && !recordAsk && !guide && !kbUp && !gateFor && !camGate ? (
         <NextRing onPress={coverOpen ? finishCover : next} label={coverOpen ? tr('Next') : tr('Next page')} style={wide ? { position: 'absolute', zIndex: 200, top: Math.max(6, (winH - BL.bookH) / 4 - 10), right: BL.rightW + Math.max(2, (winW - BL.leftW - BL.rightW - BL.bookW) / 4 - 10) } : { position: 'absolute', zIndex: 200, top: insets.top + 10, right: 12 }} />
       ) : null}
       <ParentGate visible={!!camGate} reason="Taking a photo opens the camera." onPass={() => { const t = camGate; setCamGate(null); setTimeout(() => placeImage(t, 'camera'), 250); }} onCancel={() => setCamGate(null)} />
