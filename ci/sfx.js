@@ -34,6 +34,7 @@ const FX = [
   ['xy-3', 3.0, 'Three soft notes: low, then high, then the middle note, gentle and friendly, on a small wooden xylophone played with soft felt mallets, warm and organic, a short natural ring-out, very quiet room, no other instruments, no voices.'],
   ['xy-4', 3.0, 'Three soft notes going up, the last one held a little longer, played slowly and calmly on a deeper wooden xylophone played with soft felt mallets, warm and organic, a short natural ring-out, very quiet room, no other instruments, no voices.'],
   ['xy-5', 3.0, 'Two quick soft notes and then a third, higher note after a tiny pause, like a little hello, on a small wooden xylophone played with soft felt mallets, warm and organic, a short natural ring-out, very quiet room, no other instruments, no voices.'],
+  ['xy-low', 1.5, 'One single low note on a wooden xylophone, struck once softly with a felt mallet, warm and round, with a short natural ring-out. Nothing before or after it, very quiet room, no other instruments, no voices.'], // the mascot's blink (Jörg, 2 Nov 2026)
   ['chalk-wipe', 1.0, 'Wiping an old school blackboard with a felt eraser: one soft, papery swish. Close, quiet room, natural, no music.'],
 ];
 // ONLY=name1,name2 makes just those (each three times)
