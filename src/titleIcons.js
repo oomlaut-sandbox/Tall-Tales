@@ -17,8 +17,9 @@ export const TITLE_ICONS = {
   make: require('../assets/title-icons/make-a-book.png'),
 };
 // the icon at a title's size (32 pt titles: a 30 pt icon), lifted to sit with the letters
-export function TitleIcon({ kind, size = 30, color, lift = -3 }) {
+// indent: a page's main title steps right, clear of Back in the top left corner (Jörg, 1 Nov 2026)
+export function TitleIcon({ kind, size = 30, color, lift = -3, indent = true }) {
   const src = TITLE_ICONS[kind];
   if (!src) return null;
-  return <Image source={src} style={{ width: size, height: size, marginRight: 12, transform: [{ translateY: lift }], ...(color ? { tintColor: color } : null) }} accessibilityIgnoresInvertColors />;
+  return <Image source={src} style={{ width: size, height: size, marginRight: 12, marginLeft: indent ? 22 : 0, transform: [{ translateY: lift }], ...(color ? { tintColor: color } : null) }} accessibilityIgnoresInvertColors />;
 }
