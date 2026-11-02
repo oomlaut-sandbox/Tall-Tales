@@ -582,14 +582,11 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
     } else pics.forEach((a) => pages.push({ ...blank(), uri: a.uri, w: a.w, h: a.h }));
     // the first picture goes on the cover too (its own copy), so the cover that comes next isn't empty: a tester chose
     // one picture and then couldn't tell where it had gone (Jörg, 1 Nov 2026)
-    // (the cover comes first now: the first picture goes on it only when the cover has no picture yet)
-    const bare = !(latest.current.cover && latest.current.cover.uri);
-    let front = null;
-    if (bare) { try { front = { uri: await keepFile(pics[0].uri, `stories/${draft.id}`, `cover-${Date.now()}.jpg`), w: pics[0].w, h: pics[0].h }; } catch (e) {} }
-    setDraft((d) => ({ ...d, pages: pages.slice(0, MAX_PAGES), ...(front ? { cover: { ...(d.cover || {}), ...front, title: d.cover ? d.cover.title || null : null } } : null) }));
+    // (the cover is made first, in its own step: the pictures all go on the pages, none on the cover: Jörg, 2 Nov 2026)
+    setDraft((d) => ({ ...d, pages: pages.slice(0, MAX_PAGES) }));
     setI(0);
     sayStep();
-    toast(front ? tr('Your pictures are on the pages, and the first one is on the cover too. Change it if you like.') : tr('Your pictures are on the pages. Now add your words.'), 6000);
+    toast(tr('Your pictures are on the pages. Now add your words.'), 6000);
   };
 
   // ---- The Cover Editor: a square like the words editor. Add a picture, then (if wanted) the title,

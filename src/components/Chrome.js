@@ -7,7 +7,7 @@ import { colors, fonts, POPUP, POPUP_TITLE, PILL_H } from '../theme';
 import { DeskFelt, Felt, Stitch, useLook } from '../look';
 import { useT } from '../i18n';
 import { tap, thunk, tick, withTap } from '../haptics';
-import { getAmbient, onAmbient, setAmbientPlayer, toggleAmbientPlayer } from '../ambient';
+import { getAmbient, onAmbient, toggleAmbientPlayer } from '../ambient';
 
 // The black bar's one layout, the same on every screen, so nothing ever jumps: the menu sits `edge` in from the
 // screen's edge (upright: the left; sideways: the top), and every icon after it sits in a slot one `step` further on
