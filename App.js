@@ -59,7 +59,7 @@ import PlaybackPanel from './src/components/PlaybackPanel';
 import Playlists from './src/screens/Playlists';
 import { playOrder } from './src/playlists';
 import { closePlayerFromBar, fadeOutAmbient, getAmbient, onAmbient, setAmbientPlayer } from './src/ambient';
-import { ageAllowed, ageOf } from './src/catalog';
+import { ageAllowed, ageOf, cachedCatalog, loadStoreBook, refreshCatalog, storeLangReady } from './src/catalog';
 import { addProfile, loadProfiles, onProfiles, switchProfile } from './src/profiles';
 import { loadGrownupCode } from './src/grownupCode';
 import { startRemoteTracks } from './src/remoteTracks';
@@ -266,7 +266,29 @@ function Root() {
   const [recordOnOpen, setRecordOnOpen] = useState(false); // the book just made opens ready to be recorded
   useEffect(() => { if (screen !== 'reader') setRecordOnOpen(false); }, [screen]);
   const lastOpen = useRef({ cover: null, rect: null }); // the book's cover and where its tile was in the library
+  // A book of your own that is also in the Book Store reads in the store's translation of it, in My Library too
+  // (it turned English there while the Book Store showed it in German: Jörg, 3 Nov 2026). twins: the store's row for
+  // each of your books, by the book's id.
+  const [twins, setTwins] = useState({});
+  useEffect(() => {
+    if (screen !== 'library') return;
+    const use = (c) => { const m = {}; for (const b of (c && c.books) || []) if (b.source_story) m[b.source_story] = b; if (Object.keys(m).length) setTwins(m); };
+    cachedCatalog().then(use).catch(() => {});
+    if (userStories.some((x) => x.published)) refreshCatalog().then(use).catch(() => {}); // (the latest, quietly)
+  }, [screen]);
+  const inReadLang = (s) => {
+    const tw = twins[s.id];
+    if (!tw || !storeLangReady(tw, readLang)) return s;
+    const L = tw.langs[readLang];
+    const cover = s.cover && s.cover.title && L.coverTitle ? { ...s.cover, title: { ...s.cover.title, text: L.coverTitle } } : s.cover;
+    return { ...s, title: L.title || s.title, cover, twin: tw };
+  };
   const openStory = (s0, rect) => {
+    // your own book in the store's translation: its translated pages (and narration) come from the store
+    if (s0 && s0.twin && storeLangReady(s0.twin, readLang)) {
+      loadStoreBook(s0.twin, readLang).then((b) => openStory({ ...b, cover: b.cover || s0.cover }, rect)).catch(() => openStory({ ...s0, twin: null }, rect));
+      return;
+    }
     const s = s0 && s0.langs ? localizeStory(s0, readLang) : s0; // a translated book opens in the reading language
     const ready = prepared(s);
     lastOpen.current = { cover: s.cover && s.cover.uri ? { uri: s.cover.uri, title: s.cover.title || null } : /* (with its title: 3 Nov 2026) */ s.pages[0] && s.pages[0].image, rect: rect || null };
@@ -277,7 +299,7 @@ function Root() {
   };
   const openMenu = () => { setDrawer((d) => !d); };
   // the books on this child's shelf (My Library's books, without those rated for older children)
-  const shelf = [...STORIES.filter((s) => SHOWN_BOOKS.includes(s.id) && !removed.includes(s.id)).map((s) => localizeStory(s, readLang)), ...userStories];
+  const shelf = [...STORIES.filter((s) => SHOWN_BOOKS.includes(s.id) && !removed.includes(s.id)).map((s) => localizeStory(s, readLang)), ...userStories.map(inReadLang)];
   const childShelf = shelf.filter((s) => ageAllowed(ageOf(null, s), controls.childAge));
   // a playlist playing: its books one after another, each reading itself (Auto Play) and the next opening
   // a moment after The End

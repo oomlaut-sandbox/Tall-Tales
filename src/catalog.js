@@ -28,8 +28,9 @@ export async function refreshCatalog() {
   const cols = 'id,title,author,blurb,shelf_id,sort,access,price_label,product_id,featured,bundled,cover_path,content_path,page_count,age_range,updated_at';
   let [sh, bk] = await Promise.all([
     supabase.from('shelves').select('id,title,sort,langs').order('sort'),
-    supabase.from('books').select(`${cols},cover_title,min_age,max_age,process,langs`).order('sort'),
+    supabase.from('books').select(`${cols},cover_title,min_age,max_age,process,langs,source_story`).order('sort'), // (source_story: the book maker's book it came from: 3 Nov 2026)
   ]);
+  if (bk.error) bk = await supabase.from('books').select(`${cols},cover_title,min_age,max_age,process,langs`).order('sort');
   // before the languages column is added (docs/store-manager-setup.sql), the same without it
   if (bk.error) bk = await supabase.from('books').select(`${cols},cover_title,min_age,max_age,langs`).order('sort'); // (no process column)
   if (bk.error) bk = await supabase.from('books').select(`${cols},cover_title,min_age,max_age,process`).order('sort');
