@@ -47,6 +47,23 @@ export function coverBoxes(t, W) {
     alignItems: (t.balign || align) === 'left' ? 'flex-start' : (t.balign || align) === 'right' ? 'flex-end' : 'center' } : null;
   return { title, byline, bs, align, balign: t.balign || align };
 }
+// just the title (and author line) of a cover, drawn over a square w wide: for a cover that's already drawn
+// as a picture elsewhere (the cover that flies open and shut: Jörg, 3 Nov 2026)
+export function CoverTitle({ t, w }) {
+  if (!t || !t.text || !w) return null;
+  const B = coverBoxes(t, w);
+  const by = <Text style={[titleStyle, bylineStyle, coverTitleLook(bylineLook(t), true), { fontSize: B.bs * w, lineHeight: B.bs * w * 1.4, paddingHorizontal: w * 0.04, textAlign: B.balign }]}>{t.byline}</Text>;
+  return (
+    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      <View style={B.title}>
+        <Text style={[titleStyle, coverTitleLook(t), { fontSize: t.size * w, lineHeight: t.size * w * 1.2, paddingHorizontal: w * 0.04, textAlign: B.align }]}>{t.text}</Text>
+        {t.byline && !B.byline ? by : null}
+      </View>
+      {B.byline ? <View style={B.byline}>{by}</View> : null}
+    </View>
+  );
+}
+
 export default function CoverArt({ cover }) {
   const [w, setW] = useState(0);
   if (!cover || !cover.uri) return null;

@@ -12,6 +12,7 @@ import { bookLayout } from './BookFrame';
 import { AMBER, AmberTint, Fade, PageView } from './PageView';
 import { Felt, DESK_FELT, DeskFelt } from '../look';
 import { playSound } from '../sound';
+import { CoverTitle } from './CoverArt';
 import { measureTile } from '../tileSpots';
 
 // wait a couple of frames (so whatever was just built is on screen before an animation starts: an animation
@@ -242,6 +243,8 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, am
           <Animated.View style={[StyleSheet.absoluteFill, { opacity: frontOp, backgroundColor: '#828282' }]}>
             {/* a cloth hardcover made in Coro: upright, the book opens upward, so its spine turns to the top (Jörg, 27 Oct 2026) */}
             {cover ? <Image source={cover} onLoad={() => setCoverReady(true)} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s, transform: !L.wide && story && story.cover && (story.cover.hard || /hardcovers/.test(String(story.cover.uri || ''))) ? [{ rotate: '90deg' }] : [] }} resizeMode="cover" /> : null}
+            {/* the cover's title, as on its tile (it was left off the flying cover: Jörg, 3 Nov 2026) */}
+            {cover && cover.title ? <CoverTitle t={cover.title} w={s} /> : null}
             {/* Amber light: the cover warmed like the pictures inside */}
             {cover && amber ? <AmberTint /> : null}
           </Animated.View>

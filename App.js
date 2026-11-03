@@ -269,10 +269,10 @@ function Root() {
   const openStory = (s0, rect) => {
     const s = s0 && s0.langs ? localizeStory(s0, readLang) : s0; // a translated book opens in the reading language
     const ready = prepared(s);
-    lastOpen.current = { cover: s.cover && s.cover.uri ? { uri: s.cover.uri } : s.pages[0] && s.pages[0].image, rect: rect || null };
+    lastOpen.current = { cover: s.cover && s.cover.uri ? { uri: s.cover.uri, title: s.cover.title || null } : /* (with its title: 3 Nov 2026) */ s.pages[0] && s.pages[0].image, rect: rect || null };
     // the cover picture ready in memory before anything moves
     if (s.cover && s.cover.uri) Image.prefetch(s.cover.uri).catch(() => {});
-    if (rect && (screen === 'library' || screen === 'store')) { setOpening({ story: ready, cover: s.cover && s.cover.uri ? { uri: s.cover.uri } : s.pages[0] && s.pages[0].image, rect }); return; }
+    if (rect && (screen === 'library' || screen === 'store')) { setOpening({ story: ready, cover: s.cover && s.cover.uri ? { uri: s.cover.uri, title: s.cover.title || null } : /* (with its title: 3 Nov 2026) */ s.pages[0] && s.pages[0].image, rect }); return; }
     setStory(ready); go('reader');
   };
   const openMenu = () => { setDrawer((d) => !d); };
@@ -284,7 +284,7 @@ function Root() {
   const [queue, setQueue] = useState(null); // { ids, i }
   const queueRef = useRef(null);
   queueRef.current = queue;
-  const openQueued = (q) => { const s = childShelf.find((x) => x.id === q.ids[q.i]); if (!s) return; const s2 = s.langs ? localizeStory(s, readLang) : s; lastOpen.current = { cover: s2.cover && s2.cover.uri ? { uri: s2.cover.uri } : s2.pages[0] && s2.pages[0].image, rect: null }; /* its own cover when it closes */ setStory(prepared(s2)); stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen('reader'); };
+  const openQueued = (q) => { const s = childShelf.find((x) => x.id === q.ids[q.i]); if (!s) return; const s2 = s.langs ? localizeStory(s, readLang) : s; lastOpen.current = { cover: s2.cover && s2.cover.uri ? { uri: s2.cover.uri, title: s2.cover.title || null } : s2.pages[0] && s2.pages[0].image, rect: null }; /* its own cover when it closes */ setStory(prepared(s2)); stopSpeech(); stopVoice(); setDrawer(false); setPeek(null); setScreen('reader'); };
   const playPlaylist = (pl) => {
     const ids = playOrder(pl, childShelf);
     if (!ids.length) return;
