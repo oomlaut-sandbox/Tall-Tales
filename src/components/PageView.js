@@ -125,7 +125,8 @@ export const PageView = forwardRef(function PageView(
                   <View style={{ height: fs * 0.7 }} />
                   {/* the author and illustrator credits in small type, like the cover's byline */}
                   <Text style={[baseStyle, { fontSize: Math.round(fs * 0.65), lineHeight: Math.round(fs * 0.65 * 1.5) }]}>
-                    {words.slice(k + 1).map((w, j) => word(w, k + 1 + j, words.length - 1))}
+                    {/* no full stop after the credits, in any language (Jörg, 3 Nov 2026) */}
+                    {words.slice(k + 1).map((w, j) => word(w, k + 1 + j, words.length - 1, k + 1 + j === words.length - 1 ? w.word.replace(/[.。]+$/, '') : undefined))}
                   </Text>
                 </View>
               );

@@ -32,13 +32,14 @@ export async function loadUserStories() {
   return list.map(fromSaved);
 }
 
-// The credits line for a title page: 'Written by A.' / 'Illustrated by B.' / 'Written by A and illustrated by B.'
-// (or 'Written and illustrated by A.' when it's the same person). Empty if neither was given.
+// The credits line for a title page: 'Written by A' / 'Illustrated by B' / 'Written by A and illustrated by B'
+// (or 'Written and illustrated by A' when it's the same person). Empty if neither was given.
+// No full stop at the end (Jörg, 3 Nov 2026).
 export function creditsLine(writer, artist) {
   const w = (writer || '').trim(), a = (artist || '').trim();
-  if (w && a) return w.toLowerCase() === a.toLowerCase() ? `Written and illustrated by ${w}.` : `Written by ${w} and illustrated by ${a}.`;
-  if (w) return `Written by ${w}.`;
-  if (a) return `Illustrated by ${a}.`;
+  if (w && a) return w.toLowerCase() === a.toLowerCase() ? `Written and illustrated by ${w}` : `Written by ${w} and illustrated by ${a}`;
+  if (w) return `Written by ${w}`;
+  if (a) return `Illustrated by ${a}`;
   return '';
 }
 
