@@ -776,7 +776,7 @@ const T = {
   'Manage profiles': { de: 'Profile verwalten', fr: 'Gérer les profils', es: 'Gestionar perfiles', ja: 'プロフィールを かんり', ar: "إدارة الملفات الشخصية" },
   'Open playlists': { de: 'Playlists öffnen', fr: 'Ouvrir les listes de lecture', es: 'Abrir listas', ja: 'プレイリストを ひらく', ar: "فتح قوائم التشغيل" },
   'Relaxing and gentle': { de: 'Entspannend und sanft', fr: 'Apaisant et doux', es: 'Relajante y suave', ja: 'ゆったり やさしく', ar: "هادئ ولطيف" },
-  'Collect and read your favorite books': { de: 'Sammle und lies deine Lieblingsbücher', fr: 'Collectionne et lis tes livres préférés', es: 'Colecciona y lee tus libros favoritos', ja: 'すきな本を あつめて よもう', ar: 'اجمع كتبك المفضلة واقرأها' },
+  'Collect and read your favourite books': { de: 'Sammle und lies deine Lieblingsbücher', fr: 'Collectionne et lis tes livres préférés', es: 'Colecciona y lee tus libros favoritos', ja: 'すきな本を あつめて よもう', ar: 'اجمع كتبك المفضلة واقرأها' },
   'Language, controls and profiles': { de: 'Sprache, Einstellungen und Profile', fr: 'Langue, contrôles et profils', es: 'Idioma, controles y perfiles', ja: 'ことば、せってい、プロフィール', ar: 'اللغة والتحكم والملفات الشخصية' },
   'Reading Options': { de: 'Leseoptionen', fr: 'Options de lecture', es: 'Opciones de lectura', ja: 'よみかたの せってい', ar: "خيارات القراءة" },
   '‹ Back to Reading Options': { de: '‹ Zurück zu den Lese-Einstellungen', fr: '‹ Retour aux options de lecture', es: '‹ Volver a Opciones de lectura', ja: '‹ よみかたの せっていに もどる', ar: "‹ العودة إلى خيارات القراءة" },
