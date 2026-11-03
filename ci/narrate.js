@@ -26,7 +26,7 @@ const VOICES = [
   // id: ElevenLabs' standard voice ID, used if the key isn't allowed to look voices up.
   // pace: how fast each voice speaks at the app's default speed (every narrator at 0.75, a calm bedtime pace — 24 Oct 2026).
   { key: 'lily', label: 'Lily', find: ['lily'], id: 'pFZP5JQG7iQjIQuC4Bku', pace: 0.75 },
-  { key: 'gregory', label: 'Gregory Grumble', find: ['gregory grumble', 'grumble'], pace: 0.75, wordPace: 1 }, // (single tapped words keep the clips already made)
+  { key: 'gregory', label: 'Gregory Grumble', find: ['gregory grumble', 'grumble'], pace: 0.75, wordPace: 1, retired: true }, // Henry: retired, nothing new is made in his voice (Jörg, 3 Nov 2026)
   // Johnny Kid (Jörg, 24 Oct 2026): only Different for now (books: the only books this voice reads)
   { key: 'johnny', label: 'Johnny Kid', find: ['johnny kid'], pace: 0.75, wordPace: 1, books: ['different'] },
   // Spuds Oxley (Jörg, 1 Nov 2026): a try-out first, Different in English and German only (trial: no Learn to Read
@@ -286,6 +286,7 @@ async function makeWords(v, voiceId) {
   let made = 0, kept = 0, failed = 0, chars = 0;
 
   for (const v of VOICES) {
+    if (v.retired) continue; // (Henry: no new narration)
     const voiceId = await findVoice(v);
     if (!voiceId) continue;
     data[v.key] = data[v.key] || {};

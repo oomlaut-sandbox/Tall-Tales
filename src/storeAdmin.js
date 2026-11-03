@@ -5,7 +5,7 @@
 // A published book lives in Storage under books/<id>/:
 //   content.json            title, credits, cover title and the pages (words + picture file names)
 //   cover.jpg, pages/<pid>.jpg
-//   narration/<voice>/…     made by the "narrate" function in Supabase (Fatima and Henry)
+//   narration/<voice>/…     made by the "narrate" function in Supabase (Fatima and Mo)
 //   narration/<lang>/<voice>/…   the same in another language, once its translation is approved
 // content.json also carries the translations (langs), made by the "translate" function and read over and
 // approved by the store owner in the Store Manager (30 Oct 2026).
@@ -129,7 +129,7 @@ export async function saveTranslation(id, lang, edits, access) {
   if (error) throw new Error(error.message);
 }
 
-// Approved: the language is narrated (Fatima and Henry), then families see and hear the book in it.
+// Approved: the language is narrated (Fatima and Mo), then families see and hear the book in it.
 export async function approveTranslation(id, lang, edits, access) {
   if (edits) await saveTranslation(id, lang, edits, access);
   const { error } = await supabase.functions.invoke('narrate', { body: { bookId: id, lang } });

@@ -1,4 +1,4 @@
-// Store narration: makes the Fatima and Henry narration (ElevenLabs, with word timings for the
+// Store narration: makes the Fatima and Mo narration (ElevenLabs, with word timings for the
 // highlighting) for a Book Store book that was published from the app's Store Manager.
 //
 // Called from the app by the store owner: POST { bookId, lang? }. It answers straight away and carries on in
@@ -21,7 +21,7 @@ const MODEL = 'eleven_multilingual_v2';
 // The same voices and paces as the books inside the app (ci/narrate.js).
 const VOICES = [
   { key: 'lily', find: ['lily'], id: 'pFZP5JQG7iQjIQuC4Bku', pace: 0.75 },
-  { key: 'gregory', find: ['gregory grumble', 'grumble'], id: null as string | null, pace: 0.75 }, // (every narrator at 0.75, as in ci/narrate.js)
+  // Henry ('gregory') is retired: no new narration in his voice, in any language (Jörg, 3 Nov 2026)
   { key: 'spuds', find: ['spuds oxley', 'spuds'], id: null as string | null, pace: 0.75 }, // Mo (1 Nov 2026)
 ];
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type' };

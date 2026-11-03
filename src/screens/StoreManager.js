@@ -261,7 +261,7 @@ function BookRow({ book, shelves, siblings, onChanged, toast }) {
           ) : null}
           {!book.bundled ? (
             <>
-              <Text style={styles.label}>Narration (Fatima, Henry and Mo)</Text>
+              <Text style={styles.label}>Narration (Fatima and Mo)</Text>
               <Text style={styles.note}>{NARRATION[book.narration_status] || book.narration_status}{book.narration_note ? `: ${book.narration_note}` : ''}</Text>
               <Pressable onPress={async () => { try { await startNarration(book.id); toast('Making the narration…'); onChanged(); } catch (e) { toast(`Couldn’t start it. ${e.message}`); } }}
                 style={[styles.pill, { backgroundColor: colors.blue }]} accessibilityRole="button">
