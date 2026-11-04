@@ -23,6 +23,7 @@ import Membership from '../components/Membership';
 import { appUserId, buyBook, canOpen, purchasesReady, restorePurchases, usePurchases } from '../purchases';
 import { PRICES } from '../prices';
 import { useLang, useT } from '../i18n';
+import { addToStoreLibrary, removeFromStoreLibrary, useStoreLibrary } from '../storeLibrary';
 import { useControls } from '../controls';
 import CoverArt from '../components/CoverArt';
 import { SHOWN_BOOKS, STORIES } from '../story';
@@ -280,7 +281,7 @@ function WhoReads({ onPress }) {
 const scrollAsks = { books: { current: 0 }, wip: { current: 0 } };
 // mode: 'library' (My Library: just My Book Collection) or 'workspace' (My Workspace: who is reading, Let's make a
 // book, Work in Progress, My Notes, Things to share and the corkboard) (Jörg, 29 Oct 2026)
-export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingOptions, onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, onNotebook, notebookHidden, onNotebookRect }) {
+export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingOptions, onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, recentlyDeleted, onNotebook, notebookHidden, onNotebookRect }) {
   const t = useT();
   // Read a book (from the start page): open scrolled down so My Books is at the top, just under the band
   const ws = mode === 'workspace';
@@ -321,6 +322,8 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
   const [selecting, setSelecting] = useState(false);
   const [picked, setPicked] = useState([]);
   const [confirm, setConfirm] = useState(false);
+  const [binOpen, setBinOpen] = useState(false); // Recently deleted
+  const [binAsk, setBinAsk] = useState(null); // 'all' or a book's id: delete for good now?
   const [gate, setGate] = useState(null); // 'share' | 'delete'
   const chosen = stories.filter((s) => picked.includes(s.id));
   const toggle = (id) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
@@ -417,6 +420,12 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
             <Text style={styles.restore}>{t('Show removed books ({n})', { n: removedCount })}</Text>
           </Pressable>
         ) : null}
+        {/* Recently deleted: your own books, for 30 days (Jörg, 4 Nov 2026) */}
+        {!selecting && recentlyDeleted && recentlyDeleted.list.length ? (
+          <Pressable onPress={() => setBinOpen(true)} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
+            <Text style={styles.restore}>{t('Recently deleted ({n})', { n: recentlyDeleted.list.length })}</Text>
+          </Pressable>
+        ) : null}
         {/* (a much bigger space after My Books: Jörg, 25 Oct 2026) */}
         {/* Reading Options under the books, in black glass (Jörg, 26 Oct 2026) */}
         {!selecting && !ws && onReadingOptions ? <ReadingOptionsSection {...onReadingOptions} style={{ width: '100%', marginTop: 26 }} /* a little apart from the books (Jörg, 29 Oct 2026) */ /> : null}
@@ -481,9 +490,36 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
         })() : null}
       </ScrollView>
       {folderOpen ? <Folder narrator={narrator} toast={toast} canSend={controls.sharing !== false} onClose={() => { const y = folderY.current; setFolderOpen(false); requestAnimationFrame(() => scrollRef.current && scrollRef.current.scrollTo({ y, animated: false })); }} /* back to the same spot (Jörg, 29 Oct 2026) */ /> : null}
+      {binOpen && recentlyDeleted && !binAsk ? (
+        <ConfirmBox modal title={t('Recently deleted')} message={t('Books you made and deleted stay here for 30 days. Then they’re gone for good.')}
+          confirm={t('Delete all now')} cancel={t('Close')} onCancel={() => setBinOpen(false)} onConfirm={() => setBinAsk('all')}>
+          <ScrollView style={{ maxHeight: 320, marginTop: 16 }} contentContainerStyle={{ gap: 12 }}>
+            {recentlyDeleted.list.map((b) => (
+              <View key={b.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                <View style={{ width: 52, height: 52, borderRadius: 4, overflow: 'hidden', backgroundColor: '#444' }}>
+                  {b.cover && b.cover.uri ? <Image source={{ uri: liveUri(b.cover.uri) }} style={{ width: '100%', height: '100%' }} /> : b.pages[0] && b.pages[0].image ? <Image source={b.pages[0].image} style={{ width: '100%', height: '100%' }} /> : null}
+                </View>
+                <View style={{ flex: 1, minWidth: 0 }}>
+                  <Text numberOfLines={1} style={{ fontFamily: fonts.uiBold, fontSize: 16, color: colors.white }}>{b.title}</Text>
+                  <Text style={{ fontFamily: fonts.ui, fontSize: 13, color: colors.textSoft }}>{b.daysLeft === 1 ? t('1 day left') : t('{n} days left', { n: b.daysLeft })}</Text>
+                </View>
+                <Pressable onPress={() => { recentlyDeleted.restore(b.id); toast && toast(t('“{title}” is back.', { title: b.title })); if (recentlyDeleted.list.length <= 1) setBinOpen(false); }} hitSlop={6} accessibilityRole="button"
+                  style={[styles.sheetBtn, { height: 34, paddingHorizontal: 14 }]}>
+                  <Text style={[styles.sheetBtnText, { fontSize: 14 }]}>{t('Put back')}</Text>
+                </Pressable>
+              </View>
+            ))}
+          </ScrollView>
+        </ConfirmBox>
+      ) : null}
+      {binAsk ? (
+        <ConfirmBox modal title={t('Delete for good?')} message={t('These books, with their pictures and recordings, can’t be brought back.')}
+          confirm={t('Delete')} cancel={t('Keep')} onCancel={() => setBinAsk(null)}
+          onConfirm={() => { recentlyDeleted.purge(binAsk === 'all' ? undefined : [binAsk]); setBinAsk(null); setBinOpen(false); }} />
+      ) : null}
       {confirm && !gate ? ( /* (hidden while the grown-up question is asked: it sat on top of the passcode, 31 Oct 2026) */
         <ConfirmBox title={chosen.length === 1 ? t('Delete “{title}”?', { title: chosen[0].title }) : t('Delete {n} books?', { n: chosen.length })}
-          message={[mineCount ? t('Books you made, with their pictures and recordings, are deleted for good.') : '', chosen.length > mineCount ? t('Built-in books can be brought back later.') : ''].filter(Boolean).join(' ') || null}
+          message={[mineCount ? t('Books you made stay in Recently deleted for 30 days, with their pictures and recordings, in case you change your mind.') : '', chosen.length > mineCount ? t('Built-in books can be brought back later.') : ''].filter(Boolean).join(' ') || null}
           confirm={t('Delete')} cancel={t('Keep')} onConfirm={() => setGate('delete')} onCancel={() => setConfirm(false)} />
       ) : null}
       <ParentGate everyday={gate === 'delete'} visible={!!gate} reason={gate === 'share' ? t('Sharing sends an invitation to Coro by message or email.') : t('Deleting books from the library.')}
@@ -538,7 +574,7 @@ export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
   const extra = cat ? STORIES.filter((st) => st.storeShelf && SHOWN_BOOKS.includes(st.id) && !cat.books.some((b) => b.id === st.id))
     .map((st, i) => ({ id: st.id, title: st.title, author: st.author || null, blurb: st.blurb || null, shelf_id: st.storeShelf, sort: i, access: 'free', bundled: true, featured: false })) : [];
   // membership only, no single books (Jörg, 29 Oct 2026): a book once marked 'paid' is a members' book
-  const shown = cat ? { ...cat, books: [...cat.books.map((b) => localizeStoreBook(b, lang)).filter((b) => (SHOWN_BOOKS.includes(b.id) || !b.bundled) && !STORIES.some((st) => st.id === b.id && st.libraryOnly)), ...extra] } : null; // plus every book published from the Store Manager
+  const shown = cat ? { ...cat, books: [...cat.books.map((b) => ({ ...localizeStoreBook(b, lang), raw: b /* (kept as is for My Library) */ })).filter((b) => (SHOWN_BOOKS.includes(b.id) || !b.bundled) && !STORIES.some((st) => st.id === b.id && st.libraryOnly)), ...extra] } : null; // plus every book published from the Store Manager
   // (web preview only, #pay-demo: two books shown as a members' book and a single book to buy)
   if (shown && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash === '#pay-demo') {
     shown.books = shown.books.map((b) => (b.id === 'rough-lives' ? { ...b, access: 'member' } : b));
@@ -614,7 +650,7 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
   const boxW = Math.min(areaW - 40, across ? 600 : 400);
   const M = 20; // margin around the cover inside the card
   const ear = Math.max(24, u * 7.5); // the dog-ear's size (as in DogEar)
-  const cs = Math.round(across ? Math.min(boxW * 0.42, areaH - Math.max(insets.top, 20) - 40 - 2 * M - 66) : boxW * 0.52); // cover size (sideways: room for the green button under it)
+  const cs = Math.round(across ? Math.min(boxW * 0.42, areaH - Math.max(insets.top, 20) - 40 - 2 * M - 66 - (bundledStory(book.id) ? 0 : 48) /* (room for Add to My Library too) */) : boxW * 0.52); // cover size (sideways: room for the green button under it)
   const [boxH, setBoxH] = useState(0);
   // right in the middle of the space between the bars (top bar / camera strip and the menu bar)
   const spaceL = across ? insets.left : 0, spaceT = across ? 0 : insets.top;
@@ -677,6 +713,18 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
       <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={styles.sheetBtnText}>{label}</Text>
     </Pressable>
   );
+  // Add to My Library: a store book the family can read goes on their shelf (Jörg, 4 Nov 2026); tapped again, it comes off
+  const lib = useStoreLibrary();
+  const shelved = lib.some((r) => r.id === book.id);
+  const addable = canRead && !bundledStory(book.id) && !busy;
+  const addPill = addable ? (
+    <Pressable onPress={() => { if (shelved) { removeFromStoreLibrary([book.id]); } else { addToStoreLibrary(book.raw || book); playSound('cardLift'); } }} hitSlop={6}
+      accessibilityRole="button" accessibilityState={{ selected: shelved }}
+      style={[styles.sheetBtn, { paddingHorizontal: 14, backgroundColor: 'transparent', borderWidth: 1.5, borderColor: shelved ? colors.green : '#6a6a6a' }]}>
+      <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75} style={[styles.sheetBtnText, { color: shelved ? colors.green : '#333' }]}>{shelved ? t('✓ In My Library') : t('Add to My Library')}</Text>
+    </Pressable>
+  ) : null;
+  const actions = <View style={{ gap: 8, alignItems: 'flex-start' }}>{addPill}{pill}</View>;
   // under the cover: title, author, pages and price, then a short description
   const info = (
     <View style={{ gap: 8 }}>
@@ -720,11 +768,11 @@ function BookCard({ u, book, rect, sideways, barH, barW, onClose, onRead, busy, 
         <View style={{ flexDirection: across ? 'column' : 'row' }}>
           <View style={{ width: cs + M, height: across ? cs + M : cs + 2 * M }} />{/* the same margin above and below the cover */}
           {/* sideways: the green button under the cover, on its left edge */}
-          {across ? <View style={{ paddingLeft: M, paddingTop: 26, paddingBottom: M, alignItems: 'flex-start' }}>{pill}</View> : null}
+          {across ? <View style={{ paddingLeft: M, paddingTop: 26, paddingBottom: M, alignItems: 'flex-start' }}>{actions}</View> : null}
           {!across ? (
             <View style={{ flex: 1, justifyContent: 'space-between', alignItems: 'flex-start', padding: 14, paddingLeft: 16, paddingTop: M, paddingBottom: M }}>
               <View />
-              {pill}
+              {actions}
             </View>
           ) : null}
         </View>

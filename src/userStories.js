@@ -128,14 +128,59 @@ export function setBookReview(id, patch) {
   });
 }
 
+// Deleting a book of your own puts it in Recently deleted for 30 days, pictures and recordings and all, so an
+// accident can be undone (like Photos: Jörg, 4 Nov 2026). After 30 days, or on "Delete now", it's gone for good.
+export const KEEP_DELETED_DAYS = 30;
+const DAY = 24 * 60 * 60 * 1000;
 export function deleteUserStory(id) {
   return serial(async () => {
     const list = await loadJSON('stories', []);
     const s = list.find((x) => x.id === id);
     const next = list.filter((x) => x.id !== id);
-    await saveJSON('stories', next); // (the list first, then the files: never a saved book pointing at deleted pictures)
-    if (s) { s.pages.forEach((p) => [p.uri, p.uri2, p.src, p.src2].forEach((x) => x && deleteFile(liveUri(x)))); if (s.cover) [s.cover.uri, s.cover.src].forEach((x) => x && deleteFile(liveUri(x))); }
-    await pruneRecordings(id, []);
+    if (s) {
+      const bin = await loadJSON('deletedStories', []);
+      await saveJSON('deletedStories', [{ ...s, deletedAt: Date.now() }, ...bin.filter((x) => x.id !== id)]);
+    }
+    await saveJSON('stories', next);
     return next.map(fromSaved);
+  });
+}
+// a deleted book's pictures, cover and recordings, gone for good
+async function wipe(s) {
+  s.pages.forEach((p) => [p.uri, p.uri2, p.src, p.src2].forEach((x) => x && deleteFile(liveUri(x))));
+  if (s.cover) [s.cover.uri, s.cover.src].forEach((x) => x && deleteFile(liveUri(x)));
+  await pruneRecordings(s.id, []);
+}
+// Recently deleted, newest first, as { id, title, cover, daysLeft }; books past 30 days are wiped on the way
+export function loadDeletedStories() {
+  return serial(async () => {
+    const bin = await loadJSON('deletedStories', []);
+    const now = Date.now();
+    const old = bin.filter((x) => now - (x.deletedAt || 0) > KEEP_DELETED_DAYS * DAY);
+    if (old.length) { await saveJSON('deletedStories', bin.filter((x) => !old.includes(x))); for (const s of old) await wipe(s); }
+    return bin.filter((x) => !old.includes(x)).map((x) => ({ ...fromSaved(x), daysLeft: Math.max(1, Math.ceil((KEEP_DELETED_DAYS * DAY - (now - (x.deletedAt || 0))) / DAY)) }));
+  });
+}
+// back where it was: the stories list again (returns the stories)
+export function restoreDeletedStory(id) {
+  return serial(async () => {
+    const bin = await loadJSON('deletedStories', []);
+    const s = bin.find((x) => x.id === id);
+    const list = await loadJSON('stories', []);
+    if (s) {
+      const { deletedAt, ...back } = s;
+      await saveJSON('stories', [...list.filter((x) => x.id !== id), back]);
+      await saveJSON('deletedStories', bin.filter((x) => x.id !== id));
+    }
+    return (await loadJSON('stories', [])).map(fromSaved);
+  });
+}
+// gone for good now (ids: some, or all of them when left out)
+export function purgeDeletedStories(ids) {
+  return serial(async () => {
+    const bin = await loadJSON('deletedStories', []);
+    const go = ids ? bin.filter((x) => ids.includes(x.id)) : bin;
+    await saveJSON('deletedStories', bin.filter((x) => !go.includes(x)));
+    for (const s of go) await wipe(s);
   });
 }
