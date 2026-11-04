@@ -62,7 +62,9 @@ async function packBook(s) {
 // book made in Coro itself. Returns false when there's nothing to send (the caller then shares the plain invitation).
 export async function shareBookWithVoices(story) {
   const recs = await listRecordings(story);
-  const own = story.mine ? await savedStory(story.id).catch(() => null) : null;
+  // your own book, also when it's open as its Book Store copy (in another language, or from the Book Store): the
+  // book you made goes with it, so it can be opened and edited on another device (Jörg, 4 Nov 2026)
+  const own = story.mine ? await savedStory(story.id).catch(() => null) : story.ownId ? await savedStory(story.ownId).catch(() => null) : null;
   if (!recs.length && !own) return false;
   const readers = (await getReaders()).filter((r) => recs.some((x) => x.reader === r.id));
   const pages = [];

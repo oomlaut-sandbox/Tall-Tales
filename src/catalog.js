@@ -142,6 +142,7 @@ export async function loadStoreBook(book, lang = 'en', appUserId = null) {
   const coverTitle = c.coverTitle && L && L.coverTitle ? { ...c.coverTitle, text: L.coverTitle } : c.coverTitle || null;
   return {
     id: c.id, title, author: c.author || undefined, store: true,
+    ...(book.source_story ? { ownId: book.source_story } : {}), // (made in this app's book maker: Share sends that book itself: 4 Nov 2026)
     ...(L ? { lang } : {}),
     cover: coverImg ? { uri: coverImg.uri, title: coverTitle } : null,
     pages: [titlePage, ...pages],

@@ -36,7 +36,7 @@ import IdeaRoom from './src/screens/IdeaRoom';
 import Settings from './src/screens/Settings';
 import MusicSounds from './src/screens/MusicSounds';
 import Membership from './src/components/Membership';
-import { purchasesReady, usePurchases } from './src/purchases';
+import { appUserId, canOpen, purchasesReady, usePurchases } from './src/purchases';
 import { FREE_BOOKS } from './src/prices';
 import TapePlayer from './src/components/TapePlayer';
 import './src/myMusic'; // the family's own music joins the list at start
@@ -46,7 +46,7 @@ import Notebook, { NOTEBOOK_COVER, R_EDGE, R_SPINE } from './src/screens/Noteboo
 import { onNewBadge } from './src/badges';
 import { SHOWN_BOOKS, STORIES, localizeStory } from './src/story';
 import { shareInvite } from './src/invite';
-import { deleteUserStory, loadUserStories } from './src/userStories';
+import { deleteUserStory, loadDeletedStories, loadUserStories, purgeDeletedStories, restoreDeletedStory } from './src/userStories';
 import TeacherDesk from './src/screens/TeacherDesk';
 import { loadJSON, loadJSONFor, saveJSON, saveJSONFor } from './src/storage';
 import { TITLE_ICONS } from './src/titleIcons';
@@ -59,7 +59,8 @@ import PlaybackPanel from './src/components/PlaybackPanel';
 import Playlists from './src/screens/Playlists';
 import { playOrder } from './src/playlists';
 import { closePlayerFromBar, fadeOutAmbient, getAmbient, onAmbient, setAmbientPlayer } from './src/ambient';
-import { ageAllowed, ageOf, cachedCatalog, loadStoreBook, refreshCatalog, storeLangReady } from './src/catalog';
+import { ageAllowed, ageOf, cachedCatalog, coverArtFor, coverFor, loadStoreBook, localizeStoreBook, refreshCatalog, storeLangReady } from './src/catalog';
+import { refreshStoreLibrary, removeFromStoreLibrary, useStoreLibrary } from './src/storeLibrary';
 import { addProfile, loadProfiles, onProfiles, switchProfile } from './src/profiles';
 import { loadGrownupCode } from './src/grownupCode';
 import { startRemoteTracks } from './src/remoteTracks';
@@ -109,6 +110,14 @@ function Root() {
   const [prefs, setPrefs] = useState({ mode: 'page', sound: false, speed: 'normal', voice: 'narrator' }) // Page by Page narration by default;
   const [userStories, setUserStories] = useState([]);
   const [removed, setRemoved] = useState([]); // built-in books taken off the shelf (can be restored)
+  // Recently deleted: your own books, kept 30 days (Jörg, 4 Nov 2026)
+  const [deleted, setDeleted] = useState([]);
+  useEffect(() => { loadDeletedStories().then(setDeleted).catch(() => {}); }, []);
+  const recentlyDeleted = {
+    list: deleted,
+    restore: async (id) => { setUserStories(await restoreDeletedStory(id)); setDeleted(await loadDeletedStories()); },
+    purge: async (ids) => { await purgeDeletedStories(ids); setDeleted(await loadDeletedStories()); },
+  };
   useEffect(() => { loadJSON('removedBooks', []).then((r) => Array.isArray(r) && setRemoved(r)); }, []);
   const setRemovedSaved = (r) => { setRemoved(r); saveJSON('removedBooks', r); };
   const [draft, setDraft] = useState(null);
@@ -272,9 +281,9 @@ function Root() {
   const [twins, setTwins] = useState({});
   useEffect(() => {
     if (screen !== 'library') return;
-    const use = (c) => { const m = {}; for (const b of (c && c.books) || []) if (b.source_story) m[b.source_story] = b; if (Object.keys(m).length) setTwins(m); };
+    const use = (c) => { const m = {}; for (const b of (c && c.books) || []) if (b.source_story) m[b.source_story] = b; if (Object.keys(m).length) setTwins(m); refreshStoreLibrary(c && c.books); };
     cachedCatalog().then(use).catch(() => {});
-    if (userStories.some((x) => x.published)) refreshCatalog().then(use).catch(() => {}); // (the latest, quietly)
+    if (userStories.some((x) => x.published) || storeLib.length) refreshCatalog().then(use).catch(() => {}); // (the latest, quietly)
   }, [screen]);
   const inReadLang = (s) => {
     const tw = twins[s.id];
@@ -284,9 +293,16 @@ function Root() {
     return { ...s, title: L.title || s.title, cover, twin: tw };
   };
   const openStory = (s0, rect) => {
+    // a store book in My Library: fetched from the store, in the reading language (members' and bought books
+    // only while they still may be opened)
+    if (s0 && s0.storeRow) {
+      if (!canOpen(purchases, s0.storeRow)) { toast(s0.storeRow.access === 'paid' ? t('Buy this book in the Book Store to read it.') : t('This book is for members. Join in the Book Store to read it.')); return; }
+      appUserId().then((uid) => loadStoreBook(s0.storeRow, readLang, uid)).then((b) => openStory(b, rect)).catch((e) => toast(t(e.message)));
+      return;
+    }
     // your own book in the store's translation: its translated pages (and narration) come from the store
     if (s0 && s0.twin && storeLangReady(s0.twin, readLang)) {
-      loadStoreBook(s0.twin, readLang).then((b) => openStory({ ...b, cover: b.cover || s0.cover }, rect)).catch(() => openStory({ ...s0, twin: null }, rect));
+      appUserId().then((uid) => loadStoreBook(s0.twin, readLang, uid)).then((b) => openStory({ ...b, cover: b.cover || s0.cover }, rect)).catch(() => openStory({ ...s0, twin: null }, rect));
       return;
     }
     const s = s0 && s0.langs ? localizeStory(s0, readLang) : s0; // a translated book opens in the reading language
@@ -299,7 +315,14 @@ function Root() {
   };
   const openMenu = () => { setDrawer((d) => !d); };
   // the books on this child's shelf (My Library's books, without those rated for older children)
-  const shelf = [...STORIES.filter((s) => SHOWN_BOOKS.includes(s.id) && !removed.includes(s.id)).map((s) => localizeStory(s, readLang)), ...userStories.map(inReadLang)];
+  // store books the family added to My Library ("Add to My Library": Jörg, 4 Nov 2026), shaped like the shelf's books;
+  // their pages come from the store when opened
+  const storeLib = useStoreLibrary();
+  const fromStore = storeLib.filter((r) => !userStories.some((u) => u.id === r.source_story) /* (your own book's store copy: yours is already there) */).map((r) => {
+    const b = localizeStoreBook(r, readLang);
+    return { id: r.id, title: b.title, author: r.author || '', pages: [{ image: coverFor(r) }], cover: coverArtFor(b), storeRow: r, minAge: r.min_age, maxAge: r.max_age };
+  });
+  const shelf = [...STORIES.filter((s) => SHOWN_BOOKS.includes(s.id) && !removed.includes(s.id)).map((s) => localizeStory(s, readLang)), ...userStories.map(inReadLang), ...fromStore];
   const childShelf = shelf.filter((s) => ageAllowed(ageOf(null, s), controls.childAge));
   // a playlist playing: its books one after another, each reading itself (Auto Play) and the next opening
   // a moment after The End
@@ -459,14 +482,16 @@ function Root() {
               setFlyer((f) => (f && !f.to && !f.hold && r ? { ...f, to: r } : f));
             }}
             onCreate={newBook} onEdit={openPublisher} onPlaylists={() => go('playlists')}
-            removedCount={removed.length} onRestore={() => setRemovedSaved([])}
+            removedCount={removed.length} onRestore={() => setRemovedSaved([])} recentlyDeleted={recentlyDeleted}
             onShare={(s) => shareInvite(s.title)} // an invitation to the app, not the book
             onDelete={async (list) => {
-              const builtIn = list.filter((s) => !s.mine).map((s) => s.id);
+              const store = list.filter((s) => s.storeRow).map((s) => s.id); // (store books: off the shelf; still in the Book Store)
+              if (store.length) removeFromStoreLibrary(store);
+              const builtIn = list.filter((s) => !s.mine && !s.storeRow).map((s) => s.id);
               if (builtIn.length) setRemovedSaved([...new Set([...removed, ...builtIn])]);
               let mine = null;
-              for (const s of list.filter((x) => x.mine)) mine = await deleteUserStory(s.id);
-              if (mine) setUserStories(mine);
+              for (const s of list.filter((x) => x.mine)) mine = await deleteUserStory(s.id); // (into Recently deleted, for 30 days)
+              if (mine) { setUserStories(mine); loadDeletedStories().then(setDeleted); }
               toast(list.length === 1 ? t('Book deleted.') : t('{n} books deleted.', { n: list.length }));
             }} />
           </View>
@@ -495,14 +520,16 @@ function Root() {
               setFlyer((f) => (f && !f.to && !f.hold && r ? { ...f, to: r } : f));
             }}
             onCreate={newBook} onEdit={openPublisher} onPlaylists={() => go('playlists')}
-            removedCount={removed.length} onRestore={() => setRemovedSaved([])}
+            removedCount={removed.length} onRestore={() => setRemovedSaved([])} recentlyDeleted={recentlyDeleted}
             onShare={(s) => shareInvite(s.title)} // an invitation to the app, not the book
             onDelete={async (list) => {
-              const builtIn = list.filter((s) => !s.mine).map((s) => s.id);
+              const store = list.filter((s) => s.storeRow).map((s) => s.id); // (store books: off the shelf; still in the Book Store)
+              if (store.length) removeFromStoreLibrary(store);
+              const builtIn = list.filter((s) => !s.mine && !s.storeRow).map((s) => s.id);
               if (builtIn.length) setRemovedSaved([...new Set([...removed, ...builtIn])]);
               let mine = null;
-              for (const s of list.filter((x) => x.mine)) mine = await deleteUserStory(s.id);
-              if (mine) setUserStories(mine);
+              for (const s of list.filter((x) => x.mine)) mine = await deleteUserStory(s.id); // (into Recently deleted, for 30 days)
+              if (mine) { setUserStories(mine); loadDeletedStories().then(setDeleted); }
               toast(list.length === 1 ? t('Book deleted.') : t('{n} books deleted.', { n: list.length }));
             }} />
           </Animated.View>
