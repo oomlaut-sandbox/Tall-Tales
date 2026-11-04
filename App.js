@@ -624,10 +624,12 @@ function Root() {
         })() : null}
         <ParentGate everyday visible={profileGate} reason={t('Your profile is for grown-ups.')} onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
         {splash ? <Splash onDone={() => setSplash(false)} /> : null}
-        {introWho ? <Intro who={introWho} onBack={() => { setIntroWho(null); setCoverOpen(true); setStartKey((n) => n + 1); }} onDone={({ who, age, name }) => {
+        {introWho ? <Intro who={introWho} onBack={() => { setIntroWho(null); setCoverOpen(true); setStartKey((n) => n + 1); }} onDone={({ who, age, name, essential }) => {
+          // 'Show essential info only' on the grown-ups' last page: the hint and tip bubbles off (Jörg, 4 Nov 2026)
+          if (essential) setControls({ ...controls, hints: false });
           // a kid's age goes into their parental controls; a grown-up's first profile is made with the name and age
           if (who === 'kid' && age != null) setControls({ ...controls, childAge: age });
-          if (who === 'grownup' && (name || age != null)) addProfile({ name, age });
+          if (who === 'grownup' && (name || age != null)) addProfile({ name, age, ...(essential ? { hints: false } : null) });
           saveJSONFor('app', 'intro', { done: Date.now(), who });
           setIntroAsk(false); setIntroWho(null); setCoverOpen(true); setStartKey((n) => n + 1); // back to the start page, the notebook open
         }} /> : null}

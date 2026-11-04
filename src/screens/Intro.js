@@ -17,7 +17,7 @@ import AgeWheel from '../components/AgeWheel';
 // the pages of each journey
 const PAGES = {
   kid: ['kidMeet', 'kidHello', 'kidAge'], // (the video first, before anyone can skip past it: Jörg, 27 Oct 2026) // (Meet Coro: a simpler video page, Jörg 26 Oct 2026)
-  grownup: ['grownHello', 'whatIs', 'access', 'grownProfile'], // (access: Made for every reader, Jörg 27 Oct 2026) // (What is Coro?: the tutorial videos, Jörg 26 Oct 2026)
+  grownup: ['grownHello', 'whatIs', 'access', 'grownProfile', 'grownLast'], // (Just one more thing…: Jörg, 4 Nov 2026) // (access: Made for every reader, Jörg 27 Oct 2026) // (What is Coro?: the tutorial videos, Jörg 26 Oct 2026)
 };
 
 // the little line icons beside each point (the heading icons, drawn dark on the light grey boxes)
@@ -56,6 +56,7 @@ export default function Intro({ who, onDone, onBack }) {
   const [age, setAge] = useState(null);
   const [turning, setTurning] = useState(false); // a finger on the age wheel
   const [name, setName] = useState('');
+  const [essential, setEssential] = useState(false); // 'Show essential info only': the hint and tip bubbles off
   // each page slides in from the right, like turning a page
   const slide = useRef(new Animated.Value(0)).current;
   const still = useReduceMotion(); // Reduce Motion: the page fades in, without sliding
@@ -63,7 +64,7 @@ export default function Intro({ who, onDone, onBack }) {
     slide.setValue(1);
     Animated.timing(slide, { toValue: 0, duration: still ? 250 : 380, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
   }, [i]);
-  const finish = () => onDone({ who, age, name: name.trim() });
+  const finish = () => onDone({ who, age, name: name.trim(), essential });
   const next = () => (i < pages.length - 1 ? setI(i + 1) : finish());
   // back: the page before, or (on the first page) the notebook's question again
   const back = () => (i > 0 ? setI(i - 1) : onBack && onBack());
@@ -138,6 +139,21 @@ export default function Intro({ who, onDone, onBack }) {
     </>
   );
 
+  if (page === 'grownLast') body = (
+    <>
+      <Text style={styles.title}>{t('Just one more thing…')}</Text>
+      <Text style={styles.lead}>{t('Please remember you can customize your experience by using the parental controls in Settings. We highly recommend you have a look.')}</Text>
+      <Text style={styles.lead}>{t('In the meantime, we’ve included a lot of helpful popups that guide and teach you with practical hints and tips. If you’re not new to Coro and you’d rather keep it to essential messages only, check this box. (Don’t worry, everything can be turned on and off again in Settings.)')}</Text>
+      <Pressable onPress={() => setEssential((v) => !v)} accessibilityRole="checkbox" accessibilityState={{ checked: essential }} hitSlop={8}
+        style={[styles.box, { flexDirection: 'row', alignItems: 'center', gap: 14 }]}>
+        <View style={[styles.check, essential && styles.checkOn]}>
+          {essential ? <View style={styles.tick} /> : null}
+        </View>
+        <Text style={[styles.boxTitle, { flex: 1 }]}>{t('Show essential info only')}</Text>
+      </Pressable>
+    </>
+  );
+
   return (
     <View style={[StyleSheet.absoluteFill, styles.screen]}>
       <DeskFelt spot="intro" />
@@ -175,6 +191,9 @@ const styles = StyleSheet.create({
   boxTitle: { fontFamily: fonts.uiBold, fontSize: 18, color: '#222' },
   boxText: { fontFamily: fonts.ui, fontSize: 16, lineHeight: 22, color: '#333' },
   small: { fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, color: '#555' },
+  check: { width: 28, height: 28, borderRadius: 7, borderWidth: 2, borderColor: '#555', backgroundColor: '#f2f2f2', alignItems: 'center', justifyContent: 'center' },
+  checkOn: { backgroundColor: colors.green, borderColor: colors.green },
+  tick: { width: 14, height: 8, borderLeftWidth: 2.6, borderBottomWidth: 2.6, borderColor: colors.white, transform: [{ rotate: '-45deg' }, { translateY: -2 }] },
   chip: { minWidth: 46, height: 40, borderRadius: 20, paddingHorizontal: 14, backgroundColor: '#bdbdbd', alignItems: 'center', justifyContent: 'center' },
   chipOn: { backgroundColor: colors.green },
   chipText: { fontFamily: fonts.uiBold, fontSize: 17, color: '#222' },

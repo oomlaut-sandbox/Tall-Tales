@@ -79,7 +79,7 @@ export function switchProfile(id) {
 }
 
 // a new child: the first one keeps what's already on the phone; later ones start fresh, with their age set
-export async function addProfile({ name, color, age, photo, cls }) {
+export async function addProfile({ name, color, age, photo, cls, hints }) {
   if (!canAdd(cls)) return null;
   // (a list of names is added within the same millisecond: a running count and a random part keep every id its own)
   // ('main' only for the very first profile ever: one made after all were removed starts fresh, never with the
@@ -88,7 +88,7 @@ export async function addProfile({ name, color, age, photo, cls }) {
   const p = { id, name: (name || '').trim() || 'Reader', color: color || PROFILE_COLORS[state.list.length % PROFILE_COLORS.length][0], ...(photo ? { photo } : {}), ...(cls ? { cls } : {}) };
   // a student joining a class that's locked is locked too
   const lockNow = cls ? await classLocked(cls).catch(() => false) : false;
-  if (id !== 'main' || lockNow) await saveJSONFor(id, 'controls', lockNow ? locked({ ...DEFAULT_CONTROLS, childAge: age ?? null }, true) : { ...DEFAULT_CONTROLS, childAge: age ?? null });
+  if (id !== 'main' || lockNow) await saveJSONFor(id, 'controls', lockNow ? locked({ ...DEFAULT_CONTROLS, childAge: age ?? null, ...(hints === false ? { hints: false } : null) }, true) : { ...DEFAULT_CONTROLS, childAge: age ?? null, ...(hints === false ? { hints: false } : null) });
   state = { ...state, list: [...state.list, p], active: state.list.length === 0 ? id : state.active, ...(id === 'main' ? { mainUsed: true } : null) };
   setScope(state.active);
   save(); emit();
