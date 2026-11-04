@@ -314,6 +314,9 @@ export default function Reader({ menuOpen = false, coverShut = false, onOpenCove
   // The book floats on dark grey (see BookFrame): two equal squares, about 30 points of grey all
   // round; the black bars take what height is left. Stacked upright; side by side on a sideways iPad.
   const { width: winW, height: winH } = useWindowDimensions();
+  // sideways, the iPad keeps its status bar along the top: Back, the bulb, Share and Next go below it (an iPhone has
+  // none sideways, so nothing moves there: 4 Nov 2026)
+  const barTop = winW > winH ? insets.top : 0;
   const BL = bookLayout(winW, winH, insets, u * 17); // the bar: the same size as on every screen
   const wide = BL.wide;
   st.current.wide = wide;
@@ -1073,17 +1076,17 @@ export default function Reader({ menuOpen = false, coverShut = false, onOpenCove
           bulb (mirroring it); sideways, in the bottom left corner, centred in the left and the bottom margins */}
       {onBackToBooks && !nightOn && !menuOpen ? (
         <BackRing onPress={() => { stopReading(); onBackToBooks(); }} label={tr('My Book Collection')}
-          style={{ position: 'absolute', zIndex: 6, left: bulbL, top: 8 } /* Back top left, the bulb under it, Next top right; upright and sideways (Jörg, 1 Nov 2026) */} />
+          style={{ position: 'absolute', zIndex: 6, left: bulbL, top: 8 + barTop } /* Back top left, the bulb under it, Next top right; upright and sideways (Jörg, 1 Nov 2026) */} />
       ) : null}
       {/* upright: Next page in the top right corner, the same as the dog ear (Jörg, 1 Nov 2026) */}
       {!menuOpen && !nightOn && !listen && idx < pages.length - 1 && !flipPair ? (
-        <NextRing onPress={withTap(() => flip(1))} label={tr('Next page')} style={{ position: 'absolute', zIndex: 6, right: bulbL, top: 8 }} />
+        <NextRing onPress={withTap(() => flip(1))} label={tr('Next page')} style={{ position: 'absolute', zIndex: 6, right: bulbL, top: 8 + barTop }} />
       ) : null}
       {/* share this book (an envelope, Jörg, 28 Oct 2026): upright in the felt's bottom right corner, sideways above the
           scissors (or above Back in books that can't be edited) */}
       {controls.sharing && !nightOn ? (
         <Pressable onPress={withTap(() => setShareGate(true))} hitSlop={14} accessibilityRole="button" accessibilityLabel={tr('Share book')}
-          style={{ position: 'absolute', zIndex: 6, left: bulbL - 1, top: 82 } /* top left, under the bulb (Jörg, 2 Nov 2026) */}>
+          style={{ position: 'absolute', zIndex: 6, left: bulbL - 1, top: 82 + barTop } /* top left, under the bulb (Jörg, 2 Nov 2026) */}>
           <Image source={ENVELOPE} style={{ width: 22, height: 22, tintColor: '#ffffff' }} resizeMode="contain" />
         </Pressable>
       ) : null}
@@ -1096,7 +1099,7 @@ export default function Reader({ menuOpen = false, coverShut = false, onOpenCove
       {/* Amber light: a very fine light bulb at the top left of the felt turns it on and off */}
       {!listen ? (
         <Pressable onPress={withTap(() => setPrefs((p) => ({ ...p, amber: !p.amber })))} hitSlop={14} accessibilityRole="switch" accessibilityState={{ checked: !!prefs.amber }}
-          accessibilityLabel={tr('Amber light')} style={[styles.bulb, { left: bulbL, top: 44 } /* under Back, top left (Jörg, 1 Nov 2026) */]}>
+          accessibilityLabel={tr('Amber light')} style={[styles.bulb, { left: bulbL, top: 44 + barTop } /* under Back, top left (Jörg, 1 Nov 2026) */]}>
           <BulbIcon size={20} on={!!prefs.amber} color="#ffffff" weight={1.7} /* solid white (Jörg, 2 Nov 2026) */ />
         </Pressable>
       ) : null}

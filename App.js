@@ -414,11 +414,11 @@ function Root() {
     if (!(width > height * 1.1)) return null;
     // sideways the top right corner belongs to the menu: the back button always lives bottom left (Jörg, 28 Oct 2026)
     // (1 Nov 2026) sideways too, Back lives in the top left: on the banner, or the felt's corner in the book maker
-    if (screen !== 'publisher' && screen !== 'notebook') return { left: screenInsets.left + 14, top: 6 };
+    if (screen !== 'publisher' && screen !== 'notebook') return { left: screenInsets.left + 14, top: screenInsets.top + 6 }; // (below the iPad's status bar, which stays sideways; an iPhone has none sideways: 4 Nov 2026)
     const ML = bookLayout(width, height, screenInsets, u * 17);
     if (!ML.wide) return null;
     const deskW = width - ML.leftW - ML.rightW;
-    return { left: ML.leftW + Math.max(2, (deskW - ML.bookW) / 4 - 10), top: Math.max(6, (height - ML.bookH) / 4 - 10) };
+    return { left: ML.leftW + Math.max(2, (deskW - ML.bookW) / 4 - 10), top: Math.max(screenInsets.top + 6, (height - ML.bookH) / 4 - 10) };
   })();
   return (
     <View style={styles.outer} onStartShouldSetResponderCapture={(e) => {
