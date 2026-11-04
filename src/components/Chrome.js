@@ -919,6 +919,21 @@ export function CoverIcon({ size = 28, color = colors.white, weight }) {
     </View>
   );
 }
+// upload: an arrow rising out of an open tray, in the same thin stroke (Jörg, 4 Nov 2026)
+export function UploadIcon({ size = 28, color = colors.white }) {
+  const w = Math.max(1.6, size * 0.07);
+  const head = size * 0.34; // the arrowhead: a square's corner, turned to point up
+  return (
+    <View style={{ width: size, height: size }}>
+      {/* the tray: open at the top */}
+      <View style={{ position: 'absolute', left: size * 0.08, right: size * 0.08, bottom: size * 0.06, height: size * 0.36, borderLeftWidth: w, borderRightWidth: w, borderBottomWidth: w, borderColor: color, borderBottomLeftRadius: size * 0.06, borderBottomRightRadius: size * 0.06 }} />
+      {/* the shaft */}
+      <View style={{ position: 'absolute', left: (size - w) / 2, top: size * 0.08, height: size * 0.6, width: w, backgroundColor: color, borderRadius: w / 2 }} />
+      {/* the head */}
+      <View style={{ position: 'absolute', left: (size - head) / 2, top: size * 0.08 + w * 0.6, width: head, height: head, borderLeftWidth: w, borderTopWidth: w, borderColor: color, transform: [{ rotate: '45deg' }], borderTopLeftRadius: w / 2 }} />
+    </View>
+  );
+}
 // the pages: a stack of pages, the front one whole and two edges peeking out behind it
 export function PagesIcon({ size = 28, color = colors.white }) {
   const w = Math.max(1.6, size * 0.07); // the same thin stroke as the house and the note

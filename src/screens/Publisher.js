@@ -13,7 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { BOOK_FONTS, bookFont, colors, fonts } from '../theme';
 import WordsOver, { DEFAULT_AT, SECOND_KEYS, WORD_SIZES, secondOf, wordsLook, wordsOverOn, wordsOverSize, wordsOverText } from '../components/WordsOver';
-import { hintsAllowed, Bar, Burger, ConfirmBox, CoverIcon, DogEar, DoneSquare, DoneTick, NextRing, Panel, PageShape, PagesIcon, Toast, ChoiceLabel } from '../components/Chrome';
+import { hintsAllowed, Bar, Burger, ConfirmBox, CoverIcon, DogEar, DoneSquare, UploadIcon, DoneTick, NextRing, Panel, PageShape, PagesIcon, Toast, ChoiceLabel } from '../components/Chrome';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, DESK_BG } from '../look';
@@ -559,6 +559,8 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
   // with the Advanced page editor). Then on to the cover, as for any new book.
   const [importing, setImporting] = useState(null); // { n, of } while the pictures come in
   const quickBook = async (layout) => {
+    const has = (latest.current.pages || []).some((p) => (p.text || '').trim() || (p.text2 || '').trim() || p.uri || p.uri2);
+    if (has && (latest.current.pages || []).length >= MAX_PAGES) { toast(tr('This book is full, so no more pages fit.'), 6000); return; }
     let r;
     try {
       r = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'images', allowsMultipleSelection: true, selectionLimit: QUICK_MAX, orderedSelection: true, quality: 1 });
@@ -583,8 +585,15 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
     // the first picture goes on the cover too (its own copy), so the cover that comes next isn't empty: a tester chose
     // one picture and then couldn't tell where it had gone (Jörg, 1 Nov 2026)
     // (the cover is made first, in its own step: the pictures all go on the pages, none on the cover: Jörg, 2 Nov 2026)
-    setDraft((d) => ({ ...d, pages: pages.slice(0, MAX_PAGES) }));
-    setI(0);
+    // a book with nothing on its pages yet gets the new pages instead; a book already under way keeps its pages and
+    // the new ones go at the end (Upload Images from the bar, any time: Jörg, 4 Nov 2026)
+    const cur = latest.current.pages || [];
+    const empty = !cur.some((p) => (p.text || '').trim() || (p.text2 || '').trim() || p.uri || p.uri2);
+    const keep = empty ? [] : cur;
+    const room = Math.max(0, MAX_PAGES - keep.length);
+    if (pages.length > room) toast(tr('Only {n} more pages fit in this book, so some pictures were left out.', { n: room }), 6000);
+    setDraft((d) => ({ ...d, pages: [...keep, ...pages.slice(0, room)] }));
+    setI(keep.length);
     sayStep();
     toast(tr('Your pictures are on the pages. Now add your words.'), 6000);
   };
@@ -1044,6 +1053,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
               {/* the page count sits above Pages, with plenty of room between them */}
               <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ alignItems: 'center', gap: 18, opacity: barFade, marginBottom: 26 }}>
               <Pressable onPress={() => openCover()} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><CoverIcon size={23} /></Pressable>
+              <Pressable onPress={() => setUploadOpen(true) /* Upload Images, any time (Jörg, 4 Nov 2026) */} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Upload Images')}><UploadIcon size={24} /></Pressable>
               <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Pages')}><PagesIcon size={24} /></Pressable>
               <Pressable onPress={() => setPageDone(true) /* 'What's next?' only from here, never after each page (Jörg, 1 Nov 2026) */} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('What’s next?')}><DoneSquare size={29} /></Pressable>
               </Animated.View>
@@ -1058,6 +1068,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
             with the phone's larger text setting, so they always fit beside the menu, house and note */}
         <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ marginLeft: 'auto', flexShrink: 0, flexDirection: 'row', alignItems: 'center', gap: 22, opacity: barFade }}>
         <Pressable onPress={() => openCover()} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><CoverIcon size={23} /></Pressable>
+        <Pressable onPress={() => setUploadOpen(true) /* Upload Images, any time (Jörg, 4 Nov 2026) */} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Upload Images')}><UploadIcon size={24} /></Pressable>
         <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Pages')}><PagesIcon size={24} /></Pressable>
         <Pressable onPress={() => setPageDone(true) /* 'What's next?' only from here, never after each page (Jörg, 1 Nov 2026) */} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('What’s next?')}><DoneSquare size={29} /></Pressable>
         </Animated.View>
