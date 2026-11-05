@@ -240,6 +240,8 @@ function AlarmPopup({ visible, on, time, sound, onTime, onSound, onOn, onClose, 
         </View>
         {/* no Done: everything is kept as you change it; tap outside (or the bar's alarm clock) to close */}
         <Text style={[styles.note, light && L.note, { marginTop: wide ? 14 : 0, marginBottom: 2, opacity: 0.7 }]}>{on ? t('Alarm on · {time}', { time: fmtTime(draft) }) : t('Alarm off')}</Text>
+        {/* the alarm rings from Coro itself: say so (the screen stays on while the nightlight shows: Jörg, 4 Nov 2026) */}
+        {on ? <Text style={[styles.note, light && L.note, { marginTop: 6, marginBottom: 2, opacity: 0.55, fontSize: 12, lineHeight: 16, textAlign: 'center', maxWidth: 320, alignSelf: 'center' }]}>{t('Leave Coro open on this screen, ideally plugged in. The screen stays on, so the alarm can ring.')}</Text> : null}
         {/* a fine grain over everything, for a tactile, made-of-something feel */}
         <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 28, overflow: 'hidden', opacity: light ? 0.22 : 0.42 }]}>
           <View style={{ width: Math.ceil((popW || 380) / 128) * 128, flexDirection: 'row', flexWrap: 'wrap' }}>

@@ -309,7 +309,7 @@ const QUICK_ICONS = { alt: require('../../assets/quick-alt.png'), every: require
 // Upload Images (2 Nov 2026; was the Quick Book bubble): a step of its own in a new book, right after the cover is
 // saved. White words in a black glass box; the two layouts as small white line drawings, the chosen one in a white
 // outline. 'No thanks' goes on to page 1.
-function UploadImages({ tr, winW, insets, onSkip, onGo }) {
+function UploadImages({ tr, winW, insets, onSkip, onGo, intro = false }) {
   const [layout, setLayout] = useState('alt'); // 'alt' | 'every' (Picture, then words to start)
   const boxW = Math.min(460, winW - 40);
   const tileW = Math.min(140, (boxW - 48 - 12) / 2);
@@ -331,8 +331,13 @@ function UploadImages({ tr, winW, insets, onSkip, onGo }) {
   return (
     <ScrollView contentContainerStyle={{ alignItems: 'center', paddingTop: insets.top + 56, paddingBottom: 40, paddingHorizontal: 20 }}>
       <View style={{ width: boxW, backgroundColor: colors.glass, borderRadius: 24, paddingHorizontal: 24, paddingTop: 28, paddingBottom: 26 }}>
-        <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 22, lineHeight: 28 }}>{tr('Upload Images')}</Text>
-        <Text style={{ color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, marginTop: 8 }}>{tr('Choose up to {n} pictures from your photos. Coro puts them into a book, and you just add the words.', { n: QUICK_MAX })}</Text>
+        <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 22, lineHeight: 28 }}>{intro ? tr('Let’s get started!') : tr('Upload Images')}</Text>
+        {intro ? (
+          // the first thing a new book offers (Jörg, 4 Nov 2026)
+          <Text style={{ color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, marginTop: 8 }}>{tr('The quickest way to make a book is if you already have the images ready to go. You can upload them all at once and I’ll make a page for each. Fill in the words and you’re done. Your first book! Do you want to select pictures from your photo library now?')}</Text>
+        ) : (
+          <Text style={{ color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, marginTop: 8 }}>{tr('Choose up to {n} pictures from your photos. Coro puts them into a book, and you just add the words.', { n: QUICK_MAX })}</Text>
+        )}
         <Text style={{ color: 'rgba(255,255,255,0.85)', fontFamily: fonts.uiBold, fontSize: 15, marginTop: 22 }}>{tr('How should the pages go?')}</Text>
         <View accessibilityRole="radiogroup" style={{ flexDirection: 'row', gap: 12, marginTop: 12, justifyContent: 'center' }}>
           <Tile v="alt" label={tr('Picture, then words')} rec={tr('(Recommended)')} />
@@ -340,7 +345,7 @@ function UploadImages({ tr, winW, insets, onSkip, onGo }) {
         </View>
         <Text style={{ color: 'rgba(255,255,255,0.65)', fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, marginTop: 18 }}>{tr('Text over image needs the Advanced page editor. It comes with Coro Family, and a grown-up turns it on in Settings.')}</Text>
         <View style={{ flexDirection: 'row', gap: 10, marginTop: 24, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-          <Pressable onPress={onSkip} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: '#3d3d3d', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('No thanks')}</Text></Pressable>
+          <Pressable onPress={onSkip} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: '#3d3d3d', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{intro ? tr('Not now') : tr('No thanks')}</Text></Pressable>
           <Pressable onPress={() => onGo(layout)} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('Choose pictures')}</Text></Pressable>
         </View>
       </View>
@@ -607,7 +612,10 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
   const isNew = (d) => !d.title.trim() && !d.cover && !d.pages.some((p) => p.text.trim() || p.uri || p.uri2);
   const [coverOpen, setCoverOpen] = useState(() => isNew(draft));
   const [startMode, setStartMode] = useState(() => isNew(draft));
-  const [aboutOpen, setAboutOpen] = useState(() => isNew(draft)); // 'What's your book about?', before the cover // the cover's button reads 'Start writing'
+  // a new book first offers Upload Images (Jörg, 4 Nov 2026), then 'What's your book about?'
+  const [startAsk, setStartAsk] = useState(() => isNew(draft) && !draft.promptId);
+  const startAsked = useRef(isNew(draft) && !draft.promptId);
+  const [aboutOpen, setAboutOpen] = useState(() => isNew(draft) && !(isNew(draft) && !draft.promptId)); // 'What's your book about?', before the cover // the cover's button reads 'Start writing'
   const coverFromNext = useRef(false); // opened from 'What's next?': Done goes back there
   const [fieldOn, setFieldOn] = useState(false); // typing in the title / names fields (the square steps aside)
   const [coverAsk, setCoverAsk] = useState(false); // 'Add the title as text?'
@@ -639,11 +647,11 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
   // Upload Images: a step of its own right after the cover of a new book (Jörg, 2 Nov 2026; was the Quick Book bubble)
   const [uploadOpen, setUploadOpen] = useState(false);
   useEffect(() => {
-    if (drawTipShown.current || !startMode || !coverOpen || aboutOpen || guide) return undefined;
+    if (drawTipShown.current || !startMode || !coverOpen || aboutOpen || startAsk || guide) return undefined;
     let on = true; // (not if a grown-up ticked 'Don't show this again': Jörg, 30 Oct 2026)
     const tm = setTimeout(() => { loadJSON('drawTip', {}).then((x) => { if (on && !(x && x.off)) { drawTipShown.current = true; setDrawTip(true); } }).catch(() => {}); }, 1000);
     return () => { on = false; clearTimeout(tm); };
-  }, [startMode, coverOpen, aboutOpen, guide]);
+  }, [startMode, coverOpen, aboutOpen, startAsk, guide]);
   const [toolsTip, setToolsTip] = useState(true); // no title yet: a speech bubble says where the tools will be
   useEffect(() => {
     if (!(coverOpen && coverTitling)) { setCoverTip(false); return undefined; }
@@ -679,7 +687,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
     setDraft((d) => (!d.title.trim() && d.cover && d.cover.title && d.cover.title.text.trim() ? { ...d, title: d.cover.title.text.trim() } : d));
     Keyboard.dismiss(); setFieldOn(false);
     setCoverOpen(false); setCoverAsk(false); setCoverTitling(false);
-    if (startMode) { setStartMode(false); setI(0); if (!draft.promptId && !latest.current.pages.some((p) => p.uri || p.uri2)) setUploadOpen(true); } // 'Start writing': Upload Images, then page 1
+    if (startMode) { setStartMode(false); setI(0); if (!draft.promptId && !startAsked.current && !latest.current.pages.some((p) => p.uri || p.uri2)) setUploadOpen(true); } /* (not again when it was offered at the start) */ // 'Start writing': Upload Images, then page 1
     else if (coverFromNext.current) setPageDone(true); // back to 'What's next?'
     coverFromNext.current = false;
     sayStep();
@@ -833,6 +841,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
   useBackStep(tourAsk && aboutOpen, () => closeTour(false)); // the 'quick peek?' bubble: like No thanks
   useBackStep(tourPlay, () => setTourPlay(false));
   useBackStep(uploadOpen, () => setUploadOpen(false));
+  useBackStep(startAsk, () => { setStartAsk(false); setAboutOpen(true); }); // (like Not now)
   useBackStep(drawTip, () => setDrawTip(false)); // the 'Pssst' hint: like Got it!
   useBackStep(coverTip, () => setCoverTip(false));
   // A new book, a few seconds into page 1 after the cover: 'Your work automatically saves…' (with Don't show this
@@ -1052,10 +1061,10 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
             <View style={{ alignItems: 'center', gap: 18 }}>
               {/* the page count sits above Pages, with plenty of room between them */}
               <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ alignItems: 'center', gap: 18, opacity: barFade, marginBottom: 26 }}>
-              <Pressable onPress={() => openCover()} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><CoverIcon size={23} /></Pressable>
-              <Pressable onPress={() => setUploadOpen(true) /* Upload Images, any time (Jörg, 4 Nov 2026) */} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Upload Images')}><UploadIcon size={24} /></Pressable>
-              <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Pages')}><PagesIcon size={24} /></Pressable>
-              <Pressable onPress={() => setPageDone(true) /* 'What's next?' only from here, never after each page (Jörg, 1 Nov 2026) */} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('What’s next?')}><DoneSquare size={29} /></Pressable>
+              <Pressable onPress={() => openCover()} hitSlop={10} delayLongPress={350} onLongPress={() => toast(tr('Cover'), 1600) /* its name, when held (Jörg, 4 Nov 2026) */} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><CoverIcon size={23} /></Pressable>
+              <Pressable onPress={() => setUploadOpen(true) /* Upload Images, any time (Jörg, 4 Nov 2026) */} hitSlop={10} delayLongPress={350} onLongPress={() => toast(tr('Upload Images'), 1600) /* its name, when held (Jörg, 4 Nov 2026) */} accessibilityRole="button" accessibilityLabel={tr('Upload Images')}><UploadIcon size={24} /></Pressable>
+              <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={10} delayLongPress={350} onLongPress={() => toast(tr('Pages'), 1600) /* its name, when held (Jörg, 4 Nov 2026) */} accessibilityRole="button" accessibilityLabel={tr('Pages')}><PagesIcon size={24} /></Pressable>
+              <Pressable onPress={() => setPageDone(true) /* 'What's next?' only from here, never after each page (Jörg, 1 Nov 2026) */} hitSlop={10} delayLongPress={350} onLongPress={() => toast(tr('What’s next?'), 1600) /* its name, when held (Jörg, 4 Nov 2026) */} accessibilityRole="button" accessibilityLabel={tr('What’s next?')}><DoneSquare size={29} /></Pressable>
               </Animated.View>
             </View>
           </Bar>
@@ -1067,10 +1076,10 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
         {/* Cover, Pages, Finish on the right (the page count floats on the page itself); they keep their size even
             with the phone's larger text setting, so they always fit beside the menu, house and note */}
         <Animated.View pointerEvents={titleBox || coverOpen ? 'none' : 'auto'} style={{ marginLeft: 'auto', flexShrink: 0, flexDirection: 'row', alignItems: 'center', gap: 22, opacity: barFade }}>
-        <Pressable onPress={() => openCover()} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><CoverIcon size={23} /></Pressable>
-        <Pressable onPress={() => setUploadOpen(true) /* Upload Images, any time (Jörg, 4 Nov 2026) */} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Upload Images')}><UploadIcon size={24} /></Pressable>
-        <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('Pages')}><PagesIcon size={24} /></Pressable>
-        <Pressable onPress={() => setPageDone(true) /* 'What's next?' only from here, never after each page (Jörg, 1 Nov 2026) */} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('What’s next?')}><DoneSquare size={29} /></Pressable>
+        <Pressable onPress={() => openCover()} hitSlop={10} delayLongPress={350} onLongPress={() => toast(tr('Cover'), 1600) /* its name, when held (Jörg, 4 Nov 2026) */} accessibilityRole="button" accessibilityLabel={tr('Edit the cover')}><CoverIcon size={23} /></Pressable>
+        <Pressable onPress={() => setUploadOpen(true) /* Upload Images, any time (Jörg, 4 Nov 2026) */} hitSlop={10} delayLongPress={350} onLongPress={() => toast(tr('Upload Images'), 1600) /* its name, when held (Jörg, 4 Nov 2026) */} accessibilityRole="button" accessibilityLabel={tr('Upload Images')}><UploadIcon size={24} /></Pressable>
+        <Pressable onPress={() => { setConfirmDelete(false); setPdfChoice(null); setPagesOpen(true); }} hitSlop={10} delayLongPress={350} onLongPress={() => toast(tr('Pages'), 1600) /* its name, when held (Jörg, 4 Nov 2026) */} accessibilityRole="button" accessibilityLabel={tr('Pages')}><PagesIcon size={24} /></Pressable>
+        <Pressable onPress={() => setPageDone(true) /* 'What's next?' only from here, never after each page (Jörg, 1 Nov 2026) */} hitSlop={10} delayLongPress={350} onLongPress={() => toast(tr('What’s next?'), 1600) /* its name, when held (Jörg, 4 Nov 2026) */} accessibilityRole="button" accessibilityLabel={tr('What’s next?')}><DoneSquare size={29} /></Pressable>
         </Animated.View>
       </Bar>
       </View>
@@ -1379,6 +1388,15 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
             {/* the speech bubble's point */}
             <View style={{ marginLeft: '14%', width: 0, height: 0, borderTopWidth: 22, borderRightWidth: 22, borderTopColor: colors.white, borderRightColor: 'transparent' }} />
           </View>
+        </View>
+      ) : null}
+      {startAsk ? (
+        // a new book: the quickest way first (Jörg, 4 Nov 2026); then 'What's your book about?'
+        <View style={[StyleSheet.absoluteFill, { zIndex: 57, backgroundColor: colors.desk, overflow: 'hidden' }, wide ? { right: BL.rightW } : { bottom: BL.barH }]}>
+          <DeskFelt spot="publisher-about" overlay />
+          <UploadImages intro tr={tr} winW={wide ? winW - BL.leftW - BL.rightW : winW} insets={insets}
+            onSkip={() => { setStartAsk(false); setAboutOpen(true); }}
+            onGo={(layout) => { setStartAsk(false); setTimeout(() => { Promise.resolve(quickBook(layout)).finally(() => setAboutOpen(true)); }, 300); }} />
         </View>
       ) : null}
       {uploadOpen ? (

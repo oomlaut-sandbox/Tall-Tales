@@ -4,7 +4,7 @@ import { TitleIcon } from '../titleIcons';
 import React, { useEffect, useRef, useState } from 'react';
 import { useScrollMemory } from '../nav';
 import { clearTileSpot, setTileSpot } from '../tileSpots';
-import { Animated, Easing, Image, PixelRatio, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, PixelRatio, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, sectionBox, sectionTitle, SECTION_GAP } from '../theme';
 import { DESK_FELT, Felt, IS_TABLET, Stitch, DESK_BG, BandFill } from '../look';
@@ -17,7 +17,7 @@ const EDIT_ICON = require('../../assets/icon-scissors.png');
 const TRASH_ICON = require('../../assets/icon-trash.png');
 const PROMPT_ICON = require('../../assets/heading-icons/sticky-note.png'); // a book prompt from the teacher (classroom.js)
 import { liveUri } from '../storage';
-import { ageAllowed, ageOf, ageText, bundledStory, cachedCatalog, coverArtFor, coverFor, loadStoreBook, localizeStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
+import { ageAllowed, ageOf, ageText, bundledStory, storeLangReady, cachedCatalog, coverArtFor, coverFor, loadStoreBook, localizeStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
 import ParentGate from '../components/ParentGate';
 import Membership from '../components/Membership';
 import { appUserId, buyBook, canOpen, purchasesReady, restorePurchases, usePurchases } from '../purchases';
@@ -581,6 +581,30 @@ export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
   }
   // the parental controls can hide books rated for older children
   if (shown && controls.childAge != null) shown.books = shown.books.filter((b) => ageAllowed(ageOf(b, bundledStory(b.id)), controls.childAge));
+  // Search and filters (Jörg, 4 Nov 2026): words (title, author, description, in every language), age, the language a
+  // book can be read in, its length, and free or members. While any is set, the matching books show in one grid.
+  const [q, setQ] = useState('');
+  const [fOpen, setFOpen] = useState(false);
+  const [f, setF] = useState({ age: null, lang: null, len: null, price: null });
+  const filtering = !!(q.trim() || f.age || f.lang || f.len || f.price);
+  const fCount = [f.age, f.lang, f.len, f.price].filter(Boolean).length;
+  const pagesOf = (b) => (bundledStory(b.id) ? bundledStory(b.id).pages.length * 2 : b.page_count || 0);
+  const readsIn = (b, l) => l === 'en' || storeLangReady(b.raw || b, l) || !!(bundledStory(b.id) && bundledStory(b.id).langs && bundledStory(b.id).langs[l]);
+  const words = (b) => {
+    const r = b.raw || b, st = bundledStory(b.id);
+    const all = [b.title, b.author, b.blurb, r.title, r.blurb, ...Object.values(r.langs || {}).map((x) => `${x.title || ''} ${x.blurb || ''}`), ...(st && st.langs ? Object.values(st.langs).map((x) => x.title || '') : [])];
+    return all.filter(Boolean).join(' ').toLowerCase();
+  };
+  const matches = shown ? shown.books.filter((b) => {
+    const terms = q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    if (terms.length && !terms.every((w) => words(b).includes(w))) return false;
+    if (f.age) { const a = ageOf(b, bundledStory(b.id)); const lo = { young: 2, mid: 5, old: 8 }[f.age], hi = { young: 4, mid: 7, old: 99 }[f.age]; if (a.min != null && (a.min > hi || (a.max != null && a.max < lo))) return false; }
+    if (f.lang && !readsIn(b, f.lang)) return false;
+    if (f.len) { const n = pagesOf(b); if (f.len === 'short' && n > 16) return false; if (f.len === 'medium' && (n <= 16 || n > 32)) return false; if (f.len === 'long' && n <= 32) return false; }
+    if (f.price === 'free' && b.access !== 'free') return false;
+    if (f.price === 'members' && b.access === 'free') return false;
+    return true;
+  }) : [];
   const featured = shown ? shown.books.find((b) => b.featured) : null;
   // a book is on the shelves only once: the featured book isn't repeated on the shelf below
   const rows = shown ? shelvesWithBooks(featured ? { ...shown, books: shown.books.filter((b) => b.id !== featured.id) } : shown) : [];
@@ -599,7 +623,63 @@ export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
       <ScrollView {...storeKeep} contentContainerStyle={{ paddingTop: 46, paddingBottom: 24, gap: 30 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.white} />}>
         {/* laid out like My Library: whole covers in a grid, nothing cut off, no sideways scrolling */}
-        {[...(featured ? [{ id: 'featured', title: t('Featured'), books: [featured] }] : []), ...rows].map((sh) => (
+        {/* search and filters (Jörg, 4 Nov 2026) */}
+        <View style={{ paddingHorizontal: 20, gap: 12 }}>
+          <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+            <View style={[styles.storeSearchWrap, { flex: 1 }]}>
+              {/* (the same centred one-line box as Help's search: see ci/check-search.js) */}
+              <TextInput value={q} onChangeText={(v) => setQ(v.replace(/\n/g, ''))} placeholder={t('Search books')} placeholderTextColor="#666"
+                style={styles.storeSearch} allowFontScaling={false} multiline scrollEnabled={false} submitBehavior="blurAndSubmit" returnKeyType="search" accessibilityLabel={t('Search books')} />
+            </View>
+            <Pressable onPress={() => setFOpen((v) => !v)} accessibilityRole="button" accessibilityState={{ expanded: fOpen }}
+              style={[styles.filterBtn, (fOpen || fCount) && { backgroundColor: colors.green }]}>
+              <Text style={styles.filterBtnText}>{fCount ? t('Filters ({n})', { n: fCount }) : t('Filters')}</Text>
+            </Pressable>
+          </View>
+          {fOpen ? (
+            <View style={styles.filterBox}>
+              {[
+                ['age', t('Age'), [['young', t('2–4')], ['mid', t('5–7')], ['old', t('8 and up')]]],
+                ['lang', t('Language'), [['en', 'English'], ['de', 'Deutsch'], ['fr', 'Français'], ['es', 'Español'], ['ja', '日本語'], ['ar', 'العربية']]],
+                ['len', t('Length'), [['short', t('Short')], ['medium', t('Medium')], ['long', t('Long')]]],
+                ['price', t('Price'), [['free', t('Free')], ['members', t('Members')]]],
+              ].map(([key, label, opts]) => (
+                <View key={key} style={{ gap: 8 }}>
+                  <Text style={styles.filterLabel}>{label}</Text>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                    {opts.map(([v, name]) => {
+                      const on = f[key] === v;
+                      return (
+                        <Pressable key={v} onPress={() => setF((x) => ({ ...x, [key]: on ? null : v }))} accessibilityRole="button" accessibilityState={{ selected: on }}
+                          style={[styles.chip, on && { backgroundColor: colors.green, borderColor: colors.green }]}>
+                          <Text style={styles.chipText}>{name}</Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </View>
+              ))}
+              {fCount ? (
+                <Pressable onPress={() => setF({ age: null, lang: null, len: null, price: null })} hitSlop={8} accessibilityRole="button" style={{ alignSelf: 'flex-start' }}>
+                  <Text style={{ fontFamily: fonts.ui, fontSize: 14, color: '#d0d0d0', textDecorationLine: 'underline' }}>{t('Clear filters')}</Text>
+                </Pressable>
+              ) : null}
+            </View>
+          ) : null}
+        </View>
+        {filtering ? (
+          <View style={{ gap: 14 }}>
+            <Text style={styles.shelfTitle}>{matches.length === 1 ? t('1 book') : t('{n} books', { n: matches.length })}</Text>
+            {matches.length ? (
+              <View style={[styles.shelfGrid, { columnGap: gridGap(winW) }]}>
+                {matches.map((b) => (
+                  <Tile key={b.id} u={u} ear={false} cover={coverFor(b)} coverArt={coverArtFor(b)} title={b.title} label={b.title} badge={<Badge book={b} />} onPress={(rect) => setOpen({ book: b, rect })} />
+                ))}
+              </View>
+            ) : <Text style={[styles.restore, { textDecorationLine: 'none', paddingHorizontal: 20, textAlign: 'left' }]}>{t('No books match. Try fewer words or filters.')}</Text>}
+          </View>
+        ) : null}
+        {(filtering ? [] : [...(featured ? [{ id: 'featured', title: t('Featured'), books: [featured] }] : []), ...rows]).map((sh) => (
           <View key={sh.id} style={{ gap: 14 }}>
             <Text style={styles.shelfTitle}>{(sh.langs && sh.langs[lang]) || t(sh.title) /* the shelf's own translation (Store Manager), or the app's */}</Text>
             <View style={[styles.shelfGrid, { columnGap: gridGap(winW) }]}>
@@ -854,6 +934,16 @@ const styles = StyleSheet.create({
   featureTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 22 },
   shelfGrid: { paddingHorizontal: 20, flexDirection: 'row', flexWrap: 'wrap', rowGap: 22 },
   shelfTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 19, paddingHorizontal: 20 },
+  // the Book Store's search: a 44-tall pill whose 20-tall line sits in the middle (12 above it), like Help's
+  storeSearchWrap: { height: 44, borderRadius: 22, overflow: 'hidden', backgroundColor: '#d6d6d6', justifyContent: 'center' },
+  storeSearch: { alignSelf: 'stretch', height: 44, backgroundColor: 'transparent', paddingHorizontal: 18, paddingTop: 12, paddingBottom: 0, includeFontPadding: false,
+    fontFamily: fonts.ui, fontSize: 16, lineHeight: 20, color: colors.ink, outlineWidth: 0 },
+  filterBtn: { height: 44, borderRadius: 22, paddingHorizontal: 18, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center' },
+  filterBtnText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 },
+  filterBox: { backgroundColor: 'rgba(0,0,0,0.55)', borderRadius: 18, padding: 18, gap: 16 },
+  filterLabel: { color: 'rgba(255,255,255,0.75)', fontFamily: fonts.uiBold, fontSize: 13, letterSpacing: 0.4 },
+  chip: { height: 34, borderRadius: 17, paddingHorizontal: 14, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.35)', alignItems: 'center', justifyContent: 'center' },
+  chipText: { color: colors.white, fontFamily: fonts.ui, fontSize: 14 },
   badgeAt: { position: 'absolute', left: 6, bottom: 6 }, // bottom-left corner of the cover
   badgeShadow: { alignSelf: 'flex-start', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.35, shadowRadius: 3, elevation: 3 },
   badge: { paddingHorizontal: 8, paddingTop: 2, paddingBottom: 4, overflow: 'hidden' }, // a little more room below: the word sits centred

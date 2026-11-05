@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, POPUP, POPUP_TITLE, PILL_H } from '../theme';
 import { DeskFelt, Felt, Stitch, useLook } from '../look';
 import { useT } from '../i18n';
+import { loadJSON, saveJSON } from '../storage';
 import { tap, thunk, tick, withTap } from '../haptics';
 import { getAmbient, onAmbient, toggleAmbientPlayer } from '../ambient';
 
@@ -705,13 +706,41 @@ let hintsOn = true;
 export const setHintsOn = (v) => { hintsOn = v !== false; };
 export const hintsAllowed = () => hintsOn;
 // every 'Don't show this message again' that was ticked (turning the bubbles back on brings them all back: Jörg, 1 Nov 2026)
-export const HINT_KEYS = ['saveTip', 'drawHint', 'drawTip', 'tourAsk', 'quickBook', 'gardenTip', 'listenTipOff'];
+export const HINT_KEYS = ['saveTip', 'drawHint', 'drawTip', 'tourAsk', 'quickBook', 'gardenTip', 'listenTipOff', 'hintSeen'];
+// Each hint bubble shows twice at most, then retires by itself (Jörg, 4 Nov 2026): how often each one has shown,
+// by its words. Turning the bubbles back on in Settings (or Reset) starts the counts again.
+export const HINT_TIMES = 2;
+let hintSeen = null;
+const hintSeenReady = loadJSON('hintSeen', {}).then((x) => { hintSeen = x && typeof x === 'object' ? x : {}; }).catch(() => { hintSeen = {}; });
+export const resetHintSeen = () => { hintSeen = {}; try { saveJSON('hintSeen', {}); } catch (e) {} };
+export const reloadHintSeen = () => loadJSON('hintSeen', {}).then((x) => { hintSeen = x && typeof x === 'object' ? x : {}; }).catch(() => {}); // (another profile)
+const hintKey = (m) => String(m || '').slice(0, 120);
 function HintGone({ onDismiss }) {
   useEffect(() => { onDismiss && onDismiss(false); }, []);
   return null;
 }
+function CountedHint(props) {
+  const [ok, setOk] = useState(() => (hintSeen ? (hintSeen[hintKey(props.message)] || 0) < HINT_TIMES : null));
+  useEffect(() => {
+    if (!props.message) return undefined;
+    let on = true;
+    hintSeenReady.then(() => {
+      if (!on) return;
+      const k = hintKey(props.message), n = hintSeen[k] || 0;
+      if (n >= HINT_TIMES) { setOk(false); return; }
+      hintSeen = { ...hintSeen, [k]: n + 1 };
+      try { saveJSON('hintSeen', hintSeen); } catch (e) {}
+      setOk(true);
+    });
+    return () => { on = false; };
+  }, [props.message]);
+  if (ok === false) return <HintGone onDismiss={props.onDismiss} />;
+  if (ok === null) return null;
+  return <ToastBubble {...props} />;
+}
 export function Toast(props) {
   if (props.hint && !hintsOn) return <HintGone onDismiss={props.onDismiss} />;
+  if (props.hint) return <CountedHint {...props} />;
   return <ToastBubble {...props} />;
 }
 function ToastBubble({ message, area, onDismiss, center, ms = BUBBLE_MS, button, check, icon, tone }) { // tone 'amber': a warm, dim bubble for the nightlight (Jörg, 30 Oct 2026) // icon: a small picture above the words // check: a 'don't show again' box (onDismiss gets whether it was ticked) // button: a green pill that closes it (then ms 0: it stays until then)

@@ -198,6 +198,11 @@ export default function Reader({ menuOpen = false, coverShut = false, onOpenCove
     ? { page: 1, pid: 'demo', uri: '', seconds: 14, start: 1.2, end: 11.5, levels: Array.from({ length: 280 }, (_, i) => Math.abs(Math.sin(i / 9)) * (0.4 + 0.6 * Math.abs(Math.sin(i / 37)))) } : null)); // the recording open in the trim editor (web preview #trim-demo shows a sample)
   const [savedPage, setSavedPage] = useState(null); // { n, k }: the page just saved, shown for a moment
   useEffect(() => { if (!savedPage) return undefined; const t = setTimeout(() => setSavedPage(null), 2600); return () => clearTimeout(t); }, [savedPage]);
+  // Record the whole book (Jörg, 4 Nov 2026): with 'Turn pages for me' on, a pause of about two seconds after a page has
+  // been read turns the page by itself, and recording carries on there (the last page just stops and saves)
+  const autoTurn = useRef(false); autoTurn.current = !!prefs.recAutoTurn;
+  const voiced = useRef({ talk: 0, quietSince: 0, fired: false });
+  const autoTurnGo = useRef(null);
   const recAuto = useRef(false); // recording carried on to the next page by itself (no instructions bubble again)
   const usingVoice = useRef(false);
   const prefsRef = useRef(prefs);
@@ -539,11 +544,24 @@ export default function Reader({ menuOpen = false, coverShut = false, onOpenCove
       await recorder.prepareToRecordAsync();
       recorder.record();
       recStart.current = Date.now();
+      voiced.current = { talk: 0, quietSince: 0, fired: false };
       // sample the voice's loudness about 20 times a second (decibels: about -50 quiet .. 0 loud)
       recLevels.current = [];
       clearInterval(meterTimer.current);
       meterTimer.current = setInterval(() => {
-        try { const st0 = recorder.getStatus(); const db = st0 && typeof st0.metering === 'number' ? st0.metering : null; if (db != null) recLevels.current.push(Math.max(0, Math.min(1, (db + 50) / 50))); } catch (e) {}
+        try {
+          const st0 = recorder.getStatus(); const db = st0 && typeof st0.metering === 'number' ? st0.metering : null;
+          if (db != null) {
+            const lv = Math.max(0, Math.min(1, (db + 50) / 50));
+            recLevels.current.push(lv);
+            if (autoTurn.current) {
+              const v = voiced.current, now = Date.now();
+              if (lv > 0.45) { v.talk += 50; v.quietSince = 0; } else if (lv < 0.3) { if (!v.quietSince) v.quietSince = now; }
+              // some reading (about a second of voice), then two quiet seconds: next page
+              if (!v.fired && v.talk >= 1000 && v.quietSince && now - v.quietSince >= 2000) { v.fired = true; autoTurnGo.current && autoTurnGo.current(); }
+            }
+          }
+        } catch (e) {}
       }, 50);
       suspendSounds(true);
       setRecording(true);
@@ -743,6 +761,11 @@ export default function Reader({ menuOpen = false, coverShut = false, onOpenCove
     });
   };
 
+  autoTurnGo.current = () => {
+    if (!st.current.recording) return;
+    if (st.current.idx + 1 < story.pages.length) flipRef.current && flipRef.current(1); else stopRec(true); // (the last page: saved, done)
+  };
+  const flipRef = useRef(null);
   const flip = async (dir) => {
     if (busy.current || st.current.turning || !canTurn(dir) || !st.current.size) return false;
     busy.current = true;
@@ -753,6 +776,7 @@ export default function Reader({ menuOpen = false, coverShut = false, onOpenCove
     runFlip(dir > 0 ? 1 : 0, 900, () => endFlip(dir, true));
     return true;
   };
+  flipRef.current = flip;
 
   // The first time a book opens: after a short pause the bottom right corner of the page lifts halfway and
   // settles back, to show that pages turn like paper (only ever once; not in Listen Only)
@@ -1333,6 +1357,7 @@ export default function Reader({ menuOpen = false, coverShut = false, onOpenCove
         {recView === 'main' ? (
           <>
             <RecRow glyph={<DotIcon />} title={tr('Start recording')} sub={tr('Read this story in your own voice, starting on page {n}', { n: Math.min(idx + 1, n) })} disabled={idx >= n} onPress={askToRecord} />
+            <RecRow glyph={<TextIcon text={prefs.recAutoTurn ? '✓' : '→'} />} title={prefs.recAutoTurn ? tr('Turn pages for me: on') : tr('Turn pages for me: off')} sub={tr('Record the whole book: when you pause for two seconds after a page, Coro turns the page and keeps recording.')} onPress={() => setPrefs((p) => ({ ...p, recAutoTurn: !p.recAutoTurn }))} />
             <RecRow glyph={<ListIcon />} title={tr('Your recordings')} sub={tr('Listen to or remove the pages you recorded')} onPress={openRecList} />
             <RecRow glyph={<TextIcon text="?" />} title={tr('Help')} sub={tr('How recording works')} onPress={() => setRecView('help')} />
           </>

@@ -50,7 +50,7 @@ import { deleteUserStory, loadDeletedStories, loadUserStories, purgeDeletedStori
 import TeacherDesk from './src/screens/TeacherDesk';
 import { loadJSON, loadJSONFor, saveJSON, saveJSONFor } from './src/storage';
 import { TITLE_ICONS } from './src/titleIcons';
-import { BulbIcon, LibraryIcon, PersonIcon, MENU_ICON, Option, Panel, Toast, BubbleHost, setGoHome, setGoSettings, setHintsOn, HomeIcon, BackRing } from './src/components/Chrome';
+import { reloadHintSeen, BulbIcon, LibraryIcon, PersonIcon, MENU_ICON, Option, Panel, Toast, BubbleHost, setGoHome, setGoSettings, setHintsOn, HomeIcon, BackRing } from './src/components/Chrome';
 import { setVolumeBubble } from './src/volume';
 import { DESK_FELT, DESK_IPAD_NOW, DeskFelt, Felt, IS_TABLET, LookContext } from './src/look';
 import { hideSplash } from './src/launch';
@@ -60,7 +60,7 @@ import Playlists from './src/screens/Playlists';
 import { playOrder } from './src/playlists';
 import { closePlayerFromBar, fadeOutAmbient, getAmbient, onAmbient, setAmbientPlayer } from './src/ambient';
 import { ageAllowed, ageOf, cachedCatalog, coverArtFor, coverFor, loadStoreBook, localizeStoreBook, refreshCatalog, storeLangReady } from './src/catalog';
-import { refreshStoreLibrary, removeFromStoreLibrary, useStoreLibrary } from './src/storeLibrary';
+import { refreshStoreLibrary, removeFromStoreLibrary, seedStoreLibrary, useStoreLibrary } from './src/storeLibrary';
 import { addProfile, loadProfiles, onProfiles, switchProfile } from './src/profiles';
 import { loadGrownupCode } from './src/grownupCode';
 import { startRemoteTracks } from './src/remoteTracks';
@@ -171,7 +171,7 @@ function Root() {
       if (!url || !/\.(oomlaut|zip)$/i.test(decodeURIComponent(url))) return;
       const data = await readVoicesFile(url);
       if (data) setIncoming(data);
-      else if (/\.zip$/i.test(decodeURIComponent(url))) toastRef.current && toastRef.current(t('That file isn’t a Coro book.'));
+      else if (/\.zip$/i.test(decodeURIComponent(url))) toastRef.current && toastRef.current(t('That .zip file isn’t a Coro book. Coro opens books that were shared from Coro.'), 6000);
     };
     Linking.getInitialURL().then(handle).catch(() => {});
     const sub = Linking.addEventListener('url', ({ url }) => handle(url));
@@ -318,6 +318,8 @@ function Root() {
   // store books the family added to My Library ("Add to My Library": Jörg, 4 Nov 2026), shaped like the shelf's books;
   // their pages come from the store when opened
   const storeLib = useStoreLibrary();
+  // a new family's shelf: the Book Store's free books go on it once (Jörg, 4 Nov 2026)
+  useEffect(() => { refreshCatalog().catch(() => null).then((c) => c || cachedCatalog()).then((c) => seedStoreLibrary(c && c.books)).catch(() => {}); }, []);
   const fromStore = storeLib.filter((r) => !userStories.some((u) => u.id === r.source_story) /* (your own book's store copy: yours is already there) */).map((r) => {
     const b = localizeStoreBook(r, readLang);
     return { id: r.id, title: b.title, author: r.author || '', pages: [{ image: coverFor(r) }], cover: coverArtFor(b), storeRow: r, minAge: r.min_age, maxAge: r.max_age };
@@ -628,6 +630,12 @@ function Root() {
             <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setIncoming(null)}>
               <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 28 }}>
                 <View style={{ width: '100%', maxWidth: 400, backgroundColor: '#000', borderRadius: 24, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26 }}>
+                  {/* what just arrived, at a glance: 'Opened in Coro' and the book's cover (Jörg, 4 Nov 2026) */}
+                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontFamily: fonts.uiBold, fontSize: 12, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14 }}>{t('Opened in Coro')}</Text>
+                  {(() => {
+                    const b = incoming.book; const img = b && ((b.cover && b.cover.img) || ((b.pages || []).find((p) => p.img) || {}).img);
+                    return img ? <Image source={{ uri: `data:image/jpeg;base64,${img}` }} style={{ width: 120, height: 120, borderRadius: 4, marginBottom: 18 }} accessibilityIgnoresInvertColors /> : null;
+                  })()}
                   {/* a book made in Coro comes whole, with or without voices (31 Oct 2026) */}
                   <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 20 }}>{incoming.book ? t('Someone sent you “{title}”', { title }) : t('{names} read “{title}” for you', { names, title })}</Text>
                   <Text style={{ color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, marginTop: 12 }}>{incoming.book ? (names ? t('Add the book to My Library, read in {names}’s voice?', { names }) : t('Add the book to My Library?')) : t('Add their voice to this book on this phone? Pages they didn’t record are read by the narrator.')}</Text>
@@ -730,7 +738,7 @@ export default function App() {
     loadProfiles().then((s) => setWho(s.active), () => setWho('main'));
     loadGrownupCode().catch(() => {});
     startRemoteTracks().catch(() => {}); // music and sounds added in the Store Manager (31 Oct 2026) // (the grown-up passcode, if one is set, is known before any grown-up question)
-    return onProfiles((s) => setWho(s.active));
+    return onProfiles((s) => { setWho(s.active); reloadHintSeen(); }); // (each reader's own hint counts)
   }, []);
   const assetsIn = useRef(false);
   const shown = useRef(0); // how many of the warm-up pictures have been drawn
