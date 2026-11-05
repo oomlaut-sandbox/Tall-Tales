@@ -7,7 +7,7 @@ import { STORE_ON } from '../controls';
 import { VIDEOS } from './Intro';
 import { FilmBox } from '../components/FilmPlayer';
 import React, { useMemo, useRef, useState } from 'react';
-import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts, boxTitle, sectionBox, SECTION_GAP } from '../theme';
@@ -28,13 +28,13 @@ const ALL_HELP = [
   { section: 'Getting started', title: 'Profiles for each child', text: [
     'Everyone can have their own profile, children and grown-ups, with their own notes, badges, Book Playlists and settings. Grown-ups add and change them in Settings, under Profiles. To switch, tap your picture at the top of My Library or My Workspace.',
   ] },
-  { section: 'Reading', title: 'Reading a book', pics: ['read-page'], text: [
+  { section: 'Reading', title: 'Reading a book', text: [
     'Open My Library and tap a book. Its cover opens and the first page appears.',
     'Each spread has a picture and its words. Turn the page by tapping the folded corner, tapping the right edge, or swiping up (or to the left when the phone is sideways). You can drag the page and it follows your finger.',
     'Swipe down (or to the right) to go back a page.',
     'Pinch the picture to zoom in.',
   ] },
-  { section: 'Reading', title: 'Hearing the story read aloud', pics: ['reading-options'], text: [
+  { section: 'Reading', title: 'Hearing the story read aloud', text: [
     'Tap the play button in the bottom bar and the narrator reads the page. Each word lights up as it’s spoken.',
     'Open Reading Options (under your books in My Library, or in Settings) to choose how the book plays: Read Yourself, Learn to Read, Auto Play, Page by Page Play or Listen Only.',
     'Under Voices you can choose Fatima or Mo. Tap a voice to hear a short sample.',
@@ -49,7 +49,7 @@ const ALL_HELP = [
     'Amber light warms the pages for evening reading: amber paper, softer words and warmer pictures.',
     'Tap the small light bulb at the top left of the felt to turn it on or off, or switch it in Reading Options.',
   ] },
-  { section: 'Music and sounds', title: 'The Audio Player', pics: ['player'], text: [
+  { section: 'Music and sounds', title: 'The Audio Player', text: [
     'Tap the music note on the black bar to open the Audio Player. It’s there while you read, in My Library and in the Book Store.',
     'Turn the top knob to choose a nature sound and the bottom knob to choose music. Press Play, and slide the felt knob to set the volume. Tap the little line at the top right, or anywhere outside the player, to close it.',
     'The sounds keep playing while you browse and read.',
@@ -62,10 +62,10 @@ const ALL_HELP = [
     'Grown-ups can tap Upload or record music (it asks the grown-up question first). Upload a song saved on the phone, or record one right there, like a parent or grandparent singing a lullaby. Give it a name and it joins the music list.',
     'Press and hold your own music to remove it.',
   ] },
-  { section: 'Music and sounds', title: 'Book Playlists', pics: ['playlists'], text: [
+  { section: 'Music and sounds', title: 'Book Playlists', text: [
     'Open Reading Options and choose Book Playlists to line up several books that play one after another. Turn on Loop to start again from the beginning, and share a playlist with family.',
   ] },
-  { section: 'Bedtime', title: 'Listen Only and the nightlight', pics: ['listen-only', 'nightlight'], text: [
+  { section: 'Bedtime', title: 'Listen Only and the nightlight', text: [
     'Tap the moon on the black bar while a book is open, then choose Daydream (the sun) or the Nightlight (the moon). The book reads by itself while the screen slowly changes.',
     'In the Nightlight, slide the fine line under the sun to dim it: the moon moves across until only a warm glow is left.',
     'Under the line, tap the moon or the Earth to see them glow instead of the sun. The line and the eclipse are only for the sun.',
@@ -73,12 +73,12 @@ const ALL_HELP = [
     'Tap the lock beside the moon so little hands can’t change anything. To unlock, tap the lock again and answer the grown-up question.',
     'The screen stays on while the nightlight shows, so keep the phone plugged in at night. Grown-ups can switch the nightlight off in Settings.',
   ] },
-  { section: 'Bedtime', title: 'The wake-up alarm', pics: ['alarm'], text: [
+  { section: 'Bedtime', title: 'The wake-up alarm', text: [
     'Tap the alarm clock beside the lock. Turn the wheel with a finger in its little dimple to set the time (one turn is the whole day), then choose what to wake up to: a nature sound or music.',
     'At that time the sun rises slowly and the sound fades in very gently. Tap Snooze for nine more minutes, or Good morning! to end it.',
     'The alarm works while the nightlight is showing and the app stays open.',
   ] },
-  { section: 'Your voice', title: 'Recording yourself reading', pics: ['recording', 'trim'], text: [
+  { section: 'Your voice', title: 'Recording yourself reading', text: [
     'A grown-up can record their own voice reading each page, so the book plays in a familiar voice. Up to three people can record each book (Mom, Opa…).',
     'Open a book, tap the red button, then Start recording. Pick who’s reading, or add a new reader with their name and a photo. Read the page, then turn it to keep going: each page saves on its own. Tap the red square to stop.',
     'Your Recordings lists every page by reader: play it, trim the start and end, or delete it.',
@@ -91,18 +91,18 @@ const ALL_HELP = [
     'Share Book on the last page sends an invitation to the app. When the book has recordings, a file with your voice goes along with it.',
     'Whoever gets it taps the file and opens it in Coro to add your voice to the same book on their phone.',
   ] },
-  { section: 'Making books', title: 'Making your own book', pics: ['book-about'], text: [
+  { section: 'Making books', title: 'Making your own book', text: [
     'Open My Workspace (on the notebook’s first page or in the menu) and tap the blue book under Let’s make a book.',
     'Tap the picture square to add a picture: choose one from your photos, or take a photo (of a drawing, say). Taking a photo asks a grown-up first.',
     'Tap the words square to type the words for that page. Two or three sentences reads best.',
     'When a page is done, tap Done under the words and choose Add another page. Tap the cover button on the bottom bar to give your book a title and add who wrote and illustrated it.',
     'Everything saves on its own. The green square at the bottom right opens What’s next?: add a page, design a cover, save for later or finish. Save for later keeps the book in My Books in Progress, in My Workspace. Finish my book puts it in My Book Collection, in My Library.',
   ] },
-  { section: 'Making books', title: 'My Workspace', pics: ['make-book'], text: [
+  { section: 'Making books', title: 'My Workspace', text: [
     'My Workspace is where you make things: who is reading, Let’s make a book, My Books in Progress, My Notes, Things to share and the Message Board.',
     'Tap a book in My Books in Progress to carry on where you left off.',
   ] },
-  { section: 'Making books', title: 'Designing a cover', pics: ['cover'], text: [
+  { section: 'Making books', title: 'Designing a cover', text: [
     'After writing a page, choose Design a cover. Add a picture, then the title if you like.',
     'Drag the title anywhere on the cover. Change its size, colour and font with the buttons under the cover.',
   ] },
@@ -111,11 +111,11 @@ const ALL_HELP = [
     'When you start a new book, right after the cover, Upload Images can make it from up to 64 pictures from your photos. First choose how the pages go: a picture, then words, or a picture on every page.',
     'Coro brings the pictures in, in the order you picked them. Then add your words, and tweak any picture with Edit photo.',
   ] },
-  { section: 'Making books', title: 'Advanced page editor', pics: ['advanced'], text: [
+  { section: 'Making books', title: 'Advanced page editor', text: [
     'The Advanced page editor is for more experienced artists and creators. It puts the words over a picture, and lets you choose where they go, how they look and how big they are.',
     'It comes with Coro Family. A grown-up turns it on in Settings, under Parental controls. Then tap Text options in the words editor, choose, and tap Done: now drag the words to where you want them on the picture.',
   ] },
-  { section: 'Making books', title: 'Pages, printing and sharing', pics: ['pages'], text: [
+  { section: 'Making books', title: 'Pages, printing and sharing', text: [
     'Tap Pages in the bottom bar to see every page. Move pages up or down, or delete them.',
     'From there you can also share the book as a PDF, print it, or delete the whole book. Printing and sharing ask a grown-up first.',
   ] },
@@ -124,19 +124,19 @@ const ALL_HELP = [
     'Pictures are kept sharp but small, so a whole book is usually 15 to 25 MB. Recordings take about 1 MB a minute.',
     'My Notes has room for 60 pages.',
   ] },
-  { section: 'My Notes', title: 'My Notes', pics: ['notes'], text: [
+  { section: 'My Notes', title: 'My Notes', text: [
     'My Notes is in My Workspace. Tap it to open it.',
     'The first page is the inside cover with “My Notes”. Turn the page to see your badges, then your own pages.',
     'Turn the pages by tapping the bottom-right corner or swiping left or up; tap the bottom-left corner or swipe right or down to go back. On the last page, the bottom-right corner adds a page: a Notes page (a picture or drawing with your notes below) or a Sketch page (two squares to draw on).',
   ] },
-  { section: 'My Notes', title: 'Drawing and notes', pics: ['draw-page', 'draw-tray'], text: [
+  { section: 'My Notes', title: 'Drawing and notes', text: [
     'Tap a picture square to make a drawing, choose a photo or take one. You can also draw on top of a photo.',
     'The drawing tools lie in the tray at the bottom: the eraser, a pencil, a fountain pen, a watercolour brush, the blend tool and the paint roller. Tap a tool to pick it up, and tap it again to choose a thin, medium or thick line.',
     'Pick a colour from the paint splotches. The + has every colour, bright and earthy, and Shapes, Mirror and Select colour. The paint roller fills a shape: tap inside it. The blend tool softly runs colours together and pulls paint along.',
     'Undo and Redo are at the top, beside the green tick for Done. The bin clears the page (it asks first).',
     'Tap the lined square to write notes.',
   ] },
-  { section: 'My Notes', title: 'Printing and sharing pages', pics: ['print-share'], text: [
+  { section: 'My Notes', title: 'Printing and sharing pages', text: [
     'Tap the envelope to share pages as a PDF, or the printer to print them. Pick the pages (or All pages); a grown-up is asked first.',
     'In Pages, each page also has its own printer and a bin.',
   ] },
@@ -144,22 +144,22 @@ const ALL_HELP = [
     'Badges are earned by reading: finishing books, reading several days in a row, reading at bedtime, and firsts like your first recording, first drawing and first book made.',
     'Badges you haven’t earned yet are grey. Tap any badge to see how to earn it.',
   ] },
-  { section: 'Books', title: 'My Library', pics: ['library'], text: [
+  { section: 'Books', title: 'My Library', text: [
     'My Library is My Book Collection: the books you’ve finished, then the books that come with the app.',
     'Tap Select to choose books to share or delete (in My Workspace, My Books in Progress). Books that came with the app can be brought back with “Show removed books”.',
   ] },
-  { section: 'Books', title: 'Things to share and the Message Board', pics: ['desk'], text: [
+  { section: 'Books', title: 'Things to share and the Message Board', text: [
     'Things to share is in My Workspace, under My Notes. It holds a note from us, the Abc sheet (tap a letter to hear it) and sheets other families send you.',
     'The Message Board at the bottom of My Workspace is for sticky notes, photos and doodles from My Notes, with Book Playlists pinned in its corner. Tap the pin to add one, and tap a note or photo to see it big or take it down.',
   ] },
-  { section: 'Books', title: 'The Book Store', pics: ['store'], store: true, text: [
+  { section: 'Books', title: 'The Book Store', store: true, text: [
     'The Book Store has new books to discover. Tap a cover to see what it’s about, then Read now.',
   ] },
   { section: 'Books', title: 'Membership and buying books', store: true, text: [
     'Coro Family, the membership, is for making books: as many as you like, with every page, voice and drawing tool and the Advanced page editor for words over pictures, for $3.99 a month or $29.99 a year, and the first 7 days are free. In the Book Store, some books are free, with a new free book every month. Books by artists are bought one at a time, members too, and half of what Coro earns from each goes to its artist.',
     'Buying is for grown-ups: the app asks a grown-up question first, and payment goes through your Apple ID. Cancel the membership any time in your App Store account settings. On a new phone, use Restore Purchases on the membership screen.',
   ] },
-  { section: 'Grown-ups', title: 'Settings and parental controls', pics: ['settings'], text: [
+  { section: 'Grown-ups', title: 'Settings and parental controls', text: [
     'We trust parents and caregivers to know best. That’s why Coro gives you the tools to shape each reader’s own experience: profiles, ages, parental controls and more.',
     'Settings is the last item in the menu. It always asks the grown-up question first.',
     'Language: choose English, Deutsch, Français, Español, 日本語 or العربية for the app. Members can also read books in a different language from the app’s. The languages are also listed at the top of the start page: tap one to switch.',
@@ -170,7 +170,7 @@ const ALL_HELP = [
     'Nightlight mode: switch the bedtime nightlight on or off. Haptic feedback: feel soft clicks on dials, knobs and buttons, or switch them off.',
     'The Garden: a quiet garden to visit, with birdsong. Turn it on in Settings, then pull up past the bottom of My Workspace to go in. Tap the garden to change the light, and tap a gate to leave.',
   ] },
-  { section: 'Grown-ups', title: 'The grown-up check', pics: ['grownup'], text: [
+  { section: 'Grown-ups', title: 'The grown-up check', text: [
     'Some things, like taking photos, printing, sharing and deleting, first ask a quick question only a grown-up can answer.',
   ] },
   // The Coro Artist Community (Jörg, 30 Oct 2026): how artists send a book, how it's sold and how they're paid
@@ -245,36 +245,6 @@ const ALL_HELP = [
 export const HELP = ALL_HELP.filter((h) => STORE_ON || !h.store);
 
 const IDEAS_FELT = require('../../assets/ideas-felt.png');
-// small pictures of the app under a topic when it opens, to show each step (Jörg, 5 Nov 2026): crops of real screens,
-// assets/help/*.jpg. A tap shows one big.
-// each one 120 high, as wide as its own shape (no wider than 220)
-const picSize = (k) => { try { const r = Image.resolveAssetSource(PICS[k]); return { height: 120, width: Math.min(220, Math.round((120 * r.width) / r.height)) }; } catch (e) { return { height: 120, width: 90 }; } };
-const PICS = {
-  'advanced': require('../../assets/help/advanced.jpg'),
-  'alarm': require('../../assets/help/alarm.jpg'),
-  'book-about': require('../../assets/help/book-about.jpg'),
-  'cover': require('../../assets/help/cover.jpg'),
-  'desk': require('../../assets/help/desk.jpg'),
-  'draw-page': require('../../assets/help/draw-page.jpg'),
-  'draw-tray': require('../../assets/help/draw-tray.jpg'),
-  'grownup': require('../../assets/help/grownup.jpg'),
-  'library': require('../../assets/help/library.jpg'),
-  'listen-only': require('../../assets/help/listen-only.jpg'),
-  'make-book': require('../../assets/help/make-book.jpg'),
-  'nightlight': require('../../assets/help/nightlight.jpg'),
-  'notes': require('../../assets/help/notes.jpg'),
-  'pages': require('../../assets/help/pages.jpg'),
-  'player': require('../../assets/help/player.jpg'),
-  'playlists': require('../../assets/help/playlists.jpg'),
-  'print-share': require('../../assets/help/print-share.jpg'),
-  'read-page': require('../../assets/help/read-page.jpg'),
-  'reading-options': require('../../assets/help/reading-options.jpg'),
-  'recording': require('../../assets/help/recording.jpg'),
-  'settings': require('../../assets/help/settings.jpg'),
-  'store': require('../../assets/help/store.jpg'),
-  'trim': require('../../assets/help/trim.jpg'),
-};
-
 
 export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro }) {
   const keep = useScrollMemory('help'); // Back returns to this spot
@@ -289,7 +259,6 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
   const stripW = Math.min(520, winW - 48) + 16, stripH = stripW * 366 / 1260;
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(null); // the open topic's title (when not searching)
-  const [big, setBig] = useState(null); // a topic's picture, shown big
   // the overview: just the section headings at first; a tapped heading opens its topics (one section at a time)
   const [openSec, setOpenSec] = useState(null);
   const found = useMemo(() => {
@@ -347,15 +316,6 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
                       {shown ? (
                         <View style={{ gap: 10, paddingTop: 14 }}>{/* a clear gap under the topic's title */}
                           {h.text.map((p, k) => <Text key={k} style={styles.p}>{t(p)}</Text>)}
-                          {h.pics ? (
-                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 6 }}>
-                              {h.pics.map((k) => (
-                                <Pressable key={k} onPress={() => setBig(k)} accessibilityRole="imagebutton" accessibilityLabel={t('Show bigger')}>
-                                  <Image source={PICS[k]} style={[styles.pic, picSize(k)]} resizeMode="cover" />
-                                </Pressable>
-                              ))}
-                            </View>
-                          ) : null}
                         </View>
                       ) : null}
                     </View>
@@ -400,12 +360,6 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
           ) : null}
         </View>
       </ScrollView>
-      {/* a topic's picture, big: tap anywhere to close */}
-      <Modal visible={!!big} transparent animationType="fade" onRequestClose={() => setBig(null)}>
-        <Pressable onPress={() => setBig(null)} accessibilityRole="button" accessibilityLabel={t('Close')} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.88)', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          {big ? <Image source={PICS[big]} style={{ width: '100%', height: '82%' }} resizeMode="contain" /> : null}
-        </Pressable>
-      </Modal>
     </WithBar>
   );
 }
@@ -444,5 +398,4 @@ const styles = StyleSheet.create({
   cardTitle: { flex: 1, fontFamily: fonts.uiBold, fontSize: 17, color: colors.white },
   chev: { fontFamily: fonts.ui, fontSize: 22, color: 'rgba(255,255,255,0.75)', width: 22, textAlign: 'center' },
   p: { fontFamily: fonts.ui, fontSize: 16, lineHeight: 23, color: colors.white },
-  pic: { borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)', backgroundColor: '#111' }, // (a topic's picture, small)
 });
