@@ -380,6 +380,8 @@ function Root() {
   const readingOptions = controls.playback && !controls.playMode ? () => setPlayOpen(true) : null;
   // the collapsible Reading Options box under the books: what it needs to show the choices in place
   const readingBox = controls.playback && !controls.playMode ? { prefs, setPrefs, toast, onPlaylists: () => go('playlists') } : null;
+  const newPlaylistReq = useRef(false); // Make a Book Playlist (My Library): Book Playlists opens with a new one started (Jörg, 5 Nov 2026)
+  const makePlaylist = readingBox ? () => { newPlaylistReq.current = true; go('playlists'); } : undefined;
   const newBook = () => {
     if (purchasesReady && !purchases.member && !storeAdmin && userStories.length >= FREE_BOOKS) { setMoreGate(true); return; }
     openPublisher(null);
@@ -483,7 +485,7 @@ function Root() {
               if (r && r.y + r.h > height - barH) { setFlyer((f) => (f && !f.to && !f.hold ? null : f)); Animated.timing(libFade, { toValue: 1, duration: 250, useNativeDriver: true }).start(); return; }
               setFlyer((f) => (f && !f.to && !f.hold && r ? { ...f, to: r } : f));
             }}
-            onCreate={newBook} onEdit={openPublisher} onPlaylists={() => go('playlists')}
+            onCreate={newBook} onEdit={openPublisher} onPlaylists={() => go('playlists')} onMakePlaylist={makePlaylist}
             removedCount={removed.length} onRestore={() => setRemovedSaved([])} recentlyDeleted={recentlyDeleted}
             onShare={(s) => shareInvite(s.title)} // an invitation to the app, not the book
             onDelete={async (list) => {
@@ -521,7 +523,7 @@ function Root() {
               if (r && r.y + r.h > height - barH) { setFlyer((f) => (f && !f.to && !f.hold ? null : f)); Animated.timing(libFade, { toValue: 1, duration: 250, useNativeDriver: true }).start(); return; }
               setFlyer((f) => (f && !f.to && !f.hold && r ? { ...f, to: r } : f));
             }}
-            onCreate={newBook} onEdit={openPublisher} onPlaylists={() => go('playlists')}
+            onCreate={newBook} onEdit={openPublisher} onPlaylists={() => go('playlists')} onMakePlaylist={makePlaylist}
             removedCount={removed.length} onRestore={() => setRemovedSaved([])} recentlyDeleted={recentlyDeleted}
             onShare={(s) => shareInvite(s.title)} // an invitation to the app, not the book
             onDelete={async (list) => {
@@ -543,7 +545,7 @@ function Root() {
         {(screen === 'store' || (screen === 'start' && peek === 'store')) && <Store u={u} openStory={openStory} openMenu={openMenu} toast={toast} onReadingOptions={readingBox} />}
         {screen === 'music' && <MusicSounds u={u} openMenu={openMenu} prefs={prefs} setPrefs={setPrefs} />}
         {screen === 'profiles' && <Profiles u={u} openMenu={openMenu} setControls={setControls} onPicked={(id) => { setNextScreen('library'); switchProfile(id); }} onBack={(to) => go(to === 'workspace' ? 'workspace' : 'library')} />}
-        {screen === 'playlists' && <Playlists u={u} openMenu={openMenu} shelf={childShelf} onPlay={playPlaylist} onDone={() => { const last = hist.current[hist.current.length - 1]; if (last && (last.screen === 'library' || last.screen === 'workspace')) goBack(); else go('workspace'); }} /* from My Library: back to the same spot (the corkboard), like the back button (Jörg, 29 Oct 2026) */ />}
+        {screen === 'playlists' && <Playlists startNew={newPlaylistReq.current} onStarted={() => { newPlaylistReq.current = false; }} u={u} openMenu={openMenu} shelf={childShelf} onPlay={playPlaylist} onDone={() => { const last = hist.current[hist.current.length - 1]; if (last && (last.screen === 'library' || last.screen === 'workspace')) goBack(); else go('workspace'); }} /* from My Library: back to the same spot (the corkboard), like the back button (Jörg, 29 Oct 2026) */ />}
         {screen === 'settings' && <Settings onSendAll={async () => {
             if (!userStories.length) { toast(t('There are no books made on this device yet.')); return; }
             try { await shareAllBooks(userStories, (k, of) => toast(t('Packing book {n} of {of}…', { n: k, of }), 60000)); toast(''); } catch (e) { toast(t('The books couldn’t be packed. Try again.')); }

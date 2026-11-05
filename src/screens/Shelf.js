@@ -281,7 +281,7 @@ function WhoReads({ onPress }) {
 const scrollAsks = { books: { current: 0 }, wip: { current: 0 } };
 // mode: 'library' (My Library: just My Book Collection) or 'workspace' (My Workspace: who is reading, Let's make a
 // book, Work in Progress, My Notes, Things to share and the corkboard) (Jörg, 29 Oct 2026)
-export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingOptions, onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onEdit, onShare, onDelete, removedCount, onRestore, recentlyDeleted, onNotebook, notebookHidden, onNotebookRect }) {
+export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingOptions, onGarden, narrator, toast, onProfiles, u, stories, openStory, openMenu, onCreate, onPlaylists, onMakePlaylist, onEdit, onShare, onDelete, removedCount, onRestore, recentlyDeleted, onNotebook, notebookHidden, onNotebookRect }) {
   const t = useT();
   // Read a book (from the start page): open scrolled down so My Books is at the top, just under the band
   const ws = mode === 'workspace';
@@ -415,6 +415,15 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
             onLongPress={!selecting && s.mine ? () => onEdit(s) : undefined} />
         ))}
         {/* Playlists, at the end of My Books: three little felt books stacked */}
+        {/* Make a Book Playlist: a blue button under the books (Jörg, 5 Nov 2026) */}
+        {!selecting && !ws && onMakePlaylist ? (
+          <View style={{ width: '100%', alignItems: 'center', marginTop: 18 }}>
+            <Pressable onPress={onMakePlaylist} accessibilityRole="button" style={({ pressed }) => [styles.playlistBtn, pressed && { opacity: 0.85 }]}>
+              <Text style={styles.playlistPlus}>+</Text>
+              <Text style={styles.playlistBtnText}>{t('Make a Book Playlist')}</Text>
+            </Pressable>
+          </View>
+        ) : null}
         {/* (a much bigger space after My Books: Jörg, 25 Oct 2026) */}
         {/* Reading Options under the books, in black glass (Jörg, 26 Oct 2026) */}
         {!selecting && !ws && onReadingOptions ? <ReadingOptionsSection {...onReadingOptions} style={{ width: '100%', marginTop: 26 }} /* a little apart from the books (Jörg, 29 Oct 2026) */ /> : null}
@@ -918,6 +927,9 @@ const styles = StyleSheet.create({
   check: { position: 'absolute', top: 8, left: 8, width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: colors.white, backgroundColor: 'rgba(0,0,0,0.25)', alignItems: 'center', justifyContent: 'center', zIndex: 2 },
   checkOn: { backgroundColor: colors.green, borderColor: colors.white }, // selected: the standard green
   checkMark: { color: colors.white, fontWeight: '800', fontSize: 16, lineHeight: 18 },
+  playlistBtn: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 52, borderRadius: 26, paddingLeft: 22, paddingRight: 26, backgroundColor: colors.blue, shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 8, shadowOffset: { width: 0, height: 3 } },
+  playlistPlus: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 26, lineHeight: 30, marginTop: -2 },
+  playlistBtnText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 17 },
   restore: { fontFamily: fonts.ui, fontSize: 15, color: '#d0d0d0', textDecorationLine: 'underline', textAlign: 'center' },
   confirm: { position: 'absolute', left: 16, right: 16, bottom: 150, backgroundColor: colors.glass, borderRadius: 20, padding: 18, gap: 14, zIndex: 40 },
   confirmText: { color: colors.white, fontFamily: fonts.ui, fontSize: 16, lineHeight: 22 },

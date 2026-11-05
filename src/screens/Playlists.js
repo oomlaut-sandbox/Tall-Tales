@@ -57,14 +57,18 @@ const BAND_FELT = require('../../assets/band-playlists.png'); // Jörg's brown f
 const BAND_COLOR = '#7a5534'; // its colour (iPad, and the status bar strip)
 const ENVELOPE = require('../../assets/icon-envelope.png'); // share
 
-export default function Playlists({ onDone, u, openMenu, shelf, onPlay }) {
+export default function Playlists({ onDone, u, openMenu, shelf, onPlay, startNew, onStarted }) {
   const keep = useScrollMemory('playlists'); // Back returns to this spot
   const { width: winW } = useWindowDimensions();
   const tapeW = Math.round(Math.min(520, winW - 48) * 0.575); // the cassette itself is about half the column (the rest is its shadow)
   const t = useT();
   const insets = useSafeAreaInsets();
   const [lists, setLists] = useState(null);
-  useEffect(() => { loadPlaylists().then(setLists); }, []);
+  useEffect(() => { loadPlaylists().then((l) => {
+    // from Make a Book Playlist: a new one, open and choosing books, straight away
+    if (startNew) { const n = newPlaylist(t('My playlist')); setLists([...(l || []), n]); setEdit(n.id); setAdding(true); onStarted && onStarted(); }
+    else setLists(l);
+  }); }, []);
   const loaded = useRef(false);
   useEffect(() => { if (lists && loaded.current) savePlaylists(lists); if (lists) loaded.current = true; }, [lists]);
   const [edit, setEdit] = useState(null); // the playlist being changed (its id)
