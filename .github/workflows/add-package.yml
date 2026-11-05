@@ -1,0 +1,28 @@
+# Adds an npm package (exact version) and saves the updated package.json and package-lock.json to the
+# add-package-output branch, to be copied into main. (This workspace can't reach the npm registry.)
+name: Add package
+on:
+  workflow_dispatch:
+    inputs:
+      pkg:
+        description: package@version
+        required: true
+permissions:
+  contents: write
+jobs:
+  add:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Add
+        run: |
+          npm install --no-audit --no-fund --save-exact "${{ inputs.pkg }}" > /tmp/log.txt 2>&1 || true
+          mkdir -p /tmp/o && cp package.json package-lock.json /tmp/o/ && tail -20 /tmp/log.txt > /tmp/o/log.txt
+          P=$(echo "${{ inputs.pkg }}" | sed -E 's/@[^@]*$//'); [ -d "node_modules/$P" ] && cp -r "node_modules/$P" /tmp/o/pkg || true
+      - name: Save
+        run: |
+          cd /tmp/o && git init -q && git config user.name "build-bot" && git config user.email "build-bot@users.noreply.github.com"
+          git add -A && git commit -qm "Add package" && git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:add-package-output
