@@ -38,15 +38,20 @@ export const PENS_BRIGHT = [
 
 const hsl = (h, s, l) => { const a = s * Math.min(l, 1 - l), f = (n) => { const k = (n + h / 30) % 12; return Math.round(255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)))); }; return '#' + [f(0), f(8), f(4)].map((v) => v.toString(16).padStart(2, '0')).join(''); };
 
-// The paint wheel (assets/colour-wheel.png was made from this same rule, so what you tap is what you get): red at
-// the top, round through the colours; pale in the middle, the full colour two thirds out, deeper at the edge.
-// dx, dy: from the middle, in radii (so 1 is the edge)
-export function wheelColour(dx, dy) {
-  const t = Math.min(1, Math.hypot(dx, dy));
-  const a = ((Math.atan2(dy, dx) * 180) / Math.PI + 90 + 360) % 360;
-  const s = 0.3 + 0.38 * Math.min(1, t / 0.2);
-  const l = t < 0.12 ? 0.96 : t < 0.62 ? 0.96 - ((t - 0.12) / 0.5) * 0.44 : 0.52 - ((t - 0.62) / 0.38) * 0.3;
-  return hsl(a, s, l);
+// The colour wheel (like Procreate's Disc, Jörg 5 Nov 2026): the ring picks the colour (h: 0 to 360, red at the
+// right, round the other way from a clock), the disc inside how strong (s: 0 grey to 1 full, left to right) and how
+// light (v: 1 at the top to 0 black at the bottom). assets/hue-ring.png, sv-white.png and sv-black.png are drawn from
+// the same rule, so what you tap is what you get.
+export function hsvHex(h, s, v) {
+  const f = (n) => { const k = (n + h / 60) % 6; return Math.round(255 * (v - v * s * Math.max(0, Math.min(k, 4 - k, 1)))); };
+  return '#' + [f(5), f(3), f(1)].map((x) => x.toString(16).padStart(2, '0')).join('');
+}
+export function hsvOf(hex) {
+  const [r, g, b] = rgbOf(hex || '#000000').map((x) => x / 255);
+  const mx = Math.max(r, g, b), d = mx - Math.min(r, g, b);
+  let h = 0;
+  if (d) h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return { h: (h * 60 + 360) % 360, s: mx ? d / mx : 0, v: mx };
 }
 export const GREYS = ['#ffffff', '#d9d9d9', '#b0b0b0', '#868686', '#5c5c5c', '#333333', '#111111'];
 
@@ -321,7 +326,7 @@ export function liveLook(st, w) {
   if (!st || st.e || st.sm || st.stp || st.f || st.z || st.ph) return null;
   const lw = Math.max(1, (st.s || 0.01) * w), b = st.b || 'ink';
   const look = b === 'pencil' ? { size: Math.max(1.2, lw * 0.45), thinning: 0, alpha: 0.9 }
-    : b === 'water' ? { size: lw * 1.6, thinning: 0.5, alpha: 0.42 }
+    : b === 'water' ? { size: lw * 1.35 * 1.1, thinning: 0.5, alpha: 0.42 } // (the body's size: see layersOf)
     : b === 'crayon' ? { size: lw * 1.35, thinning: 0.3, alpha: 0.7 }
     : { size: lw * 1.5, thinning: 0.6, alpha: 1 };
   const one = (x) => outlineD(pfOutline(x, w, look.size, { thinning: look.thinning, live: true }));
@@ -369,7 +374,11 @@ function layersOf(st, w) {
     // (Apple Pencil: a light touch is a pale wash, pressing harder loads more pigment)
     // (calmer, Jörg 27 Oct 2026: the width follows the hand less wildly, shorter points at the ends, an even body
     // with more colour, a gentle edge; it still deepens where strokes cross)
-    const B = (k, wob = 0) => inkD({ ...st, s: (st.s || 0.01) * k }, w, 1.5, 0.75, 0, wob);
+    // new strokes (pf, Jörg 5 Nov 2026): the shape comes from perfect-freehand, the same shape that's shown while
+    // painting, so nothing jumps on lift and the edge doesn't wobble with the finger's speed
+    const B = st.pf
+      ? (k) => outlineD(pfOutline(st, w, lw * k * 1.1, { thinning: 0.5 }))
+      : (k, wob = 0) => inkD({ ...st, s: (st.s || 0.01) * k }, w, 1.5, 0.75, 0, wob);
     const dk = darkOf(st, 0.6);
     if (st.wet) return [
       { d: B(1.9, 0.15), fill: true, alpha: (light ? 0.3 : 0.12) * dk, blur: lw * 0.4, multiply: !light, tex: 2 }, // the bleed into the wet wash

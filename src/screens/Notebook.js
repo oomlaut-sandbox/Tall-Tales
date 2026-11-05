@@ -28,7 +28,7 @@ import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
 import ToolPic from '../components/ToolPic';
 import { STAMPS, stampWidth } from '../stamps';
 const SHOW_STAMPS = false; // the stamps are the felt mascot: away until Jörg's hand-drawn one arrives (drawings that have them still show them)
-import { GREYS, DRAW_LAYERS, PENS, PENS_BRIGHT, SHAPES, wheelColour, SIZES, makeFill, FILL_G, mixColours, shapePts, withMirrors, inkOf, isMeta, layerAlpha, withLayerAlpha } from '../strokes';
+import { GREYS, DRAW_LAYERS, PENS, PENS_BRIGHT, SHAPES, hsvHex, hsvOf, SIZES, makeFill, FILL_G, mixColours, shapePts, withMirrors, inkOf, isMeta, layerAlpha, withLayerAlpha } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
 import { STORIES } from '../story';
@@ -997,37 +997,80 @@ function BucketIcon() {
   );
 }
 
-// The paint wheel: one smooth wheel of every colour (its picture made from wheelColour). Touch it to pick, drag to
-// try colours (the pen follows), let go to keep it. A white ring shows the spot.
-const WHEEL = require('../../assets/colour-wheel.png');
-function PaintWheel({ size, spot, onPick, label, onTouch }) {
-  const R = size / 2;
-  const at = (e, done) => {
-    const dx = (e.nativeEvent.locationX - R) / R, dy = (e.nativeEvent.locationY - R) / R;
-    const k = Math.hypot(dx, dy);
-    const sx = k > 1 ? dx / k : dx, sy = k > 1 ? dy / k : dy; // (dragged off the edge: the edge)
-    onPick(wheelColour(sx, sy), [sx, sy], done);
-  };
+// the small white pictures on the options under the colour wheel (Jörg, 5 Nov 2026)
+function OptIcon({ kind }) {
+  const c = colors.white, box = { width: 18, height: 18 };
+  const at = (st) => <View style={[{ position: 'absolute' }, st]} />;
+  if (kind === 'mix') return <View style={box}>{at({ left: 0, top: 3, width: 12, height: 12, borderRadius: 6, borderWidth: 2, borderColor: c })}{at({ left: 6, top: 3, width: 12, height: 12, borderRadius: 6, backgroundColor: c, opacity: 0.85 })}</View>;
+  if (kind === 'shapes') return <View style={box}>{at({ left: 0, top: 6, width: 11, height: 11, borderRadius: 2, borderWidth: 2, borderColor: c })}{at({ left: 7, top: 0, width: 11, height: 11, borderRadius: 5.5, backgroundColor: c })}</View>;
+  if (kind === 'mirror') return (
+    <View style={box}>
+      {at({ left: 0, top: 3, width: 0, height: 0, borderTopWidth: 6, borderBottomWidth: 6, borderRightWidth: 7, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderRightColor: c })}
+      {at({ left: 11, top: 3, width: 0, height: 0, borderTopWidth: 6, borderBottomWidth: 6, borderLeftWidth: 7, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: c, opacity: 0.55 })}
+      {[0, 6, 12].map((y) => <View key={y} style={{ position: 'absolute', left: 8.25, top: y + 0.5, width: 1.5, height: 4, backgroundColor: c }} />)}
+    </View>
+  );
+  if (kind === 'stamp') return <View style={box}>{at({ left: 5, top: 0, width: 8, height: 8, borderRadius: 4, backgroundColor: c })}{at({ left: 7, top: 7, width: 4, height: 5, backgroundColor: c })}{at({ left: 1, top: 12, width: 16, height: 5, borderRadius: 2, backgroundColor: c })}</View>;
+  if (kind === 'behind') return <View style={box}>{at({ left: 0, top: 0, width: 12, height: 12, borderRadius: 2, backgroundColor: c, opacity: 0.85 })}{at({ left: 5, top: 5, width: 13, height: 13, borderRadius: 2, borderWidth: 2, borderColor: c, backgroundColor: '#5f5f5f' })}</View>;
+  // the eyedropper: a squeeze bulb and a glass tube, leaning to the left
   return (
-    <View style={{ alignSelf: 'center', width: size, height: size, marginVertical: 6 }} accessible accessibilityRole="adjustable" accessibilityLabel={label}
+    <View style={[box, { transform: [{ rotate: '45deg' }] }]}>
+      {at({ left: 5.5, top: -1, width: 7, height: 7, borderTopLeftRadius: 3.5, borderTopRightRadius: 3.5, borderBottomLeftRadius: 1, borderBottomRightRadius: 1, backgroundColor: c })}
+      {at({ left: 3.5, top: 5.5, width: 11, height: 2.2, borderRadius: 1, backgroundColor: c })}
+      {at({ left: 6.5, top: 7.5, width: 5, height: 7.5, borderWidth: 1.6, borderTopWidth: 0, borderColor: c })}
+      {at({ left: 8.2, top: 14.5, width: 1.6, height: 4, borderRadius: 0.8, backgroundColor: c })}
+    </View>
+  );
+}
+
+// The colour wheel (like Procreate's Disc, Jörg 5 Nov 2026): a ring of every colour round the outside, and inside it a
+// disc of that colour, pale at the top left, full at the right, dark at the bottom. Touch or drag either one (the pen
+// follows), let go to keep it. Each has a white ring showing where you are.
+const HUE_RING = require('../../assets/hue-ring.png');
+const SV_WHITE = require('../../assets/sv-white.png');
+const SV_BLACK = require('../../assets/sv-black.png');
+const RING_IN = 0.8; // (the ring's inside edge, as a share of the wheel's radius: matches assets/hue-ring.png)
+const DISC = 0.66; // (the disc's radius, the same way)
+function PaintWheel({ size, hsv, onPick, label, onTouch }) {
+  const R = size / 2, rd = R * DISC;
+  const part = useRef(null); // 'ring' or 'disc': whichever the finger started on
+  const at = (e, done) => {
+    const dx = e.nativeEvent.locationX - R, dy = e.nativeEvent.locationY - R;
+    if (!part.current) part.current = Math.hypot(dx, dy) > R * (RING_IN + DISC) / 2 ? 'ring' : 'disc';
+    if (part.current === 'ring') {
+      const h = ((Math.atan2(-dy, dx) * 180) / Math.PI + 360) % 360;
+      onPick({ ...hsv, h, ...(hsv.s < 0.05 ? { s: 1, v: Math.max(hsv.v, 0.6) } : null) }, done); // (from a grey: the colour itself)
+    } else {
+      let x = dx / rd, y = dy / rd; const k = Math.hypot(x, y); if (k > 1) { x /= k; y /= k; } // (off the edge: the edge)
+      onPick({ h: hsv.h, s: (x + 1) / 2, v: 1 - (y + 1) / 2 }, done);
+    }
+    if (done) part.current = null;
+  };
+  const ringR = R * (RING_IN + 1) / 2, ra = (-hsv.h * Math.PI) / 180;
+  const dot = (left, top, fill) => (
+    <View pointerEvents="none" style={{ position: 'absolute', left: left - 15, top: top - 15, width: 30, height: 30, borderRadius: 15, borderWidth: 3, borderColor: colors.white,
+      backgroundColor: fill, shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 4, shadowOffset: { width: 0, height: 1 } }} />
+  );
+  return (
+    <View style={{ alignSelf: 'center', width: size, height: size, marginTop: 14, marginBottom: 4 }} accessible accessibilityRole="adjustable" accessibilityLabel={label}
       accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
-      onAccessibilityAction={(e) => { // VoiceOver: swipe up or down to go round the wheel's rim, a twelfth at a time
+      onAccessibilityAction={(e) => { // VoiceOver: swipe up or down to go round the ring, a twelfth at a time
         const d = e.nativeEvent.actionName === 'increment' ? 1 : e.nativeEvent.actionName === 'decrement' ? -1 : 0;
-        if (!d) return;
-        const a0 = spot ? Math.atan2(spot[1], spot[0]) : -Math.PI / 2;
-        const a1 = a0 + (d * Math.PI) / 6, sx = Math.cos(a1) * 0.9, sy = Math.sin(a1) * 0.9;
-        onPick(wheelColour(sx, sy), [sx, sy], true);
+        if (d) onPick({ h: (hsv.h + d * 30 + 360) % 360, s: hsv.s < 0.05 ? 1 : hsv.s, v: hsv.s < 0.05 ? 1 : hsv.v }, true);
       }}
       onStartShouldSetResponder={() => true} onMoveShouldSetResponder={() => true} onResponderTerminationRequest={() => false}
-      onResponderGrant={(e) => { onTouch && onTouch(true); at(e, false); }} onResponderMove={(e) => at(e, false)}
-      onResponderRelease={(e) => { at(e, true); onTouch && onTouch(false); }} onResponderTerminate={() => onTouch && onTouch(false)}>
-      <View pointerEvents="none" style={{ width: size, height: size, borderRadius: R, shadowColor: '#000', shadowOpacity: 0.55, shadowRadius: 10, shadowOffset: { width: 0, height: 4 } }}>
-        <Image source={WHEEL} style={{ width: size, height: size }} />
+      onResponderGrant={(e) => { part.current = null; onTouch && onTouch(true); at(e, false); }} onResponderMove={(e) => at(e, false)}
+      onResponderRelease={(e) => { at(e, true); onTouch && onTouch(false); }} onResponderTerminate={() => { part.current = null; onTouch && onTouch(false); }}>
+      <Image pointerEvents="none" source={HUE_RING} style={{ position: 'absolute', left: 0, top: 0, width: size, height: size }} />
+      <View pointerEvents="none" style={{ position: 'absolute', left: R - rd, top: R - rd, width: rd * 2, height: rd * 2, borderRadius: rd, overflow: 'hidden', backgroundColor: hsvHex(hsv.h, 1, 1) }}>
+        <Image source={SV_WHITE} style={{ position: 'absolute', left: 0, top: 0, width: rd * 2, height: rd * 2 }} resizeMode="stretch" />
+        <Image source={SV_BLACK} style={{ position: 'absolute', left: 0, top: 0, width: rd * 2, height: rd * 2 }} resizeMode="stretch" />
       </View>
-      {spot ? (
-        <View pointerEvents="none" style={{ position: 'absolute', left: R + spot[0] * R - 16, top: R + spot[1] * R - 16, width: 32, height: 32, borderRadius: 16, borderWidth: 4, borderColor: colors.white,
-          backgroundColor: wheelColour(spot[0], spot[1]), shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 4, shadowOffset: { width: 0, height: 1 } }} />
-      ) : null}
+      {dot(R + Math.cos(ra) * ringR, R + Math.sin(ra) * ringR, hsvHex(hsv.h, 1, 1))}
+      {(() => { // the disc's spot (inside the circle: the square's corners are drawn in to its edge)
+        let x = hsv.s * 2 - 1, y = (1 - hsv.v) * 2 - 1; const k = Math.hypot(x, y); if (k > 1) { x /= k; y /= k; }
+        return dot(R + x * rd, R + y * rd, hsvHex(hsv.h, hsv.s, hsv.v));
+      })()}
     </View>
   );
 }
@@ -1150,7 +1193,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   };
   const [dropper, setDropper] = useState(false);
   const [onWheel, setOnWheel] = useState(false); // a finger on the paint wheel: the sheet holds still
-  const [wheelSpot, setWheelSpot] = useState(null); // where on the paint wheel the colour was picked (the white ring) // the eyedropper: the next tap on the page picks up the colour there // Mirror: everything drawn appears flipped on the other side too
+  const [wheelHsv, setWheelHsv] = useState({ h: 0, s: 1, v: 1 }); // where the colour wheel's two white rings are (follows the pen) // the eyedropper: the next tap on the page picks up the colour there // Mirror: everything drawn appears flipped on the other side too
   const [redo, setRedo] = useState([]); // strokes taken back with Undo, to put back with Redo
   const [recent, setRecent] = useState(['#1e2324', '#f1e8d8', '#2f4a4c', '#93a08f', '#b98a3e', '#9a4f36', '#4e3125']); // the seven colours in the pill: earthy to start (the bright ones are under +)
   const [more, setMore] = useState(false); // the + sheet: all the colours, Mix, Shapes, Mirror
@@ -1290,7 +1333,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
         ? { sm: 1, c: '#000000', s: Math.max(0.03, S.current.size * 2.4), p: [+x.toFixed(4), +y.toFixed(4)], ...(S.current.smudgeK !== 1 ? { k: S.current.smudgeK } : null), ...m } // a fingertip, rubbing
         : S.current.erase
         ? { e: 1, c: '#000000', s: Math.max(0.035, S.current.size * (S.current.eraseSoft ? 3 : 2.2)), p: [+x.toFixed(4), +y.toFixed(4)], ...(S.current.eraseSoft ? { k: 0.35 } : null), ...m }
-        : { c: S.current.pen, s: S.current.size, b: S.current.brush, p: [+x.toFixed(4), +y.toFixed(4)], ...(force > 0 ? { q: [+force.toFixed(2)] } : null), ...(S.current.brush === 'ink' || !S.current.brush ? { pf: 1 } : null), ...m }; // (pf: the fountain pen's new strokes, perfect-freehand)
+        : { c: S.current.pen, s: S.current.size, b: S.current.brush, p: [+x.toFixed(4), +y.toFixed(4)], ...(force > 0 ? { q: [+force.toFixed(2)] } : null), ...(S.current.brush === 'ink' || S.current.brush === 'water' || !S.current.brush ? { pf: 1 } : null), ...m }; // (pf: the fountain pen's new strokes, perfect-freehand)
       { const u = tiltNow(e); if (u != null && !cur.current.e && !cur.current.sm) cur.current.t = [+u.toFixed(2)]; }
       setLive({ ...cur.current });
     },
@@ -1478,6 +1521,13 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   // the bin; Undo, Redo and Done above the page. The + opens everything else: all the colours, Mix, Shapes and
   // Mirror. Tap the tool you're holding again for its sizes. ----
   const add7 = (hex) => setRecent((r) => [hex, ...r.filter((x) => x.toLowerCase() !== hex.toLowerCase())].slice(0, 7));
+  // the wheel shows the pen's colour when the sheet opens or the colour changes elsewhere (a grey or black keeps the
+  // ring where it was)
+  useEffect(() => {
+    if (!more || onWheel) return;
+    const c = hsvOf(pen);
+    setWheelHsv((o) => (c.s < 0.03 || c.v < 0.03 ? { ...c, h: o.h } : c));
+  }, [pen, more]); // eslint-disable-line react-hooks/exhaustive-deps
   const pick = (hex) => {
     const next = mixing ? mixColours(pen, hex) : hex;
     setPen(next); setErase(false); setBucket(false);
@@ -1606,25 +1656,15 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
         </View>
         {/* everything below the title scrolls, so the sheet never covers the page's top */}
         <ScrollView scrollEnabled={!onWheel} style={{ maxHeight: winH - insets.top - 140 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 6 }}>
-        <Text style={styles.sheetLabel}>{t('Bright colours')}</Text>
-        {grid(PENS_BRIGHT)}
-        <Text style={styles.sheetLabel}>{t('Earthy colours')}</Text>
-        {grid(PENS)}
-        {/* the greys, right under the earthy colours (Jörg, 26 Oct 2026) */}
-        <Text style={styles.sheetLabel}>{t('Greys')}</Text>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 8, rowGap: 10 }}>
-          {GREYS.map((hex) => swatch(hex, mixing ? t('Mix in {name}', { name: t(GREY_NAMES[hex] || 'Grey') }) : t('{name} pen', { name: t(GREY_NAMES[hex] || 'Grey') }), Math.min(34, Math.floor((w - 44) / 8) - 8), () => { setWheelSpot(null); pick(hex); }, !erase && !mixing && pen.toLowerCase() === hex.toLowerCase()))}
-        </View>
-        {/* every colour: the paint wheel (pale in the middle, the full colour, deep at the edge; tap or drag) */}
-        <Text style={styles.sheetLabel}>{t('Every colour')}</Text>
-        <PaintWheel size={Math.min(w - 44, 300)} spot={wheelSpot} onPick={(hex, spot, done) => { setWheelSpot(spot); if (done) pick(hex); else { setPen(mixing ? mixColours(pen, hex) : hex); setErase(false); setBucket(false); } }} label={t('Colour wheel')} onTouch={setOnWheel} />
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 20 }}>
-          <Pressable onPress={() => setMixing((x) => !x)} style={[styles.toolWide, mixing && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mix colours')} accessibilityState={{ selected: !!mixing }}><Text style={styles.toolText}>{t('Mix')}</Text></Pressable>
-          <Pressable onPress={() => { setShapesOpen((x) => !x); if (shapesOpen) setShape(null); }} style={[styles.toolWide, (shapesOpen || shape) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Shapes')} accessibilityState={{ expanded: !!shapesOpen, selected: !!shape }}><Text style={styles.toolText}>{t('Shapes')}</Text></Pressable>
-          <Pressable onPress={() => setMirror((x) => !x)} style={[styles.toolWide, mirror && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mirror drawing')} accessibilityState={{ selected: !!mirror }}><Text style={styles.toolText}>{t('Mirror')}</Text></Pressable>
-          {SHOW_STAMPS ? <Pressable onPress={() => setStampsOpen((x) => !x)} style={[styles.toolWide, (stampsOpen || stamp) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Stamps')} accessibilityState={{ expanded: !!stampsOpen, selected: !!stamp }}><Text style={styles.toolText}>{t('Stamps')}</Text></Pressable> : null}
-          <Pressable onPress={() => setBehind((x) => !x)} style={[styles.toolWide, behind && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Colour behind the lines')} accessibilityState={{ selected: !!behind }}><Text style={styles.toolText}>{t('Behind the lines')}</Text></Pressable>
-          <Pressable onPress={() => { setDropper(true); setMore(false); }} style={[styles.toolWide, dropper && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Pick up a colour from the page')} accessibilityState={{ selected: !!dropper }}><Text style={styles.toolText}>{t('Pick up a colour')}</Text></Pressable>
+        {/* the colour wheel first (Jörg, 5 Nov 2026), its options right under it, then the greys, then the rest */}
+        <PaintWheel size={Math.min(w - 44, 320)} hsv={wheelHsv} onPick={(c, done) => { setWheelHsv(c); const hex = hsvHex(c.h, c.s, c.v); if (done) pick(hex); else if (!mixing) { setPen(hex); setErase(false); setBucket(false); } }} label={t('Colour wheel')} onTouch={setOnWheel} />
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 16 }}>
+          <Pressable onPress={() => setMixing((x) => !x)} style={[styles.toolWide, styles.toolIcon, mixing && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mix colours')} accessibilityState={{ selected: !!mixing }}><OptIcon kind="mix" /><Text style={styles.toolText}>{t('Mix')}</Text></Pressable>
+          <Pressable onPress={() => { setShapesOpen((x) => !x); if (shapesOpen) setShape(null); }} style={[styles.toolWide, styles.toolIcon, (shapesOpen || shape) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Shapes')} accessibilityState={{ expanded: !!shapesOpen, selected: !!shape }}><OptIcon kind="shapes" /><Text style={styles.toolText}>{t('Shapes')}</Text></Pressable>
+          <Pressable onPress={() => setMirror((x) => !x)} style={[styles.toolWide, styles.toolIcon, mirror && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mirror drawing')} accessibilityState={{ selected: !!mirror }}><OptIcon kind="mirror" /><Text style={styles.toolText}>{t('Mirror')}</Text></Pressable>
+          {SHOW_STAMPS ? <Pressable onPress={() => setStampsOpen((x) => !x)} style={[styles.toolWide, styles.toolIcon, (stampsOpen || stamp) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Stamps')} accessibilityState={{ expanded: !!stampsOpen, selected: !!stamp }}><OptIcon kind="stamp" /><Text style={styles.toolText}>{t('Stamps')}</Text></Pressable> : null}
+          <Pressable onPress={() => setBehind((x) => !x)} style={[styles.toolWide, styles.toolIcon, behind && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Colour behind the lines')} accessibilityState={{ selected: !!behind }}><OptIcon kind="behind" /><Text style={styles.toolText}>{t('Behind the lines')}</Text></Pressable>
+          <Pressable onPress={() => { setDropper(true); setMore(false); }} style={[styles.toolWide, styles.toolIcon, dropper && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Pick up a colour from the page')} accessibilityState={{ selected: !!dropper }}><OptIcon kind="dropper" /><Text style={styles.toolText}>{t('Pick up a colour')}</Text></Pressable>
         </View>
         {SHOW_STAMPS && stampsOpen ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
@@ -1648,6 +1688,14 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
             ))}
           </View>
         ) : null}
+        <Text style={styles.sheetLabel}>{t('Greys')}</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 8, rowGap: 10 }}>
+          {GREYS.map((hex) => swatch(hex, mixing ? t('Mix in {name}', { name: t(GREY_NAMES[hex] || 'Grey') }) : t('{name} pen', { name: t(GREY_NAMES[hex] || 'Grey') }), sz, () => pick(hex), !erase && !mixing && pen.toLowerCase() === hex.toLowerCase()))}
+        </View>
+        <Text style={styles.sheetLabel}>{t('Bright colours')}</Text>
+        {grid(PENS_BRIGHT)}
+        <Text style={styles.sheetLabel}>{t('Earthy colours')}</Text>
+        {grid(PENS)}
         </ScrollView>
       </View>
     );
@@ -1771,6 +1819,7 @@ const styles = StyleSheet.create({
   swatchOn: { borderColor: colors.white, borderWidth: 3, transform: [{ scale: 1.15 }] },
   tool: { width: 38, height: 38, borderRadius: 19, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   toolWide: { height: 38, borderRadius: 19, paddingHorizontal: 11, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
+  toolIcon: { flexDirection: 'row', gap: 7, paddingLeft: 12, paddingRight: 14 }, // (an option with its icon: 5 Nov 2026)
   toolOn: { backgroundColor: colors.green },
   toolText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 },
 });
