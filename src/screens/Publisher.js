@@ -334,12 +334,12 @@ function UploadImages({ tr, winW, insets, onSkip, onGo, intro = false }) {
         <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 28, lineHeight: 34 }}>{intro ? tr('Let’s get started!') : tr('Upload Images')}</Text>
         {intro ? (
           // the first thing a new book offers (Jörg, 4 Nov 2026)
-          <Text style={{ color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, marginTop: 8 }}>{tr('The quickest way to make a book? Select from images already on your device. You can upload them all at once and I’ll make a page for each. Fill in the words and you’re done. Your first book! Do you want to select pictures from your photo library now?')}</Text>
+          <Text style={{ color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, marginTop: 8 }}>{tr('The quickest way to make a book? Select from images already on your device. You can upload them all at once and I’ll make a page for each. Fill in the words and you’re done your book. Do you want to select pictures from your photo library now?')}</Text>
         ) : (
           <Text style={{ color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, marginTop: 8 }}>{tr('Choose up to {n} pictures from your photos. Coro puts them into a book, and you just add the words.', { n: QUICK_MAX })}</Text>
         )}
-        <Text style={{ color: 'rgba(255,255,255,0.85)', fontFamily: fonts.uiBold, fontSize: 15, marginTop: 22 }}>{tr('How should the pages go?')}</Text>
-        <View accessibilityRole="radiogroup" style={{ flexDirection: 'row', gap: 12, marginTop: 12, justifyContent: 'center' }}>
+        <Text style={{ color: 'rgba(255,255,255,0.85)', fontFamily: fonts.uiBold, fontSize: 18, lineHeight: 24, marginTop: 22 }}>{tr('How should the pages go?')}</Text>
+        <View accessibilityRole="radiogroup" style={{ flexDirection: 'row', gap: 12, marginTop: 18, justifyContent: 'center' }}>
           <Tile v="alt" label={tr('Picture, then words')} rec={tr('(Recommended)')} />
           <Tile v="every" label={tr('A picture on every page')} />
         </View>
