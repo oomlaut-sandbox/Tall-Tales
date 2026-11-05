@@ -637,7 +637,8 @@ export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
         {/* search and filters (Jörg, 4 Nov 2026) */}
         <View style={{ paddingHorizontal: 20, gap: 12 }}>
           <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-            <View style={[styles.storeSearchWrap, { flex: 1 }]}>
+            {/* iPad: no wider than two books and the gap between them (Jörg, 5 Nov 2026) */}
+            <View style={[styles.storeSearchWrap, IS_TABLET ? { width: ((winW - 40) * (2 * TILE[COLS(winW)] + (100 - COLS(winW) * TILE[COLS(winW)]) / (COLS(winW) - 1))) / 100 } : { flex: 1 }]}>
               {/* (the same centred one-line box as Help's search: see ci/check-search.js) */}
               <TextInput value={q} onChangeText={(v) => setQ(v.replace(/\n/g, ''))} placeholder={t('Search books')} placeholderTextColor="#666"
                 style={styles.storeSearch} allowFontScaling={false} multiline scrollEnabled={false} submitBehavior="blurAndSubmit" returnKeyType="search" accessibilityLabel={t('Search books')} />
