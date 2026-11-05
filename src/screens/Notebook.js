@@ -999,28 +999,16 @@ function BucketIcon() {
 
 // the small white pictures on the options under the colour wheel (Jörg, 5 Nov 2026)
 function OptIcon({ kind }) {
-  const c = colors.white, box = { width: 18, height: 18 };
+  const c = colors.white, Z = 19, k = Z / 24, lw = 2.2 * k; // (drawn on a 24 grid, shown 19 wide)
+  const box = { width: Z, height: Z };
   const at = (st) => <View style={[{ position: 'absolute' }, st]} />;
-  if (kind === 'mix') return <View style={box}>{at({ left: 0, top: 3, width: 12, height: 12, borderRadius: 6, borderWidth: 2, borderColor: c })}{at({ left: 6, top: 3, width: 12, height: 12, borderRadius: 6, backgroundColor: c, opacity: 0.85 })}</View>;
-  if (kind === 'shapes') return <View style={box}>{at({ left: 0, top: 6, width: 11, height: 11, borderRadius: 2, borderWidth: 2, borderColor: c })}{at({ left: 7, top: 0, width: 11, height: 11, borderRadius: 5.5, backgroundColor: c })}</View>;
-  if (kind === 'mirror') return (
-    <View style={box}>
-      {at({ left: 0, top: 3, width: 0, height: 0, borderTopWidth: 6, borderBottomWidth: 6, borderRightWidth: 7, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderRightColor: c })}
-      {at({ left: 11, top: 3, width: 0, height: 0, borderTopWidth: 6, borderBottomWidth: 6, borderLeftWidth: 7, borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: c, opacity: 0.55 })}
-      {[0, 6, 12].map((y) => <View key={y} style={{ position: 'absolute', left: 8.25, top: y + 0.5, width: 1.5, height: 4, backgroundColor: c }} />)}
-    </View>
-  );
-  if (kind === 'stamp') return <View style={box}>{at({ left: 5, top: 0, width: 8, height: 8, borderRadius: 4, backgroundColor: c })}{at({ left: 7, top: 7, width: 4, height: 5, backgroundColor: c })}{at({ left: 1, top: 12, width: 16, height: 5, borderRadius: 2, backgroundColor: c })}</View>;
-  if (kind === 'behind') return <View style={box}>{at({ left: 0, top: 0, width: 12, height: 12, borderRadius: 2, backgroundColor: c, opacity: 0.85 })}{at({ left: 5, top: 5, width: 13, height: 13, borderRadius: 2, borderWidth: 2, borderColor: c, backgroundColor: '#5f5f5f' })}</View>;
-  // the eyedropper: a squeeze bulb and a glass tube, leaning to the left
-  return (
-    <View style={[box, { transform: [{ rotate: '45deg' }] }]}>
-      {at({ left: 5.5, top: -1, width: 7, height: 7, borderTopLeftRadius: 3.5, borderTopRightRadius: 3.5, borderBottomLeftRadius: 1, borderBottomRightRadius: 1, backgroundColor: c })}
-      {at({ left: 3.5, top: 5.5, width: 11, height: 2.2, borderRadius: 1, backgroundColor: c })}
-      {at({ left: 6.5, top: 7.5, width: 5, height: 7.5, borderWidth: 1.6, borderTopWidth: 0, borderColor: c })}
-      {at({ left: 8.2, top: 14.5, width: 1.6, height: 4, borderRadius: 0.8, backgroundColor: c })}
-    </View>
-  );
+  const ring = (cx, cy, r) => at({ left: (cx - r) * k, top: (cy - r) * k, width: 2 * r * k, height: 2 * r * k, borderRadius: r * k, borderWidth: lw, borderColor: c });
+  const bar = (x, y, w, h) => at({ left: x * k, top: y * k, width: w * k, height: h * k, borderRadius: lw / 2, backgroundColor: c });
+  if (kind === 'shapes') return <View style={box}>{at({ left: 3 * k, top: 5.5 * k, width: 18 * k, height: 13 * k, borderRadius: 2.5 * k, borderWidth: lw, borderColor: c })}</View>; // a rectangle
+  if (kind === 'mirror') return <View style={box}>{bar(12 - 1.1, 3, 2.2, 18)}{ring(5.2, 12, 3.4 + 1.1)}{ring(18.8, 12, 3.4 + 1.1)}</View>; // a line, a circle each side
+  if (kind === 'stamp') return <View style={box}>{at({ left: 5 * k, top: 0, width: 8 * k, height: 8 * k, borderRadius: 4 * k, backgroundColor: c })}{at({ left: 7 * k, top: 7 * k, width: 4 * k, height: 5 * k, backgroundColor: c })}{at({ left: 1 * k, top: 12 * k, width: 16 * k, height: 5 * k, borderRadius: 2 * k, backgroundColor: c })}</View>;
+  // select colour: a circle with a crosshair through it
+  return <View style={box}>{ring(12, 12, 7.6 + 1.1)}{bar(12 - 1.1, 1.8, 2.2, 6.2)}{bar(12 - 1.1, 16, 2.2, 6.2)}{bar(1.8, 12 - 1.1, 6.2, 2.2)}{bar(16, 12 - 1.1, 6.2, 2.2)}</View>;
 }
 
 // The colour wheel (like Procreate's Disc, Jörg 5 Nov 2026): a ring of every colour round the outside, and inside it a
@@ -1658,13 +1646,11 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
         <ScrollView scrollEnabled={!onWheel} style={{ maxHeight: winH - insets.top - 140 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 6 }}>
         {/* the colour wheel first (Jörg, 5 Nov 2026), its options right under it, then the greys, the earthy colours and the bright ones */}
         <PaintWheel size={Math.min(w - 44, 320)} hsv={wheelHsv} onPick={(c, done) => { setWheelHsv(c); const hex = hsvHex(c.h, c.s, c.v); if (done) pick(hex); else if (!mixing) { setPen(hex); setErase(false); setBucket(false); } }} label={t('Colour wheel')} onTouch={setOnWheel} />
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 16 }}>
-          <Pressable onPress={() => setMixing((x) => !x)} style={[styles.toolWide, styles.toolIcon, mixing && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mix colours')} accessibilityState={{ selected: !!mixing }}><OptIcon kind="mix" /><Text style={styles.toolText}>{t('Mix')}</Text></Pressable>
-          <Pressable onPress={() => { setShapesOpen((x) => !x); if (shapesOpen) setShape(null); }} style={[styles.toolWide, styles.toolIcon, (shapesOpen || shape) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Shapes')} accessibilityState={{ expanded: !!shapesOpen, selected: !!shape }}><OptIcon kind="shapes" /><Text style={styles.toolText}>{t('Shapes')}</Text></Pressable>
-          <Pressable onPress={() => setMirror((x) => !x)} style={[styles.toolWide, styles.toolIcon, mirror && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mirror drawing')} accessibilityState={{ selected: !!mirror }}><OptIcon kind="mirror" /><Text style={styles.toolText}>{t('Mirror')}</Text></Pressable>
-          {SHOW_STAMPS ? <Pressable onPress={() => setStampsOpen((x) => !x)} style={[styles.toolWide, styles.toolIcon, (stampsOpen || stamp) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Stamps')} accessibilityState={{ expanded: !!stampsOpen, selected: !!stamp }}><OptIcon kind="stamp" /><Text style={styles.toolText}>{t('Stamps')}</Text></Pressable> : null}
-          <Pressable onPress={() => setBehind((x) => !x)} style={[styles.toolWide, styles.toolIcon, behind && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Colour behind the lines')} accessibilityState={{ selected: !!behind }}><OptIcon kind="behind" /><Text style={styles.toolText}>{t('Behind the lines')}</Text></Pressable>
-          <Pressable onPress={() => { setDropper(true); setMore(false); }} style={[styles.toolWide, styles.toolIcon, dropper && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Pick up a colour from the page')} accessibilityState={{ selected: !!dropper }}><OptIcon kind="dropper" /><Text style={styles.toolText}>{t('Pick up a colour')}</Text></Pressable>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 7, marginTop: 16 }}>{/* one row: Shapes, Mirror, Select colour (Mix and Behind the lines gone: Jörg, 5 Nov 2026) */}
+          <Pressable onPress={() => { setShapesOpen((x) => !x); if (shapesOpen) setShape(null); }} style={[styles.toolWide, styles.toolIcon, styles.toolRow, (shapesOpen || shape) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Shapes')} accessibilityState={{ expanded: !!shapesOpen, selected: !!shape }}><OptIcon kind="shapes" /><Text style={[styles.toolText, styles.toolRowText]}>{t('Shapes')}</Text></Pressable>
+          <Pressable onPress={() => setMirror((x) => !x)} style={[styles.toolWide, styles.toolIcon, styles.toolRow, mirror && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mirror drawing')} accessibilityState={{ selected: !!mirror }}><OptIcon kind="mirror" /><Text style={[styles.toolText, styles.toolRowText]}>{t('Mirror')}</Text></Pressable>
+          {SHOW_STAMPS ? <Pressable onPress={() => setStampsOpen((x) => !x)} style={[styles.toolWide, styles.toolIcon, styles.toolRow, (stampsOpen || stamp) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Stamps')} accessibilityState={{ expanded: !!stampsOpen, selected: !!stamp }}><OptIcon kind="stamp" /><Text style={[styles.toolText, styles.toolRowText]}>{t('Stamps')}</Text></Pressable> : null}
+          <Pressable onPress={() => { setDropper(true); setMore(false); }} style={[styles.toolWide, styles.toolIcon, styles.toolRow, dropper && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Pick up a colour from the page')} accessibilityState={{ selected: !!dropper }}><OptIcon kind="dropper" /><Text style={[styles.toolText, styles.toolRowText]}>{t('Select colour')}</Text></Pressable>
         </View>
         {SHOW_STAMPS && stampsOpen ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
@@ -1820,6 +1806,8 @@ const styles = StyleSheet.create({
   tool: { width: 38, height: 38, borderRadius: 19, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   toolWide: { height: 38, borderRadius: 19, paddingHorizontal: 11, backgroundColor: '#5f5f5f', alignItems: 'center', justifyContent: 'center' },
   toolIcon: { flexDirection: 'row', gap: 7, paddingLeft: 12, paddingRight: 14 }, // (an option with its icon: 5 Nov 2026)
+  toolRow: { flexGrow: 1, gap: 5, paddingLeft: 9, paddingRight: 11 }, // (the three under the wheel share one line)
+  toolRowText: { fontSize: 14 },
   toolOn: { backgroundColor: colors.green },
   toolText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 },
 });

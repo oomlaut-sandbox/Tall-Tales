@@ -201,7 +201,7 @@ const T = {
   'Normal': { de: 'Normal', fr: 'Normal', es: 'Normal', ja: 'ふつう', ar: 'عادي' },
   'Strong': { de: 'Kräftig', fr: 'Fort', es: 'Fuerte', ja: 'つよく', ar: 'قوي' },
   'Every colour': { de: 'Alle Farben', fr: 'Toutes les couleurs', es: 'Todos los colores', ja: 'すべての いろ', ar: 'كل الألوان' },
-  'Pick up a colour': { de: 'Farbe aufnehmen', fr: 'Prendre une couleur', es: 'Tomar un color', ja: 'いろを ひろう', ar: 'التقط لونًا' },
+  'Select colour': { de: 'Farbe wählen', fr: 'Choisir une couleur', es: 'Elegir color', ja: 'いろを えらぶ', ar: 'اختر لونًا' },
   'Pick up a colour from the page': { de: 'Eine Farbe von der Seite aufnehmen', fr: 'Prendre une couleur sur la page', es: 'Tomar un color de la página', ja: 'ページから いろを ひろう', ar: 'التقط لونًا من الصفحة' },
   'Tap the page to pick up a colour': { de: 'Tippe auf die Seite, um eine Farbe aufzunehmen', fr: 'Touche la page pour prendre une couleur', es: 'Toca la página para tomar un color', ja: 'ページを タップして いろを ひろおう', ar: 'اضغط على الصفحة لتلتقط لونًا' },
   'Behind the lines': { de: 'Hinter den Linien', fr: 'Derrière les traits', es: 'Detrás de las líneas', ja: 'せんの うしろ', ar: 'خلف الخطوط' },
