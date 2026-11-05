@@ -74,3 +74,53 @@ export function unzipFirst(b) {
   }
   return null;
 }
+
+// Many stored files in one zip, written straight to a file one at a time, so a whole library never sits in memory at
+// once (Send all my books: Jörg, 4 Nov 2026). out: an expo-file-system File; entries: an async list of
+// { name, data: Uint8Array }, made one by one by next().
+export async function zipManyToFile(out, next) {
+  try { if (out.exists) out.delete(); } catch (e) {}
+  out.create();
+  const h = out.open();
+  const central = [];
+  let at = 0;
+  try {
+    for (let k = 0; ; k++) {
+      const e = await next(k);
+      if (!e) break;
+      const nm = utf8(e.name), crc = crc32(e.data), n = e.data.length;
+      const local = new Uint8Array([...u32(0x04034b50), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(crc), ...u32(n), ...u32(n), ...u16(nm.length), ...u16(0)]);
+      h.writeBytes(local); h.writeBytes(nm); h.writeBytes(e.data);
+      central.push({ nm, crc, n, at });
+      at += local.length + nm.length + n;
+    }
+    let cdSize = 0;
+    for (const c of central) {
+      const rec = new Uint8Array([...u32(0x02014b50), ...u16(20), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(c.crc), ...u32(c.n), ...u32(c.n), ...u16(c.nm.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(c.at)]);
+      h.writeBytes(rec); h.writeBytes(c.nm); cdSize += rec.length + c.nm.length;
+    }
+    h.writeBytes(new Uint8Array([...u32(0x06054b50), ...u16(0), ...u16(0), ...u16(central.length), ...u16(central.length), ...u32(cdSize), ...u32(at), ...u16(0)]));
+  } finally { try { h.close(); } catch (e) {} }
+  return central.length;
+}
+
+// Each stored file in a zip on disk, read one at a time (the counterpart of zipManyToFile): calls each(name, data)
+// and stops when it returns false.
+export async function eachZipEntry(file, each) {
+  const h = file.open();
+  try {
+    let o = 0;
+    for (;;) {
+      h.offset = o;
+      const hd = h.readBytes(30);
+      if (!hd || hd.length < 30) break;
+      const r16 = (p) => hd[p] | (hd[p + 1] << 8), r32 = (p) => (hd[p] | (hd[p + 1] << 8) | (hd[p + 2] << 16) | (hd[p + 3] << 24)) >>> 0;
+      if (r32(0) !== 0x04034b50) break;
+      const method = r16(8), size = r32(18), nl = r16(26), xl = r16(28);
+      const name = fromUtf8(h.readBytes(nl));
+      h.offset = o + 30 + nl + xl;
+      if (method === 0 && size > 0 && !name.endsWith('/')) { if ((await each(name, h.readBytes(size))) === false) break; }
+      o += 30 + nl + xl + size;
+    }
+  } finally { try { h.close(); } catch (e) {} }
+}

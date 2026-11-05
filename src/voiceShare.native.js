@@ -11,7 +11,7 @@ import { OPEN_HELP, inviteMessage } from './invite';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { addReceivedStory, savedStory } from './userStories';
 import { keepFile } from './storage';
-import { fromUtf8, unzipFirst, utf8, zipOne } from './zipStore';
+import { eachZipEntry, fromUtf8, unzipFirst, utf8, zipManyToFile, zipOne } from './zipStore';
 
 const KIND = 'oomlaut-voices';
 
@@ -47,7 +47,7 @@ async function picData(uri) {
 }
 const DROP = ['uri', 'uri2', 'src', 'src2', 'edit', 'edit2'];
 const without = (o, keys) => Object.fromEntries(Object.entries(o || {}).filter(([k]) => !keys.includes(k)));
-async function packBook(s) {
+async function packBook(s, keepState = false) {
   const pages = [];
   for (const p of s.pages || []) {
     const img = await picData(p.uri), img2 = p.uri2 ? await picData(p.uri2) : null;
@@ -55,17 +55,19 @@ async function packBook(s) {
   }
   let cover = null;
   if (s.cover && s.cover.uri) { const img = await picData(s.cover.uri); cover = { ...without(s.cover, DROP), ...(img ? { img } : null) }; }
-  return { id: s.id, title: s.title, writer: s.writer || '', artist: s.artist || '', cover, pages };
+  return { id: s.id, title: s.title, writer: s.writer || '', artist: s.artist || '', cover, pages, ...(keepState && !s.published ? { published: false } : null) }; // (all my books: a book still being made stays in My Workspace on the other device)
 }
 
 // Make the file and open the share sheet with the invitation and the file together: the book's recordings, and a
 // book made in Coro itself. Returns false when there's nothing to send (the caller then shares the plain invitation).
-export async function shareBookWithVoices(story) {
+// One book's file contents: its recordings (the readers and their pages) and, for a book made in Coro, the book
+// itself. null when there's nothing to send.
+async function bookPayload(story, keepState = false) {
   const recs = await listRecordings(story);
   // your own book, also when it's open as its Book Store copy (in another language, or from the Book Store): the
   // book you made goes with it, so it can be opened and edited on another device (Jörg, 4 Nov 2026)
   const own = story.mine ? await savedStory(story.id).catch(() => null) : story.ownId ? await savedStory(story.ownId).catch(() => null) : null;
-  if (!recs.length && !own) return false;
+  if (!recs.length && !own) return null;
   const readers = (await getReaders()).filter((r) => recs.some((x) => x.reader === r.id));
   const pages = [];
   for (const r of recs) {
@@ -74,22 +76,73 @@ export async function shareBookWithVoices(story) {
       pages.push({ reader: r.reader, pid: r.pid, seconds: r.seconds, ...(r.start ? { start: r.start } : {}), ...(r.end ? { end: r.end } : {}), ...(r.levels ? { levels: r.levels } : {}), ...(r.at ? { at: r.at } : {}), audio });
     } catch (e) {}
   }
-  if (!pages.length && !own) return false;
+  if (!pages.length && !own) return null;
   const people = [];
   for (const r of readers) {
     let photo = null;
     try { if (r.photo) photo = await new File(r.photo).base64(); } catch (e) {}
     people.push({ id: r.id, name: r.name, ...(photo ? { photo } : {}) });
   }
-  const names = people.map((p) => p.name).join(', ');
-  const book = own ? await packBook(own) : null;
+  const book = own ? await packBook(own, keepState) : null;
+  return { names: people.map((p) => p.name).join(', '), data: { kind: KIND, v: 2, storyId: own ? own.id : story.id, title: story.title, readers: people, pages, ...(book ? { book } : null) } };
+}
+
+// Make the file and open the share sheet with the invitation and the file together: the book's recordings, and a
+// book made in Coro itself. Returns false when there's nothing to send (the caller then shares the plain invitation).
+export async function shareBookWithVoices(story) {
+  const got = await bookPayload(story);
+  if (!got) return false;
+  const { names, data } = got;
   // sent as a .zip with the book inside: every mail app takes a .zip (Gmail on iPhone refused Coro's own type: 2 Nov 2026)
   const file = new File(Paths.cache, `${safeName(story.title)}${names ? ` - read by ${safeName(names)}` : ''}.zip`);
   try { if (file.exists) file.delete(); } catch (e) {}
-  file.write(zipOne('book.oomlaut', utf8(JSON.stringify({ kind: KIND, v: 2, storyId: story.id, title: story.title, readers: people, pages, ...(book ? { book } : null) }))));
+  file.write(zipOne('book.oomlaut', utf8(JSON.stringify(data))));
   const message = `${inviteMessage(story.title)}\n\n${names ? `The attached file has the book, read in ${names}’s voice.` : 'The attached file has the book.'}\n${OPEN_HELP}`;
   await Share.share({ message, url: file.uri }).catch(() => {});
   return true;
+}
+
+// Send all my books (Jörg, 4 Nov 2026): every book made on this phone, with its recordings, in one .zip for another
+// device (AirDrop to the iPad, say). Inside: library.json (how many, their titles), then book-1.oomlaut… each the
+// same as a single shared book. Written one book at a time, so even a big library never sits in memory at once.
+// onStep(n, of) while packing. Returns the number of books, or 0 when there are none.
+export async function shareAllBooks(stories, onStep) {
+  const mine = (stories || []).filter((s) => s.mine);
+  if (!mine.length) return 0;
+  const day = new Date().toISOString().slice(0, 10);
+  const file = new File(Paths.cache, `Coro books ${day}.zip`);
+  await zipManyToFile(file, async (k) => {
+    if (k === 0) return { name: 'library.json', data: utf8(JSON.stringify({ kind: 'coro-library', v: 1, count: mine.length, titles: mine.map((s) => s.title) })) };
+    const s = mine[k - 1];
+    if (!s) return null;
+    onStep && onStep(k, mine.length);
+    const got = await bookPayload(s, true).catch(() => null);
+    return got ? { name: `book-${k}.oomlaut`, data: utf8(JSON.stringify(got.data)) } : { name: `skip-${k}.txt`, data: utf8('-') };
+  });
+  const message = `My Coro books, ${mine.length === 1 ? '1 book' : `${mine.length} books`}.\nHow to open it: tap the file, tap the Share button, then choose Coro.`;
+  await Share.share({ message, url: file.uri }).catch(() => {});
+  return mine.length;
+}
+
+// a library file (Send all my books): its titles, for the box that asks whether to add them; null when it isn't one
+async function readLibrary(uri) {
+  let info = null;
+  await eachZipEntry(new File(uri), (name, data) => {
+    if (name === 'library.json') { try { const j = JSON.parse(fromUtf8(data)); if (j && j.kind === 'coro-library') info = j; } catch (e) {} }
+    return false; // (only the first entry)
+  });
+  return info ? { kind: 'coro-library', uri, count: info.count || 0, titles: info.titles || [] } : null;
+}
+// every book in a library file joins this phone's books, one at a time. onStep(n, of). Returns how many came in.
+export async function importLibrary(lib, onStep) {
+  let n = 0, k = 0;
+  await eachZipEntry(new File(lib.uri), async (name, data) => {
+    if (!/^book-\d+\.oomlaut$/.test(name)) return true;
+    k++; onStep && onStep(k, lib.count);
+    try { const d = JSON.parse(fromUtf8(data)); if (d && d.kind === KIND) { const r = await importVoices(d); if (r && (r.ok || r.book)) n++; } } catch (e) {}
+    return true;
+  });
+  return n;
 }
 
 // A file someone sent (opened in Coro): what's in it, for the "Add Opa's voice?" box (or a sheet).
@@ -98,6 +151,8 @@ export async function readVoicesFile(uri) {
     // a .zip (how Coro sends books since 2 Nov 2026) holds the same file inside; older .oomlaut files still open
     let text;
     if (/\.zip$/i.test(decodeURIComponent(uri))) {
+      const lib = await readLibrary(uri).catch(() => null); // all the books from another device
+      if (lib) return lib;
       const inner = unzipFirst(await new File(uri).bytes());
       if (!inner) return null;
       text = fromUtf8(inner.data);
@@ -127,7 +182,7 @@ async function unpackBook(b) {
   }
   let cover = null;
   if (b.cover && b.cover.img) cover = { ...without(b.cover, ['img']), uri: await put(b.cover.img, 'cover.jpg') };
-  await addReceivedStory({ id: b.id, title: b.title || 'Untitled book', writer: b.writer || '', artist: b.artist || '', cover, pages });
+  await addReceivedStory({ id: b.id, title: b.title || 'Untitled book', writer: b.writer || '', artist: b.artist || '', cover, pages, ...(b.published === false ? { published: false } : null) });
 }
 
 // Add it: the book first, when it came in the file (made in Coro); then each reader joins this phone's readers (or

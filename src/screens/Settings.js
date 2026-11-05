@@ -71,7 +71,7 @@ function Section({ id, icon, title, open, setOpen, children }) {
   );
 }
 
-export default function Settings({ storeAdmin, u, openMenu, lang, setLang, bookLang, setBookLang, controls, setControls, mode, onDone, onJoin, onProfiles, onPlaylists, onReadingOptions, onMusic, onTeacherDesk, prefs, setPrefs, toast }) {
+export default function Settings({ storeAdmin, u, openMenu, lang, setLang, bookLang, setBookLang, controls, setControls, mode, onDone, onJoin, onProfiles, onPlaylists, onReadingOptions, onMusic, onTeacherDesk, prefs, setPrefs, toast, onSendAll }) {
   const keep = useScrollMemory('settings'); // Back returns to this spot
   const t = useT();
   const insets = useSafeAreaInsets();
@@ -245,6 +245,16 @@ export default function Settings({ storeAdmin, u, openMenu, lang, setLang, bookL
                   <Text style={styles.pillText}>{t('Manage profiles')}</Text>
                 </Pressable>
               </View>
+              {/* Send all my books (Jörg, 4 Nov 2026): every book made here, with its recordings, in one file for another
+                  device (AirDrop to the iPad); opened there in Coro, they all come in at once */}
+              {onSendAll ? (
+                <View style={[styles.card, { marginTop: 12 }]}>
+                  <Text style={styles.small}>{t('Your books live on this device. To have them on another iPhone or iPad too, send them all in one file, by AirDrop for example, and open it there in Coro.')}</Text>
+                  <Pressable onPress={onSendAll} style={[styles.pill, { backgroundColor: '#5f5f5f' }]} accessibilityRole="button">
+                    <Text style={styles.pillText}>{t('Send all my books')}</Text>
+                  </Pressable>
+                </View>
+              ) : null}
           </Section>
           <Section id="languages" icon={SET_ICONS.languages} title={t('Languages')} open={openSec} setOpen={setOpenSec}>
               <View style={styles.card}>

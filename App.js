@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, Linking, Modal, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import { importVoices, readVoicesFile } from './src/voiceShare';
+import { importLibrary, importVoices, readVoicesFile, shareAllBooks } from './src/voiceShare';
 import { SHEET_KIND, sheetPhotoFile, unpackSheetPage } from './src/sheetShare';
 import { addSheet } from './src/folder';
 import * as ScreenOrientation from 'expo-screen-orientation';
@@ -544,7 +544,10 @@ function Root() {
         {screen === 'music' && <MusicSounds u={u} openMenu={openMenu} prefs={prefs} setPrefs={setPrefs} />}
         {screen === 'profiles' && <Profiles u={u} openMenu={openMenu} setControls={setControls} onPicked={(id) => { setNextScreen('library'); switchProfile(id); }} onBack={(to) => go(to === 'workspace' ? 'workspace' : 'library')} />}
         {screen === 'playlists' && <Playlists u={u} openMenu={openMenu} shelf={childShelf} onPlay={playPlaylist} onDone={() => { const last = hist.current[hist.current.length - 1]; if (last && (last.screen === 'library' || last.screen === 'workspace')) goBack(); else go('workspace'); }} /* from My Library: back to the same spot (the corkboard), like the back button (Jörg, 29 Oct 2026) */ />}
-        {screen === 'settings' && <Settings u={u} storeAdmin={storeAdmin} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
+        {screen === 'settings' && <Settings onSendAll={async () => {
+            if (!userStories.length) { toast(t('There are no books made on this device yet.')); return; }
+            try { await shareAllBooks(userStories, (k, of) => toast(t('Packing book {n} of {of}…', { n: k, of }), 60000)); toast(''); } catch (e) { toast(t('The books couldn’t be packed. Try again.')); }
+          }} u={u} storeAdmin={storeAdmin} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
           controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => (controls.everydayGates === false ? setJoinGate(true) : setMemberOpen(true))} onProfiles={() => go('profiles')} onPlaylists={() => go('playlists')} onReadingOptions={readingOptions} onMusic={() => go('music')} onTeacherDesk={() => go('teacherDesk')} prefs={prefs} setPrefs={setPrefs} toast={toast} />}
         {screen === 'teacherDesk' && <TeacherDesk u={u} openMenu={openMenu} toast={toast} stories={userStories} onList={setUserStories} openStory={(s) => { readFrom.current = 'teacherDesk'; openStory(s); }} controls={controls} setControls={setControls} fontKey={prefs.font} />}
         {screen === 'garden' && <Garden u={u} openMenu={openMenu} toast={toast} onHome={() => go('workspace')} />}
@@ -619,6 +622,28 @@ function Root() {
                       go('workspace'); toast(t('It’s in Things to share.'));
                     } catch (e) { toast(t('That file couldn’t be opened.')); }
                   }} style={{ height: 44, borderRadius: 22, paddingHorizontal: 22, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 }}>{t('Add')}</Text></Pressable>
+                </View>
+              </View>
+            </View>
+          </Modal>
+        ) : incoming && incoming.kind === 'coro-library' ? (
+          // all the books from another device (Send all my books: Jörg, 4 Nov 2026)
+          <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={() => setIncoming(null)}>
+            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 28 }}>
+              <View style={{ width: '100%', maxWidth: 400, backgroundColor: '#000', borderRadius: 24, paddingHorizontal: 28, paddingTop: 30, paddingBottom: 26 }}>
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontFamily: fonts.uiBold, fontSize: 12, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14 }}>{t('Opened in Coro')}</Text>
+                <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 20 }}>{incoming.count === 1 ? t('1 book from another device') : t('{n} books from another device', { n: incoming.count })}</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, marginTop: 12 }}>{incoming.titles.slice(0, 6).join(' · ')}{incoming.titles.length > 6 ? ' …' : ''}</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.75)', fontFamily: fonts.ui, fontSize: 15, lineHeight: 22, marginTop: 12 }}>{t('Add them to My Library, with their recordings? Books already on this device are updated.')}</Text>
+                <View style={{ flexDirection: 'row', gap: 10, marginTop: 26, justifyContent: 'flex-end' }}>
+                  <Pressable onPress={() => setIncoming(null)} style={{ height: 44, borderRadius: 22, paddingHorizontal: 20, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 }}>{t('Not now')}</Text></Pressable>
+                  <Pressable onPress={async () => {
+                    const lib = incoming; setIncoming(null);
+                    const n = await importLibrary(lib, (k, of) => toast(t('Adding book {n} of {of}…', { n: k, of }), 60000)).catch(() => 0);
+                    loadUserStories().then(setUserStories).catch(() => {});
+                    go('library');
+                    toast(n ? (n === 1 ? t('1 book is in My Library.') : t('{n} books are in My Library.', { n })) : t('That file couldn’t be opened.'), 5000);
+                  }} style={{ height: 44, borderRadius: 22, paddingHorizontal: 22, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 }}>{t('Add all')}</Text></Pressable>
                 </View>
               </View>
             </View>

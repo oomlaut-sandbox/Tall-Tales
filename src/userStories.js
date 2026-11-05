@@ -21,7 +21,7 @@ export function addReceivedStory(story) {
   return serial(async () => {
     const list = await loadJSON('stories', []);
     const i = list.findIndex((x) => x.id === story.id);
-    const saved = { ...story, published: true };
+    const saved = { ...story, published: story.published !== false };
     if (i >= 0) list[i] = saved; else list.push(saved);
     await saveJSON('stories', list);
     return list.map(fromSaved);
