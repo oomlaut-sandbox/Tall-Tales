@@ -589,7 +589,8 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
     } else pics.forEach((a) => pages.push({ ...blank(), uri: a.uri, w: a.w, h: a.h }));
     // the first picture goes on the cover too (its own copy), so the cover that comes next isn't empty: a tester chose
     // one picture and then couldn't tell where it had gone (Jörg, 1 Nov 2026)
-    // (the cover is made first, in its own step: the pictures all go on the pages, none on the cover: Jörg, 2 Nov 2026)
+    // (the cover is made first, in its own step: the pictures all go on the pages: Jörg, 2 Nov 2026; but an empty cover
+    // gets the first picture too: 5 Nov 2026)
     // a book with nothing on its pages yet gets the new pages instead; a book already under way keeps its pages and
     // the new ones go at the end (Upload Images from the bar, any time: Jörg, 4 Nov 2026)
     const cur = latest.current.pages || [];
@@ -597,7 +598,12 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
     const keep = empty ? [] : cur;
     const room = Math.max(0, MAX_PAGES - keep.length);
     if (pages.length > room) toast(tr('Only {n} more pages fit in this book, so some pictures were left out.', { n: room }), 6000);
-    setDraft((d) => ({ ...d, pages: [...keep, ...pages.slice(0, room)] }));
+    // a cover with no picture yet gets the first one as well, its own copy, so the cover isn't empty (Jörg, 5 Nov 2026)
+    let coverPic = null;
+    if (!(latest.current.cover && latest.current.cover.uri)) {
+      try { coverPic = { uri: await keepPicture(draft.id, pics[0].uri), w: pics[0].w, h: pics[0].h }; } catch (e) { /* the cover stays as it is */ }
+    }
+    setDraft((d) => ({ ...d, pages: [...keep, ...pages.slice(0, room)], ...(coverPic && !(d.cover && d.cover.uri) ? { cover: { ...(d.cover || {}), ...coverPic, title: d.cover ? d.cover.title || null : null } } : null) }));
     setI(keep.length);
     sayStep();
     toast(tr('Your pictures are on the pages. Now add your words.'), 6000);
