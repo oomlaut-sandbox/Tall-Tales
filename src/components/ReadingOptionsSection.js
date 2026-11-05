@@ -13,7 +13,7 @@ const ICON = require('../../assets/heading-icons/reading-options.png'); // a sim
 // open / onToggle: given by Settings (one category open at a time); otherwise the box keeps its own
 export default function ReadingOptionsSection({ prefs, setPrefs, toast, onPlaylists, style, open, onToggle }) {
   const t = useT();
-  const [own, setOwn] = useState(false);
+  const [own, setOwn] = useState(true); // open to begin with in My Library and the Book Store (Jörg, 5 Nov 2026); Settings opens its own
   const on = open != null ? open : own;
   const toggle = onToggle || (() => setOwn((o) => !o));
   const [view, setView] = useState('main'); // the choices, or the voices
