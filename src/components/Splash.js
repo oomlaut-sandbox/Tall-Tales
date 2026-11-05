@@ -4,9 +4,16 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { Asset } from 'expo-asset';
+import { IS_TABLET } from '../look';
+import PadFilm from './PadFilm';
+import { Platform } from 'react-native';
+const PAD = IS_TABLET && Platform.OS !== 'web'; // (the iPad's film: pictures and sound, PadFilm.native.js)
 import { reduceMotion } from '../a11y';
 
 const CLIP = require('../../assets/splash/coro-splash.mp4');
+// iPad only (Jörg, 5 Nov 2026: on iPad the video never got past 'loading', even from its own file): the same film as
+// pictures (an animated WebP drawn with Skia) and its sound on its own, so no video player is needed there.
+// The iPhone keeps the video.
 const BG = '#c9c7c4'; // the light grey felt the clip is filmed on (no dark flash before the first frame)
 
 // why the film didn't show, if it didn't (Jörg, 5 Nov 2026: gone on iPad only, again): App shows it once as a note
@@ -59,7 +66,7 @@ export default function Splash({ onDone }) {
       player.play();
     } catch (e) { filmTrouble = `couldn’t load the film (${String((e && e.message) || e).slice(0, 80)})`; }
   };
-  useEffect(() => { load(); }, [player]);
+  useEffect(() => { if (!PAD) load(); }, [player]);
   useEffect(() => {
     const subs = [];
     try { subs.push(player.addListener('playToEnd', () => finish())); } catch (e) {}
@@ -70,14 +77,16 @@ export default function Splash({ onDone }) {
     // (Jörg, 5 Nov 2026: gone on iPad, kept on iPhone: with a whole library loading at the start the film can begin
     // later than 2 s, and it was given up on. Now it gets 4 s to start, and the 6 s limit counts from when it does.)
     const safety = setTimeout(() => finish(), 15000); // never stuck on it
-    const again = setTimeout(() => { let st = ''; try { st = player.status; } catch (e) {} if (!seenRef.current && st !== 'readyToPlay') load(); }, 3000); // (handed over once more)
-    const noFilm = setTimeout(() => { let t = 0; try { t = player.currentTime || 0; } catch (e) {} if (!seenRef.current && t < 0.1) { let st = ''; try { st = player.status; } catch (e) {} const u = srcRef.current ? String(srcRef.current.uri).split(':')[0] : 'none'; finish(true, `no picture within 8 seconds (status: ${st || 'unknown'}, time ${t.toFixed(2)}, source ${u})`); } /* nothing playing at all */ }, 8000);
+    const again = PAD ? null : setTimeout(() => { let st = ''; try { st = player.status; } catch (e) {} if (!seenRef.current && st !== 'readyToPlay') load(); }, 3000); // (handed over once more)
+    const noFilm = setTimeout(() => { let t = 0; try { t = player.currentTime || 0; } catch (e) {} if (!seenRef.current && (PAD || t < 0.1)) { let st = PAD ? 'pictures' : ''; try { if (!PAD) st = player.status; } catch (e) {} const u = PAD ? 'webp' : srcRef.current ? String(srcRef.current.uri).split(':')[0] : 'none'; finish(true, `no picture within 8 seconds (status: ${st || 'unknown'}, time ${t.toFixed(2)}, source ${u})`); } /* nothing playing at all */ }, 8000);
     return () => { clearTimeout(safety); clearTimeout(noFilm); clearTimeout(again); subs.forEach((x) => { try { x.remove(); } catch (e) {} }); try { player.pause(); } catch (e) {} };
   }, [player]);
   if (gone) return null;
   return (
     <Animated.View style={[StyleSheet.absoluteFill, { zIndex: 500, backgroundColor: seen ? BG : '#3b3b3b', opacity: fade }]}>
-      <Animated.View style={[StyleSheet.absoluteFill, { opacity: show }]}><VideoView player={player} style={StyleSheet.absoluteFill} contentFit={W > H ? 'contain' : 'cover'} /* sideways: the whole upright clip, on its own grey felt colour */ onFirstFrameRender={onFrame} nativeControls={false} allowsFullscreen={false} allowsPictureInPicture={false} /></Animated.View>
+      <Animated.View style={[StyleSheet.absoluteFill, { opacity: show }]}>{PAD ? (
+        <PadFilm W={W} H={H} onStart={() => { seenRef.current = true; playing(); }} onEnd={() => finish()} onError={(m) => { filmTrouble = m; }} />
+      ) : <VideoView player={player} style={StyleSheet.absoluteFill} contentFit={W > H ? 'contain' : 'cover'} /* sideways: the whole upright clip, on its own grey felt colour */ onFirstFrameRender={onFrame} nativeControls={false} allowsFullscreen={false} allowsPictureInPicture={false} />}</Animated.View>
       {black ? <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#000' }]} /> : null}
       <Pressable style={StyleSheet.absoluteFill} pointerEvents={leaving.current ? 'none' : 'auto'} onPress={() => finish()} accessibilityRole="button" accessibilityLabel="Skip" />
     </Animated.View>
