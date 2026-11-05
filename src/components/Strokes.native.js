@@ -4,10 +4,10 @@
 // faint grain lies over the whole page. (The web preview uses Strokes.js.)
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { AlphaType, BackdropBlur, BlendMode, BlurMask, BlurStyle, Canvas, ClipOp, ColorType, DiscretePathEffect, Group, Image as SkImage, Paint, ImageShader, PaintStyle, Path, Rect, Skia, StrokeCap, StrokeJoin, TileMode, useImage } from '@shopify/react-native-skia';
+import { AlphaType, BackdropBlur, BackdropFilter, Blur, Offset, BlendMode, BlurMask, BlurStyle, Canvas, ClipOp, ColorType, DiscretePathEffect, Group, Image as SkImage, Paint, ImageShader, PaintStyle, Path, Rect, Skia, StrokeCap, StrokeJoin, TileMode, useImage } from '@shopify/react-native-skia';
 import { Asset } from 'expo-asset';
 import { File, Paths } from 'expo-file-system';
-import { byLayer, drawOrder, layersFor, liveLook, mirrored, smudgeOf } from '../strokes';
+import { byLayer, drawOrder, layersFor, liveLook, mirrored, smudgeOf, smudgeSteps } from '../strokes';
 import { STAMP, stampBox } from '../stamps';
 import { liveUri } from '../storage';
 
@@ -62,7 +62,22 @@ function smudgePaths(st, w) {
     return { path: out, blur: S.blur * kb };
   });
 }
+// the smudge, version 2: each short step of the rub takes what's just behind it, moved forward and softened a touch
+// (two passes, the outer one weaker, so the edge of the rub doesn't show as a line)
+const SMUDGE2_PASSES = [[1, 0.15], [0.55, 1]]; // [width, how far it pulls]
+function smudge2Clips(st, w) {
+  return smudgeSteps(st, w).flatMap((S) => SMUDGE2_PASSES.map(([kw, kp]) => {
+    const p = Skia.Path.Make(); p.moveTo(S.a[0], S.a[1]); p.lineTo(S.b[0], S.b[1]);
+    p.stroke({ width: S.width * kw, cap: StrokeCap.Round, join: StrokeJoin.Round });
+    return { path: p, dx: S.dx * kp, dy: S.dy * kp, blur: S.blur };
+  }));
+}
+function Smudge2({ st, width }) {
+  const parts = useMemo(() => (st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]).flatMap((q) => smudge2Clips(q, width)), [st, width]);
+  return <>{parts.map((P, i) => <BackdropFilter key={i} clip={P.path} filter={<><Offset x={P.dx} y={P.dy} /><Blur blur={P.blur} /></>} />)}</>;
+}
 function Smudge({ st, width }) {
+  if (st.v === 2) return <Smudge2 st={st} width={width} />;
   const parts = useMemo(() => (st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]).flatMap((q) => smudgePaths(q, width)), [st, width]);
   // blurs what has been drawn so far, only where the finger rubbed
   return <>{parts.map((P, i) => <BackdropBlur key={i} blur={P.blur} clip={P.path} />)}</>;
@@ -229,6 +244,16 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
     if (st.stp) { await drawStamp(canvas, st, px); continue; }
     if (st.sm) { // the smudge: blur what's there so far, inside where the finger rubbed
       for (const q of st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]) {
+        if (q.v === 2) { // (the new smudge: see Smudge2)
+          for (const P of smudge2Clips(q, px)) {
+            canvas.save();
+            canvas.clipPath(P.path, ClipOp.Intersect, true);
+            canvas.saveLayer(undefined, null, Skia.ImageFilter.MakeOffset(P.dx, P.dy, Skia.ImageFilter.MakeBlur(P.blur, P.blur, TileMode.Clamp, null)));
+            canvas.restore();
+            canvas.restore();
+          }
+          continue;
+        }
         for (const P of smudgePaths(q, px)) {
         canvas.save();
         canvas.clipPath(P.path, ClipOp.Intersect, true);
