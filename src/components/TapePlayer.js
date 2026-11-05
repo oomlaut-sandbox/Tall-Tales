@@ -122,11 +122,11 @@ export default function TapePlayer({ onMenu, area }) {
         <Pressable onPress={withTap(playAmbient)} style={at(PLAY.x, PLAY.y, PLAY.w, PLAY.h)} accessibilityRole="button" accessibilityLabel={t('Play')} />
         <Pressable onPress={withTap(pauseAmbient)} style={at(1360, 562, 230, 250)} accessibilityRole="button" accessibilityLabel={t('Pause')} />
         {/* (the night felt's windows sit a little lower; its names start a little further in) */}
-        {windowText(s.night ? [282, 1070, 1082, 172] : [268, 1067, 1082, 150], name(s.sound) || t('Select sound'), !s.sound)}
-        {windowText(s.night ? [276, 1641, 1082, 174] : [268, 1637, 1076, 150], name(s.music) || t('Select music'), !s.music)}
+        {windowText(s.night ? [282, 1070, 1082, 172] : [268, 1067, 1082, 150], name(s.sound) || t('Off (select sound)'), !s.sound)}
+        {windowText(s.night ? [276, 1641, 1082, 174] : [268, 1637, 1076, 150], name(s.music) || t('Off (select music)'), !s.music)}
         {/* the knobs stay put; tap one to click to the next choice */}
-        <Pressable onPress={withTap(() => stepAmbient('sound'), thunk)} style={at(1386, 1010, 250, 260)} accessibilityRole="button" accessibilityLabel={name(s.sound) || t('Select sound')} />
-        <Pressable onPress={withTap(() => stepAmbient('music'), thunk)} style={at(1386, 1580, 250, 260)} accessibilityRole="button" accessibilityLabel={name(s.music) || t('Select music')} />
+        <Pressable onPress={withTap(() => stepAmbient('sound'), thunk)} style={at(1386, 1010, 250, 260)} accessibilityRole="button" accessibilityLabel={name(s.sound) || t('Off (select sound)')} />
+        <Pressable onPress={withTap(() => stepAmbient('music'), thunk)} style={at(1386, 1580, 250, 260)} accessibilityRole="button" accessibilityLabel={name(s.music) || t('Off (select music)')} />
         {/* the knobs' lines turn with each click (at night: on the brown felt's knobs, in cream) */}
         {s.night ? mark(1512, 1145, k1) : mark(1506, 1127, k1)}
         {s.night ? mark(1512, 1707, k2) : mark(1506, 1700, k2)}
