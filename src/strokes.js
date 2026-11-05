@@ -468,16 +468,24 @@ const darkOf = (st, lo = 0.45) => { const q = pres(pressOf(st)); return q == nul
 const PAPER = [247, 245, 240];
 const tint = (hex, k) => { const c = rgbOf(hex || '#111111'); return '#' + c.map((v, i) => Math.round(PAPER[i] + (v - PAPER[i]) * k).toString(16).padStart(2, '0')).join(''); };
 function pencilPressed(st, w, lw) {
-  const p = st.p, q = st.q, n = p.length / 2, out = [];
-  const run = 2; // (points to a piece)
+  const p = st.p, q = st.q, n = p.length / 2;
+  const LEVELS = 5, run = 3; // (at most five shades a line, each one shape: light enough to redraw while erasing)
+  const at = (k) => q[Math.min(q.length - 1, k)] || 0;
+  const paths = Array(LEVELS).fill('');
   for (let i = 0; i < n - 1; i += run) {
     const j = Math.min(n - 1, i + run);
+    const f = pres((at(i) + at(j)) / 2) || 0.5;
+    const L = Math.min(LEVELS - 1, Math.floor(f * LEVELS));
     let d = `M${(p[i * 2] * w).toFixed(1)} ${(p[i * 2 + 1] * w).toFixed(1)}`;
     for (let k = i + 1; k <= j; k++) d += ` L${(p[k * 2] * w).toFixed(1)} ${(p[k * 2 + 1] * w).toFixed(1)}`;
-    const at = (k) => q[Math.min(q.length - 1, k)] || 0;
-    const f = pres((at(i) + at(j)) / 2) || 0.5;
-    out.push({ d, width: Math.max(0.8, lw * (0.2 + f * 0.5)), alpha: 1, color: tint(st.c, 0.3 + f * 0.7) });
+    paths[L] += d + ' ';
   }
+  const out = [];
+  paths.forEach((d, L) => {
+    if (!d) return;
+    const f = (L + 0.5) / LEVELS;
+    out.push({ d, width: Math.max(0.8, lw * (0.2 + f * 0.5)), alpha: 1, color: tint(st.c, 0.3 + f * 0.7) });
+  });
   return out.length ? out : [{ d: strokeD(st, w), width: Math.max(1.2, lw * 0.45), alpha: 0.92 }];
 }
 function layersOf(st, w) {

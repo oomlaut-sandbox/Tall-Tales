@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
+import { Asset } from 'expo-asset';
 import { reduceMotion } from '../a11y';
 
 const CLIP = require('../../assets/splash/coro-splash.mp4');
@@ -43,11 +44,22 @@ export default function Splash({ onDone }) {
     setBlack(true);
     setTimeout(() => fadeUp(1600), 500);
   };
-  const player = useVideoPlayer(CLIP, (p) => {
+  // (Jörg, 5 Nov 2026: on iPad the film stayed 'loading' and never showed.) The clip is now handed over as the file
+  // itself, from its place on the device, and loaded off the main thread; if it's still loading after 3 seconds it's
+  // handed over once more, and it has until 8 seconds to start.
+  const player = useVideoPlayer(null, (p) => {
     p.loop = false;
     try { p.audioMixingMode = 'mixWithOthers'; } catch (e) {}
-    p.play();
   });
+  const srcRef = useRef(null);
+  const load = async () => {
+    try {
+      if (!srcRef.current) { const a = Asset.fromModule(CLIP); await a.downloadAsync(); srcRef.current = { uri: a.localUri || a.uri }; }
+      if (player.replaceAsync) await player.replaceAsync(srcRef.current); else player.replace(srcRef.current);
+      player.play();
+    } catch (e) { filmTrouble = `couldn’t load the film (${String((e && e.message) || e).slice(0, 80)})`; }
+  };
+  useEffect(() => { load(); }, [player]);
   useEffect(() => {
     const subs = [];
     try { subs.push(player.addListener('playToEnd', () => finish())); } catch (e) {}
@@ -57,9 +69,10 @@ export default function Splash({ onDone }) {
     if (reduceMotion()) { const q = setTimeout(() => finish(true, 'Reduce Motion is on in this iPad’s Accessibility settings'), 250); return () => clearTimeout(q); } // Reduce Motion: no film by itself, straight to the start page
     // (Jörg, 5 Nov 2026: gone on iPad, kept on iPhone: with a whole library loading at the start the film can begin
     // later than 2 s, and it was given up on. Now it gets 4 s to start, and the 6 s limit counts from when it does.)
-    const safety = setTimeout(() => finish(), 11000); // never stuck on it
-    const noFilm = setTimeout(() => { let t = 0; try { t = player.currentTime || 0; } catch (e) {} if (!seenRef.current && t < 0.1) { let st = ''; try { st = player.status; } catch (e) {} finish(true, `no picture within 4 seconds (status: ${st || 'unknown'}, time ${t.toFixed(2)})`); } /* nothing playing at all */ }, 4000);
-    return () => { clearTimeout(safety); clearTimeout(noFilm); subs.forEach((x) => { try { x.remove(); } catch (e) {} }); try { player.pause(); } catch (e) {} };
+    const safety = setTimeout(() => finish(), 15000); // never stuck on it
+    const again = setTimeout(() => { let st = ''; try { st = player.status; } catch (e) {} if (!seenRef.current && st !== 'readyToPlay') load(); }, 3000); // (handed over once more)
+    const noFilm = setTimeout(() => { let t = 0; try { t = player.currentTime || 0; } catch (e) {} if (!seenRef.current && t < 0.1) { let st = ''; try { st = player.status; } catch (e) {} const u = srcRef.current ? String(srcRef.current.uri).split(':')[0] : 'none'; finish(true, `no picture within 8 seconds (status: ${st || 'unknown'}, time ${t.toFixed(2)}, source ${u})`); } /* nothing playing at all */ }, 8000);
+    return () => { clearTimeout(safety); clearTimeout(noFilm); clearTimeout(again); subs.forEach((x) => { try { x.remove(); } catch (e) {} }); try { player.pause(); } catch (e) {} };
   }, [player]);
   if (gone) return null;
   return (
