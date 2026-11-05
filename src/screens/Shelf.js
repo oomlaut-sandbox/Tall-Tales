@@ -415,7 +415,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
             onLongPress={!selecting && s.mine ? () => onEdit(s) : undefined} />
         ))}
         {/* Playlists, at the end of My Books: three little felt books stacked */}
-        {/* Make a Book Playlist: a blue button under the books (Jörg, 5 Nov 2026) */}
+        {/* Make a Book Playlist: a grey button under the books (Jörg, 5 Nov 2026) */}
         {!selecting && !ws && onMakePlaylist ? (
           <View style={{ width: '100%', alignItems: 'center', marginTop: 18 }}>
             <Pressable onPress={onMakePlaylist} accessibilityRole="button" style={({ pressed }) => [styles.playlistBtn, pressed && { opacity: 0.85 }]}>
@@ -927,7 +927,7 @@ const styles = StyleSheet.create({
   check: { position: 'absolute', top: 8, left: 8, width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: colors.white, backgroundColor: 'rgba(0,0,0,0.25)', alignItems: 'center', justifyContent: 'center', zIndex: 2 },
   checkOn: { backgroundColor: colors.green, borderColor: colors.white }, // selected: the standard green
   checkMark: { color: colors.white, fontWeight: '800', fontSize: 16, lineHeight: 18 },
-  playlistBtn: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 52, borderRadius: 26, paddingLeft: 22, paddingRight: 26, backgroundColor: colors.blue, shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 8, shadowOffset: { width: 0, height: 3 } },
+  playlistBtn: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 52, borderRadius: 26, paddingLeft: 22, paddingRight: 26, backgroundColor: '#5f5f5f' /* grey, like the app's other pills (Jörg, 5 Nov 2026; was blue) */, shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 8, shadowOffset: { width: 0, height: 3 } },
   playlistPlus: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 26, lineHeight: 30, marginTop: -2 },
   playlistBtnText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 17 },
   restore: { fontFamily: fonts.ui, fontSize: 15, color: '#d0d0d0', textDecorationLine: 'underline', textAlign: 'center' },
