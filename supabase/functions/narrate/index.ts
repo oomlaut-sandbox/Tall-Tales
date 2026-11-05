@@ -65,7 +65,8 @@ function creditsOf(c: any) {
 // word (Otter Alphabet, Jörg, 4 Nov 2026). Everything else is read as written.
 // In English, letters the narrator got wrong on their own are spelled the way they sound (Jörg, 4 Nov 2026; Zed, as
 // in Canada).
-const LETTER_EN: Record<string, string> = { A: 'Eh', K: 'Kay', P: 'Pee', U: 'You', Y: 'Why', Z: 'Zed' };
+// (A: 'The letter A', chosen by ear in Fatima's and Mo's voices: 'Eh' and 'Ay' came out wrong. Jörg, 5 Nov 2026)
+const LETTER_EN: Record<string, string> = { A: 'The letter A', K: 'Kay', P: 'Pee', U: 'You', Y: 'Why', Z: 'Zed' };
 function spoken(text: string, lang = 'en') {
   const t = (text || '').trim().replace(/[.!。]$/, '');
   const m = t.match(/^(\p{L})(\p{L})$/u);
