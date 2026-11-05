@@ -22,7 +22,7 @@ import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, DESK_BG, IS_TABLET } from '../look';
 import ParentGate from '../components/ParentGate';
-import { LiveInk, StrokesView, colourAt, liveIsQuick, pagePixels } from '../components/Strokes';
+import { LiveInk, StrokesView, colourAt, liveIsQuick, onBlendTrouble, pagePixels } from '../components/Strokes';
 import { EarArt } from '../components/Ear';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
 import ToolPic from '../components/ToolPic';
@@ -1174,6 +1174,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   const [outFor, setOutFor] = useState(null); // 'print' | 'share', behind the grown-up question
   const [outBusy, setOutBusy] = useState(false);
   const [outErr, toastHere] = useState(null);
+  useEffect(() => { onBlendTrouble(toastHere); return () => onBlendTrouble(null); }, []); // (if the blend tool can't work on this phone, say why)
   const sendOut = async (what) => {
     setOutBusy(true);
     try { await (what === 'print' ? printDrawing(strokes, photo) : shareDrawing(strokes, photo, title || t('My drawing'))); }

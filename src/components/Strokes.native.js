@@ -82,38 +82,62 @@ function blendFilter(st, w, size) {
   const M = Skia.ImageFilter.MakePicture(mr.finishRecordingAsPicture(), all);
   // the pull: each bit of the rub coloured by the way it went (red: across, green: down; mid grey: none)
   const pr = Skia.PictureRecorder(); const pc = pr.beginRecording(all);
-  const base = Skia.Paint(); base.setColor(Skia.Color('rgb(128,128,128)')); pc.drawRect(all, base);
+  const base = Skia.Paint(); base.setColor(Skia.Color('#808080')); pc.drawRect(all, base);
   for (const D of B.dirs) {
     const q = Skia.Paint(); q.setAntiAlias(true);
-    q.setColor(Skia.Color(`rgb(${Math.round(128 - D.ux * 127)},${Math.round(128 - D.uy * 127)},128)`));
+    const hx = (v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
+    q.setColor(Skia.Color(`#${hx(128 - D.ux * 127)}${hx(128 - D.uy * 127)}80`));
     q.setStyle(PaintStyle.Stroke); q.setStrokeWidth(B.width * 1.3); q.setStrokeCap(StrokeCap.Round);
     q.setMaskFilter(Skia.MaskFilter.MakeBlur(BlurStyle.Normal, B.soft, true));
     pc.drawLine(D.a[0], D.a[1], D.b[0], D.b[1], q);
   }
   const P = Skia.ImageFilter.MakePicture(pr.finishRecordingAsPicture(), all);
-  const moved = B.dirs.length ? Skia.ImageFilter.MakeDisplacementMap(0, 1, B.pull * 2, P, null) : null; // (0, 1: red, green)
+  // what's drawn so far, as a filter of its own (an empty input isn't taken everywhere on the phone: 5 Nov 2026)
+  const SRC = Skia.ImageFilter.MakeOffset(0, 0, null);
+  let moved = SRC;
+  if (B.dirs.length) { try { moved = Skia.ImageFilter.MakeDisplacementMap(0, 1, B.pull * 2, P, SRC); } catch (e) { blendTrouble(e, 'pull'); } } // (0, 1: red, green)
   const soft = Skia.ImageFilter.MakeBlur(B.blur, B.blur, TileMode.Decal, moved);
   const X = Skia.ImageFilter.MakeBlend(BlendMode.SrcIn, M, soft); // the softened copy, only under the brush
-  const Y = Skia.ImageFilter.MakeBlend(BlendMode.DstOut, null, M); // what's there, less under the brush
+  const Y = Skia.ImageFilter.MakeBlend(BlendMode.DstOut, SRC, M); // what's there, less under the brush
   const F = Skia.ImageFilter.MakeArithmetic(0, 1, 1, 0, true, Y, X); // the two added
   const pad = B.width + B.soft * 3 + B.pull;
   const xs = B.pts.map((q) => q[0]), ys = B.pts.map((q) => q[1]);
   const bounds = Skia.XYWHRect(Math.min(...xs) - pad, Math.min(...ys) - pad, Math.max(...xs) - Math.min(...xs) + 2 * pad, Math.max(...ys) - Math.min(...ys) + 2 * pad);
   return { F, bounds };
 }
+// if the blend can't be made on this phone, say why once (a toast in the drawing editor), and blur instead
+let troubleSeen = false;
+let troubleSay = null;
+export const onBlendTrouble = (f) => { troubleSay = f; };
+function blendTrouble(e, where) {
+  if (troubleSeen) return; troubleSeen = true;
+  try { console.warn('blend', where, e); } catch (x) {}
+  if (troubleSay) setTimeout(() => troubleSay(`Blend (${where}): ${String((e && e.message) || e).slice(0, 120)}`), 0);
+}
 // draws a blend onto a canvas (the screen's picture, the exported picture)
 function drawBlend(canvas, st, w) {
   for (const q of st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]) {
-    const b = blendFilter(q, w, w);
-    if (!b) continue;
-    const put = Skia.Paint(); put.setBlendMode(BlendMode.Src);
-    canvas.saveLayer(put, b.bounds, b.F);
-    canvas.restore();
+    let b = null;
+    try { b = blendFilter(q, w, w); } catch (e) { blendTrouble(e, 'filter'); }
+    if (b) {
+      const put = Skia.Paint(); put.setBlendMode(BlendMode.Src);
+      canvas.saveLayer(put, b.bounds, b.F);
+      canvas.restore();
+      continue;
+    }
+    // the plain way, as the smudge did: blur what's there, inside the rub (soft passes)
+    for (const P of smudgePaths({ ...q, v: 2 }, w)) {
+      canvas.save();
+      canvas.clipPath(P.path, ClipOp.Intersect, true);
+      canvas.saveLayer(undefined, null, Skia.ImageFilter.MakeBlur(P.blur, P.blur, TileMode.Clamp, null));
+      canvas.restore();
+      canvas.restore();
+    }
   }
 }
 function Blend({ st, width }) {
   const pic = useMemo(() => {
-    try { const r = Skia.PictureRecorder(); const c = r.beginRecording(Skia.XYWHRect(0, 0, width, width)); drawBlend(c, st, width); return r.finishRecordingAsPicture(); } catch (e) { return null; }
+    try { const r = Skia.PictureRecorder(); const c = r.beginRecording(Skia.XYWHRect(0, 0, width, width)); drawBlend(c, st, width); return r.finishRecordingAsPicture(); } catch (e) { blendTrouble(e, 'picture'); return null; }
   }, [st, width]);
   return pic ? <Picture picture={pic} /> : null;
 }

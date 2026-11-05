@@ -168,3 +168,5 @@ export async function drawStampWeb(g, st, px) {
 // (the quick live line is for phones: the web preview draws it the full way)
 export function LiveInk() { return null; }
 export const liveIsQuick = () => false;
+
+export const onBlendTrouble = () => {};
