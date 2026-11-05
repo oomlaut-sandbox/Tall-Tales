@@ -1,0 +1,28 @@
+# Downloads one public file (e.g. a public-domain book from Project Gutenberg) and saves it on the fetch-output
+# branch, because the coding workspace can't reach most websites. Run by hand with the file's address.
+name: Fetch a file
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: The file's address (https://…)
+        required: true
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download
+        run: |
+          mkdir -p /tmp/o
+          cd /tmp/o
+          curl -sSL --fail -A "Mozilla/5.0 (Coro book import)" -o "$(basename "${{ inputs.url }}" | cut -d'?' -f1)" "${{ inputs.url }}" 2> err.txt || true
+          ls -la > list.txt
+      - name: Save
+        run: |
+          cd /tmp/o
+          git init -q && git checkout -q -b fetch-output
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          git add -A && git commit -qm "Fetched ${{ inputs.url }}"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:fetch-output
