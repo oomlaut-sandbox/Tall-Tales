@@ -1,0 +1,24 @@
+Uploading asset (narrate): supabase/functions/_shared/books.ts
+Deployed Functions on project ehszrhwfckwlvpplslcw: narrate
+You can inspect your deployment in the Dashboard: https://supabase.com/dashboard/project/ehszrhwfckwlvpplslcw/functions
+A new version of Supabase CLI is available: v3.0.0 (currently installed v2.122.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+You can inspect your deployment in the Dashboard: https://supabase.com/dashboard/project/ehszrhwfckwlvpplslcw/functions
+A new version of Supabase CLI is available: v3.0.0 (currently installed v2.122.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+You can inspect your deployment in the Dashboard: https://supabase.com/dashboard/project/ehszrhwfckwlvpplslcw/functions
+A new version of Supabase CLI is available: v3.0.0 (currently installed v2.122.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+A new version of Supabase CLI is available: v3.0.0 (currently installed v2.122.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+Finished supabase secrets set.
+A new version of Supabase CLI is available: v3.0.0 (currently installed v2.122.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+Finished supabase secrets set.
+A new version of Supabase CLI is available: v3.0.0 (currently installed v2.122.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+anthropic key: set
+Finished supabase secrets set.
+A new version of Supabase CLI is available: v3.0.0 (currently installed v2.122.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+revenuecat secret key: set
