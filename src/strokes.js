@@ -356,6 +356,9 @@ function paintWash(st, w, lw, light, dk) {
   return out;
 }
 
+// the fountain pen's width: the thickest size a little thinner than the others would make it (Jörg, 5 Nov 2026:
+// its lines were too fat)
+const penSize = (st, lw) => lw * ((st.s || 0.01) > 0.025 ? 1.05 : 1.5);
 export function pfOutline(st, w, size, { thinning = 0.6, taper = true, live = false } = {}) {
   const p = st.p || [];
   const pts = [];
@@ -389,7 +392,7 @@ export function liveLook(st, w) {
   const look = b === 'pencil' ? { size: Math.max(1.2, lw * 0.45), thinning: 0, alpha: 0.9 }
     : b === 'water' ? { size: lw * 1.35 * 1.1, thinning: 0.5, alpha: 0.42 } // (the body's size: see layersOf)
     : b === 'crayon' ? { size: lw * 1.35, thinning: 0.3, alpha: 0.7 }
-    : { size: lw * 1.5, thinning: 0.6, alpha: 1 };
+    : { size: penSize(st, lw), thinning: 0.6, alpha: 1 };
   const one = (x) => outlineD(pfOutline(x, w, look.size, { thinning: look.thinning, live: true }));
   return { d: [one(st), ...(st.m ? [one(mirrored(st))] : [])].join(' '), alpha: look.alpha, color: st.c || '#111111' };
 }
@@ -467,7 +470,7 @@ function layersOf(st, w) {
       { d: inkD({ ...st, s: (st.s || 0.01) * 0.8 }, w, 0.8, 0.35, 2.5), fill: true, alpha: clamp((light ? 0.6 : 0.45) * k, 0.1, 0.75), multiply: !light, tex: 2 },
     ];
   }
-  if (st.pf) { const d = outlineD(pfOutline(st, w, lw * 1.5)); if (d) return [{ d, fill: true, alpha: 1 }]; } // (perfect-freehand: 4 Nov 2026)
+  if (st.pf) { const d = outlineD(pfOutline(st, w, penSize(st, lw))); if (d) return [{ d, fill: true, alpha: 1 }]; } // (perfect-freehand: 4 Nov 2026)
   return [{ d: inkD(st, w, 1.2, 1.3), fill: true, alpha: 1 }]; // the fountain pen: solid ink, thick to thin with the speed // (no blur: lighter to draw, so pages snapshot and turn smoothly)
 }
 
