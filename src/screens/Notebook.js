@@ -1165,6 +1165,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   const [mirror, setMirror] = useState(false);
   const [stamp, setStamp] = useState(null); // a stamp in hand: put a finger down to place it, slide to move it, lift to stick it
   const [stampsOpen, setStampsOpen] = useState(false);
+  const [askClear, setAskClear] = useState(false); // the bin's question: erase everything?
   const [behind, setBehind] = useState(false); // colouring in behind the lines: what's drawn goes underneath everything else
   const [alphaFor, setAlphaFor] = useState(null); // the layer whose Transparency slider is open (Jörg, 30 Oct 2026)
   const [layer, setLayer] = useState(2); // Layers: the one being drawn on (1 bottom to 4 top); a drawing opens on layer 2 (Jörg, 28 Oct 2026)
@@ -1565,8 +1566,23 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
     </Pressable>
   );
   const hasInk = inkOf(strokes).length > 0; // (not counting the layers' transparency)
+  // the bin asks first (Jörg, 5 Nov 2026): a box in the middle, Erase everything (red) or Keep it. (Undo still
+  // brings it back.)
+  const clearNow = () => { setAskClear(false); setCleared(strokes); setStrokes([]); setRedo([]); };
+  const askEl = askClear ? (
+    <View style={[StyleSheet.absoluteFill, { zIndex: 80, backgroundColor: 'rgba(0,0,0,0.45)', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 }]}>
+      <Pressable style={StyleSheet.absoluteFill} onPress={() => setAskClear(false)} accessibilityRole="button" accessibilityLabel={t('Keep it')} />
+      <View accessibilityViewIsModal style={{ maxWidth: 340, width: '100%', backgroundColor: colors.glass, borderRadius: 24, paddingTop: 30, paddingBottom: 30, paddingHorizontal: 27, alignItems: 'center', gap: 22 }}>
+        <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 18, lineHeight: 25, textAlign: 'center' }}>{t('Are you sure you want to erase everything?')}</Text>
+        <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <Pressable onPress={() => setAskClear(false)} accessibilityRole="button" style={[styles.toolWide, { height: 44, borderRadius: 22, paddingHorizontal: 20 }]}><Text style={styles.toolText}>{t('Keep it')}</Text></Pressable>
+          <Pressable onPress={clearNow} accessibilityRole="button" style={[styles.toolWide, { height: 44, borderRadius: 22, paddingHorizontal: 20, backgroundColor: '#c8432f' }]}><Text style={styles.toolText}>{t('Erase everything')}</Text></Pressable>
+        </View>
+      </View>
+    </View>
+  ) : null;
   const binEl = (
-    <Pressable onPress={() => { setCleared(strokes); setStrokes([]); setRedo([]); }} disabled={!hasInk} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Clear the drawing')} accessibilityState={{ disabled: !hasInk }}
+    <Pressable onPress={() => setAskClear(true)} disabled={!hasInk} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Clear the drawing')} accessibilityState={{ disabled: !hasInk }}
       style={[styles.plusBtn, !hasInk && { opacity: 0.35 }]}>
       <Image source={TRASH} style={{ width: 22, height: 22, tintColor: colors.white }} resizeMode="contain" />
     </Pressable>
@@ -1705,6 +1721,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
           </View>
         </View>
         {more ? <View style={{ position: 'absolute', right: 0, bottom: 0 }}>{moreEl(TOOLS_W + 48)}</View> : null}
+        {askEl}
       </View>
     );
   }
@@ -1726,6 +1743,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
         <View>{trayEl(winW)}</View>
       </View>
       {more ? <View style={{ position: 'absolute', left: 0, bottom: 0 }}>{moreEl(winW)}</View> : null}
+      {askEl}
     </View>
   );
 }
