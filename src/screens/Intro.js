@@ -143,14 +143,22 @@ export default function Intro({ who, onDone, onBack }) {
     <>
       <Text style={styles.title}>{t('Just one more thing…')}</Text>
       <Text style={styles.lead}>{t('Please remember you can customize your experience by using the parental controls in Settings. We highly recommend you have a look.')}</Text>
-      <Text style={styles.lead}>{t('In the meantime, we’ve included a lot of helpful popups that guide and teach you with practical hints and tips. If you’re not new to Coro and you’d rather keep it to essential messages only, check this box. (Don’t worry, everything can be turned on and off again in Settings.)')}</Text>
-      <Pressable onPress={() => setEssential((v) => !v)} accessibilityRole="checkbox" accessibilityState={{ checked: essential }} hitSlop={8}
-        style={[styles.box, { flexDirection: 'row', alignItems: 'center', gap: 14 }]}>
-        <View style={[styles.check, essential && styles.checkOn]}>
-          {essential ? <View style={styles.tick} /> : null}
-        </View>
-        <Text style={[styles.boxTitle, { flex: 1 }]}>{t('Show essential info only')}</Text>
-      </Pressable>
+      {/* (Jörg, 5 Nov 2026) the defaults suggested, hints that retire on their own; two choices, the first one picked */}
+      <Text style={styles.lead}>{t('If you’re new to Coro, we suggest you try the default settings. And don’t worry, hints will automatically disappear after you see them twice. And you can turn them back on anytime in Settings.')}</Text>
+      <View accessibilityRole="radiogroup" style={{ gap: 10 }}>
+        {[[false, t('Yes, I understand, proceed with recommended settings')], [true, t('Turn off hints and tips, I know how Coro works')]].map(([v, label]) => {
+          const on = essential === v;
+          return (
+            <Pressable key={String(v)} onPress={() => setEssential(v)} accessibilityRole="radio" accessibilityState={{ checked: on }} hitSlop={4}
+              style={[styles.box, { flexDirection: 'row', alignItems: 'center', gap: 14 }]}>
+              <View style={[styles.check, on && styles.checkOn]}>
+                {on ? <View style={styles.tick} /> : null}
+              </View>
+              <Text style={[styles.boxTitle, { flex: 1 }]}>{label}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
     </>
   );
 
@@ -171,9 +179,16 @@ export default function Intro({ who, onDone, onBack }) {
         <View style={{ flex: 1, alignItems: 'center', gap: 10 }}>
           <View style={styles.dots}>{pages.map((p, k) => <View key={p} style={[styles.dot, k === i && styles.dotOn]} />)}</View>
         </View>
-        <Pressable onPress={next} hitSlop={10} accessibilityRole="button" accessibilityLabel={i < pages.length - 1 ? t('Next') : t('Let’s go!')} style={[styles.arrow, styles.arrowOn]}>
-          <View style={[styles.chev, { transform: [{ translateX: -2 }, { rotate: '45deg' }], borderRightWidth: 2.4, borderTopWidth: 2.4 }]} />
-        </Pressable>
+        {page === 'grownLast' ? (
+          // the grown-ups' last page: Let's go! in words (Jörg, 5 Nov 2026)
+          <Pressable onPress={next} hitSlop={10} accessibilityRole="button" style={styles.goBtn}>
+            <Text style={styles.goText}>{t('Let’s go!')}</Text>
+          </Pressable>
+        ) : (
+          <Pressable onPress={next} hitSlop={10} accessibilityRole="button" accessibilityLabel={i < pages.length - 1 ? t('Next') : t('Let’s go!')} style={[styles.arrow, styles.arrowOn]}>
+            <View style={[styles.chev, { transform: [{ translateX: -2 }, { rotate: '45deg' }], borderRightWidth: 2.4, borderTopWidth: 2.4 }]} />
+          </Pressable>
+        )}
       </View>
     </View>
   );
@@ -200,6 +215,8 @@ const styles = StyleSheet.create({
   input: { height: 48, borderRadius: 12, backgroundColor: '#f2f2f2', paddingHorizontal: 14, paddingVertical: 0, includeFontPadding: false, fontFamily: fonts.ui, fontSize: 19, color: '#222' },
   arrow: { width: 50, height: 50, borderRadius: 25, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.7)', alignItems: 'center', justifyContent: 'center' },
   arrowOn: { backgroundColor: colors.green, borderColor: colors.green },
+  goBtn: { height: 50, borderRadius: 25, paddingHorizontal: 24, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' },
+  goText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 17 },
   chev: { width: 13, height: 13, borderColor: colors.white },
   foot: { flexDirection: 'row', alignItems: 'center', gap: 22, paddingHorizontal: 24, paddingTop: 14 },
   dots: { flexDirection: 'row', gap: 8 },
