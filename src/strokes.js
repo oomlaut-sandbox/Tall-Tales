@@ -28,13 +28,15 @@ export const PENS = [
   ['#2f4a4c', 'Deep teal'], ['#5f7672', 'Slate'], ['#93a08f', 'Sage'], ['#8a7660', 'Taupe'],
   ['#d2ab86', 'Sand'], ['#b98a3e', 'Ochre'], ['#9a4f36', 'Rust'], ['#4e3125', 'Umber'],
 ];
-// the bright colours, for children: two rows of eight, the other palette (switch between them under the page)
-export const PENS_BRIGHT = [
-  ['#ffffff', 'White'], ['#111111', 'Black'], ['#e53935', 'Red'], ['#fb8c00', 'Orange'],
-  ['#fdd835', 'Yellow'], ['#9ccc3d', 'Lime'], ['#3a9a4a', 'Green'], ['#00a29a', 'Teal'],
-  ['#4fb0f0', 'Sky blue'], ['#1f5fc8', 'Blue'], ['#7e57c2', 'Purple'], ['#ec6fa8', 'Pink'],
-  ['#c2185b', 'Raspberry'], ['#ffb38a', 'Peach'], ['#8d5524', 'Brown'], ['#9e9e9e', 'Grey'],
+// the bright natural colours (Jörg, 5 Nov 2026; instead of the old bright ones, no neons): the primaries first, then
+// their mixes, then the softer shades of sky, water, moss and sunset
+export const PENS_NATURAL = [
+  ['#d1453b', 'Poppy red'], ['#f2c14e', 'Sunflower'], ['#3f6e9e', 'Lake blue'], ['#4e7d4f', 'Leaf green'],
+  ['#f0a04b', 'Apricot'], ['#6a4c93', 'Plum'], ['#7fb3d5', 'Sky blue'], ['#2e8a88', 'Sea teal'],
+  ['#7a9a4a', 'Moss green'], ['#a8c47c', 'Spring green'], ['#e07a5f', 'Sunset coral'], ['#a63d57', 'Berry'],
+  ['#e5989b', 'Rose'], ['#9c89b8', 'Lavender'],
 ];
+export const PENS_BRIGHT = PENS_NATURAL; // (the old name, for anything that still asks for it)
 
 const hsl = (h, s, l) => { const a = s * Math.min(l, 1 - l), f = (n) => { const k = (n + h / 30) % 12; return Math.round(255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)))); }; return '#' + [f(0), f(8), f(4)].map((v) => v.toString(16).padStart(2, '0')).join(''); };
 

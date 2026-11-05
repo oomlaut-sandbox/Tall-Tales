@@ -28,7 +28,7 @@ import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
 import ToolPic from '../components/ToolPic';
 import { STAMPS, stampWidth } from '../stamps';
 const SHOW_STAMPS = false; // the stamps are the felt mascot: away until Jörg's hand-drawn one arrives (drawings that have them still show them)
-import { GREYS, DRAW_LAYERS, PENS, PENS_BRIGHT, SHAPES, hsvHex, hsvOf, SIZES, toolSize, makeFill, FILL_G, mixColours, shapePts, withMirrors, inkOf, isMeta, layerAlpha, withLayerAlpha } from '../strokes';
+import { GREYS, DRAW_LAYERS, PENS, PENS_NATURAL, SHAPES, hsvHex, hsvOf, SIZES, toolSize, makeFill, FILL_G, mixColours, shapePts, withMirrors, inkOf, isMeta, layerAlpha, withLayerAlpha } from '../strokes';
 import { blankNote, blankSketch, dropNotebookPicture, keepNotebookPicture, loadNotebook, saveNotebook } from '../notebook';
 import { allBadges, currentStreak, loadLog, markFirst, onNewBadge } from '../badges';
 import { STORIES } from '../story';
@@ -1185,7 +1185,9 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   const [onWheel, setOnWheel] = useState(false); // a finger on the paint wheel: the sheet holds still
   const [wheelHsv, setWheelHsv] = useState({ h: 0, s: 1, v: 1 }); // where the colour wheel's two white rings are (follows the pen) // the eyedropper: the next tap on the page picks up the colour there // Mirror: everything drawn appears flipped on the other side too
   const [redo, setRedo] = useState([]); // strokes taken back with Undo, to put back with Redo
-  const [recent, setRecent] = useState(['#1e2324', '#f1e8d8', '#2f4a4c', '#93a08f', '#b98a3e', '#9a4f36', '#4e3125']); // the seven colours in the pill: earthy to start (the bright ones are under +)
+  // the seven colours in the pill: the pen (charcoal, for lines) and the primaries first, red, yellow, blue, then green,
+  // orange and purple: what children see first (Jörg, 5 Nov 2026; was earthy)
+  const [recent, setRecent] = useState(['#1e2324', '#d1453b', '#f2c14e', '#3f6e9e', '#4e7d4f', '#f0a04b', '#6a4c93']);
   const [more, setMore] = useState(false); // the + sheet: all the colours, Mix, Shapes, Mirror
   const [sizePop, setSizePop] = useState(null); // the tool whose sizes are showing
   // after a size is picked the pill stays a moment, then dissolves
@@ -1541,7 +1543,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   };
   // the greys' names, for VoiceOver (in the order of GREYS: light to dark)
   const GREY_NAMES = { '#ffffff': 'White', '#d9d9d9': 'Pale grey', '#b0b0b0': 'Light grey', '#868686': 'Grey', '#5c5c5c': 'Dark grey', '#333333': 'Charcoal', '#111111': 'Black' };
-  const colourName = (hex) => { if (GREY_NAMES[hex.toLowerCase()]) return t(GREY_NAMES[hex.toLowerCase()]); const f = [...PENS_BRIGHT, ...PENS].find(([h]) => h.toLowerCase() === hex.toLowerCase()); return f ? t(f[1]) : t('Mixed colour'); };
+  const colourName = (hex) => { if (GREY_NAMES[hex.toLowerCase()]) return t(GREY_NAMES[hex.toLowerCase()]); const f = [...PENS_NATURAL, ...PENS].find(([h]) => h.toLowerCase() === hex.toLowerCase()); return f ? t(f[1]) : t('Mixed colour'); };
   // the colour you're drawing with, on its own, bigger, in a rounded box of black glass with a soft white glow
   const currentEl = (
     <View style={styles.currentBox} accessibilityLabel={t('The colour you are drawing with')}>
@@ -1661,7 +1663,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
         </View>
         {/* everything below the title scrolls, so the sheet never covers the page's top */}
         <ScrollView scrollEnabled={!onWheel} style={{ maxHeight: winH - insets.top - 140 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 6 }}>
-        {/* the colour wheel first (Jörg, 5 Nov 2026), its options right under it, then the greys, the earthy colours and the bright ones */}
+        {/* the colour wheel first (Jörg, 5 Nov 2026), its options right under it, then the bright natural colours, the greys and the earthy colours */}
         <PaintWheel size={Math.min(w - 44, 320)} hsv={wheelHsv} onPick={(c, done) => { setWheelHsv(c); const hex = hsvHex(c.h, c.s, c.v); if (done) pick(hex); else if (!mixing) { setPen(hex); setErase(false); setBucket(false); } }} label={t('Colour wheel')} onTouch={setOnWheel} />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 7, marginTop: 16 }}>{/* one row: Shapes, Mirror, Select colour (Mix and Behind the lines gone: Jörg, 5 Nov 2026) */}
           <Pressable onPress={() => { setShapesOpen((x) => !x); if (shapesOpen) setShape(null); }} style={[styles.toolWide, styles.toolIcon, styles.toolRow, (shapesOpen || shape) && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Shapes')} accessibilityState={{ expanded: !!shapesOpen, selected: !!shape }}><OptIcon kind="shapes" /><Text style={[styles.toolText, styles.toolRowText]}>{t('Shapes')}</Text></Pressable>
@@ -1691,14 +1693,14 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
             ))}
           </View>
         ) : null}
+        <Text style={styles.sheetLabel}>{t('Bright natural colours')}</Text>
+        {grid(PENS_NATURAL)}
         <Text style={styles.sheetLabel}>{t('Greys')}</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 8, rowGap: 10 }}>
           {GREYS.map((hex) => swatch(hex, mixing ? t('Mix in {name}', { name: t(GREY_NAMES[hex] || 'Grey') }) : t('{name} pen', { name: t(GREY_NAMES[hex] || 'Grey') }), sz, () => pick(hex), !erase && !mixing && pen.toLowerCase() === hex.toLowerCase()))}
         </View>
         <Text style={styles.sheetLabel}>{t('Earthy colours')}</Text>
-        {grid(PENS)}
-        <Text style={styles.sheetLabel}>{t('Bright colours')}</Text>
-        {grid(PENS_BRIGHT)}
+        {grid(PENS.filter(([h]) => !GREYS.includes(h) && !['#dcdcdc', '#b4b4b4', '#7d7d7d', '#4a4a4a'].includes(h)))}{/* (the whites and greys have their own row above) */}
         </ScrollView>
       </View>
     );
