@@ -1,0 +1,66 @@
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated rimraf@2.4.5: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated glob@6.0.4: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated http-call@5.3.0: Renamed to @heroku/http-call — please install @heroku/http-call instead.
+npm warn deprecated uuid@7.0.3: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+npm warn deprecated uuid@8.3.2: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+npm warn deprecated uuid@8.3.2: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+
+Builds for @oomlaut-code/tall-tales:
+
+ID                       cc2e5ce1-3838-4cb6-8686-c469da76ae3e
+Platform                 iOS
+Status                   finished
+Profile                  production
+Distribution             store
+SDK Version              57.0.0
+Version                  0.1.0
+Build number             215
+Commit                   5920e44339361e403f103ab15679a3e12471754a
+Logs                     https://expo.dev/accounts/oomlaut-code/projects/tall-tales/builds/cc2e5ce1-3838-4cb6-8686-c469da76ae3e
+Application Archive URL  https://expo.dev/artifacts/eas/Si6ioqU1gwjZUpdFl6H54IZVQ_gGgwmhSyGL4rBZUCw.ipa
+Build Artifacts URL      null
+Fingerprint              36dc8236aae4dffeecfcd482b401f87889481046
+Started at               11/5/2026, 11:13:20 AM
+Finished at              11/5/2026, 11:18:42 AM
+Started by               GitHub-builds
+
+———
+
+ID                       9622d499-c329-4a59-a912-bb83aa89b3cb
+Platform                 iOS
+Status                   finished
+Profile                  production
+Distribution             store
+SDK Version              57.0.0
+Version                  0.1.0
+Build number             214
+Commit                   439922fbd8ef71c7148aca55adbc0ab6a4d0f2bb
+Logs                     https://expo.dev/accounts/oomlaut-code/projects/tall-tales/builds/9622d499-c329-4a59-a912-bb83aa89b3cb
+Application Archive URL  https://expo.dev/artifacts/eas/eNncWmkuMFqBX2ACx0tsEFqIsWVLiMxI9-dc1QmkusQ.ipa
+Build Artifacts URL      null
+Fingerprint              36dc8236aae4dffeecfcd482b401f87889481046
+Started at               11/5/2026, 8:36:05 AM
+Finished at              11/5/2026, 11:50:03 AM
+Started by               GitHub-builds
+
+———
+
+ID                       80e5f94a-3d8d-4b42-85ba-26e9d697a785
+Platform                 iOS
+Status                   finished
+Profile                  production
+Distribution             store
+SDK Version              57.0.0
+Version                  0.1.0
+Build number             213
+Commit                   c73a74b07d423067bc70c58fea2908a4c2f20ed5
+Logs                     https://expo.dev/accounts/oomlaut-code/projects/tall-tales/builds/80e5f94a-3d8d-4b42-85ba-26e9d697a785
+Application Archive URL  https://expo.dev/artifacts/eas/FuixQ-Q-VqnAl878UMZnOTXr3UXSbGMp4ooYETzoQ7I.ipa
+Build Artifacts URL      null
+Fingerprint              36dc8236aae4dffeecfcd482b401f87889481046
+Started at               11/5/2026, 6:48:51 AM
+Finished at              11/5/2026, 10:00:17 AM
+Started by               GitHub-builds

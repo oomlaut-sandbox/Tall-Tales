@@ -1,0 +1,52 @@
+- Fetching the build…
+✔ Showing the last build for the project @oomlaut-code/tall-tales
+{
+  "id": "cc2e5ce1-3838-4cb6-8686-c469da76ae3e",
+  "status": "FINISHED",
+  "platform": "IOS",
+  "artifacts": {
+    "buildUrl": "https://expo.dev/artifacts/eas/Si6ioqU1gwjZUpdFl6H54IZVQ_gGgwmhSyGL4rBZUCw.ipa",
+    "xcodeBuildLogsUrl": "https://storage.googleapis.com/eas-workflows-production/logs/c1175638-16e5-4be5-b443-b93246c7ec7f/cc2e5ce1-3838-4cb6-8686-c469da76ae3e/2026-11-05T11%3A13%3A21Z-cc2e5ce1-3838-4cb6-8686-c469da76ae3e-xcode.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20261105%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20261105T121838Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=96c0d0a97958c1347b733255c13e534142f55b375d42e72e12e3acc2de7f4fe47a598e0e34c9165d553abb630584fb9fe11b9b50f843987774f6264676623b06dd0a6d85cbe009ff5fda50d88a78cfee626c58a2e95b722c0e820826c5026e3624706c67a06c0da65457ea9d3cb3d7ed88544b5223b5e17699c0132571a1fea3e2deb80314614930a00c40771a481eb5d36fe25aced87e71666be4e0c05185662c0286de18ada9eb42f470dfae468916415c2e58b7287b937c1fcb00f5e9993ff4439f11f89915fd48203634b74d04da63c20dc7f418527719c2b02928e43c7a0a2a4c04b3c9c173bb4043fefdb00182053c5ea2ee16d431da73259c0a3e6428",
+    "applicationArchiveUrl": "https://expo.dev/artifacts/eas/Si6ioqU1gwjZUpdFl6H54IZVQ_gGgwmhSyGL4rBZUCw.ipa"
+  },
+  "fingerprint": {
+    "id": "01a19e5c-5464-7118-aefb-536d2271a93c",
+    "hash": "36dc8236aae4dffeecfcd482b401f87889481046"
+  },
+  "initiatingActor": {
+    "id": "d43d59e2-8803-4e8f-aa24-8218321e10fc",
+    "displayName": "GitHub-builds"
+  },
+  "logFiles": [
+    "https://storage.googleapis.com/eas-workflows-production/logs/c1175638-16e5-4be5-b443-b93246c7ec7f/cc2e5ce1-3838-4cb6-8686-c469da76ae3e/2026-11-05T11%3A13%3A21Z-19bad5d0-f136-47a3-adcd-57a9f0ba7879.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20261105%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20261105T121838Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=3006a3b3efd120578d046fb7d27b2135b12921fd117e061cd7e9679fba0c13f1dbf3d5f778934748bbd8b23f9bfa7063586fa483bf1f16b332c0187eb64959becc9d7cf7aa1163a734e1689ff06754f1b646ce327cd5020a4c6e73a04dda301f813687dae8863ddf8b00450922c914bdbb561a949a3bbcf7419d45c88fd148545b2ec840780d980e7b71dbf14491a5006f662672bc0c95c0844268c5d5cd4ddf2c0114a502c618b0037ae9782ba28592238ce295cc681f0e47410f8cc8022073add84ad448ec4600b464104010e5346d34462b9023ed9d061dcdbc6a893c1c2d48690b39f95ae49f1fc7438f426a91dfe97082ea4683702b6d24518d2f933088",
+    "https://storage.googleapis.com/eas-workflows-production/logs/c1175638-16e5-4be5-b443-b93246c7ec7f/cc2e5ce1-3838-4cb6-8686-c469da76ae3e/2026-11-05T11%3A13%3A21Z-cc2e5ce1-3838-4cb6-8686-c469da76ae3e-xcode.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20261105%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20261105T121838Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=96c0d0a97958c1347b733255c13e534142f55b375d42e72e12e3acc2de7f4fe47a598e0e34c9165d553abb630584fb9fe11b9b50f843987774f6264676623b06dd0a6d85cbe009ff5fda50d88a78cfee626c58a2e95b722c0e820826c5026e3624706c67a06c0da65457ea9d3cb3d7ed88544b5223b5e17699c0132571a1fea3e2deb80314614930a00c40771a481eb5d36fe25aced87e71666be4e0c05185662c0286de18ada9eb42f470dfae468916415c2e58b7287b937c1fcb00f5e9993ff4439f11f89915fd48203634b74d04da63c20dc7f418527719c2b02928e43c7a0a2a4c04b3c9c173bb4043fefdb00182053c5ea2ee16d431da73259c0a3e6428"
+  ],
+  "app": {
+    "id": "c1175638-16e5-4be5-b443-b93246c7ec7f",
+    "name": "tall-tales",
+    "slug": "tall-tales",
+    "ownerAccount": {
+      "id": "4e03be64-359b-4249-90f9-5ccc360a82b1",
+      "name": "oomlaut-code"
+    }
+  },
+  "distribution": "STORE",
+  "buildProfile": "production",
+  "appIdentifier": "com.oomlaut.reader",
+  "sdkVersion": "57.0.0",
+  "appVersion": "0.1.0",
+  "appBuildVersion": "215",
+  "gitCommitHash": "5920e44339361e403f103ab15679a3e12471754a",
+  "gitCommitMessage": "[testflight] build\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01NDsvQ4w6b4M39K7iEhCswz",
+  "priority": "HIGH",
+  "createdAt": "2026-11-05T11:13:20.131Z",
+  "updatedAt": "2026-11-05T11:18:42.247Z",
+  "completedAt": "2026-11-05T11:18:41.754Z",
+  "expirationDate": "2026-12-05T11:13:20.190Z",
+  "isForIosSimulator": false,
+  "metrics": {
+    "buildWaitTime": 1295,
+    "buildQueueTime": 6380,
+    "buildDuration": 313948
+  }
+}
