@@ -415,17 +415,6 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
             onLongPress={!selecting && s.mine ? () => onEdit(s) : undefined} />
         ))}
         {/* Playlists, at the end of My Books: three little felt books stacked */}
-        {!selecting && !ws && removedCount ? (
-          <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
-            <Text style={styles.restore}>{t('Show removed books ({n})', { n: removedCount })}</Text>
-          </Pressable>
-        ) : null}
-        {/* Recently deleted: your own books, for 30 days (Jörg, 4 Nov 2026) */}
-        {!selecting && recentlyDeleted && recentlyDeleted.list.length ? (
-          <Pressable onPress={() => setBinOpen(true)} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
-            <Text style={styles.restore}>{t('Recently deleted ({n})', { n: recentlyDeleted.list.length })}</Text>
-          </Pressable>
-        ) : null}
         {/* (a much bigger space after My Books: Jörg, 25 Oct 2026) */}
         {/* Reading Options under the books, in black glass (Jörg, 26 Oct 2026) */}
         {!selecting && !ws && onReadingOptions ? <ReadingOptionsSection {...onReadingOptions} style={{ width: '100%', marginTop: 26 }} /* a little apart from the books (Jörg, 29 Oct 2026) */ /> : null}
@@ -488,6 +477,19 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
             </>
           );
         })() : null}
+        {/* the little links (Show removed books, Recently deleted) always at the very bottom of the page (Jörg, 5 Nov 2026) */}
+        {!selecting && ((!ws && removedCount) || (recentlyDeleted && recentlyDeleted.list.length)) ? <View style={{ width: '100%', height: 18 }} /> : null}
+        {!selecting && !ws && removedCount ? (
+          <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
+            <Text style={styles.restore}>{t('Show removed books ({n})', { n: removedCount })}</Text>
+          </Pressable>
+        ) : null}
+        {/* Recently deleted: your own books, for 30 days (Jörg, 4 Nov 2026) */}
+        {!selecting && recentlyDeleted && recentlyDeleted.list.length ? (
+          <Pressable onPress={() => setBinOpen(true)} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
+            <Text style={styles.restore}>{t('Recently deleted ({n})', { n: recentlyDeleted.list.length })}</Text>
+          </Pressable>
+        ) : null}
       </ScrollView>
       {folderOpen ? <Folder narrator={narrator} toast={toast} canSend={controls.sharing !== false} onClose={() => { const y = folderY.current; setFolderOpen(false); requestAnimationFrame(() => scrollRef.current && scrollRef.current.scrollTo({ y, animated: false })); }} /* back to the same spot (Jörg, 29 Oct 2026) */ /> : null}
       {binOpen && recentlyDeleted && !binAsk ? (
