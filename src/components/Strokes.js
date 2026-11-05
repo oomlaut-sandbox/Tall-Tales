@@ -46,7 +46,7 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
     const fid = L.blur ? `${id}-${i}-${j}` : null;
     if (fid) defs.push(h('filter', { key: fid, id: fid, x: '-50%', y: '-50%', width: '200%', height: '200%' }, h('feGaussianBlur', { stdDeviation: L.blur })));
     paths.push(h('path', {
-      key: `${i}-${j}`, d: L.d, fill: L.fill ? st.c : 'none', stroke: L.fill ? 'none' : st.c, strokeWidth: L.fill ? 0 : L.width,
+      key: `${i}-${j}`, d: L.d, fill: L.fill ? L.color || st.c : 'none', stroke: L.fill ? 'none' : L.color || st.c, strokeWidth: L.fill ? 0 : L.width,
       strokeLinecap: 'round', strokeLinejoin: 'round', opacity: L.alpha, filter: fid ? `url(#${fid})` : undefined,
       style: L.multiply ? { mixBlendMode: 'multiply' } : undefined, strokeDasharray: L.grain === 'crayon' ? '3 1.4' : L.grain ? '6 0.6' : undefined,
     }));
@@ -91,7 +91,7 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
       g.globalCompositeOperation = L.erase ? 'destination-out' : L.multiply ? 'multiply' : 'source-over';
       g.filter = L.blur ? `blur(${L.blur}px)` : 'none';
       const p = new Path2D(L.d);
-      if (L.fill) { g.fillStyle = st.c; g.fill(p); } else { g.strokeStyle = L.erase ? '#000' : st.c; g.lineWidth = L.width; g.lineCap = 'round'; g.lineJoin = 'round'; g.stroke(p); }
+      if (L.fill) { g.fillStyle = L.color || st.c; g.fill(p); } else { g.strokeStyle = L.erase ? '#000' : L.color || st.c; g.lineWidth = L.width; g.lineCap = 'round'; g.lineJoin = 'round'; g.stroke(p); }
       g.restore();
     }
   }
@@ -121,7 +121,7 @@ async function pageCanvas(strokes, px, ph, photo) {
       h.globalCompositeOperation = L.erase ? 'destination-out' : L.multiply ? 'multiply' : 'source-over';
       h.filter = L.blur ? `blur(${L.blur}px)` : 'none';
       const p = new Path2D(L.d);
-      if (L.fill) { h.fillStyle = st.c; h.fill(p); } else { h.strokeStyle = L.erase ? '#000' : st.c; h.lineWidth = L.width; h.lineCap = 'round'; h.lineJoin = 'round'; h.stroke(p); }
+      if (L.fill) { h.fillStyle = L.color || st.c; h.fill(p); } else { h.strokeStyle = L.erase ? '#000' : L.color || st.c; h.lineWidth = L.width; h.lineCap = 'round'; h.lineJoin = 'round'; h.stroke(p); }
       h.restore();
     }
   }

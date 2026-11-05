@@ -28,7 +28,7 @@ const Layer = React.memo(function Layer({ L, color }) {
   if (!path) return null;
   const [gl, gd] = grainOf(L);
   return (
-    <Path path={path} color={L.erase ? '#000000' : color} opacity={L.alpha} style={L.fill ? 'fill' : 'stroke'} strokeWidth={L.width || 0} strokeCap="round" strokeJoin="round"
+    <Path path={path} color={L.erase ? '#000000' : L.color || color} opacity={L.alpha} style={L.fill ? 'fill' : 'stroke'} strokeWidth={L.width || 0} strokeCap="round" strokeJoin="round"
       blendMode={L.erase ? 'dstOut' : L.multiply ? 'multiply' : 'srcOver'}>
       {L.blur ? <BlurMask blur={L.blur} style={L.inner ? 'inner' : 'normal'} /> : null}
       {L.grain ? <DiscretePathEffect length={gl} deviation={gd} /> : null}
@@ -380,7 +380,7 @@ async function pageImage(strokes, px, ph, photo) {
       const path = Skia.Path.MakeFromSVGString(L.d);
       if (!path) continue;
       const paint = Skia.Paint();
-      paint.setAntiAlias(true); paint.setColor(Skia.Color(st.c)); paint.setAlphaf(L.alpha);
+      paint.setAntiAlias(true); paint.setColor(Skia.Color(L.color || st.c)); paint.setAlphaf(L.alpha);
       paint.setStyle(L.fill ? PaintStyle.Fill : PaintStyle.Stroke);
       if (!L.fill) { paint.setStrokeWidth(L.width); paint.setStrokeCap(StrokeCap.Round); paint.setStrokeJoin(StrokeJoin.Round); }
       if (L.blur) paint.setMaskFilter(Skia.MaskFilter.MakeBlur(L.inner ? BlurStyle.Inner : BlurStyle.Normal, L.blur, true));

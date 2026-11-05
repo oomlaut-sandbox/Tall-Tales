@@ -290,7 +290,7 @@ export function inkD(st, w, taper = 1, swing = 1, tiltK = 0, wob = 0) {
     v = i < 2 ? step(1) : v * 0.85 + step(i) * 0.15; // (speed changes gently, so the width flows)
     // Apple Pencil: how hard it presses sets the width (q: the pressure at each point, 0 to 1); a finger: the speed
     const qi = st.q && st.q.length ? st.q[Math.min(st.q.length - 1, Math.round((i / Math.max(1, n - 1)) * (st.q.length - 1)))] : null;
-    const f = qi != null ? clamp(0.3 + qi * 1.25, 0.3, 1.45) : clamp(1.5 - (v / (base * 1.5 + 3)) * swing, 0.22, 1.5); // slow: full; fast: thin
+    const f = qi != null ? clamp(0.2 + pres(qi) * 1.25, 0.25, 1.45) : clamp(1.5 - (v / (base * 1.5 + 3)) * swing, 0.22, 1.5); // slow: full; fast: thin
     // thin, then thick, then thin again: the ends taper over a length along the line (not a number of points),
     // the same at the start as at the end, never more than a third of the line each
     const ease = (q) => q * q * (3 - 2 * q); // a smooth point, not a blunt end
@@ -397,13 +397,17 @@ function paintWash(st, w, lw, light, dk) {
 
 // the fountain pen's width: the thickest size a little thinner than the others would make it (Jörg, 5 Nov 2026:
 // its lines were too fat)
+// Apple Pencil pressure (q, 0 to 1 as the phone gives it) as the stroke feels it (Jörg, 5 Nov 2026: 'zero pressure
+// effects'): an ordinary touch only reaches about a third of the way, so the low end is opened up: a feather-light
+// touch about 0.3, a normal one about 0.6, pressing hard 1
+export const pres = (q) => (q == null ? null : Math.max(0.08, Math.min(1, Math.sqrt(Math.max(0, q) * 1.8))));
 const penSize = (st, lw) => lw * ((st.s || 0.01) > 0.025 ? 1.05 : 1.5);
 export function pfOutline(st, w, size, { thinning = 0.6, taper = true, live = false } = {}) {
   const p = st.p || [];
   const pts = [];
   for (let i = 0; i + 1 < p.length; i += 2) {
     const q = st.q && st.q.length ? st.q[Math.min(st.q.length - 1, i / 2)] : null;
-    pts.push([p[i] * w, p[i + 1] * w, q != null && q > 0 ? Math.min(1, 0.15 + q * 0.85) : 0.5]);
+    pts.push([p[i] * w, p[i + 1] * w, q != null && q > 0 ? pres(q) : 0.5]);
   }
   if (!pts.length) return [];
   const t = taper ? Math.max(size * 2.5, 6) : 0;
@@ -428,7 +432,7 @@ export function outlineD(pts) {
 export function liveLook(st, w) {
   if (!st || st.e || st.sm || st.stp || st.f || st.z || st.ph) return null;
   const lw = Math.max(1, (st.s || 0.01) * w), b = st.b || 'ink';
-  const look = b === 'pencil' ? { size: Math.max(1.2, lw * 0.45), thinning: 0, alpha: 0.9 }
+  const look = b === 'pencil' ? { size: Math.max(1.2, lw * 0.45), thinning: st.q ? 0.5 : 0, alpha: 0.9 }
     : b === 'water' ? { size: lw * 1.35 * 1.1, thinning: 0.5, alpha: 0.42 } // (the body's size: see layersOf)
     : b === 'crayon' ? { size: lw * 1.35, thinning: 0.3, alpha: 0.7 }
     : { size: penSize(st, lw), thinning: 0.6, alpha: 1 };
@@ -457,7 +461,25 @@ const mean = (a) => (a && a.length ? a.reduce((x, y) => x + y, 0) / a.length : n
 const pressOf = (st) => mean(st.q);
 const uprightOf = (st) => { const m = mean(st.t); return m == null ? 1 : m; };
 // a light touch makes a lighter mark, pressing hard a deeper one (pencil, crayon, watercolour)
-const darkOf = (st, lo = 0.45) => { const q = pressOf(st); return q == null ? 1 : clamp(lo + q * (1.25 - lo), lo, 1.15); };
+const darkOf = (st, lo = 0.45) => { const q = pres(pressOf(st)); return q == null ? 1 : clamp(lo + q * (1.15 - lo), lo, 1.15); };
+// the pencil with Apple Pencil pressure (Jörg, 5 Nov 2026): along the line it's paler and finer where it's pressed
+// lightly, darker and a little wider where it's pressed hard, like a real pencil. Drawn in short pieces, each its own
+// shade of the colour (towards the paper's white when light), all solid so the joins don't show.
+const PAPER = [247, 245, 240];
+const tint = (hex, k) => { const c = rgbOf(hex || '#111111'); return '#' + c.map((v, i) => Math.round(PAPER[i] + (v - PAPER[i]) * k).toString(16).padStart(2, '0')).join(''); };
+function pencilPressed(st, w, lw) {
+  const p = st.p, q = st.q, n = p.length / 2, out = [];
+  const run = 2; // (points to a piece)
+  for (let i = 0; i < n - 1; i += run) {
+    const j = Math.min(n - 1, i + run);
+    let d = `M${(p[i * 2] * w).toFixed(1)} ${(p[i * 2 + 1] * w).toFixed(1)}`;
+    for (let k = i + 1; k <= j; k++) d += ` L${(p[k * 2] * w).toFixed(1)} ${(p[k * 2 + 1] * w).toFixed(1)}`;
+    const at = (k) => q[Math.min(q.length - 1, k)] || 0;
+    const f = pres((at(i) + at(j)) / 2) || 0.5;
+    out.push({ d, width: Math.max(0.8, lw * (0.2 + f * 0.5)), alpha: 1, color: tint(st.c, 0.3 + f * 0.7) });
+  }
+  return out.length ? out : [{ d: strokeD(st, w), width: Math.max(1.2, lw * 0.45), alpha: 0.92 }];
+}
 function layersOf(st, w) {
   if (st.stp || st.ph) return []; // a stamp or an imported photo is a picture (drawn by the canvas itself), not paint
   if (st.sm) return []; // the smudge draws nothing of its own: it softens what's under it (see smudgeOutline)
@@ -499,6 +521,7 @@ function layersOf(st, w) {
   // pencil (Jörg, 27 Oct 2026): a plain, smooth, fine line of even width, like a sharp pencil or a fineliner.
   // No speed swing, no taper, no grain. Apple Pencil: pressing harder makes it a little darker, that's all.
   if (b === 'pencil') {
+    if (st.q && st.q.length > 1) return pencilPressed(st, w, lw);
     return [{ d: strokeD(st, w), width: Math.max(1.2, lw * 0.45), alpha: clamp(0.92 * darkOf(st, 0.6), 0.5, 1) }];
   }
   // crayon: waxy and smooth-edged, the paper's tooth breaking it up; two soft passes that deepen where they cross

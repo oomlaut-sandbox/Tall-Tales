@@ -1281,7 +1281,9 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
     }
     return null;
   };
-  const onPen = (e) => { const u = uprightOf(e.nativeEvent); tilt.current = u; };
+  const penPress = useRef(0); // the pen's pressure from its pointer events (0 to 1), as a second source
+  const onPen = (e) => { const u = uprightOf(e.nativeEvent); tilt.current = u; const ne = e.nativeEvent; if (ne && ne.pointerType === 'pen' && typeof ne.pressure === 'number') penPress.current = ne.pressure; };
+  const pressNow = (e) => { const f = (e.nativeEvent && e.nativeEvent.force) || 0; return f > 0 ? f : penPress.current || 0; };
   const tiltNow = (e) => { const u = uprightOf(e.nativeEvent); return u != null ? u : tilt.current; };
   const at = (e) => [e.nativeEvent.locationX / Wref.current, e.nativeEvent.locationY / Wref.current];
   const pad = useRef(PanResponder.create({
@@ -1320,7 +1322,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
       }
       // the eraser: a soft round line that rubs out what is under it (a little wider than the pen)
       // Apple Pencil: how hard it presses (0 to 1) is kept for each point; a finger has none (speed sets the width)
-      const force = e.nativeEvent.force || 0;
+      const force = pressNow(e);
       cur.current = S.current.brush === 'smudge' && !S.current.erase
         ? { sm: 1, v: 3, c: '#000000', s: toolSize('smudge', S.current.size), p: [+x.toFixed(4), +y.toFixed(4)], ...(S.current.smudgeK !== 1 ? { k: S.current.smudgeK } : null), ...m } // a fingertip, rubbing
         : S.current.erase
@@ -1364,7 +1366,9 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
       const sx = c.p[n - 2] + (x - c.p[n - 2]) * pull, sy = c.p[n - 1] + (y - c.p[n - 1]) * pull;
       if ((c.p[n - 2] - sx) ** 2 + (c.p[n - 1] - sy) ** 2 < (0.0035 / Z.current.s) ** 2) return; // (finer points when zoomed in)
       c.p.push(+sx.toFixed(4), +sy.toFixed(4));
-      if (c.q) c.q.push(+(e.nativeEvent.force || 0).toFixed(2));
+      // (the Apple Pencil's first touch often reads no pressure: start keeping it from the first point that has some,
+      // the points before it taking that same value: Jörg, 5 Nov 2026, 'zero pressure effects')
+      { const f = pressNow(e); if (!c.q && f > 0 && !c.e && !c.sm) c.q = Array(c.p.length / 2 - 1).fill(+f.toFixed(2)); if (c.q) c.q.push(+f.toFixed(2)); }
       if (!c.t && !c.e && !c.sm) { const u0 = tiltNow(e); if (u0 != null) c.t = Array(c.p.length / 2 - 1).fill(+u0.toFixed(2)); } // (the pen's tilt can arrive just after the touch)
       if (c.t) { const u = tiltNow(e); c.t.push(+(u != null ? u : c.t[c.t.length - 1]).toFixed(2)); }
       showLive();
