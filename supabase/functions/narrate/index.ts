@@ -136,7 +136,8 @@ Deno.serve(async (req) => {
   // only the store owner may start narration
   const auth = req.headers.get('Authorization') || '';
   const asCaller = createClient(URL_, ANON, { global: { headers: { Authorization: auth } } });
-  const { data: isAdmin } = await asCaller.rpc('is_store_admin');
+  // (or the store's own service key: the Store narrate workflow, to remake a book's narration: 4 Nov 2026)
+  const { data: isAdmin } = auth === `Bearer ${SERVICE}` ? { data: true } : await asCaller.rpc('is_store_admin');
   if (!isAdmin) return json({ error: 'Only the store owner can do this.' }, 403);
   const { bookId, lang: lang0 } = await req.json().catch(() => ({}));
   if (!bookId || !/^[a-z0-9-]+$/.test(bookId)) return json({ error: 'Which book?' }, 400);

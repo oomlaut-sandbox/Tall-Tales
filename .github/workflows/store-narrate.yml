@@ -1,0 +1,63 @@
+# Remakes a Book Store book's narration (Fatima and Mo) in the given languages, through the store's narrate service,
+# then reports how each language came out. Needs the SUPABASE_ACCESS_TOKEN and SUPABASE_URL secrets. Never prints keys.
+name: Store narrate
+on:
+  workflow_dispatch:
+    inputs:
+      book:
+        description: The store book's id
+        required: true
+      langs:
+        description: Languages (en de fr es ja ar), or "ready" for English and every approved language
+        required: false
+        default: ready
+permissions:
+  contents: write
+jobs:
+  narrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Narrate
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          BOOK: ${{ inputs.book }}
+          LANGS: ${{ inputs.langs }}
+        run: |
+          node -e '
+            const url = (process.env.SUPABASE_URL || "").trim().replace(/\/$/, "");
+            const ref = url.replace(/^https:\/\/([a-z0-9]+)\.supabase\.co$/, "$1");
+            const mgmt = (p, init = {}) => fetch(`https://api.supabase.com/v1/projects/${ref}${p}`, { ...init, headers: { Authorization: `Bearer ${process.env.SUPABASE_ACCESS_TOKEN}`, "Content-Type": "application/json" } });
+            const sql = async (query) => (await mgmt("/database/query", { method: "POST", body: JSON.stringify({ query }) })).json();
+            const book = (process.env.BOOK || "").replace(/[^a-z0-9-]/g, "");
+            (async () => {
+              const out = [];
+              const keys = await (await mgmt("/api-keys")).json();
+              const service = (keys.find((k) => k.name === "service_role") || {}).api_key;
+              if (!service) throw new Error("no service key");
+              const row = (await sql(`select id, narration_status, (select jsonb_object_agg(k, v->>\x27status\x27) from jsonb_each(langs) e(k, v)) as langs from public.books where id = \x27${book}\x27`))[0];
+              if (!row) throw new Error("no such book: " + book);
+              let langs = (process.env.LANGS || "ready").trim();
+              langs = langs === "ready" ? ["en", ...Object.entries(row.langs || {}).filter(([, s]) => s === "ready").map(([k]) => k)] : langs.split(/[ ,]+/);
+              out.push("languages: " + langs.join(" "));
+              for (const lang of langs) {
+                const r = await fetch(`${url}/functions/v1/narrate`, { method: "POST", headers: { Authorization: `Bearer ${service}`, apikey: service, "Content-Type": "application/json" }, body: JSON.stringify({ bookId: book, lang }) });
+                out.push(`${lang}: started HTTP ${r.status} ${(await r.text()).slice(0, 120)}`);
+                // wait for it
+                for (let i = 0; i < 40; i++) {
+                  await new Promise((ok) => setTimeout(ok, 6000));
+                  const b = (await sql(`select narration_status, narration_note, langs->\x27${lang}\x27 as l from public.books where id = \x27${book}\x27`))[0];
+                  const st = lang === "en" ? b.narration_status : b.l && b.l.status;
+                  const note = lang === "en" ? b.narration_note : b.l && b.l.note;
+                  if (st && !["working", "narrating"].includes(st)) { out.push(`${lang}: ${st}${note ? " (" + note + ")" : ""}`); break; }
+                }
+              }
+              require("fs").writeFileSync("/tmp/r.txt", out.join("\n") + "\n"); console.log(out.join("\n"));
+            })().catch((e) => { require("fs").writeFileSync("/tmp/r.txt", "error: " + e.message + "\n"); console.log(e.message); });'
+      - name: Save report
+        if: always()
+        run: |
+          mkdir -p o && cd o && git init -q && (cp /tmp/r.txt store-narrate.txt 2>/dev/null || echo "no report" > store-narrate.txt)
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          git add store-narrate.txt && git commit -qm "Store narrate report"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:store-narrate-output
