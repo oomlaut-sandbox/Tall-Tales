@@ -1483,15 +1483,15 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
       ))}
     </View>
     {/* zoomed in: Fit shows the whole page again */}
-    {zoomed ? (
+    {zoomed && !more ? ( /* (none of the page's pills over the Colours sheet: Jörg, 5 Nov 2026) */
       <Pressable onPress={fit} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('Show the whole page')} style={[styles.sizePop, { right: 10, top: 10, height: 36, paddingHorizontal: 16, minWidth: 0 }]}>
         <Text style={{ color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 13 }}>{t('Fit (zoom out)')}</Text>
       </Pressable>
     ) : null}
     {/* the sizes of the tool in your hand: a little dark pill in the bottom left corner of the page */}
-    {sizePopEl()}
+    {more ? null : sizePopEl()}
     {/* a stamp in hand: its sizes, and ✕ to put it down (bottom left, like the sizes pill) */}
-    {stamp && !dropper && !sizePop ? (
+    {stamp && !dropper && !sizePop && !more ? (
       <View style={[styles.sizePop, { left: 10, bottom: 10, paddingHorizontal: 10 }]}>
         {SIZES.map(([name, sz]) => (
           <Pressable key={name} onPress={() => setSize(sz)} hitSlop={6} accessibilityRole="button" accessibilityLabel={t('{name} pen', { name: t(name) })} accessibilityState={{ selected: size === sz }}
@@ -1505,7 +1505,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
       </View>
     ) : null}
     {/* behind the lines: a small label at the top of the page, tap it to come back to the front */}
-    {behind && !dropper ? (
+    {behind && !dropper && !more ? (
       <Pressable onPress={() => setBehind(false)} accessibilityRole="button" accessibilityLabel={t('Draw on top again')} style={[styles.sizePop, { left: 10, top: 10, height: 36, paddingHorizontal: 14 }]}>
         <Text style={{ color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 13 }}>{t('Behind the lines')}  ✕</Text>
       </Pressable>
@@ -1656,7 +1656,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
         </View>
         {/* everything below the title scrolls, so the sheet never covers the page's top */}
         <ScrollView scrollEnabled={!onWheel} style={{ maxHeight: winH - insets.top - 140 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 6 }}>
-        {/* the colour wheel first (Jörg, 5 Nov 2026), its options right under it, then the greys, then the rest */}
+        {/* the colour wheel first (Jörg, 5 Nov 2026), its options right under it, then the greys, the earthy colours and the bright ones */}
         <PaintWheel size={Math.min(w - 44, 320)} hsv={wheelHsv} onPick={(c, done) => { setWheelHsv(c); const hex = hsvHex(c.h, c.s, c.v); if (done) pick(hex); else if (!mixing) { setPen(hex); setErase(false); setBucket(false); } }} label={t('Colour wheel')} onTouch={setOnWheel} />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 16 }}>
           <Pressable onPress={() => setMixing((x) => !x)} style={[styles.toolWide, styles.toolIcon, mixing && styles.toolOn]} accessibilityRole="button" accessibilityLabel={t('Mix colours')} accessibilityState={{ selected: !!mixing }}><OptIcon kind="mix" /><Text style={styles.toolText}>{t('Mix')}</Text></Pressable>
@@ -1692,10 +1692,10 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 8, rowGap: 10 }}>
           {GREYS.map((hex) => swatch(hex, mixing ? t('Mix in {name}', { name: t(GREY_NAMES[hex] || 'Grey') }) : t('{name} pen', { name: t(GREY_NAMES[hex] || 'Grey') }), sz, () => pick(hex), !erase && !mixing && pen.toLowerCase() === hex.toLowerCase()))}
         </View>
-        <Text style={styles.sheetLabel}>{t('Bright colours')}</Text>
-        {grid(PENS_BRIGHT)}
         <Text style={styles.sheetLabel}>{t('Earthy colours')}</Text>
         {grid(PENS)}
+        <Text style={styles.sheetLabel}>{t('Bright colours')}</Text>
+        {grid(PENS_BRIGHT)}
         </ScrollView>
       </View>
     );
