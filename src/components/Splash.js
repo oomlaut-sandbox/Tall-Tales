@@ -27,7 +27,7 @@ export default function Splash({ onDone }) {
   const show = useRef(new Animated.Value(0)).current;
   const shown = useRef(false);
   const onFrame = () => { seenRef.current = true; setTimeout(() => playing(), 450); /* (in case the time updates never come) */ };
-  const playing = () => { if (shown.current) return; shown.current = true; setSeen(true); Animated.timing(show, { toValue: 1, duration: 180, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(); };
+  const playing = () => { if (shown.current) return; shown.current = true; setSeen(true); setTimeout(() => finish(), 6000); /* never stuck: from when it really starts */ Animated.timing(show, { toValue: 1, duration: 180, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(); };
   const done = useRef(false);
   const end = () => { if (done.current) return; done.current = true; setGone(true); onDone && onDone(); };
   const fadeUp = (ms) => { setTimeout(end, ms + 600); /* never stuck over the start page */ Animated.timing(fade, { toValue: 0, duration: ms, easing: Easing.inOut(Easing.sin), useNativeDriver: true }).start(end); };
@@ -51,8 +51,10 @@ export default function Splash({ onDone }) {
     try { subs.push(player.addListener('playingChange', ({ isPlaying }) => { if (isPlaying) setTimeout(() => { let t = 0; try { t = player.currentTime || 0; } catch (e) {} if (t > 0.01) playing(); }, 60); })); } catch (e) {}
     try { subs.push(player.addListener('statusChange', ({ status }) => { if (status === 'readyToPlay') { try { player.play(); } catch (e) {} } if (status === 'error') finish(true); })); } catch (e) {}
     if (reduceMotion()) { const q = setTimeout(() => finish(true), 250); return () => clearTimeout(q); } // Reduce Motion: no film by itself, straight to the start page
-    const safety = setTimeout(() => finish(), 7000); // never stuck on it
-    const noFilm = setTimeout(() => { let t = 0; try { t = player.currentTime || 0; } catch (e) {} if (!seenRef.current && t < 0.1) finish(true); /* nothing playing at all */ }, 2000);
+    // (Jörg, 5 Nov 2026: gone on iPad, kept on iPhone: with a whole library loading at the start the film can begin
+    // later than 2 s, and it was given up on. Now it gets 4 s to start, and the 6 s limit counts from when it does.)
+    const safety = setTimeout(() => finish(), 11000); // never stuck on it
+    const noFilm = setTimeout(() => { let t = 0; try { t = player.currentTime || 0; } catch (e) {} if (!seenRef.current && t < 0.1) finish(true); /* nothing playing at all */ }, 4000);
     return () => { clearTimeout(safety); clearTimeout(noFilm); subs.forEach((x) => { try { x.remove(); } catch (e) {} }); try { player.pause(); } catch (e) {} };
   }, [player]);
   if (gone) return null;
