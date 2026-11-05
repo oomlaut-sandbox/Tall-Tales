@@ -603,6 +603,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
     if (!(latest.current.cover && latest.current.cover.uri)) {
       try { coverPic = { uri: await keepPicture(draft.id, pics[0].uri), w: pics[0].w, h: pics[0].h }; } catch (e) { /* the cover stays as it is */ }
     }
+    if (coverPic && !(latest.current.cover && latest.current.cover.title)) setCoverAsk(true); // 'Add the title as text?', as when a cover picture is chosen
     setDraft((d) => ({ ...d, pages: [...keep, ...pages.slice(0, room)], ...(coverPic && !(d.cover && d.cover.uri) ? { cover: { ...(d.cover || {}), ...coverPic, title: d.cover ? d.cover.title || null : null } } : null) }));
     setI(keep.length);
     sayStep();
@@ -1590,7 +1591,13 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
                   </View>
                   ) : null}
                   </>
-                ); })() : null}
+                ); })() : (cover && cover.uri && !cover.title ? (
+                  // a cover with a picture and no title yet: a way to add one, any time (Jörg, 5 Nov 2026: Upload
+                  // Images put the first picture on the cover, and there was no way to type a title on it)
+                  <Pressable onPress={coverYes} hitSlop={6} accessibilityRole="button" style={[styles.toolChip, { alignSelf: 'flex-start', height: 38, paddingHorizontal: 16 }]}>
+                    <Text style={[styles.donePillText, { fontSize: 15 }]}>{tr('Add a title')}</Text>
+                  </Pressable>
+                ) : null)}
               </View>
             ) : null}
             {/* Done (or Start writing) right under the box, lined up with the cover's right edge */}
