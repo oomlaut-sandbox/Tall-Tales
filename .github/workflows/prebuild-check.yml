@@ -1,0 +1,29 @@
+# Makes the iOS project the way EAS will (expo prebuild, no pods) and saves the start-up code (AppDelegate) and
+# Info.plist on the prebuild-output branch, to check what config plugins add before a real build. Run by hand.
+name: Prebuild check
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  prebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --no-audit --no-fund
+      - name: Prebuild iOS
+        run: |
+          mkdir -p /tmp/o
+          npx expo prebuild --platform ios --no-install --clean > /tmp/o/prebuild.txt 2>&1 || true
+          find ios -maxdepth 2 -name "AppDelegate*" -exec cp {} /tmp/o/ \; 2>/dev/null || true
+          cp ios/*/Info.plist /tmp/o/ 2>/dev/null || true
+      - name: Save
+        run: |
+          cd /tmp/o
+          git init -q && git checkout -q -b prebuild-output
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          git add -A && git commit -qm "Prebuild check"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:prebuild-output

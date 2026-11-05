@@ -96,7 +96,8 @@
           },
           "resizeMode": "contain"
         }
-      ]
+      ],
+      "./plugins/withPencilPointerEvents"
     ],
     "web": {
       "output": "single",
