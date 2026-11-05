@@ -1527,7 +1527,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
     if (!more || onWheel) return;
     const c = hsvOf(pen);
     setWheelHsv((o) => (c.s < 0.03 || c.v < 0.03 ? { ...c, h: o.h } : c));
-  }, [pen, more]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pen, more]);
   const pick = (hex) => {
     const next = mixing ? mixColours(pen, hex) : hex;
     setPen(next); setErase(false); setBucket(false);
