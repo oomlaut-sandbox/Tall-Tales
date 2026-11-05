@@ -299,16 +299,19 @@ export function pfOutline(st, w, size, { thinning = 0.6, taper = true, live = fa
   }
   if (!pts.length) return [];
   const t = taper ? Math.max(size * 2.5, 6) : 0;
-  return getStroke(pts, { size, thinning, smoothing: 0.55, streamline: 0.35, simulatePressure: !(st.q && st.q.some((v) => v > 0)),
+  return getStroke(pts, { size, thinning, smoothing: 0.55, streamline: 0.45, simulatePressure: !(st.q && st.q.some((v) => v > 0)),
     start: { taper: t, cap: true }, end: { taper: live ? 0 : t, cap: true }, last: !live });
 }
-// an outline as SVG path data: smooth curves through the midpoints (perfect-freehand's own recipe)
+// an outline as SVG path data: smooth curves through the midpoints, each outline point its own curve's control point.
+// (Not the shorter 'T' recipe: there each curve guesses its control point from the one before, and when the points
+// are unevenly spaced the guesses swing side to side, a zigzag edge while drawing: Jörg's video, 5 Nov 2026.)
 export function outlineD(pts) {
   const n = pts.length;
   if (n < 4) return '';
-  const f = (v) => v.toFixed(1);
-  let d = `M${f(pts[0][0])} ${f(pts[0][1])} Q${f(pts[1][0])} ${f(pts[1][1])} ${f((pts[1][0] + pts[2][0]) / 2)} ${f((pts[1][1] + pts[2][1]) / 2)} T`;
-  for (let i = 2; i < n - 1; i++) d += `${f((pts[i][0] + pts[i + 1][0]) / 2)} ${f((pts[i][1] + pts[i + 1][1]) / 2)} `;
+  const f = (v) => v.toFixed(2);
+  const mid = (a, b) => `${f((a[0] + b[0]) / 2)} ${f((a[1] + b[1]) / 2)}`;
+  let d = `M${mid(pts[0], pts[1])}`;
+  for (let i = 1; i <= n; i++) { const a = pts[i % n], b = pts[(i + 1) % n]; d += `Q${f(a[0])} ${f(a[1])} ${mid(a, b)}`; }
   return d + 'Z';
 }
 // the quick look of a line while it's being drawn: one plain shape in its colour (the full brush, with the paper's
