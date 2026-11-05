@@ -80,7 +80,12 @@ export function mirrored(st) {
 // The smudge: { sm: 1, s, p }: a fingertip rubbed over the drawing, blurring and blending what's under it. Its
 // shape (where it rubbed) as SVG path data, and how soft (the blur, in pixels).
 // k: the smudge's strength (0.5 gentle, 1 as it was, 1.8 strong)
-export const smudgeOf = (st, w) => ({ d: strokeD(st, w), width: Math.max(4, (st.s || 0.03) * w), blur: Math.max(2, (st.s || 0.03) * w * 0.35 * (st.k || 1)) });
+// the smudge: a soft brush that softens what's under it. Version 2 (v: 2, Jörg 5 Nov 2026: 'a very subtle, soft brush
+// that gently blends colours below'): narrower, and a much lighter blur
+export const smudgeOf = (st, w) => {
+  const width = Math.max(st.v === 2 ? 3 : 4, (st.s || 0.03) * w);
+  return { d: strokeD(st, w), width, blur: st.v === 2 ? Math.max(0.8, width * 0.16 * (st.k || 1)) : Math.max(2, width * 0.35 * (st.k || 1)) };
+};
 // the strokes with every mirrored one doubled (for the paint bucket, which needs all the lines as walls)
 export const withMirrors = (list) => (list || []).flatMap((st) => (st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]));
 export const SIZES = [['thin', 0.007], ['medium', 0.015], ['thick', 0.032]]; // a sharp pencil, a crayon, a chunky crayon
@@ -91,31 +96,6 @@ export const toolSize = (tool, size) => {
   const i = Math.max(0, SIZES.findIndex(([, v]) => v === size));
   return TOOL_SIZES[tool][i];
 };
-// The smudge, version 2 (v: 2, Jörg 5 Nov 2026): like a fingertip, it drags the colour along the way it moves,
-// a little at a time, instead of blurring a wide band. The rub is cut into short steps; each step takes what's just
-// behind it, moved forward a bit and softened a touch, so colour is carried along and fades out. k: strength.
-export function smudgeSteps(st, w) {
-  const p = st.p || [], width = Math.max(3, (st.s || 0.02) * w), k = st.k || 1;
-  const pts = [];
-  for (let i = 0; i < p.length; i += 2) pts.push([p[i] * w, p[i + 1] * w]);
-  let len = 0;
-  for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
-  const step = Math.max(1.2, width * 0.15, len / 100); // (no more than 100 steps)
-  const q = pts.length ? [pts[0]] : [];
-  let carry = 0;
-  for (let i = 1; i < pts.length; i++) {
-    const a = pts[i - 1], b = pts[i], d = Math.hypot(b[0] - a[0], b[1] - a[1]);
-    let t = step - carry;
-    while (t <= d) { q.push([a[0] + ((b[0] - a[0]) * t) / d, a[1] + ((b[1] - a[1]) * t) / d]); t += step; }
-    carry = d - (t - step);
-  }
-  const out = [];
-  for (let i = 1; i < q.length; i++) {
-    const a = q[i - 1], b = q[i];
-    out.push({ a, b, dx: (b[0] - a[0]) * 0.4 * k, dy: (b[1] - a[1]) * 0.4 * k, width, blur: Math.max(0.6, width * 0.14 * k) }); // (softening as it goes lets the carried colour fade out)
-  }
-  return out;
-}
 
 // is the point (x, y) close to any point of the stroke? (for the eraser)
 export function near(st, x, y, r) {
@@ -377,14 +357,16 @@ function paintWash(st, w, lw, light, dk) {
   const m = light ? null : true;
   const out = [
     // the bloom: where the water ran a little past the brush
-    { d: outlineD(wobbled(O, size * 0.25, size * 0.3, size * 2, rnd)), fill: true, alpha: (light ? 0.1 : 0.03) * dk, blur: size * 0.1, multiply: m, tex: 3 },
+    { d: outlineD(wobbled(O, size * 0.25, size * 0.3, size * 2, rnd)), fill: true, alpha: (light ? 0.06 : 0.025) * dk, blur: size * 0.1, multiply: m, tex: 3 },
   ];
   for (let i = 0; i < WASH_COPIES; i++) {
     const sc = size * (0.5 + rnd() * 1.6);
-    out.push({ d: outlineD(wobbled(O, size * (rnd() * 0.3 - 0.2), size * (0.12 + rnd() * 0.22), sc, rnd)), fill: true, alpha: (light ? 0.1 : 0.07) * dk, multiply: m, tex: 3 });
+    // (gentler, Jörg 5 Nov 2026: about as strong as the shape shown while painting, and every other copy laid on
+    // normally instead of multiplied, so a stroke over paint mixes with it more than it darkens it)
+    out.push({ d: outlineD(wobbled(O, size * (rnd() * 0.3 - 0.2), size * (0.12 + rnd() * 0.22), sc, rnd)), fill: true, alpha: (light ? 0.06 : 0.034) * dk, multiply: i % 2 ? null : m, tex: 3 });
   }
   // the rim, where the pigment gathered as it dried: thin and uneven
-  out.push({ d: outlineD(wobbled(O, -size * 0.06, size * 0.14, size * 0.9, rnd)), fill: true, alpha: light ? 0 : 0.5 * dk, blur: Math.max(0.7, size * 0.05), multiply: m, inner: true, tex: 3 });
+  out.push({ d: outlineD(wobbled(O, -size * 0.06, size * 0.14, size * 0.9, rnd)), fill: true, alpha: light ? 0 : 0.16 * dk, blur: Math.max(0.7, size * 0.06), multiply: m, inner: true, tex: 3 });
   return out;
 }
 
