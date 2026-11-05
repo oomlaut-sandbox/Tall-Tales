@@ -131,9 +131,9 @@ const ALL_HELP = [
   ] },
   { section: 'My Notes', title: 'Drawing and notes', text: [
     'Tap a picture square to make a drawing, choose a photo or take one. You can also draw on top of a photo.',
-    'The drawing tools lie in the tray at the bottom: the eraser, a pencil, a fountain pen, a watercolour brush, the smudge tool and the paint roller. Tap a tool to pick it up, and tap it again to choose a thin, medium or thick line.',
-    'Pick a colour from the paint splotches. The + has every colour, bright and earthy, and Mix, Shapes and Mirror. The paint roller fills a shape: tap inside it. The smudge tool softly blurs what you’ve drawn.',
-    'Undo and Redo are at the top, beside the green tick for Done. The bin clears the page.',
+    'The drawing tools lie in the tray at the bottom: the eraser, a pencil, a fountain pen, a watercolour brush, the blend tool and the paint roller. Tap a tool to pick it up, and tap it again to choose a thin, medium or thick line.',
+    'Pick a colour from the paint splotches. The + has every colour, bright and earthy, and Shapes, Mirror and Select colour. The paint roller fills a shape: tap inside it. The blend tool softly runs colours together and pulls paint along.',
+    'Undo and Redo are at the top, beside the green tick for Done. The bin clears the page (it asks first).',
     'Tap the lined square to write notes.',
   ] },
   { section: 'My Notes', title: 'Printing and sharing pages', text: [

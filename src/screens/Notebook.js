@@ -1319,7 +1319,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
       // Apple Pencil: how hard it presses (0 to 1) is kept for each point; a finger has none (speed sets the width)
       const force = e.nativeEvent.force || 0;
       cur.current = S.current.brush === 'smudge' && !S.current.erase
-        ? { sm: 1, v: 2, c: '#000000', s: toolSize('smudge', S.current.size), p: [+x.toFixed(4), +y.toFixed(4)], ...(S.current.smudgeK !== 1 ? { k: S.current.smudgeK } : null), ...m } // a fingertip, rubbing
+        ? { sm: 1, v: 3, c: '#000000', s: toolSize('smudge', S.current.size), p: [+x.toFixed(4), +y.toFixed(4)], ...(S.current.smudgeK !== 1 ? { k: S.current.smudgeK } : null), ...m } // a fingertip, rubbing
         : S.current.erase
         ? { e: 1, c: '#000000', s: toolSize('eraser', S.current.size) * (S.current.eraseSoft ? 1.4 : 1), p: [+x.toFixed(4), +y.toFixed(4)], ...(S.current.eraseSoft ? { k: 0.35 } : null), ...m }
         : { c: S.current.pen, s: S.current.size, b: S.current.brush, p: [+x.toFixed(4), +y.toFixed(4)], ...(force > 0 ? { q: [+force.toFixed(2)] } : null), ...(S.current.brush === 'ink' || S.current.brush === 'water' || !S.current.brush ? { pf: 1 } : null), ...(S.current.brush === 'water' ? { wc: 1 } : null), ...m }; // (pf: the fountain pen's new strokes, perfect-freehand)
@@ -1606,7 +1606,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   );
   // the tools in a tray, like real ones on a desk (the one in your hand stands up higher): an eraser, a pencil, a
   // fountain pen (ink), a watercolour brush, a wax crayon and a paint roller (fill), as Jörg rendered them
-  const TRAY = [['eraser', 'Eraser'], ['pencil', 'Pencil'], ['pen', 'Ink'], ['water', 'Watercolour'], ['smudge', 'Smudge'], ['roller', 'Fill']];
+  const TRAY = [['eraser', 'Eraser'], ['pencil', 'Pencil'], ['pen', 'Ink'], ['water', 'Watercolour'], ['smudge', 'Blend'], ['roller', 'Fill']];
   const BRUSH_OF = { pencil: 'pencil', pen: 'ink', water: 'water', smudge: 'smudge' };
   const onTool = erase ? 'eraser' : bucket ? 'roller' : Object.keys(BRUSH_OF).find((k) => BRUSH_OF[k] === brush) || 'pen';
   const pickTool = (k) => {
@@ -1619,7 +1619,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   };
   // the tools stand in a row on dark grey, as in Jörg's drawing; the one in your hand gets a fine box with its name above
   const TRAY_H = 158, BOX_TOP = 22, TOOL_GAP = 16;
-  const TRAY_NAMES = { eraser: 'Eraser', pencil: 'Pencil', pen: 'Fountain pen', water: 'Watercolour brush', smudge: 'Smudge tool', roller: 'Paint roller' };
+  const TRAY_NAMES = { eraser: 'Eraser', pencil: 'Pencil', pen: 'Fountain pen', water: 'Watercolour brush', smudge: 'Blend tool', roller: 'Paint roller' };
   const trayEl = (w) => {
     const tw = Math.floor((w - 20) / TRAY.length), th = (TRAY_H - BOX_TOP - TOOL_GAP) * 1.5;
     return (

@@ -4,10 +4,10 @@
 // faint grain lies over the whole page. (The web preview uses Strokes.js.)
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { AlphaType, BackdropBlur, BlendMode, BlurMask, BlurStyle, Canvas, ClipOp, ColorType, DiscretePathEffect, Group, Image as SkImage, Paint, ImageShader, PaintStyle, Path, Rect, Skia, StrokeCap, StrokeJoin, TileMode, useImage } from '@shopify/react-native-skia';
+import { AlphaType, BackdropBlur, BlendMode, Picture, BlurMask, BlurStyle, Canvas, ClipOp, ColorType, DiscretePathEffect, Group, Image as SkImage, Paint, ImageShader, PaintStyle, Path, Rect, Skia, StrokeCap, StrokeJoin, TileMode, useImage } from '@shopify/react-native-skia';
 import { Asset } from 'expo-asset';
 import { File, Paths } from 'expo-file-system';
-import { byLayer, drawOrder, layersFor, liveLook, mirrored, smudgeOf } from '../strokes';
+import { byLayer, drawOrder, layersFor, liveLook, mirrored, smudgeOf, blendOf } from '../strokes';
 import { STAMP, stampBox } from '../stamps';
 import { liveUri } from '../storage';
 
@@ -62,7 +62,63 @@ function smudgePaths(st, w) {
     return { path: out, blur: S.blur * kb };
   });
 }
+// The blend tool (v: 3): the paint under a very soft brush becomes a mix of itself and a softened copy pulled a
+// little the way the finger moved. One image filter works out the whole result from what's drawn so far and the
+// layer is put back in its place (Src), so see-through paint isn't laid twice (that darkened watercolour).
+//   M: the brush, soft at its edge (white, see-through outside)  P: a map of the way it moved (grey: no pull)
+//   F = what's there × (1 − M) + softened, pulled copy × M
+function blendFilter(st, w, size) {
+  const B = blendOf(st, w);
+  if (B.pts.length < 1) return null;
+  const all = Skia.XYWHRect(0, 0, size, size);
+  const path = Skia.Path.MakeFromSVGString(B.d);
+  if (!path) return null;
+  // the brush
+  const mr = Skia.PictureRecorder(); const mc = mr.beginRecording(all);
+  const mp = Skia.Paint(); mp.setAntiAlias(true); mp.setColor(Skia.Color('#ffffff')); mp.setAlphaf(B.amount);
+  mp.setStyle(PaintStyle.Stroke); mp.setStrokeWidth(B.width); mp.setStrokeCap(StrokeCap.Round); mp.setStrokeJoin(StrokeJoin.Round);
+  mp.setMaskFilter(Skia.MaskFilter.MakeBlur(BlurStyle.Normal, B.soft, true));
+  mc.drawPath(path, mp);
+  const M = Skia.ImageFilter.MakePicture(mr.finishRecordingAsPicture(), all);
+  // the pull: each bit of the rub coloured by the way it went (red: across, green: down; mid grey: none)
+  const pr = Skia.PictureRecorder(); const pc = pr.beginRecording(all);
+  const base = Skia.Paint(); base.setColor(Skia.Color('rgb(128,128,128)')); pc.drawRect(all, base);
+  for (const D of B.dirs) {
+    const q = Skia.Paint(); q.setAntiAlias(true);
+    q.setColor(Skia.Color(`rgb(${Math.round(128 - D.ux * 127)},${Math.round(128 - D.uy * 127)},128)`));
+    q.setStyle(PaintStyle.Stroke); q.setStrokeWidth(B.width * 1.3); q.setStrokeCap(StrokeCap.Round);
+    q.setMaskFilter(Skia.MaskFilter.MakeBlur(BlurStyle.Normal, B.soft, true));
+    pc.drawLine(D.a[0], D.a[1], D.b[0], D.b[1], q);
+  }
+  const P = Skia.ImageFilter.MakePicture(pr.finishRecordingAsPicture(), all);
+  const moved = B.dirs.length ? Skia.ImageFilter.MakeDisplacementMap(0, 1, B.pull * 2, P, null) : null; // (0, 1: red, green)
+  const soft = Skia.ImageFilter.MakeBlur(B.blur, B.blur, TileMode.Decal, moved);
+  const X = Skia.ImageFilter.MakeBlend(BlendMode.SrcIn, M, soft); // the softened copy, only under the brush
+  const Y = Skia.ImageFilter.MakeBlend(BlendMode.DstOut, null, M); // what's there, less under the brush
+  const F = Skia.ImageFilter.MakeArithmetic(0, 1, 1, 0, true, Y, X); // the two added
+  const pad = B.width + B.soft * 3 + B.pull;
+  const xs = B.pts.map((q) => q[0]), ys = B.pts.map((q) => q[1]);
+  const bounds = Skia.XYWHRect(Math.min(...xs) - pad, Math.min(...ys) - pad, Math.max(...xs) - Math.min(...xs) + 2 * pad, Math.max(...ys) - Math.min(...ys) + 2 * pad);
+  return { F, bounds };
+}
+// draws a blend onto a canvas (the screen's picture, the exported picture)
+function drawBlend(canvas, st, w) {
+  for (const q of st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]) {
+    const b = blendFilter(q, w, w);
+    if (!b) continue;
+    const put = Skia.Paint(); put.setBlendMode(BlendMode.Src);
+    canvas.saveLayer(put, b.bounds, b.F);
+    canvas.restore();
+  }
+}
+function Blend({ st, width }) {
+  const pic = useMemo(() => {
+    try { const r = Skia.PictureRecorder(); const c = r.beginRecording(Skia.XYWHRect(0, 0, width, width)); drawBlend(c, st, width); return r.finishRecordingAsPicture(); } catch (e) { return null; }
+  }, [st, width]);
+  return pic ? <Picture picture={pic} /> : null;
+}
 function Smudge({ st, width }) {
+  if (st.v === 3) return <Blend st={st} width={width} />;
   const parts = useMemo(() => (st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]).flatMap((q) => smudgePaths(q, width)), [st, width]);
   // blurs what has been drawn so far, only where the finger rubbed
   return <>{parts.map((P, i) => <BackdropBlur key={i} blur={P.blur} clip={P.path} />)}</>;
@@ -103,7 +159,7 @@ export function LiveInk({ live, width, height }) {
   if (!path) return null;
   return (
     <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width, height }}>
-      <Canvas style={{ width, height }}><Path path={path} color={L.color} opacity={L.alpha} /></Canvas>
+      <Canvas style={{ width, height }}><Path path={path} color={L.color} opacity={L.alpha}>{L.soft ? <BlurMask blur={L.soft} style="normal" /> : null}</Path></Canvas>
     </View>
   );
 }
@@ -227,6 +283,7 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
    for (const st of r.list) {
     if (st.ph) { await drawPhotoStroke(canvas, st, px, px); continue; }
     if (st.stp) { await drawStamp(canvas, st, px); continue; }
+    if (st.sm && st.v === 3) { drawBlend(canvas, st, px); continue; } // the blend tool
     if (st.sm) { // the smudge: blur what's there so far, inside where the finger rubbed
       for (const q of st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]) {
         for (const P of smudgePaths(q, px)) {

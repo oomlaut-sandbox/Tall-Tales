@@ -88,6 +88,29 @@ export const smudgeOf = (st, w) => {
 };
 // the strokes with every mirrored one doubled (for the paint bucket, which needs all the lines as walls)
 export const withMirrors = (list) => (list || []).flatMap((st) => (st.m ? [{ ...st, m: 0 }, mirrored(st)] : [st]));
+// The blend tool (v: 3, Jörg 5 Nov 2026: 'gently blur colour areas together and drag paint, very soft brush
+// edges'): under a very soft round brush, the paint is mixed with a softened copy of itself, pulled a little the
+// way the finger moved. Here only the shape of it; Strokes.native.js does the mixing. k: Gentle 0.5, Normal 1, Strong 1.8.
+export function blendOf(st, w) {
+  const width = Math.max(4, (st.s || 0.03) * w), k = st.k || 1;
+  const p = st.p || [], pts = [];
+  for (let i = 0; i < p.length; i += 2) pts.push([p[i] * w, p[i + 1] * w]);
+  // the way the finger moved, every so often along the rub (for the pull)
+  const step = Math.max(2, width * 0.25), dirs = [];
+  let last = pts[0];
+  for (let i = 1; i < pts.length; i++) {
+    const b = pts[i], dx = b[0] - last[0], dy = b[1] - last[1], d = Math.hypot(dx, dy);
+    if (d >= step) { dirs.push({ a: last, b, ux: dx / d, uy: dy / d }); last = b; }
+  }
+  if (last !== pts[pts.length - 1] && dirs.length) { const q = dirs[dirs.length - 1]; dirs.push({ a: last, b: pts[pts.length - 1], ux: q.ux, uy: q.uy }); }
+  return {
+    d: strokeD(st, w), pts, dirs, width,
+    soft: width * 0.32, // how soft the brush's edge is
+    blur: 0.6 + width * 0.25 * k, // how much the colours run together
+    pull: width * 0.5 * k, // how far paint is dragged
+    amount: Math.min(1, 0.45 + 0.3 * k), // how much of the mix shows (Gentle a little over half)
+  };
+}
 export const SIZES = [['thin', 0.007], ['medium', 0.015], ['thick', 0.032]]; // a sharp pencil, a crayon, a chunky crayon
 // the eraser's and the smudge's own widths for the three sizes (Jörg, 5 Nov 2026: much smaller, one fine enough
 // for details). As a share of the page's width: on a phone about 2, 6 and 14 points for the eraser.
@@ -408,7 +431,8 @@ export function liveLook(st, w) {
     : b === 'crayon' ? { size: lw * 1.35, thinning: 0.3, alpha: 0.7 }
     : { size: penSize(st, lw), thinning: 0.6, alpha: 1 };
   const one = (x) => outlineD(pfOutline(x, w, look.size, { thinning: look.thinning, live: true }));
-  return { d: [one(st), ...(st.m ? [one(mirrored(st))] : [])].join(' '), alpha: look.alpha, color: st.c || '#111111' };
+  // soft: the watercolour's soft edge already while painting (Jörg, 5 Nov 2026), like the finished stroke's
+  return { d: [one(st), ...(st.m ? [one(mirrored(st))] : [])].join(' '), alpha: look.alpha, color: st.c || '#111111', soft: b === 'water' && st.wc ? Math.max(0.8, look.size * 0.1) : 0 };
 }
 
 // What to paint for one stroke, as layers any canvas can draw (Skia on phones, SVG / canvas in the preview):
