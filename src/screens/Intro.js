@@ -144,7 +144,7 @@ export default function Intro({ who, onDone, onBack }) {
       <Text style={styles.title}>{t('Just one more thing…')}</Text>
       <Text style={styles.lead}>{t('Please remember you can customize your experience by using the parental controls in Settings. We highly recommend you have a look.')}</Text>
       {/* (Jörg, 5 Nov 2026) the defaults suggested, hints that retire on their own; two choices, the first one picked */}
-      <Text style={styles.lead}>{t('If you’re new to Coro, we suggest you try the default settings. And don’t worry, hints will automatically disappear after you see them twice. And you can turn them back on anytime in Settings.')}</Text>
+      <Text style={styles.lead}>{t('If you’re new to Coro, we suggest you try the default settings. And don’t worry, hints will automatically disappear after you see them twice. You can always turn them back on in Settings.')}</Text>
       <View accessibilityRole="radiogroup" style={{ gap: 10 }}>
         {[[false, t('Yes, I understand, proceed with recommended settings')], [true, t('Turn off hints and tips, I know how Coro works')]].map(([v, label]) => {
           const on = essential === v;
