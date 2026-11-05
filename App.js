@@ -28,7 +28,7 @@ import Publisher, { draftFrom } from './src/screens/Publisher';
 import Help from './src/screens/Help';
 import Welcome from './src/screens/Welcome';
 import Intro from './src/screens/Intro';
-import Splash from './src/components/Splash';
+import Splash, { filmTrouble } from './src/components/Splash';
 const INTRO_ON = true; // the new intro (Kid or Grown-up, Jörg 26 Oct 2026): on (Jörg, 26 Oct); shown once, on the first launch. The web preview shows it at #intro
 const BADGE_BUBBLES = false; // the 'A new badge!' speech bubbles (off for now)
 const WELCOME_ON = false; // the welcome intro: hidden from builds until it's finished (web preview #welcome still shows it)
@@ -685,7 +685,7 @@ function Root() {
           );
         })() : null}
         <ParentGate everyday visible={profileGate} reason={t('Your profile is for grown-ups.')} onPass={() => { setProfileGate(false); go('profile'); }} onCancel={() => setProfileGate(false)} />
-        {splash ? <Splash onDone={() => setSplash(false)} /> : null}
+        {splash ? <Splash onDone={() => { setSplash(false); if (filmTrouble) setTimeout(() => toast(`Opening film skipped: ${filmTrouble}`, 9000), 1500); }} /> : null}{/* (the note: a TestFlight check, out before App Review) */}
         {introWho ? <Intro who={introWho} onBack={() => { setIntroWho(null); setCoverOpen(true); setStartKey((n) => n + 1); }} onDone={({ who, age, name, essential }) => {
           // 'Show essential info only' on the grown-ups' last page: the hint and tip bubbles off (Jörg, 4 Nov 2026)
           if (essential) setControls({ ...controls, hints: false });

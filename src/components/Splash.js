@@ -8,6 +8,9 @@ import { reduceMotion } from '../a11y';
 const CLIP = require('../../assets/splash/coro-splash.mp4');
 const BG = '#c9c7c4'; // the light grey felt the clip is filmed on (no dark flash before the first frame)
 
+// why the film didn't show, if it didn't (Jörg, 5 Nov 2026: gone on iPad only, again): App shows it once as a note
+// on the start page. A check for TestFlight: take it out before App Review.
+export let filmTrouble = null;
 export default function Splash({ onDone }) {
   const { width: W, height: H } = useWindowDimensions();
   const fade = useRef(new Animated.Value(1)).current;
@@ -31,8 +34,9 @@ export default function Splash({ onDone }) {
   const done = useRef(false);
   const end = () => { if (done.current) return; done.current = true; setGone(true); onDone && onDone(); };
   const fadeUp = (ms) => { setTimeout(end, ms + 600); /* never stuck over the start page */ Animated.timing(fade, { toValue: 0, duration: ms, easing: Easing.inOut(Easing.sin), useNativeDriver: true }).start(end); };
-  const finish = (quiet) => {
+  const finish = (quiet, why) => {
     if (leaving.current) return;
+    if (why && !shown.current) filmTrouble = why;
     leaving.current = true;
     try { player.pause(); } catch (e) {}
     if (quiet === true || reduceMotion()) { fadeUp(450); return; } // (Reduce Motion: a gentle fade)
@@ -49,12 +53,12 @@ export default function Splash({ onDone }) {
     try { subs.push(player.addListener('playToEnd', () => finish())); } catch (e) {}
     try { player.timeUpdateEventInterval = 0.05; subs.push(player.addListener('timeUpdate', ({ currentTime }) => { if (currentTime > 0.04) { seenRef.current = true; playing(); } })); } catch (e) {}
     try { subs.push(player.addListener('playingChange', ({ isPlaying }) => { if (isPlaying) setTimeout(() => { let t = 0; try { t = player.currentTime || 0; } catch (e) {} if (t > 0.01) playing(); }, 60); })); } catch (e) {}
-    try { subs.push(player.addListener('statusChange', ({ status }) => { if (status === 'readyToPlay') { try { player.play(); } catch (e) {} } if (status === 'error') finish(true); })); } catch (e) {}
-    if (reduceMotion()) { const q = setTimeout(() => finish(true), 250); return () => clearTimeout(q); } // Reduce Motion: no film by itself, straight to the start page
+    try { subs.push(player.addListener('statusChange', ({ status }) => { if (status === 'readyToPlay') { try { player.play(); } catch (e) {} } if (status === 'error') { let m = ''; try { m = String((player.status && player.status) || ''); } catch (e) {} finish(true, 'the video reported an error' + (m ? ` (${m})` : '')); } })); } catch (e) {}
+    if (reduceMotion()) { const q = setTimeout(() => finish(true, 'Reduce Motion is on in this iPad’s Accessibility settings'), 250); return () => clearTimeout(q); } // Reduce Motion: no film by itself, straight to the start page
     // (Jörg, 5 Nov 2026: gone on iPad, kept on iPhone: with a whole library loading at the start the film can begin
     // later than 2 s, and it was given up on. Now it gets 4 s to start, and the 6 s limit counts from when it does.)
     const safety = setTimeout(() => finish(), 11000); // never stuck on it
-    const noFilm = setTimeout(() => { let t = 0; try { t = player.currentTime || 0; } catch (e) {} if (!seenRef.current && t < 0.1) finish(true); /* nothing playing at all */ }, 4000);
+    const noFilm = setTimeout(() => { let t = 0; try { t = player.currentTime || 0; } catch (e) {} if (!seenRef.current && t < 0.1) { let st = ''; try { st = player.status; } catch (e) {} finish(true, `no picture within 4 seconds (status: ${st || 'unknown'}, time ${t.toFixed(2)})`); } /* nothing playing at all */ }, 4000);
     return () => { clearTimeout(safety); clearTimeout(noFilm); subs.forEach((x) => { try { x.remove(); } catch (e) {} }); try { player.pause(); } catch (e) {} };
   }, [player]);
   if (gone) return null;
