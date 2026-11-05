@@ -692,7 +692,7 @@ export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
         ) : null}
         {(filtering ? [] : [...(featured ? [{ id: 'featured', title: t('Featured'), books: [featured] }] : []), ...rows]).map((sh) => (
           <View key={sh.id} style={{ gap: 14 }}>
-            <Text style={styles.shelfTitle}>{(sh.langs && sh.langs[lang]) || t(sh.title) /* the shelf's own translation (Store Manager), or the app's */}</Text>
+            <Text style={styles.shelfTitle} accessibilityRole="header">{(sh.langs && sh.langs[lang]) || t(sh.title) /* the shelf's own translation (Store Manager), or the app's */}</Text>
             <View style={[styles.shelfGrid, { columnGap: gridGap(winW) }]}>
               {sh.books.map((b) => (
                 // the cover and its title (two lines at most, like My Library: Jörg, 31 Oct 2026); the author and the rest
@@ -947,7 +947,7 @@ const styles = StyleSheet.create({
   kicker: { color: '#d0d0d0', fontFamily: fonts.uiBold, fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 },
   featureTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 22 },
   shelfGrid: { paddingHorizontal: 20, flexDirection: 'row', flexWrap: 'wrap', rowGap: 22 },
-  shelfTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 19, paddingHorizontal: 20 },
+  shelfTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 26, lineHeight: 32, paddingHorizontal: 20 }, // (bigger: Jörg, 5 Nov 2026; was 19)
   // the Book Store's search: a 44-tall pill whose 20-tall line sits in the middle (12 above it), like Help's
   storeSearchWrap: { height: 44, borderRadius: 22, overflow: 'hidden', backgroundColor: '#d6d6d6', justifyContent: 'center' },
   storeSearch: { alignSelf: 'stretch', height: 44, backgroundColor: 'transparent', paddingHorizontal: 18, paddingTop: 12, paddingBottom: 0, includeFontPadding: false,
