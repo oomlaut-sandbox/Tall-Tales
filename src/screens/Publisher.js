@@ -334,7 +334,7 @@ function UploadImages({ tr, winW, insets, onSkip, onGo, intro = false }) {
         <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 28, lineHeight: 34 }}>{intro ? tr('Let’s get started!') : tr('Upload Images')}</Text>
         {intro ? (
           // the first thing a new book offers (Jörg, 4 Nov 2026)
-          <Text style={{ color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, marginTop: 8 }}>{tr('The quickest way to make a book is if you already have the images ready to go. You can upload them all at once and I’ll make a page for each. Fill in the words and you’re done. Your first book! Do you want to select pictures from your photo library now?')}</Text>
+          <Text style={{ color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, marginTop: 8 }}>{tr('The quickest way to make a book? Select from images already on your device. You can upload them all at once and I’ll make a page for each. Fill in the words and you’re done. Your first book! Do you want to select pictures from your photo library now?')}</Text>
         ) : (
           <Text style={{ color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, marginTop: 8 }}>{tr('Choose up to {n} pictures from your photos. Coro puts them into a book, and you just add the words.', { n: QUICK_MAX })}</Text>
         )}
