@@ -63,10 +63,16 @@ function creditsOf(c: any) {
 // What the narrator says for a page. An alphabet page that's just a letter in both cases ("Aa", "Bb") is read as the
 // letter alone ("A."), which the narrator says as the letter's name; read as written, "Aa" came out as a strange
 // word (Otter Alphabet, Jörg, 4 Nov 2026). Everything else is read as written.
-function spoken(text: string) {
+// In English, letters the narrator got wrong on their own are spelled the way they sound (Jörg, 4 Nov 2026; Zed, as
+// in Canada).
+const LETTER_EN: Record<string, string> = { A: 'Eh', K: 'Kay', P: 'Pee', U: 'You', Y: 'Why', Z: 'Zed' };
+function spoken(text: string, lang = 'en') {
   const t = (text || '').trim().replace(/[.!。]$/, '');
   const m = t.match(/^(\p{L})(\p{L})$/u);
-  if (m && m[1] !== m[2] && m[1].toLowerCase() === m[2].toLowerCase()) return `${m[1].toUpperCase()}.`;
+  if (m && m[1] !== m[2] && m[1].toLowerCase() === m[2].toLowerCase()) {
+    const L = m[1].toUpperCase();
+    return `${lang === 'en' && LETTER_EN[L] ? LETTER_EN[L] : L}.`;
+  }
   return text;
 }
 
@@ -105,7 +111,7 @@ async function narrate(bookId: string, lang: string) {
       // a few pages at a time, so a whole book is done in well under a minute
       for (let i = 0; i < pages.length; i += 4) {
         await Promise.all(pages.slice(i, i + 4).map(async (p: any) => {
-          const say = spoken(p.text);
+          const say = spoken(p.text, lang);
           const fp = await fingerprint(`${MODEL}|${v.id}|${v.pace}|${en ? '' : lang}|${say}`);
           if (timings[p.pid] && timings[p.pid].fp === fp) { next[p.pid] = timings[p.pid]; kept++; return; }
           const r = await el(`/v1/text-to-speech/${v.id}/with-timestamps?output_format=mp3_44100_128`, {
