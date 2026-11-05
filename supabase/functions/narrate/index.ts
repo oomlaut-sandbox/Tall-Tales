@@ -137,7 +137,9 @@ Deno.serve(async (req) => {
   const auth = req.headers.get('Authorization') || '';
   const asCaller = createClient(URL_, ANON, { global: { headers: { Authorization: auth } } });
   // (or the store's own service key: the Store narrate workflow, to remake a book's narration: 4 Nov 2026)
-  const { data: isAdmin } = auth === `Bearer ${SERVICE}` ? { data: true } : await asCaller.rpc('is_store_admin');
+  // (the gateway has already checked the token's signature: narrate is deployed with JWT checks on)
+  const role = (() => { try { return JSON.parse(atob(auth.split(' ')[1].split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).role; } catch { return null; } })();
+  const { data: isAdmin } = auth === `Bearer ${SERVICE}` || role === 'service_role' ? { data: true } : await asCaller.rpc('is_store_admin');
   if (!isAdmin) return json({ error: 'Only the store owner can do this.' }, 403);
   const { bookId, lang: lang0 } = await req.json().catch(() => ({}));
   if (!bookId || !/^[a-z0-9-]+$/.test(bookId)) return json({ error: 'Which book?' }, 400);
