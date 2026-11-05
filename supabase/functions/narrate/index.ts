@@ -60,6 +60,16 @@ function creditsOf(c: any) {
   return w ? `Written by ${w}.` : a ? `Illustrated by ${a}.` : '';
 }
 
+// What the narrator says for a page. An alphabet page that's just a letter in both cases ("Aa", "Bb") is read as the
+// letter alone ("A."), which the narrator says as the letter's name; read as written, "Aa" came out as a strange
+// word (Otter Alphabet, Jörg, 4 Nov 2026). Everything else is read as written.
+function spoken(text: string) {
+  const t = (text || '').trim().replace(/[.!。]$/, '');
+  const m = t.match(/^(\p{L})(\p{L})$/u);
+  if (m && m[1] !== m[2] && m[1].toLowerCase() === m[2].toLowerCase()) return `${m[1].toUpperCase()}.`;
+  return text;
+}
+
 async function narrate(bookId: string, lang: string) {
   const db = createClient(URL_, SERVICE);
   const en = lang === 'en';
@@ -95,17 +105,18 @@ async function narrate(bookId: string, lang: string) {
       // a few pages at a time, so a whole book is done in well under a minute
       for (let i = 0; i < pages.length; i += 4) {
         await Promise.all(pages.slice(i, i + 4).map(async (p: any) => {
-          const fp = await fingerprint(`${MODEL}|${v.id}|${v.pace}|${en ? '' : lang}|${p.text}`);
+          const say = spoken(p.text);
+          const fp = await fingerprint(`${MODEL}|${v.id}|${v.pace}|${en ? '' : lang}|${say}`);
           if (timings[p.pid] && timings[p.pid].fp === fp) { next[p.pid] = timings[p.pid]; kept++; return; }
           const r = await el(`/v1/text-to-speech/${v.id}/with-timestamps?output_format=mp3_44100_128`, {
             method: 'POST',
-            body: JSON.stringify({ text: p.text, model_id: MODEL, ...(en ? {} : { language_code: lang }), voice_settings: { stability: 0.55, similarity_boost: 0.8, style: 0.15, use_speaker_boost: true, speed: v.pace } }),
+            body: JSON.stringify({ text: say, model_id: MODEL, ...(en ? {} : { language_code: lang }), voice_settings: { stability: 0.55, similarity_boost: 0.8, style: 0.15, use_speaker_boost: true, speed: v.pace } }),
           });
           if (r.status !== 200 || !r.body || !r.body.audio_base64) throw new Error(`ElevenLabs said no (HTTP ${r.status}) for page ${p.pid}.`);
           const up = await db.storage.from(BUCKET).upload(`${dir}/${v.key}/${p.pid}.mp3`, b64ToBytes(r.body.audio_base64), { contentType: 'audio/mpeg', upsert: true });
           if (up.error) throw new Error(`Saving the narration failed: ${up.error.message}`);
           const al = r.body.alignment || r.body.normalized_alignment;
-          const starts = al ? tokenize(p.text).map((t) => Math.round((al.character_start_times_seconds[Math.min(t.start, al.character_start_times_seconds.length - 1)] || 0) * 1000) / 1000) : [];
+          const starts = say !== p.text ? tokenize(p.text).map(() => 0) /* (a letter page: one word, from the start) */ : al ? tokenize(p.text).map((t) => Math.round((al.character_start_times_seconds[Math.min(t.start, al.character_start_times_seconds.length - 1)] || 0) * 1000) / 1000) : [];
           const dur = al ? al.character_end_times_seconds[al.character_end_times_seconds.length - 1] : 0;
           next[p.pid] = { fp, words: starts, dur: Math.round(dur * 1000) / 1000 };
           made++;
