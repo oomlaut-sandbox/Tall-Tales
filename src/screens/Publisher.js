@@ -303,8 +303,8 @@ function LookIcon({ look, ink }) {
 }
 
 // ---- Quick Book (31 Oct 2026): a new book made from up to 64 pictures at once ----
-// the two layouts, two squares each in white line art (a picture, then words; or two pictures) on a grey square tile
-// (Jörg, 31 Oct 2026)
+// the two layouts, two squares each (a picture, then words; or two pictures): a picture page coloured light grey, a page
+// of words white, their lines in dark grey (Jörg, 5 Nov 2026; was white line art)
 const QUICK_ICONS = { alt: require('../../assets/quick-alt.png'), every: require('../../assets/quick-every.png') };
 // Upload Images (2 Nov 2026; was the Quick Book bubble): a step of its own in a new book, right after the cover is
 // saved. White words in a black glass box; the two layouts as small white line drawings, the chosen one in a white
@@ -318,7 +318,7 @@ function UploadImages({ tr, winW, insets, onSkip, onGo, intro = false }) {
     return (
       <Pressable onPress={() => setLayout(v)} accessibilityRole="radio" accessibilityState={{ selected: on }} accessibilityLabel={rec ? `${label} ${rec}` : label}
         style={{ width: tileW, alignItems: 'center', gap: 10 }}>
-        <View style={{ width: tileW, height: Math.round(tileW * 0.62), borderRadius: 12, borderWidth: 1.5, borderColor: on ? colors.white : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: tileW, height: Math.round(tileW * 0.62), borderRadius: 12, borderWidth: 1.5, borderColor: on ? colors.white : 'transparent', backgroundColor: on ? '#3a3a3a' : 'transparent' /* the chosen one: a dark grey box, white outline (Jörg, 5 Nov 2026) */, alignItems: 'center', justifyContent: 'center' }}>
           <Image source={QUICK_ICONS[v]} style={{ width: Math.round(tileW * 0.56), height: Math.round(tileW * 0.28) }} resizeMode="contain" accessibilityIgnoresInvertColors />
         </View>
         <View style={{ alignItems: 'center' }}>
@@ -330,8 +330,8 @@ function UploadImages({ tr, winW, insets, onSkip, onGo, intro = false }) {
   };
   return (
     <ScrollView contentContainerStyle={{ alignItems: 'center', paddingTop: insets.top + 56, paddingBottom: 40, paddingHorizontal: 20 }}>
-      <View style={{ width: boxW, backgroundColor: colors.glass, borderRadius: 24, paddingHorizontal: 24, paddingTop: 28, paddingBottom: 26 }}>
-        <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 22, lineHeight: 28 }}>{intro ? tr('Let’s get started!') : tr('Upload Images')}</Text>
+      <View style={{ width: boxW, backgroundColor: 'rgba(0,0,0,0.7)' /* a little more see-through than the other boxes (Jörg, 5 Nov 2026) */, borderRadius: 24, paddingHorizontal: 24, paddingTop: 28, paddingBottom: 26 }}>
+        <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 28, lineHeight: 34 }}>{intro ? tr('Let’s get started!') : tr('Upload Images')}</Text>
         {intro ? (
           // the first thing a new book offers (Jörg, 4 Nov 2026)
           <Text style={{ color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24, marginTop: 8 }}>{tr('The quickest way to make a book is if you already have the images ready to go. You can upload them all at once and I’ll make a page for each. Fill in the words and you’re done. Your first book! Do you want to select pictures from your photo library now?')}</Text>
