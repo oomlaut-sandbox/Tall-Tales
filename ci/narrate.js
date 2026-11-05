@@ -164,6 +164,8 @@ async function makeSampleLangs(v, voiceId) {
 // "The End", said by each narrator on the last page of every book: slow, steady and soft, for bedtime.
 // One clip per language, the same for every book. assets/narration/<voice>/the-end/<lang>.mp3
 const THE_END = { en: 'The End.', de: 'Ende.', fr: 'Fin.', es: 'Fin.', ja: 'おしまい。', ar: 'النهاية.' };
+// takes Jörg picked by ear, made by ci/voice-samples.js (5 Nov 2026: happier, the tone going down at the end): never made again here
+const END_CHOSEN = { lily: ['en'], spuds: ['en'] };
 const END_SETTINGS = { stability: 0.9, similarity_boost: 0.8, style: 0, use_speaker_boost: false };
 async function makeTheEnd(v, voiceId) {
   samples.theEnd = samples.theEnd || {};
@@ -173,6 +175,7 @@ async function makeTheEnd(v, voiceId) {
     const fp = crypto.createHash('sha1').update(`${MODEL}|${voiceId}|${speed}|${JSON.stringify(END_SETTINGS)}|${text}`).digest('hex').slice(0, 12);
     const file = path.join('assets/narration', v.key, 'the-end', `${lang}.mp3`);
     if (mine[lang] === fp && fs.existsSync(file)) continue;
+    if ((END_CHOSEN[v.key] || []).includes(lang) && fs.existsSync(file)) continue; // (a take Jörg chose: kept as it is)
     const audio = await speakClip(voiceId, text, speed, END_SETTINGS);
     if (!audio) { say(`FAILED The End (${lang}) for ${v.label}`); continue; }
     fs.mkdirSync(path.dirname(file), { recursive: true });
