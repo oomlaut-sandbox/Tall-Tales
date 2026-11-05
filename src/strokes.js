@@ -1,3 +1,5 @@
+import { getStroke } from 'perfect-freehand';
+
 // Finger drawings in My Notes are kept as strokes, not pictures: each stroke is a colour, a pen size
 // and its points. Points are measured in widths of the drawing (x from 0 to 1, y from 0 to the height
 // in widths), so a drawing looks the same at any size. { c: '#c0392b', s: 0.02, p: [x1, y1, x2, y2, …] }
@@ -284,6 +286,45 @@ export function inkD(st, w, taper = 1, swing = 1, tiltK = 0, wob = 0) {
   return `M${f1(L[0])}${through(L)} Q${f1(cap(n - 1, 1))} ${f1(Rr[0])}${through(Rr)} Q${f1(cap(0, -1))} ${f1(L[0])}Z`;
 }
 
+// perfect-freehand (MIT, Steve Ruiz): a pressure-sensitive outline for a line, the way a real pen swells and tapers
+// (Jörg, 4 Nov 2026). Used for the fountain pen's new strokes (pf: 1) and for the quick live line while drawing.
+// q: the Apple Pencil's pressure at each point (a finger: the speed stands in for it). live: the end still moving
+// (no taper at the tip, so the line stays under the pen).
+export function pfOutline(st, w, size, { thinning = 0.6, taper = true, live = false } = {}) {
+  const p = st.p || [];
+  const pts = [];
+  for (let i = 0; i + 1 < p.length; i += 2) {
+    const q = st.q && st.q.length ? st.q[Math.min(st.q.length - 1, i / 2)] : null;
+    pts.push([p[i] * w, p[i + 1] * w, q != null && q > 0 ? Math.min(1, 0.15 + q * 0.85) : 0.5]);
+  }
+  if (!pts.length) return [];
+  const t = taper ? Math.max(size * 2.5, 6) : 0;
+  return getStroke(pts, { size, thinning, smoothing: 0.55, streamline: 0.35, simulatePressure: !(st.q && st.q.some((v) => v > 0)),
+    start: { taper: t, cap: true }, end: { taper: live ? 0 : t, cap: true }, last: !live });
+}
+// an outline as SVG path data: smooth curves through the midpoints (perfect-freehand's own recipe)
+export function outlineD(pts) {
+  const n = pts.length;
+  if (n < 4) return '';
+  const f = (v) => v.toFixed(1);
+  let d = `M${f(pts[0][0])} ${f(pts[0][1])} Q${f(pts[1][0])} ${f(pts[1][1])} ${f((pts[1][0] + pts[2][0]) / 2)} ${f((pts[1][1] + pts[2][1]) / 2)} T`;
+  for (let i = 2; i < n - 1; i++) d += `${f((pts[i][0] + pts[i + 1][0]) / 2)} ${f((pts[i][1] + pts[i + 1][1]) / 2)} `;
+  return d + 'Z';
+}
+// the quick look of a line while it's being drawn: one plain shape in its colour (the full brush, with the paper's
+// texture, is painted when the pen lifts: like Procreate and Paper). null: draw it the full way (eraser, smudge,
+// shapes, stamps, fills).
+export function liveLook(st, w) {
+  if (!st || st.e || st.sm || st.stp || st.f || st.z || st.ph) return null;
+  const lw = Math.max(1, (st.s || 0.01) * w), b = st.b || 'ink';
+  const look = b === 'pencil' ? { size: Math.max(1.2, lw * 0.45), thinning: 0, alpha: 0.9 }
+    : b === 'water' ? { size: lw * 1.6, thinning: 0.5, alpha: 0.42 }
+    : b === 'crayon' ? { size: lw * 1.35, thinning: 0.3, alpha: 0.7 }
+    : { size: lw * 1.5, thinning: 0.6, alpha: 1 };
+  const one = (x) => outlineD(pfOutline(x, w, look.size, { thinning: look.thinning, live: true }));
+  return { d: [one(st), ...(st.m ? [one(mirrored(st))] : [])].join(' '), alpha: look.alpha, color: st.c || '#111111' };
+}
+
 // What to paint for one stroke, as layers any canvas can draw (Skia on phones, SVG / canvas in the preview):
 //   { d, fill: true } a filled shape, or { d, width } a line; alpha 0..1; blur in pixels; multiply: deepens
 //   where it crosses other colour; grain: a slightly rough, pencil-like edge; inner: the blur only inside the
@@ -352,6 +393,7 @@ function layersOf(st, w) {
       { d: inkD({ ...st, s: (st.s || 0.01) * 0.8 }, w, 0.8, 0.35, 2.5), fill: true, alpha: clamp((light ? 0.6 : 0.45) * k, 0.1, 0.75), multiply: !light, tex: 2 },
     ];
   }
+  if (st.pf) { const d = outlineD(pfOutline(st, w, lw * 1.5)); if (d) return [{ d, fill: true, alpha: 1 }]; } // (perfect-freehand: 4 Nov 2026)
   return [{ d: inkD(st, w, 1.2, 1.3), fill: true, alpha: 1 }]; // the fountain pen: solid ink, thick to thin with the speed // (no blur: lighter to draw, so pages snapshot and turn smoothly)
 }
 

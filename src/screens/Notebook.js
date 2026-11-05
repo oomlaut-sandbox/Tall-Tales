@@ -22,7 +22,7 @@ import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, DESK_BG, IS_TABLET } from '../look';
 import ParentGate from '../components/ParentGate';
-import { StrokesView, colourAt, pagePixels } from '../components/Strokes';
+import { LiveInk, StrokesView, colourAt, liveIsQuick, pagePixels } from '../components/Strokes';
 import { EarArt } from '../components/Ear';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
 import ToolPic from '../components/ToolPic';
@@ -1080,7 +1080,16 @@ function LayerAlpha({ n, value, onChange, t }) {
 function LiveStrokes({ bus, strokes, width, height, noPaper }) {
   const [live, setLive] = useState(bus.v);
   useEffect(() => { bus.subs.add(setLive); return () => { bus.subs.delete(setLive); }; }, [bus]);
-  return <StrokesView strokes={strokes} live={live} width={width} height={height} noPaper={noPaper} />;
+  // a pen, pencil, crayon or watercolour line: the drawing stays as it is (not painted again) and the line goes on a
+  // quick layer over it; the eraser, smudge, shapes and stamps are drawn into the drawing itself
+  // (always the same two pieces, so the drawing's canvas is never rebuilt when a line starts or ends)
+  const quick = !!live && liveIsQuick(live, width);
+  return (
+    <>
+      <StrokesView strokes={strokes} live={quick ? null : live} width={width} height={height} noPaper={noPaper} />
+      {quick ? <LiveInk live={live} width={width} height={height} /> : null}
+    </>
+  );
 }
 
 const SAVE_ICON = require('../../assets/heading-icons/save-exit.png'); // an arrow into a tray, as in the book maker's Save for later
@@ -1281,7 +1290,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
         ? { sm: 1, c: '#000000', s: Math.max(0.03, S.current.size * 2.4), p: [+x.toFixed(4), +y.toFixed(4)], ...(S.current.smudgeK !== 1 ? { k: S.current.smudgeK } : null), ...m } // a fingertip, rubbing
         : S.current.erase
         ? { e: 1, c: '#000000', s: Math.max(0.035, S.current.size * (S.current.eraseSoft ? 3 : 2.2)), p: [+x.toFixed(4), +y.toFixed(4)], ...(S.current.eraseSoft ? { k: 0.35 } : null), ...m }
-        : { c: S.current.pen, s: S.current.size, b: S.current.brush, p: [+x.toFixed(4), +y.toFixed(4)], ...(force > 0 ? { q: [+force.toFixed(2)] } : null), ...m };
+        : { c: S.current.pen, s: S.current.size, b: S.current.brush, p: [+x.toFixed(4), +y.toFixed(4)], ...(force > 0 ? { q: [+force.toFixed(2)] } : null), ...(S.current.brush === 'ink' || !S.current.brush ? { pf: 1 } : null), ...m }; // (pf: the fountain pen's new strokes, perfect-freehand)
       { const u = tiltNow(e); if (u != null && !cur.current.e && !cur.current.sm) cur.current.t = [+u.toFixed(2)]; }
       setLive({ ...cur.current });
     },
@@ -1316,7 +1325,8 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
       const n = c.p.length;
       // steady the hand: each new point is pulled a little towards the last one, so wobbles smooth out into curves
       // (lightly: the line still keeps up with the finger)
-      const sx = c.p[n - 2] + (x - c.p[n - 2]) * 0.55, sy = c.p[n - 1] + (y - c.p[n - 1]) * 0.55;
+      const pull = c.e || c.sm ? 0.55 : 0.8; // (pens: perfect-freehand smooths the line itself, so each point stays nearer the pen: less trailing)
+      const sx = c.p[n - 2] + (x - c.p[n - 2]) * pull, sy = c.p[n - 1] + (y - c.p[n - 1]) * pull;
       if ((c.p[n - 2] - sx) ** 2 + (c.p[n - 1] - sy) ** 2 < (0.0035 / Z.current.s) ** 2) return; // (finer points when zoomed in)
       c.p.push(+sx.toFixed(4), +sy.toFixed(4));
       if (c.q) c.q.push(+(e.nativeEvent.force || 0).toFixed(2));

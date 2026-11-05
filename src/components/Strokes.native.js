@@ -7,7 +7,7 @@ import { View } from 'react-native';
 import { AlphaType, BackdropBlur, BlendMode, BlurMask, BlurStyle, Canvas, ClipOp, ColorType, DiscretePathEffect, Group, Image as SkImage, Paint, ImageShader, PaintStyle, Path, Rect, Skia, StrokeCap, StrokeJoin, TileMode, useImage } from '@shopify/react-native-skia';
 import { Asset } from 'expo-asset';
 import { File, Paths } from 'expo-file-system';
-import { byLayer, drawOrder, layersFor, mirrored, smudgeOf } from '../strokes';
+import { byLayer, drawOrder, layersFor, liveLook, mirrored, smudgeOf } from '../strokes';
 import { STAMP, stampBox } from '../stamps';
 import { liveUri } from '../storage';
 
@@ -92,7 +92,20 @@ const One = React.memo(function One({ st, width, height }) {
 });
 
 // noPaper: on a photo (no paper grain over the photo; the tooth still shows in what's drawn)
-export function StrokesView({ strokes, width, height, live, noPaper }) {
+// the line being drawn, quick: one plain shape on its own little canvas over the drawing, so the drawing under it
+// isn't painted again for every point (the lag while drawing: Jörg, 4 Nov 2026). null when it needs the full way.
+export function LiveInk({ live, width, height }) {
+  const L = useMemo(() => liveLook(live, width), [live, width]);
+  const path = useMemo(() => (L && L.d ? Skia.Path.MakeFromSVGString(L.d) : null), [L]);
+  if (!path) return null;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width, height }}>
+      <Canvas style={{ width, height }}><Path path={path} color={L.color} opacity={L.alpha} /></Canvas>
+    </View>
+  );
+}
+export const liveIsQuick = (live, width) => !!liveLook(live, width);
+export const StrokesView = React.memo(function StrokesView({ strokes, width, height, live, noPaper }) {
   const grain = useImage(GRAIN);
   const tooth = useImage(TOOTH);
   const k = (TILE * width) / 512;
@@ -118,7 +131,7 @@ export function StrokesView({ strokes, width, height, live, noPaper }) {
       </Canvas>
     </View>
   );
-}
+});
 
 let texCache = null;
 async function textures() {

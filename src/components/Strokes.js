@@ -164,3 +164,7 @@ export async function drawStampWeb(g, st, px) {
     g.drawImage(im, -b.w / 2, -b.h / 2, b.w, b.h); g.restore();
   }
 }
+
+// (the quick live line is for phones: the web preview draws it the full way)
+export function LiveInk() { return null; }
+export const liveIsQuick = () => false;
