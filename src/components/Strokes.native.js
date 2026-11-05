@@ -16,6 +16,9 @@ const alphaPaint = (a) => { if (a == null || a >= 1) return undefined; const p =
 
 const GRAIN = require('../../assets/paper-grain.png'); // 512 × 512, repeats without seams
 const TOOTH = require('../../assets/paper-tooth.png');
+// watercolour (tex 3, Jörg 5 Nov 2026): instead of the tooth's light specks, the pigment's cloudy unevenness: patches
+// where more of it settled and less, and its fine grain. Kept only where it's painted (dstIn), one repeat a page wide.
+const WASH = require('../../assets/wash.png');
 export const TILE = 0.7; // one repeat of the paper texture, in widths of the drawing (the same at every size)
 
 const grainOf = (L) => (L.grain === 'crayon' ? [4, 1.5] : [2.5, 0.7]); // the rough edge: segment length, how far it wanders
@@ -45,7 +48,7 @@ export function runsOf(list, w) {
   }
   return runs;
 }
-const TOOTH_OF = { 1: 0.45, 2: 0.7 }; // (gentle: the paper shows, it doesn't take over)
+const TOOTH_OF = { 1: 0.45, 2: 0.7, 3: 0 }; // (gentle: the paper shows, it doesn't take over)
 // the smudge's shape as an outline Skia can clip to (the rubbed line, as wide as the fingertip)
 // soft edges: three rubs, wide and light, then narrower and stronger, so the blur fades out at its edges
 const SMUDGE_PASSES = [[1.6, 0.25], [1.2, 0.5], [0.85, 1]];
@@ -108,6 +111,7 @@ export const liveIsQuick = (live, width) => !!liveLook(live, width);
 export const StrokesView = React.memo(function StrokesView({ strokes, width, height, live, noPaper }) {
   const grain = useImage(GRAIN);
   const tooth = useImage(TOOTH);
+  const wash = useImage(WASH);
   const k = (TILE * width) / 512;
   const tex = (img) => <ImageShader image={img} tx="repeat" ty="repeat" rect={{ x: 0, y: 0, width: 512, height: 512 }} transform={[{ scale: k }]} />;
   const parts = useMemo(() => byLayer(live ? [...(strokes || []), live] : strokes).map((part) => ({ part, runs: runsOf(drawOrder(part), width) })), [strokes, live, width]); // (worked out once per change)
@@ -122,7 +126,8 @@ export const StrokesView = React.memo(function StrokesView({ strokes, width, hei
           {runs.map((r, i) => (r.tex > 0 ? (
             <Group key={i} layer>
               {r.list.map((st, j) => <One key={j} st={st} width={width} height={height} />)}
-              {tooth ? <Rect x={0} y={0} width={width} height={height} blendMode="srcATop" opacity={TOOTH_OF[r.tex]}>{tex(tooth)}</Rect> : null}
+              {r.tex === 3 ? (wash ? <Rect x={0} y={0} width={width} height={height} blendMode="dstIn"><ImageShader image={wash} tx="repeat" ty="repeat" rect={{ x: 0, y: 0, width: 512, height: 512 }} transform={[{ scale: width / 512 }]} /></Rect> : null)
+                : tooth ? <Rect x={0} y={0} width={width} height={height} blendMode="srcATop" opacity={TOOTH_OF[r.tex]}>{tex(tooth)}</Rect> : null}
             </Group>
           ) : r.list.map((st, j) => <One key={`${i}-${j}`} st={st} width={width} height={height} />)))}
         </Group>
@@ -143,7 +148,7 @@ async function textures() {
       return Skia.Image.MakeImageFromEncoded(data);
     } catch (e) { return null; }
   };
-  texCache = { grain: await load(GRAIN), tooth: await load(TOOTH) };
+  texCache = { grain: await load(GRAIN), tooth: await load(TOOTH), wash: await load(WASH) };
   return texCache;
 }
 const stampCache = {};
@@ -188,8 +193,8 @@ async function drawPhotoStroke(canvas, st, w, h) {
     canvas.drawImageRect(img, Skia.XYWHRect((iw - sw) / 2, (ih - sh) / 2, sw, sh), Skia.XYWHRect(0, 0, w, h), p);
   } catch (e) {}
 }
-const texPaint = (img, px, blend, alpha = 1) => {
-  const k = (TILE * px) / 512;
+const texPaint = (img, px, blend, alpha = 1, tile = TILE) => {
+  const k = (tile * px) / 512;
   const m = Skia.Matrix(); m.scale(k, k);
   const p = Skia.Paint();
   p.setShader(img.makeShaderOptions(TileMode.Repeat, TileMode.Repeat, 1, 1, m)); // (linear filtering)
@@ -251,7 +256,11 @@ export async function strokesToImage(strokes, px = 1600, bg = '#ffffff', photo =
       canvas.drawPath(path, paint);
     }
    }
-   if (r.tex > 0) { if (T.tooth) canvas.drawRect(Skia.XYWHRect(0, 0, px, px), texPaint(T.tooth, px, BlendMode.SrcATop, TOOTH_OF[r.tex])); canvas.restore(); }
+   if (r.tex > 0) {
+     if (r.tex === 3) { if (T.wash) canvas.drawRect(Skia.XYWHRect(0, 0, px, px), texPaint(T.wash, px, BlendMode.DstIn, 1, 1)); }
+     else if (T.tooth) canvas.drawRect(Skia.XYWHRect(0, 0, px, px), texPaint(T.tooth, px, BlendMode.SrcATop, TOOTH_OF[r.tex]));
+     canvas.restore();
+   }
   }
   canvas.restore();
   }

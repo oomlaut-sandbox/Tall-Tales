@@ -295,6 +295,67 @@ export function inkD(st, w, taper = 1, swing = 1, tiltK = 0, wob = 0) {
 // (Jörg, 4 Nov 2026). Used for the fountain pen's new strokes (pf: 1) and for the quick live line while drawing.
 // q: the Apple Pencil's pressure at each point (a finger: the speed stands in for it). live: the end still moving
 // (no taper at the tip, so the line stays under the pen).
+// Watercolour (Jörg, 5 Nov 2026), after Tyler Hobbs' way of painting it: the stroke's shape (perfect-freehand, the
+// same one shown while painting) is laid down many times, each copy very faint and its edge pushed in or out a
+// little, differently each time. Where the copies agree (the middle) the colour builds up; at the edge they don't, so
+// it comes out soft and uneven, like a wash. Then the pigment that gathered at the rim as it dried, and a faint bloom
+// where the water ran. Each stroke's wobble comes from its own points, so it looks the same every time it's drawn.
+function seeded(seed) {
+  let a = seed >>> 0;
+  return () => { a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+// the outline, every point pushed out (or in) along the edge by `push`, plus a gentle wander of up to `amp` that
+// changes every `scale` along the way
+function wobbled(poly, push, amp, scale, rnd) {
+  const n = poly.length;
+  let area = 0; const cum = [0];
+  for (let i = 0; i < n; i++) {
+    const a = poly[i], b = poly[(i + 1) % n];
+    area += a[0] * b[1] - b[0] * a[1];
+    if (i < n - 1) cum.push(cum[i] + Math.hypot(b[0] - a[0], b[1] - a[1]));
+  }
+  const L = cum[n - 1] || 1, sgn = area > 0 ? -1 : 1;
+  const K = Math.max(3, Math.ceil(L / scale));
+  const knots = Array.from({ length: K }, () => rnd() * 2 - 1);
+  return poly.map((p, i) => {
+    const a = poly[(i - 1 + n) % n], b = poly[(i + 1) % n];
+    let nx = b[1] - a[1], ny = a[0] - b[0];
+    const k = Math.hypot(nx, ny) || 1; nx = (nx / k) * sgn; ny = (ny / k) * sgn;
+    const u = (cum[i] / L) * K, k0 = Math.floor(u) % K, f = u - Math.floor(u), e = (1 - Math.cos(Math.PI * f)) / 2;
+    const off = push + amp * (knots[k0] * (1 - e) + knots[(k0 + 1) % K] * e);
+    return [p[0] + nx * off, p[1] + ny * off];
+  });
+}
+const WASH_COPIES = 14;
+// (worked out once per stroke and size: the copies take a moment, and the page is drawn again often)
+const washCache = new WeakMap();
+function watercolour(st, w, lw, light, dk) {
+  const hit = washCache.get(st);
+  if (hit && hit.w === w) return hit.out;
+  const out = paintWash(st, w, lw, light, dk);
+  washCache.set(st, { w, out });
+  return out;
+}
+function paintWash(st, w, lw, light, dk) {
+  const size = lw * 1.35 * 1.1; // (the same width as the shape shown while painting)
+  const O = pfOutline(st, w, size, { thinning: 0.5 });
+  if (O.length < 4) return [];
+  const p = st.p || [];
+  const rnd = seeded(((p[0] || 0) * 7919 + (p[1] || 0) * 104729 + p.length * 31) * 100000);
+  const m = light ? null : true;
+  const out = [
+    // the bloom: where the water ran a little past the brush
+    { d: outlineD(wobbled(O, size * 0.25, size * 0.3, size * 2, rnd)), fill: true, alpha: (light ? 0.1 : 0.03) * dk, blur: size * 0.1, multiply: m, tex: 3 },
+  ];
+  for (let i = 0; i < WASH_COPIES; i++) {
+    const sc = size * (0.5 + rnd() * 1.6);
+    out.push({ d: outlineD(wobbled(O, size * (rnd() * 0.3 - 0.2), size * (0.12 + rnd() * 0.22), sc, rnd)), fill: true, alpha: (light ? 0.1 : 0.07) * dk, multiply: m, tex: 3 });
+  }
+  // the rim, where the pigment gathered as it dried: thin and uneven
+  out.push({ d: outlineD(wobbled(O, -size * 0.06, size * 0.14, size * 0.9, rnd)), fill: true, alpha: light ? 0 : 0.5 * dk, blur: Math.max(0.7, size * 0.05), multiply: m, inner: true, tex: 3 });
+  return out;
+}
+
 export function pfOutline(st, w, size, { thinning = 0.6, taper = true, live = false } = {}) {
   const p = st.p || [];
   const pts = [];
@@ -368,6 +429,7 @@ function layersOf(st, w) {
   const b = st.b || 'ink';
   const light = /^#f{3,6}$/i.test(st.c || '') || /^#f1e8d8$/i.test(st.c || ''); // white or cream: lighter than the paper's shadows, so no multiply
   if (b === 'water') {
+    if (st.wc) return watercolour(st, w, lw, light, darkOf(st, 0.6));
     // a soft round brush: long pointed ends and a width that swells and thins a lot with the speed; a see-through
     // body, the pigment gathering at its rim as it dries, a faint bloom where the water spread. Crossing strokes
     // deepen (multiply). Wet into wet (painted over a wash that hadn't dried yet): no rim, it runs into the colour under it.

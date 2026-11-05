@@ -1333,7 +1333,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
         ? { sm: 1, c: '#000000', s: Math.max(0.03, S.current.size * 2.4), p: [+x.toFixed(4), +y.toFixed(4)], ...(S.current.smudgeK !== 1 ? { k: S.current.smudgeK } : null), ...m } // a fingertip, rubbing
         : S.current.erase
         ? { e: 1, c: '#000000', s: Math.max(0.035, S.current.size * (S.current.eraseSoft ? 3 : 2.2)), p: [+x.toFixed(4), +y.toFixed(4)], ...(S.current.eraseSoft ? { k: 0.35 } : null), ...m }
-        : { c: S.current.pen, s: S.current.size, b: S.current.brush, p: [+x.toFixed(4), +y.toFixed(4)], ...(force > 0 ? { q: [+force.toFixed(2)] } : null), ...(S.current.brush === 'ink' || S.current.brush === 'water' || !S.current.brush ? { pf: 1 } : null), ...m }; // (pf: the fountain pen's new strokes, perfect-freehand)
+        : { c: S.current.pen, s: S.current.size, b: S.current.brush, p: [+x.toFixed(4), +y.toFixed(4)], ...(force > 0 ? { q: [+force.toFixed(2)] } : null), ...(S.current.brush === 'ink' || S.current.brush === 'water' || !S.current.brush ? { pf: 1 } : null), ...(S.current.brush === 'water' ? { wc: 1 } : null), ...m }; // (pf: the fountain pen's new strokes, perfect-freehand)
       { const u = tiltNow(e); if (u != null && !cur.current.e && !cur.current.sm) cur.current.t = [+u.toFixed(2)]; }
       setLive({ ...cur.current });
     },
