@@ -29,6 +29,13 @@ export async function addSheet(sheet, photoUri) {
   return s;
 }
 
+// a drawing changed again (Draw on it): its strokes replaced, its paper kept (Jörg, 5 Nov 2026)
+export async function updateSheet(id, page) {
+  if (!cache) await loadFolder();
+  cache = { sheets: cache.sheets.map((x) => (x.id === id ? { ...x, date: Date.now(), page: { ...x.page, ...page } } : x)) };
+  await save();
+}
+
 export async function removeSheet(id) {
   if (!cache) await loadFolder();
   const s = cache.sheets.find((x) => x.id === id);

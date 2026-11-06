@@ -14,7 +14,12 @@ import { LETTERS } from '../narration/samples';
 import { StrokesView } from './Strokes';
 import ParentGate from './ParentGate';
 import { ConfirmBox } from './Chrome';
-import { loadFolder, onFolder, removeSheet } from '../folder';
+import { addSheet, loadFolder, onFolder, removeSheet, updateSheet } from '../folder';
+import { strokesToImage } from './Strokes';
+import { DrawEditor } from '../screens/Notebook';
+import { pinPhoto } from '../corkboard';
+import { Asset } from 'expo-asset';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { loadNotebook } from '../notebook';
 import { shareSheet } from '../sheetShare';
 import { activeProfile } from '../profiles';
@@ -25,9 +30,23 @@ const ENVELOPE = require('../../assets/icon-envelope.png');
 const TRASH = require('../../assets/icon-trash.png');
 const TYPE = 'SpecialElite_400Regular'; // the typewriter, like My Notes
 const CREAM = '#f4f2ed';
+// sheets of paper to draw on (Jörg, 5 Nov 2026): canvas, lined and graph paper. A drawing on one is kept here in
+// Things to share, can be pinned to the Message Board, and shared or printed from the drawing tools' Done.
+const PAPERS = [
+  ['canvas', 'Canvas', require('../../assets/sheets/canvas.jpg')],
+  ['lined', 'Lined paper', require('../../assets/sheets/lined.jpg')],
+  ['graph', 'Graph paper', require('../../assets/sheets/graph.jpg')],
+];
+const paperFile = async (src) => { const a = Asset.fromModule(src); await a.downloadAsync(); return a.localUri || a.uri; };
 
 // a page from someone's notebook, drawn like the notebook: the picture square above the notes
 function SheetPage({ page, size }) {
+  if (page.kind === 'drawing') return (
+    <View style={{ width: size, height: size, borderRadius: 3, overflow: 'hidden', backgroundColor: CREAM }}>
+      {page.uri ? <Image source={{ uri: page.uri }} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
+      <StrokesView strokes={page.strokes || []} width={size} height={size} noPaper />
+    </View>
+  );
   return (
     <View style={{ width: size, backgroundColor: CREAM, borderRadius: size * 0.06, overflow: 'hidden' }}>
       <View style={{ width: size, height: size, borderBottomWidth: 1, borderColor: '#cfc9bd' }}>
@@ -93,6 +112,24 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
   const [sendGate, setSendGate] = useState(false);
   const [picking, setPicking] = useState(null); // notebook pages to choose from
   const [sure, setSure] = useState(null); // a sheet about to be thrown away
+  const [drawOn, setDrawOn] = useState(null); // drawing on a sheet: { bg, strokes, id }
+  const [pinAsk, setPinAsk] = useState(null); // after a drawing: pin it to the Message Board too? { strokes, bg }
+  const insets = useSafeAreaInsets();
+  const startPaper = async (src) => { try { setDrawOn({ bg: await paperFile(src), strokes: [] }); } catch (e) { toast && toast(t('That didn’t work. Try again.')); } };
+  const pinNow = async (strokes, bg) => {
+    try { const png = await strokesToImage(strokes, 1200, '#ffffff', bg); await pinPhoto(png, 'doodle'); toast && toast(t('Pinned to the Message Board.')); }
+    catch (e) { toast && toast(t('That didn’t work. Try again.')); }
+  };
+  const drawDone = async (strokes) => {
+    const d = drawOn; setDrawOn(null);
+    const ink = (strokes || []).some((x) => !x.e);
+    if (!ink) return;
+    try {
+      if (d.id) { await updateSheet(d.id, { strokes }); setOpen(null); }
+      else await addSheet({ kind: 'page', from: null, page: { kind: 'drawing', strokes } }, d.bg);
+      setPinAsk({ strokes, bg: d.bg });
+    } catch (e) { toast && toast(t('That didn’t work. Try again.')); }
+  };
   const fade = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     loadFolder().then((f) => setSheets(f.sheets));
@@ -134,7 +171,17 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
                 <Text allowFontScaling={false} style={[styles.letter, lang === 'ja' && styles.kana, { fontSize: thumb * (lang === 'ja' ? 0.3 : 0.36), transform: [{ translateY: -thumb * 0.05 }] }]}>{lang === 'ja' ? 'あいう' : lang === 'de' ? 'Äbc' : 'Abc'}</Text>
               </View>
             ), 2.5, () => setOpen('abc'))}
-            {sheets.map((s, k) => card(s.id, s.from ? t('From {name}', { name: s.from }) : t('A sheet'), <SheetPage page={s.page} size={thumb} />, k % 2 ? 2 : -2, () => setOpen(s)))}
+            {sheets.map((s, k) => card(s.id, s.from ? t('From {name}', { name: s.from }) : s.page && s.page.kind === 'drawing' ? t('My drawing') : t('A sheet'), <SheetPage page={s.page} size={thumb} />, k % 2 ? 2 : -2, () => setOpen(s)))}
+          </View>
+          {/* paper to draw on */}
+          <Text style={[styles.title, { fontSize: 20, marginTop: 40 }]}>{t('Draw on a sheet')}</Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 18, marginTop: 18 }}>
+            {PAPERS.map(([k, label, src], i) => (
+              <Pressable key={k} onPress={withTap(() => startPaper(src))} accessibilityRole="button" accessibilityLabel={t(label)} style={{ width: thumb * 0.7, alignItems: 'center', gap: 8, transform: [{ rotate: `${[-2, 1.5, -1][i]}deg` }] }}>
+                <View style={styles.cardShadow}><Image source={src} style={{ width: thumb * 0.7, height: thumb * 0.7, borderRadius: 3 }} /></View>
+                <Text numberOfLines={1} style={styles.cardLabel}>{t(label)}</Text>
+              </Pressable>
+            ))}
           </View>
           {canSend ? (
             <Pressable onPress={withTap(() => setSendGate(true))} style={styles.sendPill} accessibilityRole="button">
@@ -165,6 +212,12 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
             <View style={{ alignItems: 'center' }}>
               {open.from ? <Text style={[styles.cardLabel, { fontSize: 16, marginBottom: 12 }]}>{t('From {name}', { name: open.from })}</Text> : null}
               <SheetPage page={open.page} size={Math.min(big, (winH - 240) / (open.page.kind === 'sketch' ? 2 : 1.42))} />
+              {open.page.kind === 'drawing' ? (
+                <View style={{ flexDirection: 'row', gap: 10, marginTop: 18 }}>
+                  <Pressable onPress={withTap(() => setDrawOn({ bg: open.page.uri, strokes: open.page.strokes || [], id: open.id }))} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Draw on it')}</Text></Pressable>
+                  <Pressable onPress={withTap(() => pinNow(open.page.strokes || [], open.page.uri))} style={[styles.pill, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Pin it')}</Text></Pressable>
+                </View>
+              ) : null}
               <Pressable onPress={withTap(() => setSure(open))} hitSlop={10} style={{ marginTop: 18 }} accessibilityRole="button" accessibilityLabel={t('Delete')}>
                 <Image source={TRASH} style={{ width: 22, height: 22, tintColor: '#bdbdbd' }} resizeMode="contain" />
               </Pressable>
@@ -199,6 +252,15 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
             <Pressable onPress={() => setPicking(null)} style={[styles.pill, { backgroundColor: '#3a3a3a', alignSelf: 'flex-end', marginTop: 18 }]}><Text style={styles.pillText}>{t('Cancel')}</Text></Pressable>
           </View>
         </View>
+      ) : null}
+      {/* after a drawing on a sheet: kept here; pin it to the Message Board too? */}
+      {pinAsk ? (
+        <ConfirmBox message={t('Your drawing is in Things to share. Pin it to the Message Board too?')} confirm={t('Pin it')} cancel={t('Not now')} danger={false}
+          onConfirm={withTap(async () => { const a = pinAsk; setPinAsk(null); await pinNow(a.strokes, a.bg); })} onCancel={() => setPinAsk(null)} />
+      ) : null}
+      {/* drawing on a sheet: the drawing tools, over everything */}
+      {drawOn ? (
+        <DrawEditor insets={insets} photo={drawOn.bg} strokes={drawOn.strokes} title={t('Drawing')} draftKey={drawOn.id ? `sheet:${drawOn.id}` : 'sheet:new'} onDone={drawDone} />
       ) : null}
       <ParentGate visible={sendGate} reason={t('Sending a sheet opens your phone’s messages and email.')} onCancel={() => setSendGate(false)}
         onPass={async () => { setSendGate(false); const nb = await loadNotebook(); setPicking(nb.pages.filter((p) => p.uri || (p.strokes && p.strokes.length) || (p.strokes2 && p.strokes2.length) || (p.text || '').trim())); }} />
