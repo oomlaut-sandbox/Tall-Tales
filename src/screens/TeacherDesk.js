@@ -34,7 +34,7 @@ import { giveSheet } from '../folder';
 import { pinFor } from '../corkboard';
 import { strokesToImage } from '../components/Strokes';
 import { DrawEditor } from './Notebook';
-import { TitleIcon } from '../titleIcons';
+import { TITLE_ICONS, TitleIcon } from '../titleIcons';
 
 const PAGES = [2, 4, 6, 8, 12];
 
@@ -262,8 +262,9 @@ export default function TeacherDesk({ onManage, u, openMenu, toast, stories, onL
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
         {/* straight to Settings, Teachers and Educators: students, classes, the class list (Jörg, 6 Nov 2026) */}
         {onManage ? (
-          <Pressable onPress={onManage} style={[styles.pill, { alignSelf: 'flex-start', backgroundColor: 'rgba(0,0,0,0.7)' }]} accessibilityRole="button">
-            <Text style={styles.pillText}>{t('Manage classroom')}</Text>
+          <Pressable onPress={onManage} style={[styles.pill, { alignSelf: 'flex-start', backgroundColor: 'rgba(0,0,0,0.7)', flexDirection: 'row', alignItems: 'center', gap: 10 }]} accessibilityRole="button">
+            <Image source={TITLE_ICONS.profile} style={{ width: 20, height: 20 }} />
+            <Text style={styles.pillText}>{t('Manage Student Profiles')}</Text>
           </Pressable>
         ) : null}
         {classes.length > 1 ? <View style={styles.chips}>{classes.map((c) => <Chip key={c.id} label={c.name || t('Classroom')} on={c.id === klass.id} onPress={() => setCls(c.id)} />)}</View> : null}
