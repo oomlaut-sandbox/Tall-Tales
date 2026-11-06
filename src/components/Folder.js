@@ -18,7 +18,7 @@ import { addSheet, loadFolder, onFolder, removeSheet, updateSheet } from '../fol
 import { strokesToImage } from './Strokes';
 import { DrawEditor } from '../screens/Notebook';
 import { pinPhoto } from '../corkboard';
-import { Asset } from 'expo-asset';
+import { PAPERS, paperFile } from '../sheets';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { loadNotebook } from '../notebook';
 import { shareSheet } from '../sheetShare';
@@ -30,15 +30,6 @@ const ENVELOPE = require('../../assets/icon-envelope.png');
 const TRASH = require('../../assets/icon-trash.png');
 const TYPE = 'SpecialElite_400Regular'; // the typewriter, like My Notes
 const CREAM = '#f4f2ed';
-// sheets of paper to draw on (Jörg, 5 Nov 2026): canvas, lined and graph paper. A drawing on one is kept here in
-// Things to share, can be pinned to the Message Board, and shared or printed from the drawing tools' Done.
-const PAPERS = [
-  ['canvas', 'Canvas', require('../../assets/sheets/canvas.jpg')],
-  ['lined', 'Lined paper', require('../../assets/sheets/lined.jpg')],
-  ['graph', 'Graph paper', require('../../assets/sheets/graph.jpg')],
-  ['kraft', 'Kraft paper', require('../../assets/sheets/kraft.jpg')],
-];
-const paperFile = async (src) => { const a = Asset.fromModule(src); await a.downloadAsync(); return a.localUri || a.uri; };
 
 // a page from someone's notebook, drawn like the notebook: the picture square above the notes
 function SheetPage({ page, size }) {

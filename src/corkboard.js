@@ -1,7 +1,7 @@
 // The corkboard at the bottom of My Library: yellow sticky notes and photos, pinned anywhere.
 // Each pin: { id, kind: 'note' | 'photo' | 'doodle' (a drawing from My Notes, a small square), text?, uri?, x, y (0..1, where its middle sits on the board), rot (degrees) }
-import { deleteFile, keepFile, loadJSON, saveJSON } from './storage';
-import { onScopeChange } from './scope';
+import { deleteFile, keepFile, loadJSON, loadJSONFor, saveJSON, saveJSONFor } from './storage';
+import { currentProfile, onScopeChange } from './scope';
 
 export const MAX_PINS = 12;
 let cache = null;
@@ -22,8 +22,8 @@ async function save() { await saveJSON('corkboard', { pins: cache, seeded: true 
 // pin would cover any of it (Jörg, 29 Oct 2026)
 export const inSheet = (x, y) => (x < 0.45 && y > 0.5) || (x < 0.42 && y < 0.3); // (and the little 'Pin notes and photos here' note, top left)
 // somewhere free-ish on the board, a little tilted
-function spot() {
-  const taken = cache || [];
+function spot(on) {
+  const taken = on || cache || [];
   let best = null;
   for (let k = 0; k < 60; k++) {
     const x = 0.16 + Math.random() * 0.68, y = 0.15 + Math.random() * 0.7;
@@ -70,4 +70,22 @@ export async function unpin(id) {
   cache = cache.filter((q) => q.id !== id);
   await save();
   return cache;
+}
+
+// pinned from the Teacher's Desk to some students' boards (Jörg, 6 Nov 2026): a note ({ kind: 'note', text }) or a
+// drawing ({ kind: 'doodle', uri }), each board its own copy, in a free spot
+export async function pinFor(ids, pin) {
+  for (let k = 0; k < ids.length; k += 1) {
+    const id = ids[k];
+    const b = await loadJSONFor(id, 'corkboard', null);
+    let pins = b && Array.isArray(b.pins) ? b.pins : [];
+    if (!b || !b.seeded) pins = [...pins, STARTER];
+    let uri = pin.uri || null;
+    if (uri) { try { uri = await keepFile(pin.uri, 'corkboard', `pin-${Date.now()}-${k}.png`); } catch (e) {} }
+    const p = { id: `p${Date.now().toString(36)}${k}`, kind: pin.kind, ...(pin.text ? { text: pin.text.trim() } : null), ...(uri ? { uri } : null), ...spot(pins) };
+    pins = [...pins, p];
+    while (pins.length > MAX_PINS) { const gone = pins.shift(); if (gone.uri) deleteFile(gone.uri); }
+    await saveJSONFor(id, 'corkboard', { pins, seeded: true });
+    if (id === currentProfile()) cache = pins;
+  }
 }

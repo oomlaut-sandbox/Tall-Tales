@@ -43,7 +43,9 @@ export const locked = (c, on) => {
   const { beforeLock, ...rest } = c;
   return { ...rest, store: beforeLock ? beforeLock.store : true, sharing: beforeLock ? beforeLock.sharing : true };
 };
-export async function classLocked(cls) { const m = await loadJSON('classLocks', {}); return !!(m && m[cls]); }
+// on by default (Jörg, 6 Nov 2026): a class is locked until the teacher turns the lock off
+export async function classLocked(cls) { const m = await loadJSON('classLocks', {}); return !(m && m[cls] === false); }
+export async function lockSet(cls) { const m = await loadJSON('classLocks', {}); return !!(m && cls in m); }
 export async function setClassLock(cls, on, studentIds, controls, setControls) {
   for (const id of studentIds) {
     const c = await loadJSONFor(id, 'controls', null);

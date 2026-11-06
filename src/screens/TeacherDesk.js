@@ -5,6 +5,8 @@
 //   To review: the books students have handed in. Read one, leave a note, then send it back or approve it.
 //   Class Library: the approved books, printed or shared as one class anthology.
 //   Classroom lock: no Book Store and no sharing outside the class.
+//   Sheets and pins (Jörg, 6 Nov 2026): draw on a sheet of paper and leave it in students' Things to share, pin it to
+//     their Message Boards, or pin a note; for the whole class or chosen students.
 import React, { useEffect, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,9 +17,14 @@ import CoverArt from '../components/CoverArt';
 import LineInput from '../components/LineInput';
 import { useT } from '../i18n';
 import { getProfiles, inClass, onProfiles } from '../profiles';
-import { addPrompt, classLocked, onPrompts, removePrompt, setClassLock } from '../classroom';
+import { addPrompt, classLocked, lockSet, onPrompts, removePrompt, setClassLock } from '../classroom';
 import { setBookReview } from '../userStories';
 import { printAnthology, shareAnthology } from '../pdf';
+import { PAPERS, paperFile } from '../sheets';
+import { giveSheet } from '../folder';
+import { pinFor } from '../corkboard';
+import { strokesToImage } from '../components/Strokes';
+import { DrawEditor } from './Notebook';
 
 const PAGES = [2, 4, 6, 8, 12];
 
@@ -95,8 +102,44 @@ export default function TeacherDesk({ u, openMenu, toast, stories, onList, openS
     try { await (share ? shareAnthology : printAnthology)(library, t('{name}: our books', { name: classTitle }), 'stacked', fontKey); } catch (e) { toast(t(e.message)); }
     setMaking(false);
   };
-  const [lockOn, setLockOn] = useState(false);
-  useEffect(() => { if (klass) classLocked(klass.id).then(setLockOn).catch(() => {}); }, [klass && klass.id]);
+  // ---- Sheets and pins: for the whole class, or chosen students ----
+  const [forAll, setForAll] = useState(true);
+  const [chosen, setChosen] = useState([]);
+  const toIds = () => (forAll ? students.map((st) => st.id) : chosen.filter((id) => students.some((st) => st.id === id)));
+  const [drawOn, setDrawOn] = useState(null); // { bg }: drawing a sheet
+  const [made, setMade] = useState(null); // { strokes, bg }: a finished sheet, where should it go?
+  const [pinText, setPinText] = useState('');
+  const [busy, setBusy] = useState(false);
+  const startPaper = async (src) => { try { setDrawOn({ bg: await paperFile(src) }); } catch (e) { toast(t('That didn’t work. Try again.')); } };
+  const deliver = async (where) => {
+    const m = made; const ids = toIds();
+    if (!m || !ids.length || busy) return;
+    setBusy(true);
+    try {
+      if (where !== 'pin') await giveSheet(ids, { kind: 'page', from: t('Your teacher'), page: { kind: 'drawing', strokes: m.strokes } }, m.bg);
+      if (where !== 'folder') { const png = await strokesToImage(m.strokes, 1200, '#ffffff', m.bg); await pinFor(ids, { kind: 'doodle', uri: png }); }
+      setMade(null);
+      toast(ids.length === 1 ? t('Sent to 1 student.') : t('Sent to {n} students.', { n: ids.length }));
+    } catch (e) { toast(t('That didn’t work. Try again.')); }
+    setBusy(false);
+  };
+  const pinNoteNow = async () => {
+    const ids = toIds();
+    if (!pinText.trim() || !ids.length || busy) return;
+    setBusy(true);
+    try { await pinFor(ids, { kind: 'note', text: pinText }); setPinText(''); toast(ids.length === 1 ? t('Pinned for 1 student.') : t('Pinned for {n} students.', { n: ids.length })); }
+    catch (e) { toast(t('That didn’t work. Try again.')); }
+    setBusy(false);
+  };
+  const [lockOn, setLockOn] = useState(true);
+  // the lock is on by default (6 Nov 2026): a class that's never had it set gets it now, for every student in it
+  useEffect(() => {
+    if (!klass) return;
+    (async () => {
+      if (!(await lockSet(klass.id))) await setClassLock(klass.id, true, students.map((st) => st.id), controls, setControls);
+      setLockOn(await classLocked(klass.id));
+    })().catch(() => {});
+  }, [klass && klass.id]);
   const lock = async (on) => {
     setLockOn(on);
     try { await setClassLock(klass.id, on, students.map((st) => st.id), controls, setControls); toast(on ? t('The class is locked.') : t('The lock is off.')); } catch (e) { setLockOn(!on); }
@@ -144,6 +187,31 @@ export default function TeacherDesk({ u, openMenu, toast, stories, onList, openS
           );
         })}
 
+        {/* Sheets and pins (Jörg, 6 Nov 2026) */}
+        <Text style={styles.h}>{t('Sheets and pins')}</Text>
+        <Text style={styles.note}>{t('Leave a sheet in your students’ Things to share, or pin a drawing or a note to their Message Boards.')}</Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>{t('For')}</Text>
+          <View style={styles.chips}>
+            <Chip label={t('The whole class')} on={forAll} onPress={() => setForAll(true)} />
+            {students.map((st) => <Chip key={st.id} label={st.name} on={!forAll && chosen.includes(st.id)} onPress={() => { setForAll(false); setChosen((c) => (c.includes(st.id) ? c.filter((x) => x !== st.id) : [...c, st.id])); }} />)}
+          </View>
+          <Text style={[styles.label, { marginTop: 6 }]}>{t('Draw on a sheet')}</Text>
+          <View style={styles.chips}>
+            {PAPERS.map(([k, label, src]) => (
+              <Pressable key={k} onPress={() => startPaper(src)} disabled={!toIds().length} style={{ alignItems: 'center', gap: 6, opacity: toIds().length ? 1 : 0.4 }} accessibilityRole="button" accessibilityLabel={t(label)}>
+                <Image source={src} style={{ width: 72, height: 72, borderRadius: 3 }} />
+                <Text style={styles.rowSub}>{t(label)}</Text>
+              </Pressable>
+            ))}
+          </View>
+          <Text style={[styles.label, { marginTop: 6 }]}>{t('Pin a note')}</Text>
+          <LineInput value={pinText} onChangeText={setPinText} placeholder={t('Like: Library day tomorrow!')} placeholderTextColor="#8a8a8a" maxLength={60} allowFontScaling={false} style={styles.field} accessibilityLabel={t('Pin a note')} />
+          <Pressable onPress={pinNoteNow} disabled={!pinText.trim() || !toIds().length || busy} style={[styles.pill, { backgroundColor: colors.green, alignSelf: 'flex-start' }, (!pinText.trim() || !toIds().length) && { opacity: 0.4 }]} accessibilityRole="button">
+            <Text style={styles.pillText}>{t('Pin it to their Message Boards')}</Text>
+          </Pressable>
+        </View>
+
         {/* 2. To review */}
         <Text style={styles.h}>{t('To review')}</Text>
         {toReview.length ? toReview.map((s) => <ReviewRow key={s.id} s={s} name={nameOf(s.owner)} openStory={openStory} onList={onList} toast={toast} />)
@@ -166,6 +234,24 @@ export default function TeacherDesk({ u, openMenu, toast, stories, onList, openS
           <Switch value={lockOn} onValueChange={lock} trackColor={{ true: colors.green }} accessibilityLabel={t('Classroom lock')} />
         </View>
       </ScrollView>
+      {/* a finished sheet: where it goes */}
+      {made ? (
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: 20, zIndex: 60 }]}>
+          <View style={[styles.row, { width: '100%', maxWidth: 420, backgroundColor: 'rgba(0,0,0,0.88)', borderRadius: 24, padding: 24, gap: 12 }]}>
+            <Text style={[styles.rowTitle, { fontSize: 18 }]}>{t('Where should the sheet go?')}</Text>
+            <Text style={styles.note}>{forAll ? t('For the whole class.') : t('For {n} students.', { n: toIds().length })}</Text>
+            <Pressable onPress={() => deliver('folder')} style={[styles.pill, busy && { opacity: 0.5 }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Things to share')}</Text></Pressable>
+            <Pressable onPress={() => deliver('pin')} style={[styles.pill, busy && { opacity: 0.5 }]} accessibilityRole="button"><Text style={styles.pillText}>{t('The Message Board')}</Text></Pressable>
+            <Pressable onPress={() => deliver('both')} style={[styles.pill, { backgroundColor: colors.green }, busy && { opacity: 0.5 }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Both')}</Text></Pressable>
+            <Pressable onPress={() => setMade(null)} style={[styles.pill, { backgroundColor: '#2e2e2e' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Cancel')}</Text></Pressable>
+          </View>
+        </View>
+      ) : null}
+      {/* drawing the sheet: the drawing tools, over the desk */}
+      {drawOn ? (
+        <DrawEditor insets={insets} photo={drawOn.bg} strokes={[]} title={t('A sheet for the class')} draftKey="teacher:sheet"
+          onDone={(strokes) => { const d = drawOn; setDrawOn(null); if ((strokes || []).some((x) => !x.e)) setMade({ strokes, bg: d.bg }); }} />
+      ) : null}
     </WithBar>
   );
 }

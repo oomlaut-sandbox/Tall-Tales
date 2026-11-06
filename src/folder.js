@@ -3,7 +3,8 @@
 // grown-up opens the file they were sent. Each child has their own folder.
 // { sheets: [{ id, kind: 'page', from, date, page: { kind: 'note' | 'sketch', text, uri, strokes, strokes2 } }] }
 import { deleteFile, keepFile, loadJSON, saveJSON } from './storage';
-import { onScopeChange } from './scope';
+import { currentProfile, onScopeChange } from './scope';
+import { loadJSONFor, saveJSONFor } from './storage';
 
 let cache = null;
 // each child has their own: a new profile starts from its own file, never the last child's (31 Oct 2026)
@@ -42,4 +43,19 @@ export async function removeSheet(id) {
   if (s && s.page && s.page.uri) deleteFile(s.page.uri);
   cache = { sheets: cache.sheets.filter((x) => x.id !== id) };
   await save();
+}
+
+// a sheet from the Teacher's Desk, left in some students' folders (Jörg, 6 Nov 2026): each one gets their own copy of
+// the paper, so throwing it away in one folder leaves the others
+export async function giveSheet(ids, sheet, photoUri) {
+  for (let k = 0; k < ids.length; k += 1) {
+    const id = ids[k];
+    const f = await loadJSONFor(id, 'folder', null);
+    const sheets = f && Array.isArray(f.sheets) ? f.sheets : [];
+    let uri = null;
+    if (photoUri) { try { uri = await keepFile(photoUri, 'folder', `sheet-${Date.now()}-${k}.jpg`); } catch (e) {} }
+    const s = { id: `s${Date.now().toString(36)}${k}`, date: Date.now(), ...sheet, page: { ...sheet.page, uri } };
+    await saveJSONFor(id, 'folder', { sheets: [s, ...sheets] });
+    if (id === currentProfile()) { cache = { sheets: [s, ...sheets] }; emit(); }
+  }
 }
