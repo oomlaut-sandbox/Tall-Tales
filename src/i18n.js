@@ -894,6 +894,7 @@ const T = {
   'Berry': { de: 'Beere', fr: 'Baie', es: 'Baya', ja: 'ベリー', ar: 'توتي' },
   'Rose': { de: 'Rosa', fr: 'Rose', es: 'Rosa', ja: 'ローズ', ar: 'وردي' },
   'Lavender': { de: 'Lavendel', fr: 'Lavande', es: 'Lavanda', ja: 'ラベンダー', ar: 'لافندر' },
+  'Brush Size': { de: 'Pinselgröße', fr: 'Taille du pinceau', es: 'Tamaño del pincel', ja: 'ふでの おおきさ', ar: 'حجم الفرشاة' },
   'Upload Images': { de: 'Bilder hochladen', fr: 'Importer des images', es: 'Subir imágenes', ja: 'えを いれる', ar: 'رفع الصور' },
   'Choose up to {n} pictures from your photos. Coro puts them into a book, and you just add the words.': { de: 'Wähle bis zu {n} Bilder aus deinen Fotos. Coro macht daraus ein Buch, und du schreibst nur noch die Wörter dazu.', fr: 'Choisis jusqu’à {n} images dans tes photos. Coro en fait un livre, et tu n’as plus qu’à ajouter les mots.', es: 'Elige hasta {n} imágenes de tus fotos. Coro las pone en un libro, y tú solo añades las palabras.', ja: 'しゃしんから{n}まいまで えをえらんでね。Coroが 本にするから、あとは ことばを かくだけ。', ar: "اختر حتى {n} صورة من صورك. يضعها Coro في كتاب، وما عليك إلا إضافة الكلمات." },
   'How should the pages go?': { de: 'Wie sollen die Seiten aussehen?', fr: 'Comment ranger les pages ?', es: '¿Cómo van las páginas?', ja: 'ページは どうする？', ar: "كيف تكون الصفحات؟" },

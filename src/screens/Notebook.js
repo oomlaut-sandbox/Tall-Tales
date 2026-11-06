@@ -1124,6 +1124,44 @@ function LiveStrokes({ bus, strokes, width, height, noPaper }) {
 }
 
 const SAVE_ICON = require('../../assets/heading-icons/save-exit.png'); // an arrow into a tray, as in the book maker's Save for later
+// Brush Size (Jörg, 5 Nov 2026): a slider in the size pill, from the smallest dot on the left to the biggest on the
+// right, a thin line between them with a grey knob. Tap a dot to jump to that end, or slide anywhere between.
+// v: 0 to 1. More of the slide goes to the small sizes (see sizeFromV), so fine work is easy to set.
+const SLIDE_W = 170;
+function SizeSlider({ v, onChange, onEnd, label }) {
+  const x0 = useRef(0);
+  const cb = useRef(onChange); cb.current = onChange;
+  const end = useRef(onEnd); end.current = onEnd;
+  const set = (x) => cb.current(Math.max(0, Math.min(1, x / SLIDE_W)));
+  const pan = useRef(PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderTerminationRequest: () => false,
+    onPanResponderGrant: (e) => { x0.current = e.nativeEvent.locationX; set(x0.current); },
+    onPanResponderMove: (_, g) => set(x0.current + g.dx),
+    onPanResponderRelease: () => end.current && end.current(),
+    onPanResponderTerminate: () => end.current && end.current(),
+  })).current;
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }} accessible accessibilityRole="adjustable" accessibilityLabel={label} accessibilityValue={{ min: 0, max: 100, now: Math.round(v * 100) }}
+      accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+      onAccessibilityAction={(e) => { const d = e.nativeEvent.actionName === 'increment' ? 0.1 : -0.1; cb.current(Math.max(0, Math.min(1, v + d))); end.current && end.current(); }}>
+      <Pressable onPress={() => { cb.current(0); end.current && end.current(); }} hitSlop={12} style={{ width: 14, alignItems: 'center' }}><View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: colors.white }} /></Pressable>
+      <View {...pan.panHandlers} style={{ width: SLIDE_W, height: 40, justifyContent: 'center' }}>
+        <View pointerEvents="none" style={{ height: 2, borderRadius: 1, backgroundColor: 'rgba(255,255,255,0.45)' }} />
+        <View pointerEvents="none" style={{ position: 'absolute', left: v * SLIDE_W - 9, width: 18, height: 18, borderRadius: 9, backgroundColor: '#9a9a9a', borderWidth: 3, borderColor: '#111' }} />
+      </View>
+      <Pressable onPress={() => { cb.current(1); end.current && end.current(); }} hitSlop={12}><View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: colors.white }} /></Pressable>
+    </View>
+  );
+}
+// each tool's line width (a share of the page's width) for a slider position: very fine to quite large
+const sizeFromV = (tool, v) => {
+  const k = v * v;
+  if (tool === 'eraser') return 0.004 + k * 0.08;
+  if (tool === 'smudge') return 0.008 + k * 0.08;
+  return 0.0025 + k * 0.06; // pencil, fountain pen, watercolour
+};
 export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone, onNext, draftKey }) {
   useHideBack(); // no back button over the drawing editor (Jörg, 27 Oct 2026)
   const t = useT();
@@ -1190,6 +1228,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   const [recent, setRecent] = useState(['#1e2324', '#d1453b', '#f2c14e', '#3f6e9e', '#4e7d4f', '#f0a04b', '#6a4c93']);
   const [more, setMore] = useState(false); // the + sheet: all the colours, Mix, Shapes, Mirror
   const [sizePop, setSizePop] = useState(null); // the tool whose sizes are showing
+  const [toolV, setToolV] = useState({ eraser: 0.35, pencil: 0.3, pen: 0.42, water: 0.55, smudge: 0.45 }); // each tool's Brush Size (0 to 1), remembered
   // after a size is picked the pill stays a moment, then dissolves
   const sizeFade = useRef(new Animated.Value(1)).current;
   const sizeTimer = useRef(null);
@@ -1199,6 +1238,12 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   }, ms); };
   useEffect(() => { clearTimeout(sizeTimer.current); sizeFade.stopAnimation(); sizeFade.setValue(1); if (sizePop && sizeAuto.current) { sizeAuto.current = false; fadeSizes(2500); } }, [sizePop]);
   useEffect(() => () => clearTimeout(sizeTimer.current), []);
+  const endSlide = () => {
+    clearTimeout(sizeTimer.current); sizeFade.stopAnimation(); sizeFade.setValue(1);
+    sizeTimer.current = setTimeout(() => {
+      Animated.timing(sizeFade, { toValue: 0, duration: 450, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(({ finished }) => { if (finished) setSizePop(null); });
+    }, 1400);
+  };
   const pickSize = (sz) => {
     setSize(sz);
     clearTimeout(sizeTimer.current); sizeFade.stopAnimation(); sizeFade.setValue(1);
@@ -1206,6 +1251,8 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
       Animated.timing(sizeFade, { toValue: 0, duration: 450, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(({ finished }) => { if (finished) setSizePop(null); });
     }, 700);
   };
+  const inHand = erase ? 'eraser' : bucket ? 'roller' : ({ pencil: 'pencil', ink: 'pen', water: 'water', smudge: 'smudge' })[brush] || 'pen'; // (the tool in hand, as onTool below)
+  useEffect(() => { if (!stamp && toolV[inHand] != null) setSize(sizeFromV(inHand, toolV[inHand])); }, [inHand, toolV, stamp]); // (Brush Size)
   const lastWater = useRef(null); // the last watercolour stroke and when it was finished (still wet for a while)
   const S = useRef({});
   S.current = { strokes, pen, size, erase, bucket, tall, brush, shape, mirror, eraseSoft, smudgeK, dropper, photo, behind, stamp, layer };
@@ -1324,9 +1371,9 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
       // Apple Pencil: how hard it presses (0 to 1) is kept for each point; a finger has none (speed sets the width)
       const force = pressNow(e);
       cur.current = S.current.brush === 'smudge' && !S.current.erase
-        ? { sm: 1, v: 3, c: '#000000', s: toolSize('smudge', S.current.size), p: [+x.toFixed(4), +y.toFixed(4)], ...(S.current.smudgeK !== 1 ? { k: S.current.smudgeK } : null), ...m } // a fingertip, rubbing
+        ? { sm: 1, v: 3, c: '#000000', s: S.current.size, p: [+x.toFixed(4), +y.toFixed(4)], ...(S.current.smudgeK !== 1 ? { k: S.current.smudgeK } : null), ...m } // a fingertip, rubbing
         : S.current.erase
-        ? { e: 1, c: '#000000', s: toolSize('eraser', S.current.size) * (S.current.eraseSoft ? 1.4 : 1), p: [+x.toFixed(4), +y.toFixed(4)], ...(S.current.eraseSoft ? { k: 0.35 } : null), ...m }
+        ? { e: 1, c: '#000000', s: S.current.size * (S.current.eraseSoft ? 1.4 : 1), p: [+x.toFixed(4), +y.toFixed(4)], ...(S.current.eraseSoft ? { k: 0.35 } : null), ...m }
         : { c: S.current.pen, s: S.current.size, b: S.current.brush, p: [+x.toFixed(4), +y.toFixed(4)], ...(force > 0 ? { q: [+force.toFixed(2)] } : null), ...(S.current.brush === 'ink' || S.current.brush === 'water' || !S.current.brush ? { pf: 1 } : null), ...(S.current.brush === 'water' ? { wc: 1 } : null), ...m }; // (pf: the fountain pen's new strokes, perfect-freehand)
       { const u = tiltNow(e); if (u != null && !cur.current.e && !cur.current.sm) cur.current.t = [+u.toFixed(2)]; }
       setLive({ ...cur.current });
@@ -1406,24 +1453,25 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   const sizePopEl = () => {
     if (!sizePop || more) return null;
     return (
-      <Animated.View style={[styles.sizePop, { left: 10, bottom: 10, opacity: sizeFade }]}>
-        {SIZES.map(([name, sz]) => (
-          <Pressable key={name} onPress={() => pickSize(sz)} hitSlop={6} accessibilityRole="button" accessibilityLabel={t('{name} pen', { name: t(name) })} accessibilityState={{ selected: size === sz }}
-            style={{ width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', backgroundColor: size === sz ? colors.green : 'transparent' }}>
-            <View style={{ width: 5 + sz * 280, height: 5 + sz * 280, borderRadius: 20, backgroundColor: colors.white }} />
-          </Pressable>
-        ))}
-        {/* the eraser: hard or soft; the smudge: gentle, normal or strong */}
-        {sizePop === 'eraser' || sizePop === 'smudge' ? <View style={{ width: StyleSheet.hairlineWidth * 2, height: 28, backgroundColor: 'rgba(255,255,255,0.3)', marginHorizontal: 4 }} /> : null}
-        {(sizePop === 'eraser' ? [['Hard', false], ['Soft', true]] : sizePop === 'smudge' ? [['Gentle', 0.5], ['Normal', 1], ['Strong', 1.8]] : []).map(([name, v]) => {
-          const on = sizePop === 'eraser' ? eraseSoft === v : smudgeK === v;
-          return (
-            <Pressable key={name} onPress={() => { if (sizePop === 'eraser') setEraseSoft(v); else setSmudgeK(v); pickSize(size); }} hitSlop={6} accessibilityRole="button" accessibilityLabel={t(name)} accessibilityState={{ selected: on }}
-              style={{ height: 34, paddingHorizontal: 10, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? colors.green : 'transparent' }}>
-              <Text style={{ color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 13 }}>{t(name)}</Text>
-            </Pressable>
-          );
-        })}
+      <Animated.View pointerEvents="box-none" style={{ position: 'absolute', zIndex: 5, left: 10, bottom: 10, opacity: sizeFade, gap: 8, alignItems: 'flex-start' }}>
+        {/* Brush Size: a small label above the pill, on the left; the eraser's Hard/Soft and the blend tool's
+            strength beside it (Jörg, 5 Nov 2026) */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <View style={styles.sizeLabel}><Text style={styles.sizeLabelText}>{t('Brush Size')}</Text></View>
+          {(sizePop === 'eraser' ? [['Hard', false], ['Soft', true]] : sizePop === 'smudge' ? [['Gentle', 0.5], ['Normal', 1], ['Strong', 1.8]] : []).map(([name, v]) => {
+            const on = sizePop === 'eraser' ? eraseSoft === v : smudgeK === v;
+            return (
+              <Pressable key={name} onPress={() => { if (sizePop === 'eraser') setEraseSoft(v); else setSmudgeK(v); endSlide(); }} hitSlop={6} accessibilityRole="button" accessibilityLabel={t(name)} accessibilityState={{ selected: on }}
+                style={[styles.sizeLabel, on && { backgroundColor: colors.green }]}>
+                <Text style={styles.sizeLabelText}>{t(name)}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        <View style={[styles.sizePop, { position: 'relative', paddingHorizontal: 18 }]}>
+          <SizeSlider v={toolV[sizePop] != null ? toolV[sizePop] : 0.4} label={t('Brush Size')}
+            onChange={(v) => { clearTimeout(sizeTimer.current); sizeFade.stopAnimation(); sizeFade.setValue(1); setToolV((o) => ({ ...o, [sizePop]: v })); }} onEnd={endSlide} />
+        </View>
       </Animated.View>
     );
   };
@@ -1824,6 +1872,8 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth * 2, borderColor: 'rgba(255,255,255,0.18)', shadowColor: '#fff', shadowOpacity: 0.22, shadowRadius: 8, shadowOffset: { width: 0, height: 0 } },
   pill: { height: 52, borderRadius: 26, backgroundColor: '#161616', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', paddingHorizontal: 6 },
   plusBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+  sizeLabel: { height: 24, paddingHorizontal: 10, borderRadius: 12, backgroundColor: 'rgba(14,14,14,0.82)', alignItems: 'center', justifyContent: 'center' },
+  sizeLabelText: { color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 12, letterSpacing: 0.3 },
   sizePop: { position: 'absolute', zIndex: 5, minWidth: 150, height: 54, borderRadius: 27, backgroundColor: '#111', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', paddingHorizontal: 6, shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 8, shadowOffset: { width: 0, height: 4 } },
   sheet: { backgroundColor: colors.glass, borderTopLeftRadius: 22, borderTopRightRadius: 22, paddingHorizontal: 22, paddingTop: 20, shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 14, shadowOffset: { width: 0, height: -4 } },
   sheetLabel: { color: '#aaa', fontFamily: fonts.uiBold, fontSize: 13, letterSpacing: 0.5, marginTop: 16, marginBottom: 10, textTransform: 'uppercase' },
