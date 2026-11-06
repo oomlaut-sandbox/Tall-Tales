@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
   band: { backgroundColor: 'rgba(0,0,0,0.55)', paddingBottom: 26, paddingHorizontal: 24, gap: 6 },
   title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 32, transform: [{ translateY: -3 }] }, // (level with the other screens' titles)
   sub: { color: '#cfcac0', fontFamily: fonts.ui, fontSize: 15 },
-  body: { padding: 20, paddingBottom: 80, gap: 14 },
+  body: { padding: 20, paddingBottom: 80, gap: 14, width: '100%', maxWidth: 680, alignSelf: 'center' }, // (one column, half the screen on an iPad, like Settings: 6 Nov 2026)
   // on the oak (6 Nov 2026): headings in black straight on the wood; loose notes sit in light see-through white boxes, in black and very dark grey
   h: { color: '#111111', fontFamily: fonts.uiBold, fontSize: 24, marginTop: 18 }, // (straight on the wood, no box: 6 Nov 2026)
   loose: { color: '#2a2a2a', fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, backgroundColor: 'rgba(255,255,255,0.55)', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, overflow: 'hidden' },
