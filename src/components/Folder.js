@@ -205,9 +205,11 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
               {open.from ? <Text style={[styles.cardLabel, { fontSize: 16, marginBottom: 12 }]}>{t('From {name}', { name: open.from })}</Text> : null}
               <SheetPage page={open.page} size={Math.min(big, (winH - 240) / (open.page.kind === 'sketch' ? 2 : 1.42))} />
               {open.page.kind === 'drawing' ? (
-                <View style={{ flexDirection: 'row', gap: 10, marginTop: 18 }}>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 10, marginTop: 18, paddingHorizontal: 16 }}>
                   <Pressable onPress={withTap(() => setDrawOn({ bg: open.page.uri, strokes: open.page.strokes || [], id: open.id }))} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Draw on it')}</Text></Pressable>
                   <Pressable onPress={withTap(() => pinNow(open.page.strokes || [], open.page.uri))} style={[styles.pill, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Pin it')}</Text></Pressable>
+                  {/* send the drawing to another family, behind the grown-up check (Jörg, 6 Nov 2026) */}
+                  {canSend ? <Pressable onPress={withTap(() => setSendGate({ page: open.page }))} style={[styles.pill, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Send it')}</Text></Pressable> : null}
                 </View>
               ) : null}
               <Pressable onPress={withTap(() => setSure(open))} hitSlop={10} style={{ marginTop: 18 }} accessibilityRole="button" accessibilityLabel={t('Delete')}>
@@ -254,8 +256,11 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
       {drawOn ? (
         <DrawEditor insets={insets} photo={drawOn.bg} strokes={drawOn.strokes} title={t('Drawing')} draftKey={drawOn.id ? `sheet:${drawOn.id}` : 'sheet:new'} onDone={drawDone} />
       ) : null}
-      <ParentGate visible={sendGate} reason={t('Sending a sheet opens your phone’s messages and email.')} onCancel={() => setSendGate(false)}
-        onPass={async () => { setSendGate(false); const nb = await loadNotebook(); setPicking(nb.pages.filter((p) => p.uri || (p.strokes && p.strokes.length) || (p.strokes2 && p.strokes2.length) || (p.text || '').trim())); }} />
+      <ParentGate visible={!!sendGate} reason={t('Sending a sheet opens your phone’s messages and email.')} onCancel={() => setSendGate(false)}
+        onPass={async () => {
+          const g = sendGate; setSendGate(false);
+          if (g && g.page) { const who = name || t('a friend'); await shareSheet({ kind: 'drawing', uri: g.page.uri, strokes: g.page.strokes || [] }, who, t('A sheet for you from {name}. Open the file in Coro to put it in Things to share.', { name: who })); return; }
+          const nb = await loadNotebook(); setPicking(nb.pages.filter((p) => p.uri || (p.strokes && p.strokes.length) || (p.strokes2 && p.strokes2.length) || (p.text || '').trim())); }} />
     </Modal>
   );
 }

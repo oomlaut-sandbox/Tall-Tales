@@ -974,6 +974,7 @@ const T = {
   'What it looks like on day 1.': { de: 'Wie es am ersten Tag aussieht.', fr: 'À quoi ça ressemble le jour 1.', es: 'Cómo se ve el día 1.', ja: '1にちめの ようす。', ar: 'كيف يبدو في اليوم الأول.' },
   'What changed.': { de: 'Was sich verändert hat.', fr: 'Ce qui a changé.', es: 'Qué cambió.', ja: 'かわった こと。', ar: 'ما الذي تغيّر.' },
   'What I think will happen next.': { de: 'Was wohl als Nächstes passiert.', fr: 'Ce qui va arriver ensuite, je pense.', es: 'Lo que creo que pasará después.', ja: 'つぎは どう なると おもう？', ar: 'ما أظن أنه سيحدث بعد ذلك.' },
+  'Send it': { de: 'Senden', fr: 'L’envoyer', es: 'Enviarlo', ja: 'おくる', ar: 'أرسلها' },
   'Upload Images': { de: 'Bilder hochladen', fr: 'Importer des images', es: 'Subir imágenes', ja: 'えを いれる', ar: 'رفع الصور' },
   'Choose up to {n} pictures from your photos. Coro puts them into a book, and you just add the words.': { de: 'Wähle bis zu {n} Bilder aus deinen Fotos. Coro macht daraus ein Buch, und du schreibst nur noch die Wörter dazu.', fr: 'Choisis jusqu’à {n} images dans tes photos. Coro en fait un livre, et tu n’as plus qu’à ajouter les mots.', es: 'Elige hasta {n} imágenes de tus fotos. Coro las pone en un libro, y tú solo añades las palabras.', ja: 'しゃしんから{n}まいまで えをえらんでね。Coroが 本にするから、あとは ことばを かくだけ。', ar: "اختر حتى {n} صورة من صورك. يضعها Coro في كتاب، وما عليك إلا إضافة الكلمات." },
   'How should the pages go?': { de: 'Wie sollen die Seiten aussehen?', fr: 'Comment ranger les pages ?', es: '¿Cómo van las páginas?', ja: 'ページは どうする？', ar: "كيف تكون الصفحات؟" },

@@ -77,6 +77,7 @@ async function unpackStrokes(list, pics) {
 }
 export async function unpackSheetPage(d) {
   const pg = (d && d.page) || {};
-  return { kind: pg.kind === 'sketch' ? 'sketch' : 'note', text: typeof pg.text === 'string' ? pg.text.slice(0, 2000) : '',
+  return { kind: pg.kind === 'sketch' || pg.kind === 'drawing' ? pg.kind : 'note', // ('drawing': a drawing on a sheet of paper from Things to share)
+    text: typeof pg.text === 'string' ? pg.text.slice(0, 2000) : '',
     strokes: await unpackStrokes(pg.strokes, d && d.pics), strokes2: await unpackStrokes(pg.strokes2, d && d.pics) };
 }
