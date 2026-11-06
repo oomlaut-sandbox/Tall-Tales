@@ -5,18 +5,26 @@
 //   mode 'enter': tap the three pictures to open the profile
 //   mode 'set': choose three pictures, then Use these
 import React, { useRef, useState } from 'react';
-import { Animated, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme';
 import { useT } from '../i18n';
 import { playKey } from '../sound';
 
-// nine pictures every child knows, the same everywhere (and the same place on the grid each time)
+// nine pictures every child knows, as Jörg's felt tiles (6 Nov 2026), the same place on the grid every time
 export const PICS = [
-  ['apple', '🍎', 'Apple'], ['star', '⭐️', 'Star'], ['fish', '🐟', 'Fish'],
-  ['moon', '🌙', 'Moon'], ['car', '🚗', 'Car'], ['rainbow', '🌈', 'Rainbow'],
-  ['cat', '🐱', 'Cat'], ['flower', '🌻', 'Flower'], ['ball', '⚽️', 'Ball'],
+  ['apple', require('../../assets/pics/apple.png'), 'Apple'], ['star', require('../../assets/pics/star.png'), 'Star'], ['fish', require('../../assets/pics/fish.png'), 'Fish'],
+  ['moon', require('../../assets/pics/moon.png'), 'Moon'], ['rocket', require('../../assets/pics/rocket.png'), 'Rocket'], ['rainbow', require('../../assets/pics/rainbow.png'), 'Rainbow'],
+  ['cat', require('../../assets/pics/cat.png'), 'Cat'], ['flower', require('../../assets/pics/flower.png'), 'Flower'], ['sun', require('../../assets/pics/sun.png'), 'Sun'],
 ];
-export const picOf = (k) => (PICS.find((p) => p[0] === k) || [k, '?', k])[1];
+// (the first set had a car and a ball where the rocket and the sun are now)
+const OLD = { car: 'rocket', ball: 'sun' };
+export const keyOf = (k) => OLD[k] || k;
+export const picImage = (k) => (PICS.find((p) => p[0] === keyOf(k)) || [])[1] || null;
+// a tile, any size
+export function PicTile({ k, size = 40, style }) {
+  const src = picImage(k);
+  return src ? <Image source={src} style={[{ width: size, height: size, borderRadius: size * 0.14 }, style]} /> : null;
+}
 const LEN = 3;
 
 export default function PicLock({ visible, mode = 'enter', name, pics, onDone, onCancel, onGrownUp }) {
@@ -36,7 +44,7 @@ export default function PicLock({ visible, mode = 'enter', name, pics, onDone, o
     setWrong(false);
     setGot(next);
     if (mode === 'enter' && next.length === LEN) {
-      if (pics && next.every((x, i) => x === pics[i])) setTimeout(() => { reset(); onDone && onDone(); }, 180);
+      if (pics && next.every((x, i) => x === keyOf(pics[i]))) setTimeout(() => { reset(); onDone && onDone(); }, 180);
       else setTimeout(nope, 180);
     }
   };
@@ -51,14 +59,14 @@ export default function PicLock({ visible, mode = 'enter', name, pics, onDone, o
           <View style={styles.slots}>
             {Array.from({ length: LEN }, (_, i) => (
               <View key={i} style={[styles.slot, got[i] && styles.slotOn]}>
-                {got[i] ? <Text style={mode === 'set' ? styles.slotPic : styles.slotDot}>{mode === 'set' ? picOf(got[i]) : '●'}</Text> : null}
+                {got[i] ? (mode === 'set' ? <PicTile k={got[i]} size={44} /> : <Text style={styles.slotDot}>●</Text>) : null}
               </View>
             ))}
           </View>
           <View style={styles.grid}>
-            {PICS.map(([k, e, label]) => (
+            {PICS.map(([k, src, label]) => (
               <Pressable key={k} onPress={() => tap(k)} style={({ pressed }) => [styles.pic, pressed && { transform: [{ scale: 0.92 }] }]} accessibilityRole="button" accessibilityLabel={t(label)}>
-                <Text style={styles.emoji} allowFontScaling={false}>{e}</Text>
+                <Image source={src} style={styles.tile} />
               </Pressable>
             ))}
           </View>
@@ -89,11 +97,10 @@ const styles = StyleSheet.create({
   slots: { flexDirection: 'row', gap: 12, marginVertical: 2 },
   slot: { width: 52, height: 52, borderRadius: 14, borderWidth: 2, borderColor: '#5a5a5a', alignItems: 'center', justifyContent: 'center' },
   slotOn: { borderColor: colors.white },
-  slotPic: { fontSize: 30 },
   slotDot: { color: colors.white, fontSize: 18 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 12, width: 3 * 84 + 2 * 12 },
-  pic: { width: 84, height: 84, borderRadius: 20, backgroundColor: '#f4f1ea', alignItems: 'center', justifyContent: 'center' },
-  emoji: { fontSize: 46 },
+  pic: { width: 84, height: 84, borderRadius: 14, shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 4, shadowOffset: { width: 0, height: 3 } },
+  tile: { width: 84, height: 84, borderRadius: 12 },
   row: { flexDirection: 'row', gap: 10, marginTop: 4 },
   pill: { height: 46, borderRadius: 23, paddingHorizontal: 22, justifyContent: 'center' },
   pillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },

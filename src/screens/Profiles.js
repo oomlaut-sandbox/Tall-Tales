@@ -15,7 +15,7 @@ import { DESK_FELT, DESK_BG } from '../look';
 import { Bar, Burger, ConfirmBox, WithBar } from '../components/Chrome';
 import ParentGate from '../components/ParentGate';
 import { unlockFamily } from '../classroom';
-import PicLock, { picOf } from '../components/PicLock';
+import PicLock, { PicTile } from '../components/PicLock';
 import { useT } from '../i18n';
 import { useControls, DEFAULT_CONTROLS } from '../controls';
 import { keepFile, liveUri, loadJSONFor, saveJSONFor } from '../storage';
@@ -393,7 +393,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
               {/* picture password (6 Nov 2026) */}
               <Text style={styles.section}>{t('Picture password')}</Text>
               <View style={[styles.choices, { alignItems: 'center' }]}>
-                {form.pics && form.pics.length ? <Text style={{ fontSize: 30 }} allowFontScaling={false} accessibilityLabel={t('Picture password')}>{form.pics.map(picOf).join(' ')}</Text> : null}
+                {form.pics && form.pics.length ? <View style={{ flexDirection: 'row', gap: 6 }} accessible accessibilityLabel={t('Picture password')}>{form.pics.map((k, i) => <PicTile key={i} k={k} size={40} />)}</View> : null}
                 <Choice label={form.pics && form.pics.length ? t('Change') : t('Choose 3 pictures')} on={false} onPress={() => setSetPics(true)} />
                 {form.pics && form.pics.length ? <Choice label={t('Turn off')} on={false} onPress={() => setForm({ ...form, pics: null })} /> : null}
               </View>
