@@ -6,6 +6,7 @@
 //   mode 'set': choose three pictures, then Use these
 import React, { useRef, useState } from 'react';
 import { Animated, Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { colors, fonts } from '../theme';
 import { useT } from '../i18n';
 import { playKey } from '../sound';
@@ -53,6 +54,8 @@ export default function PicLock({ visible, mode = 'enter', name, pics, onDone, o
   return (
     <Modal visible={!!visible} transparent animationType="fade" onRequestClose={close} supportedOrientations={['portrait', 'landscape']}>
       <View style={styles.dim}>
+        {/* a slight blur of the page behind the glass, so it stays light without competing (6 Nov 2026) */}
+        <BlurView intensity={14} tint="dark" style={StyleSheet.absoluteFill} pointerEvents="none" />
         <Animated.View style={[styles.box, { transform: [{ translateX: shake }] }]}>
           <Text style={styles.title}>{mode === 'set' ? t('Choose 3 pictures') : t('Hi, {name}!', { name })}</Text>
           <Text style={styles.sub}>{mode === 'set' ? t('Tap them in order. {name} taps the same three to open their profile.', { name }) : wrong ? t('Not quite. Try again!') : t('Tap your 3 pictures.')}</Text>
