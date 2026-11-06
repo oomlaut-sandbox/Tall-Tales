@@ -2,7 +2,7 @@
 // rest are sheets sent by other Oomlaut families (a notebook page: a drawing, a photo, a note), added when a
 // grown-up opens the file they were sent. Each child has their own folder.
 // { sheets: [{ id, kind: 'page', from, date, page: { kind: 'note' | 'sketch', text, uri, strokes, strokes2 } }] }
-import { deleteFile, keepFile, loadJSON, saveJSON } from './storage';
+import { deleteFile, keepFile, liveUri, loadJSON, saveJSON } from './storage';
 import { currentProfile, onScopeChange } from './scope';
 import { loadJSONFor, saveJSONFor } from './storage';
 
@@ -15,7 +15,9 @@ export function onFolder(fn) { listeners.add(fn); return () => listeners.delete(
 
 export async function loadFolder() {
   const f = await loadJSON('folder', null);
-  cache = { sheets: f && Array.isArray(f.sheets) ? f.sheets : [] };
+  // (a picture's saved path is moved to today's app folder: iOS moves the folder with every update, and an old
+  // path shows a blank sheet. 6 Nov 2026)
+  cache = { sheets: (f && Array.isArray(f.sheets) ? f.sheets : []).map((x) => (x.page && x.page.uri ? { ...x, page: { ...x.page, uri: liveUri(x.page.uri) } } : x)) };
   return cache;
 }
 async function save() { await saveJSON('folder', cache); emit(); }

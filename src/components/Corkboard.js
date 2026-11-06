@@ -15,7 +15,7 @@ import { CameraIcon, ChoiceLabel } from './Chrome';
 // the icons before the words, the same line icons as the app's other pop-ups (Jörg, 28 Oct 2026)
 const PIN_ICONS = { doodle: require('../../assets/heading-icons/my-notebook.png'), note: require('../../assets/heading-icons/sticky-note.png') /* a note with its corner curling up (Jörg, 29 Oct 2026) */, photo: require('../../assets/heading-icons/family-and-memories.png') };
 const PinIcon = ({ src }) => (src ? <Image source={src} style={{ width: 22, height: 22, tintColor: colors.white }} resizeMode="contain" accessibilityIgnoresInvertColors /> : <View style={{ width: 22, alignItems: 'center' }}><CameraIcon size={19} color={colors.white} weight={1.6} /></View>);
-import { inSheet, loadPins, pinNote, pinPhoto, unpin } from '../corkboard';
+import { inSheet, loadPins, onPins, pinNote, pinPhoto, unpin } from '../corkboard';
 import { onScopeChange } from '../scope';
 import { loadNotebook } from '../notebook';
 import { StrokesView, strokesToImage } from './Strokes';
@@ -81,7 +81,9 @@ export default function Corkboard({ width, toast, onPlaylists }) {
   };
   useEffect(() => {
     loadPins().then(setPins);
-    return onScopeChange(() => loadPins().then(setPins)); // another child's board
+    const off = onPins((p) => setPins([...(p || [])])); // (pinned from somewhere else: shown at once)
+    const offScope = onScopeChange(() => loadPins().then(setPins)); // another child's board
+    return () => { off(); offScope(); };
   }, []);
   const H = Math.round(width * 1.1); // much taller than wide (Jörg, 29 Oct 2026)
 

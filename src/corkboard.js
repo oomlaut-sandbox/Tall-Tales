@@ -1,6 +1,6 @@
 // The corkboard at the bottom of My Library: yellow sticky notes and photos, pinned anywhere.
 // Each pin: { id, kind: 'note' | 'photo' | 'doodle' (a drawing from My Notes, a small square), text?, uri?, x, y (0..1, where its middle sits on the board), rot (degrees) }
-import { deleteFile, keepFile, loadJSON, loadJSONFor, saveJSON, saveJSONFor } from './storage';
+import { deleteFile, keepFile, liveUri, loadJSON, loadJSONFor, saveJSON, saveJSONFor } from './storage';
 import { currentProfile, onScopeChange } from './scope';
 
 export const MAX_PINS = 12;
@@ -12,11 +12,18 @@ onScopeChange(() => { cache = null; });
 const STARTER = { id: 'starter', kind: 'note', text: 'Make, read and share books', seed: 1, x: 0.7, y: 0.56, rot: 3 };
 export async function loadPins() {
   const b = await loadJSON('corkboard', null);
-  cache = b && Array.isArray(b.pins) ? b.pins : [];
+  // (photo and drawing pins: their saved path moved to today's app folder. iOS moves the folder with every
+  // update, and an old path showed as a blank white sheet: Jörg, 6 Nov 2026)
+  cache = (b && Array.isArray(b.pins) ? b.pins : []).map((p) => (p.uri ? { ...p, uri: liveUri(p.uri) } : p));
   if (!b || !b.seeded) { cache = [...cache, STARTER]; await save(); }
   return cache;
 }
-async function save() { await saveJSON('corkboard', { pins: cache, seeded: true }); }
+// the board on screen hears about every change, wherever it was pinned from (the folder's Pin it, the Teacher's
+// Desk): before this a drawing pinned from Things to share only showed after something else changed the board
+const pinListeners = new Set();
+const emit = () => pinListeners.forEach((fn) => { try { fn(cache); } catch (e) {} });
+export function onPins(fn) { pinListeners.add(fn); return () => pinListeners.delete(fn); }
+async function save() { await saveJSON('corkboard', { pins: cache, seeded: true }); emit(); }
 
 // the Book Playlists sheet, always pinned in the board's lower left corner: no pin's middle may land where the
 // pin would cover any of it (Jörg, 29 Oct 2026)
@@ -86,6 +93,6 @@ export async function pinFor(ids, pin) {
     pins = [...pins, p];
     while (pins.length > MAX_PINS) { const gone = pins.shift(); if (gone.uri) deleteFile(gone.uri); }
     await saveJSONFor(id, 'corkboard', { pins, seeded: true });
-    if (id === currentProfile()) cache = pins;
+    if (id === currentProfile()) { cache = pins; emit(); }
   }
 }
