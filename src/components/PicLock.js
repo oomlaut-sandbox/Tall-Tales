@@ -91,8 +91,8 @@ export default function PicLock({ visible, mode = 'enter', name, pics, onDone, o
 }
 
 const styles = StyleSheet.create({
-  dim: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: 20 },
-  box: { width: '100%', maxWidth: 380, backgroundColor: 'rgba(0,0,0,0.92)', borderRadius: 26, paddingTop: 30, paddingBottom: 30, paddingHorizontal: 26, alignItems: 'center', gap: 14 },
+  dim: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)', alignItems: 'center', justifyContent: 'center', padding: 20 },
+  box: { width: '100%', maxWidth: 380, backgroundColor: 'rgba(0,0,0,0.7)', borderRadius: 26, paddingTop: 30, paddingBottom: 30, paddingHorizontal: 26, alignItems: 'center', gap: 14 },
   title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 24, textAlign: 'center' },
   sub: { color: '#cfcac0', fontFamily: fonts.ui, fontSize: 15, lineHeight: 21, textAlign: 'center' },
   slots: { flexDirection: 'row', gap: 12, marginVertical: 2 },
