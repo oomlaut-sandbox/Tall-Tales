@@ -14,6 +14,7 @@ import { colors, fonts } from '../theme';
 import { DESK_FELT, DESK_BG } from '../look';
 import { Bar, Burger, ConfirmBox, WithBar } from '../components/Chrome';
 import ParentGate from '../components/ParentGate';
+import PicLock, { picOf } from '../components/PicLock';
 import { useT } from '../i18n';
 import { useControls, DEFAULT_CONTROLS } from '../controls';
 import { keepFile, liveUri, loadJSONFor, saveJSONFor } from '../storage';
@@ -99,13 +100,19 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
   const [openCls, setOpenCls] = useState(null); // the class folder that's open (classroom mode)
   const cls = room ? (classes.find((c) => c.id === openCls) || null) : null;
   const folders = !!room && !cls; // the classes themselves, as folders
-  const shown = room ? (cls ? inClass(cls.id) : []) : s.list;
+  // (classroom mode off: the students' profiles are kept but hidden until it's on again, as Settings says. They
+  // showed in the family's picker, 30 names anyone could tap: Jörg, 6 Nov 2026)
+  const family = s.list.filter((p) => !p.cls);
+  const shown = room ? (cls ? inClass(cls.id) : []) : (family.length ? family : s.list);
   const [view, setView] = useState('grid'); // 'grid' | 'list' (the names, A to Z)
   const [selecting, setSelecting] = useState(false); // Select on the bar: tap profiles, then the trash can
   const [picked, setPicked] = useState([]);
   const [sureMany, setSureMany] = useState(false);
   const [classForm, setClassForm] = useState(null); // { id?, name }: a new class, or one being renamed
   const [moreAv, setMoreAv] = useState(false); // Explore more avatars
+  const [lockFor, setLockFor] = useState(null); // { id, glide }: the profile asking for its picture password
+  const [lockGate, setLockGate] = useState(null); // forgot the pictures: the grown-up question opens it instead
+  const [setPics, setSetPics] = useState(false); // choosing a profile's picture password (in its settings)
   const stopSelect = () => { setSelecting(false); setPicked([]); };
   const togglePick = (id) => setPicked((l) => (l.includes(id) ? l.filter((x) => x !== id) : [...l, id]));
   // each child's box: a third of the row, much wider than the character (Jörg, 26 Oct 2026), so names and
@@ -115,7 +122,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
 
   const openForm = (p) => {
     setSure(false);
-    setForm(p ? { id: p.id, name: p.name, color: p.color, photo: p.photo || null, age: ages[p.id] ?? null }
+    setForm(p ? { id: p.id, name: p.name, color: p.color, photo: p.photo || null, age: ages[p.id] ?? null, pics: p.pics || null }
       : { name: '', color: PROFILE_COLORS[s.list.length % PROFILE_COLORS.length][0], age: null, cls: cls ? cls.id : undefined });
   };
   // a photo for the profile: from the phone's photos, a small square from its middle, kept with the app
@@ -136,7 +143,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
   const saveForm = async () => {
     const f = form;
     if (f.id) {
-      updateProfile(f.id, { name: f.name, color: f.color, photo: f.photo || null });
+      updateProfile(f.id, { name: f.name, color: f.color, photo: f.photo || null, pics: f.pics && f.pics.length ? f.pics : null });
       if (f.id === s.active) setControls({ ...controls, childAge: f.age });
       else {
         const c = await loadJSONFor(f.id, 'controls', null);
@@ -144,7 +151,8 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
       }
     } else {
       const first = s.list.length === 0;
-      await addProfile({ name: f.name, color: f.color, age: f.age, photo: f.photo || null, cls: f.cls });
+      const made = await addProfile({ name: f.name, color: f.color, age: f.age, photo: f.photo || null, cls: f.cls });
+      if (made && f.pics && f.pics.length) updateProfile(made.id, { pics: f.pics });
       if (first) setControls({ ...controls, childAge: f.age }); // the first child keeps the settings already here
     }
     setForm(null);
@@ -156,8 +164,11 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
     picking.current = true;
     Animated.timing(pageFade, { toValue: 0, duration: 220, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => { picking.current = false; onBack(to); });
   };
-  const pick = (id, glide = true) => {
+  // a profile with a picture password asks for it first (not for the child already reading)
+  const pick = (id, glide = true, opened = false) => {
     if (picking.current) return;
+    const who = s.list.find((p) => p.id === id);
+    if (!opened && who && who.pics && who.pics.length && id !== s.active) { setLockFor({ id, glide }); return; }
     const L = glide ? cells.current[id] : null;
     picking.current = true;
     // fade the page away first; then switch (the app starts afresh for that child, straight into My Library)
@@ -378,6 +389,14 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
                 {AGES.map((a) => <Choice key={a} label={String(a)} on={form.age === a} onPress={() => setForm({ ...form, age: a })} />)}
               </View>
               <Text style={styles.small}>{t('A grown-up sees every book. For a child, books rated for older children are hidden.')}</Text>
+              {/* picture password (6 Nov 2026) */}
+              <Text style={styles.section}>{t('Picture password')}</Text>
+              <View style={[styles.choices, { alignItems: 'center' }]}>
+                {form.pics && form.pics.length ? <Text style={{ fontSize: 30 }} allowFontScaling={false} accessibilityLabel={t('Picture password')}>{form.pics.map(picOf).join(' ')}</Text> : null}
+                <Choice label={form.pics && form.pics.length ? t('Change') : t('Choose 3 pictures')} on={false} onPress={() => setSetPics(true)} />
+                {form.pics && form.pics.length ? <Choice label={t('Turn off')} on={false} onPress={() => setForm({ ...form, pics: null })} /> : null}
+              </View>
+              <Text style={styles.small}>{t('With a picture password, only someone who knows the three pictures can open this profile. A grown-up can always open it with the grown-up question.')}</Text>
               {/* (for a profile that exists) a red Delete on the left; Cancel, then Save in the bottom right corner (Jörg, 26 Oct 2026) */}
               {/* (they shrink to fit, so longer words in other languages never push one out of the box) */}
               <View style={{ flexDirection: 'row', gap: 8, marginTop: 6, alignItems: 'center' }}>
@@ -454,6 +473,11 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
       {/* ending classroom mode: asked first, saying that nothing is lost (Jörg, 31 Oct 2026) */}
       {endAsk ? <ConfirmBox modal danger={false} title={t('End classroom mode?')} message={t('Your class folders and every student’s profile, notebook and books are kept. Turn classroom mode on again in Settings to see them.')} confirm={t('End classroom mode')} cancel={t('Cancel')}
         onConfirm={() => { setEndAsk(false); endClassroom(); setOpenCls(null); }} onCancel={() => setEndAsk(false)} /> : null}
+      {/* a picture password: chosen in a profile's settings, asked for when its name is tapped */}
+      <PicLock visible={setPics && !!form} mode="set" name={(form && form.name) || '?'} onCancel={() => setSetPics(false)} onDone={(pics) => { setSetPics(false); setForm((f) => ({ ...f, pics })); }} />
+      <PicLock visible={!!lockFor && !lockGate} mode="enter" name={lockFor ? ((s.list.find((p) => p.id === lockFor.id) || {}).name || '') : ''} pics={lockFor ? (s.list.find((p) => p.id === lockFor.id) || {}).pics : null}
+        onCancel={() => setLockFor(null)} onGrownUp={() => setLockGate(lockFor)} onDone={() => { const l = lockFor; setLockFor(null); pick(l.id, l.glide, true); }} />
+      <ParentGate everyday visible={!!lockGate} reason={t('A grown-up can open any profile.')} onPass={() => { const l = lockGate; setLockGate(null); setLockFor(null); pick(l.id, l.glide, true); }} onCancel={() => setLockGate(null)} />
       <ParentGate everyday visible={!!gate} reason={t('Changing profiles is for grown-ups.')}
         onPass={() => { const g = gate; setGate(null); if (g === 'add') openForm(null); else if (g === 'select') { setEditing(false); setSelecting(true); } else if (g === 'class') setClassForm({ name: '' }); else if (g === 'endclass') setEndAsk(true); else setEditing(true); }} onCancel={() => setGate(null)} />
     </WithBar>

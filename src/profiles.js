@@ -160,6 +160,11 @@ export function removeClass(id) {
   return true;
 }
 export function endClassroom() {
-  state = { ...state, classroom: null };
+  // (a student was reading: the first family profile takes over, since the students are hidden now: 6 Nov 2026)
+  const cur = state.list.find((p) => p.id === state.active);
+  const fam = state.list.find((p) => !p.cls);
+  const active = cur && cur.cls && fam ? fam.id : state.active;
+  state = { ...state, classroom: null, active };
+  if (active !== currentProfile()) setScope(active);
   save(); emit();
 }
