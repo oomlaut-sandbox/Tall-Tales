@@ -401,8 +401,11 @@ function paintWash(st, w, lw, light, dk) {
 // effects'): an ordinary touch only reaches about a third of the way, so the low end is opened up: a feather-light
 // touch about 0.3, a normal one about 0.6, pressing hard 1
 export const pres = (q) => (q == null ? null : Math.max(0.08, Math.min(1, Math.sqrt(Math.max(0, q) * 1.8))));
+// the pencil's width and its line (see layersOf): steady and smoothed, no tapered ends, pressure widens it
+const pencilSize = (lw) => Math.max(1.2, lw * 0.5);
+const PENCIL_OF = (st) => ({ thinning: st.q && st.q.some((v) => v > 0) ? 0.55 : 0, taper: false, streamline: 0.55, smoothing: 0.6 });
 const penSize = (st, lw) => lw * ((st.s || 0.01) > 0.025 ? 1.05 : 1.5);
-export function pfOutline(st, w, size, { thinning = 0.6, taper = true, live = false } = {}) {
+export function pfOutline(st, w, size, { thinning = 0.6, taper = true, live = false, streamline = 0.45, smoothing = 0.55 } = {}) {
   const p = st.p || [];
   const pts = [];
   for (let i = 0; i + 1 < p.length; i += 2) {
@@ -411,7 +414,7 @@ export function pfOutline(st, w, size, { thinning = 0.6, taper = true, live = fa
   }
   if (!pts.length) return [];
   const t = taper ? Math.max(size * 2.5, 6) : 0;
-  return getStroke(pts, { size, thinning, smoothing: 0.55, streamline: 0.45, simulatePressure: !(st.q && st.q.some((v) => v > 0)),
+  return getStroke(pts, { size, thinning, smoothing, streamline, simulatePressure: !(st.q && st.q.some((v) => v > 0)),
     start: { taper: t, cap: true }, end: { taper: live ? 0 : t, cap: true }, last: !live });
 }
 // an outline as SVG path data: smooth curves through the midpoints, each outline point its own curve's control point.
@@ -432,11 +435,11 @@ export function outlineD(pts) {
 export function liveLook(st, w) {
   if (!st || st.e || st.sm || st.stp || st.f || st.z || st.ph) return null;
   const lw = Math.max(1, (st.s || 0.01) * w), b = st.b || 'ink';
-  const look = b === 'pencil' ? { size: Math.max(1.2, lw * 0.45), thinning: st.q ? 0.5 : 0, alpha: 0.9 }
+  const look = b === 'pencil' ? { size: pencilSize(lw), pencil: true, alpha: 1 }
     : b === 'water' ? { size: lw * 1.35 * 1.1, thinning: 0.5, alpha: 0.42 } // (the body's size: see layersOf)
     : b === 'crayon' ? { size: lw * 1.35, thinning: 0.3, alpha: 0.7 }
     : { size: penSize(st, lw), thinning: 0.6, alpha: 1 };
-  const one = (x) => outlineD(pfOutline(x, w, look.size, { thinning: look.thinning, live: true }));
+  const one = (x) => outlineD(pfOutline(x, w, look.size, look.pencil ? { ...PENCIL_OF(x), live: true } : { thinning: look.thinning, live: true }));
   // soft: the watercolour's soft edge already while painting (Jörg, 5 Nov 2026), like the finished stroke's
   return { d: [one(st), ...(st.m ? [one(mirrored(st))] : [])].join(' '), alpha: look.alpha, color: st.c || '#111111', soft: b === 'water' && st.wc ? Math.max(0.8, look.size * 0.1) : 0 };
 }
@@ -528,9 +531,12 @@ function layersOf(st, w) {
   }
   // pencil (Jörg, 27 Oct 2026): a plain, smooth, fine line of even width, like a sharp pencil or a fineliner.
   // No speed swing, no taper, no grain. Apple Pencil: pressing harder makes it a little darker, that's all.
+  // (5 Nov 2026, Jörg: 'just make it a solid line, with the pressure variation, line smoothing on'): one solid shape,
+  // smoothed, the same one shown while drawing; Apple Pencil pressure makes it thinner and thicker along the line
   if (b === 'pencil') {
-    if (st.q && st.q.length > 1) return pencilPressed(st, w, lw);
-    return [{ d: strokeD(st, w), width: Math.max(1.2, lw * 0.45), alpha: clamp(0.92 * darkOf(st, 0.6), 0.5, 1) }];
+    const d = outlineD(pfOutline(st, w, pencilSize(lw), PENCIL_OF(st)));
+    if (d) return [{ d, fill: true, alpha: 1 }];
+    return [{ d: strokeD(st, w), width: pencilSize(lw), alpha: 1 }];
   }
   // crayon: waxy and smooth-edged, the paper's tooth breaking it up; two soft passes that deepen where they cross
   if (b === 'crayon') {
