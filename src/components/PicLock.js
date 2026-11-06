@@ -10,14 +10,15 @@ import { colors, fonts } from '../theme';
 import { useT } from '../i18n';
 import { playKey } from '../sound';
 
-// nine pictures every child knows, as Jörg's felt tiles (6 Nov 2026), the same place on the grid every time
+// nine felt monsters, each one easy to tell apart (Jörg, 6 Nov 2026), the same place on the grid every time
+const M = (n) => [`m${n}`, [null, require('../../assets/pics/monster-1.png'), require('../../assets/pics/monster-2.png'), require('../../assets/pics/monster-3.png'), require('../../assets/pics/monster-4.png'), require('../../assets/pics/monster-5.png'), require('../../assets/pics/monster-6.png'), require('../../assets/pics/monster-7.png'), require('../../assets/pics/monster-8.png'), require('../../assets/pics/monster-9.png')][n]];
 export const PICS = [
-  ['apple', require('../../assets/pics/apple.png'), 'Apple'], ['star', require('../../assets/pics/star.png'), 'Star'], ['fish', require('../../assets/pics/fish.png'), 'Fish'],
-  ['moon', require('../../assets/pics/moon.png'), 'Moon'], ['rocket', require('../../assets/pics/rocket.png'), 'Rocket'], ['rainbow', require('../../assets/pics/rainbow.png'), 'Rainbow'],
-  ['cat', require('../../assets/pics/cat.png'), 'Cat'], ['flower', require('../../assets/pics/flower.png'), 'Flower'], ['sun', require('../../assets/pics/sun.png'), 'Sun'],
+  [...M(1), 'Red one-eyed monster'], [...M(2), 'Green blobby monster'], [...M(3), 'Yellow furry monster'],
+  [...M(4), 'Pink furry monster'], [...M(5), 'Orange monster with long legs'], [...M(6), 'Green monster with horns'],
+  [...M(7), 'Blue one-eyed monster'], [...M(8), 'Red monster with horns'], [...M(9), 'Purple monster with horns'],
 ];
-// (the first set had a car and a ball where the rocket and the sun are now)
-const OLD = { car: 'rocket', ball: 'sun' };
+// (earlier sets: emoji, then felt pictures; a password made with them opens with the monster in the same place)
+const OLD = { apple: 'm1', star: 'm2', fish: 'm3', moon: 'm4', car: 'm5', rocket: 'm5', rainbow: 'm6', cat: 'm7', flower: 'm8', ball: 'm9', sun: 'm9' };
 export const keyOf = (k) => OLD[k] || k;
 export const picImage = (k) => (PICS.find((p) => p[0] === keyOf(k)) || [])[1] || null;
 // a tile, any size
