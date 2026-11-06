@@ -14,6 +14,7 @@ import { colors, fonts } from '../theme';
 import { DESK_FELT, DESK_BG } from '../look';
 import { Bar, Burger, ConfirmBox, WithBar } from '../components/Chrome';
 import ParentGate from '../components/ParentGate';
+import { unlockFamily } from '../classroom';
 import PicLock, { picOf } from '../components/PicLock';
 import { useT } from '../i18n';
 import { useControls, DEFAULT_CONTROLS } from '../controls';
@@ -472,7 +473,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
       ) : null}
       {/* ending classroom mode: asked first, saying that nothing is lost (Jörg, 31 Oct 2026) */}
       {endAsk ? <ConfirmBox modal danger={false} title={t('End classroom mode?')} message={t('Your class folders and every student’s profile, notebook and books are kept. Turn classroom mode on again in Settings to see them.')} confirm={t('End classroom mode')} cancel={t('Cancel')}
-        onConfirm={() => { setEndAsk(false); endClassroom(); setOpenCls(null); }} onCancel={() => setEndAsk(false)} /> : null}
+        onConfirm={() => { setEndAsk(false); endClassroom(); unlockFamily(getProfiles().list, controls, setControls).catch(() => {}); setOpenCls(null); }} onCancel={() => setEndAsk(false)} /> : null}
       {/* a picture password: chosen in a profile's settings, asked for when its name is tapped */}
       <PicLock visible={setPics && !!form} mode="set" name={(form && form.name) || '?'} onCancel={() => setSetPics(false)} onDone={(pics) => { setSetPics(false); setForm((f) => ({ ...f, pics })); }} />
       <PicLock visible={!!lockFor && !lockGate} mode="enter" name={lockFor ? ((s.list.find((p) => p.id === lockFor.id) || {}).name || '') : ''} pics={lockFor ? (s.list.find((p) => p.id === lockFor.id) || {}).pics : null}

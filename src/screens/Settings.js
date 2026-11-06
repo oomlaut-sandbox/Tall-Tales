@@ -22,6 +22,7 @@ import { LANGS, useT } from '../i18n';
 import { lockedControls, quickSafeControls, DEFAULT_CONTROLS, STORE_ON } from '../controls';
 import { usePurchases } from '../purchases';
 import { pickTextFile } from '../textFile';
+import { unlockFamily } from '../classroom';
 import { MAX_CLASS, PROFILE_COLORS, activeProfile, addProfile, canAdd, endClassroom, inClass, getProfiles, onProfiles as watchProfiles, setClassroom } from '../profiles';
 import { hapticsOn, onHaptics, tap } from '../haptics';
 const LOCK_ICON = require('../../assets/heading-icons/grown-ups.png'); // (the lock, before Use Quick and Safe Kid)
@@ -313,7 +314,7 @@ export default function Settings({ storeAdmin, u, openMenu, lang, setLang, bookL
                   </Pressable>
                   <Text style={styles.small}>{t('The students’ profiles stay. Without a classroom, up to six profiles can be added.')}</Text>
                   {endAsk ? <ConfirmBox modal danger={false} title={t('End classroom mode?')} message={t('Your class folders and every student’s profile, notebook and books are kept. Turn classroom mode on again in Settings to see them.')} confirm={t('End classroom mode')} cancel={t('Cancel')}
-                    onConfirm={() => { setEndAsk(false); endClassroom(); }} onCancel={() => setEndAsk(false)} /> : null}
+                    onConfirm={() => { setEndAsk(false); endClassroom(); unlockFamily(getProfiles().list, controls, setControls).catch(() => {}); }} onCancel={() => setEndAsk(false)} /> : null}
                 </>
               ) : (
                 <>

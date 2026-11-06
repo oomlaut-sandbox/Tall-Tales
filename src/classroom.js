@@ -9,6 +9,7 @@
 // handIn ('in' handed in | 'back' sent back | 'ok' approved) and note (the teacher's note).
 import { loadJSON, loadJSONFor, saveJSON, saveJSONFor } from './storage';
 import { DEFAULT_CONTROLS } from './controls';
+import { currentProfile } from './scope';
 
 let prompts = [];
 let loaded = false;
@@ -76,7 +77,21 @@ export async function setClassLock(cls, on, studentIds, controls, setControls) {
     const c = await loadJSONFor(id, 'controls', null);
     await saveJSONFor(id, 'controls', locked({ ...DEFAULT_CONTROLS, ...(c || {}) }, on));
   }
-  setControls(locked(controls, on));
+  // (only when the one reading now is in the class: the lock used to land on whoever was reading, a family
+  // profile too, and stayed after classroom mode ended: Jörg, 6 Nov 2026)
+  if (studentIds.includes(currentProfile())) setControls(locked(controls, on));
   const m = await loadJSON('classLocks', {});
   await saveJSON('classLocks', { ...(m || {}), [cls]: !!on });
+}
+
+// classroom mode ends: the family's own profiles (not in a class) lose any classroom lock that reached them, so
+// the Book Store, sharing and the whole menu are back. The students keep theirs, hidden until classroom mode is on
+// again (6 Nov 2026)
+export async function unlockFamily(list, controls, setControls) {
+  for (const p of list.filter((x) => !x.cls)) {
+    const c = await loadJSONFor(p.id, 'controls', null);
+    if (c && c.beforeLock) await saveJSONFor(p.id, 'controls', locked(c, false));
+  }
+  const me = list.find((x) => x.id === currentProfile());
+  if (me && !me.cls && controls && controls.beforeLock) setControls(locked(controls, false));
 }
