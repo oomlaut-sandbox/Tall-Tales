@@ -15,6 +15,7 @@ export const TITLE_ICONS = {
   profiles: require('../assets/title-icons/people.png'),
   about: require('../assets/title-icons/info.png'),
   make: require('../assets/title-icons/make-a-book.png'),
+  desk: require('../assets/title-icons/apple.png'), // the Teacher's Desk: an apple (6 Nov 2026)
 };
 // the icon at a title's size (32 pt titles: a 30 pt icon), lifted to sit with the letters
 // indent: a page's main title steps right, clear of Back in the top left corner (Jörg, 1 Nov 2026)

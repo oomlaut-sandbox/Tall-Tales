@@ -34,6 +34,7 @@ import { giveSheet } from '../folder';
 import { pinFor } from '../corkboard';
 import { strokesToImage } from '../components/Strokes';
 import { DrawEditor } from './Notebook';
+import { TitleIcon } from '../titleIcons';
 
 const PAGES = [2, 4, 6, 8, 12];
 
@@ -255,8 +256,8 @@ export default function TeacherDesk({ u, openMenu, toast, stories, onList, openS
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
         <Oak />
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
-        <Text style={styles.title}>{t('Teacher’s Desk')}</Text>
-        <Text style={styles.sub}>{classTitle} · {students.length === 1 ? t('1 student') : t('{n} students', { n: students.length })}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}><TitleIcon kind="desk" /><Text style={[styles.title, { flexShrink: 1 }]}>{t('Teacher’s Desk')}</Text></View>
+        <Text style={[styles.sub, { marginLeft: 59 }]}>{classTitle} · {students.length === 1 ? t('1 student') : t('{n} students', { n: students.length })}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
         {classes.length > 1 ? <View style={styles.chips}>{classes.map((c) => <Chip key={c.id} label={c.name || t('Classroom')} on={c.id === klass.id} onPress={() => setCls(c.id)} />)}</View> : null}
@@ -431,8 +432,8 @@ const styles = StyleSheet.create({
   title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 32, transform: [{ translateY: -3 }] }, // (level with the other screens' titles)
   sub: { color: '#cfcac0', fontFamily: fonts.ui, fontSize: 15 },
   body: { padding: 20, paddingBottom: 80, gap: 14 },
-  // on the oak (6 Nov 2026): loose headings and notes sit in light see-through white boxes, in black and very dark grey
-  h: { color: '#111111', fontFamily: fonts.uiBold, fontSize: 21, marginTop: 14, alignSelf: 'flex-start', backgroundColor: 'rgba(255,255,255,0.55)', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 8, overflow: 'hidden' },
+  // on the oak (6 Nov 2026): headings in black straight on the wood; loose notes sit in light see-through white boxes, in black and very dark grey
+  h: { color: '#111111', fontFamily: fonts.uiBold, fontSize: 24, marginTop: 18 }, // (straight on the wood, no box: 6 Nov 2026)
   loose: { color: '#2a2a2a', fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, backgroundColor: 'rgba(255,255,255,0.55)', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, overflow: 'hidden' },
   // (the apple is cut out with its shadow drawn into the picture, on a bigger canvas: about 76 pt of apple in 125 pt)
   apple: { alignSelf: 'flex-end', marginTop: 4, marginRight: -18, marginBottom: -20, width: 125, height: 127 },
