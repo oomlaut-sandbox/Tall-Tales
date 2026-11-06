@@ -6,7 +6,7 @@
 import LineInput from '../components/LineInput';
 import { TitleIcon } from '../titleIcons';
 import { useScrollMemory } from '../nav';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { boxTitle, colors, fonts, sectionBox } from '../theme';
@@ -72,13 +72,14 @@ function Section({ id, icon, title, open, setOpen, children }) {
   );
 }
 
-export default function Settings({ storeAdmin, u, openMenu, lang, setLang, bookLang, setBookLang, controls, setControls, mode, onDone, onJoin, onProfiles, onPlaylists, onReadingOptions, onMusic, onTeacherDesk, prefs, setPrefs, toast, onSendAll }) {
+export default function Settings({ startOpen, storeAdmin, u, openMenu, lang, setLang, bookLang, setBookLang, controls, setControls, mode, onDone, onJoin, onProfiles, onPlaylists, onReadingOptions, onMusic, onTeacherDesk, prefs, setPrefs, toast, onSendAll }) {
   const keep = useScrollMemory('settings'); // Back returns to this spot
   const t = useT();
   const insets = useSafeAreaInsets();
   const [hap, setHap] = useState(hapticsOn());
   const [roView, setRoView] = useState('main'); // Reading Options: the choices, or the voices
-  const [openSec, setOpenSec] = useState(null);
+  const [openSec, setOpenSec] = useState(startOpen || null); // (Manage classroom on the Teacher's Desk opens Teachers and Educators: 6 Nov 2026)
+  const jumped = useRef(false);
   const [room, setRoom] = useState(getProfiles().classroom || null); // the classroom folder, if there is one
   // whose controls these are: the reader using the app now (Jörg, 28 Oct 2026)
   const [who, setWho] = useState(() => (activeProfile() || {}).name || null);
@@ -275,6 +276,7 @@ export default function Settings({ storeAdmin, u, openMenu, lang, setLang, bookL
               </View>
           </Section>
           {/* Teachers and Educators: a classroom folder of up to 30 students (Jörg, 26 Oct 2026) */}
+          <View onLayout={(e) => { if (startOpen === 'teachers' && !jumped.current && keep.ref.current) { jumped.current = true; const y = e.nativeEvent.layout.y; setTimeout(() => keep.ref.current && keep.ref.current.scrollTo({ y: Math.max(0, y - 12), animated: false }), 60); } }}>
           <Section id="teachers" icon={SET_ICONS.teachers} title={t('Teachers and Educators')} open={openSec} setOpen={setOpenSec}>
             <View style={styles.card}>
               <Text style={styles.p}>{t('Set up a classroom folder with up to {n} student profiles. Students can make books together or on their own: books are shared by the class, and each student keeps their own notebook, badges and settings.', { n: MAX_CLASS })}</Text>
@@ -328,6 +330,7 @@ export default function Settings({ storeAdmin, u, openMenu, lang, setLang, bookL
               )}
             </View>
           </Section>
+          </View>
           <Pressable onPress={onDone} style={[styles.pill, { alignSelf: 'flex-end', backgroundColor: colors.green, marginTop: 8 }]} accessibilityRole="button">
             <Text style={styles.pillText}>{t('Done')}</Text>
           </Pressable>

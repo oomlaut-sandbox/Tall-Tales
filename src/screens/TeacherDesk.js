@@ -107,7 +107,7 @@ function ReviewRow({ s, name, openStory, onList, toast }) {
   );
 }
 
-export default function TeacherDesk({ u, openMenu, toast, stories, onList, openStory, controls, setControls, fontKey }) {
+export default function TeacherDesk({ onManage, u, openMenu, toast, stories, onList, openStory, controls, setControls, fontKey }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const [, bump] = useState(0);
@@ -260,6 +260,12 @@ export default function TeacherDesk({ u, openMenu, toast, stories, onList, openS
         <Text style={[styles.sub, { marginLeft: 59 }]}>{classTitle} · {students.length === 1 ? t('1 student') : t('{n} students', { n: students.length })}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
+        {/* straight to Settings, Teachers and Educators: students, classes, the class list (Jörg, 6 Nov 2026) */}
+        {onManage ? (
+          <Pressable onPress={onManage} style={[styles.pill, { alignSelf: 'flex-start', backgroundColor: 'rgba(0,0,0,0.7)' }]} accessibilityRole="button">
+            <Text style={styles.pillText}>{t('Manage classroom')}</Text>
+          </Pressable>
+        ) : null}
         {classes.length > 1 ? <View style={styles.chips}>{classes.map((c) => <Chip key={c.id} label={c.name || t('Classroom')} on={c.id === klass.id} onPress={() => setCls(c.id)} />)}</View> : null}
 
         {/* 1. Book prompts */}

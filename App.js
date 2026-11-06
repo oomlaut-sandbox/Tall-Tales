@@ -140,7 +140,8 @@ function Root() {
   const langRef = useRef(lang);
   langRef.current = lang;
   const [settingsGate, setSettingsGate] = useState(false); // Settings is for grown-ups
-  const [deskGate, setDeskGate] = useState(false); // so is the Teacher's Desk, from the menu (6 Nov 2026)
+  const [deskGate, setDeskGate] = useState(false);
+  const settingsAt = useRef(null); // a Settings section to open straight away (Manage classroom on the Teacher's Desk) // so is the Teacher's Desk, from the menu (6 Nov 2026)
   // the books' language: members can choose one in Settings; otherwise the app's language
   const purchases = usePurchases();
   const readLang = (purchases.member && bookLang) || lang;
@@ -224,6 +225,7 @@ function Root() {
   const [nbFrom, setNbFrom] = useState(null); // where the little notebook was on the shelf when it was opened
   // (anything the parental controls hide can't be reached either)
   const go = (s) => {
+    if (s !== 'settings') settingsAt.current = null;
     if (s !== 'reader') setQueue(null); // leaving the reader ends a playlist
     if ((s === 'store' && (!STORE_ON || !controls.store)) || (s === 'notebook' && !controls.notebook) || ((s === 'help' || s === 'about' || s === 'ideas') && !controls.help)) s = 'library';
     // the back button's list of where you've been (each with the book that was open, in the reader or the book maker)
@@ -548,12 +550,12 @@ function Root() {
         {screen === 'music' && <MusicSounds u={u} openMenu={openMenu} prefs={prefs} setPrefs={setPrefs} />}
         {screen === 'profiles' && <Profiles u={u} openMenu={openMenu} setControls={setControls} onPicked={(id) => { setNextScreen('library'); switchProfile(id); }} onBack={(to) => go(to === 'workspace' ? 'workspace' : 'library')} />}
         {screen === 'playlists' && <Playlists startNew={newPlaylistReq.current} onStarted={() => { newPlaylistReq.current = false; }} u={u} openMenu={openMenu} shelf={childShelf} onPlay={playPlaylist} onDone={() => { const last = hist.current[hist.current.length - 1]; if (last && (last.screen === 'library' || last.screen === 'workspace')) goBack(); else go('workspace'); }} /* from My Library: back to the same spot (the corkboard), like the back button (Jörg, 29 Oct 2026) */ />}
-        {screen === 'settings' && <Settings onSendAll={async () => {
+        {screen === 'settings' && <Settings startOpen={settingsAt.current} onSendAll={async () => {
             if (!userStories.length) { toast(t('There are no books made on this device yet.')); return; }
             try { await shareAllBooks(userStories, (k, of) => toast(t('Packing book {n} of {of}…', { n: k, of }), 60000)); toast(''); } catch (e) { toast(t('The books couldn’t be packed. Try again.')); }
           }} u={u} storeAdmin={storeAdmin} openMenu={openMenu} lang={lang} setLang={setLang} bookLang={bookLang} setBookLang={setBookLang}
           controls={controls} setControls={setControls} mode={prefs.mode} onDone={() => go('library')} onJoin={() => (controls.everydayGates === false ? setJoinGate(true) : setMemberOpen(true))} onProfiles={() => go('profiles')} onPlaylists={() => go('playlists')} onReadingOptions={readingOptions} onMusic={() => go('music')} onTeacherDesk={() => go('teacherDesk')} prefs={prefs} setPrefs={setPrefs} toast={toast} />}
-        {screen === 'teacherDesk' && <TeacherDesk u={u} openMenu={openMenu} toast={toast} stories={userStories} onList={setUserStories} openStory={(s) => { readFrom.current = 'teacherDesk'; openStory(s); }} controls={controls} setControls={setControls} fontKey={prefs.font} />}
+        {screen === 'teacherDesk' && <TeacherDesk onManage={() => { settingsAt.current = 'teachers'; go('settings'); }} u={u} openMenu={openMenu} toast={toast} stories={userStories} onList={setUserStories} openStory={(s) => { readFrom.current = 'teacherDesk'; openStory(s); }} controls={controls} setControls={setControls} fontKey={prefs.font} />}
         {screen === 'garden' && <Garden u={u} openMenu={openMenu} toast={toast} onHome={() => go('workspace')} />}
         {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} onWelcome={WELCOME_ON ? () => setWelcome(true) : null}
           onIntro={() => { setSplash(true); setIntroWho(null); setIntroAsk(true); setCoverOpen(false); setStartKey((n) => n + 1); go('start'); }} />}
