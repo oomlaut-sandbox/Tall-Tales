@@ -36,6 +36,7 @@ const PAPERS = [
   ['canvas', 'Canvas', require('../../assets/sheets/canvas.jpg')],
   ['lined', 'Lined paper', require('../../assets/sheets/lined.jpg')],
   ['graph', 'Graph paper', require('../../assets/sheets/graph.jpg')],
+  ['kraft', 'Kraft paper', require('../../assets/sheets/kraft.jpg')],
 ];
 const paperFile = async (src) => { const a = Asset.fromModule(src); await a.downloadAsync(); return a.localUri || a.uri; };
 
@@ -177,7 +178,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
           <Text style={[styles.title, { fontSize: 20, marginTop: 40 }]}>{t('Draw on a sheet')}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 18, marginTop: 18 }}>
             {PAPERS.map(([k, label, src], i) => (
-              <Pressable key={k} onPress={withTap(() => startPaper(src))} accessibilityRole="button" accessibilityLabel={t(label)} style={{ width: thumb * 0.7, alignItems: 'center', gap: 8, transform: [{ rotate: `${[-2, 1.5, -1][i]}deg` }] }}>
+              <Pressable key={k} onPress={withTap(() => startPaper(src))} accessibilityRole="button" accessibilityLabel={t(label)} style={{ width: thumb * 0.7, alignItems: 'center', gap: 8, transform: [{ rotate: `${[-2, 1.5, -1, 2][i % 4]}deg` }] }}>
                 <View style={styles.cardShadow}><Image source={src} style={{ width: thumb * 0.7, height: thumb * 0.7, borderRadius: 3 }} /></View>
                 <Text numberOfLines={1} style={styles.cardLabel}>{t(label)}</Text>
               </Pressable>
