@@ -398,7 +398,7 @@ export default function TeacherDesk({ u, openMenu, toast, stories, onList, openS
         <Text style={styles.h}>{t('Classroom lock')}</Text>
         <View style={[styles.row, { flexDirection: 'row', alignItems: 'center', gap: 12 }]}>
           <Text style={[styles.note, { flex: 1 }]}>{t('No Book Store, no buying, and no sharing or printing outside the class.')}</Text>
-          <Switch value={lockOn} onValueChange={lock} trackColor={{ true: colors.deepRed }} ios_backgroundColor="#5a5a5a" accessibilityLabel={t('Classroom lock')} />
+          <Switch value={lockOn} onValueChange={lock} trackColor={{ false: '#5a5a5a', true: '#a3a3a3' }} thumbColor="#ffffff" ios_backgroundColor="#5a5a5a" accessibilityLabel={t('Classroom lock')} />
         </View>
         {/* an apple for the teacher, at the foot of the page, clear of everything, on the right (Jörg, 6 Nov 2026) */}
         <Image source={APPLE} style={styles.apple} resizeMode="contain" accessibilityIgnoresInvertColors />
@@ -434,7 +434,8 @@ const styles = StyleSheet.create({
   // on the oak (6 Nov 2026): loose headings and notes sit in light see-through white boxes, in black and very dark grey
   h: { color: '#111111', fontFamily: fonts.uiBold, fontSize: 21, marginTop: 14, alignSelf: 'flex-start', backgroundColor: 'rgba(255,255,255,0.55)', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 8, overflow: 'hidden' },
   loose: { color: '#2a2a2a', fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, backgroundColor: 'rgba(255,255,255,0.55)', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, overflow: 'hidden' },
-  apple: { alignSelf: 'flex-end', marginTop: 28, marginRight: 4, width: 84, height: 86, shadowColor: '#000', shadowOpacity: 0.45, shadowRadius: 8, shadowOffset: { width: 3, height: 6 } },
+  // (the apple is cut out with its shadow drawn into the picture, on a bigger canvas: about 76 pt of apple in 125 pt)
+  apple: { alignSelf: 'flex-end', marginTop: 4, marginRight: -18, marginBottom: -20, width: 125, height: 127 },
   note: { color: '#cfcac0', fontFamily: fonts.ui, fontSize: 14, lineHeight: 20 },
   label: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 17, marginTop: 12 }, // (plain words, bigger and white, with room above: 6 Nov 2026)
   row: { backgroundColor: 'rgba(16,16,16,0.82)', borderRadius: 14, padding: 14, gap: 10 },
