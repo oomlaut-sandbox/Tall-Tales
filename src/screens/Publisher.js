@@ -22,6 +22,8 @@ import { creditsLine } from '../userStories';
 import { playKey } from '../sound';
 import { useControls } from '../controls';
 import { usePurchases } from '../purchases';
+import { promptOf } from '../classroom';
+import { listRecordings } from '../recordings';
 import { classOf, deleteUserStory, dropPicture, keepPicture, newPageId, overOf, saveUserStory } from '../userStories';
 import StoryGuide from '../components/StoryGuide';
 import ParentGate from '../components/ParentGate';
@@ -124,7 +126,9 @@ export function draftFrom(story) {
   // a book prompt from the teacher (classroom.js): a ready-started book, with its title and pages waiting
   if (story.prompt) {
     const pr = story.prompt;
-    return { id: `s${Date.now()}`, title: pr.title, writer: story.writer || '', artist: story.writer || '', pages: Array.from({ length: Math.max(1, pr.pages || 1) }, blank),
+    // (a starter book's pages, pictures and words, or blank pages: 6 Nov 2026)
+    const pages = pr.starter && pr.starter.length ? pr.starter.map((p) => ({ ...blank(), ...p, pid: newPageId() })) : Array.from({ length: Math.max(1, pr.pages || 1) }, blank);
+    return { id: `s${Date.now()}`, title: pr.title, writer: story.writer || '', artist: story.writer || '', pages,
       cls: pr.cls, owner: story.owner, promptId: pr.id, promptNote: pr.note || null, handIn: null };
   }
   const d = {
@@ -928,10 +932,24 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
       const list = await save({ handIn: true });
       if (!list.some((x) => x.id === latest.current.id)) { toast(tr('Add a picture or some words first.')); return; }
       toast(tr('Handed in. Your teacher will have a look.'));
+      // the teacher asked for it to be read aloud: any page not recorded yet? (6 Nov 2026)
+      if (myPrompt && myPrompt.record) {
+        const s = list.find((x) => x.id === latest.current.id);
+        const recs = s ? await listRecordings(s).catch(() => []) : [];
+        const body = s ? s.pages.filter((p) => !p.titlePage) : [];
+        if (s && body.some((p) => !recs.some((r) => r.pid === p.pid))) { setRecordAsk({ list, id: s.id, wip: true }); return; }
+      }
       onDone(list, null, 'wip');
     } catch (e) { toast(tr('Couldn’t save the book. Try again.')); }
   };
   // the teacher's words when the book opens: the prompt's instructions (a new book), or the note on a book sent back
+  // the teacher's prompt (6 Nov 2026): a few words on each page, a word bank to tap, and reading it aloud first
+  const myPrompt = promptOf(draft.promptId);
+  const hintFor = (k) => (myPrompt && myPrompt.hints && myPrompt.hints[k] ? tr(myPrompt.hints[k]) : null);
+  // the teacher's note on a page of a book sent back: shown when that page is open
+  const pageNotes = (draft.handIn === 'back' && draft.pageNotes) || null;
+  const [notesSeen, setNotesSeen] = useState([]);
+  const pageNote = pageNotes && page && pageNotes[page.pid] && !notesSeen.includes(page.pid) ? pageNotes[page.pid] : null;
   const [teacherMsg, setTeacherMsg] = useState(() => (initial && initial.handIn === 'back' && initial.note ? { k: 'note', text: initial.note }
     : initial && initial.promptNote && !(initial.pages || []).some((p) => (p.text || '').trim() || p.uri) ? { k: 'prompt', text: initial.promptNote } : null));
 
@@ -1200,6 +1218,17 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
                 ))}
               </View>
             ) : null}
+            {/* the teacher's word bank: tap a word to add it (6 Nov 2026) */}
+            {myPrompt && myPrompt.words && myPrompt.words.length ? (
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 4 }}>
+                {myPrompt.words.map((w) => (
+                  <Pressable key={w} onPress={() => { playKey(); const now = wp.text || ''; wupdate({ text: now + (now && !/\s$/.test(now) ? ' ' : '') + w }); }} accessibilityRole="button" accessibilityLabel={tr('Add the word {word}', { word: w })}
+                    style={{ height: 34, borderRadius: 17, paddingHorizontal: 14, justifyContent: 'center', backgroundColor: '#3d3d3d' }}>
+                    <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{w}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            ) : null}
           </Animated.View>
           {(() => {
             const W = winW - 2 * GAP;
@@ -1237,11 +1266,11 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
                       {/* the words drawn invisibly give the box its size (a text box doesn't always grow with its
                           words); the text box lies exactly over them */}
                       <View>
-                        <Text style={[overType, { opacity: 0 }]}>{(wp.text || tr('Type the words for this page. Two or three sentences reads best.')) + (/\n$/.test(wp.text || '') ? ' ' : '')/* (a new empty line keeps its room) */}</Text>
+                        <Text style={[overType, { opacity: 0 }]}>{(wp.text || hintFor(i) || tr('Type the words for this page. Two or three sentences reads best.')) + (/\n$/.test(wp.text || '') ? ' ' : '')/* (a new empty line keeps its room) */}</Text>
                         <TextInput
                           value={wp.text}
                           onChangeText={(text) => { if (text.length > (wp.text || '').length) playKey(); wupdate({ text }); }}
-                          placeholder={tr('Type the words for this page. Two or three sentences reads best.')}
+                          placeholder={hintFor(i) || tr('Type the words for this page. Two or three sentences reads best.')}
                           placeholderTextColor={wordsLook(wp.textLook || 'light', wp.textInk).color === '#1c1c1c' ? '#666' : 'rgba(255,255,255,0.7)'}
                           multiline
                           autoFocus
@@ -1256,7 +1285,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
                   <TextInput
                     value={wp.text}
                     onChangeText={(text) => { if (text.length > (wp.text || '').length) playKey(); wupdate({ text }); }}
-                    placeholder={tr('Type the words for this page. Two or three sentences reads best.')}
+                    placeholder={hintFor(i) || tr('Type the words for this page. Two or three sentences reads best.')}
                     placeholderTextColor="#666"
                     multiline
                     autoFocus
@@ -1355,9 +1384,9 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
         <View style={[StyleSheet.absoluteFill, styles.choiceBack, { zIndex: 80 }]}>
           <View style={styles.choice}>
             <Text style={styles.choiceTitle}>{tr('Now read it aloud')}</Text>
-            <Text style={[styles.choiceBtnText, { fontFamily: fonts.ui, textAlign: 'center', lineHeight: 22, marginBottom: 8 }]}>{tr('Books you make are read in a real voice: yours, or the voice of someone who loves the reader. Coro has no computer voice, so until someone records the pages, the book is silent. Record it now, one page at a time.')}</Text>
+            <Text style={[styles.choiceBtnText, { fontFamily: fonts.ui, textAlign: 'center', lineHeight: 22, marginBottom: 8 }]}>{recordAsk.wip ? tr('Your teacher would like to hear you read your book. Record it now, one page at a time.') : tr('Books you make are read in a real voice: yours, or the voice of someone who loves the reader. Coro has no computer voice, so until someone records the pages, the book is silent. Record it now, one page at a time.')}</Text>
             <Pressable onPress={() => { const r = recordAsk; setRecordAsk(null); onDone(r.list, r.id); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 6 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.voice} text={tr('Record now')} style={styles.choiceBtnText} /></Pressable>
-            <Pressable onPress={() => { const r = recordAsk; setRecordAsk(null); onDone(r.list, null, 'published'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Later')}</Text></Pressable>
+            <Pressable onPress={() => { const r = recordAsk; setRecordAsk(null); onDone(r.list, null, r.wip ? 'wip' : 'published'); }} style={styles.choiceBtn} accessibilityRole="button"><Text style={styles.choiceBtnText}>{tr('Later')}</Text></Pressable>
           </View>
         </View>
       ) : null}
@@ -1371,6 +1400,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
       ) : null}
       {tourPlay ? <TourVideo tr={tr} onClose={() => setTourPlay(false)} /> : null}
       {/* the teacher's prompt, or their note on a book sent back (classroom.js) */}
+      {pageNote && !teacherMsg && !coverOpen && !aboutOpen && !editing ? <Toast message={tr('Your teacher, about this page: {note}', { note: pageNote })} area={{ left: GAP - 6, right: GAP - 6, bottom: 150 }} ms={0} button={tr('OK')} onDismiss={() => setNotesSeen((a) => [...a, page.pid])} /> : null}
       {teacherMsg && !coverOpen && !aboutOpen && !editing ? <Toast message={teacherMsg.k === 'note' ? tr('A note from your teacher: {note}', { note: teacherMsg.text }) : tr('From your teacher: {note}', { note: teacherMsg.text })} area={{ left: GAP - 6, right: GAP - 6, bottom: 150 }} ms={0} button={tr('OK')} onDismiss={() => setTeacherMsg(null)} /> : null}
       {saveTip && !editing && !drawFor && !photoEdit && !coverOpen && !tourPlay ? <Toast hint message={tr('Your work saves as you go. Find your book again in My Workspace, under My Books in Progress.')} ms={0}
         check={tr('Don’t show this message again')} button={tr('Keep going')} onDismiss={(ticked) => { setSaveTip(false); if (ticked) saveJSON('saveTip', { off: true }); }} /> : null}

@@ -75,7 +75,7 @@ const OVER_KEYS = ['textOn', 'textAt', 'textLook', 'textInk', 'textSize', 'both'
 export const overOf = (p) => Object.fromEntries(OVER_KEYS.filter((k) => p[k] != null).map((k) => [k, p[k]]));
 
 // a class book's details (classroom.js)
-const CLASS_KEYS = ['cls', 'owner', 'promptId', 'promptNote', 'handIn', 'note'];
+const CLASS_KEYS = ['cls', 'owner', 'promptId', 'promptNote', 'handIn', 'note', 'pageNotes']; // (pageNotes: the teacher's note on a page, by its pid)
 export const classOf = (s) => Object.fromEntries(CLASS_KEYS.filter((k) => s && s[k] != null).map((k) => [k, s[k]]));
 
 const hasContent = (p) => (p.text && p.text.trim()) || p.uri || p.uri2;
@@ -84,7 +84,10 @@ const hasContent = (p) => (p.text && p.text.trim()) || p.uri || p.uri2;
 export async function keepPicture(storyId, uri) {
   return keepFile(uri, `stories/${storyId}`, `img-${Date.now()}.jpg`);
 }
+// a starter book's pictures (classroom.js) are shared by every student's copy: never deleted with one of them
+const shared = (uri) => typeof uri === 'string' && uri.includes('/prompts/');
 export function dropPicture(uri) {
+  if (shared(uri)) return;
   deleteFile(liveUri(uri));
 }
 
@@ -147,7 +150,7 @@ export function deleteUserStory(id) {
 }
 // a deleted book's pictures, cover and recordings, gone for good
 async function wipe(s) {
-  s.pages.forEach((p) => [p.uri, p.uri2, p.src, p.src2].forEach((x) => x && deleteFile(liveUri(x))));
+  s.pages.forEach((p) => [p.uri, p.uri2, p.src, p.src2].forEach((x) => x && !shared(x) && deleteFile(liveUri(x))));
   if (s.cover) [s.cover.uri, s.cover.src].forEach((x) => x && deleteFile(liveUri(x)));
   await pruneRecordings(s.id, []);
 }

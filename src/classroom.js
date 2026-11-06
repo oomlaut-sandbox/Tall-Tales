@@ -23,11 +23,36 @@ export const getPrompts = () => prompts;
 export function onPrompts(fn) { listeners.add(fn); loadPrompts().catch(() => {}); return () => listeners.delete(fn); }
 const save = () => { saveJSON('classPrompts', prompts); emit(); };
 
-// { title, note, pages, cls } (cls: the class folder it's for)
+// { title, note, pages, cls } (cls: the class folder it's for), and (6 Nov 2026):
+//   together: one page each, bound into one class book on the Teacher's Desk
+//   hints: a few words for each page, shown where the student writes (from a starter like All About Me)
+//   starter: the pages of one of the teacher's books, pictures and words, that every student starts from
+//     (its pictures are kept once, in prompts/<id>/, and never deleted with a student's page: see userStories.js)
+//   words: a word bank, tapped to add a word while writing
+//   record: the teacher asks for the book to be read aloud before it's handed in
+export const newPromptId = () => `pr${Date.now().toString(36)}`;
 export function addPrompt(p) {
-  prompts = [{ id: `pr${Date.now().toString(36)}`, title: (p.title || '').trim(), note: (p.note || '').trim(), pages: p.pages || 4, cls: p.cls || null, at: Date.now() }, ...prompts];
+  const clean = (a) => (Array.isArray(a) ? a.map((w) => String(w || '').trim()).filter(Boolean) : []);
+  prompts = [{ id: p.id || newPromptId(), title: (p.title || '').trim(), note: (p.note || '').trim(), pages: p.together ? 1 : (p.starter && p.starter.length) || p.pages || 4, cls: p.cls || null, at: Date.now(),
+    ...(p.together ? { together: true } : null), ...(clean(p.hints).length ? { hints: (p.hints || []).map((h) => String(h || '').trim()) } : null),
+    ...(p.starter && p.starter.length ? { starter: p.starter } : null), ...(clean(p.words).length ? { words: clean(p.words).slice(0, 24) } : null), ...(p.record ? { record: true } : null) }, ...prompts];
   save();
 }
+export const promptOf = (id) => (id ? prompts.find((p) => p.id === id) || null : null);
+
+// Ready-made starters for a prompt: a title, instructions and a few words on each page (Jörg, 6 Nov 2026)
+export const STARTERS = [
+  { k: 'me', title: 'All About Me', note: 'A picture and a sentence on each page.', hints: ['This is me.', 'My family.', 'What I love to do.', 'When I grow up…'] },
+  { k: 'weekend', title: 'My Weekend', note: 'A picture and a sentence on each page.', hints: ['On Saturday…', 'On Sunday…', 'The best part was…', 'Next weekend I want to…'] },
+  { k: 'trip', title: 'Our Field Trip', note: 'Draw or take a picture of each part of the trip.', hints: ['Where we went.', 'What we saw.', 'What I learned.', 'My favourite part.'] },
+  { k: 'science', title: 'What I Saw', note: 'Watch something change, and draw what you see.', hints: ['What I am watching.', 'What it looks like on day 1.', 'What changed.', 'What I think will happen next.'] },
+];
+
+// How each student is doing with a prompt: 'none' (not started) | 'working' | 'in' | 'back' | 'ok'
+export const statusOf = (prompt, studentId, stories) => {
+  const s = stories.find((x) => x.promptId === prompt.id && x.owner === studentId);
+  return !s ? 'none' : s.handIn || (s.published ? 'ok' : 'working');
+};
 export function removePrompt(id) { prompts = prompts.filter((p) => p.id !== id); save(); }
 
 // the prompts waiting for this student: their class's, not yet started by them
