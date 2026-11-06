@@ -61,6 +61,7 @@ import { playOrder } from './src/playlists';
 import { closePlayerFromBar, fadeOutAmbient, getAmbient, onAmbient, setAmbientPlayer } from './src/ambient';
 import { ageAllowed, ageOf, cachedCatalog, coverArtFor, coverFor, loadStoreBook, localizeStoreBook, refreshCatalog, storeLangReady } from './src/catalog';
 import { refreshStoreLibrary, removeFromStoreLibrary, seedStoreLibrary, useStoreLibrary } from './src/storeLibrary';
+import { unlockFamily } from './src/classroom';
 import { addProfile, classroom, loadProfiles, onProfiles, switchProfile } from './src/profiles';
 import { loadGrownupCode } from './src/grownupCode';
 import { startRemoteTracks } from './src/remoteTracks';
@@ -766,7 +767,9 @@ export default function App() {
   // the app afresh with their notebook, badges, playlists and settings
   const [who, setWho] = useState(null);
   useEffect(() => {
-    loadProfiles().then((s) => setWho(s.active), () => setWho('main'));
+    // (classroom mode off: any classroom lock that reached a family profile is lifted first, before its settings
+    // are read. It used to land on whoever was reading and stay: 6 Nov 2026)
+    loadProfiles().then(async (s) => { if (!s.classroom) await unlockFamily(s.list || [], null, () => {}).catch(() => {}); setWho(s.active); }, () => setWho('main'));
     loadGrownupCode().catch(() => {});
     startRemoteTracks().catch(() => {}); // music and sounds added in the Store Manager (31 Oct 2026) // (the grown-up passcode, if one is set, is known before any grown-up question)
     return onProfiles((s) => { setWho(s.active); reloadHintSeen(); }); // (each reader's own hint counts)
