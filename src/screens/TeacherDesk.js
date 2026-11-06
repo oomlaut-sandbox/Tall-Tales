@@ -257,8 +257,6 @@ export default function TeacherDesk({ u, openMenu, toast, stories, onList, openS
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         <Text style={styles.title}>{t('Teacher’s Desk')}</Text>
         <Text style={styles.sub}>{classTitle} · {students.length === 1 ? t('1 student') : t('{n} students', { n: students.length })}</Text>
-        {/* an apple for the teacher, sitting on the desk with its shadow */}
-        <Image source={APPLE} style={[styles.apple, { top: insets.top + 54 }]} resizeMode="contain" accessibilityIgnoresInvertColors />
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
         {classes.length > 1 ? <View style={styles.chips}>{classes.map((c) => <Chip key={c.id} label={c.name || t('Classroom')} on={c.id === klass.id} onPress={() => setCls(c.id)} />)}</View> : null}
@@ -402,6 +400,8 @@ export default function TeacherDesk({ u, openMenu, toast, stories, onList, openS
           <Text style={[styles.note, { flex: 1 }]}>{t('No Book Store, no buying, and no sharing or printing outside the class.')}</Text>
           <Switch value={lockOn} onValueChange={lock} trackColor={{ true: colors.deepRed }} ios_backgroundColor="#5a5a5a" accessibilityLabel={t('Classroom lock')} />
         </View>
+        {/* an apple for the teacher, at the foot of the page, clear of everything, on the right (Jörg, 6 Nov 2026) */}
+        <Image source={APPLE} style={styles.apple} resizeMode="contain" accessibilityIgnoresInvertColors />
       </ScrollView>
       {/* a finished sheet: where it goes */}
       {made ? (
@@ -434,7 +434,7 @@ const styles = StyleSheet.create({
   // on the oak (6 Nov 2026): loose headings and notes sit in light see-through white boxes, in black and very dark grey
   h: { color: '#111111', fontFamily: fonts.uiBold, fontSize: 21, marginTop: 14, alignSelf: 'flex-start', backgroundColor: 'rgba(255,255,255,0.55)', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 8, overflow: 'hidden' },
   loose: { color: '#2a2a2a', fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, backgroundColor: 'rgba(255,255,255,0.55)', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, overflow: 'hidden' },
-  apple: { position: 'absolute', right: 22, width: 84, height: 86, shadowColor: '#000', shadowOpacity: 0.45, shadowRadius: 8, shadowOffset: { width: 3, height: 6 } },
+  apple: { alignSelf: 'flex-end', marginTop: 28, marginRight: 4, width: 84, height: 86, shadowColor: '#000', shadowOpacity: 0.45, shadowRadius: 8, shadowOffset: { width: 3, height: 6 } },
   note: { color: '#cfcac0', fontFamily: fonts.ui, fontSize: 14, lineHeight: 20 },
   label: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 17, marginTop: 12 }, // (plain words, bigger and white, with room above: 6 Nov 2026)
   row: { backgroundColor: 'rgba(16,16,16,0.82)', borderRadius: 14, padding: 14, gap: 10 },
