@@ -16,7 +16,10 @@ import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { Bar, Burger, WithBar } from '../components/Chrome';
-import { DESK_FELT } from '../look';
+// the Teacher's Desk sits on Jörg's light oak, with an apple for the teacher (6 Nov 2026); every other screen keeps the felt
+const OAK = require('../../assets/desk-oak.jpg');
+const APPLE = require('../../assets/desk-apple.png');
+const Oak = () => <Image source={OAK} resizeMode="cover" style={StyleSheet.absoluteFill} />;
 import CoverArt from '../components/CoverArt';
 import LineInput from '../components/LineInput';
 import { useT } from '../i18n';
@@ -241,24 +244,28 @@ export default function TeacherDesk({ u, openMenu, toast, stories, onList, openS
   };
   if (!klass) {
     return (
-      <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
+      <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
+        <Oak />
         <View style={[styles.band, { paddingTop: insets.top + 30 }]}><Text style={styles.title}>{t('Teacher’s Desk')}</Text></View>
-        <View style={styles.body}><Text style={styles.note}>{t('Set up a classroom first: Settings, then Teachers and Educators.')}</Text></View>
+        <View style={styles.body}><Text style={styles.loose}>{t('Set up a classroom first: Settings, then Teachers and Educators.')}</Text></View>
       </WithBar>
     );
   }
   return (
-    <WithBar style={styles.screen} bg={DESK_FELT} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
+    <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} /></Bar>}>
+        <Oak />
       <View style={[styles.band, { paddingTop: insets.top + 30 }]}>
         <Text style={styles.title}>{t('Teacher’s Desk')}</Text>
         <Text style={styles.sub}>{classTitle} · {students.length === 1 ? t('1 student') : t('{n} students', { n: students.length })}</Text>
+        {/* an apple for the teacher, sitting on the desk with its shadow */}
+        <Image source={APPLE} style={[styles.apple, { top: insets.top + 54 }]} resizeMode="contain" accessibilityIgnoresInvertColors />
       </View>
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
         {classes.length > 1 ? <View style={styles.chips}>{classes.map((c) => <Chip key={c.id} label={c.name || t('Classroom')} on={c.id === klass.id} onPress={() => setCls(c.id)} />)}</View> : null}
 
         {/* 1. Book prompts */}
         <Text style={styles.h}>{t('Book prompts')}</Text>
-        <Text style={styles.note}>{t('Each student finds a prompt in My Workspace as a ready-started book, with its title and your instructions.')}</Text>
+        <Text style={styles.loose}>{t('Each student finds a prompt in My Workspace as a ready-started book, with its title and your instructions.')}</Text>
         <View style={styles.row}>
           <LineInput value={title} onChangeText={setTitle} placeholder={t('Title, like My Weekend')} placeholderTextColor="#8a8a8a" maxLength={60} allowFontScaling={false} style={styles.field} accessibilityLabel={t('Prompt title')} />
           <TextInput value={note} onChangeText={setNote} multiline placeholder={t('Instructions, like: A picture and a sentence on each page.')} placeholderTextColor="#8a8a8a" allowFontScaling={false} style={styles.input} accessibilityLabel={t('Instructions')} />
@@ -341,14 +348,14 @@ export default function TeacherDesk({ u, openMenu, toast, stories, onList, openS
 
         {/* Sheets and pins (Jörg, 6 Nov 2026) */}
         <Text style={styles.h}>{t('Sheets and pins')}</Text>
-        <Text style={styles.note}>{t('Leave a sheet in your students’ Things to share, or pin a drawing or a note to their Message Boards.')}</Text>
+        <Text style={styles.loose}>{t('Leave a sheet in your students’ Things to share, or pin a drawing or a note to their Message Boards.')}</Text>
         <View style={styles.row}>
           <Text style={styles.label}>{t('For')}</Text>
           <View style={styles.chips}>
             <Chip label={t('The whole class')} on={forAll} onPress={() => setForAll(true)} />
             {students.map((st) => <Chip key={st.id} label={st.name} on={!forAll && chosen.includes(st.id)} onPress={() => { setForAll(false); setChosen((c) => (c.includes(st.id) ? c.filter((x) => x !== st.id) : [...c, st.id])); }} />)}
           </View>
-          <Text style={[styles.label, { marginTop: 6 }]}>{t('Draw on a sheet')}</Text>
+          <Text style={styles.label}>{t('Draw on a sheet')}</Text>
           <View style={styles.chips}>
             {PAPERS.map(([k, label, src]) => (
               <Pressable key={k} onPress={() => startPaper(src)} disabled={!toIds().length} style={{ alignItems: 'center', gap: 6, opacity: toIds().length ? 1 : 0.4 }} accessibilityRole="button" accessibilityLabel={t(label)}>
@@ -357,7 +364,7 @@ export default function TeacherDesk({ u, openMenu, toast, stories, onList, openS
               </Pressable>
             ))}
           </View>
-          <Text style={[styles.label, { marginTop: 6 }]}>{t('Pin a note')}</Text>
+          <Text style={styles.label}>{t('Pin a note')}</Text>
           <LineInput value={pinText} onChangeText={setPinText} placeholder={t('Like: Library day tomorrow!')} placeholderTextColor="#8a8a8a" maxLength={60} allowFontScaling={false} style={styles.field} accessibilityLabel={t('Pin a note')} />
           <Pressable onPress={pinNoteNow} disabled={!pinText.trim() || !toIds().length || busy} style={[styles.pill, { backgroundColor: colors.green, alignSelf: 'flex-start' }, (!pinText.trim() || !toIds().length) && { opacity: 0.4 }]} accessibilityRole="button">
             <Text style={styles.pillText}>{t('Pin it to their Message Boards')}</Text>
@@ -367,11 +374,11 @@ export default function TeacherDesk({ u, openMenu, toast, stories, onList, openS
         {/* 2. To review */}
         <Text style={styles.h}>{t('To review')}</Text>
         {toReview.length ? toReview.map((s) => <ReviewRow key={s.id} s={s} name={nameOf(s.owner)} openStory={openStory} onList={onList} toast={toast} />)
-          : <Text style={styles.note}>{t('Nothing handed in yet. Students tap Hand in to my teacher when a book is ready.')}</Text>}
+          : <Text style={styles.loose}>{t('Nothing handed in yet. Students tap Hand in to my teacher when a book is ready.')}</Text>}
 
         {/* 3. Class Library */}
         <Text style={styles.h}>{t('Class Library')}</Text>
-        <Text style={styles.note}>{library.length ? (library.length === 1 ? t('1 approved book, in My Library for the whole class.') : t('{n} approved books, in My Library for the whole class.', { n: library.length })) : t('Approved books appear here, and in My Library for the whole class.')}</Text>
+        <Text style={styles.loose}>{library.length ? (library.length === 1 ? t('1 approved book, in My Library for the whole class.') : t('{n} approved books, in My Library for the whole class.', { n: library.length })) : t('Approved books appear here, and in My Library for the whole class.')}</Text>
         {library.length ? (
           <View style={styles.chips}>
             <Pressable onPress={() => anthology(false)} style={[styles.pill, making && { opacity: 0.5 }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Print the class book')}</Text></Pressable>
@@ -393,7 +400,7 @@ export default function TeacherDesk({ u, openMenu, toast, stories, onList, openS
         <Text style={styles.h}>{t('Classroom lock')}</Text>
         <View style={[styles.row, { flexDirection: 'row', alignItems: 'center', gap: 12 }]}>
           <Text style={[styles.note, { flex: 1 }]}>{t('No Book Store, no buying, and no sharing or printing outside the class.')}</Text>
-          <Switch value={lockOn} onValueChange={lock} trackColor={{ true: colors.green }} accessibilityLabel={t('Classroom lock')} />
+          <Switch value={lockOn} onValueChange={lock} trackColor={{ true: colors.deepRed }} ios_backgroundColor="#5a5a5a" accessibilityLabel={t('Classroom lock')} />
         </View>
       </ScrollView>
       {/* a finished sheet: where it goes */}
@@ -424,9 +431,12 @@ const styles = StyleSheet.create({
   title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 32, transform: [{ translateY: -3 }] }, // (level with the other screens' titles)
   sub: { color: '#cfcac0', fontFamily: fonts.ui, fontSize: 15 },
   body: { padding: 20, paddingBottom: 80, gap: 14 },
-  h: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 21, marginTop: 14 },
+  // on the oak (6 Nov 2026): loose headings and notes sit in light see-through white boxes, in black and very dark grey
+  h: { color: '#111111', fontFamily: fonts.uiBold, fontSize: 21, marginTop: 14, alignSelf: 'flex-start', backgroundColor: 'rgba(255,255,255,0.55)', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 8, overflow: 'hidden' },
+  loose: { color: '#2a2a2a', fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, backgroundColor: 'rgba(255,255,255,0.55)', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, overflow: 'hidden' },
+  apple: { position: 'absolute', right: 22, width: 84, height: 86, shadowColor: '#000', shadowOpacity: 0.45, shadowRadius: 8, shadowOffset: { width: 3, height: 6 } },
   note: { color: '#cfcac0', fontFamily: fonts.ui, fontSize: 14, lineHeight: 20 },
-  label: { color: '#9d988f', fontFamily: fonts.uiBold, fontSize: 12, letterSpacing: 0.5, textTransform: 'uppercase' },
+  label: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 17, marginTop: 12 }, // (plain words, bigger and white, with room above: 6 Nov 2026)
   row: { backgroundColor: 'rgba(16,16,16,0.82)', borderRadius: 14, padding: 14, gap: 10 },
   rowTitle: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
   rowSub: { color: '#b5b0a7', fontFamily: fonts.ui, fontSize: 13, marginTop: 2 },
