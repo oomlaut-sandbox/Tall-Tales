@@ -61,7 +61,8 @@ import { playOrder } from './src/playlists';
 import { closePlayerFromBar, fadeOutAmbient, getAmbient, onAmbient, setAmbientPlayer } from './src/ambient';
 import { ageAllowed, ageOf, cachedCatalog, coverArtFor, coverFor, loadStoreBook, localizeStoreBook, refreshCatalog, storeLangReady } from './src/catalog';
 import { refreshStoreLibrary, removeFromStoreLibrary, seedStoreLibrary, useStoreLibrary } from './src/storeLibrary';
-import { addProfile, loadProfiles, onProfiles, switchProfile } from './src/profiles';
+import { addProfile, classroom, loadProfiles, onProfiles, switchProfile } from './src/profiles';
+const DESK_ICON = require('./assets/heading-icons/learning.png');
 import { loadGrownupCode } from './src/grownupCode';
 import { startRemoteTracks } from './src/remoteTracks';
 import { playSound, setEffects, setEffectsVolume } from './src/sound';
@@ -139,6 +140,7 @@ function Root() {
   const langRef = useRef(lang);
   langRef.current = lang;
   const [settingsGate, setSettingsGate] = useState(false); // Settings is for grown-ups
+  const [deskGate, setDeskGate] = useState(false); // so is the Teacher's Desk, from the menu (6 Nov 2026)
   // the books' language: members can choose one in Settings; otherwise the app's language
   const purchases = usePurchases();
   const readLang = (purchases.member && bookLang) || lang;
@@ -604,6 +606,7 @@ function Root() {
             </Animated.View>
           );
         })() : null}
+        <ParentGate everyday visible={deskGate} reason={t('The Teacher’s Desk is for grown-ups.')} onPass={() => { setDeskGate(false); go('teacherDesk'); }} onCancel={() => setDeskGate(false)} />
         <ParentGate everyday visible={settingsGate} reason={t('Changing settings is for grown-ups.')} onPass={() => { setSettingsGate(false); go('settings'); }} onCancel={() => setSettingsGate(false)} />
         <Membership visible={memberOpen} onClose={() => setMemberOpen(false)} toast={toast} />
         <ParentGate visible={joinGate} reason={t('The membership is a paid subscription.')} onPass={() => { setJoinGate(false); setMemberOpen(true); }} onCancel={() => setJoinGate(false)} />
@@ -720,6 +723,8 @@ function Root() {
             {controls.help ? <Option glyph={<BulbIcon size={26} color={colors.white} weight={2} />} title={t('Ideas')} sub={t('Books you can make together')} onPress={() => go('ideas')} /> : null}
             {controls.help ? <Option glyph={<Image source={TITLE_ICONS.support} style={{ width: 26, height: 26 }} />} title={t('Help')} sub={t('Learn how to get the most out of Coro')} onPress={() => go('help')} /> : null}
             {/* (Profiles now live at the bottom of Settings and Profiles; children still switch from the start page) */}
+            {/* Teacher's Desk: in classroom mode, behind the grown-up question (Jörg, 6 Nov 2026) */}
+            {classroom() ? <Option glyph={<Image source={DESK_ICON} style={{ width: 26, height: 26, tintColor: colors.white }} />} title={t('Teacher’s Desk')} sub={t('Prompts, reviews and the Class Library')} onPress={() => { setDrawer(false); setDeskGate(true); }} /> : null}
             {/* Settings: always last, always behind the grown-up question */}
             <Option glyph={<PersonIcon />} title={t('Settings')} sub={t('Language, controls and profiles')} onPress={() => { setDrawer(false); setSettingsGate(true); }} />
             {/* (About is reached from Help) */}
