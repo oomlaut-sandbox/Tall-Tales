@@ -15,20 +15,25 @@ export default function PadFilm({ W, H, onStart, onEnd, onError }) {
   useEffect(() => {
     if (!anim) return undefined;
     let on = true, n = 0, tm = null, snd = null;
+    // every frame is a new picture in memory (720 × 1280, about 3.7 MB): each one is let go two frames later, once
+    // the canvas has moved on. They used to pile up, all 75 (about 280 MB), and the iPad Pro closed the app during
+    // the film (Jörg, 6 Nov 2026)
+    const held = [];
+    const letGo = (keep) => { while (held.length > keep) { const old = held.shift(); try { old && old.dispose && old.dispose(); } catch (e) {} } };
     let total = 75;
     try { total = anim.getFrameCount() || 75; } catch (e) {}
     try { snd = createAudioPlayer(SOUND); snd.volume = 1; } catch (e) { snd = null; }
     const step = () => {
       if (!on) return;
       let ms = 40;
-      try { ms = anim.decodeNextFrame(); setFrame(anim.getCurrentFrame()); } catch (e) {}
+      try { ms = anim.decodeNextFrame(); const f = anim.getCurrentFrame(); if (f) { held.push(f); setFrame(f); letGo(2); } } catch (e) {}
       n += 1;
       if (n === 1) { onStart && onStart(); try { if (snd) snd.play(); } catch (e) {} }
       if (n >= total) { onEnd && onEnd(); return; }
       tm = setTimeout(step, ms > 0 ? ms : 40);
     };
     step();
-    return () => { on = false; clearTimeout(tm); try { if (snd) { snd.pause(); snd.remove(); } } catch (e) {} };
+    return () => { on = false; clearTimeout(tm); try { if (snd) { snd.pause(); snd.remove(); } } catch (e) {} setTimeout(() => letGo(0), 300); };
   }, [anim]);
   // filling the screen upright (cut at the sides), the whole film when sideways: like the video
   return <Canvas style={StyleSheet.absoluteFill}>{frame ? <SkImage image={frame} x={0} y={0} width={W} height={H} fit={W > H ? 'contain' : 'cover'} /> : null}</Canvas>;
