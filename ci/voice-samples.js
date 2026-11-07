@@ -1,6 +1,6 @@
 // Takes to listen to before choosing (not used by the app). Writes samples/<name>.mp3 and samples/report.txt.
 // Run by .github/workflows/voice-samples.yml.
-// (5 Nov 2026) Jörg: "The End" happier, its tone going down at the end of the line, in Fatima's and Mo's voices
+// (7 Nov 2026) Goodnight, Garden, every page in both voices. (5 Nov 2026) Jörg: "The End" happier, its tone going down at the end of the line, in Fatima's and Mo's voices
 // (English); and the letter A for Otter Alphabet ("should sound like Eh"), written three ways to hear which is right.
 const https = require('https');
 const fs = require('fs');
@@ -9,17 +9,19 @@ const VOICES = [['fatima', ['lily'], 'pFZP5JQG7iQjIQuC4Bku'], ['mo', ['spuds oxl
 const SPEED = 0.85; // (Mo's speed; the same for Fatima so they match)
 const TAKES = [
   // name, model, text, settings, voices (default both)
-  // Mo, "The End" again (Fatima's take 3 is the one)
-  ['the-end-4-cheerful', 'eleven_v3', '[cheerfully] The End.', { stability: 0.5, similarity_boost: 0.8 }, ['mo']],
-  ['the-end-5-warmly', 'eleven_v3', '[warmly, with a smile] The End.', { stability: 0.5, similarity_boost: 0.8 }, ['mo']],
-  ['the-end-6-smile', 'eleven_multilingual_v2', 'The End.', { stability: 0.6, similarity_boost: 0.85, style: 0.3, use_speaker_boost: true }, ['mo']],
-  ['the-end-7-glad', 'eleven_v3', '[happily, softly] And that is... the end.', { stability: 0.5, similarity_boost: 0.8 }, ['mo']],
-  // the letter A, the way it's said in the alphabet ("ay", like the start of "acorn")
-  ['letter-a-1-ipa', 'eleven_flash_v2', '<phoneme alphabet="ipa" ph="eɪ">A</phoneme>.', { stability: 0.9, similarity_boost: 0.8 }],
-  ['letter-a-2-cmu', 'eleven_flash_v2', '<phoneme alphabet="cmu-arpabet" ph="EY1">A</phoneme>.', { stability: 0.9, similarity_boost: 0.8 }],
-  ['letter-a-3-letter', 'eleven_multilingual_v2', 'The letter A.', { stability: 0.9, similarity_boost: 0.8, style: 0 }],
-  ['letter-a-4-aay', 'eleven_multilingual_v2', 'Aay.', { stability: 0.9, similarity_boost: 0.8, style: 0 }],
-  ['letter-a-5-v3', 'eleven_v3', 'A. (the letter, said "ay")', { stability: 0.5, similarity_boost: 0.8 }],
+  // (7 Nov 2026) Goodnight, Garden: every page, soft and sleepy, for Jörg to hear first
+  ['goodnight-garden-p01', 'eleven_multilingual_v2', 'The sun is going down in the garden.', { stability: 0.65, similarity_boost: 0.85, style: 0.15, use_speaker_boost: true }],
+  ['goodnight-garden-p02', 'eleven_multilingual_v2', 'Goodnight, flowers. Fold up your petals.', { stability: 0.65, similarity_boost: 0.85, style: 0.15, use_speaker_boost: true }],
+  ['goodnight-garden-p03', 'eleven_multilingual_v2', 'Goodnight, bees. Buzz home to bed.', { stability: 0.65, similarity_boost: 0.85, style: 0.15, use_speaker_boost: true }],
+  ['goodnight-garden-p04', 'eleven_multilingual_v2', 'Goodnight, snail. Tuck in your head.', { stability: 0.65, similarity_boost: 0.85, style: 0.15, use_speaker_boost: true }],
+  ['goodnight-garden-p05', 'eleven_multilingual_v2', 'Goodnight, birds, snug in your nest.', { stability: 0.65, similarity_boost: 0.85, style: 0.15, use_speaker_boost: true }],
+  ['goodnight-garden-p06', 'eleven_multilingual_v2', 'Goodnight, stones, cool and still.', { stability: 0.65, similarity_boost: 0.85, style: 0.15, use_speaker_boost: true }],
+  ['goodnight-garden-p07', 'eleven_multilingual_v2', 'Up comes the moon, round and bright.', { stability: 0.65, similarity_boost: 0.85, style: 0.15, use_speaker_boost: true }],
+  ['goodnight-garden-p08', 'eleven_multilingual_v2', 'The crickets sing a sleepy song.', { stability: 0.65, similarity_boost: 0.85, style: 0.15, use_speaker_boost: true }],
+  ['goodnight-garden-p09', 'eleven_multilingual_v2', 'The fireflies blink. Blink... blink... blink.', { stability: 0.65, similarity_boost: 0.85, style: 0.15, use_speaker_boost: true }],
+  ['goodnight-garden-p10', 'eleven_multilingual_v2', 'Shh... the whole garden is sleeping now.', { stability: 0.65, similarity_boost: 0.85, style: 0.15, use_speaker_boost: true }],
+  ['goodnight-garden-p11', 'eleven_multilingual_v2', 'Goodnight, garden.', { stability: 0.65, similarity_boost: 0.85, style: 0.15, use_speaker_boost: true }],
+  ['goodnight-garden-p12', 'eleven_multilingual_v2', 'Goodnight, little one. Sleep tight.', { stability: 0.65, similarity_boost: 0.85, style: 0.15, use_speaker_boost: true }],
 ];
 const call = (method, p, body) => new Promise((res) => {
   const data = body ? JSON.stringify(body) : null;
