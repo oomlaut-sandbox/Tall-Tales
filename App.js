@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Image, Linking, Modal, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import { importLibrary, importVoices, readVoicesFile, shareAllBooks } from './src/voiceShare';
+import { importLibrary, importVoices, readVoicesFile, shareAllBooks, shareBookWithVoices } from './src/voiceShare';
 import { SHEET_KIND, sheetPhotoFile, unpackSheetPage } from './src/sheetShare';
 import { addSheet } from './src/folder';
 import * as ScreenOrientation from 'expo-screen-orientation';
@@ -141,6 +141,11 @@ function Root() {
   langRef.current = lang;
   const [settingsGate, setSettingsGate] = useState(false); // Settings is for grown-ups
   const [deskGate, setDeskGate] = useState(false);
+  // sharing a book from My Library or My Workspace (Select, then the envelope): the book's file, as from the reader
+  const shareFromShelf = (s) => {
+    toast(t('Getting the book ready…'), 8000);
+    shareBookWithVoices(s).then((sent) => { toast(''); if (!sent) shareInvite(s.title); }).catch(() => { toast(''); shareInvite(s.title); });
+  };
   const settingsAt = useRef(null); // a Settings section to open straight away (Manage classroom on the Teacher's Desk) // so is the Teacher's Desk, from the menu (6 Nov 2026)
   // the books' language: members can choose one in Settings; otherwise the app's language
   const purchases = usePurchases();
@@ -491,7 +496,7 @@ function Root() {
             }}
             onCreate={newBook} onEdit={openPublisher} onPlaylists={() => go('playlists')} onMakePlaylist={makePlaylist}
             removedCount={removed.length} onRestore={() => setRemovedSaved([])} recentlyDeleted={recentlyDeleted}
-            onShare={(s) => shareInvite(s.title)} // an invitation to the app, not the book
+            onShare={shareFromShelf} // the book itself, with its recordings, like the reader's envelope (just the invitation if there's nothing to send: 7 Nov 2026)
             onDelete={async (list) => {
               const store = list.filter((s) => s.storeRow).map((s) => s.id); // (store books: off the shelf; still in the Book Store)
               if (store.length) removeFromStoreLibrary(store);
@@ -529,7 +534,7 @@ function Root() {
             }}
             onCreate={newBook} onEdit={openPublisher} onPlaylists={() => go('playlists')} onMakePlaylist={makePlaylist}
             removedCount={removed.length} onRestore={() => setRemovedSaved([])} recentlyDeleted={recentlyDeleted}
-            onShare={(s) => shareInvite(s.title)} // an invitation to the app, not the book
+            onShare={shareFromShelf} // the book itself, with its recordings, like the reader's envelope (just the invitation if there's nothing to send: 7 Nov 2026)
             onDelete={async (list) => {
               const store = list.filter((s) => s.storeRow).map((s) => s.id); // (store books: off the shelf; still in the Book Store)
               if (store.length) removeFromStoreLibrary(store);
