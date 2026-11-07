@@ -1028,6 +1028,7 @@ const T = {
   'Play again': { de: 'Noch mal spielen', fr: 'Rejouer', es: 'Jugar otra vez', ja: 'もう いちど', ar: 'العب مجددًا' },
   'New game': { de: 'Neues Spiel', fr: 'Nouvelle partie', es: 'Partida nueva', ja: 'あたらしい ゲーム', ar: 'لعبة جديدة' },
   'Mancala': { de: 'Mancala', fr: 'Mancala', es: 'Mancala', ja: 'マンカラ', ar: 'المنقلة' },
+  'Turn pages for me': { de: 'Für mich umblättern', fr: 'Tourner les pages pour moi', es: 'Pasar las páginas por mí', ja: 'ページを めくって もらう', ar: 'اقلب الصفحات عني' },
   'Upload Images': { de: 'Bilder hochladen', fr: 'Importer des images', es: 'Subir imágenes', ja: 'えを いれる', ar: 'رفع الصور' },
   'Choose up to {n} pictures from your photos. Coro puts them into a book, and you just add the words.': { de: 'Wähle bis zu {n} Bilder aus deinen Fotos. Coro macht daraus ein Buch, und du schreibst nur noch die Wörter dazu.', fr: 'Choisis jusqu’à {n} images dans tes photos. Coro en fait un livre, et tu n’as plus qu’à ajouter les mots.', es: 'Elige hasta {n} imágenes de tus fotos. Coro las pone en un libro, y tú solo añades las palabras.', ja: 'しゃしんから{n}まいまで えをえらんでね。Coroが 本にするから、あとは ことばを かくだけ。', ar: "اختر حتى {n} صورة من صورك. يضعها Coro في كتاب، وما عليك إلا إضافة الكلمات." },
   'How should the pages go?': { de: 'Wie sollen die Seiten aussehen?', fr: 'Comment ranger les pages ?', es: '¿Cómo van las páginas?', ja: 'ページは どうする？', ar: "كيف تكون الصفحات؟" },

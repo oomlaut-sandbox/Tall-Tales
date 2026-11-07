@@ -5,7 +5,7 @@ const MOON_NUDGE = 0.4; // (in u) the crescent's optical nudge in its slot
 import { isRestricted, useControls } from '../controls';
 import { useLang, useT } from '../i18n';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, Image, PanResponder, Platform, Pressable, ScrollView, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, PanResponder, Platform, Pressable, ScrollView, Share, StyleSheet, Switch, Text, View, useWindowDimensions } from 'react-native';
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOOK_FONTS, colors, fonts } from '../theme';
@@ -1357,7 +1357,8 @@ export default function Reader({ menuOpen = false, coverShut = false, onOpenCove
         {recView === 'main' ? (
           <>
             <RecRow glyph={<DotIcon />} title={tr('Start recording')} sub={tr('Read this story in your own voice, starting on page {n}', { n: Math.min(idx + 1, n) })} disabled={idx >= n} onPress={askToRecord} />
-            <RecRow glyph={<TextIcon text={prefs.recAutoTurn ? '✓' : '→'} />} title={prefs.recAutoTurn ? tr('Turn pages for me: on') : tr('Turn pages for me: off')} sub={tr('Record the whole book: when you pause for two seconds after a page, Coro turns the page and keeps recording.')} onPress={() => setPrefs((p) => ({ ...p, recAutoTurn: !p.recAutoTurn }))} />
+            <RecRow glyph={<TextIcon text="→" />} title={tr('Turn pages for me')} sub={tr('Record the whole book: when you pause for two seconds after a page, Coro turns the page and keeps recording.')} onPress={() => setPrefs((p) => ({ ...p, recAutoTurn: !p.recAutoTurn }))}
+              toggle={!!prefs.recAutoTurn} /* a switch, on or off (Jörg, 7 Nov 2026) */ />
             <RecRow glyph={<ListIcon />} title={tr('Your recordings')} sub={tr('Listen to or remove the pages you recorded')} onPress={openRecList} />
             <RecRow glyph={<TextIcon text="?" />} title={tr('Help')} sub={tr('How recording works')} onPress={() => setRecView('help')} />
           </>
@@ -1412,14 +1413,16 @@ export default function Reader({ menuOpen = false, coverShut = false, onOpenCove
 }
 
 // a choice in the recording box: a small round icon, its name and a line under it (like the rows of the voices box)
-function RecRow({ glyph, title, sub, onPress, disabled }) {
+function RecRow({ glyph, title, sub, onPress, disabled, toggle }) {
+  const sw = toggle !== undefined;
   return (
-    <Pressable onPress={withTap(onPress)} disabled={disabled} accessibilityRole="button" style={[styles.recRow, disabled && { opacity: 0.45 }]}>
+    <Pressable onPress={withTap(onPress)} disabled={disabled} accessibilityRole={sw ? 'switch' : 'button'} accessibilityState={sw ? { checked: toggle } : undefined} style={[styles.recRow, disabled && { opacity: 0.45 }]}>
       <View style={styles.recRowIc}>{glyph}</View>
       <View style={{ flex: 1, minWidth: 0 }}>
         <Text style={styles.recRowTitle}>{title}</Text>
         <Text style={styles.recRowSub}>{sub}</Text>
       </View>
+      {sw ? <Switch value={toggle} onValueChange={() => onPress()} trackColor={{ true: colors.green }} style={{ marginLeft: 10 }} /> : null}
     </Pressable>
   );
 }
