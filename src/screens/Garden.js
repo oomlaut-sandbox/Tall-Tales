@@ -3,6 +3,7 @@
 //   the rocks: throw felt pebbles onto the pebble beach and hear them land
 //   the woodpile: arrange driftwood sticks and dominoes on the felt
 //   the flowers: a paper pinwheel to spin with a swipe
+//   the rocks: Jörg's felt stones to slide about, a quiet zen activity (ZenStones.js, 7 Nov 2026)
 //   the picnic table: mancala, against Coro or with someone next to you (Mancala.js, 7 Nov 2026)
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, View } from 'react-native';
@@ -15,6 +16,7 @@ import { withTap } from '../haptics';
 import { pinwheelWhirr, playGarden, playPebble } from '../sound';
 import { createAudioPlayer } from 'expo-audio';
 import Mancala from './Mancala';
+import ZenStones from './ZenStones';
 
 // Jörg's garden, 1116 × 1886 (it fills the screen edge to edge), as the day goes: in daylight, in the golden evening, and at night under the lights
 const MAPS = {
@@ -30,6 +32,8 @@ const SPOTS = [
   { game: 'home', box: [0.38, 0.0, 0.53, 0.095], label: 'My Workspace' }, // the gate at the top: back to My Workspace (Jörg, 29 Oct 2026)
   { game: 'home', box: [0.48, 0.86, 0.72, 1.0], label: 'My Workspace' }, // the gate at the bottom
   { game: 'mancala', box: [0.57, 0.11, 0.86, 0.3], label: 'Mancala' }, // the picnic table (7 Nov 2026)
+  { game: 'zen', box: [0.12, 0.18, 0.33, 0.29], label: 'The stones' }, // the rocks (7 Nov 2026)
+  { game: 'zen', box: [0.1, 0.78, 0.37, 0.95], label: 'The stones' },
   // (put away until they're ready)
   // { game: 'pebbles', box: [0.12, 0.18, 0.33, 0.29], label: 'The rocks' },
   // { game: 'pebbles', box: [0.1, 0.78, 0.37, 0.95], label: 'The rocks' },
@@ -113,6 +117,7 @@ export default function Garden({ u, openMenu, toast, onHome }) {
         {map}
         {game === 'pebbles' && area ? <Pebbles area={area} onBack={() => setGame(null)} /> : null}
         {game === 'sticks' && area ? <Driftwood area={area} onBack={() => setGame(null)} /> : null}
+        {game === 'zen' && area ? <ZenStones area={area} onBack={() => setGame(null)} /> : null}
         {game === 'mancala' && area ? <Mancala area={area} onBack={() => setGame(null)} /> : null}
         {game === 'pinwheel' && area ? <Pinwheel area={area} onBack={() => setGame(null)} /> : null}
       </View>
