@@ -1,0 +1,27 @@
+build 230: VALID (id 3874846a-98fa-4389-af0d-850532b1f709)
+build 229: VALID (id 45fff581-f9e7-488c-9ccb-a65913c7c79d)
+build 228: VALID (id 244e34ac-bcf4-428f-96cf-ee93629c5e37)
+build 227: VALID (id 576a7fd8-e4bf-4595-a06d-eaeaa5a60fbe)
+build 226: VALID (id 27b4a9bc-1fbf-427f-bb47-6ff0c55efcd1)
+crash submissions: HTTP 200
+3 found
+- ALEtn0rSYUuDfzvJH2g0LA0 2026-11-06T20:20:24.963Z iPad15_5 iOS 18.6.2 comment: Using the eraser drawing tool to erase a lot of stuff
+  crash log: {"errors":[{"id":"2f6ae1a8-7ba9-4527-936f-bd577f79ede0","status":"404","code":"NOT_FOUND","title":"The specified resource does not exist","detail":"There is no resource of type 'betaCrashLogs' with id 'ALEtn0rSYUuDfzvJH2g0LA0'"}]}
+- ANJodoTz5PvgFaZyVUs5p5E 2026-10-29T21:13:25.769Z iPad15_5 iOS 18.6.2 comment: Same
+  crash log: {"errors":[{"id":"a2d0b58c-949a-41b4-ae33-f5ab3fb49605","status":"404","code":"NOT_FOUND","title":"The specified resource does not exist","detail":"There is no resource of type 'betaCrashLogs' with id 'ANJodoTz5PvgFaZyVUs5p5E'"}]}
+- ACXio1trsza2Sik5lGXt9xo 2026-10-29T20:56:45.965Z iPad15_5 iOS 18.6.2 comment: Just opened the app and that is all
+  crash log: {"errors":[{"id":"c1c09ca6-b476-4ac1-bbaf-cc6af5e158ea","status":"404","code":"NOT_FOUND","title":"The specified resource does not exist","detail":"There is no resource of type 'betaCrashLogs' with id 'ACXio1trsza2Sik5lGXt9xo'"}]}
+diagnostics for build 230: HTTP 404 
+diagnostics for build 229: HTTP 404 
+subscription groups: 1
+- group "Coro Family" | display names: en-US=PREPARE_FOR_SUBMISSION
+  availability: HTTP 200 set, 0 countries | prices in 175 countries | review note: no | family sharable: false
+  review screenshot: yes (COMPLETE) | localizations: en-US=PREPARE_FOR_SUBMISSION
+  oomlaut.member.monthly: READY_TO_SUBMIT | ONE_MONTH | US $3.99 | free trial: FREE_TRIAL ONE_WEEK, FREE_TRIAL ONE_WEEK, FREE_TRIAL ONE_WEEK, FREE_TRIAL ONE_WEEK, FREE_TRIAL ONE_WEEK | names: 1
+  availability: HTTP 200 set, 0 countries | prices in 175 countries | review note: no | family sharable: false
+  review screenshot: yes (COMPLETE) | localizations: en-US=PREPARE_FOR_SUBMISSION
+  oomlaut.member.yearly: READY_TO_SUBMIT | ONE_YEAR | US $29.99 | free trial: FREE_TRIAL ONE_WEEK, FREE_TRIAL ONE_WEEK, FREE_TRIAL ONE_WEEK, FREE_TRIAL ONE_WEEK, FREE_TRIAL ONE_WEEK | names: 1
+books for sale (in-app purchases): 0
+sandbox testers: HTTP 200, 1 found
+  tester in CAN (Jörg)
+run at Sat Nov  7 08:50:50 UTC 2026
