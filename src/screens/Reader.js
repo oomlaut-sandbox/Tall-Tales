@@ -1342,7 +1342,10 @@ export default function Reader({ menuOpen = false, coverShut = false, onOpenCove
         onPass={() => {
           setShareGate(false);
           // recorded in the family's voice: the recordings go along as a file (opened in Coro); otherwise the invitation
-          shareBookWithVoices(story).then((sent) => { if (!sent) shareInvite(story.title); }).catch(() => shareInvite(story.title));
+          // (nothing to send, or it couldn't be packed: say so, then the invitation. It went quietly before, and a book
+          // that should have gone looked like the share was broken: Jörg, 7 Nov 2026)
+          shareBookWithVoices(story).then((sent) => { if (!sent) { toast(story.mine ? tr('This book has no recordings yet, so an invitation to Coro is sent instead.') : tr('Book Store books aren’t sent as a file, so an invitation to Coro is sent instead.'), 5000); shareInvite(story.title); } })
+            .catch((e) => { toast(tr('The book couldn’t be packed ({why}), so an invitation is sent instead.', { why: String((e && e.message) || e).slice(0, 60) }), 7000); shareInvite(story.title); });
         }} />
       <ParentGate visible={!!printGate} reason={tr('Printing opens your phone’s print options.')} onPass={() => doPrint(printGate)} onCancel={() => setPrintGate(null)} />
 
