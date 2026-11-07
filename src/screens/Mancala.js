@@ -1,5 +1,5 @@
-// Mancala in the Garden (Jörg, 7 Nov 2026): the old counting-and-sowing game, on a board of light oak with felt
-// stones. The rules are Kalah, the version most families know:
+// Mancala in the Garden (Jörg, 7 Nov 2026): the old counting-and-sowing game, on a dark felt board with a stitched
+// edge and Jörg's felt stones. The rules are Kalah, the version most families know:
 //   six pits each, four stones in every pit to start, and a store at each end
 //   take all the stones from one of your pits and drop them one at a time into the next pits, going round
 //     (into your own store too, never into the other player's)
@@ -19,15 +19,13 @@ import { withTap } from '../haptics';
 import { playPebble } from '../sound';
 
 const FELT = require('../../assets/desk-felt.jpg');
-const OAK = require('../../assets/desk-oak.jpg');
-// Jörg's felt stones (the same ones as on the beach)
-const STONES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => [
-  null,
-  require('../../assets/garden/pebble-1.png'), require('../../assets/garden/pebble-2.png'), require('../../assets/garden/pebble-3.png'),
-  require('../../assets/garden/pebble-4.png'), require('../../assets/garden/pebble-5.png'), require('../../assets/garden/pebble-6.png'),
-  require('../../assets/garden/pebble-7.png'), require('../../assets/garden/pebble-8.png'), require('../../assets/garden/pebble-9.png'),
-  require('../../assets/garden/pebble-10.png'),
-][n]);
+// Jörg's eight felt stones (7 Nov 2026)
+const STONES = ['cream', 'grey', 'charcoal', 'sand', 'taupe', 'moss', 'rust', 'speckle'].map((n) => ({
+  cream: require('../../assets/garden/stones/cream.png'), grey: require('../../assets/garden/stones/grey.png'),
+  charcoal: require('../../assets/garden/stones/charcoal.png'), sand: require('../../assets/garden/stones/sand.png'),
+  taupe: require('../../assets/garden/stones/taupe.png'), moss: require('../../assets/garden/stones/moss.png'),
+  rust: require('../../assets/garden/stones/rust.png'), speckle: require('../../assets/garden/stones/speckle.png'),
+}[n]));
 
 const PITS = 6, START = 4;
 const STORE = [6, 13]; // player 0's store, player 1's store
@@ -147,7 +145,7 @@ export default function Mancala({ area, onBack }) {
     if (tall) return { x: store ? 1.2 * c : side, y: bh - along, w: store ? sh : sw, h: store ? sw : sh };
     return { x: along, y: store ? 1.2 * c : bh - side, w: sw, h: sh };
   };
-  const stoneSize = c * 0.3;
+  const stoneSize = c * 0.34;
 
   const mine = (i) => !isStore(i) && sideOf(i) === turn && (!vsCoro || turn === 0);
   const canTap = (i) => !busy && !over && mine(i) && board[i] > 0;
@@ -171,8 +169,13 @@ export default function Mancala({ area, onBack }) {
         <Text style={styles.sub} numberOfLines={2}>{sub}</Text>
       </View>
       {/* the board: light oak, its pits and stores sunk into it */}
-      <View style={{ position: 'absolute', left: bx, top: by, width: bw, height: bh, borderRadius: c * 0.5, overflow: 'hidden', shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 10, shadowOffset: { width: 0, height: 6 } }}>
-        <Image source={OAK} style={StyleSheet.absoluteFill} resizeMode="cover" />
+      <View style={{ position: 'absolute', left: bx, top: by, width: bw, height: bh, borderRadius: c * 0.5, shadowColor: '#000', shadowOpacity: 0.6, shadowRadius: 12, shadowOffset: { width: 4, height: 8 } }}>
+        {/* the board: the same felt, much darker, with a stitched edge */}
+        <View style={[StyleSheet.absoluteFill, { borderRadius: c * 0.5, overflow: 'hidden' }]}>
+          <Image source={FELT} style={StyleSheet.absoluteFill} resizeMode="cover" />
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(8,8,8,0.62)' }]} />
+        </View>
+        <View pointerEvents="none" style={{ position: 'absolute', left: c * 0.14, top: c * 0.14, right: c * 0.14, bottom: c * 0.14, borderRadius: c * 0.38, borderWidth: 1.5, borderStyle: 'dashed', borderColor: 'rgba(205,195,180,0.6)' }} />
         {board.map((n, i) => {
           const s = slot(i);
           const glow = canTap(i);
@@ -180,12 +183,12 @@ export default function Mancala({ area, onBack }) {
             <Pressable key={i} disabled={!canTap(i)} onPress={withTap(() => move(i, turn))}
               accessibilityRole="button" accessibilityLabel={isStore(i) ? t('{name}’s store: {n} stones', { name: name(sideOf(i)), n }) : t('{n} stones', { n })}
               style={{ position: 'absolute', left: s.x - s.w / 2, top: s.y - s.h / 2, width: s.w, height: s.h, borderRadius: Math.min(s.w, s.h) / 2,
-                backgroundColor: 'rgba(40,26,14,0.55)', borderWidth: glow ? 3 : 1.5, borderColor: glow ? '#ffffff' : lit === i ? '#f2c14e' : 'rgba(0,0,0,0.35)' }}>
+                backgroundColor: 'rgba(0,0,0,0.5)', borderWidth: glow || lit === i ? 2 : 0, borderColor: glow ? 'rgba(255,255,255,0.75)' : '#f2c14e' }}>
               {/* the stones in it, scattered a little */}
               {Array.from({ length: Math.min(n, isStore(i) ? 36 : 18) }, (_, k) => {
                 const a = rnd(i * 101 + k) * Math.PI * 2, rr = Math.sqrt(rnd(i * 77 + k * 3)) * 0.32;
                 const sx = s.w / 2 + Math.cos(a) * rr * s.w - stoneSize / 2, sy = s.h / 2 + Math.sin(a) * rr * s.h - stoneSize / 2;
-                return <Image key={k} source={STONES[(i * 7 + k) % STONES.length]} style={{ position: 'absolute', left: sx, top: sy, width: stoneSize, height: stoneSize }} resizeMode="contain" />;
+                return <Image key={k} source={STONES[(i * 7 + k) % STONES.length]} style={{ position: 'absolute', left: sx, top: sy, width: stoneSize, height: stoneSize, transform: [{ rotate: `${Math.round(rnd(i * 13 + k * 7) * 360)}deg` }] }} resizeMode="contain" />;
               })}
             </Pressable>
           );
@@ -225,7 +228,7 @@ export default function Mancala({ area, onBack }) {
 const styles = StyleSheet.create({
   status: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 22, textAlign: 'center' },
   sub: { color: '#d8d3c8', fontFamily: fonts.ui, fontSize: 14, lineHeight: 19, textAlign: 'center', marginTop: 2 },
-  count: { color: '#2a1d10', fontFamily: fonts.uiBold, fontSize: 13, backgroundColor: 'rgba(255,255,255,0.75)', borderRadius: 9, paddingHorizontal: 6, overflow: 'hidden' },
+  count: { color: '#ebe4d7', fontFamily: fonts.uiBold, fontSize: 15 },
   choices: { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'center', gap: 8, flexWrap: 'wrap', paddingHorizontal: 12 },
   chip: { height: 40, borderRadius: 20, paddingHorizontal: 16, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.6)' },
   chipOn: { backgroundColor: colors.green },
