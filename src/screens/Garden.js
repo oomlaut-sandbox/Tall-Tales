@@ -32,8 +32,9 @@ const SPOTS = [
   { game: 'home', box: [0.38, 0.0, 0.53, 0.095], label: 'My Workspace' }, // the gate at the top: back to My Workspace (Jörg, 29 Oct 2026)
   { game: 'home', box: [0.48, 0.86, 0.72, 1.0], label: 'My Workspace' }, // the gate at the bottom
   { game: 'mancala', box: [0.57, 0.11, 0.86, 0.3], label: 'Mancala' }, // the picnic table (7 Nov 2026)
-  { game: 'zen', box: [0.12, 0.18, 0.33, 0.29], label: 'The stones' }, // the rocks (7 Nov 2026)
-  { game: 'zen', box: [0.1, 0.78, 0.37, 0.95], label: 'The stones' },
+  // (the zen stones: put away for now, Jörg, 7 Nov 2026)
+  // { game: 'zen', box: [0.12, 0.18, 0.33, 0.29], label: 'The stones' },
+  // { game: 'zen', box: [0.1, 0.78, 0.37, 0.95], label: 'The stones' },
   // (put away until they're ready)
   // { game: 'pebbles', box: [0.12, 0.18, 0.33, 0.29], label: 'The rocks' },
   // { game: 'pebbles', box: [0.1, 0.78, 0.37, 0.95], label: 'The rocks' },
