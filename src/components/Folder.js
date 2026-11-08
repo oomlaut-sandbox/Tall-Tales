@@ -179,9 +179,9 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
             <Image source={FOLDER_BACK} style={{ position: 'absolute', top: 0, left: 0, width: fw, height: fbh, tintColor: '#000', opacity: 0.38 }} />
             {/* the folder's tab, typed with the child's name, like the small folder on My Workspace */}
             {name ? (
-              <View style={{ position: 'absolute', left: fw * 0.03, top: fbh * 0.008, width: fw * 0.27, height: fbh * 0.046, alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ position: 'absolute', left: fw * 0.05, top: fbh * 0.012, width: fw * 0.29, height: fbh * 0.05, alignItems: 'center', justifyContent: 'center' }}>
                 <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} allowFontScaling={false}
-                  style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.round(fw * 0.026), color: '#3b342b' }}>{name}</Text>
+                  style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.round(fw * 0.032), color: '#3b342b' }}>{name}</Text>
               </View>
             ) : null}
             <View style={{ position: 'absolute', top: fbh, left: 0, width: fw, height: ffh }}>
