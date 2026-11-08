@@ -1,8 +1,9 @@
 // The corkboard: always at the very bottom of My Library, as wide as two books. Anyone can pin a yellow sticky
 // note or a photo to it with the pin button (taking a photo asks a grown-up first, as everywhere). Tap a pin to
 // see it big, or to take it down.
-import React, { useEffect, useState } from 'react';
-import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Image, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -15,7 +16,7 @@ import { CameraIcon, ChoiceLabel } from './Chrome';
 // the icons before the words, the same line icons as the app's other pop-ups (Jörg, 28 Oct 2026)
 const PIN_ICONS = { doodle: require('../../assets/heading-icons/my-notebook.png'), note: require('../../assets/heading-icons/sticky-note.png') /* a note with its corner curling up (Jörg, 29 Oct 2026) */, photo: require('../../assets/heading-icons/family-and-memories.png') };
 const PinIcon = ({ src }) => (src ? <Image source={src} style={{ width: 22, height: 22, tintColor: colors.white }} resizeMode="contain" accessibilityIgnoresInvertColors /> : <View style={{ width: 22, alignItems: 'center' }}><CameraIcon size={19} color={colors.white} weight={1.6} /></View>);
-import { inSheet, loadPins, onPins, pinNote, pinPhoto, unpin } from '../corkboard';
+import { inSheet, loadPins, movePin, onPins, pinNote, pinPhoto, unpin } from '../corkboard';
 import { onScopeChange } from '../scope';
 import { loadNotebook } from '../notebook';
 import { StrokesView, strokesToImage } from './Strokes';
@@ -48,6 +49,56 @@ function Pin({ p, W }) {
       {head}
       <Image source={{ uri: p.uri }} style={{ flex: 1, alignSelf: 'stretch' }} resizeMode="cover" />
     </View>
+  );
+}
+
+// A pin that can be moved (Jörg, 8 Nov 2026): touch and hold it a moment, it lifts, then drag it anywhere on the
+// board and let go. A quick tap still opens it; a swipe still scrolls the page.
+function MovablePin({ p, s, W, H, onOpen, onMoved, label }) {
+  const pos = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
+  const lift = useRef(new Animated.Value(0)).current;
+  const st = useRef({ lifted: false, timer: null, moved: false }).current;
+  const pan = useRef(PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => st.lifted,
+    // until it's lifted, the page may take the touch and scroll; once lifted, the pin keeps it
+    onPanResponderTerminationRequest: () => !st.lifted,
+    onShouldBlockNativeResponder: () => true,
+    onPanResponderGrant: () => {
+      st.moved = false;
+      clearTimeout(st.timer);
+      st.timer = setTimeout(() => {
+        if (st.moved) return;
+        st.lifted = true;
+        try { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } catch (e) {}
+        Animated.spring(lift, { toValue: 1, friction: 6, tension: 120, useNativeDriver: true }).start();
+      }, 280);
+    },
+    onPanResponderMove: (e, g) => {
+      if (!st.lifted) { if (Math.hypot(g.dx, g.dy) > 8) { st.moved = true; clearTimeout(st.timer); } return; }
+      pos.setValue({ x: g.dx, y: g.dy });
+    },
+    onPanResponderRelease: (e, g) => {
+      clearTimeout(st.timer);
+      if (st.lifted) {
+        st.lifted = false;
+        Animated.timing(lift, { toValue: 0, duration: 140, useNativeDriver: true }).start();
+        onMoved(p.x + g.dx / W, p.y + g.dy / H, () => pos.setValue({ x: 0, y: 0 }));
+      } else if (!st.moved) onOpen();
+    },
+    onPanResponderTerminate: () => {
+      clearTimeout(st.timer);
+      if (st.lifted) { st.lifted = false; Animated.timing(lift, { toValue: 0, duration: 140, useNativeDriver: true }).start(); }
+      Animated.spring(pos, { toValue: { x: 0, y: 0 }, useNativeDriver: true }).start();
+    },
+  })).current;
+  const scale = lift.interpolate({ inputRange: [0, 1], outputRange: [1, 1.08] });
+  return (
+    <Animated.View {...pan.panHandlers} accessible accessibilityRole="button" accessibilityLabel={label}
+      style={{ position: 'absolute', left: p.x * W - s / 2, top: p.y * H - s / 2, zIndex: 1,
+        transform: [{ translateX: pos.x }, { translateY: pos.y }, { scale }, { rotate: `${p.rot || 0}deg` }] }}>
+      <Pin p={p} W={W} />
+    </Animated.View>
   );
 }
 
@@ -140,10 +191,14 @@ export default function Corkboard({ width, toast, onPlaylists }) {
           // (a pin from before the sheet, sitting over it: shown just above it instead)
           if (onPlaylists && inSheet(p.x, p.y)) p = { ...p, y: 0.38 };
           return (
-            <Pressable key={p.id} onPress={withTap(() => setOpen(p))} accessibilityRole="button" accessibilityLabel={p.kind === 'note' ? p.text : p.kind === 'doodle' ? t('Doodle') : t('Photo')}
-              style={{ position: 'absolute', left: p.x * width - s / 2, top: p.y * H - s / 2, transform: [{ rotate: `${p.rot || 0}deg` }] }}>
-              <Pin p={p} W={width} />
-            </Pressable>
+            <MovablePin key={p.id} p={p} s={s} W={width} H={H} label={p.kind === 'note' ? p.text : p.kind === 'doodle' ? t('Doodle') : t('Photo')}
+              onOpen={withTap(() => setOpen(p))}
+              onMoved={async (x, y, done) => {
+                // (never onto the Book Playlists sheet: just above it instead)
+                const ny = onPlaylists && inSheet(x, y) ? 0.38 : y;
+                const next = await movePin(p.id, x, ny).catch(() => null);
+                if (next) setPins([...next]); requestAnimationFrame(done);
+              }} />
           );
         })}
         {/* the pin button: pin something new */}
