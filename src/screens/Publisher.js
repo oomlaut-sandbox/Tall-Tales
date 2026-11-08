@@ -322,7 +322,7 @@ function UploadImages({ tr, winW, insets, onSkip, onGo, intro = false }) {
     return (
       <Pressable onPress={() => setLayout(v)} accessibilityRole="radio" accessibilityState={{ selected: on }} accessibilityLabel={rec ? `${label} ${rec}` : label}
         style={{ width: tileW, alignItems: 'center', gap: 10 }}>
-        <View style={{ width: tileW, height: Math.round(tileW * 0.62), borderRadius: 12, borderWidth: 1.5, borderColor: on ? colors.white : 'transparent', backgroundColor: on ? '#3a3a3a' : 'transparent' /* the chosen one: a dark grey box, white outline (Jörg, 5 Nov 2026) */, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: tileW, height: Math.round(tileW * 0.62), borderRadius: 12, borderWidth: 1.5, borderColor: on ? colors.white : 'transparent', backgroundColor: on ? '#2a2a2a' : 'transparent' /* the chosen one: a darker grey than the box, white outline (Jörg, 7 Nov 2026) */, alignItems: 'center', justifyContent: 'center' }}>
           <Image source={QUICK_ICONS[v]} style={{ width: Math.round(tileW * 0.56), height: Math.round(tileW * 0.28) }} resizeMode="contain" accessibilityIgnoresInvertColors />
         </View>
         <View style={{ alignItems: 'center' }}>
@@ -334,7 +334,7 @@ function UploadImages({ tr, winW, insets, onSkip, onGo, intro = false }) {
   };
   return (
     <ScrollView contentContainerStyle={{ alignItems: 'center', paddingTop: insets.top + 56, paddingBottom: 40, paddingHorizontal: 20 }}>
-      <View style={{ width: boxW, backgroundColor: 'rgba(0,0,0,0.7)' /* a little more see-through than the other boxes (Jörg, 5 Nov 2026) */, borderRadius: 24, paddingHorizontal: 24, paddingTop: 28, paddingBottom: 26 }}>
+      <View style={{ width: boxW, backgroundColor: '#373737' /* a solid mid grey (Jörg, 7 Nov 2026; was see-through black glass) */, borderRadius: 24, paddingHorizontal: 24, paddingTop: 28, paddingBottom: 26 }}>
         <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 28, lineHeight: 34 }}>{intro ? tr('Let’s get started!') : tr('Upload Images')}</Text>
         {intro ? (
           // the first thing a new book offers (Jörg, 4 Nov 2026)
