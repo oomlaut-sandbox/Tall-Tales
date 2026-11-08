@@ -41,7 +41,7 @@ export function LetterTile({ width }) {
   const name = useReaderName();
   const [open, setOpen] = useState(false);
   const [boxW, setBoxW] = useState(0);
-  const envW = boxW * 0.96, envH = envW / ENV_RATIO;
+  const envW = boxW * 0.82, envH = envW / ENV_RATIO;
   return (
     <>
       <Pressable onPress={() => { playSound('cardLift'); setOpen(true); }} style={{ width, gap: 8 }} accessibilityRole="button" accessibilityLabel={t('Open the letter from Coro')}
@@ -53,7 +53,7 @@ export function LetterTile({ width }) {
               {/* the reader's name, typed where an address would go */}
               {name ? (
                 <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} allowFontScaling={false}
-                  style={{ position: 'absolute', left: envW * 0.12, width: envW * 0.5, top: envH * 0.6, fontFamily: TYPE, fontSize: Math.round(envW * 0.075), color: INK, opacity: 0.85 }}>{name}</Text>
+                  style={{ position: 'absolute', left: envW * 0.15, width: envW * 0.7, top: envH * 0.6, textAlign: 'center', fontFamily: TYPE, fontSize: Math.round(envW * 0.085), color: INK, opacity: 0.85 }}>{name}</Text>
               ) : null}
             </View>
           ) : null}
