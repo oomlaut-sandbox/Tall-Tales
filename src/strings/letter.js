@@ -18,12 +18,12 @@ export default {
     ja: "わたしたちは、すべての つくりかたについて、かくさず しょうじきに おつたえします。あなたにとって いちばん よいものを えらんでいただけるように。",
     ar: "نلتزم بالشفافية والصدق في كل مرحلة، لتتمكن من اختيار ما هو الأفضل لك.",
   },
-  "In your Library you’ll find some examples of books made with Coro:": {
-    de: "In deiner Bibliothek findest du einige Beispiele für Bücher, die mit Coro gemacht wurden:",
-    fr: "Dans votre Bibliothèque, vous trouverez quelques exemples de livres faits avec Coro :",
-    es: "En tu Biblioteca encontrarás algunos ejemplos de libros hechos con Coro:",
-    ja: "ライブラリには、Coro で つくった 本の れいが いくつか あります。",
-    ar: "ستجد في مكتبتك بعض الأمثلة على كتب صُنعت باستخدام Coro:",
+  "In the Book Store you’ll find some examples of books made with Coro:": {
+    de: "Im Buchladen findest du einige Beispiele für Bücher, die mit Coro gemacht wurden:",
+    fr: "Dans la Librairie, vous trouverez quelques exemples de livres faits avec Coro :",
+    es: "En la Librería encontrarás algunos ejemplos de libros hechos con Coro:",
+    ja: "本やさんには、Coro で つくった 本の れいが いくつか あります。",
+    ar: "ستجد في متجر الكتب بعض الأمثلة على كتب صُنعت باستخدام Coro:",
   },
   "Different was written and illustrated by hand by Jörg Schmidt.": {
     de: "Anders wurde von Jörg Schmidt von Hand geschrieben und illustriert.",

@@ -18,7 +18,7 @@ const INK = '#2b2622';
 const PARAS = [
   'Hello, and thank you for supporting Coro. We so hope you love making books as much as we do.',
   'We’re dedicated to transparency and honesty around every process, so you can choose what’s best for you.',
-  'In your Library you’ll find some examples of books made with Coro:',
+  'In the Book Store you’ll find some examples of books made with Coro:',
   'Different was written and illustrated by hand by Jörg Schmidt.',
   'The Rough Lives of Animals was drawn by hand by Jörg Schmidt, then rendered with AI. Its text is a mix of the author’s original writing and AI.',
   'Tips for Authors was made with a mix of original work by Jörg Schmidt and AI.',
