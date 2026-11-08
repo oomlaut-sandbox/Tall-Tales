@@ -14,7 +14,7 @@ import { useT } from '../i18n';
 import { useControls } from '../controls';
 
 const BAND_FELT = require('../../assets/band-ideas.png'); // Jörg's moss green felt banner (cropped close under the stitching, with a soft felt edge)
-const SPREAD = require('../../assets/ideas-spread.jpg'); // an open book: Jörg's felt cat stretching, and 'Make a book for yourself…' (under the words at the top)
+const SPREAD = require('../../assets/ideas-spread.jpg'); // an open book: Jörg's long-eared creature (8 Nov 2026; was the felt cat), and 'Make a book for yourself…' (under the words at the top)
 
 export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
   const keep = useScrollMemory('ideas'); // Back returns to this spot
