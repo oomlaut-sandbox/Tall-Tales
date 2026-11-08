@@ -136,16 +136,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
     Animated.timing(fade, { toValue: 1, duration: 260, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
     return () => { a(); b(); stopVoice(); stopSpeech(); };
   }, []);
-  // the folder opening: its front half swings down, then the things in it appear
-  const flap = useRef(new Animated.Value(0)).current;
-  const show = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    Animated.sequence([
-      Animated.delay(120),
-      Animated.timing(flap, { toValue: 1, duration: 620, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
-    ]).start();
-    Animated.sequence([Animated.delay(560), Animated.timing(show, { toValue: 1, duration: 320, useNativeDriver: true })]).start();
-  }, []);
+  // (the folder simply lies open, no swinging front half: Jörg, 8 Nov 2026)
   const close = () => Animated.timing(fade, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => onClose());
   const big = Math.min(winW - 28, winH - 220, 620); // an opened sheet: nearly the phone's width
   const fw = Math.min(winW - 24, 760); // the folder, across
@@ -165,7 +156,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
 
   return (
     <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent visible animationType="none" onRequestClose={close}>
-      <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.78)', opacity: fade }]}>
+      <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.92)', opacity: fade }]}>{/* nearly black behind the folder (Jörg, 8 Nov 2026; was 0.78) */}
         <Pressable style={StyleSheet.absoluteFill} onPress={close} accessibilityLabel={t('Close')} />
         {/* the title, with Send a sheet and Close always at the top (Jörg, 8 Nov 2026: at the bottom they were hard to
             reach once the folder filled up) */}
@@ -186,13 +177,19 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
           <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: (winW - fw) / 2, width: fw, height: fbh + ffh }}>
             <Image source={FOLDER_BACK} style={{ position: 'absolute', top: 0, left: 0, width: fw, height: fbh }} />
             <Image source={FOLDER_BACK} style={{ position: 'absolute', top: 0, left: 0, width: fw, height: fbh, tintColor: '#000', opacity: 0.38 }} />
-            <Animated.View style={{ position: 'absolute', top: fbh, left: 0, width: fw, height: ffh,
-              transform: [{ perspective: 1400 }, { translateY: -ffh / 2 }, { rotateX: flap.interpolate({ inputRange: [0, 1], outputRange: ['-88deg', '0deg'] }) }, { translateY: ffh / 2 }] }}>
+            {/* the folder's tab, typed with the child's name, like the small folder on My Workspace */}
+            {name ? (
+              <View style={{ position: 'absolute', left: fw * 0.03, top: fbh * 0.008, width: fw * 0.27, height: fbh * 0.046, alignItems: 'center', justifyContent: 'center' }}>
+                <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} allowFontScaling={false}
+                  style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.round(fw * 0.026), color: '#3b342b' }}>{name}</Text>
+              </View>
+            ) : null}
+            <View style={{ position: 'absolute', top: fbh, left: 0, width: fw, height: ffh }}>
               <Image source={FOLDER_FRONT} style={{ width: fw, height: ffh }} resizeMode="stretch" />
               <Image source={FOLDER_FRONT} resizeMode="stretch" style={{ position: 'absolute', top: 0, left: 0, width: fw, height: ffh, tintColor: '#000', opacity: 0.38 }} />
-            </Animated.View>
+            </View>
           </View>
-          <Animated.View onLayout={(e) => { const h = e.nativeEvent.layout.height; if (Math.abs(h - innerH) > 4) setInnerH(h); }} style={{ width: fw, paddingTop: fw * 0.1, paddingBottom: fw * 0.08, paddingHorizontal: fw * 0.08, alignItems: 'center', opacity: show }}>
+          <Animated.View onLayout={(e) => { const h = e.nativeEvent.layout.height; if (Math.abs(h - innerH) > 4) setInnerH(h); }} style={{ width: fw, paddingTop: fw * 0.1, paddingBottom: fw * 0.08, paddingHorizontal: fw * 0.08, alignItems: 'center' }}>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 24, marginTop: 0 }}>
             {card('welcome', t('A note from Coro'), (
               <View style={[styles.paper, { width: thumb, height: thumb * 1.25, padding: thumb * 0.1 }]}>
