@@ -53,7 +53,7 @@ export function LetterTile({ width }) {
               {/* the reader's name, typed where an address would go */}
               {name ? (
                 <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} allowFontScaling={false}
-                  style={{ position: 'absolute', left: envW * 0.15, width: envW * 0.7, top: envH * 0.52 - Math.round(envW * 0.085) * 0.6 + 4, textAlign: 'center', fontFamily: TYPE, fontSize: Math.round(envW * 0.085), color: INK, opacity: 0.85 }}>{name}</Text>
+                  style={{ position: 'absolute', left: envW * 0.15, width: envW * 0.7, top: envH * 0.52 - Math.round(envW * 0.085) * 0.6 + 4, textAlign: 'center', fontFamily: TYPE, fontSize: Math.round(envW * 0.085), color: INK, opacity: 0.85, transform: [{ rotate: '-4deg' }] /* typed a little askew (Jörg, 8 Nov 2026) */ }}>{name}</Text>
               ) : null}
             </View>
           ) : null}
