@@ -95,6 +95,12 @@ function AbcSheet({ size, narrator }) {
   );
 }
 
+// the folder itself, opened flat (Jörg's photo, 8 Nov 2026): its back half with the tab, and its front half, which
+// swings down open when Things to share opens. 1200 × 876 and 1200 × 824.
+const FOLDER_BACK = require('../../assets/folder-open-back.png');
+const FOLDER_FRONT = require('../../assets/folder-open-front.png');
+const FB_H = 876, FF_H = 824, F_W = 1200;
+
 export default function Folder({ narrator = 'lily', onClose, toast, canSend = true }) {
   const t = useT();
   const lang = useLang();
@@ -130,9 +136,22 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
     Animated.timing(fade, { toValue: 1, duration: 260, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
     return () => { a(); b(); stopVoice(); stopSpeech(); };
   }, []);
+  // the folder opening: its front half swings down, then the things in it appear
+  const flap = useRef(new Animated.Value(0)).current;
+  const show = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.sequence([
+      Animated.delay(120),
+      Animated.timing(flap, { toValue: 1, duration: 620, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+    ]).start();
+    Animated.sequence([Animated.delay(560), Animated.timing(show, { toValue: 1, duration: 320, useNativeDriver: true })]).start();
+  }, []);
   const close = () => Animated.timing(fade, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => onClose());
   const big = Math.min(winW - 28, winH - 220, 620); // an opened sheet: nearly the phone's width
-  const thumb = Math.min((winW - 72) / 2, 200);
+  const fw = Math.min(winW - 24, 760); // the folder, across
+  const fbh = fw * FB_H / F_W, ffh = fw * FF_H / F_W;
+  const thumb = Math.min((fw * 0.84 - 24) / 2, 200);
+  const headH = insets.top + 128; // the title and its buttons, fixed at the top
 
   // the sheets as small cards, a little tilted, as if just spilled out of the folder
   const card = (key, label, child, rot, onPress) => (
@@ -147,9 +166,33 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
     <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent visible animationType="none" onRequestClose={close}>
       <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.78)', opacity: fade }]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={close} accessibilityLabel={t('Close')} />
-        <ScrollView contentContainerStyle={{ paddingTop: 90, paddingBottom: 60, paddingHorizontal: 24, alignItems: 'center' }}>
+        {/* the title, with Send a sheet and Close always at the top (Jörg, 8 Nov 2026: at the bottom they were hard to
+            reach once the folder filled up) */}
+        <View style={{ position: 'absolute', left: 0, right: 0, top: 0, paddingTop: insets.top + 18, alignItems: 'center', gap: 12, zIndex: 3 }}>
           <Text style={styles.title}>{t('Things to share')}</Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 24, marginTop: 26 }}>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            {canSend ? (
+              <Pressable onPress={withTap(() => setSendGate(true))} style={[styles.sendPill, { marginTop: 0 }]} accessibilityRole="button">
+                <Image source={ENVELOPE} style={{ width: 20, height: 20, tintColor: colors.white }} resizeMode="contain" />
+                <Text style={styles.pillText}>{t('Send a sheet')}</Text>
+              </Pressable>
+            ) : null}
+            <Pressable onPress={close} hitSlop={10} style={[styles.pill, styles.closePill, { marginTop: 0 }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Close')}</Text></Pressable>
+          </View>
+        </View>
+        <ScrollView style={{ marginTop: headH }} contentContainerStyle={{ paddingBottom: 60, alignItems: 'center' }}>
+          {/* the folder, opened, a little darkened so the sheets on it stand out */}
+          <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: (winW - fw) / 2, width: fw, height: fbh + ffh }}>
+            <Image source={FOLDER_BACK} style={{ position: 'absolute', top: 0, left: 0, width: fw, height: fbh }} />
+            <Image source={FOLDER_BACK} style={{ position: 'absolute', top: 0, left: 0, width: fw, height: fbh, tintColor: '#000', opacity: 0.38 }} />
+            <Animated.View style={{ position: 'absolute', top: fbh, left: 0, width: fw, height: ffh,
+              transform: [{ perspective: 1400 }, { translateY: -ffh / 2 }, { rotateX: flap.interpolate({ inputRange: [0, 1], outputRange: ['-88deg', '0deg'] }) }, { translateY: ffh / 2 }] }}>
+              <Image source={FOLDER_FRONT} style={{ width: fw, height: ffh }} />
+              <Image source={FOLDER_FRONT} style={{ position: 'absolute', top: 0, left: 0, width: fw, height: ffh, tintColor: '#000', opacity: 0.38 }} />
+            </Animated.View>
+          </View>
+          <Animated.View style={{ width: fw, minHeight: fbh + ffh, paddingTop: fw * 0.1, paddingHorizontal: fw * 0.08, alignItems: 'center', opacity: show }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 24, marginTop: 0 }}>
             {card('welcome', t('A note from Coro'), (
               <View style={[styles.paper, { width: thumb, height: thumb * 1.25, padding: thumb * 0.1 }]}>
                 <Text style={[styles.hand, { fontSize: thumb * 0.1 }]}>{t('Hello!')}</Text>
@@ -166,7 +209,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
             {sheets.map((s, k) => card(s.id, s.from ? t('From {name}', { name: s.from }) : s.page && s.page.kind === 'drawing' ? t('My drawing') : t('A sheet'), <SheetPage page={s.page} size={thumb} />, k % 2 ? 2 : -2, () => setOpen(s)))}
           </View>
           {/* paper to draw on */}
-          <Text style={[styles.title, { fontSize: 20, marginTop: 40 }]}>{t('Draw on a sheet')}</Text>
+          <Text style={[styles.title, { fontSize: 20, marginTop: 40, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 5, textShadowOffset: { width: 0, height: 1 } }]}>{t('Draw on a sheet')}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 18, marginTop: 18 }}>
             {PAPERS.map(([k, label, src], i) => (
               <Pressable key={k} onPress={withTap(() => startPaper(src))} accessibilityRole="button" accessibilityLabel={t(label)} style={{ width: thumb * 0.7, alignItems: 'center', gap: 8, transform: [{ rotate: `${[-2, 1.5, -1, 2][i % 4]}deg` }] }}>
@@ -175,13 +218,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
               </Pressable>
             ))}
           </View>
-          {canSend ? (
-            <Pressable onPress={withTap(() => setSendGate(true))} style={styles.sendPill} accessibilityRole="button">
-              <Image source={ENVELOPE} style={{ width: 20, height: 20, tintColor: colors.white }} resizeMode="contain" />
-              <Text style={styles.pillText}>{t('Send a sheet')}</Text>
-            </Pressable>
-          ) : null}
-          <Pressable onPress={close} hitSlop={10} style={[styles.pill, styles.closePill]} accessibilityRole="button"><Text style={styles.pillText}>{t('Close')}</Text></Pressable>
+          </Animated.View>
         </ScrollView>
       </Animated.View>
 
@@ -268,7 +305,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
 const styles = StyleSheet.create({
   title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 28 },
   cardShadow: { shadowColor: '#000', shadowOffset: { width: 2, height: 8 }, shadowOpacity: 0.55, shadowRadius: 10, elevation: 8 },
-  cardLabel: { color: 'rgba(255,255,255,0.85)', fontFamily: fonts.uiSemiBold, fontSize: 14 },
+  cardLabel: { color: 'rgba(255,255,255,0.92)', fontFamily: fonts.uiSemiBold, fontSize: 14, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 4, textShadowOffset: { width: 0, height: 1 } },
   paper: { backgroundColor: '#fbf7ee', borderRadius: 3 },
   hand: { fontFamily: TYPE, color: '#3a2f22' },
   letterText: { fontFamily: TYPE, fontSize: 16, lineHeight: 25, color: '#3a3226', marginBottom: 10 },
