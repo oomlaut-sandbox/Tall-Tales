@@ -1,0 +1,71 @@
+// The letter from Coro (in the envelope beside the featured book in the Book Store): how the books are made
+// (Jörg, 8 Nov 2026). Merged into the main table in src/i18n.js. The translations still need Jörg's approval.
+export default {
+  "A letter from Coro": { de: "Ein Brief von Coro", fr: "Une lettre de Coro", es: "Una carta de Coro", ja: "Coro からの てがみ", ar: "رسالة من Coro" },
+  "Open the letter from Coro": { de: "Den Brief von Coro öffnen", fr: "Ouvrir la lettre de Coro", es: "Abrir la carta de Coro", ja: "Coro からの てがみを ひらく", ar: "افتح الرسالة من Coro" },
+  "Put the letter back": { de: "Brief zurücklegen", fr: "Ranger la lettre", es: "Guardar la carta", ja: "てがみを しまう", ar: "أعد الرسالة" },
+  "Hello, and thank you for supporting Coro. We so hope you love making books as much as we do.": {
+    de: "Hallo und danke, dass du Coro unterstützt. Wir hoffen so sehr, dass du das Büchermachen genauso liebst wie wir.",
+    fr: "Bonjour, et merci de soutenir Coro. Nous espérons vraiment que vous aimerez créer des livres autant que nous.",
+    es: "Hola, y gracias por apoyar a Coro. Esperamos de verdad que disfrutes haciendo libros tanto como nosotros.",
+    ja: "こんにちは。Coro を おうえんしてくださり、ありがとうございます。わたしたちと おなじくらい、本づくりを たのしんでいただけたら うれしいです。",
+    ar: "مرحبًا، وشكرًا لدعمك Coro. نتمنى حقًا أن تحب صناعة الكتب بقدر ما نحبها.",
+  },
+  "We’re dedicated to transparency and honesty around every process, so you can choose what’s best for you.": {
+    de: "Wir legen bei jedem Schritt Wert auf Transparenz und Ehrlichkeit, damit du selbst wählen kannst, was für dich das Beste ist.",
+    fr: "Nous tenons à la transparence et à l’honnêteté à chaque étape, pour que vous puissiez choisir ce qui vous convient le mieux.",
+    es: "Nos comprometemos con la transparencia y la honestidad en cada proceso, para que puedas elegir lo que mejor te convenga.",
+    ja: "わたしたちは、すべての つくりかたについて、かくさず しょうじきに おつたえします。あなたにとって いちばん よいものを えらんでいただけるように。",
+    ar: "نلتزم بالشفافية والصدق في كل مرحلة، لتتمكن من اختيار ما هو الأفضل لك.",
+  },
+  "In your Library you’ll find some examples of books made with Coro:": {
+    de: "In deiner Bibliothek findest du einige Beispiele für Bücher, die mit Coro gemacht wurden:",
+    fr: "Dans votre Bibliothèque, vous trouverez quelques exemples de livres faits avec Coro :",
+    es: "En tu Biblioteca encontrarás algunos ejemplos de libros hechos con Coro:",
+    ja: "ライブラリには、Coro で つくった 本の れいが いくつか あります。",
+    ar: "ستجد في مكتبتك بعض الأمثلة على كتب صُنعت باستخدام Coro:",
+  },
+  "Different was written and illustrated by hand by Jörg Schmidt.": {
+    de: "Anders wurde von Jörg Schmidt von Hand geschrieben und illustriert.",
+    fr: "Différent a été écrit et illustré à la main par Jörg Schmidt.",
+    es: "Diferente fue escrito e ilustrado a mano por Jörg Schmidt.",
+    ja: "『ちがう』は、ヨルク・シュミットが 手で かき、手で えを えがきました。",
+    ar: "كتب يورغ شميت كتاب «مختلف» ورسمه بيده.",
+  },
+  "The Rough Lives of Animals was drawn by hand by Jörg Schmidt, then rendered with AI. Its text is a mix of the author’s original writing and AI.": {
+    de: "The Rough Lives of Animals wurde von Jörg Schmidt von Hand gezeichnet und dann mit KI umgesetzt. Der Text ist eine Mischung aus dem eigenen Text des Autors und KI.",
+    fr: "The Rough Lives of Animals a été dessiné à la main par Jörg Schmidt, puis rendu avec l’IA. Son texte mêle l’écriture originale de l’auteur et l’IA.",
+    es: "The Rough Lives of Animals fue dibujado a mano por Jörg Schmidt y luego renderizado con IA. Su texto es una mezcla de la escritura original del autor y de la IA.",
+    ja: "『The Rough Lives of Animals』は、ヨルク・シュミットが 手で えを かき、そのあと AI で しあげました。ぶんしょうは、作者が かいた ことばと AI を くみあわせています。",
+    ar: "رسم يورغ شميت كتاب The Rough Lives of Animals بيده، ثم أُنجز بمساعدة الذكاء الاصطناعي. ونصّه مزيج من كتابة المؤلف الأصلية والذكاء الاصطناعي.",
+  },
+  "Tips for Authors was made with a mix of original work by Jörg Schmidt and AI.": {
+    de: "Tips for Authors entstand aus einer Mischung aus eigener Arbeit von Jörg Schmidt und KI.",
+    fr: "Tips for Authors mêle le travail original de Jörg Schmidt et l’IA.",
+    es: "Tips for Authors se hizo con una mezcla de trabajo original de Jörg Schmidt y de IA.",
+    ja: "『Tips for Authors』は、ヨルク・シュミットの オリジナルの しごとと AI を くみあわせて つくりました。",
+    ar: "صُنع كتاب Tips for Authors بمزيج من عمل أصلي ليورغ شميت والذكاء الاصطناعي.",
+  },
+  "Every book is translated with the help of AI. A person then reads each translation and approves it before anyone hears it. The read-aloud voices are made with ElevenLabs, a voice tool. They are not recordings of real people reading.": {
+    de: "Jedes Buch wird mit Hilfe von KI übersetzt. Danach liest ein Mensch jede Übersetzung und gibt sie frei, bevor sie jemand hört. Die Vorlesestimmen entstehen mit ElevenLabs, einem Stimmenwerkzeug. Es sind keine Aufnahmen echter Menschen, die vorlesen.",
+    fr: "Chaque livre est traduit avec l’aide de l’IA. Une personne relit ensuite chaque traduction et l’approuve avant que quiconque l’entende. Les voix de lecture sont créées avec ElevenLabs, un outil vocal. Ce ne sont pas des enregistrements de vraies personnes qui lisent.",
+    es: "Cada libro se traduce con ayuda de la IA. Después, una persona lee cada traducción y la aprueba antes de que nadie la escuche. Las voces de lectura se hacen con ElevenLabs, una herramienta de voz. No son grabaciones de personas reales leyendo.",
+    ja: "どの本も、AI の たすけを かりて ほんやくしています。そのあと、ひとが それぞれの ほんやくを よみ、だれかが きく まえに しょうにんします。よみきかせの こえは、こえの ツール ElevenLabs で つくっています。ほんとうの ひとが よんだ ろくおんでは ありません。",
+    ar: "يُترجم كل كتاب بمساعدة الذكاء الاصطناعي. ثم يقرأ شخص كل ترجمة ويوافق عليها قبل أن يسمعها أحد. الأصوات التي تقرأ القصص مصنوعة باستخدام ElevenLabs، وهي أداة للأصوات. وهي ليست تسجيلات لأشخاص حقيقيين يقرؤون.",
+  },
+  "Books from artists in the store are made without AI, except for their translations.": {
+    de: "Bücher von Künstlerinnen und Künstlern im Buchladen entstehen ohne KI, abgesehen von ihren Übersetzungen.",
+    fr: "Les livres des artistes de la librairie sont faits sans IA, à l’exception de leurs traductions.",
+    es: "Los libros de artistas de la tienda se hacen sin IA, salvo sus traducciones.",
+    ja: "ブックストアの アーティストの 本は、ほんやくを のぞいて、AI を つかわずに つくられています。",
+    ar: "كتب الفنانين في المتجر مصنوعة دون ذكاء اصطناعي، باستثناء ترجماتها.",
+  },
+  "We look forward to seeing the stories that people dream up and create. The book store will grow in time with quality books, made by real people. Until then, please stay on this exciting journey of discovery with us.": {
+    de: "Wir freuen uns auf die Geschichten, die sich Menschen ausdenken und erschaffen. Der Buchladen wird mit der Zeit mit guten Büchern wachsen, gemacht von echten Menschen. Bis dahin: Bleib mit uns auf dieser spannenden Entdeckungsreise.",
+    fr: "Nous avons hâte de découvrir les histoires que chacun imaginera et créera. La librairie s’enrichira avec le temps de beaux livres, faits par de vraies personnes. D’ici là, poursuivez avec nous ce passionnant voyage de découverte.",
+    es: "Tenemos muchas ganas de ver las historias que la gente imagine y cree. La tienda irá creciendo con libros de calidad, hechos por personas reales. Mientras tanto, sigue con nosotros en este emocionante viaje de descubrimiento.",
+    ja: "みなさんが おもいえがき、つくる おはなしを たのしみに しています。ブックストアは、ほんとうの ひとが つくった すてきな 本で、すこしずつ ふえていきます。それまで、この わくわくする はっけんの たびを いっしょに つづけてください。",
+    ar: "نتطلع إلى رؤية القصص التي يتخيلها الناس ويصنعونها. وسيكبر متجر الكتب مع الوقت بكتب جيدة صنعها أشخاص حقيقيون. وإلى ذلك الحين، ابقَ معنا في رحلة الاكتشاف المثيرة هذه.",
+  },
+  "With love,": { de: "Alles Liebe,", fr: "Avec amour,", es: "Con cariño,", ja: "あいを こめて", ar: "مع الحب،" },
+};

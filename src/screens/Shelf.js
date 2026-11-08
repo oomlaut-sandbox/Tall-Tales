@@ -26,6 +26,7 @@ import { useLang, useT } from '../i18n';
 import { addToStoreLibrary, removeFromStoreLibrary, useStoreLibrary } from '../storeLibrary';
 import { useControls } from '../controls';
 import CoverArt from '../components/CoverArt';
+import { LetterTile } from '../components/CoroLetter';
 import { SHOWN_BOOKS, STORIES } from '../story';
 import { BlurView } from 'expo-blur';
 const AnimatedBlur = Animated.createAnimatedComponent(BlurView);
@@ -702,6 +703,8 @@ export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
                   badge={<Badge book={b} />}
                   onPress={(rect) => setOpen({ book: b, rect })} />
               ))}
+              {/* the letter from Coro beside the featured book: how the books are made (Jörg, 8 Nov 2026) */}
+              {sh.id === 'featured' ? <LetterTile width={tileWidth(winW)} /> : null}
             </View>
           </View>
         ))}
