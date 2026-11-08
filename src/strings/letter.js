@@ -67,5 +67,12 @@ export default {
     ja: "みなさんが おもいえがき、つくる おはなしを たのしみに しています。ブックストアは、ほんとうの ひとが つくった すてきな 本で、すこしずつ ふえていきます。それまで、この わくわくする はっけんの たびを いっしょに つづけてください。",
     ar: "نتطلع إلى رؤية القصص التي يتخيلها الناس ويصنعونها. وسيكبر متجر الكتب مع الوقت بكتب جيدة صنعها أشخاص حقيقيون. وإلى ذلك الحين، ابقَ معنا في رحلة الاكتشاف المثيرة هذه.",
   },
+  "Coro is about the books you make together, so the most important ones in your Library will be yours.": {
+    de: "Bei Coro geht es um die Bücher, die ihr gemeinsam macht. Die wichtigsten Bücher in deiner Bibliothek werden also deine eigenen sein.",
+    fr: "Coro, ce sont les livres que vous faites ensemble : les plus importants de votre bibliothèque seront donc les vôtres.",
+    es: "Coro trata de los libros que hacéis juntos, así que los más importantes de tu biblioteca serán los tuyos.",
+    ja: "Coro は、いっしょに つくる 本の ための アプリです。だから、あなたの 本だなで いちばん たいせつな 本は、あなたが つくった 本に なるでしょう。",
+    ar: "Coro يدور حول الكتب التي تصنعونها معًا، لذا ستكون أهم الكتب في مكتبتك هي كتبك أنت.",
+  },
   "With love,": { de: "Alles Liebe,", fr: "Avec amour,", es: "Con cariño,", ja: "あいを こめて", ar: "مع الحب،" },
 };
