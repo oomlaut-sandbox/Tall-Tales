@@ -76,6 +76,7 @@ export default function Garden({ u, openMenu, toast, onHome }) {
   // birdsong by day; at night the crickets take over (one fades out as the other comes up). Both start silent and
   // come up very slowly; they go quiet when you leave (Jörg, 26 Oct 2026)
   const todRef = useRef(tod); todRef.current = tod;
+  const gameRef = useRef(game); gameRef.current = game; // Mancala plays in quiet: the garden's sounds fade out (Jörg, 9 Nov 2026)
   useEffect(() => {
     let birds = null, crickets = null, id = null, vb = 0, vc = 0;
     try {
@@ -83,8 +84,9 @@ export default function Garden({ u, openMenu, toast, onHome }) {
       crickets = createAudioPlayer(CRICKETS); crickets.loop = true; crickets.volume = 0; crickets.play();
       const step = (v, to) => (v < to ? Math.min(to, v + 0.005) : Math.max(to, v - 0.01)); // up slowly, down a little quicker
       id = setInterval(() => {
-        const night = todRef.current === 'night';
-        vb = step(vb, night ? 0 : 0.55); vc = step(vc, night ? 0.6 : 0);
+        const night = todRef.current === 'night', hush = gameRef.current === 'mancala';
+        if (hush) { vb = Math.max(0, vb - 0.06); vc = Math.max(0, vc - 0.06); } // out in about two seconds
+        else { vb = step(vb, night ? 0 : 0.55); vc = step(vc, night ? 0.6 : 0); }
         try { birds.volume = vb; crickets.volume = vc; } catch (e) {}
       }, 200); // about 22 seconds to full
     } catch (e) {}
