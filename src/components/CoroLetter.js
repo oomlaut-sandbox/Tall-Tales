@@ -17,7 +17,7 @@ const INK = '#2b2622';
 
 const PARAS = [
   'Hello, and thank you for supporting Coro. We so hope you love making books as much as we do.',
-  'We look forward to seeing the stories that people dream up and create. The book store will grow in time with quality books, made by real people. Until then, please stay on this exciting journey of discovery with us.',
+  'We look forward to seeing the stories that you dream up and create. The book store will grow in time with quality books, made by real people. Until then, please stay on this exciting journey of discovery with us.',
   'Coro is about the books you make together, so the most important ones in your Library will be yours.',
   'We’re dedicated to transparency and honesty around every process, so you can choose what’s best for you.',
   'In the Book Store you’ll find some examples of books made with Coro.',

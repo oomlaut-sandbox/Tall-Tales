@@ -46,12 +46,12 @@ export default {
     ja: "ブックストアの アーティストの 本は、ほんやくを のぞいて、AI を つかわずに つくられています。",
     ar: "كتب الفنانين في المتجر مصنوعة دون ذكاء اصطناعي، باستثناء ترجماتها.",
   },
-  "We look forward to seeing the stories that people dream up and create. The book store will grow in time with quality books, made by real people. Until then, please stay on this exciting journey of discovery with us.": {
-    de: "Wir freuen uns auf die Geschichten, die sich Menschen ausdenken und erschaffen. Der Buchladen wird mit der Zeit mit guten Büchern wachsen, gemacht von echten Menschen. Bis dahin: Bleib mit uns auf dieser spannenden Entdeckungsreise.",
-    fr: "Nous avons hâte de découvrir les histoires que chacun imaginera et créera. La librairie s’enrichira avec le temps de beaux livres, faits par de vraies personnes. D’ici là, poursuivez avec nous ce passionnant voyage de découverte.",
-    es: "Tenemos muchas ganas de ver las historias que la gente imagine y cree. La tienda irá creciendo con libros de calidad, hechos por personas reales. Mientras tanto, sigue con nosotros en este emocionante viaje de descubrimiento.",
-    ja: "みなさんが おもいえがき、つくる おはなしを たのしみに しています。ブックストアは、ほんとうの ひとが つくった すてきな 本で、すこしずつ ふえていきます。それまで、この わくわくする はっけんの たびを いっしょに つづけてください。",
-    ar: "نتطلع إلى رؤية القصص التي يتخيلها الناس ويصنعونها. وسيكبر متجر الكتب مع الوقت بكتب جيدة صنعها أشخاص حقيقيون. وإلى ذلك الحين، ابقَ معنا في رحلة الاكتشاف المثيرة هذه.",
+  "We look forward to seeing the stories that you dream up and create. The book store will grow in time with quality books, made by real people. Until then, please stay on this exciting journey of discovery with us.": {
+    de: "Wir freuen uns auf die Geschichten, die du dir ausdenkst und erschaffst. Der Buchladen wird mit der Zeit mit guten Büchern wachsen, gemacht von echten Menschen. Bis dahin: Bleib mit uns auf dieser spannenden Entdeckungsreise.",
+    fr: "Nous avons hâte de découvrir les histoires que vous imaginerez et créerez. La librairie s’enrichira avec le temps de beaux livres, faits par de vraies personnes. D’ici là, poursuivez avec nous ce passionnant voyage de découverte.",
+    es: "Tenemos muchas ganas de ver las historias que imagines y crees. La tienda irá creciendo con libros de calidad, hechos por personas reales. Mientras tanto, sigue con nosotros en este emocionante viaje de descubrimiento.",
+    ja: "あなたが おもいえがき、つくる おはなしを たのしみに しています。ブックストアは、ほんとうの ひとが つくった すてきな 本で、すこしずつ ふえていきます。それまで、この わくわくする はっけんの たびを いっしょに つづけてください。",
+    ar: "نتطلع إلى رؤية القصص التي تتخيلها وتصنعها. وسيكبر متجر الكتب مع الوقت بكتب جيدة صنعها أشخاص حقيقيون. وإلى ذلك الحين، ابقَ معنا في رحلة الاكتشاف المثيرة هذه.",
   },
   "Coro is about the books you make together, so the most important ones in your Library will be yours.": {
     de: "Bei Coro geht es um die Bücher, die ihr gemeinsam macht. Die wichtigsten Bücher in deiner Bibliothek werden also deine eigenen sein.",
