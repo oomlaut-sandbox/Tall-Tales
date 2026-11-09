@@ -41,8 +41,8 @@ const BOARD_WIDE = require('../../assets/garden/mancala/board-wide.png');
 const BOARD_AR = 527 / 1608; // width / height, upright
 // where the holes are on the upright board, as fractions of its size: the rows from the bottom store (cell 0)
 // to the top store (cell 7); your pits in the right column, the other player's in the left
-const ROWS = [0.912, 0.791, 0.670, 0.549, 0.428, 0.307, 0.187, 0.072];
-const COL = { near: 0.705, far: 0.305, store: 0.507 };
+const ROWS = [0.912, 0.795, 0.674, 0.553, 0.432, 0.311, 0.191, 0.072]; // (the pits nudged down a touch onto the holes: 9 Nov 2026)
+const COL = { near: 0.697, far: 0.305, store: 0.507 }; // (your column nudged left onto the holes)
 const PIT_D = 0.25, STORE_W = 0.675, STORE_H = 0.08; // a pit's width, a store's width and height (of the board's width / height)
 // smooth grey pebbles, cut from Jörg's photo (9 Nov 2026; were the felt stones)
 const STONES = [
@@ -210,7 +210,7 @@ export default function Mancala({ area, onBack }) {
             <Pressable key={i} disabled={!canTap(i)} onPress={withTap(() => move(i, turn))}
               accessibilityRole="button" accessibilityLabel={isStore(i) ? t('{name}’s store: {n} stones', { name: name(sideOf(i)), n }) : t('{n} stones', { n })}
               style={{ position: 'absolute', left: s.x - s.w / 2, top: s.y - s.h / 2, width: s.w, height: s.h, borderRadius: Math.min(s.w, s.h) / 2,
-                borderWidth: glow || lit === i ? 2 : 0, borderColor: glow ? 'rgba(255,255,255,0.75)' : '#f2c14e' }}>
+                borderWidth: glow || lit === i ? 2 : 0, borderColor: glow ? 'rgba(255,255,255,0.4)' /* 60% see-through (Jörg, 9 Nov 2026) */ : '#f2c14e' }}>
               {/* the stones in it, scattered a little */}
               {Array.from({ length: Math.min(n, isStore(i) ? 36 : 18) }, (_, k) => {
                 const a = rnd(i * 101 + k) * Math.PI * 2, rr = Math.sqrt(rnd(i * 77 + k * 3)) * 0.32;
