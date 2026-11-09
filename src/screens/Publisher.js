@@ -335,7 +335,7 @@ function UploadImages({ tr, winW, insets, onSkip, onGo, intro = false }) {
   };
   return (
     <ScrollView contentContainerStyle={{ alignItems: 'center', paddingTop: insets.top + 56, paddingBottom: 40, paddingHorizontal: 20 }}>
-      <View style={{ width: boxW, backgroundColor: '#373737' /* a solid mid grey (Jörg, 7 Nov 2026; was see-through black glass) */, borderRadius: 24, paddingHorizontal: 24, paddingTop: 28, paddingBottom: 26 }}>
+      <View style={{ width: boxW, backgroundColor: '#2c2c2c' /* a solid grey, a touch darker, with a thin lighter outline (Jörg, 9 Nov 2026; was #373737) */, borderWidth: 2, borderColor: '#4a4a4a', borderRadius: 24, paddingHorizontal: 24, paddingTop: 28, paddingBottom: 26 }}>
         <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 28, lineHeight: 34 }}>{intro ? tr('Let’s get started!') : tr('Upload Images')}</Text>
         {intro ? (
           // the first thing a new book offers (Jörg, 4 Nov 2026)
@@ -350,7 +350,7 @@ function UploadImages({ tr, winW, insets, onSkip, onGo, intro = false }) {
         </View>
         <Text style={{ color: 'rgba(255,255,255,0.65)', fontFamily: fonts.ui, fontSize: 14, lineHeight: 20, marginTop: 18 }}>{tr('Text over image needs the Advanced page editor. It comes with Coro Family, and a grown-up turns it on in Settings.')}</Text>
         <View style={{ flexDirection: 'row', gap: 10, marginTop: 24, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-          <Pressable onPress={onSkip} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: '#3d3d3d', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{intro ? tr('Not now') : tr('No thanks')}</Text></Pressable>
+          <Pressable onPress={onSkip} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: '#4e4e4e' /* lighter, to stand out on the darker box (Jörg, 9 Nov 2026) */, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{intro ? tr('Not now') : tr('No thanks')}</Text></Pressable>
           <Pressable onPress={() => onGo(layout)} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('Choose pictures')}</Text></Pressable>
         </View>
       </View>

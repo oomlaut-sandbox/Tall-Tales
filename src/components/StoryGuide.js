@@ -67,7 +67,7 @@ export default function StoryGuide({ visible, onClose, area, onIdeas }) {
 
 const styles = StyleSheet.create({
   scrim: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.3)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, zIndex: 70 },
-  card: { padding: 24, gap: 12, overflow: 'hidden', width: '100%' },
+  card: { padding: 24, gap: 12, overflow: 'hidden', width: '100%', borderRadius: 24, borderWidth: 2, borderColor: '#4a4a4a' }, // rounded, with the thin lighter outline (Jörg, 9 Nov 2026)
   kicker: { color: colors.muted, fontFamily: fonts.uiBold, fontSize: 13, letterSpacing: 0.3 },
   title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 26 },
   body: { color: '#e2e2e2', fontFamily: fonts.ui, fontSize: 17, lineHeight: 25 },
