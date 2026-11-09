@@ -255,7 +255,7 @@ export default function Mancala({ area, onBack }) {
       </View>
       {/* ?: Coro's letter about the game, where it comes from and how to play (Jörg, 9 Nov 2026) */}
       <Pressable onPress={withTap(() => setHelp(true))} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('How to play Mancala')}
-        style={[styles.help, { top: Math.max(insets.top, 12) + 8 }]}>
+        style={[styles.help, tall ? { top: Math.max(insets.top, 12) + 8 } : { bottom: 20 } /* sideways: bottom right, in line with the buttons (Jörg, 9 Nov 2026) */]}>
         <Text style={styles.helpText}>?</Text>
       </Pressable>
       {help ? <PaperLetter title="Let’s play Mancala!" paras={LETTER} onClose={() => setHelp(false)} /> : null}
