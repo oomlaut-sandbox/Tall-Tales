@@ -58,13 +58,14 @@ export function LetterTile({ width }) {
         </View>
         <Text numberOfLines={2} style={styles.tileTitle}>{t('A letter from Coro')}</Text>
       </Pressable>
-      {open ? <Letter onClose={() => setOpen(false)} /> : null}
+      {open ? <PaperLetter title="A letter from Coro" paras={PARAS} onClose={() => setOpen(false)} /> : null}
     </>
   );
 }
 
-// The letter itself: it slides up out of the dark, typed on the old paper
-function Letter({ onClose }) {
+// A letter from Coro: it slides up out of the dark, typed on the old paper and signed by Coro.
+// title and paras are the English words (translated here); also the Mancala letter (Jörg, 9 Nov 2026)
+export function PaperLetter({ title, paras, onClose }) {
   const t = useT();
   const lang = useLang();
   const rtl = lang === 'ar';
@@ -85,8 +86,8 @@ function Letter({ onClose }) {
           <Animated.View style={[styles.sheetShadow, { width: sheetW, transform: [{ translateY: rise }] }]}>
             <Image source={PAPER} style={StyleSheet.absoluteFill} resizeMode="stretch" />
             <View style={{ paddingHorizontal: Math.round(sheetW * 0.09), paddingTop: Math.round(sheetW * 0.11), paddingBottom: Math.round(sheetW * 0.09), gap: Math.round(fs * 0.9) }}>
-              <Text style={[para, { fontSize: fs + 5, lineHeight: Math.round((fs + 5) * 1.4), marginBottom: 4 }, dir]} accessibilityRole="header">{t('A letter from Coro')}</Text>
-              {PARAS.map((p) => <Text key={p} style={[para, dir]}>{t(p)}</Text>)}
+              <Text style={[para, { fontSize: fs + 5, lineHeight: Math.round((fs + 5) * 1.4), marginBottom: 4 }, dir]} accessibilityRole="header">{t(title)}</Text>
+              {paras.map((p) => <Text key={p} style={[para, dir]}>{t(p)}</Text>)}
               <Text style={[para, { marginTop: 8 }, dir]}>{t('With love,')}{'\n'}Coro</Text>
               <Pressable onPress={close} hitSlop={8} accessibilityRole="button" style={styles.back}>
                 <Text style={{ fontFamily: fonts.uiSemiBold, fontSize: 14, color: '#5d554c' }}>{t('Put the letter back')}</Text>

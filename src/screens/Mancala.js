@@ -17,6 +17,22 @@ import { colors, fonts } from '../theme';
 import { useT } from '../i18n';
 import { withTap } from '../haptics';
 import { playPebble } from '../sound';
+import { PaperLetter } from '../components/CoroLetter';
+
+// Coro's letter about Mancala: a little of where it comes from, then how to play, for a six-year-old (strings/mancala.js)
+const LETTER = [
+  'Hello! Mancala is one of the oldest games in the world. Families in Africa have played it for more than a thousand years, and it has travelled to many places since.',
+  'People played with seeds, shells or pebbles. Some carved beautiful boards out of wood, and some just scooped little holes in the sand. The word “mancala” comes from an Arabic word that means “to move”.',
+  'It has many names. In Ghana it’s called Oware, and in East Africa it’s called Bao. Now it’s your turn to play!',
+  'How to play',
+  'Your pits are the six little holes with a white ring. Your store is the big hole at the end of your row. The numbers tell you how many stones are in each one.',
+  '1. Tap one of your pits. Its stones hop out and drop into the next holes, one stone in each, going around the board.',
+  '2. Stones that land in your store are yours to keep. (They skip the other player’s store.)',
+  '3. If your last stone lands in your store, you get another turn!',
+  '4. If your last stone lands in an empty pit on your side, you capture it, and all the stones in the pit right across from it. They all go into your store.',
+  '5. When one side runs out of stones, the game is over. Whoever has the most stones in their store wins.',
+  'Coro plays gently, so take your time. Count the stones before you tap, and have fun!',
+];
 
 const FELT = require('../../assets/desk-felt.jpg');
 // Jörg's eight felt stones (7 Nov 2026)
@@ -93,6 +109,7 @@ export default function Mancala({ area, onBack }) {
   const [lit, setLit] = useState(null); // the pit a stone just landed in
   const [note, setNote] = useState(null); // 'again' | 'took'
   const [over, setOver] = useState(false);
+  const [help, setHelp] = useState(false);
   const timers = useRef([]);
   const live = useRef(true);
   useEffect(() => () => { live.current = false; timers.current.forEach(clearTimeout); }, []);
@@ -129,7 +146,7 @@ export default function Mancala({ area, onBack }) {
   }, [turn, busy, over, vsCoro, board]);
 
   // ---- the board's size and every slot's place on it ----
-  const top = Math.max(insets.top, 12) + 66; // under the back button and the words
+  const top = Math.max(insets.top, 12) + 96; // under the title, whose turn it is and the words
   const bottom = 86; // the choices underneath
   const room = { w: W - 32, h: H - top - bottom };
   const LEN = 8; // cells along the board: a store, six pits, a store
@@ -165,17 +182,17 @@ export default function Mancala({ area, onBack }) {
       <Image source={FELT} style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} resizeMode="cover" />
       {/* whose turn */}
       <View style={{ position: 'absolute', left: 70, right: 70, top: Math.max(insets.top, 12) + 6, alignItems: 'center' }}>
+        <Text style={styles.title} accessibilityRole="header">{t('Mancala')}</Text>
         <Text style={styles.status} numberOfLines={1} adjustsFontSizeToFit>{status}</Text>
         <Text style={styles.sub} numberOfLines={2}>{sub}</Text>
       </View>
       {/* the board: light oak, its pits and stores sunk into it */}
       <View style={{ position: 'absolute', left: bx, top: by, width: bw, height: bh, borderRadius: c * 0.5, shadowColor: '#000', shadowOpacity: 0.6, shadowRadius: 12, shadowOffset: { width: 4, height: 8 } }}>
-        {/* the board: the same felt, much darker, with a stitched edge */}
+        {/* the board: the same felt, much darker (no stitched edge: Jörg, 9 Nov 2026) */}
         <View style={[StyleSheet.absoluteFill, { borderRadius: c * 0.5, overflow: 'hidden' }]}>
           <Image source={FELT} style={StyleSheet.absoluteFill} resizeMode="cover" />
           <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(8,8,8,0.62)' }]} />
         </View>
-        <View pointerEvents="none" style={{ position: 'absolute', left: c * 0.14, top: c * 0.14, right: c * 0.14, bottom: c * 0.14, borderRadius: c * 0.38, borderWidth: 1.5, borderStyle: 'dashed', borderColor: 'rgba(205,195,180,0.6)' }} />
         {board.map((n, i) => {
           const s = slot(i);
           const glow = canTap(i);
@@ -205,6 +222,12 @@ export default function Mancala({ area, onBack }) {
           );
         })}
       </View>
+      {/* ?: Coro's letter about the game, where it comes from and how to play (Jörg, 9 Nov 2026) */}
+      <Pressable onPress={withTap(() => setHelp(true))} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('How to play Mancala')}
+        style={[styles.help, { top: Math.max(insets.top, 12) + 8 }]}>
+        <Text style={styles.helpText}>?</Text>
+      </Pressable>
+      {help ? <PaperLetter title="Let’s play Mancala!" paras={LETTER} onClose={() => setHelp(false)} /> : null}
       {/* who to play with, and a new game */}
       <View style={[styles.choices, { bottom: 22 }]}>
         <Pressable onPress={withTap(() => restart(true))} style={[styles.chip, vsCoro && styles.chipOn]} accessibilityRole="radio" accessibilityState={{ selected: vsCoro }}>
@@ -217,16 +240,15 @@ export default function Mancala({ area, onBack }) {
           <Text style={styles.chipText}>{over ? t('Play again') : t('New game')}</Text>
         </Pressable>
       </View>
-      <Pressable onPress={withTap(onBack)} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Back to the Garden')}
-        style={[styles.back, { top: Math.max(insets.top, 12) + 8 }]}>
-        <View style={styles.backChevron} />
-      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  status: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 22, textAlign: 'center' },
+  title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 26, textAlign: 'center' },
+  status: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 18, textAlign: 'center', marginTop: 4 },
+  help: { position: 'absolute', right: 16, width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center' },
+  helpText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 22, lineHeight: 26 },
   sub: { color: '#d8d3c8', fontFamily: fonts.ui, fontSize: 14, lineHeight: 19, textAlign: 'center', marginTop: 2 },
   count: { color: '#ebe4d7', fontFamily: fonts.uiBold, fontSize: 15 },
   choices: { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'center', gap: 8, flexWrap: 'wrap', paddingHorizontal: 12 },

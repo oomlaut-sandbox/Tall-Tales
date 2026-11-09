@@ -10,6 +10,7 @@ import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, View } fr
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Bar, Burger, Toast, WithBar } from '../components/Chrome';
 import { loadJSON, saveJSON } from '../storage';
+import { useBackStep } from '../nav';
 import { colors } from '../theme';
 import { useT } from '../i18n';
 import { withTap } from '../haptics';
@@ -110,6 +111,9 @@ export default function Garden({ u, openMenu, toast, onHome }) {
       </View>
     );
   }
+  // Back (the one arrow, top left) closes the game and returns to the Garden: the games have no back of their own
+  // (Jörg, 9 Nov 2026: there were two)
+  useBackStep(!!game, () => setGame(null));
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} vertical={v} /></Bar>}>
       {hello ? <Toast hint message={t('Welcome to the Garden: simple games and puzzles to relax with, and more on the way. And remember, nothing beats being outside in nature. For real, go outside! (To get back to My Workspace, tap the gate.)')} ms={0} check={t('Don’t show this message again')} button={t('Got it!')}
@@ -295,10 +299,6 @@ function Pebbles({ area, onBack }) {
         </Animated.View>
       </View>
       {/* back to the garden */}
-      <Pressable onPress={withTap(onBack)} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Back to the Garden')}
-        style={[styles.back, { top: Math.max(insets.top, 12) + 8 }]}>
-        <View style={styles.backChevron} />
-      </Pressable>
     </View>
   );
 }
@@ -452,10 +452,6 @@ function Driftwood({ area, onBack }) {
           );
         })}
       </View>
-      <Pressable onPress={withTap(onBack)} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Back to the Garden')}
-        style={[styles.back, { top: Math.max(insets.top, 12) + 8 }]}>
-        <View style={styles.backChevron} />
-      </Pressable>
     </View>
   );
 }
@@ -519,10 +515,6 @@ function Pinwheel({ area, onBack }) {
         <Animated.Image source={HEAD} style={{ position: 'absolute', left: 0, top: 0, width: D, height: D, opacity: blur.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }} />
         <Animated.Image source={HEAD_BLUR} style={{ position: 'absolute', left: 0, top: 0, width: D, height: D, opacity: blur }} />
       </Animated.View>
-      <Pressable onPress={withTap(onBack)} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Back to the Garden')}
-        style={[styles.back, { top: Math.max(insets.top, 12) + 8 }]}>
-        <View style={styles.backChevron} />
-      </Pressable>
     </View>
   );
 }

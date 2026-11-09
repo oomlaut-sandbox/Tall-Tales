@@ -113,10 +113,6 @@ export default function ZenStones({ area, onBack }) {
           );
         })}
       </View>
-      <Pressable onPress={withTap(onBack)} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Back to the Garden')}
-        style={[styles.back, { top: Math.max(insets.top, 12) + 8 }]}>
-        <View style={styles.backChevron} />
-      </Pressable>
     </View>
   );
 }
