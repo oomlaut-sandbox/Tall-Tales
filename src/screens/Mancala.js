@@ -35,13 +35,24 @@ const LETTER = [
 ];
 
 const FELT = require('../../assets/desk-felt.jpg');
-// Jörg's eight felt stones (7 Nov 2026)
-const STONES = ['cream', 'grey', 'charcoal', 'sand', 'taupe', 'moss', 'rust', 'speckle'].map((n) => ({
-  cream: require('../../assets/garden/stones/cream.png'), grey: require('../../assets/garden/stones/grey.png'),
-  charcoal: require('../../assets/garden/stones/charcoal.png'), sand: require('../../assets/garden/stones/sand.png'),
-  taupe: require('../../assets/garden/stones/taupe.png'), moss: require('../../assets/garden/stones/moss.png'),
-  rust: require('../../assets/garden/stones/rust.png'), speckle: require('../../assets/garden/stones/speckle.png'),
-}[n]));
+// Jörg's brown felt board (9 Nov 2026): upright, and turned for sideways (your store on the right)
+const BOARD = require('../../assets/garden/mancala/board.png'); // 527 × 1608
+const BOARD_WIDE = require('../../assets/garden/mancala/board-wide.png');
+const BOARD_AR = 527 / 1608; // width / height, upright
+// where the holes are on the upright board, as fractions of its size: the rows from the bottom store (cell 0)
+// to the top store (cell 7); your pits in the right column, the other player's in the left
+const ROWS = [0.912, 0.791, 0.670, 0.549, 0.428, 0.307, 0.187, 0.072];
+const COL = { near: 0.705, far: 0.305, store: 0.507 };
+const PIT_D = 0.25, STORE_W = 0.675, STORE_H = 0.08; // a pit's width, a store's width and height (of the board's width / height)
+// smooth grey pebbles, cut from Jörg's photo (9 Nov 2026; were the felt stones)
+const STONES = [
+  require('../../assets/garden/mancala/pebble-01.png'), require('../../assets/garden/mancala/pebble-02.png'),
+  require('../../assets/garden/mancala/pebble-03.png'), require('../../assets/garden/mancala/pebble-04.png'),
+  require('../../assets/garden/mancala/pebble-05.png'), require('../../assets/garden/mancala/pebble-06.png'),
+  require('../../assets/garden/mancala/pebble-07.png'), require('../../assets/garden/mancala/pebble-08.png'),
+  require('../../assets/garden/mancala/pebble-09.png'), require('../../assets/garden/mancala/pebble-10.png'),
+  require('../../assets/garden/mancala/pebble-11.png'), require('../../assets/garden/mancala/pebble-12.png'),
+];
 
 const PITS = 6, START = 4;
 const STORE = [6, 13]; // player 0's store, player 1's store
@@ -149,20 +160,22 @@ export default function Mancala({ area, onBack }) {
   const top = Math.max(insets.top, 12) + 96; // under the title, whose turn it is and the words
   const bottom = 86; // the choices underneath
   const room = { w: W - 32, h: H - top - bottom };
-  const LEN = 8; // cells along the board: a store, six pits, a store
-  const c = tall ? Math.min(room.h / LEN, room.w / 2.4) : Math.min(room.w / LEN, room.h / 2.4);
-  const bw = tall ? c * 2.4 : c * LEN, bh = tall ? c * LEN : c * 2.4;
+  // the board keeps the picture's shape: as big as fits
+  const tallH = Math.min(room.h, room.w / BOARD_AR), wideW = Math.min(room.w, room.h / BOARD_AR);
+  const bw = tall ? tallH * BOARD_AR : wideW, bh = tall ? tallH : wideW * BOARD_AR;
+  const along = tall ? bw : bh; // the board's short side
+  const c = (along * PIT_D) / 0.84; // (the old cell size, which the counts' spacing is measured in)
   const bx = (W - bw) / 2, by = top + (room.h - bh) / 2;
   const cellOf = (i) => (i === 6 ? 7 : i === 13 ? 0 : i < 6 ? i + 1 : 13 - i);
   const slot = (i) => {
-    const cell = cellOf(i), near = sideOf(i) === 0;
-    const along = (cell + 0.5) * c, side = (near ? 0.72 : 0.28) * 2.4 * c;
-    const store = isStore(i);
-    const sw = store ? c * 0.86 : c * 0.84, sh = store ? 2.4 * c * 0.84 : c * 0.84;
-    if (tall) return { x: store ? 1.2 * c : side, y: bh - along, w: store ? sh : sw, h: store ? sw : sh };
-    return { x: along, y: store ? 1.2 * c : bh - side, w: sw, h: sh };
+    const cell = cellOf(i), store = isStore(i);
+    const u = store ? COL.store : sideOf(i) === 0 ? COL.near : COL.far, v = ROWS[cell];
+    const d = along * PIT_D;
+    if (tall) return { x: u * bw, y: v * bh, w: store ? STORE_W * bw : d, h: store ? STORE_H * bh : d };
+    // sideways: the upright board turned a quarter clockwise, so the top store is on the right
+    return { x: (1 - v) * bw, y: u * bh, w: store ? STORE_H * bw : d, h: store ? STORE_W * bh : d };
   };
-  const stoneSize = c * 0.34;
+  const stoneSize = along * PIT_D * 0.36;
 
   const mine = (i) => !isStore(i) && sideOf(i) === turn && (!vsCoro || turn === 0);
   const canTap = (i) => !busy && !over && mine(i) && board[i] > 0;
@@ -187,12 +200,9 @@ export default function Mancala({ area, onBack }) {
         <Text style={styles.sub} numberOfLines={2}>{sub}</Text>
       </View>
       {/* the board: light oak, its pits and stores sunk into it */}
-      <View style={{ position: 'absolute', left: bx, top: by, width: bw, height: bh, borderRadius: c * 0.5, shadowColor: '#000', shadowOpacity: 0.6, shadowRadius: 12, shadowOffset: { width: 4, height: 8 } }}>
-        {/* the board: the same felt, much darker (no stitched edge: Jörg, 9 Nov 2026) */}
-        <View style={[StyleSheet.absoluteFill, { borderRadius: c * 0.5, overflow: 'hidden' }]}>
-          <Image source={FELT} style={StyleSheet.absoluteFill} resizeMode="cover" />
-          <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(8,8,8,0.62)' }]} />
-        </View>
+      <View style={{ position: 'absolute', left: bx, top: by, width: bw, height: bh, shadowColor: '#000', shadowOpacity: 0.55, shadowRadius: 12, shadowOffset: { width: 4, height: 8 } }}>
+        {/* the board: Jörg's brown felt board, its holes in the picture (9 Nov 2026) */}
+        <Image source={tall ? BOARD : BOARD_WIDE} style={{ position: 'absolute', left: 0, top: 0, width: bw, height: bh }} resizeMode="stretch" />
         {board.map((n, i) => {
           const s = slot(i);
           const glow = canTap(i);
@@ -200,12 +210,12 @@ export default function Mancala({ area, onBack }) {
             <Pressable key={i} disabled={!canTap(i)} onPress={withTap(() => move(i, turn))}
               accessibilityRole="button" accessibilityLabel={isStore(i) ? t('{name}’s store: {n} stones', { name: name(sideOf(i)), n }) : t('{n} stones', { n })}
               style={{ position: 'absolute', left: s.x - s.w / 2, top: s.y - s.h / 2, width: s.w, height: s.h, borderRadius: Math.min(s.w, s.h) / 2,
-                backgroundColor: 'rgba(0,0,0,0.5)', borderWidth: glow || lit === i ? 2 : 0, borderColor: glow ? 'rgba(255,255,255,0.75)' : '#f2c14e' }}>
+                borderWidth: glow || lit === i ? 2 : 0, borderColor: glow ? 'rgba(255,255,255,0.75)' : '#f2c14e' }}>
               {/* the stones in it, scattered a little */}
               {Array.from({ length: Math.min(n, isStore(i) ? 36 : 18) }, (_, k) => {
                 const a = rnd(i * 101 + k) * Math.PI * 2, rr = Math.sqrt(rnd(i * 77 + k * 3)) * 0.32;
                 const sx = s.w / 2 + Math.cos(a) * rr * s.w - stoneSize / 2, sy = s.h / 2 + Math.sin(a) * rr * s.h - stoneSize / 2;
-                return <Image key={k} source={STONES[(i * 7 + k) % STONES.length]} style={{ position: 'absolute', left: sx, top: sy, width: stoneSize, height: stoneSize, transform: [{ rotate: `${Math.round(rnd(i * 13 + k * 7) * 360)}deg` }] }} resizeMode="contain" />;
+                return <Image key={k} source={STONES[(i * 7 + k) % STONES.length]} style={{ position: 'absolute', left: sx, top: sy, width: stoneSize, height: stoneSize, transform: [{ rotate: `${Math.round((rnd(i * 13 + k * 7) - 0.5) * 30)}deg` }] }} resizeMode="contain" />;
               })}
             </Pressable>
           );
