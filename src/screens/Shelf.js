@@ -16,6 +16,7 @@ import { onPrompts, promptsFor } from '../classroom';
 const SHARE_ICON = require('../../assets/icon-envelope.png');
 const EDIT_ICON = require('../../assets/icon-scissors.png');
 const TRASH_ICON = require('../../assets/icon-trash.png');
+const AGAIN_ICON = require('../../assets/icon-again-line.png');
 const PROMPT_ICON = require('../../assets/heading-icons/sticky-note.png'); // a book prompt from the teacher (classroom.js)
 import { liveUri } from '../storage';
 import { ageAllowed, ageOf, ageText, bundledStory, storeLangReady, cachedCatalog, coverArtFor, coverFor, loadStoreBook, localizeStoreBook, refreshCatalog, shelvesWithBooks } from '../catalog';
@@ -491,8 +492,10 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
         {/* the little links (Show removed books, Recently deleted) always at the very bottom of the page (Jörg, 5 Nov 2026) */}
         {!selecting && ((!ws && removedCount) || (recentlyDeleted && recentlyDeleted.list.length)) ? <View style={{ width: '100%', height: 18 }} /> : null}
         {!selecting && !ws && removedCount ? (
-          <Pressable onPress={onRestore} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
-            <Text style={styles.restore}>{t('Show removed books ({n})', { n: removedCount })}</Text>
+          // a grey pill with a bring-back arrow, like Recently deleted (Jörg, 9 Nov 2026)
+          <Pressable onPress={onRestore} style={styles.binPill} accessibilityRole="button">
+            <Image source={AGAIN_ICON} style={{ width: 18, height: 18, tintColor: colors.white }} resizeMode="contain" />
+            <Text style={styles.binPillText}>{t('Show removed books ({n})', { n: removedCount })}</Text>
           </Pressable>
         ) : null}
         {/* Recently deleted: your own books, for 30 days (Jörg, 4 Nov 2026) */}
