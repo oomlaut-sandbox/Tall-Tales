@@ -6,8 +6,9 @@ export const APP_LINK = 'https://apps.apple.com/app/id6822165068';
 // how to open a Coro file someone sent, in plain words, with a page that shows it step by step (Jörg, 2 Nov 2026)
 export const OPEN_HELP = 'How to open it: tap the file, tap the Share button, then choose Coro. (No Coro yet? Get it free first.) Step by step: https://corobooks.com/open';
 
+// (Jörg's words, 9 Nov 2026)
 export function inviteMessage(title) {
-  return `We’ve been reading “${title}” together in Coro: books we make together. Come and read with us! ${APP_LINK}`;
+  return `We’ve been reading “${title}” together in the Coro book-making app. Come and read with us :) ${APP_LINK}`;
 }
 
 export function shareInvite(title) {
