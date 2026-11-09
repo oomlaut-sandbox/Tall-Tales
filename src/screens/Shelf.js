@@ -290,6 +290,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
   const ws = mode === 'workspace';
   const keep = useScrollMemory(ws ? 'workspace' : 'library'); // Back returns to this spot
   const scrollRef = keep.ref;
+  const [pinMoving, setPinMoving] = useState(false);
   const booksY = useRef(null);
   const booksDone = scrollAsks.books;
   const wip = stories.filter((s) => s.mine && !s.published);
@@ -380,7 +381,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
         sub={selecting ? (picked.length ? t('{n} selected', { n: picked.length }) : t('Tap books to select them')) : t('Your books, ready to read')} /> : null}
       {/* pulled up past the corkboard at the very bottom: a speech bubble invites you on to the Garden (once per pull),
           only once a grown-up has unlocked it in Settings → The Garden */}
-      <ScrollView ref={scrollRef} onContentSizeChange={keep.onContentSizeChange} contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]} scrollEventThrottle={64}
+      <ScrollView ref={scrollRef} scrollEnabled={!pinMoving} /* still while a pin on the Message Board is moved (Jörg, 9 Nov 2026) */ onContentSizeChange={keep.onContentSizeChange} contentContainerStyle={[styles.grid, { columnGap: gridGap(winW) }]} scrollEventThrottle={64}
         onScroll={(e) => {
           keep.onScroll(e); lastY.current = e.nativeEvent.contentOffset.y;
           const { contentOffset: o, layoutMeasurement: l, contentSize: c } = e.nativeEvent;
@@ -483,7 +484,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
               ); })()}
               {/* the corkboard: always at the very bottom, as wide as two books */}
               <View style={{ width: '100%' }} />
-              <Corkboard width={2 * colW + gap} toast={toast} onPlaylists={onPlaylists} />
+              <Corkboard width={2 * colW + gap} toast={toast} onPlaylists={onPlaylists} onLift={(on) => setPinMoving(on)} />
               {/* its name under it, like My Notes (Jörg, 29 Oct 2026) */}
               <Text style={[styles.tileTitle, styles.tileOption, { width: '100%', marginTop: -14 }]} accessibilityRole="header">{t('Message Board')}</Text>{/* Book Playlists: a white sheet pinned to the board (Jörg, 29 Oct 2026) */}
             </>

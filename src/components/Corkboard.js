@@ -54,7 +54,7 @@ function Pin({ p, W }) {
 
 // A pin that can be moved (Jörg, 8 Nov 2026): touch and hold it a moment, it lifts, then drag it anywhere on the
 // board and let go. A quick tap still opens it; a swipe still scrolls the page.
-function MovablePin({ p, s, W, H, onOpen, onMoved, label }) {
+function MovablePin({ p, s, W, H, onOpen, onMoved, label, onLift }) {
   const pos = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
   const lift = useRef(new Animated.Value(0)).current;
   const st = useRef({ lifted: false, timer: null, moved: false }).current;
@@ -70,6 +70,7 @@ function MovablePin({ p, s, W, H, onOpen, onMoved, label }) {
       st.timer = setTimeout(() => {
         if (st.moved) return;
         st.lifted = true;
+        onLift && onLift(true); // the page holds still while a pin is moved (Jörg, 9 Nov 2026)
         try { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } catch (e) {}
         Animated.spring(lift, { toValue: 1, friction: 6, tension: 120, useNativeDriver: true }).start();
       }, 280);
@@ -81,14 +82,14 @@ function MovablePin({ p, s, W, H, onOpen, onMoved, label }) {
     onPanResponderRelease: (e, g) => {
       clearTimeout(st.timer);
       if (st.lifted) {
-        st.lifted = false;
+        st.lifted = false; onLift && onLift(false);
         Animated.timing(lift, { toValue: 0, duration: 140, useNativeDriver: true }).start();
         onMoved(p.x + g.dx / W, p.y + g.dy / H, () => pos.setValue({ x: 0, y: 0 }));
       } else if (!st.moved) onOpen();
     },
     onPanResponderTerminate: () => {
       clearTimeout(st.timer);
-      if (st.lifted) { st.lifted = false; Animated.timing(lift, { toValue: 0, duration: 140, useNativeDriver: true }).start(); }
+      if (st.lifted) { st.lifted = false; onLift && onLift(false); Animated.timing(lift, { toValue: 0, duration: 140, useNativeDriver: true }).start(); }
       Animated.spring(pos, { toValue: { x: 0, y: 0 }, useNativeDriver: true }).start();
     },
   })).current;
@@ -102,7 +103,7 @@ function MovablePin({ p, s, W, H, onOpen, onMoved, label }) {
   );
 }
 
-export default function Corkboard({ width, toast, onPlaylists }) {
+export default function Corkboard({ width, toast, onPlaylists, onLift }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const [pins, setPins] = useState([]);
@@ -191,7 +192,7 @@ export default function Corkboard({ width, toast, onPlaylists }) {
           // (a pin from before the sheet, sitting over it: shown just above it instead)
           if (onPlaylists && inSheet(p.x, p.y)) p = { ...p, y: 0.38 };
           return (
-            <MovablePin key={p.id} p={p} s={s} W={width} H={H} label={p.kind === 'note' ? p.text : p.kind === 'doodle' ? t('Doodle') : t('Photo')}
+            <MovablePin key={p.id} p={p} s={s} W={width} H={H} onLift={onLift} label={p.kind === 'note' ? p.text : p.kind === 'doodle' ? t('Doodle') : t('Photo')}
               onOpen={withTap(() => setOpen(p))}
               onMoved={async (x, y, done) => {
                 // (never onto the Book Playlists sheet: just above it instead)
