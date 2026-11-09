@@ -179,11 +179,10 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
             <Image source={FOLDER_BACK} style={{ position: 'absolute', top: 0, left: 0, width: fw, height: fbh }} />
             <Image source={FOLDER_BACK} style={{ position: 'absolute', top: 0, left: 0, width: fw, height: fbh, tintColor: '#000', opacity: 0.38 }} />
             {/* the folder's paper label on its tab, typed with the child's name, like the small folder on My Workspace
-                (its label cut from that folder; darkened with the folder: Jörg, 9 Nov 2026) */}
+                (its label cut from that folder, the same warm cream, not darkened: Jörg, 9 Nov 2026) */}
             {name ? (
               <View style={{ position: 'absolute', left: fw * 0.068, top: fw * 0.0092, width: fw * 0.192, height: fw * 0.0233, alignItems: 'center', justifyContent: 'center', paddingHorizontal: fw * 0.01 }}>
                 <Image source={FOLDER_LABEL} resizeMode="stretch" style={StyleSheet.absoluteFill} />
-                <Image source={FOLDER_LABEL} resizeMode="stretch" style={[StyleSheet.absoluteFill, { tintColor: '#000', opacity: 0.38 }]} />
                 <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} allowFontScaling={false}
                   style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.max(7, Math.round(fw * 0.0145)), color: '#3b342b' }}>{name}</Text>
               </View>
