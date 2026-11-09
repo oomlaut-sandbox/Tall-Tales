@@ -22,6 +22,7 @@ import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, DESK_BG, IS_TABLET } from '../look';
 import ParentGate from '../components/ParentGate';
+import { shareSheet } from '../sheetShare';
 import { LiveInk, StrokesView, colourAt, liveIsQuick, onBlendTrouble, pagePixels } from '../components/Strokes';
 import { EarArt } from '../components/Ear';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
@@ -753,6 +754,14 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
                 <View style={{ gap: 6 }}><Text style={styles.prowSub}>{t('To page')}</Text>{stepper('to', r.to)}</View>
               </View>
               <Pressable onPress={() => set(0, pages.length - 1)} hitSlop={6} style={[styles.allChip, { alignSelf: 'flex-start' }]} accessibilityRole="button"><Text style={styles.pbtnText}>{t('All pages')}</Text></Pressable>
+              {/* one page can also go to another Coro family, into their Things to share (moved here from Things to
+                  share: Jörg, 9 Nov 2026) */}
+              {outAsk === 'share' && r.from === r.to ? (
+                <Pressable onPress={() => { setOutAsk(null); setOutGate('sheet'); }} style={[styles.outPill, { backgroundColor: '#3a3a3a', flexDirection: 'row', gap: 10, alignSelf: 'flex-start' }]} accessibilityRole="button">
+                  <Image source={ENVELOPE} style={{ width: 18, height: 18, tintColor: colors.white }} resizeMode="contain" />
+                  <Text style={styles.pillText}>{t('Send a sheet')}</Text>
+                </Pressable>
+              ) : null}
               <View style={{ flexDirection: 'row', gap: 10, justifyContent: 'flex-end', marginTop: 6 }}>
                 <Pressable onPress={() => setOutAsk(null)} style={[styles.outPill, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Cancel')}</Text></Pressable>
                 <Pressable onPress={() => { const k = outAsk; setOutAsk(null); setOutGate(k); }} style={[styles.outPill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{outAsk === 'print' ? t('Print') : t('Share')}</Text></Pressable>
@@ -761,11 +770,18 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           </View>
         );
       })() : null}
-      <ParentGate visible={!!outGate} reason={outGate === 'print' ? t('Printing opens your phone’s print options.') : t('Sharing opens your phone’s messages and email.')}
+      <ParentGate visible={!!outGate} reason={outGate === 'print' ? t('Printing opens your phone’s print options.') : outGate === 'sheet' ? t('Sending a sheet opens your phone’s messages and email.') : t('Sharing opens your phone’s messages and email.')}
         onCancel={() => setOutGate(null)}
         onPass={async () => {
           const kind = outGate; setOutGate(null);
           const r = outRange || { from: 0, to: pages.length - 1 };
+          if (kind === 'sheet') {
+            clearTimeout(timer.current); if (latest.current) await saveNotebook(latest.current);
+            const who = name || t('a friend');
+            try { await shareSheet(pages[r.from], who, t('A sheet for you from {name}. Open the file in Coro to put it in Things to share.', { name: who })); }
+            catch (e) { toast(t('That didn’t work. Try again.')); }
+            return;
+          }
           const list = pages.slice(r.from, r.to + 1);
           setOutBusy(true);
           clearTimeout(timer.current); if (latest.current) await saveNotebook(latest.current);
