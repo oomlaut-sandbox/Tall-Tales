@@ -72,6 +72,7 @@ export function PaperLetter({ title, paras, onClose }) {
   const insets = useSafeAreaInsets();
   const { width: winW } = useWindowDimensions();
   const sheetW = Math.min(winW - 32, 560);
+  const [sheetH, setSheetH] = useState(0);
   const fade = useRef(new Animated.Value(0)).current;
   useEffect(() => { Animated.timing(fade, { toValue: 1, duration: 420, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(); }, []);
   const close = () => Animated.timing(fade, { toValue: 0, duration: 260, useNativeDriver: true }).start(() => onClose());
@@ -83,8 +84,9 @@ export function PaperLetter({ title, paras, onClose }) {
       <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.78)', opacity: fade }]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={close} accessibilityLabel={t('Put the letter back')} />
         <ScrollView contentContainerStyle={{ alignItems: 'center', paddingTop: insets.top + 30, paddingBottom: insets.bottom + 40 }}>
-          <Animated.View style={[styles.sheetShadow, { width: sheetW, transform: [{ translateY: rise }] }]}>
-            <Image source={PAPER} style={StyleSheet.absoluteFill} resizeMode="stretch" />
+          <Animated.View onLayout={(e) => setSheetH(e.nativeEvent.layout.height)} style={[styles.sheetShadow, { width: sheetW, transform: [{ translateY: rise }] }]}>
+            {/* its exact size, measured (an image pinned only by its edges can be drawn at its own size on the phone) */}
+            {sheetH ? <Image source={PAPER} style={{ position: 'absolute', left: 0, top: 0, width: sheetW, height: sheetH }} resizeMode="stretch" /> : null}
             <View style={{ paddingHorizontal: Math.round(sheetW * 0.09), paddingTop: Math.round(sheetW * 0.11), paddingBottom: Math.round(sheetW * 0.09), gap: Math.round(fs * 0.9) }}>
               <Text style={[para, { fontSize: fs + 5, lineHeight: Math.round((fs + 5) * 1.4), marginBottom: 4 }, dir]} accessibilityRole="header">{t(title)}</Text>
               {paras.map((p) => <Text key={p} style={[para, dir]}>{t(p)}</Text>)}
