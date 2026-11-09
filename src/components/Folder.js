@@ -99,6 +99,7 @@ function AbcSheet({ size, narrator }) {
 // swings down open when Things to share opens. 1200 × 876 and 1200 × 824.
 const FOLDER_BACK = require('../../assets/folder-open-back.png');
 const FOLDER_FRONT = require('../../assets/folder-open-front.png');
+const FOLDER_LABEL = require('../../assets/folder-label.png'); // the paper label from the small folder's tab (616 × 124)
 const FB_H = 876, FF_H = 824, F_W = 1200;
 
 export default function Folder({ narrator = 'lily', onClose, toast, canSend = true }) {
@@ -177,11 +178,14 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
           <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: (winW - fw) / 2, width: fw, height: fbh + ffh }}>
             <Image source={FOLDER_BACK} style={{ position: 'absolute', top: 0, left: 0, width: fw, height: fbh }} />
             <Image source={FOLDER_BACK} style={{ position: 'absolute', top: 0, left: 0, width: fw, height: fbh, tintColor: '#000', opacity: 0.38 }} />
-            {/* the folder's tab, typed with the child's name, like the small folder on My Workspace */}
+            {/* the folder's paper label on its tab, typed with the child's name, like the small folder on My Workspace
+                (its label cut from that folder; darkened with the folder: Jörg, 9 Nov 2026) */}
             {name ? (
-              <View style={{ position: 'absolute', left: fw * 0.05, top: fbh * 0.012, width: fw * 0.29, height: fbh * 0.05, alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ position: 'absolute', left: fw * 0.068, top: fw * 0.0092, width: fw * 0.192, height: fw * 0.0233, alignItems: 'center', justifyContent: 'center', paddingHorizontal: fw * 0.01 }}>
+                <Image source={FOLDER_LABEL} resizeMode="stretch" style={StyleSheet.absoluteFill} />
+                <Image source={FOLDER_LABEL} resizeMode="stretch" style={[StyleSheet.absoluteFill, { tintColor: '#000', opacity: 0.38 }]} />
                 <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} allowFontScaling={false}
-                  style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.round(fw * 0.032), color: '#3b342b' }}>{name}</Text>
+                  style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.max(7, Math.round(fw * 0.0145)), color: '#3b342b' }}>{name}</Text>
               </View>
             ) : null}
             <View style={{ position: 'absolute', top: fbh, left: 0, width: fw, height: ffh }}>
