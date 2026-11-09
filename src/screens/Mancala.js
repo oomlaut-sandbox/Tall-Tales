@@ -176,7 +176,7 @@ export default function Mancala({ area, onBack }) {
     return { x: (1 - v) * bw, y: u * bh, w: store ? STORE_H * bw : d, h: store ? STORE_W * bh : d };
   };
   const stoneSize = along * 0.09;
-  const edgeGap = along * 0.05; // kept well in from the inner edge of each hole (its ring is a touch inside the hole)
+  const edgeGap = along * 0.04; // kept well in from the inner edge of each hole (its ring is a touch inside the hole)
 
   const mine = (i) => !isStore(i) && sideOf(i) === turn && (!vsCoro || turn === 0);
   const canTap = (i) => !busy && !over && mine(i) && board[i] > 0;
