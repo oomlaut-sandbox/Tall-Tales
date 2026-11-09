@@ -252,7 +252,7 @@ function EmptyPicture({ side, plain }) {
       <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#2f5f9e', alignItems: 'center', justifyContent: 'center', padding: side * 0.12 }]}>
         <Image source={BLUE_CLOTH} style={{ position: 'absolute', left: 0, top: 0, width: side, height: side }} resizeMode="cover" />
         {/* nudged a little right, off the spine, so it looks centred on the cloth (Jörg, 9 Nov 2026) */}
-        <Text style={{ textAlign: 'center', color: colors.white, fontFamily: fonts.uiBold, fontSize: f, lineHeight: f * 1.24, transform: [{ translateX: side * 0.025 }] }}>{tr('Add a picture')}</Text>
+        <Text style={{ textAlign: 'center', color: colors.white, fontFamily: fonts.uiBold, fontSize: f, lineHeight: f * 1.24, transform: [{ translateX: side * 0.025 - 4 }] }}>{tr('Add a picture')}</Text>
       </View>
     );
   }
