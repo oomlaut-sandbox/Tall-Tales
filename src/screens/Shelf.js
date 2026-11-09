@@ -497,8 +497,10 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
         ) : null}
         {/* Recently deleted: your own books, for 30 days (Jörg, 4 Nov 2026) */}
         {!selecting && recentlyDeleted && recentlyDeleted.list.length ? (
-          <Pressable onPress={() => setBinOpen(true)} style={{ width: '100%', paddingVertical: 8 }} accessibilityRole="button">
-            <Text style={styles.restore}>{t('Recently deleted ({n})', { n: recentlyDeleted.list.length })}</Text>
+          // a grey pill with the bin, not a link (Jörg, 9 Nov 2026)
+          <Pressable onPress={() => setBinOpen(true)} style={styles.binPill} accessibilityRole="button">
+            <Image source={TRASH_ICON} style={{ width: 18, height: 18, tintColor: colors.white }} resizeMode="contain" />
+            <Text style={styles.binPillText}>{t('Recently deleted ({n})', { n: recentlyDeleted.list.length })}</Text>
           </Pressable>
         ) : null}
       </ScrollView>
@@ -935,6 +937,8 @@ const styles = StyleSheet.create({
   playlistBtn: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 52, borderRadius: 26, paddingLeft: 22, paddingRight: 26, backgroundColor: '#5f5f5f' /* grey, like the app's other pills (Jörg, 5 Nov 2026; was blue) */, shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 8, shadowOffset: { width: 0, height: 3 } },
   playlistPlus: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 26, lineHeight: 30, marginTop: -2 },
   playlistBtnText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 17 },
+  binPill: { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 10, height: 44, borderRadius: 22, paddingHorizontal: 22, marginTop: 8, backgroundColor: colors.pillGrey },
+  binPillText: { fontFamily: fonts.uiBold, fontSize: 15, color: colors.white },
   restore: { fontFamily: fonts.ui, fontSize: 15, color: '#d0d0d0', textDecorationLine: 'underline', textAlign: 'center' },
   confirm: { position: 'absolute', left: 16, right: 16, bottom: 150, backgroundColor: colors.glass, borderRadius: 20, padding: 18, gap: 14, zIndex: 40 },
   confirmText: { color: colors.white, fontFamily: fonts.ui, fontSize: 16, lineHeight: 22 },
