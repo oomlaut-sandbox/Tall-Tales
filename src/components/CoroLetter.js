@@ -17,13 +17,13 @@ const INK = '#2b2622';
 
 const PARAS = [
   'Hello, and thank you for supporting Coro. We so hope you love making books as much as we do.',
+  'We look forward to seeing the stories that people dream up and create. The book store will grow in time with quality books, made by real people. Until then, please stay on this exciting journey of discovery with us.',
+  'Coro is about the books you make together, so the most important ones in your Library will be yours.',
   'We’re dedicated to transparency and honesty around every process, so you can choose what’s best for you.',
   'In the Book Store you’ll find some examples of books made with Coro.',
   'Some books are made entirely by hand, while others can be made with the help of AI tools. Regardless, the exact process is documented and shared in the Book Store listings.',
   'Every book is translated with the help of AI. A person then reads each translation and approves it before anyone hears it. The read-aloud voices are made with ElevenLabs, a voice tool. They are not recordings of real people reading.',
   'Books from artists in the store are made without AI, except for their translations.',
-  'We look forward to seeing the stories that people dream up and create. The book store will grow in time with quality books, made by real people. Until then, please stay on this exciting journey of discovery with us.',
-  'Coro is about the books you make together, so the most important ones in your Library will be yours.',
 ];
 
 // The reader's name, kept up to date when the profile changes
