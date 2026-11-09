@@ -1,4 +1,5 @@
 // My Library and Book Store.
+import { takeOpen } from '../helpLinks';
 import { LinearGradient } from 'expo-linear-gradient';
 import { TitleIcon } from '../titleIcons';
 import React, { useEffect, useRef, useState } from 'react';
@@ -319,7 +320,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
   const controls = useControls(); // parental controls: My Notes, Make a book and Select may be hidden
   const { width: winW, height: winH } = useWindowDimensions();
   const folderY = useRef(0), lastY = useRef(0); // where the page was when Things to share opened
-  const [folderOpen, setFolderOpen] = useState(false); // Things to share, opened (the sheets)
+  const [folderOpen, setFolderOpen] = useState(() => mode === 'workspace' && !!takeOpen('folder')); // Things to share, opened (the sheets; Help's link opens it)
   const [selecting, setSelecting] = useState(false);
   const [picked, setPicked] = useState([]);
   const [confirm, setConfirm] = useState(false);

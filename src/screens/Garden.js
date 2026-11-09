@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Bar, Burger, Toast, WithBar } from '../components/Chrome';
 import { loadJSON, saveJSON } from '../storage';
 import { useBackStep } from '../nav';
+import { takeOpen } from '../helpLinks';
 import { colors } from '../theme';
 import { useT } from '../i18n';
 import { withTap } from '../haptics';
@@ -47,7 +48,7 @@ const BIRDS = require('../../assets/ambient/forest-birds.mp3'); // birdsong, fad
 
 export default function Garden({ u, openMenu, toast, onHome }) {
   const t = useT();
-  const [game, setGame] = useState(null);
+  const [game, setGame] = useState(() => takeOpen('game')); // (Help's Mancala link opens the game straight away)
   const [area, setArea] = useState(null);
   const open = (g) => {
     if (g === 'home') { onHome && onHome(); return; }

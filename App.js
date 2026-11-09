@@ -68,6 +68,7 @@ import { startRemoteTracks } from './src/remoteTracks';
 import { playSound, setEffects, setEffectsVolume } from './src/sound';
 import { stopSpeech } from './src/speech';
 import { stopVoice } from './src/voice';
+import { openNext } from './src/helpLinks';
 import { backHidden, clearBack, hasStep, markBack, markBackInto, onStepsChange, takeStep, useBackStep } from './src/nav';
 
 function Root() {
@@ -563,7 +564,19 @@ function Root() {
         {screen === 'teacherDesk' && <TeacherDesk onManage={() => { settingsAt.current = 'teachers'; go('settings'); }} u={u} openMenu={openMenu} toast={toast} stories={userStories} onList={setUserStories} openStory={(s) => { readFrom.current = 'teacherDesk'; openStory(s); }} controls={controls} setControls={setControls} fontKey={prefs.font} />}
         {screen === 'garden' && <Garden u={u} openMenu={openMenu} toast={toast} onHome={() => go('workspace')} />}
         {screen === 'help' && <Help u={u} openMenu={openMenu} onAbout={() => go('about')} onIdeas={() => go('ideas')} onWelcome={WELCOME_ON ? () => setWelcome(true) : null}
-          onIntro={() => { setSplash(true); setIntroWho(null); setIntroAsk(true); setCoverOpen(false); setStartKey((n) => n + 1); go('start'); }} />}
+          onIntro={() => { setSplash(true); setIntroWho(null); setIntroAsk(true); setCoverOpen(false); setStartKey((n) => n + 1); go('start'); }}
+          /* each topic's link to the part of the app it talks about (Jörg, 9 Nov 2026) */
+          canGo={(to) => (to === 'store' ? STORE_ON && controls.store : to === 'notebook' ? controls.notebook !== false : true)}
+          onGo={(to) => {
+            if (to === 'settings') { setSettingsGate(true); return; }
+            if (to === 'garden' || to === 'mancala') {
+              if (!controls.garden) { toast(t('A grown-up can unlock the Garden in Settings, under Parental controls.')); return; }
+              if (to === 'mancala') openNext({ game: 'mancala' });
+              go('garden'); return;
+            }
+            if (to === 'folder') { openNext({ folder: true }); go('workspace'); return; }
+            go(to);
+          }} />}
         {screen === 'ideas' && <IdeaRoom u={u} openMenu={openMenu} onMake={() => openPublisher(null)} onHelp={() => go('help')} />}
         {screen === 'about' && <About u={u} openMenu={openMenu} onBack={() => go('help')} onSecret={() => {
           // the store owner: straight to the Store Manager when signed in, otherwise to the sign-in first
