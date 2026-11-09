@@ -11,7 +11,7 @@
 // Upright, the board stands tall: your pits on the right, going up to your store at the top. Sideways it lies across:
 // your pits along the bottom, going right to your store.
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../theme';
 import { useT } from '../i18n';
@@ -35,15 +35,17 @@ const LETTER = [
 ];
 
 const FELT = require('../../assets/desk-felt.jpg');
-// Jörg's brown felt board (9 Nov 2026): upright, and turned for sideways (your store on the right)
-const BOARD = require('../../assets/garden/mancala/board.png'); // 527 × 1608
+// Jörg's felt board (9 Nov 2026, second version): upright, and turned for sideways (your store on the right)
+const BOARD = require('../../assets/garden/mancala/board.png'); // 624 × 1909
 const BOARD_WIDE = require('../../assets/garden/mancala/board-wide.png');
-const BOARD_AR = 527 / 1608; // width / height, upright
-// where the holes are on the upright board, as fractions of its size: the rows from the bottom store (cell 0)
-// to the top store (cell 7); your pits in the right column, the other player's in the left
-const ROWS = [0.912, 0.795, 0.674, 0.553, 0.432, 0.311, 0.191, 0.072]; // (the pits nudged down a touch onto the holes: 9 Nov 2026)
-const COL = { near: 0.697, far: 0.305, store: 0.507 }; // (your column nudged left onto the holes)
-const PIT_D = 0.265, STORE_W = 0.675, STORE_H = 0.08; // a pit's width, a store's width and height (of the board's width / height)
+const BOARD_AR = 624 / 1909; // width / height, upright
+// where the holes are on the upright board (measured on the picture), as fractions of its size: the rows from the
+// bottom store (cell 0) to the top store (cell 7); your pits in the right column, the other player's in the left
+const ROWS = [0.9125, 0.7926, 0.6716, 0.5516, 0.4306, 0.3106, 0.1902, 0.0775];
+const COL = { near: 0.6971, far: 0.3061 };
+const STORES = { top: { x: 0.492, w: 0.6571, h: 0.0812 }, bottom: { x: 0.5016, w: 0.6859, h: 0.0812 } };
+const HOLE_D = 0.2564; // a pit's hole, of the board's width
+const PIT_D = HOLE_D * 1.06; // its ring: a few points bigger than the hole (Jörg, 9 Nov 2026)
 // smooth grey pebbles, cut from Jörg's photo (9 Nov 2026; were the felt stones)
 const STONES = [
   require('../../assets/garden/mancala/pebble-01.png'), require('../../assets/garden/mancala/pebble-02.png'),
@@ -106,6 +108,21 @@ function coroMove(b) {
 }
 
 // a fixed little scatter, so the stones in a pit don't jump about as more arrive
+// one pebble; the one just sown drops into its hole from a little above, slowly (Jörg, 9 Nov 2026)
+function Stone({ drop, fall, source, left, top, size, turn }) {
+  const v = useRef(new Animated.Value(drop ? 0 : 1)).current;
+  useEffect(() => {
+    if (drop) Animated.timing(v, { toValue: 1, duration: 340, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
+  }, []);
+  return (
+    <Animated.Image source={source} resizeMode="contain"
+      style={{ position: 'absolute', left, top, width: size, height: size,
+        opacity: v.interpolate({ inputRange: [0, 0.25, 1], outputRange: [0, 1, 1] }),
+        transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [-fall, 0] }) },
+          { scale: v.interpolate({ inputRange: [0, 1], outputRange: [1.25, 1] }) }, { rotate: `${turn}deg` }] }} />
+  );
+}
+
 const rnd = (s) => { const x = Math.sin(s * 12.9898) * 43758.5453; return x - Math.floor(x); };
 
 export default function Mancala({ area, onBack }) {
@@ -136,7 +153,7 @@ export default function Mancala({ area, onBack }) {
     if (busy || over) return;
     const r = play(board, from, p);
     setBusy(true); setNote(null);
-    const STEP = 230;
+    const STEP = 420; // one stone at a time, unhurried (Jörg, 9 Nov 2026; was 230)
     const b = board.slice(); b[from] = 0;
     setBoard(b.slice());
     r.path.forEach((i, k) => later(() => { b[i] += 1; setBoard(b.slice()); setLit(i); playPebble(0.35); }, STEP * (k + 1)));
@@ -168,15 +185,15 @@ export default function Mancala({ area, onBack }) {
   const bx = (W - bw) / 2, by = top + (room.h - bh) / 2;
   const cellOf = (i) => (i === 6 ? 7 : i === 13 ? 0 : i < 6 ? i + 1 : 13 - i);
   const slot = (i) => {
-    const cell = cellOf(i), store = isStore(i);
-    const u = store ? COL.store : sideOf(i) === 0 ? COL.near : COL.far, v = ROWS[cell];
+    const cell = cellOf(i), store = isStore(i), st = cell === 7 ? STORES.top : STORES.bottom;
+    const u = store ? st.x : sideOf(i) === 0 ? COL.near : COL.far, v = ROWS[cell];
     const d = along * PIT_D;
-    if (tall) return { x: u * bw, y: v * bh, w: store ? STORE_W * bw : d, h: store ? STORE_H * bh : d };
+    if (tall) return { x: u * bw, y: v * bh, w: store ? st.w * bw : d, h: store ? st.h * bh : d };
     // sideways: the upright board turned a quarter clockwise, so the top store is on the right
-    return { x: (1 - v) * bw, y: u * bh, w: store ? STORE_H * bw : d, h: store ? STORE_W * bh : d };
+    return { x: (1 - v) * bw, y: u * bh, w: store ? st.h * bw : d, h: store ? st.w * bh : d };
   };
-  const stoneSize = along * 0.09;
-  const edgeGap = along * (0.0375 + (PIT_D - 0.25) / 2); // the pebbles' area stays as it was when the rings grew // about 15 pixels in from the inner edge of each hole (Jörg, 9 Nov 2026) // kept well in from the inner edge of each hole (its ring is a touch inside the hole)
+  const stoneSize = along * 0.103; // (each pebble's picture now carries a deeper shadow around it)
+  const edgeGap = along * (0.031 + (PIT_D - HOLE_D) / 2); // about 15 pixels in from the inner edge of each hole (Jörg, 9 Nov 2026)
 
   const mine = (i) => !isStore(i) && sideOf(i) === turn && (!vsCoro || turn === 0);
   const canTap = (i) => !busy && !over && mine(i) && board[i] > 0;
@@ -219,7 +236,7 @@ export default function Mancala({ area, onBack }) {
                 const a = rnd(i * 101 + k) * Math.PI * 2, rr = Math.sqrt(rnd(i * 77 + k * 3));
                 const ax = Math.max(0, s.w / 2 - edgeGap - stoneSize / 2), ay = Math.max(0, s.h / 2 - edgeGap - stoneSize / 2);
                 const sx = s.w / 2 + Math.cos(a) * rr * ax - stoneSize / 2, sy = s.h / 2 + Math.sin(a) * rr * ay - stoneSize / 2;
-                return <Image key={k} source={STONES[(i * 7 + k) % STONES.length]} style={{ position: 'absolute', left: sx, top: sy, width: stoneSize, height: stoneSize, transform: [{ rotate: `${Math.round((rnd(i * 13 + k * 7) - 0.5) * 30)}deg` }] }} resizeMode="contain" />;
+                return <Stone key={k} drop={lit === i && k === n - 1} fall={stoneSize} source={STONES[(i * 7 + k) % STONES.length]} left={sx} top={sy} size={stoneSize} turn={Math.round((rnd(i * 13 + k * 7) - 0.5) * 30)} />;
               })}
             </Pressable>
           );
