@@ -26,7 +26,6 @@ import { activeProfile } from '../profiles';
 import { onScopeChange } from '../scope';
 
 const KRAFT = require('../../assets/kraft.jpg');
-const ENVELOPE = require('../../assets/icon-envelope.png');
 const TRASH = require('../../assets/icon-trash.png');
 const TYPE = 'SpecialElite_400Regular'; // the typewriter, like My Notes
 const CREAM = '#f4f2ed';
@@ -144,7 +143,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
   const [innerH, setInnerH] = useState(0); // how tall the sheets on it are: the folder's front half stretches to hold them all
   const fbh = fw * FB_H / F_W, ffh = Math.max(fw * FF_H / F_W, innerH - fw * FB_H / F_W + 40);
   const thumb = Math.min((fw * 0.84 - 24) / 2, 200);
-  const headH = insets.top + 128; // the title and its buttons, fixed at the top
+  const headH = insets.top + 74; // the title, fixed at the top
 
   // the sheets as small cards, a little tilted, as if just spilled out of the folder
   const card = (key, label, child, rot, onPress) => (
@@ -159,19 +158,10 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
     <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent visible animationType="none" onRequestClose={close}>
       <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.92)', opacity: fade }]}>{/* nearly black behind the folder (Jörg, 8 Nov 2026; was 0.78) */}
         <Pressable style={StyleSheet.absoluteFill} onPress={close} accessibilityLabel={t('Close')} />
-        {/* the title, with Send a sheet and Close always at the top (Jörg, 8 Nov 2026: at the bottom they were hard to
-            reach once the folder filled up) */}
-        <View style={{ position: 'absolute', left: 0, right: 0, top: 0, paddingTop: insets.top + 18, alignItems: 'center', gap: 12, zIndex: 3 }}>
+        {/* the title alone at the top; the folder closes from its own Close at the bottom right (Jörg, 9 Nov 2026:
+            Send a sheet and Close taken away from under the title) */}
+        <View style={{ position: 'absolute', left: 0, right: 0, top: 0, paddingTop: insets.top + 18, alignItems: 'center', zIndex: 3 }}>
           <Text style={styles.title}>{t('Things to share')}</Text>
-          <View style={{ flexDirection: 'row', gap: 10 }}>
-            {canSend ? (
-              <Pressable onPress={withTap(() => setSendGate(true))} style={[styles.sendPill, { marginTop: 0 }]} accessibilityRole="button">
-                <Image source={ENVELOPE} style={{ width: 20, height: 20, tintColor: colors.white }} resizeMode="contain" />
-                <Text style={styles.pillText}>{t('Send a sheet')}</Text>
-              </Pressable>
-            ) : null}
-            <Pressable onPress={close} hitSlop={10} style={[styles.pill, styles.closePill, { marginTop: 0 }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Close')}</Text></Pressable>
-          </View>
         </View>
         <ScrollView style={{ marginTop: headH }} contentContainerStyle={{ paddingBottom: 60, alignItems: 'center' }}>
           {/* the folder, opened, a little darkened so the sheets on it stand out */}
@@ -221,11 +211,14 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
             ))}
           </View>
           </Animated.View>
-          {/* a small x at the folder's bottom right that closes it (Jörg, 9 Nov 2026) */}
+          {/* Close and a small x at the folder's bottom right (Jörg, 9 Nov 2026) */}
           <Pressable onPress={withTap(close)} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Close')}
-            style={[styles.folderX, { top: fbh + ffh - fw * 0.075 - 34, left: (winW - fw) / 2 + fw - fw * 0.065 - 34 }]}>
-            <View style={[styles.xBar, { transform: [{ rotate: '45deg' }] }]} />
-            <View style={[styles.xBar, { transform: [{ rotate: '-45deg' }] }]} />
+            style={[styles.folderX, { top: fbh + ffh - fw * 0.075 - 34, right: (winW - fw) / 2 + fw * 0.065 }]}>
+            <Text style={styles.folderXText}>{t('Close')}</Text>
+            <View style={{ width: 14, height: 14, alignItems: 'center', justifyContent: 'center' }}>
+              <View style={[styles.xBar, { transform: [{ rotate: '45deg' }] }]} />
+              <View style={[styles.xBar, { transform: [{ rotate: '-45deg' }] }]} />
+            </View>
           </Pressable>
         </ScrollView>
       </Animated.View>
@@ -319,7 +312,8 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
 }
 
 const styles = StyleSheet.create({
-  folderX: { position: 'absolute', width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(0,0,0,0.45)', alignItems: 'center', justifyContent: 'center' },
+  folderX: { position: 'absolute', height: 34, borderRadius: 17, paddingLeft: 14, paddingRight: 12, flexDirection: 'row', gap: 8, backgroundColor: 'rgba(0,0,0,0.45)', alignItems: 'center', justifyContent: 'center' },
+  folderXText: { color: '#f2eee6', fontFamily: fonts.uiBold, fontSize: 14 },
   xBar: { position: 'absolute', width: 14, height: 2.2, borderRadius: 1.1, backgroundColor: '#f2eee6' },
   title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 28 },
   cardShadow: { shadowColor: '#000', shadowOffset: { width: 2, height: 8 }, shadowOpacity: 0.55, shadowRadius: 10, elevation: 8 },
@@ -330,7 +324,6 @@ const styles = StyleSheet.create({
   letter: { fontFamily: 'EBGaramond_700Bold', color: '#2f2418' },
   kana: { fontFamily: undefined, fontWeight: '700' },
   openBack: { backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 14 },
-  sendPill: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 46, borderRadius: 23, paddingHorizontal: 22, backgroundColor: '#3a3a3a', marginTop: 36 },
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
   pillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
   glassBar: { backgroundColor: colors.glass, borderRadius: 24, paddingHorizontal: 20, paddingTop: 22, paddingBottom: 22, marginTop: 14 }, // black glass under the buttons
