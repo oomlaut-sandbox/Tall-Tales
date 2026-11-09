@@ -1,0 +1,6 @@
+total 256
+drwxr-xr-x  2 runner runner   4096 Nov  9 20:22 .
+drwxrwxrwt 15 root   root     4096 Nov  9 20:22 ..
+-rw-r--r--  1 runner runner 250512 Nov  9 20:22 NotoSansArabic-SemiBold.ttf
+-rw-r--r--  1 runner runner      0 Nov  9 20:22 err.txt
+-rw-r--r--  1 runner runner      0 Nov  9 20:22 list.txt
