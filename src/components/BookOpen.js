@@ -38,6 +38,10 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, am
     bx = (winW - s) / 2; by = L.topH + (deskH - 2 * s) / 2;
   }
   const tx = L.wide ? bx + s : bx, ty = L.wide ? by : by + s; // the words square
+  // a cloth hardcover turns its spine to the top in portrait, where the book opens upward (in landscape it stays on
+  // the left). Also Tips for Authors from the Book Store, whose cloth cover lost its hardcover mark on the way there
+  // (Jörg, 9 Nov 2026; its store id is tips-for-authors-xxxx)
+  const spineUp = !!(story && ((story.cover && (story.cover.hard || /hardcovers/.test(String(story.cover.uri || '')))) || /^tips-for-authors(-|$)/.test(String(story.id || ''))));
 
   const bg = useRef(new Animated.Value(closing ? 1 : 0)).current;
   const mv = useRef(new Animated.Value(closing ? 1 : 0)).current;
@@ -242,7 +246,7 @@ export default function BookOpen({ u, story, cover, rect, textScale, fontKey, am
         <Animated.View style={[{ width: s, height: s, backgroundColor: '#828282' }, leaf]}>
           <Animated.View style={[StyleSheet.absoluteFill, { opacity: frontOp, backgroundColor: '#828282' }]}>
             {/* a cloth hardcover made in Coro: upright, the book opens upward, so its spine turns to the top (Jörg, 27 Oct 2026) */}
-            {cover ? <Image source={cover} onLoad={() => setCoverReady(true)} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s, transform: !L.wide && story && story.cover && (story.cover.hard || /hardcovers/.test(String(story.cover.uri || ''))) ? [{ rotate: '90deg' }] : [] }} resizeMode="cover" /> : null}
+            {cover ? <Image source={cover} onLoad={() => setCoverReady(true)} style={{ position: 'absolute', left: 0, top: 0, width: s, height: s, transform: !L.wide && spineUp ? [{ rotate: '90deg' }] : [] }} resizeMode="cover" /> : null}
             {/* the cover's title, as on its tile (it was left off the flying cover: Jörg, 3 Nov 2026) */}
             {cover && cover.title ? <CoverTitle t={cover.title} w={s} /> : null}
             {/* Amber light: the cover warmed like the pictures inside */}
