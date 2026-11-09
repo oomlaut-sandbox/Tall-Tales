@@ -221,6 +221,12 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
             ))}
           </View>
           </Animated.View>
+          {/* a small x at the folder's bottom right that closes it (Jörg, 9 Nov 2026) */}
+          <Pressable onPress={withTap(close)} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Close')}
+            style={[styles.folderX, { top: fbh + ffh - fw * 0.075 - 34, left: (winW - fw) / 2 + fw - fw * 0.065 - 34 }]}>
+            <View style={[styles.xBar, { transform: [{ rotate: '45deg' }] }]} />
+            <View style={[styles.xBar, { transform: [{ rotate: '-45deg' }] }]} />
+          </Pressable>
         </ScrollView>
       </Animated.View>
 
@@ -305,6 +311,8 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
 }
 
 const styles = StyleSheet.create({
+  folderX: { position: 'absolute', width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(0,0,0,0.45)', alignItems: 'center', justifyContent: 'center' },
+  xBar: { position: 'absolute', width: 14, height: 2.2, borderRadius: 1.1, backgroundColor: '#f2eee6' },
   title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 28 },
   cardShadow: { shadowColor: '#000', shadowOffset: { width: 2, height: 8 }, shadowOpacity: 0.55, shadowRadius: 10, elevation: 8 },
   cardLabel: { color: 'rgba(255,255,255,0.92)', fontFamily: fonts.uiSemiBold, fontSize: 14, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 4, textShadowOffset: { width: 0, height: 1 } },
