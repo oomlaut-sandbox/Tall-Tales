@@ -43,7 +43,7 @@ const BOARD_AR = 527 / 1608; // width / height, upright
 // to the top store (cell 7); your pits in the right column, the other player's in the left
 const ROWS = [0.912, 0.795, 0.674, 0.553, 0.432, 0.311, 0.191, 0.072]; // (the pits nudged down a touch onto the holes: 9 Nov 2026)
 const COL = { near: 0.697, far: 0.305, store: 0.507 }; // (your column nudged left onto the holes)
-const PIT_D = 0.25, STORE_W = 0.675, STORE_H = 0.08; // a pit's width, a store's width and height (of the board's width / height)
+const PIT_D = 0.23, STORE_W = 0.675, STORE_H = 0.08; // a pit's width, a store's width and height (of the board's width / height)
 // smooth grey pebbles, cut from Jörg's photo (9 Nov 2026; were the felt stones)
 const STONES = [
   require('../../assets/garden/mancala/pebble-01.png'), require('../../assets/garden/mancala/pebble-02.png'),
@@ -175,7 +175,8 @@ export default function Mancala({ area, onBack }) {
     // sideways: the upright board turned a quarter clockwise, so the top store is on the right
     return { x: (1 - v) * bw, y: u * bh, w: store ? STORE_H * bw : d, h: store ? STORE_W * bh : d };
   };
-  const stoneSize = along * PIT_D * 0.36;
+  const stoneSize = along * 0.09;
+  const edgeGap = along * 0.05; // kept well in from the inner edge of each hole (its ring is a touch inside the hole)
 
   const mine = (i) => !isStore(i) && sideOf(i) === turn && (!vsCoro || turn === 0);
   const canTap = (i) => !busy && !over && mine(i) && board[i] > 0;
@@ -213,8 +214,13 @@ export default function Mancala({ area, onBack }) {
                 borderWidth: glow || lit === i ? 2 : 0, borderColor: glow ? 'rgba(255,255,255,0.4)' /* 60% see-through (Jörg, 9 Nov 2026) */ : '#f2c14e' }}>
               {/* the stones in it, scattered a little */}
               {Array.from({ length: Math.min(n, isStore(i) ? 36 : 18) }, (_, k) => {
-                const a = rnd(i * 101 + k) * Math.PI * 2, rr = Math.sqrt(rnd(i * 77 + k * 3)) * 0.32;
-                const sx = s.w / 2 + Math.cos(a) * rr * s.w - stoneSize / 2, sy = s.h / 2 + Math.sin(a) * rr * s.h - stoneSize / 2;
+                // clustered in the middle: no stone comes nearer the hole's inner edge than the margin (Jörg, 9 Nov 2026)
+                // up to five in a pit sit evenly round its middle, in a little heap where none hides another; more spread out
+                const ring = !isStore(i) && n <= 5;
+                const a = ring ? rnd(i * 31) * Math.PI * 2 + k * Math.PI * 2 / n + (rnd(i * 101 + k) - 0.5) * 0.6 : rnd(i * 101 + k) * Math.PI * 2;
+                const rr = ring ? (n > 1 ? 0.55 + 0.45 * rnd(i * 77 + k * 3) : 0) : Math.sqrt(rnd(i * 77 + k * 3));
+                const ax = Math.max(0, s.w / 2 - edgeGap - stoneSize / 2), ay = Math.max(0, s.h / 2 - edgeGap - stoneSize / 2);
+                const sx = s.w / 2 + Math.cos(a) * rr * ax - stoneSize / 2, sy = s.h / 2 + Math.sin(a) * rr * ay - stoneSize / 2;
                 return <Image key={k} source={STONES[(i * 7 + k) % STONES.length]} style={{ position: 'absolute', left: sx, top: sy, width: stoneSize, height: stoneSize, transform: [{ rotate: `${Math.round((rnd(i * 13 + k * 7) - 0.5) * 30)}deg` }] }} resizeMode="contain" />;
               })}
             </Pressable>
