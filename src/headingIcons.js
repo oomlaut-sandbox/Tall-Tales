@@ -12,6 +12,7 @@ export const HEADING_ICONS = {
   'Grown-ups': require('../assets/heading-icons/grown-ups.png'),
   'Artificial Intelligence': require('../assets/heading-icons/ai.png'), // two sparkles
   'Accessibility': require('../assets/heading-icons/accessibility.png'), // a person in a circle, arms out (Jörg, 27 Oct 2026)
+  'The Garden': require('../assets/heading-icons/garden.png'), // a simple tree (Jörg, 9 Nov 2026)
   'Teachers and Educators': require('../assets/heading-icons/learning.png'),
   'Artist Community': require('../assets/heading-icons/together-with-others.png'), // two people (30 Oct 2026)
   'Your favourite books': require('../assets/heading-icons/your-favourite-books.png'),
