@@ -15,6 +15,7 @@ const ENV_RATIO = 720 / 542;
 const TYPE = 'SpecialElite_400Regular'; // the Typewriter font (theme.js)
 const INK = '#2b2622';
 
+const HELLO_NAME = 'Hi {name}. Thank you for supporting Coro. We so hope you love making books as much as we do.';
 const PARAS = [
   'Hello, and thank you for supporting Coro. We so hope you love making books as much as we do.',
   'We look forward to seeing the stories that you dream up and create. The book store will grow in time with quality books, made by real people. Until then, please stay on this exciting journey of discovery with us.',
@@ -58,7 +59,8 @@ export function LetterTile({ width }) {
         </View>
         <Text numberOfLines={2} style={styles.tileTitle}>{t('A letter from Coro')}</Text>
       </Pressable>
-      {open ? <PaperLetter title="A letter from Coro" paras={PARAS} onClose={() => setOpen(false)} /> : null}
+      {/* it greets the reader by their profile name (Jörg, 9 Nov 2026) */}
+      {open ? <PaperLetter title="A letter from Coro" paras={name ? [[HELLO_NAME, { name }], ...PARAS.slice(1)] : PARAS} onClose={() => setOpen(false)} /> : null}
     </>
   );
 }
@@ -89,7 +91,7 @@ export function PaperLetter({ title, paras, onClose }) {
             {sheetH ? <Image source={PAPER} style={{ position: 'absolute', left: 0, top: 0, width: sheetW, height: sheetH }} resizeMode="stretch" /> : null}
             <View style={{ paddingHorizontal: Math.round(sheetW * 0.09), paddingTop: Math.round(sheetW * 0.11), paddingBottom: Math.round(sheetW * 0.09), gap: Math.round(fs * 0.9) }}>
               <Text style={[para, { fontSize: fs + 5, lineHeight: Math.round((fs + 5) * 1.4), marginBottom: 4 }, dir]} accessibilityRole="header">{t(title)}</Text>
-              {paras.map((p) => <Text key={p} style={[para, dir]}>{t(p)}</Text>)}
+              {paras.map((p) => (Array.isArray(p) ? <Text key={p[0]} style={[para, dir]}>{t(p[0], p[1])}</Text> : <Text key={p} style={[para, dir]}>{t(p)}</Text>))}
               <Text style={[para, { marginTop: 8 }, dir]}>{t('With love,')}{'\n'}Coro</Text>
               <Pressable onPress={close} hitSlop={8} accessibilityRole="button" style={styles.back}>
                 <Text style={{ fontFamily: fonts.uiSemiBold, fontSize: 14, color: '#5d554c' }}>{t('Put the letter back')}</Text>

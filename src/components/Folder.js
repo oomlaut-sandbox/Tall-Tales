@@ -181,11 +181,11 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
             {/* the folder's paper label on its tab, typed with the child's name, like the small folder on My Workspace
                 (its label cut from that folder, the same warm cream, not darkened: Jörg, 9 Nov 2026) */}
             {name ? (
-              <View style={{ position: 'absolute', left: fw * 0.068, top: fw * 0.0092, width: fw * 0.192, height: fw * 0.0233, alignItems: 'center', justifyContent: 'center', paddingHorizontal: fw * 0.01 }}>
+              <View style={{ position: 'absolute', left: fw * 0.056, top: fw * 0.0055, width: fw * 0.216, height: fw * 0.03, alignItems: 'center', justifyContent: 'center', paddingHorizontal: fw * 0.012 }}>{/* a little bigger (Jörg, 9 Nov 2026) */}
                 {/* its exact size: an image pinned only by its edges was drawn at its own (large) size on the phone */}
-                <Image source={FOLDER_LABEL} resizeMode="stretch" style={{ position: 'absolute', left: 0, top: 0, width: fw * 0.192, height: fw * 0.0233 }} />
+                <Image source={FOLDER_LABEL} resizeMode="stretch" style={{ position: 'absolute', left: 0, top: 0, width: fw * 0.216, height: fw * 0.03 }} />
                 <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} allowFontScaling={false}
-                  style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.max(7, Math.round(fw * 0.0145)), color: '#3b342b' }}>{name}</Text>
+                  style={{ fontFamily: 'SpecialElite_400Regular', fontSize: Math.max(8, Math.round(fw * 0.017)), lineHeight: Math.max(8, Math.round(fw * 0.017)) * 1.15, color: '#3b342b', textAlign: 'center', includeFontPadding: false, transform: [{ translateY: Math.max(8, Math.round(fw * 0.017)) * 0.12 }] /* the typewriter face sits high in its line: down to the label's middle */ }}>{name}</Text>
               </View>
             ) : null}
             <View style={{ position: 'absolute', top: fbh, left: 0, width: fw, height: ffh }}>

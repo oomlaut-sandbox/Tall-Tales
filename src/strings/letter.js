@@ -61,4 +61,11 @@ export default {
     ar: "Coro يدور حول الكتب التي تصنعونها معًا، لذا ستكون أهم الكتب في مكتبتك هي كتبك أنت.",
   },
   "With love,": { de: "Alles Liebe,", fr: "Avec amour,", es: "Con cariño,", ja: "あいを こめて", ar: "مع الحب،" },
+  "Hi {name}. Thank you for supporting Coro. We so hope you love making books as much as we do.": {
+    de: "Hallo {name}. Danke, dass du Coro unterstützt. Wir hoffen so sehr, dass du das Büchermachen genauso liebst wie wir.",
+    fr: "Bonjour {name}. Merci de soutenir Coro. Nous espérons vraiment que tu aimeras créer des livres autant que nous.",
+    es: "Hola, {name}. Gracias por apoyar a Coro. Esperamos de verdad que disfrutes haciendo libros tanto como nosotros.",
+    ja: "{name}さん、こんにちは。Coro を おうえんしてくださり、ありがとうございます。わたしたちと おなじくらい、本づくりを たのしんでいただけたら うれしいです。",
+    ar: "مرحبًا يا {name}. شكرًا لدعمك Coro. نتمنى حقًا أن تحب صناعة الكتب بقدر ما نحبها.",
+  },
 };
