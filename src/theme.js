@@ -71,3 +71,10 @@ export const bookFont = (key) => BOOK_FONTS[key] || BOOK_FONTS.serif;
 
 // The phone column never grows past this width (matters on tablets and the web preview).
 export const MAX_WIDTH = 460;
+
+// the + / − on the section headings in Help and Ideas run through the colours, red at the top to purple at the
+// bottom, spread over the whole list (Jörg, 10 Nov 2026)
+export function rainbow(i, n) {
+  const h = (-5 + (267 * i) / Math.max(1, n - 1) + 360) % 360;
+  return `hsl(${Math.round(h)}, 78%, 58%)`;
+}

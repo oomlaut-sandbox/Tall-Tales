@@ -6,7 +6,7 @@ import { HEADING_ICONS } from '../headingIcons';
 import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fonts, boxTitle, sectionBox, SECTION_GAP } from '../theme';
+import { colors, fonts, boxTitle, sectionBox, SECTION_GAP, rainbow } from '../theme';
 import { DESK_FELT, IS_TABLET, DESK_BG, BandFill } from '../look';
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import { IDEA_SECTIONS, IDEA_COUNT } from '../ideas';
@@ -43,12 +43,12 @@ export default function IdeaRoom({ u, openMenu, onMake, onHelp }) {
             <View style={styles.spread}><Image source={SPREAD} style={{ width: '100%', height: '100%' }} resizeMode="cover" accessibilityIgnoresInvertColors /></View>
           </View>
           <Text style={[styles.caption, { width: spreadW }]}>{t('Example of a Coro book. You make your own.')}</Text>
-          {IDEA_SECTIONS.map((sec) => { const secOpen = openSec === sec.title; return (
+          {IDEA_SECTIONS.map((sec, si) => { const secOpen = openSec === sec.title; return (
             <View key={sec.title} style={styles.box}>
               <Pressable onPress={() => { setOpenSec(secOpen ? null : sec.title); setOpen(null); }} accessibilityRole="button" accessibilityState={{ expanded: secOpen }} style={[styles.secHead, !secOpen && { marginBottom: 0 }]}>
                 {HEADING_ICONS[sec.title] ? <Image source={HEADING_ICONS[sec.title]} style={styles.secIcon} accessibilityIgnoresInvertColors /> : null}
                 <Text style={styles.section}>{t(sec.title)}</Text>
-                <Text style={styles.secChev}>{secOpen ? '−' : '+'}</Text>
+                <Text style={[styles.secChev, { color: rainbow(si, IDEA_SECTIONS.length) }]}>{secOpen ? '−' : '+'}</Text>
               </Pressable>
               {secOpen ? <Text style={styles.intro}>{t(sec.intro)}</Text> : null}
               {secOpen && sec.ideas.map((idea) => {
