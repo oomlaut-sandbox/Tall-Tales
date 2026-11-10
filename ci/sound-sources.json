@@ -1,13 +1,10 @@
 {
   "note": "CC0 field recordings from BigSoundBank (bigsoundbank.com, public domain, commercial use allowed, no attribution needed). Downloaded by .github/workflows/fetch-sounds.yml to the sounds-output branch. 'urls' adds CC0 / CC-BY files from Freesound and LaSonotheque (BigSoundBank's French twin).",
   "sounds": {},
-  "searches": [
-    "loon",
-    "plongeon",
-    "lake night"
-  ],
+  "searches": [],
   "urls": {
-    "fs-search-loon": "https://freesound.org/search/?q=loon&f=license%3A%22Creative+Commons+0%22&s=Downloads+%28most+first%29",
-    "fs-search-loon-lake": "https://freesound.org/search/?q=loon+lake&f=license%3A%22Creative+Commons+0%22"
+    "loon-nps-yell": "https://www.nps.gov/nps-audiovideo/legacy/mp3/imr/avElement/yell-YELLCOLO20160913T18ms.mp3",
+    "loon-fs634858": "https://cdn.freesound.org/previews/634/634858_14006003-hq.mp3",
+    "loon-fs634858-lq": "https://cdn.freesound.org/previews/634/634858_14006003-lq.mp3"
   }
 }
