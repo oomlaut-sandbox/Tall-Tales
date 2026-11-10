@@ -110,7 +110,7 @@ function PillLabel({ icon, x, text }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7 }}>
       {x ? (
-        <View style={{ width: 16, height: 16, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: 11, height: 11, alignItems: 'center', justifyContent: 'center' }}>
           <View style={[styles.pillX, { transform: [{ rotate: '45deg' }] }]} />
           <View style={[styles.pillX, { transform: [{ rotate: '-45deg' }] }]} />
         </View>
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
   kana: { fontFamily: undefined, fontWeight: '700' },
   openBack: { backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 14 },
   iconPill: { paddingHorizontal: 16 },
-  pillX: { position: 'absolute', width: 16, height: 2, borderRadius: 1, backgroundColor: colors.white },
+  pillX: { position: 'absolute', width: 12, height: 2, borderRadius: 1, backgroundColor: colors.white }, // a small x (Jörg, 10 Nov 2026)
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
   pillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
   glassBar: { backgroundColor: colors.glass, borderRadius: 24, paddingHorizontal: 14, paddingTop: 22, paddingBottom: 22, marginTop: 14 }, // black glass under the buttons
