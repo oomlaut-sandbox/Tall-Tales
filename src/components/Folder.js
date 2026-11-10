@@ -101,6 +101,25 @@ const FOLDER_FRONT = require('../../assets/folder-open-front.png');
 const FOLDER_LABEL = require('../../assets/folder-label.png'); // the paper label from the small folder's tab (616 × 124)
 const FB_H = 876, FF_H = 824, F_W = 1200;
 
+
+// the words on a pill with a small icon before them (Jörg, 10 Nov 2026)
+const ICON_DRAW = require('../../assets/heading-icons/making-books.png');
+const ICON_PIN = require('../../assets/icon-pin.png');
+const ICON_SEND = require('../../assets/icon-envelope.png');
+function PillLabel({ icon, x, text }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7 }}>
+      {x ? (
+        <View style={{ width: 16, height: 16, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={[styles.pillX, { transform: [{ rotate: '45deg' }] }]} />
+          <View style={[styles.pillX, { transform: [{ rotate: '-45deg' }] }]} />
+        </View>
+      ) : <Image source={icon} style={{ width: 18, height: 18, tintColor: colors.white }} resizeMode="contain" />}
+      <Text style={styles.pillText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{text}</Text>
+    </View>
+  );
+}
+
 export default function Folder({ narrator = 'lily', onClose, toast, canSend = true }) {
   const t = useT();
   const lang = useLang();
@@ -243,18 +262,18 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
               {/* the buttons under the sheet sit on black glass, so the shelf behind doesn't show through (Jörg, 9 Nov 2026) */}
               <View style={[styles.glassBar, { width: Math.min(big, (winH - 240) / (open.page.kind === 'sketch' ? 2 : 1.42)) }]}>
                 {open.page.kind === 'drawing' ? (
-                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 10 }}>
-                    <Pressable onPress={withTap(() => setDrawOn({ bg: open.page.uri, strokes: open.page.strokes || [], id: open.id }))} style={[styles.pill, { backgroundColor: colors.green }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Draw on it')}</Text></Pressable>
-                    <Pressable onPress={withTap(() => pinNow(open.page.strokes || [], open.page.uri))} style={[styles.pill, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Pin it')}</Text></Pressable>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8 }}>
+                    <Pressable onPress={withTap(() => setDrawOn({ bg: open.page.uri, strokes: open.page.strokes || [], id: open.id }))} style={[styles.pill, styles.iconPill, { backgroundColor: colors.green }]} accessibilityRole="button"><PillLabel icon={ICON_DRAW} text={t('Draw on it')} /></Pressable>
+                    <Pressable onPress={withTap(() => pinNow(open.page.strokes || [], open.page.uri))} style={[styles.pill, styles.iconPill, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><PillLabel icon={ICON_PIN} text={t('Pin it')} /></Pressable>
                     {/* send the drawing to another family, behind the grown-up check (Jörg, 6 Nov 2026) */}
-                    {canSend ? <Pressable onPress={withTap(() => setSendGate({ page: open.page }))} style={[styles.pill, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Send it')}</Text></Pressable> : null}
+                    {canSend ? <Pressable onPress={withTap(() => setSendGate({ page: open.page }))} style={[styles.pill, styles.iconPill, { backgroundColor: '#3a3a3a' }]} accessibilityRole="button"><PillLabel icon={ICON_SEND} text={t('Send it')} /></Pressable> : null}
                   </View>
                 ) : null}
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 22, marginTop: open.page.kind === 'drawing' ? 18 : 0 }}>
                   <Pressable onPress={withTap(() => setSure(open))} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('Delete')}>
                     <Image source={TRASH} style={{ width: 22, height: 22, tintColor: '#bdbdbd' }} resizeMode="contain" />
                   </Pressable>
-                  <Pressable onPress={() => { stopVoice(); stopSpeech(); setOpen(null); }} hitSlop={10} style={[styles.pill, { backgroundColor: colors.pillGrey }]} accessibilityRole="button"><Text style={styles.pillText}>{t('Close')}</Text></Pressable>
+                  <Pressable onPress={() => { stopVoice(); stopSpeech(); setOpen(null); }} hitSlop={10} style={[styles.pill, styles.iconPill, { backgroundColor: colors.pillGrey }]} accessibilityRole="button"><PillLabel x text={t('Close')} /></Pressable>
                 </View>
               </View>
             </View>
@@ -321,9 +340,11 @@ const styles = StyleSheet.create({
   letter: { fontFamily: 'EBGaramond_700Bold', color: '#2f2418' },
   kana: { fontFamily: undefined, fontWeight: '700' },
   openBack: { backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center', padding: 14 },
+  iconPill: { paddingHorizontal: 16 },
+  pillX: { position: 'absolute', width: 16, height: 2, borderRadius: 1, backgroundColor: colors.white },
   pill: { height: 44, borderRadius: 22, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center' },
   pillText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 },
-  glassBar: { backgroundColor: colors.glass, borderRadius: 24, paddingHorizontal: 20, paddingTop: 22, paddingBottom: 22, marginTop: 14 }, // black glass under the buttons
+  glassBar: { backgroundColor: colors.glass, borderRadius: 24, paddingHorizontal: 14, paddingTop: 22, paddingBottom: 22, marginTop: 14 }, // black glass under the buttons
   closePill: { backgroundColor: colors.pillGrey, marginTop: 22 }, // a grey pill (red is only for throwing away: 31 Oct 2026)
   sureBox: { width: '100%', maxWidth: 400, backgroundColor: 'rgba(0,0,0,0.86)', borderRadius: 24, paddingHorizontal: 24, paddingTop: 26, paddingBottom: 22 },
   sureText: { color: colors.white, fontFamily: fonts.ui, fontSize: 17, lineHeight: 24 },
