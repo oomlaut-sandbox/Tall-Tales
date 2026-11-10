@@ -13,7 +13,7 @@ import { speakTracked, stopSpeech } from '../speech';
 import { LETTERS } from '../narration/samples';
 import { StrokesView } from './Strokes';
 import ParentGate from './ParentGate';
-import { ConfirmBox } from './Chrome';
+import { BackRing, ConfirmBox } from './Chrome';
 import { addSheet, loadFolder, onFolder, removeSheet, updateSheet } from '../folder';
 import { strokesToImage } from './Strokes';
 import { DrawEditor } from '../screens/Notebook';
@@ -163,6 +163,13 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
         <View style={{ position: 'absolute', left: 0, right: 0, top: 0, paddingTop: insets.top + 18, alignItems: 'center', zIndex: 3 }}>
           <Text style={styles.title}>{t('Things to share')}</Text>
         </View>
+        {/* Back (top left, where the app's own Back sits) and an x (top right) both close the folder (Jörg, 9 Nov 2026) */}
+        <BackRing onPress={withTap(close)} label={t('Back')} style={{ position: 'absolute', zIndex: 4, top: insets.top + 10, left: 12 }} />
+        <Pressable onPress={withTap(close)} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Close')}
+          style={[styles.folderX, { top: insets.top + 3, right: 12 }]}>
+          <View style={[styles.xBar, { transform: [{ rotate: '45deg' }] }]} />
+          <View style={[styles.xBar, { transform: [{ rotate: '-45deg' }] }]} />
+        </Pressable>
         <ScrollView style={{ marginTop: headH }} contentContainerStyle={{ paddingBottom: 60, alignItems: 'center' }}>
           {/* the folder, opened, a little darkened so the sheets on it stand out */}
           <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: (winW - fw) / 2, width: fw, height: fbh + ffh }}>
@@ -211,15 +218,6 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
             ))}
           </View>
           </Animated.View>
-          {/* Close and a small x at the folder's bottom right (Jörg, 9 Nov 2026) */}
-          <Pressable onPress={withTap(close)} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('Close')}
-            style={[styles.folderX, { top: fbh + ffh - fw * 0.075 - 34, right: (winW - fw) / 2 + fw * 0.065 }]}>
-            <Text style={styles.folderXText}>{t('Close')}</Text>
-            <View style={{ width: 14, height: 14, alignItems: 'center', justifyContent: 'center' }}>
-              <View style={[styles.xBar, { transform: [{ rotate: '45deg' }] }]} />
-              <View style={[styles.xBar, { transform: [{ rotate: '-45deg' }] }]} />
-            </View>
-          </Pressable>
         </ScrollView>
       </Animated.View>
 
@@ -312,8 +310,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
 }
 
 const styles = StyleSheet.create({
-  folderX: { position: 'absolute', height: 34, borderRadius: 17, paddingLeft: 14, paddingRight: 12, flexDirection: 'row', gap: 8, backgroundColor: 'rgba(0,0,0,0.45)', alignItems: 'center', justifyContent: 'center' },
-  folderXText: { color: '#f2eee6', fontFamily: fonts.uiBold, fontSize: 14 },
+  folderX: { position: 'absolute', zIndex: 4, width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center' },
   xBar: { position: 'absolute', width: 14, height: 2.2, borderRadius: 1.1, backgroundColor: '#f2eee6' },
   title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 28 },
   cardShadow: { shadowColor: '#000', shadowOffset: { width: 2, height: 8 }, shadowOpacity: 0.55, shadowRadius: 10, elevation: 8 },
