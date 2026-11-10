@@ -233,7 +233,7 @@ const ALL_HELP = [
     'Mancala is one of the oldest games in the world. Play against Coro or with someone next to you, taking turns. Tap the ? on the game for where it comes from and how to play.',
   ] },
   { section: 'Teachers and Educators', title: 'Classroom folders', go: 'settings', text: [
-    'A classroom folder holds up to 30 student profiles. Set it up in Settings, under Teachers and Educators: give your class a name, then add each student in Profiles.',
+    'A classroom folder holds up to 40 student profiles. Set it up in Settings, under Teachers and Educators: give your class a name, then add each student in Profiles.',
     'To add the whole class at once, paste your class list in Settings, or choose it as a file (.csv or .txt, saved from a spreadsheet).',
     'Students tap their name to start. Each one keeps their own notebook, badges and settings.',
     'Books are shared by the whole class, so students can make a book together, or each make their own.',

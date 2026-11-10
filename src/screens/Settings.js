@@ -89,7 +89,7 @@ export default function Settings({ startOpen, storeAdmin, u, openMenu, lang, set
   const [names, setNames] = useState(''); // a pasted class list: one name per line (or separated by commas)
   const [added, setAdded] = useState(null);
   const [importTo, setImportTo] = useState(null); // which class the list goes into (the first, until another is chosen)
-  // make a profile for every name on the list, up to 30 in the class (names already there are skipped)
+  // make a profile for every name on the list, up to 40 in the class (names already there are skipped)
   // a class list from a file (.csv or .txt): one student a line; a line's cells (first name, last name…) make one
   // name, and a heading line such as 'Name' or 'First name, Last name' is left out. The names fill the box above,
   // so they can be checked before they're added (Jörg, 31 Oct 2026)
@@ -275,7 +275,7 @@ export default function Settings({ startOpen, storeAdmin, u, openMenu, lang, set
                 {!ps.member ? <Pressable onPress={onJoin} hitSlop={8} accessibilityRole="link"><Text style={styles.link}>{t('Join the membership to choose')}</Text></Pressable> : null}
               </View>
           </Section>
-          {/* Teachers and Educators: a classroom folder of up to 30 students (Jörg, 26 Oct 2026) */}
+          {/* Teachers and Educators: a classroom folder of up to 40 students (Jörg, 26 Oct 2026; 40 since 10 Nov) */}
           <View onLayout={(e) => { if (startOpen === 'teachers' && !jumped.current && keep.ref.current) { jumped.current = true; const y = e.nativeEvent.layout.y; setTimeout(() => keep.ref.current && keep.ref.current.scrollTo({ y: Math.max(0, y - 12), animated: false }), 60); } }}>
           <Section id="teachers" icon={SET_ICONS.teachers} title={t('Teachers and Educators')} open={openSec} setOpen={setOpenSec}>
             <View style={styles.card}>

@@ -8,10 +8,10 @@ import { DEFAULT_CONTROLS } from './controls';
 import { classLocked, locked } from './classroom';
 
 export const MAX_PROFILES = 6;
-// Teachers and Educators (Jörg, 26 Oct 2026): a classroom folder holds up to 30 students' profiles. Books are shared
+// Teachers and Educators (Jörg, 26 Oct 2026): a classroom folder holds up to 40 students' profiles. Books are shared
 // by the whole class (to make books together); each student's notebook, badges and settings stay their own.
-export const MAX_CLASS = 30;
-// (Jörg, 26 Oct 2026: a teacher can have several class folders, each with up to 30 students. A profile in a class
+export const MAX_CLASS = 40; // (Jörg, 10 Nov 2026; was 30)
+// (Jörg, 26 Oct 2026: a teacher can have several class folders, each with up to 40 students. A profile in a class
 // carries the class's id as 'cls'.)
 export const inClass = (cls) => state.list.filter((p) => p.cls === cls);
 export const canAdd = (cls) => (state.classroom ? inClass(cls).length < MAX_CLASS : state.list.length < MAX_PROFILES);

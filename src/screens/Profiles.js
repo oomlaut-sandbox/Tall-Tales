@@ -95,7 +95,7 @@ export default function Profiles({ u, openMenu, setControls, onPicked, onBack })
   const [sure, setSure] = useState(false);
   const canSwitch = controls.profiles !== false;
   const { width: winW, height: winH } = useWindowDimensions();
-  const room = s.classroom; // classroom mode: class folders, each with up to 30 students
+  const room = s.classroom; // classroom mode: class folders, each with up to 40 students
   const classes = s.classes || [];
   const [endAsk, setEndAsk] = useState(false); // 'End classroom mode?'
   const [openCls, setOpenCls] = useState(null); // the class folder that's open (classroom mode)
