@@ -866,7 +866,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
   const photoOf = (t) => (t === 'cover' ? (cover && cover.uri ? { src: cover.src || cover.uri, uri: cover.uri, edit: cover.edit } : null)
     : t === 'page2' ? (page.uri2 ? { src: page.src2 || page.uri2, uri: page.uri2, edit: page.edit2 } : null)
     : (page.uri ? { src: page.src || page.uri, uri: page.uri, edit: page.edit } : null));
-  // a drawing made here: Edit drawing opens it again in the drawing tools (Jörg, 10 Nov 2026). Its strokes when we
+  // a drawing made here: Keep drawing opens it again in the drawing tools (Jörg, 10 Nov 2026). Its strokes when we
   // kept them; a drawing from before that comes back as a picture on layer 1 to draw over.
   const drawingOf = (t) => {
     const cur = photoOf(t);
@@ -1713,7 +1713,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
         <Pressable onPress={() => setImgAsk(null)} accessible={false} style={[StyleSheet.absoluteFill, styles.choiceBack]}>{/* (tapping outside: the same as Cancel) */}
           <Pressable onPress={() => {}} accessible={false} style={styles.choice}>
             <Text style={styles.choiceTitle}>{photoOf(imgAsk) ? tr('Picture') : tr('Add a picture')}</Text>
-            {drawingOf(imgAsk) ? <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setDrawStart(drawingOf(t)); setDrawFor(t); }} style={[styles.choiceBtn, { backgroundColor: colors.green }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Edit drawing')} style={styles.choiceBtnText} /></Pressable> : null}
+            {drawingOf(imgAsk) ? <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setDrawStart(drawingOf(t)); setDrawFor(t); }} style={[styles.choiceBtn, { backgroundColor: colors.green }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Keep drawing') /* the same words as in My Notes (Jörg, 10 Nov 2026) */} style={styles.choiceBtnText} /></Pressable> : null}
             {photoOf(imgAsk) && !drawingOf(imgAsk) ? <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setPhotoEdit(t); }} style={[styles.choiceBtn, { backgroundColor: colors.green }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.crop} text={tr('Edit photo')} style={styles.choiceBtnText} /></Pressable> : null}
             <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); placeImage(t, 'library'); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.photo} text={tr('Choose a picture')} style={styles.choiceBtnText} /></Pressable>
             {/* a photo of a drawing, say; the camera only opens after the grown-up check */}

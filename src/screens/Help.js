@@ -10,7 +10,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, fonts, boxTitle, sectionBox, SECTION_GAP, rainbow } from '../theme';
+import { colors, fonts, boxTitle, sectionBox, SECTION_GAP } from '../theme';
 import { DESK_FELT, IS_TABLET, DESK_BG, BandFill } from '../look';
 import { Bar, Burger, WithBar } from '../components/Chrome';
 import { useLang, useT } from '../i18n';
@@ -305,7 +305,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
           <View style={{ height: 18 }} />
           {!found.length ? <Text style={[styles.p, { color: colors.white }]}>{t('Nothing found for “{q}”. Try another word.', { q: q.trim() })}</Text> : null}
           {/* each section in its own black glass box: its heading, and its topics when it's open (searching opens all) */}
-          {found.reduce((secs, h) => { const last = secs[secs.length - 1]; if (last && last.section === h.section) last.items.push(h); else secs.push({ section: h.section, items: [h] }); return secs; }, []).map(({ section, items }, si, all) => {
+          {found.reduce((secs, h) => { const last = secs[secs.length - 1]; if (last && last.section === h.section) last.items.push(h); else secs.push({ section: h.section, items: [h] }); return secs; }, []).map(({ section, items }) => {
             const secOpen = searching || openSec === section;
             return (
               <View key={section} style={styles.box}>
@@ -313,7 +313,7 @@ export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro
                   style={[styles.secHead, !secOpen && { marginBottom: 0 }]}>
                   {HEADING_ICONS[section] ? <Image source={HEADING_ICONS[section]} style={styles.secIcon} accessibilityIgnoresInvertColors /> : null}
                   <Text style={[styles.section, { flex: 1 }]}>{t(section)}</Text>
-                  {!searching ? <Text style={[styles.secChev, { color: rainbow(si, all.length) }]}>{secOpen ? '−' : '+'}</Text> : null}
+                  {!searching ? <Text style={styles.secChev}>{secOpen ? '−' : '+'}</Text> : null}
                 </Pressable>
                 {secOpen ? items.map((h) => {
                   const shown = searching || open === h.title;
