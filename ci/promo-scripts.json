@@ -391,10 +391,31 @@
     "So pick up a book and read it.",
     "Then make a book of your own, and join the conversation.",
     "Coro, books you make together."
+   ],
+   "done": true
+  },
+  "quick-peek-mo": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lines": [
+    "Every Coro book opens like a real one.",
+    "Turn the page, and the story begins.",
+    "The words light up as they’re read aloud, so little readers can follow along.",
+    "Pick who reads, and how it looks. Every page is yours to explore.",
+    "Turn it sideways for a bigger picture.",
+    "Then make a book of your own. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Books you make together."
    ]
   }
  },
  "_only": [
-  "ad-love-of-books-mo-4"
+  "quick-peek-mo"
  ]
 }
