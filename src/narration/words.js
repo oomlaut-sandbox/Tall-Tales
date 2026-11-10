@@ -1619,6 +1619,12 @@ export const WORDS = {
 };
 
 export const PARTS = {
+  lily: {
+  },
+  gregory: {
+  },
+  spuds: {
+  },
 };
 
 // Learn to Read words in the translated books, by voice and language.
