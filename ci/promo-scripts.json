@@ -428,10 +428,120 @@
    },
    "lines": [
     "Turn it sideways, and it looks more like a traditional book."
+   ],
+   "done": true
+  },
+  "quick-peek-mo-de": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lang": "de",
+   "lines": [
+    "Jedes Coro-Buch öffnet sich wie ein echtes.",
+    "Blättere um, und die Geschichte beginnt.",
+    "Die Wörter leuchten auf, während sie vorgelesen werden, so können kleine Leser mitlesen.",
+    "Such dir aus, wer vorliest und wie es aussieht. Jede Seite gehört dir zum Entdecken.",
+    "Dreh es zur Seite, und es sieht eher aus wie ein klassisches Buch.",
+    "Und dann mach dein eigenes Buch. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Bücher, die ihr zusammen macht."
+   ]
+  },
+  "quick-peek-mo-fr": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lang": "fr",
+   "lines": [
+    "Chaque livre Coro s’ouvre comme un vrai.",
+    "Tourne la page, et l’histoire commence.",
+    "Les mots s’illuminent pendant la lecture, pour que les petits lecteurs puissent suivre.",
+    "Choisis qui lit, et l’apparence du livre. Chaque page est à toi d’explorer.",
+    "Tourne-le sur le côté, et il ressemble davantage à un livre traditionnel.",
+    "Puis crée ton propre livre. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Des livres que l’on fait ensemble."
+   ]
+  },
+  "quick-peek-mo-es": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lang": "es",
+   "lines": [
+    "Cada libro de Coro se abre como uno de verdad.",
+    "Pasa la página y empieza la historia.",
+    "Las palabras se iluminan mientras se leen en voz alta, para que los pequeños lectores puedan seguirlas.",
+    "Elige quién lee y cómo se ve. Cada página es tuya para explorar.",
+    "Gíralo de lado y se parecerá más a un libro tradicional.",
+    "Luego haz tu propio libro. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Libros que hacéis juntos."
+   ]
+  },
+  "quick-peek-mo-ja": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lang": "ja",
+   "lines": [
+    "コロの本は、ほんものの本のようにひらきます。",
+    "ページをめくると、おはなしがはじまります。",
+    "よみあげることばがひかるので、ちいさな読者もいっしょによめます。",
+    "だれがよむか、どんな見た目にするかをえらべます。どのページも、じゆうにたのしめます。",
+    "よこにすると、もっとふつうの本のようになります。",
+    "そして、じぶんだけの本をつくろう。<break time=\"0.8s\" /> コロ。<break time=\"0.5s\" /> いっしょにつくるえほん。"
+   ]
+  },
+  "quick-peek-mo-ar": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lang": "ar",
+   "lines": [
+    "كل كتاب من Coro يُفتح مثل كتاب حقيقي.",
+    "اقلب الصفحة، فتبدأ الحكاية.",
+    "تُضيء الكلمات وهي تُقرأ بصوت عالٍ، ليتابع القرّاء الصغار معها.",
+    "اختر من يقرأ، وكيف يبدو الكتاب. كل صفحة لك لتستكشفها.",
+    "أدِره جانبيًا، فيبدو أكثر شبهًا بالكتاب التقليدي.",
+    "ثم اصنع كتابك الخاص. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> كتب تصنعونها معًا."
    ]
   }
  },
  "_only": [
-  "quick-peek-mo-sideways"
+  "quick-peek-mo-de",
+  "quick-peek-mo-fr",
+  "quick-peek-mo-es",
+  "quick-peek-mo-ja",
+  "quick-peek-mo-ar"
  ]
 }
