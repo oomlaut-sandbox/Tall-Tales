@@ -298,7 +298,7 @@ export default function Folder({ narrator = 'lily', onClose, toast, canSend = tr
       ) : null}
       {/* drawing on a sheet: the drawing tools, over everything */}
       {drawOn ? (
-        <DrawEditor insets={insets} photo={drawOn.bg} strokes={drawOn.strokes} title={t('Drawing')} draftKey={drawOn.id ? `sheet:${drawOn.id}` : 'sheet:new'} onDone={drawDone} />
+        <DrawEditor insets={insets} photo={drawOn.bg} strokes={drawOn.strokes} title={t('Drawing')} draftKey={drawOn.id ? `sheet:${drawOn.id}` : 'sheet:new'} onDone={drawDone} onCancel={() => setDrawOn(null)} />
       ) : null}
       <ParentGate visible={!!sendGate} reason={t('Sending a sheet opens your phone’s messages and email.')} onCancel={() => setSendGate(false)}
         onPass={async () => {

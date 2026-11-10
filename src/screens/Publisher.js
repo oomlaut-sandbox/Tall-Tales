@@ -1746,6 +1746,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
       {drawFor ? (
         <DrawEditor key={drawStart ? 'photo' : 'plain'} strokes={drawStart || undefined} insets={insets} draftKey={`book:${draft.id}:${drawFor}:${drawFor === 'cover' ? 0 : i}`} title={drawFor === 'cover' ? tr('Drawing · Cover') : tr('Drawing · Page {n}', { n: i + 1 })}
           onDone={(strokes) => { const t = drawFor; setDrawFor(null); setDrawStart(null); placeDrawing(t, strokes); }}
+          onCancel={() => { setDrawFor(null); setDrawStart(null); }}
           onNext={async (strokes) => { // Next page: save the drawing, then on to the next page (a new one after the last)
             const t = drawFor; setDrawFor(null); setDrawStart(null); await placeDrawing(t, strokes);
             if (t === 'cover') { finishCover(); return; }

@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { colors, fonts, MAX_WIDTH } from '../theme';
-import { Bar, Burger, DoneTick, Panel, Toast, barGeo, ChoiceLabel } from '../components/Chrome';
+import { Bar, Burger, ConfirmBox, DoneTick, Panel, Toast, barGeo, ChoiceLabel } from '../components/Chrome';
 import { keepFile, loadJSON, saveJSON } from '../storage';
 import { Fade } from '../components/PageView';
 import { Spine, bookLayout } from '../components/BookFrame';
@@ -814,6 +814,7 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
         <DrawEditor insets={insets} photo={page.kind === 'sketch' ? null : page.uri} strokes={drawing === 'bottom' ? page.strokes2 || [] : page.strokes}
           title={page.kind === 'sketch' ? t('Sketch · Page {n}', { n: i + 1 }) : t('Drawing · Page {n}', { n: i + 1 })} draftKey={`notes:${i}:${drawing}`}
           onDone={(strokes) => { update(drawing === 'bottom' ? { strokes2: strokes } : { strokes }); setDrawing(false); if (strokes.length) markFirst('firstDrawing'); }}
+          onCancel={() => setDrawing(false)}
           onNext={(strokes) => { update(drawing === 'bottom' ? { strokes2: strokes } : { strokes }); setDrawing(false); if (strokes.length) markFirst('firstDrawing'); setTimeout(next, 350); }} />
       ) : null}
     </View>
@@ -1178,7 +1179,7 @@ const sizeFromV = (tool, v) => {
   if (tool === 'smudge') return 0.008 + k * 0.08;
   return 0.0025 + k * 0.06; // pencil, fountain pen, watercolour
 };
-export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone, onNext, draftKey }) {
+export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone, onNext, onCancel, draftKey }) {
   useHideBack(); // no back button over the drawing editor (Jörg, 27 Oct 2026)
   const t = useT();
   const { width: winW, height: winH } = useWindowDimensions();
@@ -1225,6 +1226,7 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
   const [layer, setLayer] = useState(2); // Layers: the one being drawn on (1 bottom to 4 top); a drawing opens on layer 2 (Jörg, 28 Oct 2026)
   // the green tick (Jörg, 28 Oct 2026): 'Print or share your drawing now, or save and start the next page?'
   const [doneAsk, setDoneAsk] = useState(false);
+  const [leaveAsk, setLeaveAsk] = useState(false); // Cancel: leave without saving, after asking
   const [outFor, setOutFor] = useState(null); // 'print' | 'share', behind the grown-up question
   const [outBusy, setOutBusy] = useState(false);
   const [outErr, toastHere] = useState(null);
@@ -1509,10 +1511,17 @@ export function DrawEditor({ insets, tall, photo, strokes: start, title, onDone,
           <Text style={[styles.choiceTitle, { lineHeight: 28 }]}>{t('Do you want to print or share your drawing now, or save it and close?')}</Text>
           <Pressable disabled={outBusy} onPress={() => setOutFor('share')} style={[styles.choiceBtn, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.share} text={t('Share')} style={styles.choiceBtnText} /></Pressable>
           <Pressable disabled={outBusy} onPress={() => setOutFor('print')} style={[styles.choiceBtn, outBusy && { opacity: 0.5 }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.print} text={t('Print')} style={styles.choiceBtnText} /></Pressable>
-          <Pressable onPress={() => setDoneAsk(false)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon="cancel" text={t('Cancel')} style={styles.choiceBtnText} /></Pressable>
+          {/* Keep drawing goes back to the page; Cancel leaves without saving, after asking (Jörg, 9 Nov 2026) */}
+          <Pressable onPress={() => setDoneAsk(false)} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={t('Keep drawing')} style={styles.choiceBtnText} /></Pressable>
+          <Pressable onPress={() => { setDoneAsk(false); setLeaveAsk(true); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon="cancel" text={t('Cancel')} style={styles.choiceBtnText} /></Pressable>
           <Pressable onPress={() => { setDoneAsk(false); dropDraft(); onDone(strokes); }} style={[styles.choiceBtn, { backgroundColor: colors.green, marginTop: 8 }]} accessibilityRole="button"><ChoiceLabel icon={SAVE_ICON} text={t('Save and close')} style={styles.choiceBtnText} /></Pressable>{/* (saves the drawing and closes the drawing tools: Jörg, 31 Oct 2026) */}
         </View>
       </View>
+    ) : null}
+    {leaveAsk ? (
+      <ConfirmBox title={t('Are you sure you want to leave?')} message={t('Your drawing will not be saved.')} confirm={t('Leave')} cancel={t('Keep drawing')}
+        onCancel={() => setLeaveAsk(false)}
+        onConfirm={() => { setLeaveAsk(false); dropDraft(); if (onCancel) onCancel(); else onDone(start || []); }} />
     ) : null}
     <ParentGate visible={!!outFor} reason={outFor === 'print' ? t('Printing opens your phone’s print options.') : t('Sharing opens your phone’s messages and email.')}
       onPass={() => { const w = outFor; setOutFor(null); setTimeout(() => sendOut(w), 250); }} onCancel={() => setOutFor(null)} />

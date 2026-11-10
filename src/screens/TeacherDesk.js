@@ -427,7 +427,7 @@ export default function TeacherDesk({ onManage, u, openMenu, toast, stories, onL
       {/* drawing the sheet: the drawing tools, over the desk */}
       {drawOn ? (
         <DrawEditor insets={insets} photo={drawOn.bg} strokes={[]} title={t('A sheet for the class')} draftKey="teacher:sheet"
-          onDone={(strokes) => { const d = drawOn; setDrawOn(null); if ((strokes || []).some((x) => !x.e)) setMade({ strokes, bg: d.bg }); }} />
+          onDone={(strokes) => { const d = drawOn; setDrawOn(null); if ((strokes || []).some((x) => !x.e)) setMade({ strokes, bg: d.bg }); }} onCancel={() => setDrawOn(null)} />
       ) : null}
     </WithBar>
   );
