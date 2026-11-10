@@ -450,7 +450,8 @@
     "Such dir aus, wer vorliest und wie es aussieht. Jede Seite gehört dir zum Entdecken.",
     "Dreh es zur Seite, und es sieht eher aus wie ein klassisches Buch.",
     "Und dann mach dein eigenes Buch. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Bücher, die ihr zusammen macht."
-   ]
+   ],
+   "done": true
   },
   "quick-peek-mo-fr": {
    "voiceFind": "spuds",
@@ -471,7 +472,8 @@
     "Choisis qui lit, et l’apparence du livre. Chaque page est à toi d’explorer.",
     "Tourne-le sur le côté, et il ressemble davantage à un livre traditionnel.",
     "Puis crée ton propre livre. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Des livres que l’on fait ensemble."
-   ]
+   ],
+   "done": true
   },
   "quick-peek-mo-es": {
    "voiceFind": "spuds",
@@ -492,7 +494,8 @@
     "Elige quién lee y cómo se ve. Cada página es tuya para explorar.",
     "Gíralo de lado y se parecerá más a un libro tradicional.",
     "Luego haz tu propio libro. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Libros que hacéis juntos."
-   ]
+   ],
+   "done": true
   },
   "quick-peek-mo-ja": {
    "voiceFind": "spuds",
@@ -513,7 +516,8 @@
     "だれがよむか、どんな見た目にするかをえらべます。どのページも、じゆうにたのしめます。",
     "よこにすると、もっとふつうの本のようになります。",
     "そして、じぶんだけの本をつくろう。<break time=\"0.8s\" /> コロ。<break time=\"0.5s\" /> いっしょにつくるえほん。"
-   ]
+   ],
+   "done": true
   },
   "quick-peek-mo-ar": {
    "voiceFind": "spuds",
@@ -534,14 +538,33 @@
     "اختر من يقرأ، وكيف يبدو الكتاب. كل صفحة لك لتستكشفها.",
     "أدِره جانبيًا، فيبدو أكثر شبهًا بالكتاب التقليدي.",
     "ثم اصنع كتابك الخاص. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> كتب تصنعونها معًا."
+   ],
+   "done": true
+  },
+  "goodnight-garden-mo": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lines": [
+    "Every Coro book opens like a real one.",
+    "Turn the page, and the story begins.",
+    "The words light up as they’re read aloud, so little readers can follow along.",
+    "Add soothing sounds, like crickets, rain or a music box.",
+    "At bedtime, the amber light makes the pages soft and warm.",
+    "Turn it sideways, and it looks more like a traditional book.",
+    "Record and listen to the story in your own voice, or that of a loved one. You’ll treasure these books for years to come.",
+    "Then make a book of your own. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Books you make together."
    ]
   }
  },
  "_only": [
-  "quick-peek-mo-de",
-  "quick-peek-mo-fr",
-  "quick-peek-mo-es",
-  "quick-peek-mo-ja",
-  "quick-peek-mo-ar"
+  "goodnight-garden-mo"
  ]
 }
