@@ -649,13 +649,8 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
   const [coverTip, setCoverTip] = useState(false); // the 'Tap the title…' bubble
   const [drawTip, setDrawTip] = useState(false); // a new book: 'Pssst…' about photographing paper drawings (once per launch)
   const drawTipShown = useRef(false);
-  const tourAsked = useRef(false);
-  useEffect(() => {
-    if (!aboutOpen || tourAsked.current) return undefined; // (once: not again when Back returns here)
-    let on = true;
-    const tm = setTimeout(() => { loadJSON('tourAsk', {}).then((x) => { if (on && !(x && x.off) && hintsAllowed()) { tourAsked.current = true; setTourAsk(true); } }).catch(() => {}); }, 1000);
-    return () => { on = false; clearTimeout(tm); setTourAsk(false); };
-  }, [aboutOpen]);
+  // the 'quick peek?' box no longer comes up by itself: a ? at the bottom right opens it (Jörg, 10 Nov 2026)
+  useEffect(() => { if (!aboutOpen) setTourAsk(false); }, [aboutOpen]);
   // Upload Images: a step of its own right after the cover of a new book (Jörg, 2 Nov 2026; was the Quick Book bubble)
   const [uploadOpen, setUploadOpen] = useState(false);
   useEffect(() => {
@@ -1397,6 +1392,11 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
           <DeskFelt spot="publisher-about" overlay />
           <AboutPage tr={tr} insets={insets} onSkip={() => setAboutOpen(false)} onQuick={null}
             onNext={({ about, aboutWords, title }) => { setDraft((d) => ({ ...d, about, aboutWords, title: d.title.trim() ? d.title : title })); setAboutOpen(false); }} />
+          {/* ? : what a Coro book looks like (the quick peek), only when asked for (Jörg, 10 Nov 2026) */}
+          <Pressable onPress={() => setTourAsk(true)} hitSlop={10} accessibilityRole="button" accessibilityLabel={tr('What does a Coro book look like?')}
+            style={{ position: 'absolute', right: 24, bottom: 28, width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 22 }}>?</Text>
+          </Pressable>
         </View>
       ) : null}
       {tourPlay ? <TourVideo tr={tr} onClose={() => setTourPlay(false)} /> : null}
@@ -1406,25 +1406,19 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
       {saveTip && !editing && !drawFor && !photoEdit && !coverOpen && !tourPlay ? <Toast hint message={tr('Your work saves as you go. Find your book again in My Workspace, under My Books in Progress.')} ms={0}
         check={tr('Don’t show this message again')} button={tr('Keep going')} onDismiss={(ticked) => { setSaveTip(false); if (ticked) saveJSON('saveTip', { off: true }); }} /> : null}
       {tourAsk && aboutOpen ? (
-        // 'Want a quick little tour?': a large white bubble over What's your book about? (Jörg, 27 Oct 2026)
+        // 'Want a quick little tour?': a grey bubble over What's your book about?, opened by the ? (Jörg, 27 Oct, 10 Nov 2026)
         <View style={[StyleSheet.absoluteFill, { zIndex: 65, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }]}>
           <View style={{ width: '100%', maxWidth: 460 }}>
-            <View style={{ backgroundColor: 'rgba(255,255,255,0.92)' /* a touch of the felt shows through (Jörg, 8 Nov 2026) */, borderRadius: 26, paddingHorizontal: 26, paddingTop: 30, paddingBottom: 30 }}>
-              <Text style={{ color: '#1f1f1f', fontFamily: 'EBGaramond_500Medium', fontSize: 23, lineHeight: 30, marginTop: 10, marginBottom: 10 }}>{tr('Do you know what a Coro book looks and feels like? Want to have a quick peek?')}</Text>
+            <View style={{ backgroundColor: '#3a3a3a' /* grey, with white words (Jörg, 10 Nov 2026) */, borderRadius: 26, paddingHorizontal: 26, paddingTop: 30, paddingBottom: 30 }}>
+              <Text style={{ color: colors.white, fontFamily: 'EBGaramond_500Medium', fontSize: 23, lineHeight: 30, marginTop: 10, marginBottom: 10 }}>{tr('Do you know what a Coro book looks and feels like? Want to have a quick peek?')}</Text>
               <View style={{ marginTop: 16, marginBottom: 10, borderRadius: 4 }}><Image source={TOUR_SPREAD} resizeMode="contain" style={{ width: Math.min(460, winW - 40) - 48, height: (Math.min(460, winW - 40) - 48) * 449 / 900, borderRadius: 4 }} accessibilityIgnoresInvertColors /></View>
-              <Pressable onPress={() => setTourOff((x) => !x)} accessibilityRole="checkbox" accessibilityState={{ checked: tourOff }} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 26 }}>
-                <View style={{ width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: '#555', backgroundColor: tourOff ? '#1f1f1f' : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-                  {tourOff ? <Text style={{ color: colors.white, fontSize: 14, lineHeight: 16, fontFamily: fonts.uiBold }}>✓</Text> : null}
-                </View>
-                <Text style={{ color: '#3a3a3a', fontFamily: fonts.ui, fontSize: 15, flexShrink: 1 }}>{tr('Don’t show this message again')}</Text>
-              </Pressable>
-              <View style={{ flexDirection: 'row', gap: 10, marginTop: 28, justifyContent: 'flex-end' }}>
-                <Pressable onPress={() => closeTour(false)} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: '#d6d6d6', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: '#1f1f1f', fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('No thanks')}</Text></Pressable>
+              <View style={{ flexDirection: 'row', gap: 10, marginTop: 24, justifyContent: 'flex-end' }}>
+                <Pressable onPress={() => closeTour(false)} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: '#555555', alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('No thanks')}</Text></Pressable>
                 <Pressable onPress={() => closeTour(true)} style={{ height: 42, borderRadius: 21, paddingHorizontal: 20, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button"><Text style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 }}>{tr('Take a look')}</Text></Pressable>
               </View>
             </View>
             {/* the speech bubble's point */}
-            <View style={{ marginLeft: '14%', width: 0, height: 0, borderTopWidth: 22, borderRightWidth: 22, borderTopColor: 'rgba(255,255,255,0.92)', borderRightColor: 'transparent' }} />
+            <View style={{ alignSelf: 'flex-end', marginRight: '10%', width: 0, height: 0, borderTopWidth: 22, borderLeftWidth: 22, borderTopColor: '#3a3a3a', borderLeftColor: 'transparent' }} />
           </View>
         </View>
       ) : null}
