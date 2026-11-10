@@ -23,6 +23,7 @@ import { Spine, bookLayout } from '../components/BookFrame';
 import { DESK_FELT, DeskFelt, DESK_BG, IS_TABLET } from '../look';
 import ParentGate from '../components/ParentGate';
 import { shareSheet } from '../sheetShare';
+import { activeProfile } from '../profiles';
 import { LiveInk, StrokesView, colourAt, liveIsQuick, onBlendTrouble, pagePixels } from '../components/Strokes';
 import { EarArt } from '../components/Ear';
 import { FlapPeel, snapshot, supportsCurl } from '../components/Curl';
@@ -777,7 +778,8 @@ export default function Notebook({ u, openMenu, toast, onDone, from }) {
           const r = outRange || { from: 0, to: pages.length - 1 };
           if (kind === 'sheet') {
             clearTimeout(timer.current); if (latest.current) await saveNotebook(latest.current);
-            const who = name || t('a friend');
+            // (the reader's profile name: there was no `name` here, so Send a sheet stopped before it began: 9 Nov 2026)
+            const who = (activeProfile() || {}).name || t('a friend');
             try { await shareSheet(pages[r.from], who, t('A sheet for you from {name}. Open the file in Coro to put it in Things to share.', { name: who })); }
             catch (e) { toast(t('That didn’t work. Try again.')); }
             return;
