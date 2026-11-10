@@ -561,10 +561,36 @@
     "Turn it sideways, and it looks more like a traditional book.",
     "Record and listen to the story in your own voice, or that of a loved one. You’ll treasure these books for years to come.",
     "Then make a book of your own. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Books you make together."
+   ],
+   "done": true
+  },
+  "goodnight-garden-mo-2": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lines": [
+    "Every Coro book opens like a real one, right from your library.",
+    "Turn the page, and the story begins.",
+    "The words light up as they’re read aloud, so little readers can follow along.",
+    "Add soothing sounds, like crickets, rain or a music box, and let the garden come alive.",
+    "At bedtime, the amber light makes the pages soft and warm, and easy on sleepy eyes.",
+    "Turn it sideways, and it looks more like a traditional book.",
+    "Share your books with family and friends, near and far. They can even add their own voices.",
+    "Record and listen to the story in your own voice, or that of a loved one. You’ll treasure these books for years to come.",
+    "In the classroom, make a book together. Every student adds a page, and it all comes together as one class book.",
+    "Because the best stories are the ones we tell together.",
+    "So make a book of your own. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Books you make together."
    ]
   }
  },
  "_only": [
-  "goodnight-garden-mo"
+  "goodnight-garden-mo-2"
  ]
 }
