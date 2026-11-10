@@ -708,10 +708,10 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
   const coverYes = () => {
     setCoverAsk(false); setCoverTitling(true);
     setCover({ ...cover, title: { text: draft.title.trim() || tr('My Story'), x: 0.5, y: 0.2, size: 0.11, color: '#ffffff', font: 'serif' } }); // white, in the serif, to start with (Jörg, 10 Nov 2026; was dark red)
-    if (cover && cover.uri) autoTitle(cover.uri, 0.2); // (dark red instead when the picture is light there)
+    if (cover && cover.uri) autoTitle(cover.uri, 0.2); // (charcoal instead when the picture is light there)
   };
   const setCoverTitle = (patch) => setDraft((d) => ({ ...d, cover: { ...d.cover, title: { ...d.cover.title, ...patch } } }));
-  // (1 Nov 2026, from a tester) until a colour is picked, the title takes white or the dark red, whichever stands out
+  // (1 Nov 2026, from a tester) until a colour is picked, the title takes white or charcoal, whichever stands out
   // from the picture where the title sits (the band of the picture around it, light or dark)
   const autoTitle = async (uri, y) => {
     try {
@@ -724,7 +724,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
         sum += (0.2126 * d[k] + 0.7152 * d[k + 1] + 0.0722 * d[k + 2]) / 255; n += 1;
       }
       const L = n ? sum / n : 1;
-      setDraft((d) => (d.cover && d.cover.title && !d.cover.title.colorSet ? { ...d, cover: { ...d.cover, title: { ...d.cover.title, color: L < 0.55 ? '#ffffff' : '#7a1414' } } } : d));
+      setDraft((d) => (d.cover && d.cover.title && !d.cover.title.colorSet ? { ...d, cover: { ...d.cover, title: { ...d.cover.title, color: L < 0.55 ? '#ffffff' : '#36393b' /* charcoal (Jörg, 10 Nov 2026; was dark red) */ } } } : d));
     } catch (e) {}
   };
   // dragging the title around the square
