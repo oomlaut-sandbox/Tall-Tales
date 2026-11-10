@@ -1045,6 +1045,7 @@ const T = {
   'Fireside fiddle': { de: 'Geige am Feuer', fr: 'Violon au coin du feu', es: 'Violín junto al fuego', ja: 'ひの そばの バイオリン', ar: 'كمان بجانب النار' },
   'Wooden flute': { de: 'Holzflöte', fr: 'Flûte en bois', es: 'Flauta de madera', ja: '木の フルート', ar: 'ناي خشبي' },
   'Evening guitar': { de: 'Abendgitarre', fr: 'Guitare du soir', es: 'Guitarra al anochecer', ja: 'ゆうぐれの ギター', ar: 'غيتار المساء' },
+  'Select to edit and share': { de: 'Auswählen zum Bearbeiten und Teilen', fr: 'Sélectionner pour modifier et partager', es: 'Seleccionar para editar y compartir', ja: 'えらんで へんしゅう・シェア', ar: 'حدّد للتعديل والمشاركة' },
   'Upload Images': { de: 'Bilder hochladen', fr: 'Importer des images', es: 'Subir imágenes', ja: 'えを いれる', ar: 'رفع الصور' },
   'Choose up to {n} pictures from your photos. Coro puts them into a book, and you just add the words.': { de: 'Wähle bis zu {n} Bilder aus deinen Fotos. Coro macht daraus ein Buch, und du schreibst nur noch die Wörter dazu.', fr: 'Choisis jusqu’à {n} images dans tes photos. Coro en fait un livre, et tu n’as plus qu’à ajouter les mots.', es: 'Elige hasta {n} imágenes de tus fotos. Coro las pone en un libro, y tú solo añades las palabras.', ja: 'しゃしんから{n}まいまで えをえらんでね。Coroが 本にするから、あとは ことばを かくだけ。', ar: "اختر حتى {n} صورة من صورك. يضعها Coro في كتاب، وما عليك إلا إضافة الكلمات." },
   'How should the pages go?': { de: 'Wie sollen die Seiten aussehen?', fr: 'Comment ranger les pages ?', es: '¿Cómo van las páginas?', ja: 'ページは どうする？', ar: "كيف تكون الصفحات؟" },

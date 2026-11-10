@@ -371,7 +371,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
           <View style={{ flex: 1 }} />
           {/* Select: in the bottom right corner of the bar (not when the parental controls turn sharing off) */}
           {/* Select: an icon (a circle with a tick), so it fits the sideways bar in every language */}
-          {controls.sharing && (!ws || wip.length) ? <Pressable onPress={() => setSelecting(true)} hitSlop={12} style={[styles.barBtn, { paddingHorizontal: 4 }]} accessibilityRole="button" accessibilityLabel={t('Select')}>
+          {controls.sharing && (!ws || wip.length) ? <Pressable onPress={() => setSelecting(true)} hitSlop={12} style={[styles.barBtn, { paddingHorizontal: 4 }]} accessibilityRole="button" accessibilityLabel={t('Select to edit and share') /* (Jörg, 10 Nov 2026: iOS shows it when the button is held) */}>
             <Image source={SELECT_ICON} style={{ width: 29, height: 29, tintColor: colors.white }} resizeMode="contain" />
           </Pressable> : null}
         </Bar>
