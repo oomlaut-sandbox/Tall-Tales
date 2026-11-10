@@ -6,8 +6,14 @@ import { Animated, Easing, Pressable, StyleSheet, Text, View, useWindowDimension
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { colors, fonts } from '../theme';
+import { useLang } from '../i18n';
 
-const CLIP = require('../../assets/tour.mp4'); // 540 x 1174, 36 seconds (the status bar blacked out, where the island sits; Jörg's new recording, 10 Nov 2026)
+// Jörg's recording with Mo telling what happens, and captions low in the picture, one film per language
+// (10 Nov 2026): 540 x 1174, 40 to 52 seconds (the status bar blacked out, where the island sits)
+const CLIPS = {
+  en: require('../../assets/videos/quick-peek-en.mp4'), de: require('../../assets/videos/quick-peek-de.mp4'), fr: require('../../assets/videos/quick-peek-fr.mp4'),
+  es: require('../../assets/videos/quick-peek-es.mp4'), ja: require('../../assets/videos/quick-peek-ja.mp4'), ar: require('../../assets/videos/quick-peek-ar.mp4'),
+};
 const AR = 540 / 1174;
 
 export default function TourVideo({ onClose, tr }) {
@@ -16,12 +22,13 @@ export default function TourVideo({ onClose, tr }) {
   const [ended, setEnded] = useState(false);
   const a = useRef(new Animated.Value(0)).current;
   const btn = useRef(new Animated.Value(0)).current;
-  const player = useVideoPlayer(CLIP, (p) => { p.loop = false; p.muted = true; try { p.audioMixingMode = 'mixWithOthers'; } catch (e) {} p.play(); });
+  const lang = useLang();
+  const player = useVideoPlayer(CLIPS[lang] || CLIPS.en, (p) => { p.loop = false; p.muted = false; p.play(); }); // with Mo's voice (Jörg, 10 Nov 2026)
   useEffect(() => {
     Animated.timing(a, { toValue: 1, duration: 220, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
     let sub = null;
     try { sub = player.addListener('playToEnd', () => setEnded(true)); } catch (e) {}
-    const safety = setTimeout(() => setEnded(true), 40000); // never without a way out
+    const safety = setTimeout(() => setEnded(true), 60000); // never without a way out
     return () => { clearTimeout(safety); try { sub && sub.remove(); } catch (e) {} try { player.pause(); } catch (e) {} };
   }, [player]);
   useEffect(() => { if (ended) Animated.timing(btn, { toValue: 1, duration: 260, useNativeDriver: true }).start(); }, [ended]);
