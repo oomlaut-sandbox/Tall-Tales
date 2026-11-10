@@ -1,14 +1,15 @@
 // The Abc sheet in each language: the letters (or, in Japanese, the hiragana) and what Fatima says for each one.
 // [shown, key (the audio file's name), what's said, the word (for the phone's own voice, until the audio is made)]
-// English says the sound too ("B… buh… bear."); the other languages say the letter and a word that starts with it.
+// Every language says the letter and a word that starts with it. (English said the sound too, "B… buh… bear.", but
+// the voice got some of the sounds wrong: now the letter's name, a pause, and the word, as in Otter Alphabet: Jörg, 10 Nov 2026.)
 const en = [
-  ['A', 'a', 'A… ah… apple.', 'apple'], ['B', 'b', 'B… buh… bear.', 'bear'], ['C', 'c', 'C… kuh… cat.', 'cat'], ['D', 'd', 'D… duh… dog.', 'dog'],
-  ['E', 'e', 'E… eh… egg.', 'egg'], ['F', 'f', 'F… fff… fish.', 'fish'], ['G', 'g', 'G… guh… goat.', 'goat'], ['H', 'h', 'H… hhh… hat.', 'hat'],
-  ['I', 'i', 'I… ih… igloo.', 'igloo'], ['J', 'j', 'J… juh… jam.', 'jam'], ['K', 'k', 'K… kuh… kite.', 'kite'], ['L', 'l', 'L… lll… lion.', 'lion'],
-  ['M', 'm', 'M… mmm… moon.', 'moon'], ['N', 'n', 'N… nnn… nest.', 'nest'], ['O', 'o', 'O… oh… octopus.', 'octopus'], ['P', 'p', 'P… puh… pig.', 'pig'],
-  ['Q', 'q', 'Q… kwuh… queen.', 'queen'], ['R', 'r', 'R… rrr… rabbit.', 'rabbit'], ['S', 's', 'S… sss… sun.', 'sun'], ['T', 't', 'T… tuh… tree.', 'tree'],
-  ['U', 'u', 'U… uh… umbrella.', 'umbrella'], ['V', 'v', 'V… vvv… van.', 'van'], ['W', 'w', 'W… wuh… whale.', 'whale'], ['X', 'x', 'X… ks… fox.', 'fox'],
-  ['Y', 'y', 'Y… yuh… yo-yo.', 'yo-yo'], ['Z', 'z', 'Z… zzz… zebra.', 'zebra'],
+  ['A', 'a', 'A. <break time="0.7s" /> Apple.', 'apple'], ['B', 'b', 'B. <break time="0.7s" /> Bear.', 'bear'], ['C', 'c', 'C. <break time="0.7s" /> Cat.', 'cat'], ['D', 'd', 'D. <break time="0.7s" /> Dog.', 'dog'],
+  ['E', 'e', 'E. <break time="0.7s" /> Egg.', 'egg'], ['F', 'f', 'F. <break time="0.7s" /> Fish.', 'fish'], ['G', 'g', 'G. <break time="0.7s" /> Goat.', 'goat'], ['H', 'h', 'H. <break time="0.7s" /> Hat.', 'hat'],
+  ['I', 'i', 'I. <break time="0.7s" /> Igloo.', 'igloo'], ['J', 'j', 'J. <break time="0.7s" /> Jam.', 'jam'], ['K', 'k', 'K. <break time="0.7s" /> Kite.', 'kite'], ['L', 'l', 'L. <break time="0.7s" /> Lion.', 'lion'],
+  ['M', 'm', 'M. <break time="0.7s" /> Moon.', 'moon'], ['N', 'n', 'N. <break time="0.7s" /> Nest.', 'nest'], ['O', 'o', 'O. <break time="0.7s" /> Octopus.', 'octopus'], ['P', 'p', 'P. <break time="0.7s" /> Pig.', 'pig'],
+  ['Q', 'q', 'Q. <break time="0.7s" /> Queen.', 'queen'], ['R', 'r', 'R. <break time="0.7s" /> Rabbit.', 'rabbit'], ['S', 's', 'S. <break time="0.7s" /> Sun.', 'sun'], ['T', 't', 'T. <break time="0.7s" /> Tree.', 'tree'],
+  ['U', 'u', 'U. <break time="0.7s" /> Umbrella.', 'umbrella'], ['V', 'v', 'V. <break time="0.7s" /> Van.', 'van'], ['W', 'w', 'W. <break time="0.7s" /> Whale.', 'whale'], ['X', 'x', 'X. <break time="0.7s" /> Fox.', 'fox'],
+  ['Y', 'y', 'Y. <break time="0.7s" /> Yo-yo.', 'yo-yo'], ['Z', 'z', 'Z. <break time="0.7s" /> Zebra.', 'zebra'],
 ];
 const de = [
   ['A', 'a', 'A… wie Affe.', 'Affe'], ['Ä', 'ae', 'Ä… wie Ärmel.', 'Ärmel'], ['B', 'b', 'B… wie Ball.', 'Ball'], ['C', 'c', 'C… wie Clown.', 'Clown'],
