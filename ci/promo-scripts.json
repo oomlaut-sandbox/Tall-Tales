@@ -614,7 +614,8 @@
     "Im Klassenzimmer macht ihr gemeinsam ein Buch. Jedes Kind gestaltet eine Seite, und alles wird zu einem Klassenbuch.",
     "Denn die schönsten Geschichten sind die, die wir gemeinsam erzählen.",
     "Und jetzt mach dein eigenes Buch. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Bücher, die ihr zusammen macht."
-   ]
+   ],
+   "done": true
   },
   "goodnight-garden-mo-fr": {
    "voiceFind": "spuds",
@@ -640,7 +641,8 @@
     "En classe, faites un livre ensemble. Chaque élève ajoute une page, et le tout devient un livre de classe.",
     "Parce que les plus belles histoires sont celles qu’on raconte ensemble.",
     "Alors crée ton propre livre. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Des livres que l’on fait ensemble."
-   ]
+   ],
+   "done": true
   },
   "goodnight-garden-mo-es": {
    "voiceFind": "spuds",
@@ -666,7 +668,8 @@
     "En clase, haced un libro juntos. Cada estudiante añade una página, y todo se une en un libro de la clase.",
     "Porque las mejores historias son las que contamos juntos.",
     "Así que haz tu propio libro. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Libros que hacéis juntos."
-   ]
+   ],
+   "done": true
   },
   "goodnight-garden-mo-ja": {
    "voiceFind": "spuds",
@@ -705,7 +708,8 @@
     "きょうしつでは、みんなで1さつの本をつくれます。ひとり1ページずつかいて、クラスの本ができあがります。",
     "いちばんすてきなおはなしは、いっしょにつくるおはなしだから。",
     "さあ、じぶんだけの本をつくろう。<break time=\"0.8s\"/>コロ。<break time=\"0.5s\"/>いっしょにつくるえほん。"
-   ]
+   ],
+   "done": true
   },
   "goodnight-garden-mo-ar": {
    "voiceFind": "spuds",
@@ -731,14 +735,26 @@
     "وفي الصف، اصنعوا كتابًا معًا. يضيف كل طالب صفحة، لتجتمع كلها في كتاب واحد للصف.",
     "لأن أجمل القصص هي التي نرويها معًا.",
     "فاصنع كتابك الخاص. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> كتب تصنعونها معًا."
+   ],
+   "done": true
+  },
+  "quick-peek-short-fatima": {
+   "speed": 0.95,
+   "pause": "0.8s",
+   "split": true,
+   "lines": [
+    "Every Coro book opens like a real one.",
+    "Turn the page, and the story begins.",
+    "The words light up as they’re read aloud, so little readers can follow along.",
+    "Add soothing sounds for bedtime,",
+    "and a warm amber light for sleepy eyes.",
+    "Turn it sideways, and it looks more like a traditional book.",
+    "Record the story in your own voice, or a loved one’s, and share it with family and friends.",
+    "Make a book of your own. <break time=\"0.4s\" /> Coro. <break time=\"0.3s\" /> Books you make together."
    ]
   }
  },
  "_only": [
-  "goodnight-garden-mo-de",
-  "goodnight-garden-mo-fr",
-  "goodnight-garden-mo-es",
-  "goodnight-garden-mo-ja",
-  "goodnight-garden-mo-ar"
+  "quick-peek-short-fatima"
  ]
 }
