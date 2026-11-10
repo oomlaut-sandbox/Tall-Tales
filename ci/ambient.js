@@ -46,6 +46,15 @@ const MUSIC = [
   // three more (Oct 2026): Japanese, ambient, shruti box
   ['japanese-garden', 'Calm traditional Japanese music for bedtime: a slow, gentle koto melody with soft, breathy shakuhachi flute phrases and lots of quiet space, like a peaceful garden at dusk with a little water, tender and simple, instrumental, no drums, no voices.'],
   ['ambient-drift', 'Slow, warm ambient music for falling asleep: soft evolving synth pads, gentle low drones and faint shimmering textures, drifting and weightless like clouds at night, very calm, no melody jumps, no beat, no drums, no voices.'],
+  // four more (Jörg, 10 Nov 2026): a simple violin, a simple flute, another guitar, soothing chanting (two takes each)
+  ['violin-a', 'A simple, slow solo violin lullaby for bedtime: a tender, singing melody played softly with long bowed notes and gentle vibrato, warm and calm, lots of space, no orchestra, no piano, instrumental, no drums.'],
+  ['violin-b', 'A quiet, simple folk violin tune for drifting off to sleep: slow and sweet, soft long notes over a very faint low drone, warm and close, like a fiddler playing gently by the fire, instrumental, no drums.'],
+  ['flute-a', 'A simple, slow wooden flute melody for bedtime: soft, breathy and warm, gentle phrases with long calm pauses, peaceful and tender, solo flute, no orchestra, instrumental, no drums.'],
+  ['flute-b', 'A gentle solo flute lullaby: a simple, slow and sweet melody, soft and airy, with a faint warm hum of strings far underneath, calm and dreamy, instrumental, no drums.'],
+  ['guitar-2a', 'A slow, warm nylon-string classical guitar for a child falling asleep: simple, gentle arpeggios and a soft tender melody, quiet and close, lots of space, instrumental, no drums.'],
+  ['guitar-2b', 'A quiet, simple acoustic guitar lullaby played softly on a porch at night: slow strummed chords and gentle picked notes, warm and cosy, calm and unhurried, instrumental, no drums.'],
+  ['chant-a', 'Soothing, slow wordless chanting for sleep: a small choir of soft, warm voices humming and singing long sustained ooh and aah tones, gentle and peaceful like a quiet monastery at night, no words, no drums, no instruments except a very faint drone.'],
+  ['chant-b', 'A calm, meditative chant: one warm low voice and soft voices humming slow, simple, sustained notes over a gentle drone, peaceful and grounding, very quiet, no words, no lyrics, no drums.'],
   ['shruti-box', 'A meditative shruti box drone for a peaceful bedtime: a warm, breathing reed harmonium drone slowly swelling in and out, with a soft, slow sustained melody on top, grounding and calm, instrumental, no drums, no voices.'],
 ];
 const ONLY = (process.env.ONLY || '').split(',').filter(Boolean);
@@ -71,7 +80,7 @@ const save = async (id, res, kind) => {
   for (const [id, prompt] of MUSIC.filter(([i]) => want(i))) {
     const res = await fetch('https://api.elevenlabs.io/v1/music?output_format=mp3_44100_128', {
       method: 'POST', headers: { 'xi-api-key': KEY, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
-      body: JSON.stringify({ prompt, music_length_ms: 120000, force_instrumental: true }),
+      body: JSON.stringify({ prompt, music_length_ms: 120000, force_instrumental: !id.startsWith('chant') }), // the chants are voices (no words)
     });
     await save(id, res, 'music');
   }
