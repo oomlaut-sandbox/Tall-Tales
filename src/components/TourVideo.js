@@ -1,13 +1,13 @@
 // The quick peek (Jörg, 27 Oct 2026): from the 'Want to have a quick peek?' bubble. The bubble closes and a black
 // glass box opens with Jörg's screen recording of a Coro book playing inside a drawn black phone (shaped like an
-// iPhone), at double speed (the clip itself is made twice as fast). When it ends, a green 'Got it' closes the box.
+// iPhone), at its own speed (Jörg, 10 Nov 2026; it was twice as fast). When it ends, a green 'Got it' closes the box.
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { colors, fonts } from '../theme';
 
-const CLIP = require('../../assets/tour.mp4'); // 540 x 1174, 18 seconds (the status bar blacked out, where the island sits; Jörg's new recording, 10 Nov 2026)
+const CLIP = require('../../assets/tour.mp4'); // 540 x 1174, 36 seconds (the status bar blacked out, where the island sits; Jörg's new recording, 10 Nov 2026)
 const AR = 540 / 1174;
 
 export default function TourVideo({ onClose, tr }) {
@@ -21,7 +21,7 @@ export default function TourVideo({ onClose, tr }) {
     Animated.timing(a, { toValue: 1, duration: 220, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
     let sub = null;
     try { sub = player.addListener('playToEnd', () => setEnded(true)); } catch (e) {}
-    const safety = setTimeout(() => setEnded(true), 22000); // never without a way out
+    const safety = setTimeout(() => setEnded(true), 40000); // never without a way out
     return () => { clearTimeout(safety); try { sub && sub.remove(); } catch (e) {} try { player.pause(); } catch (e) {} };
   }, [player]);
   useEffect(() => { if (ended) Animated.timing(btn, { toValue: 1, duration: 260, useNativeDriver: true }).start(); }, [ended]);
