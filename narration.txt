@@ -1,0 +1,26 @@
+Plan: creator, characters used 118828 of 121000
+Lily: found in your voices as "Lily - Velvety Actress" (premade)
+Lily: 0 word and part clips made, 25 unchanged (25 words, 31 parts)
+Lily: different de: 2 word clips made, 67 unchanged
+Lily: different fr: 2 word clips made, 73 unchanged
+Lily: different es: 2 word clips made, 55 unchanged
+Lily: different ja: 0 word clips made, 41 unchanged
+Lily: different ar: 0 word clips made, 58 unchanged
+Lily: sample unchanged
+Lily: letter q made
+Lily: letter s made
+Lily: letter y made
+Lily: letter z made
+Mo (Spuds Oxley): found in your voices as "Spuds Oxley - Grandpa " (professional)
+Mo (Spuds Oxley): 0 word and part clips made, 25 unchanged (25 words, 31 parts)
+Mo (Spuds Oxley): different de: 2 word clips made, 67 unchanged
+Mo (Spuds Oxley): different fr: 2 word clips made, 73 unchanged
+Mo (Spuds Oxley): different es: 2 word clips made, 55 unchanged
+Mo (Spuds Oxley): different ja: 0 word clips made, 41 unchanged
+Mo (Spuds Oxley): different ar: 0 word clips made, 58 unchanged
+Mo (Spuds Oxley): sample unchanged
+Mo (Spuds Oxley): letter q made
+Mo (Spuds Oxley): letter s made
+Mo (Spuds Oxley): letter y made
+Mo (Spuds Oxley): letter z made
+Done: 0 new, 192 unchanged, 0 failed, 0 characters used this run
