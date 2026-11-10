@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { colors, fonts } from '../theme';
 
-const CLIP = require('../../assets/tour.mp4'); // 540 x 1174, 17 seconds (the status bar blacked out, where the island sits)
+const CLIP = require('../../assets/tour.mp4'); // 540 x 1174, 18 seconds (the status bar blacked out, where the island sits; Jörg's new recording, 10 Nov 2026)
 const AR = 540 / 1174;
 
 export default function TourVideo({ onClose, tr }) {
