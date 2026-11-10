@@ -587,10 +587,158 @@
     "In the classroom, make a book together. Every student adds a page, and it all comes together as one class book.",
     "Because the best stories are the ones we tell together.",
     "So make a book of your own. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Books you make together."
+   ],
+   "done": true
+  },
+  "goodnight-garden-mo-de": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lang": "de",
+   "lines": [
+    "Jedes Coro-Buch öffnet sich wie ein echtes, direkt aus deiner Bibliothek.",
+    "Blättere um, und die Geschichte beginnt.",
+    "Die Wörter leuchten auf, während sie vorgelesen werden, so können kleine Leser mitlesen.",
+    "Füge beruhigende Klänge hinzu, wie Grillen, Regen oder eine Spieluhr, und lass den Garten lebendig werden.",
+    "Zur Schlafenszeit macht das Bernsteinlicht die Seiten weich und warm, sanft für müde Augen.",
+    "Dreh es zur Seite, und es sieht eher aus wie ein klassisches Buch.",
+    "Teile deine Bücher mit Familie und Freunden, nah und fern. Sie können sogar ihre eigenen Stimmen hinzufügen.",
+    "Nimm die Geschichte mit deiner eigenen Stimme auf, oder mit der eines geliebten Menschen. Diese Bücher wirst du noch viele Jahre in Ehren halten.",
+    "Im Klassenzimmer macht ihr gemeinsam ein Buch. Jedes Kind gestaltet eine Seite, und alles wird zu einem Klassenbuch.",
+    "Denn die schönsten Geschichten sind die, die wir gemeinsam erzählen.",
+    "Und jetzt mach dein eigenes Buch. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Bücher, die ihr zusammen macht."
+   ]
+  },
+  "goodnight-garden-mo-fr": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lang": "fr",
+   "lines": [
+    "Chaque livre Coro s’ouvre comme un vrai, directement depuis ta bibliothèque.",
+    "Tourne la page, et l’histoire commence.",
+    "Les mots s’illuminent pendant la lecture, pour que les petits lecteurs puissent suivre.",
+    "Ajoute des sons apaisants, comme des grillons, la pluie ou une boîte à musique, et laisse le jardin prendre vie.",
+    "Au coucher, la lumière ambrée rend les pages douces et chaudes, et repose les yeux fatigués.",
+    "Tourne-le sur le côté, et il ressemble davantage à un livre traditionnel.",
+    "Partage tes livres avec ta famille et tes amis, proches ou lointains. Ils peuvent même y ajouter leur voix.",
+    "Enregistre et écoute l’histoire avec ta propre voix, ou celle d’un être cher. Tu chériras ces livres pendant des années.",
+    "En classe, faites un livre ensemble. Chaque élève ajoute une page, et le tout devient un livre de classe.",
+    "Parce que les plus belles histoires sont celles qu’on raconte ensemble.",
+    "Alors crée ton propre livre. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Des livres que l’on fait ensemble."
+   ]
+  },
+  "goodnight-garden-mo-es": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lang": "es",
+   "lines": [
+    "Cada libro de Coro se abre como uno de verdad, directamente desde tu biblioteca.",
+    "Pasa la página y empieza la historia.",
+    "Las palabras se iluminan mientras se leen en voz alta, para que los pequeños lectores puedan seguirlas.",
+    "Añade sonidos relajantes, como grillos, lluvia o una caja de música, y deja que el jardín cobre vida.",
+    "A la hora de dormir, la luz ámbar vuelve las páginas suaves y cálidas, y descansa los ojos con sueño.",
+    "Gíralo de lado y se parecerá más a un libro tradicional.",
+    "Comparte tus libros con familiares y amigos, cerca o lejos. Incluso pueden añadir sus propias voces.",
+    "Graba y escucha la historia con tu propia voz, o con la de un ser querido. Atesorarás estos libros durante muchos años.",
+    "En clase, haced un libro juntos. Cada estudiante añade una página, y todo se une en un libro de la clase.",
+    "Porque las mejores historias son las que contamos juntos.",
+    "Así que haz tu propio libro. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Libros que hacéis juntos."
+   ]
+  },
+  "goodnight-garden-mo-ja": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lang": "ja",
+   "captions": [
+    "Coro の 本は、本だなから ほんものの 本のように ひらきます。",
+    "ページを めくると、おはなしが はじまります。",
+    "よみあげる ことばが ひかるので、ちいさな 読者も いっしょに よめます。",
+    "コオロギや 雨の音、オルゴールなど、やさしい 音を くわえて、にわを いきいきと させましょう。",
+    "ねる まえは、こはくいろの あかりで ページが やわらかく あたたかく なり、ねむい 目にも やさしいです。",
+    "よこに すると、もっと ふつうの 本のように なります。",
+    "本を かぞくや ともだちと シェアしましょう。ちかくても、とおくても。みんなの こえも くわえられます。",
+    "じぶんの こえや、だいすきな ひとの こえで おはなしを ろくおんして きけます。なんねんも たいせつに したい 本に なります。",
+    "きょうしつでは、みんなで 1さつの 本を つくれます。ひとり 1ページずつ かいて、クラスの 本が できあがります。",
+    "いちばん すてきな おはなしは、いっしょに つくる おはなしだから。",
+    "さあ、じぶんだけの 本を つくろう。<break time=\"0.8s\" /> Coro。<break time=\"0.5s\" /> いっしょに つくる えほん。"
+   ],
+   "lines": [
+    "コロの本は、本だなからほんものの本のようにひらきます。",
+    "ページをめくると、おはなしがはじまります。",
+    "よみあげることばがひかるので、ちいさな読者もいっしょによめます。",
+    "コオロギや雨の音、オルゴールなど、やさしい音をくわえて、にわをいきいきとさせましょう。",
+    "ねるまえは、こはくいろのあかりでページがやわらかくあたたかくなり、ねむい目にもやさしいです。",
+    "よこにすると、もっとふつうの本のようになります。",
+    "本をかぞくやともだちとシェアしましょう。ちかくても、とおくても。みんなのこえもくわえられます。",
+    "じぶんのこえや、だいすきなひとのこえでおはなしをろくおんしてきけます。なんねんもたいせつにしたい本になります。",
+    "きょうしつでは、みんなで1さつの本をつくれます。ひとり1ページずつかいて、クラスの本ができあがります。",
+    "いちばんすてきなおはなしは、いっしょにつくるおはなしだから。",
+    "さあ、じぶんだけの本をつくろう。<break time=\"0.8s\"/>コロ。<break time=\"0.5s\"/>いっしょにつくるえほん。"
+   ]
+  },
+  "goodnight-garden-mo-ar": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lang": "ar",
+   "lines": [
+    "كل كتاب من Coro يُفتح مثل كتاب حقيقي، مباشرة من مكتبتك.",
+    "اقلب الصفحة، فتبدأ الحكاية.",
+    "تُضيء الكلمات وهي تُقرأ بصوت عالٍ، ليتابع القرّاء الصغار معها.",
+    "أضف أصواتًا هادئة، مثل صرير الصراصير أو المطر أو صندوق الموسيقى، ودع الحديقة تنبض بالحياة.",
+    "وقت النوم، يجعل الضوء الكهرماني الصفحات ناعمة ودافئة، ولطيفة على العيون الناعسة.",
+    "أدِره جانبيًا، فيبدو أكثر شبهًا بالكتاب التقليدي.",
+    "شارك كتبك مع العائلة والأصدقاء، قريبين كانوا أم بعيدين. ويمكنهم أيضًا إضافة أصواتهم.",
+    "سجّل القصة واستمع إليها بصوتك أو بصوت من تحب. ستعتز بهذه الكتب لسنوات طويلة.",
+    "وفي الصف، اصنعوا كتابًا معًا. يضيف كل طالب صفحة، لتجتمع كلها في كتاب واحد للصف.",
+    "لأن أجمل القصص هي التي نرويها معًا.",
+    "فاصنع كتابك الخاص. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> كتب تصنعونها معًا."
    ]
   }
  },
  "_only": [
-  "goodnight-garden-mo-2"
+  "goodnight-garden-mo-de",
+  "goodnight-garden-mo-fr",
+  "goodnight-garden-mo-es",
+  "goodnight-garden-mo-ja",
+  "goodnight-garden-mo-ar"
  ]
 }
