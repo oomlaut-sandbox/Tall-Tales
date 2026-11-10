@@ -22,6 +22,10 @@ export const TRACKS = [
   { id: 'dreamy-harp', kind: 'music', name: 'Dreamy harp', src: require('../assets/ambient/dreamy-harp.mp3') },
   { id: 'ambient-drift', kind: 'music', name: 'Night clouds', src: require('../assets/ambient/ambient-drift.mp3') }, // slow ambient pads (ElevenLabs, evened out)
   { id: 'shruti-box', kind: 'music', name: 'Shruti box', src: require('../assets/ambient/shruti-box.mp3') }, // a breathing reed drone (ElevenLabs, evened out)
+  // three more (Jörg, 10 Nov 2026; ElevenLabs, evened out to the others)
+  { id: 'fireside-fiddle', kind: 'music', name: 'Fireside fiddle', src: require('../assets/ambient/fireside-fiddle.mp3') }, // a gentle folk violin over a faint drone
+  { id: 'wooden-flute', kind: 'music', name: 'Wooden flute', src: require('../assets/ambient/wooden-flute.mp3') }, // a breathy solo flute
+  { id: 'evening-guitar', kind: 'music', name: 'Evening guitar', src: require('../assets/ambient/evening-guitar.mp3') }, // a nylon-string guitar
 ];
 // the pieces built into the app (the Store Manager can hide any of them: Jörg, 31 Oct 2026)
 export const BUILTIN_TRACKS = TRACKS.slice();

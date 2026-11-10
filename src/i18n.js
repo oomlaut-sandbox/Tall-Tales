@@ -1041,6 +1041,10 @@ const T = {
   'Your drawing will not be saved.': { de: 'Deine Zeichnung wird nicht gespeichert.', fr: 'Ton dessin ne sera pas enregistré.', es: 'Tu dibujo no se guardará.', ja: 'かいた えは ほぞんされません。', ar: 'لن تُحفظ رسمتك.' },
   'Leave': { de: 'Gehen', fr: 'Partir', es: 'Salir', ja: 'やめる', ar: 'مغادرة' },
   'What does a Coro book look like?': { de: 'Wie sieht ein Coro-Buch aus?', fr: 'À quoi ressemble un livre Coro ?', es: '¿Cómo es un libro de Coro?', ja: 'Coro の 本って どんな 本?', ar: 'كيف يبدو كتاب Coro؟' },
+  // music for the player (Jörg, 10 Nov 2026)
+  'Fireside fiddle': { de: 'Geige am Feuer', fr: 'Violon au coin du feu', es: 'Violín junto al fuego', ja: 'ひの そばの バイオリン', ar: 'كمان بجانب النار' },
+  'Wooden flute': { de: 'Holzflöte', fr: 'Flûte en bois', es: 'Flauta de madera', ja: '木の フルート', ar: 'ناي خشبي' },
+  'Evening guitar': { de: 'Abendgitarre', fr: 'Guitare du soir', es: 'Guitarra al anochecer', ja: 'ゆうぐれの ギター', ar: 'غيتار المساء' },
   'Upload Images': { de: 'Bilder hochladen', fr: 'Importer des images', es: 'Subir imágenes', ja: 'えを いれる', ar: 'رفع الصور' },
   'Choose up to {n} pictures from your photos. Coro puts them into a book, and you just add the words.': { de: 'Wähle bis zu {n} Bilder aus deinen Fotos. Coro macht daraus ein Buch, und du schreibst nur noch die Wörter dazu.', fr: 'Choisis jusqu’à {n} images dans tes photos. Coro en fait un livre, et tu n’as plus qu’à ajouter les mots.', es: 'Elige hasta {n} imágenes de tus fotos. Coro las pone en un libro, y tú solo añades las palabras.', ja: 'しゃしんから{n}まいまで えをえらんでね。Coroが 本にするから、あとは ことばを かくだけ。', ar: "اختر حتى {n} صورة من صورك. يضعها Coro في كتاب، وما عليك إلا إضافة الكلمات." },
   'How should the pages go?': { de: 'Wie sollen die Seiten aussehen?', fr: 'Comment ranger les pages ?', es: '¿Cómo van las páginas?', ja: 'ページは どうする？', ar: "كيف تكون الصفحات؟" },
