@@ -707,8 +707,8 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
   const coverNo = () => { setCover({ ...cover, title: null }); setCoverAsk(false); }; // stay on the cover
   const coverYes = () => {
     setCoverAsk(false); setCoverTitling(true);
-    setCover({ ...cover, title: { text: draft.title.trim() || tr('My Story'), x: 0.5, y: 0.2, size: 0.11, color: '#7a1414', font: 'serif' } }); // dark red, in the serif, to start with (Jörg, 27 Oct 2026; was white)
-    if (cover && cover.uri) autoTitle(cover.uri, 0.2); // (white instead when the picture is dark there)
+    setCover({ ...cover, title: { text: draft.title.trim() || tr('My Story'), x: 0.5, y: 0.2, size: 0.11, color: '#ffffff', font: 'serif' } }); // white, in the serif, to start with (Jörg, 10 Nov 2026; was dark red)
+    if (cover && cover.uri) autoTitle(cover.uri, 0.2); // (dark red instead when the picture is light there)
   };
   const setCoverTitle = (patch) => setDraft((d) => ({ ...d, cover: { ...d.cover, title: { ...d.cover.title, ...patch } } }));
   // (1 Nov 2026, from a tester) until a colour is picked, the title takes white or the dark red, whichever stands out
