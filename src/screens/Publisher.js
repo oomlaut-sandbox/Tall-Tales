@@ -676,12 +676,13 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
   const cover = draft.cover || null;
   const setCover = (c) => setDraft((d) => ({ ...d, cover: c }));
   const openCover = (fromNext) => { coverFromNext.current = fromNext === true; setPageDone(false); setCoverAsk(false); setCoverTitling(!!(cover && cover.title)); setCoverOpen(true); };
+  const usedBy = (ph, uri) => !!(ph && ph.draw && ph.draw.some((x) => x.ph === uri)); // a picture a drawing still uses on one of its layers
   const pickCover = async (source, given) => {
     try {
       const ph = given || await choosePhoto(source);
       if (!ph) return;
-      if (cover && cover.uri) dropLater(cover.uri);
-      if (cover && cover.src && cover.src !== cover.uri) dropLater(cover.src);
+      if (cover && cover.uri && !usedBy(ph, cover.uri)) dropLater(cover.uri);
+      if (cover && cover.src && cover.src !== cover.uri && !usedBy(ph, cover.src)) dropLater(cover.src);
       setCover({ ...ph, title: cover ? cover.title || null : null });
       if (cover && cover.title && !cover.title.colorSet) autoTitle(ph.uri, cover.title.y);
       if (!(cover && cover.title)) setCoverAsk(true);
@@ -786,7 +787,7 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
     try {
       const tmp = await strokesToImage(strokes, 1600);
       const uri = await keepFile(tmp, `stories/${draft.id}`, `draw-${Date.now()}.png`);
-      await placeImage(target, null, { uri, w: 1600, h: 1600 });
+      await placeImage(target, null, { uri, w: 1600, h: 1600, draw: strokes }); // the strokes kept, so it can be drawn on again
     } catch (e) { toast(tr('That drawing couldn’t be saved. Try again.')); }
   };
   // given: a picture already made (a drawing), instead of choosing one
@@ -796,15 +797,15 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
       const ph = given || await choosePhoto(source);
       if (!ph) return;
       if (target === 'page2') {
-        if (page.uri2) dropLater(page.uri2);
-        if (page.src2 && page.src2 !== page.uri2) dropLater(page.src2);
-        update({ uri2: ph.uri, w2: ph.w, h2: ph.h, src2: null, edit2: null });
+        if (page.uri2 && !usedBy(ph, page.uri2)) dropLater(page.uri2);
+        if (page.src2 && page.src2 !== page.uri2 && !usedBy(ph, page.src2)) dropLater(page.src2);
+        update({ uri2: ph.uri, w2: ph.w, h2: ph.h, src2: null, edit2: null, draw2: ph.draw || null });
         sayStep();
         return;
       }
-      if (page.uri) dropLater(page.uri);
-      if (page.src && page.src !== page.uri) dropLater(page.src);
-      update({ ...ph, src: null, edit: null });
+      if (page.uri && !usedBy(ph, page.uri)) dropLater(page.uri);
+      if (page.src && page.src !== page.uri && !usedBy(ph, page.src)) dropLater(page.src);
+      update({ draw: null, ...ph, src: null, edit: null });
       sayStep();
     } catch (e) {
       toast(source === 'camera' ? tr('Couldn’t open the camera.') : tr('Couldn’t open your photos. Check that Coro is allowed to use Photos in Settings.'));
@@ -865,6 +866,15 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
   const photoOf = (t) => (t === 'cover' ? (cover && cover.uri ? { src: cover.src || cover.uri, uri: cover.uri, edit: cover.edit } : null)
     : t === 'page2' ? (page.uri2 ? { src: page.src2 || page.uri2, uri: page.uri2, edit: page.edit2 } : null)
     : (page.uri ? { src: page.src || page.uri, uri: page.uri, edit: page.edit } : null));
+  // a drawing made here: Edit drawing opens it again in the drawing tools (Jörg, 10 Nov 2026). Its strokes when we
+  // kept them; a drawing from before that comes back as a picture on layer 1 to draw over.
+  const drawingOf = (t) => {
+    const cur = photoOf(t);
+    if (!cur) return null;
+    const strokes = t === 'cover' ? cover.draw : t === 'page2' ? page.draw2 : page.draw;
+    if (strokes && strokes.length) return strokes;
+    return /\/draw-\d+\.png$/.test(cur.uri || '') ? [{ ph: cur.uri, ly: 1 }] : null;
+  };
   const photoDone = async (t, out, edit) => {
     setPhotoEdit(null);
     const cur = photoOf(t);
@@ -1703,11 +1713,12 @@ export default function Publisher({ menuOpen = false, u, initial, fontKey, openM
         <Pressable onPress={() => setImgAsk(null)} accessible={false} style={[StyleSheet.absoluteFill, styles.choiceBack]}>{/* (tapping outside: the same as Cancel) */}
           <Pressable onPress={() => {}} accessible={false} style={styles.choice}>
             <Text style={styles.choiceTitle}>{photoOf(imgAsk) ? tr('Picture') : tr('Add a picture')}</Text>
-            {photoOf(imgAsk) ? <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setPhotoEdit(t); }} style={[styles.choiceBtn, { backgroundColor: colors.green }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.crop} text={tr('Edit photo')} style={styles.choiceBtnText} /></Pressable> : null}
+            {drawingOf(imgAsk) ? <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setDrawStart(drawingOf(t)); setDrawFor(t); }} style={[styles.choiceBtn, { backgroundColor: colors.green }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Edit drawing')} style={styles.choiceBtnText} /></Pressable> : null}
+            {photoOf(imgAsk) && !drawingOf(imgAsk) ? <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setPhotoEdit(t); }} style={[styles.choiceBtn, { backgroundColor: colors.green }]} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.crop} text={tr('Edit photo')} style={styles.choiceBtnText} /></Pressable> : null}
             <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); placeImage(t, 'library'); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.photo} text={tr('Choose a picture')} style={styles.choiceBtnText} /></Pressable>
             {/* a photo of a drawing, say; the camera only opens after the grown-up check */}
             <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setCamGate(t); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={'camera'} text={tr('Take a photo')} style={styles.choiceBtnText} /></Pressable>
-            <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setDrawFor(t); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Make a drawing')} style={styles.choiceBtnText} /></Pressable>
+            {!drawingOf(imgAsk) ? <Pressable onPress={() => { const t = imgAsk; setImgAsk(null); setDrawFor(t); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.draw} text={tr('Make a drawing')} style={styles.choiceBtnText} /></Pressable> : null}
             {/* the cover only: just the title on a hardcover (cloth, leather…) of their choice */}
             {imgAsk === 'cover' ? <Pressable onPress={() => { setImgAsk(null); setHardAsk(true); }} style={styles.choiceBtn} accessibilityRole="button"><ChoiceLabel icon={CHOICE_ICONS.text} text={tr('Text only cover')} style={styles.choiceBtnText} /></Pressable> : null}
             <Pressable onPress={() => setImgAsk(null)} style={[styles.choiceBtn, { marginTop: 14 }]} accessibilityRole="button"><ChoiceLabel icon="cancel" text={tr('Cancel')} style={styles.choiceBtnText} /></Pressable>
