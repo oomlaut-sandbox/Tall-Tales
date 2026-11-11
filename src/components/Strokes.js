@@ -169,4 +169,3 @@ export async function drawStampWeb(g, st, px) {
 export function LiveInk() { return null; }
 export const liveIsQuick = () => false;
 
-export const onBlendTrouble = () => {};

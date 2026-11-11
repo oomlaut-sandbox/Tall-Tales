@@ -81,5 +81,4 @@ first. App Store launch: 24 Nov 2026; submit to App Review by about 14 Nov 2026.
 
 ## Before App Review (~14 Nov 2026)
 
-- Remove the temporary test messages: the filmTrouble toast (Splash.js, App.js) and blendTrouble
-  (Strokes.native.js and its hookup in Notebook.js).
+- Done 10 Nov 2026: the temporary test messages (film and blend trouble toasts) are out, and the version is 1.0.0.

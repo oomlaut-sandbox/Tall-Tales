@@ -16,9 +16,8 @@ const CLIP = require('../../assets/splash/coro-splash.mp4');
 // The iPhone keeps the video.
 const BG = '#c9c7c4'; // the light grey felt the clip is filmed on (no dark flash before the first frame)
 
-// why the film didn't show, if it didn't (Jörg, 5 Nov 2026: gone on iPad only, again): App shows it once as a note
-// on the start page. A check for TestFlight: take it out before App Review.
-export let filmTrouble = null;
+// why the film didn't show, if it didn't (kept for debugging; the TestFlight note that showed it is gone: 10 Nov 2026)
+let filmTrouble = null;
 export default function Splash({ onDone }) {
   const { width: W, height: H } = useWindowDimensions();
   const fade = useRef(new Animated.Value(1)).current;

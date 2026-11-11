@@ -105,14 +105,11 @@ function blendFilter(st, w, size) {
   const bounds = Skia.XYWHRect(Math.min(...xs) - pad, Math.min(...ys) - pad, Math.max(...xs) - Math.min(...xs) + 2 * pad, Math.max(...ys) - Math.min(...ys) + 2 * pad);
   return { F, bounds };
 }
-// if the blend can't be made on this phone, say why once (a toast in the drawing editor), and blur instead
+// if the blend can't be made on this phone, it blurs instead (the TestFlight toast that said why is gone: 10 Nov 2026)
 let troubleSeen = false;
-let troubleSay = null;
-export const onBlendTrouble = (f) => { troubleSay = f; };
 function blendTrouble(e, where) {
   if (troubleSeen) return; troubleSeen = true;
   try { console.warn('blend', where, e); } catch (x) {}
-  if (troubleSay) setTimeout(() => troubleSay(`Blend (${where}): ${String((e && e.message) || e).slice(0, 120)}`), 0);
 }
 // draws a blend onto a canvas (the screen's picture, the exported picture)
 function drawBlend(canvas, st, w) {
