@@ -13,6 +13,7 @@ import { withTap } from '../haptics';
 import { playSound } from '../sound';
 import { PaperLetter } from '../components/CoroLetter';
 import PairSets from '../components/PairSets';
+import ParentGate from '../components/ParentGate';
 import { liveUri } from '../storage';
 import { SET_SIZE, loadPairSets, savePairSets } from '../pairSets';
 
@@ -80,6 +81,7 @@ export default function Pairs({ area, toast }) {
   // the pictures in play: Coro's, or one of the family's own sets (a set plays once it has all fifteen)
   const [own, setOwn] = useState({ sets: [], chosen: null });
   const [choosing, setChoosing] = useState(false);
+  const [gate, setGate] = useState(false); // a grown-up says yes before the family's photos come in (Jörg, 11 Nov 2026)
   useEffect(() => { loadPairSets().then((d) => { if (live.current) setOwn(d); }); }, []);
   const mine = own.sets.find((s) => s.id === own.chosen && s.pics.length === SET_SIZE);
   const faces = mine ? mine.pics.map((u) => ({ uri: liveUri(u) })) : FACES;
@@ -143,9 +145,10 @@ export default function Pairs({ area, toast }) {
         <PairSets data={own} coroFaces={FACES} width={W} toast={toast} onClose={() => setChoosing(false)}
           onChange={(d, fresh) => { setOwn(d); savePairSets(d); if (fresh) restart(); }} />
       ) : null}
+      <ParentGate visible={gate} reason={t('Making your own cards uses photos from this phone.')} onCancel={() => setGate(false)} onPass={() => { setGate(false); setChoosing(true); }} />
       {help ? <PaperLetter title="Let’s find the pairs!" paras={LETTER} onClose={() => setHelp(false)} /> : null}
       <View style={styles.choices}>
-        <Pressable onPress={withTap(() => setChoosing(true))} style={styles.chip} accessibilityRole="button">
+        <Pressable onPress={withTap(() => setGate(true))} style={styles.chip} accessibilityRole="button">
           <Image source={ICON_PICTURE} style={styles.chipIcon} resizeMode="contain" />
           <Text style={styles.chipText}>{t('Make your own')}</Text>
         </Pressable>

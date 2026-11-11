@@ -1054,6 +1054,7 @@ const T = {
   'You found them all!': { de: 'Du hast alle gefunden!', fr: 'Tu les as toutes trouvées !', es: '¡Las encontraste todas!', ja: 'ぜんぶ みつけたね!', ar: 'وجدتها كلها!' },
   'Card {n}': { de: 'Karte {n}', fr: 'Carte {n}', es: 'Carta {n}', ja: 'カード {n}', ar: 'البطاقة {n}' },
   // Find the pairs: your own picture sets (Jörg, 11 Nov 2026)
+  'Making your own cards uses photos from this phone.': { de: 'Für eigene Karten werden Fotos von diesem Telefon verwendet.', fr: 'Pour créer tes propres cartes, on utilise des photos de ce téléphone.', es: 'Para crear tus propias cartas se usan fotos de este teléfono.', ja: 'じぶんの カードを つくるには、この スマホの しゃしんを つかいます。', ar: 'لصنع بطاقاتك الخاصة نستخدم صورًا من هذا الهاتف.' },
   'Make your own': { de: 'Eigene Bilder', fr: 'Crée le tien', es: 'Crea el tuyo', ja: 'じぶんで つくる', ar: 'اصنع مجموعتك' },
   'Pictures': { de: 'Bilder', fr: 'Images', es: 'Imágenes', ja: 'え', ar: 'الصور' },
   'Coro’s pictures': { de: 'Coros Bilder', fr: 'Les images de Coro', es: 'Las imágenes de Coro', ja: 'Coro の え', ar: 'صور Coro' },
