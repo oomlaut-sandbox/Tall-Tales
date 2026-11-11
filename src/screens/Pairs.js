@@ -3,7 +3,7 @@
 // match turn back. Fifteen pairs, 5 across and 6 down (6 across and 5 down sideways). Every card lies a little
 // askew, with a soft shadow, so the table feels real. A calm game: no clock, no score, just the pairs found so far.
 // Coro's own pictures are in assets/garden/pairs. A family can also make its own sets of fifteen photos, each with a
-// name, and play with those (the Pictures button: components/PairSets.js).
+// name, and play with those (the Make your own button: components/PairSets.js).
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -28,6 +28,8 @@ const LETTER = [
 ];
 
 const FELT = require('../../assets/desk-felt.jpg'); // the grey felt, as under Mancala (Jörg, 11 Nov 2026; first on his oak table)
+const ICON_PICTURE = require('../../assets/icon-picture-line.png'); // Make your own (Jörg, 11 Nov 2026)
+const ICON_AGAIN = require('../../assets/icon-again-line.png'); // New game / Play again
 const FACES = [
   require('../../assets/garden/pairs/pair-01.jpg'), require('../../assets/garden/pairs/pair-02.jpg'), require('../../assets/garden/pairs/pair-03.jpg'),
   require('../../assets/garden/pairs/pair-04.jpg'), require('../../assets/garden/pairs/pair-05.jpg'), require('../../assets/garden/pairs/pair-06.jpg'),
@@ -112,7 +114,7 @@ export default function Pairs({ area, toast }) {
 
   // the cards: 5 across and 6 down upright, 6 across and 5 down sideways, as big as the table allows
   const cols = tall ? 5 : 6, rows = tall ? 6 : 5;
-  const top = Math.max(insets.top, 12) + 78, bottom = 74;
+  const top = Math.max(insets.top, 12) + (tall ? 92 : 84), bottom = 74;
   const side = tall ? 10 : 70;
   const cell = Math.min((W - side * 2) / cols, (H - top - bottom) / rows);
   const size = Math.floor(cell * 0.88);
@@ -123,7 +125,7 @@ export default function Pairs({ area, toast }) {
       <Image source={FELT} style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} resizeMode="cover" />
       <View style={{ position: 'absolute', left: 70, right: 70, top: Math.max(insets.top, 12) + 6, alignItems: 'center' }}>
         <Text style={styles.title} accessibilityRole="header">{t('Find the pairs')}</Text>
-        <Text style={styles.sub} numberOfLines={2} adjustsFontSizeToFit>
+        <Text style={[styles.sub, { marginTop: tall ? 16 : 8 }]} numberOfLines={2} adjustsFontSizeToFit>
           {over ? t('You found them all!') : pairsFound ? t('{n} of {m} pairs found', { n: pairsFound, m: PAIRS }) : t('Turn over two cards. If they match, they stay.')}
         </Text>
       </View>
@@ -144,9 +146,11 @@ export default function Pairs({ area, toast }) {
       {help ? <PaperLetter title="Let’s find the pairs!" paras={LETTER} onClose={() => setHelp(false)} /> : null}
       <View style={styles.choices}>
         <Pressable onPress={withTap(() => setChoosing(true))} style={styles.chip} accessibilityRole="button">
-          <Text style={styles.chipText}>{t('Pictures')}</Text>
+          <Image source={ICON_PICTURE} style={styles.chipIcon} resizeMode="contain" />
+          <Text style={styles.chipText}>{t('Make your own')}</Text>
         </Pressable>
         <Pressable onPress={withTap(restart)} style={[styles.chip, over && styles.chipOn]} accessibilityRole="button">
+          <Image source={ICON_AGAIN} style={styles.chipIcon} resizeMode="contain" />
           <Text style={styles.chipText}>{over ? t('Play again') : t('New game')}</Text>
         </Pressable>
       </View>
@@ -162,7 +166,8 @@ const styles = StyleSheet.create({
   help: { position: 'absolute', right: 16, width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center' },
   helpText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 22, lineHeight: 26 },
   choices: { position: 'absolute', left: 0, right: 0, bottom: 22, flexDirection: 'row', justifyContent: 'center', gap: 8 },
-  chip: { height: 40, borderRadius: 20, paddingHorizontal: 16, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.6)' },
+  chip: { height: 40, borderRadius: 20, paddingHorizontal: 16, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.6)', flexDirection: 'row', alignItems: 'center', gap: 7 },
+  chipIcon: { width: 18, height: 18, tintColor: colors.white },
   chipOn: { backgroundColor: colors.green },
   chipText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 },
 });
