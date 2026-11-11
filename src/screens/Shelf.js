@@ -512,7 +512,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
       {binOpen && recentlyDeleted && !binAsk ? (
         <ConfirmBox modal title={t('Recently deleted')} message={t('Books you made and deleted stay here for 30 days. Then they’re gone for good.')}
           confirm={t('Delete all now')} cancel={t('Close')} onCancel={() => setBinOpen(false)} onConfirm={() => setBinAsk('all')}>
-          <ScrollView style={{ maxHeight: 320, marginTop: 16 }} contentContainerStyle={{ gap: 12 }}>
+          <ScrollView style={{ maxHeight: Math.max(260, winH * 0.48), marginTop: 16 }} contentContainerStyle={{ gap: 12 }} showsVerticalScrollIndicator>
             {recentlyDeleted.list.map((b) => (
               <View key={b.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                 <View style={{ width: 52, height: 52, borderRadius: 4, overflow: 'hidden', backgroundColor: '#444' }}>
@@ -526,15 +526,24 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
                   style={[styles.sheetBtn, { height: 34, paddingHorizontal: 14 }]}>
                   <Text style={[styles.sheetBtnText, { fontSize: 14 }]}>{t('Put back')}</Text>
                 </Pressable>
+                {/* a small bin: this one book gone for good, after asking (Jörg, 11 Nov 2026) */}
+                <Pressable onPress={() => setBinAsk(b.id)} hitSlop={6} accessibilityRole="button" accessibilityLabel={t('Delete “{title}” for good', { title: b.title })}
+                  style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: colors.pillGrey, alignItems: 'center', justifyContent: 'center' }}>
+                  <Image source={TRASH_ICON} style={{ width: 16, height: 16, tintColor: colors.white }} resizeMode="contain" />
+                </Pressable>
               </View>
             ))}
           </ScrollView>
         </ConfirmBox>
       ) : null}
       {binAsk ? (
-        <ConfirmBox modal title={t('Delete for good?')} message={t('These books, with their pictures and recordings, can’t be brought back.')}
+        <ConfirmBox modal title={t('Delete for good?')} message={binAsk === 'all' ? t('These books, with their pictures and recordings, can’t be brought back.') : t('This book, with its pictures and recordings, can’t be brought back.')}
           confirm={t('Delete')} cancel={t('Keep')} onCancel={() => setBinAsk(null)}
-          onConfirm={() => { recentlyDeleted.purge(binAsk === 'all' ? undefined : [binAsk]); setBinAsk(null); setBinOpen(false); }} />
+          onConfirm={() => {
+            const one = binAsk !== 'all';
+            recentlyDeleted.purge(one ? [binAsk] : undefined); setBinAsk(null);
+            if (!one || recentlyDeleted.list.length <= 1) setBinOpen(false); // (one book: the list stays open)
+          }} />
       ) : null}
       {confirm && !gate ? ( /* (hidden while the grown-up question is asked: it sat on top of the passcode, 31 Oct 2026) */
         <ConfirmBox title={chosen.length === 1 ? t('Delete “{title}”?', { title: chosen[0].title }) : t('Delete {n} books?', { n: chosen.length })}

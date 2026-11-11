@@ -765,8 +765,11 @@ function ToastBubble({ message, area, onDismiss, center, ms = BUBBLE_MS, button,
 export function ConfirmBox({ title, message, confirm, cancel, onConfirm, onCancel, danger = true, modal = false, children }) {
   const tr = useT();
   const box = (
-    <Pressable onPress={onCancel} accessible={false} style={[StyleSheet.absoluteFill, { backgroundColor: colors.scrim, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, zIndex: 90, elevation: 90 }]}>
-      <Pressable onPress={() => {}} accessible={false} style={[POPUP, { width: '100%', maxWidth: 440 }]}>
+    <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, zIndex: 90, elevation: 90 }]}>
+      {/* the dimmed screen behind (a tap there is Cancel), and the box on it as a plain view, so a list inside
+          the box can scroll (Recently deleted: Jörg, 11 Nov 2026) */}
+      <Pressable onPress={onCancel} accessible={false} style={[StyleSheet.absoluteFill, { backgroundColor: colors.scrim }]} />
+      <View style={[POPUP, { width: '100%', maxWidth: 440 }]}>
         {title ? <Text style={POPUP_TITLE} accessibilityRole="header">{title}</Text> : null}
         {message ? <Text style={{ fontFamily: fonts.ui, fontSize: 16, lineHeight: 23, color: colors.textSoft, marginTop: title ? 10 : 0 }}>{message}</Text> : null}
         {children}
@@ -778,8 +781,8 @@ export function ConfirmBox({ title, message, confirm, cancel, onConfirm, onCance
             <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={{ color: colors.white, fontFamily: fonts.uiBold, fontSize: 16 }}>{confirm}</Text>
           </Pressable>
         </View>
-      </Pressable>
-    </Pressable>
+      </View>
+    </View>
   );
   if (!modal) return box;
   return <Modal supportedOrientations={['portrait', 'landscape-left', 'landscape-right']} transparent animationType="fade" visible onRequestClose={onCancel}>{box}</Modal>;
