@@ -76,5 +76,5 @@ export const MAX_WIDTH = 460;
 // bottom, spread over the whole list (Jörg, 10 Nov 2026)
 export function rainbow(i, n) {
   const h = (-5 + (267 * i) / Math.max(1, n - 1) + 360) % 360;
-  return `hsl(${Math.round(h)}, 78%, 58%)`;
+  return `hsl(${Math.round(h)}, 62%, 58%)`; // 20% less saturated than before (78%), Jörg, 10 Nov 2026
 }
