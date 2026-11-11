@@ -5,7 +5,7 @@
 //   the flowers: a paper pinwheel to spin with a swipe
 //   the rocks: Jörg's felt stones to slide about, a quiet zen activity (ZenStones.js, 7 Nov 2026)
 //   the picnic table: mancala, against Coro or with someone next to you (Mancala.js, 7 Nov 2026)
-//   the vegetable patch: find the pairs, thirty cards on an oak table (Pairs.js, 11 Nov 2026)
+//   the vegetable patch: find the pairs, thirty cards on the felt (Pairs.js, 11 Nov 2026)
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

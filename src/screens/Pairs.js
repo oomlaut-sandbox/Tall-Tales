@@ -1,4 +1,4 @@
-// Find the pairs in the Garden (Jörg, 11 Nov 2026): thirty square cards face down on an old oak table, like the
+// Find the pairs in the Garden (Jörg, 11 Nov 2026): thirty square cards face down on the grey felt, like the
 // small white-bordered photos on the Message Board. Turn over two: a matching pair stays face up, two that don't
 // match turn back. Fifteen pairs, 5 across and 6 down (6 across and 5 down sideways). Every card lies a little
 // askew, with a soft shadow, so the table feels real. A calm game: no clock, no score, just the pairs found so far.
@@ -11,8 +11,7 @@ import { useT } from '../i18n';
 import { withTap } from '../haptics';
 import { playSound } from '../sound';
 
-const WOOD = require('../../assets/garden/pairs/wood.jpg'); // Jörg's oak table (1100 × 2023)
-const WOOD_WIDE = require('../../assets/garden/pairs/wood-wide.jpg'); // the same, turned for sideways
+const FELT = require('../../assets/desk-felt.jpg'); // the grey felt, as under Mancala (Jörg, 11 Nov 2026; first on his oak table)
 const FACES = [
   require('../../assets/garden/pairs/pair-01.jpg'), require('../../assets/garden/pairs/pair-02.jpg'), require('../../assets/garden/pairs/pair-03.jpg'),
   require('../../assets/garden/pairs/pair-04.jpg'), require('../../assets/garden/pairs/pair-05.jpg'), require('../../assets/garden/pairs/pair-06.jpg'),
@@ -98,7 +97,7 @@ export default function Pairs({ area }) {
 
   return (
     <View style={StyleSheet.absoluteFill}>
-      <Image source={tall ? WOOD : WOOD_WIDE} style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} resizeMode="cover" />
+      <Image source={FELT} style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} resizeMode="cover" />
       <View style={{ position: 'absolute', left: 70, right: 70, top: Math.max(insets.top, 12) + 6, alignItems: 'center' }}>
         <Text style={styles.title} accessibilityRole="header">{t('Find the pairs')}</Text>
         <Text style={styles.sub} numberOfLines={2} adjustsFontSizeToFit>
