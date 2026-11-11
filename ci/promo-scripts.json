@@ -585,7 +585,7 @@
     "Share your books with family and friends, near and far. They can even add their own voices.",
     "Record and listen to the story in your own voice, or that of a loved one. You’ll treasure these books for years to come.",
     "In the classroom, make a book together. Every student adds a page, and it all comes together as one class book.",
-    "Because the best stories are the ones we tell together.",
+    "The best stories are the ones we tell together.",
     "So make a book of your own. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Books you make together."
    ],
    "done": true
@@ -612,7 +612,7 @@
     "Teile deine Bücher mit Familie und Freunden, nah und fern. Sie können sogar ihre eigenen Stimmen hinzufügen.",
     "Nimm die Geschichte mit deiner eigenen Stimme auf, oder mit der eines geliebten Menschen. Diese Bücher wirst du noch viele Jahre in Ehren halten.",
     "Im Klassenzimmer macht ihr gemeinsam ein Buch. Jedes Kind gestaltet eine Seite, und alles wird zu einem Klassenbuch.",
-    "Denn die schönsten Geschichten sind die, die wir gemeinsam erzählen.",
+    "Die schönsten Geschichten sind die, die wir gemeinsam erzählen.",
     "Und jetzt mach dein eigenes Buch. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Bücher, die ihr zusammen macht."
    ],
    "done": true
@@ -639,7 +639,7 @@
     "Partage tes livres avec ta famille et tes amis, proches ou lointains. Ils peuvent même y ajouter leur voix.",
     "Enregistre et écoute l’histoire avec ta propre voix, ou celle d’un être cher. Tu chériras ces livres pendant des années.",
     "En classe, faites un livre ensemble. Chaque élève ajoute une page, et le tout devient un livre de classe.",
-    "Parce que les plus belles histoires sont celles qu’on raconte ensemble.",
+    "Les plus belles histoires sont celles qu’on raconte ensemble.",
     "Alors crée ton propre livre. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Des livres que l’on fait ensemble."
    ],
    "done": true
@@ -666,7 +666,7 @@
     "Comparte tus libros con familiares y amigos, cerca o lejos. Incluso pueden añadir sus propias voces.",
     "Graba y escucha la historia con tu propia voz, o con la de un ser querido. Atesorarás estos libros durante muchos años.",
     "En clase, haced un libro juntos. Cada estudiante añade una página, y todo se une en un libro de la clase.",
-    "Porque las mejores historias son las que contamos juntos.",
+    "Las mejores historias son las que contamos juntos.",
     "Así que haz tu propio libro. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> Libros que hacéis juntos."
    ],
    "done": true
@@ -693,7 +693,7 @@
     "本を かぞくや ともだちと シェアしましょう。ちかくても、とおくても。みんなの こえも くわえられます。",
     "じぶんの こえや、だいすきな ひとの こえで おはなしを ろくおんして きけます。なんねんも たいせつに したい 本に なります。",
     "きょうしつでは、みんなで 1さつの 本を つくれます。ひとり 1ページずつ かいて、クラスの 本が できあがります。",
-    "いちばん すてきな おはなしは、いっしょに つくる おはなしだから。",
+    "いちばん すてきな おはなしは、いっしょに つくる おはなし。",
     "さあ、じぶんだけの 本を つくろう。<break time=\"0.8s\" /> Coro。<break time=\"0.5s\" /> いっしょに つくる えほん。"
    ],
    "lines": [
@@ -706,7 +706,7 @@
     "本をかぞくやともだちとシェアしましょう。ちかくても、とおくても。みんなのこえもくわえられます。",
     "じぶんのこえや、だいすきなひとのこえでおはなしをろくおんしてきけます。なんねんもたいせつにしたい本になります。",
     "きょうしつでは、みんなで1さつの本をつくれます。ひとり1ページずつかいて、クラスの本ができあがります。",
-    "いちばんすてきなおはなしは、いっしょにつくるおはなしだから。",
+    "いちばんすてきなおはなしは、いっしょにつくるおはなし。",
     "さあ、じぶんだけの本をつくろう。<break time=\"0.8s\"/>コロ。<break time=\"0.5s\"/>いっしょにつくるえほん。"
    ],
    "done": true
@@ -733,7 +733,7 @@
     "شارك كتبك مع العائلة والأصدقاء، قريبين كانوا أم بعيدين. ويمكنهم أيضًا إضافة أصواتهم.",
     "سجّل القصة واستمع إليها بصوتك أو بصوت من تحب. ستعتز بهذه الكتب لسنوات طويلة.",
     "وفي الصف، اصنعوا كتابًا معًا. يضيف كل طالب صفحة، لتجتمع كلها في كتاب واحد للصف.",
-    "لأن أجمل القصص هي التي نرويها معًا.",
+    "أجمل القصص هي التي نرويها معًا.",
     "فاصنع كتابك الخاص. <break time=\"0.8s\" /> Coro. <break time=\"0.5s\" /> كتب تصنعونها معًا."
    ],
    "done": true
@@ -751,10 +751,111 @@
     "Turn it sideways, and it looks more like a traditional book.",
     "Record the story in your own voice, or a loved one’s, and share it with family and friends.",
     "Make a book of your own. <break time=\"0.4s\" /> Coro. <break time=\"0.3s\" /> Books you make together."
+   ],
+   "done": true
+  },
+  "gg-line10-en": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lines": [
+    "The best stories are the ones we tell together."
+   ]
+  },
+  "gg-line10-de": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lang": "de",
+   "lines": [
+    "Die schönsten Geschichten sind die, die wir gemeinsam erzählen."
+   ]
+  },
+  "gg-line10-fr": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lang": "fr",
+   "lines": [
+    "Les plus belles histoires sont celles qu’on raconte ensemble."
+   ]
+  },
+  "gg-line10-es": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lang": "es",
+   "lines": [
+    "Las mejores historias son las que contamos juntos."
+   ]
+  },
+  "gg-line10-ja": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lang": "ja",
+   "lines": [
+    "いちばんすてきなおはなしは、いっしょにつくるおはなし。"
+   ]
+  },
+  "gg-line10-ar": {
+   "voiceFind": "spuds",
+   "speed": 0.85,
+   "pause": "0.9s",
+   "split": true,
+   "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.35,
+    "use_speaker_boost": true
+   },
+   "lang": "ar",
+   "lines": [
+    "أجمل القصص هي التي نرويها معًا."
    ]
   }
  },
  "_only": [
-  "quick-peek-short-fatima"
+  "gg-line10-en",
+  "gg-line10-de",
+  "gg-line10-fr",
+  "gg-line10-es",
+  "gg-line10-ja",
+  "gg-line10-ar"
  ]
 }
