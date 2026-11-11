@@ -1,0 +1,6 @@
+gg-line10-en 1 ok 115399 bytes
+gg-line10-de 1 ok 185616 bytes
+gg-line10-fr 1 ok 132954 bytes
+gg-line10-es 1 ok 135461 bytes
+gg-line10-ja 1 ok 156777 bytes
+gg-line10-ar 1 ok 84052 bytes
