@@ -2,7 +2,8 @@
 // small white-bordered photos on the Message Board. Turn over two: a matching pair stays face up, two that don't
 // match turn back. Fifteen pairs, 5 across and 6 down (6 across and 5 down sideways). Every card lies a little
 // askew, with a soft shadow, so the table feels real. A calm game: no clock, no score, just the pairs found so far.
-// The pictures are stand-ins until Jörg's fifteen photos arrive: swap the files in assets/garden/pairs.
+// Coro's own pictures are in assets/garden/pairs. A family can also make its own sets of fifteen photos, each with a
+// name, and play with those (the Pictures button: components/PairSets.js).
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,6 +12,9 @@ import { useT } from '../i18n';
 import { withTap } from '../haptics';
 import { playSound } from '../sound';
 import { PaperLetter } from '../components/CoroLetter';
+import PairSets from '../components/PairSets';
+import { liveUri } from '../storage';
+import { SET_SIZE, loadPairSets, savePairSets } from '../pairSets';
 
 // Coro's letter on how to play (strings/pairs.js)
 const LETTER = [
@@ -42,7 +46,7 @@ function deal() {
 }
 
 // one card: white back, picture face with a white border; it turns over about its middle
-function Card({ card, size, up, found, onPress, label }) {
+function Card({ card, face, size, up, found, onPress, label }) {
   const v = useRef(new Animated.Value(up ? 1 : 0)).current;
   useEffect(() => { Animated.timing(v, { toValue: up ? 1 : 0, duration: 300, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(); }, [up]);
   const edge = Math.max(3, Math.round(size * 0.07));
@@ -52,7 +56,7 @@ function Card({ card, size, up, found, onPress, label }) {
       <Animated.View style={[styles.card, { width: size, height: size, transform: [{ scaleX: v.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0.02, 1] }) }] }]}>
         {/* the face */}
         <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: size, height: size, padding: edge, opacity: v.interpolate({ inputRange: [0, 0.5, 0.501, 1], outputRange: [0, 0, 1, 1] }) }}>
-          <Image source={FACES[card.pic]} style={{ width: size - edge * 2, height: size - edge * 2, opacity: found ? 0.92 : 1 }} resizeMode="cover" />
+          <Image source={face} style={{ width: size - edge * 2, height: size - edge * 2, opacity: found ? 0.92 : 1 }} resizeMode="cover" />
         </Animated.View>
         {/* the back: plain white paper */}
         <Animated.View style={[styles.back, { width: size, height: size, opacity: v.interpolate({ inputRange: [0, 0.5, 0.501, 1], outputRange: [1, 1, 0, 0] }) }]} />
@@ -61,7 +65,7 @@ function Card({ card, size, up, found, onPress, label }) {
   );
 }
 
-export default function Pairs({ area }) {
+export default function Pairs({ area, toast }) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const W = area.w, H = area.h;
@@ -71,6 +75,12 @@ export default function Pairs({ area }) {
   const [found, setFound] = useState({}); // card id: true, once its pair is found
   const [busy, setBusy] = useState(false);
   const [help, setHelp] = useState(false);
+  // the pictures in play: Coro's, or one of the family's own sets (a set plays once it has all fifteen)
+  const [own, setOwn] = useState({ sets: [], chosen: null });
+  const [choosing, setChoosing] = useState(false);
+  useEffect(() => { loadPairSets().then((d) => { if (live.current) setOwn(d); }); }, []);
+  const mine = own.sets.find((s) => s.id === own.chosen && s.pics.length === SET_SIZE);
+  const faces = mine ? mine.pics.map((u) => ({ uri: liveUri(u) })) : FACES;
   const timers = useRef([]);
   const live = useRef(true);
   useEffect(() => () => { live.current = false; timers.current.forEach(clearTimeout); }, []);
@@ -119,7 +129,7 @@ export default function Pairs({ area }) {
       </View>
       {cards.map((c, i) => (
         <View key={c.id} style={{ position: 'absolute', left: gx + (i % cols) * cell + (cell - size) / 2 + c.dx * cell, top: gy + Math.floor(i / cols) * cell + (cell - size) / 2 + c.dy * cell }}>
-          <Card card={c} size={size} up={up.includes(c.id) || !!found[c.id]} found={!!found[c.id]} onPress={() => tap(c)} label={t('Card {n}', { n: i + 1 })} />
+          <Card card={c} face={faces[c.pic]} size={size} up={up.includes(c.id) || !!found[c.id]} found={!!found[c.id]} onPress={() => tap(c)} label={t('Card {n}', { n: i + 1 })} />
         </View>
       ))}
       {/* ?: Coro's letter on how to play, as in Mancala (Jörg, 11 Nov 2026) */}
@@ -127,8 +137,15 @@ export default function Pairs({ area }) {
         style={[styles.help, tall ? { top: Math.max(insets.top, 12) + 8 } : { bottom: 20 }]}>
         <Text style={styles.helpText}>?</Text>
       </Pressable>
+      {choosing ? (
+        <PairSets data={own} coroFaces={FACES} width={W} toast={toast} onClose={() => setChoosing(false)}
+          onChange={(d, fresh) => { setOwn(d); savePairSets(d); if (fresh) restart(); }} />
+      ) : null}
       {help ? <PaperLetter title="Let’s find the pairs!" paras={LETTER} onClose={() => setHelp(false)} /> : null}
       <View style={styles.choices}>
+        <Pressable onPress={withTap(() => setChoosing(true))} style={styles.chip} accessibilityRole="button">
+          <Text style={styles.chipText}>{t('Pictures')}</Text>
+        </Pressable>
         <Pressable onPress={withTap(restart)} style={[styles.chip, over && styles.chipOn]} accessibilityRole="button">
           <Text style={styles.chipText}>{over ? t('Play again') : t('New game')}</Text>
         </Pressable>
@@ -144,7 +161,7 @@ const styles = StyleSheet.create({
   back: { position: 'absolute', left: 0, top: 0, backgroundColor: '#fbfaf6', borderRadius: 2 },
   help: { position: 'absolute', right: 16, width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center' },
   helpText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 22, lineHeight: 26 },
-  choices: { position: 'absolute', left: 0, right: 0, bottom: 22, flexDirection: 'row', justifyContent: 'center' },
+  choices: { position: 'absolute', left: 0, right: 0, bottom: 22, flexDirection: 'row', justifyContent: 'center', gap: 8 },
   chip: { height: 40, borderRadius: 20, paddingHorizontal: 16, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.6)' },
   chipOn: { backgroundColor: colors.green },
   chipText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 15 },

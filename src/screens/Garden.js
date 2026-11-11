@@ -131,7 +131,7 @@ export default function Garden({ u, openMenu, toast, onHome }) {
         {game === 'sticks' && area ? <Driftwood area={area} onBack={() => setGame(null)} /> : null}
         {game === 'zen' && area ? <ZenStones area={area} onBack={() => setGame(null)} /> : null}
         {game === 'mancala' && area ? <Mancala area={area} onBack={() => setGame(null)} /> : null}
-        {game === 'pairs' && area ? <Pairs area={area} /> : null}
+        {game === 'pairs' && area ? <Pairs area={area} toast={toast} /> : null}
         {game === 'games' && area ? <GardenGames area={area} onOpen={setGame} /> : null}
         {game === 'pinwheel' && area ? <Pinwheel area={area} onBack={() => setGame(null)} /> : null}
       </View>
