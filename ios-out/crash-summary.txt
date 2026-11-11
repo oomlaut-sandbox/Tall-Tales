@@ -1,0 +1,31 @@
+build 245: VALID (id 779828f2-0550-4070-a561-552746e76c2a)
+build 244: VALID (id 8eb9ce54-5bfc-4ff5-956d-f57e06d5c2ba)
+build 243: VALID (id 1633b937-09ad-4453-b211-4120659a9b56)
+build 242: VALID (id 747b7846-ea1e-4980-abbe-592bcd3b3a5b)
+build 241: VALID (id 607c674e-edaf-4c1d-afb3-f207f3077cdd)
+crash submissions: HTTP 200
+5 found
+- AMO5R7P8-hLSqFKFpStDbhg 2026-11-11T06:21:45.571Z iPad15_5 iOS 18.6.2 comment: 
+  crash log: {"errors":[{"id":"6e70f426-69cc-45d9-a086-95c7a82b3698","status":"404","code":"NOT_FOUND","title":"The specified resource does not exist","detail":"There is no resource of type 'betaCrashLogs' with id 'AMO5R7P8-hLSqFKFpStDbhg'"}]}
+- ADgVwuep_hrkcmKYLxCyKQg 2026-11-08T00:20:10.129Z iPad15_5 iOS 18.6.2 comment: 
+  crash log: {"errors":[{"id":"13b796e2-fcc1-4e47-8ec0-620e7f0990d9","status":"404","code":"NOT_FOUND","title":"The specified resource does not exist","detail":"There is no resource of type 'betaCrashLogs' with id 'ADgVwuep_hrkcmKYLxCyKQg'"}]}
+- ALEtn0rSYUuDfzvJH2g0LA0 2026-11-06T20:20:24.963Z iPad15_5 iOS 18.6.2 comment: Using the eraser drawing tool to erase a lot of stuff
+  crash log: {"errors":[{"id":"9c25ed6e-7115-4554-a049-9f69460f9423","status":"404","code":"NOT_FOUND","title":"The specified resource does not exist","detail":"There is no resource of type 'betaCrashLogs' with id 'ALEtn0rSYUuDfzvJH2g0LA0'"}]}
+- ANJodoTz5PvgFaZyVUs5p5E 2026-10-29T21:13:25.769Z iPad15_5 iOS 18.6.2 comment: Same
+  crash log: {"errors":[{"id":"f55ad5ab-bcc4-4b63-9be1-7215a0dd1c5a","status":"404","code":"NOT_FOUND","title":"The specified resource does not exist","detail":"There is no resource of type 'betaCrashLogs' with id 'ANJodoTz5PvgFaZyVUs5p5E'"}]}
+- ACXio1trsza2Sik5lGXt9xo 2026-10-29T20:56:45.965Z iPad15_5 iOS 18.6.2 comment: Just opened the app and that is all
+  crash log: {"errors":[{"id":"f473c8a3-ae88-45fe-97b9-67f3c8cfe3b9","status":"404","code":"NOT_FOUND","title":"The specified resource does not exist","detail":"There is no resource of type 'betaCrashLogs' with id 'ACXio1trsza2Sik5lGXt9xo'"}]}
+diagnostics for build 245: HTTP 404 
+diagnostics for build 244: HTTP 404 
+subscription groups: 1
+- group "Coro Family" | display names: en-US=PREPARE_FOR_SUBMISSION
+  availability: HTTP 200 set, 0 countries | prices in 175 countries | review note: no | family sharable: false
+  review screenshot: yes (COMPLETE) | localizations: en-US=PREPARE_FOR_SUBMISSION
+  oomlaut.member.monthly: READY_TO_SUBMIT | ONE_MONTH | US $3.99 | free trial: FREE_TRIAL ONE_WEEK, FREE_TRIAL ONE_WEEK, FREE_TRIAL ONE_WEEK, FREE_TRIAL ONE_WEEK, FREE_TRIAL ONE_WEEK | names: 1
+  availability: HTTP 200 set, 0 countries | prices in 175 countries | review note: no | family sharable: false
+  review screenshot: yes (COMPLETE) | localizations: en-US=PREPARE_FOR_SUBMISSION
+  oomlaut.member.yearly: READY_TO_SUBMIT | ONE_YEAR | US $29.99 | free trial: FREE_TRIAL ONE_WEEK, FREE_TRIAL ONE_WEEK, FREE_TRIAL ONE_WEEK, FREE_TRIAL ONE_WEEK, FREE_TRIAL ONE_WEEK | names: 1
+books for sale (in-app purchases): 0
+sandbox testers: HTTP 200, 1 found
+  tester in CAN (Jörg)
+run at Wed Nov 11 17:39:35 UTC 2026
