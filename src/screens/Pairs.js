@@ -2,7 +2,7 @@
 // small white-bordered photos on the Message Board. Turn over two: a matching pair stays face up, two that don't
 // match turn back. Fifteen pairs, 5 across and 6 down (6 across and 5 down sideways). Every card lies a little
 // askew, with a soft shadow, so the table feels real. A calm game: no clock, no score, just the pairs found so far.
-// Coro's own pictures are in assets/garden/pairs. A family can also make its own sets of fifteen photos, each with a
+// Coro's own cards (Jörg's felt cards, photographed and cut out) are in assets/garden/pairs. A family can also make its own sets of fifteen photos, each with a
 // name, and play with those (the Make your own button: components/PairSets.js).
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -32,12 +32,22 @@ const FELT = require('../../assets/desk-felt.jpg'); // the grey felt, as under M
 const ICON_PICTURE = require('../../assets/icon-picture-line.png'); // Make your own (Jörg, 11 Nov 2026)
 const ICON_AGAIN = require('../../assets/icon-again-line.png'); // New game / Play again
 const FACES = [
-  require('../../assets/garden/pairs/pair-01.jpg'), require('../../assets/garden/pairs/pair-02.jpg'), require('../../assets/garden/pairs/pair-03.jpg'),
-  require('../../assets/garden/pairs/pair-04.jpg'), require('../../assets/garden/pairs/pair-05.jpg'), require('../../assets/garden/pairs/pair-06.jpg'),
-  require('../../assets/garden/pairs/pair-07.jpg'), require('../../assets/garden/pairs/pair-08.jpg'), require('../../assets/garden/pairs/pair-09.jpg'),
-  require('../../assets/garden/pairs/pair-10.jpg'), require('../../assets/garden/pairs/pair-11.jpg'), require('../../assets/garden/pairs/pair-12.jpg'),
-  require('../../assets/garden/pairs/pair-13.jpg'), require('../../assets/garden/pairs/pair-14.jpg'), require('../../assets/garden/pairs/pair-15.jpg'),
+  require('../../assets/garden/pairs/pair-01.png'), require('../../assets/garden/pairs/pair-02.png'), require('../../assets/garden/pairs/pair-03.png'),
+  require('../../assets/garden/pairs/pair-04.png'), require('../../assets/garden/pairs/pair-05.png'), require('../../assets/garden/pairs/pair-06.png'),
+  require('../../assets/garden/pairs/pair-07.png'), require('../../assets/garden/pairs/pair-08.png'), require('../../assets/garden/pairs/pair-09.png'),
+  require('../../assets/garden/pairs/pair-10.png'), require('../../assets/garden/pairs/pair-11.png'), require('../../assets/garden/pairs/pair-12.png'),
+  require('../../assets/garden/pairs/pair-13.png'), require('../../assets/garden/pairs/pair-14.png'), require('../../assets/garden/pairs/pair-15.png'),
 ];
+// the backs: five plain felt cards, each card gets one of them
+const BACKS = [
+  require('../../assets/garden/pairs/back-1.png'),
+  require('../../assets/garden/pairs/back-2.png'),
+  require('../../assets/garden/pairs/back-3.png'),
+  require('../../assets/garden/pairs/back-4.png'),
+  require('../../assets/garden/pairs/back-5.png'),
+];
+// the felt pictures are 420 px square with the card itself 360 px in the middle (the rest is its shadow)
+const FELT_OVER = 420 / 360;
 const PAIRS = FACES.length;
 
 // a fresh table: every picture twice, shuffled, each card with its own small turn and nudge
@@ -45,24 +55,33 @@ function deal() {
   const cards = [];
   for (let p = 0; p < PAIRS; p++) for (let k = 0; k < 2; k++) cards.push({ pic: p });
   for (let i = cards.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const x = cards[i]; cards[i] = cards[j]; cards[j] = x; }
-  return cards.map((c, i) => ({ ...c, id: i, turn: (Math.random() - 0.5) * 9, dx: (Math.random() - 0.5) * 0.06, dy: (Math.random() - 0.5) * 0.06 }));
+  return cards.map((c, i) => ({ ...c, id: i, back: Math.floor(Math.random() * BACKS.length), turn: (Math.random() - 0.5) * 9, dx: (Math.random() - 0.5) * 0.06, dy: (Math.random() - 0.5) * 0.06 }));
 }
 
-// one card: white back, picture face with a white border; it turns over about its middle
-function Card({ card, face, size, up, found, onPress, label }) {
+// one card: it turns over about its middle. Coro's cards are Jörg's felt cards, cut out along their own edges
+// (11 Nov 2026), face and back; a family's own photos sit on white paper with a white border, on a felt back.
+function Card({ card, face, felt, size, up, found, onPress, label }) {
   const v = useRef(new Animated.Value(up ? 1 : 0)).current;
   useEffect(() => { Animated.timing(v, { toValue: up ? 1 : 0, duration: 300, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(); }, [up]);
   const edge = Math.max(3, Math.round(size * 0.07));
+  const big = Math.round(size * FELT_OVER), off = (size - big) / 2;
+  const faceOn = v.interpolate({ inputRange: [0, 0.5, 0.501, 1], outputRange: [0, 0, 1, 1] });
+  const backOn = v.interpolate({ inputRange: [0, 0.5, 0.501, 1], outputRange: [1, 1, 0, 0] });
+  const pic = (src) => <Image source={src} style={{ position: 'absolute', left: off, top: off, width: big, height: big }} resizeMode="contain" />;
   return (
     <Pressable onPress={onPress} disabled={up} accessibilityRole="button" accessibilityLabel={label}
       style={{ width: size, height: size, transform: [{ rotate: `${card.turn}deg` }] }}>
-      <Animated.View style={[styles.card, { width: size, height: size, transform: [{ scaleX: v.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0.02, 1] }) }] }]}>
+      <Animated.View style={{ width: size, height: size, transform: [{ scaleX: v.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0.02, 1] }) }] }}>
         {/* the face */}
-        <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: size, height: size, padding: edge, opacity: v.interpolate({ inputRange: [0, 0.5, 0.501, 1], outputRange: [0, 0, 1, 1] }) }}>
-          <Image source={face} style={{ width: size - edge * 2, height: size - edge * 2, opacity: found ? 0.92 : 1 }} resizeMode="cover" />
+        <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: size, height: size, opacity: faceOn }}>
+          {felt ? pic(face) : (
+            <View style={[styles.card, { width: size, height: size, padding: edge }]}>
+              <Image source={face} style={{ width: size - edge * 2, height: size - edge * 2, opacity: found ? 0.92 : 1 }} resizeMode="cover" />
+            </View>
+          )}
         </Animated.View>
-        {/* the back: plain white paper */}
-        <Animated.View style={[styles.back, { width: size, height: size, opacity: v.interpolate({ inputRange: [0, 0.5, 0.501, 1], outputRange: [1, 1, 0, 0] }) }]} />
+        {/* the back: plain felt */}
+        <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: size, height: size, opacity: backOn }}>{pic(BACKS[card.back])}</Animated.View>
       </Animated.View>
     </Pressable>
   );
@@ -133,7 +152,7 @@ export default function Pairs({ area, toast }) {
       </View>
       {cards.map((c, i) => (
         <View key={c.id} style={{ position: 'absolute', left: gx + (i % cols) * cell + (cell - size) / 2 + c.dx * cell, top: gy + Math.floor(i / cols) * cell + (cell - size) / 2 + c.dy * cell }}>
-          <Card card={c} face={faces[c.pic]} size={size} up={up.includes(c.id) || !!found[c.id]} found={!!found[c.id]} onPress={() => tap(c)} label={t('Card {n}', { n: i + 1 })} />
+          <Card card={c} face={faces[c.pic]} felt={!mine} size={size} up={up.includes(c.id) || !!found[c.id]} found={!!found[c.id]} onPress={() => tap(c)} label={t('Card {n}', { n: i + 1 })} />
         </View>
       ))}
       {/* ?: Coro's letter on how to play, as in Mancala (Jörg, 11 Nov 2026) */}
@@ -165,7 +184,6 @@ const styles = StyleSheet.create({
   title: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 26, textAlign: 'center', textShadowColor: 'rgba(0,0,0,0.55)', textShadowRadius: 6, textShadowOffset: { width: 0, height: 1 } },
   sub: { color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 15, lineHeight: 20, textAlign: 'center', marginTop: 4, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 5, textShadowOffset: { width: 0, height: 1 } },
   card: { backgroundColor: '#fbfaf6', borderRadius: 2, shadowColor: '#000', shadowOpacity: 0.45, shadowRadius: 4, shadowOffset: { width: 1.5, height: 3 }, elevation: 4 },
-  back: { position: 'absolute', left: 0, top: 0, backgroundColor: '#fbfaf6', borderRadius: 2 },
   help: { position: 'absolute', right: 16, width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center' },
   helpText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 22, lineHeight: 26 },
   choices: { position: 'absolute', left: 0, right: 0, bottom: 22, flexDirection: 'row', justifyContent: 'center', gap: 8 },
