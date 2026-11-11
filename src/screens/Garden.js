@@ -5,7 +5,7 @@
 //   the flowers: a paper pinwheel to spin with a swipe
 //   the rocks: Jörg's felt stones to slide about, a quiet zen activity (ZenStones.js, 7 Nov 2026)
 //   the picnic table: mancala, against Coro or with someone next to you (Mancala.js, 7 Nov 2026)
-//   the vegetable patch: find the pairs, thirty cards on the felt (Pairs.js, 11 Nov 2026)
+//   and find the pairs, thirty cards on the felt (Pairs.js, 11 Nov 2026): the table opens the Games page (GardenGames.js)
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, PanResponder, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,6 +20,7 @@ import { pinwheelWhirr, playGarden, playPebble } from '../sound';
 import { createAudioPlayer } from 'expo-audio';
 import Mancala from './Mancala';
 import Pairs from './Pairs';
+import GardenGames from './GardenGames';
 import ZenStones from './ZenStones';
 
 // Jörg's garden, 1116 × 1886 (it fills the screen edge to edge), as the day goes: in daylight, in the golden evening, and at night under the lights
@@ -35,8 +36,7 @@ const ORDER = ['day', 'evening', 'night'];
 const SPOTS = [
   { game: 'home', box: [0.38, 0.0, 0.53, 0.095], label: 'My Workspace' }, // the gate at the top: back to My Workspace (Jörg, 29 Oct 2026)
   { game: 'home', box: [0.48, 0.86, 0.72, 1.0], label: 'My Workspace' }, // the gate at the bottom
-  { game: 'mancala', box: [0.57, 0.11, 0.86, 0.3], label: 'Mancala' }, // the picnic table (7 Nov 2026)
-  { game: 'pairs', box: [0.53, 0.5, 0.92, 0.85], label: 'Find the pairs' }, // the vegetable patch (Jörg, 11 Nov 2026)
+  { game: 'games', box: [0.57, 0.11, 0.86, 0.3], label: 'Games' }, // the picnic table: all the games live there (Jörg, 11 Nov 2026; it opened Mancala)
   // (the zen stones: put away for now, Jörg, 7 Nov 2026)
   // { game: 'zen', box: [0.12, 0.18, 0.33, 0.29], label: 'The stones' },
   // { game: 'zen', box: [0.1, 0.78, 0.37, 0.95], label: 'The stones' },
@@ -87,7 +87,7 @@ export default function Garden({ u, openMenu, toast, onHome }) {
       crickets = createAudioPlayer(CRICKETS); crickets.loop = true; crickets.volume = 0; crickets.play();
       const step = (v, to) => (v < to ? Math.min(to, v + 0.005) : Math.max(to, v - 0.01)); // up slowly, down a little quicker
       id = setInterval(() => {
-        const night = todRef.current === 'night', hush = gameRef.current === 'mancala';
+        const night = todRef.current === 'night', hush = !!gameRef.current; // quiet on the Games page and in every game (Jörg, 11 Nov 2026)
         if (hush) { vb = Math.max(0, vb - 0.06); vc = Math.max(0, vc - 0.06); } // out in about two seconds
         else { vb = step(vb, night ? 0 : 0.55); vc = step(vc, night ? 0.6 : 0); }
         try { birds.volume = vb; crickets.volume = vc; } catch (e) {}
@@ -119,7 +119,8 @@ export default function Garden({ u, openMenu, toast, onHome }) {
   }
   // Back (the one arrow, top left) closes the game and returns to the Garden: the games have no back of their own
   // (Jörg, 9 Nov 2026: there were two)
-  useBackStep(!!game, () => setGame(null));
+  // from a game, Back goes to the Games page; from there, to the Garden (Jörg, 11 Nov 2026)
+  useBackStep(!!game, () => setGame(game === 'mancala' || game === 'pairs' ? 'games' : null));
   return (
     <WithBar style={styles.screen} bar={(v) => <Bar u={u} vertical={v}><Burger u={u} onPress={openMenu} vertical={v} /></Bar>}>
       {hello ? <Toast hint message={t('Welcome to the Garden: simple games and puzzles to relax with, and more on the way. And remember, nothing beats being outside in nature. For real, go outside! (To get back to My Workspace, tap the gate.)')} ms={0} check={t('Don’t show this message again')} button={t('Got it!')}
@@ -131,6 +132,7 @@ export default function Garden({ u, openMenu, toast, onHome }) {
         {game === 'zen' && area ? <ZenStones area={area} onBack={() => setGame(null)} /> : null}
         {game === 'mancala' && area ? <Mancala area={area} onBack={() => setGame(null)} /> : null}
         {game === 'pairs' && area ? <Pairs area={area} /> : null}
+        {game === 'games' && area ? <GardenGames area={area} onOpen={setGame} /> : null}
         {game === 'pinwheel' && area ? <Pinwheel area={area} onBack={() => setGame(null)} /> : null}
       </View>
     </WithBar>

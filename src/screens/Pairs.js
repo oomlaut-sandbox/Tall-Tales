@@ -10,6 +10,18 @@ import { colors, fonts } from '../theme';
 import { useT } from '../i18n';
 import { withTap } from '../haptics';
 import { playSound } from '../sound';
+import { PaperLetter } from '../components/CoroLetter';
+
+// Coro's letter on how to play (strings/pairs.js)
+const LETTER = [
+  'Hello! This is a game for sharp eyes and a good memory. Every picture is hiding here twice.',
+  'How to play',
+  '1. All the cards start face down. Tap one to turn it over, then tap another.',
+  '2. If the two pictures match, you found a pair! They stay face up.',
+  '3. If they don’t match, look closely and remember where they are. Then they turn back over.',
+  '4. Keep going until you have found every pair.',
+  'Play by yourself, or take turns with someone next to you. Take your time, and have fun!',
+];
 
 const FELT = require('../../assets/desk-felt.jpg'); // the grey felt, as under Mancala (Jörg, 11 Nov 2026; first on his oak table)
 const FACES = [
@@ -58,6 +70,7 @@ export default function Pairs({ area }) {
   const [up, setUp] = useState([]); // the cards turned over this go (one or two)
   const [found, setFound] = useState({}); // card id: true, once its pair is found
   const [busy, setBusy] = useState(false);
+  const [help, setHelp] = useState(false);
   const timers = useRef([]);
   const live = useRef(true);
   useEffect(() => () => { live.current = false; timers.current.forEach(clearTimeout); }, []);
@@ -109,6 +122,12 @@ export default function Pairs({ area }) {
           <Card card={c} size={size} up={up.includes(c.id) || !!found[c.id]} found={!!found[c.id]} onPress={() => tap(c)} label={t('Card {n}', { n: i + 1 })} />
         </View>
       ))}
+      {/* ?: Coro's letter on how to play, as in Mancala (Jörg, 11 Nov 2026) */}
+      <Pressable onPress={withTap(() => setHelp(true))} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('How to play Find the pairs')}
+        style={[styles.help, tall ? { top: Math.max(insets.top, 12) + 8 } : { bottom: 20 }]}>
+        <Text style={styles.helpText}>?</Text>
+      </Pressable>
+      {help ? <PaperLetter title="Let’s find the pairs!" paras={LETTER} onClose={() => setHelp(false)} /> : null}
       <View style={styles.choices}>
         <Pressable onPress={withTap(restart)} style={[styles.chip, over && styles.chipOn]} accessibilityRole="button">
           <Text style={styles.chipText}>{over ? t('Play again') : t('New game')}</Text>
@@ -123,6 +142,8 @@ const styles = StyleSheet.create({
   sub: { color: colors.white, fontFamily: fonts.uiSemiBold, fontSize: 15, lineHeight: 20, textAlign: 'center', marginTop: 4, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 5, textShadowOffset: { width: 0, height: 1 } },
   card: { backgroundColor: '#fbfaf6', borderRadius: 2, shadowColor: '#000', shadowOpacity: 0.45, shadowRadius: 4, shadowOffset: { width: 1.5, height: 3 }, elevation: 4 },
   back: { position: 'absolute', left: 0, top: 0, backgroundColor: '#fbfaf6', borderRadius: 2 },
+  help: { position: 'absolute', right: 16, width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center' },
+  helpText: { color: colors.white, fontFamily: fonts.uiBold, fontSize: 22, lineHeight: 26 },
   choices: { position: 'absolute', left: 0, right: 0, bottom: 22, flexDirection: 'row', justifyContent: 'center' },
   chip: { height: 40, borderRadius: 20, paddingHorizontal: 16, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.6)' },
   chipOn: { backgroundColor: colors.green },

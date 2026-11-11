@@ -11,6 +11,7 @@ import WELCOME_T from './strings/welcome';
 import A11Y_T from './strings/a11y';
 import LETTER_T from './strings/letter';
 import MANCALA_T from './strings/mancala';
+import PAIRS_T from './strings/pairs';
 
 export const LANGS = [
   ['en', 'English'],
@@ -1099,7 +1100,7 @@ export const NUMBER_WORDS = {
 };
 
 // more translations, kept in their own files by area (reading and recording, notebook, Help, the Idea Room)
-Object.assign(T, READER_T, NOTEBOOK_T, HELP_T, IDEAS_T, WELCOME_T, A11Y_T, LETTER_T, MANCALA_T);
+Object.assign(T, READER_T, NOTEBOOK_T, HELP_T, IDEAS_T, WELCOME_T, A11Y_T, LETTER_T, MANCALA_T, PAIRS_T);
 
 export function translate(lang, s, vars) {
   const row = T[s];
