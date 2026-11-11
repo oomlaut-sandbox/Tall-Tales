@@ -569,9 +569,9 @@ function Root() {
           canGo={(to) => (to === 'store' ? STORE_ON && controls.store : to === 'notebook' ? controls.notebook !== false : true)}
           onGo={(to) => {
             if (to === 'settings') { setSettingsGate(true); return; }
-            if (to === 'garden' || to === 'mancala') {
+            if (to === 'garden' || to === 'mancala' || to === 'pairs') {
               if (!controls.garden) { toast(t('A grown-up can unlock the Garden in Settings, under Parental controls.')); return; }
-              if (to === 'mancala') openNext({ game: 'mancala' });
+              if (to !== 'garden') openNext({ game: to });
               go('garden'); return;
             }
             if (to === 'folder') { openNext({ folder: true }); go('workspace'); return; }

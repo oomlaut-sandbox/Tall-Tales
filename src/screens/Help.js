@@ -147,6 +147,7 @@ const ALL_HELP = [
   { section: 'Books', title: 'My Library', go: 'library', text: [
     'My Library is My Book Collection: the books you’ve finished, then the books that come with the app.',
     'Tap Select to choose books to share or delete (in My Workspace, My Books in Progress). Books that came with the app can be brought back with “Show removed books”.',
+    'Books you made and delete go to Recently deleted, at the bottom of My Workspace, for 30 days. Tap Put back to bring one back, the bin beside it to delete just that book for good, or Delete all now.',
   ] },
   { section: 'Books', title: 'Things to share and the Message Board', go: 'folder', text: [
     'Things to share is in My Workspace, under My Notes. It holds a note from us, the Abc sheet (tap a letter to hear it) and sheets other families send you.',
@@ -228,9 +229,14 @@ const ALL_HELP = [
   ] },
   { section: 'The Garden', title: 'The Garden', go: 'garden', text: [
     'The Garden: a quiet garden to visit, with birdsong. Turn it on in Settings, then pull up past the bottom of My Workspace to go in. Tap the garden to change the light, and tap a gate to leave.',
+    'Tap the picnic table to open Games: Mancala and Find the pairs. More games are on the way.',
   ] },
   { section: 'The Garden', title: 'Mancala', go: 'mancala', text: [
     'Mancala is one of the oldest games in the world. Play against Coro or with someone next to you, taking turns. Tap the ? on the game for where it comes from and how to play.',
+  ] },
+  { section: 'The Garden', title: 'Find the pairs', go: 'pairs', text: [
+    'Find the pairs is a memory game with 30 felt cards, face down. Turn over two: if they match, they stay face up. If not, look closely, then they turn back. Find all 15 pairs. Play alone or take turns. Tap the ? on the game for how to play.',
+    'New game deals the cards again. Make your own lets a grown-up make a set of cards from photos on this phone: give the set a name and choose 15 photos, and each one becomes a pair. Sets belong to the profile that made them, and the photos stay on this phone.',
   ] },
   { section: 'Teachers and Educators', title: 'Classroom folders', go: 'settings', text: [
     'A classroom folder holds up to 40 student profiles. Set it up in Settings, under Teachers and Educators: give your class a name, then add each student in Profiles.',
@@ -254,7 +260,7 @@ const IDEAS_FELT = require('../../assets/ideas-felt.png');
 
 // where each topic's link goes, by name (the places' own names, already in every language)
 const PLACES = { library: 'My Library', workspace: 'My Workspace', notebook: 'My Notes', music: 'Music and Sounds', playlists: 'Book Playlists',
-  folder: 'Things to share', store: 'Book Store', settings: 'Settings', garden: 'The Garden', mancala: 'Mancala' };
+  folder: 'Things to share', store: 'Book Store', settings: 'Settings', garden: 'The Garden', mancala: 'Mancala', pairs: 'Find the pairs' };
 
 export default function Help({ u, openMenu, onAbout, onIdeas, onWelcome, onIntro, onGo, canGo = () => true }) {
   const keep = useScrollMemory('help'); // Back returns to this spot
