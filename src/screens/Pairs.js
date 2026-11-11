@@ -38,10 +38,9 @@ const FACES = [
   require('../../assets/garden/pairs/pair-10.png'), require('../../assets/garden/pairs/pair-11.png'), require('../../assets/garden/pairs/pair-12.png'),
   require('../../assets/garden/pairs/pair-13.png'), require('../../assets/garden/pairs/pair-14.png'), require('../../assets/garden/pairs/pair-15.png'),
 ];
-// the backs: two plain felt cards with clean edges, each card gets one of them (Jörg, 11 Nov 2026)
+// the back: one plain white felt card, the same on every card (Jörg, 11 Nov 2026)
 const BACKS = [
   require('../../assets/garden/pairs/back-1.png'),
-  require('../../assets/garden/pairs/back-2.png'),
 ];
 // the felt pictures are 420 px square with the card itself 360 px in the middle (the rest is its shadow)
 const FELT_OVER = 420 / 360;
