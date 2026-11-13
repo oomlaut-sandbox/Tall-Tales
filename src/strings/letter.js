@@ -4,12 +4,12 @@ export default {
   "A letter from Coro": { de: "Ein Brief von Coro", fr: "Une lettre de Coro", es: "Una carta de Coro", ja: "Coro からの てがみ", ar: "رسالة من Coro" },
   "Open the letter from Coro": { de: "Den Brief von Coro öffnen", fr: "Ouvrir la lettre de Coro", es: "Abrir la carta de Coro", ja: "Coro からの てがみを ひらく", ar: "افتح الرسالة من Coro" },
   "Put the letter back": { de: "Brief zurücklegen", fr: "Ranger la lettre", es: "Guardar la carta", ja: "てがみを しまう", ar: "أعد الرسالة" },
-  "Hello, and thank you for supporting Coro. We so hope you love making books as much as we do.": {
-    de: "Hallo und danke, dass du Coro unterstützt. Wir hoffen so sehr, dass du das Büchermachen genauso liebst wie wir.",
-    fr: "Bonjour, et merci de soutenir Coro. Nous espérons vraiment que vous aimerez créer des livres autant que nous.",
-    es: "Hola, y gracias por apoyar a Coro. Esperamos de verdad que disfrutes haciendo libros tanto como nosotros.",
-    ja: "こんにちは。Coro を おうえんしてくださり、ありがとうございます。わたしたちと おなじくらい、本づくりを たのしんでいただけたら うれしいです。",
-    ar: "مرحبًا، وشكرًا لدعمك Coro. نتمنى حقًا أن تحب صناعة الكتب بقدر ما نحبها.",
+  "Hello, and thank you for supporting Coro. We so hope you love making and reading books as much as we do.": {
+    de: "Hallo und danke, dass du Coro unterstützt. Wir hoffen so sehr, dass du das Büchermachen und das Lesen genauso liebst wie wir.",
+    fr: "Bonjour, et merci de soutenir Coro. Nous espérons vraiment que vous aimerez créer et lire des livres autant que nous.",
+    es: "Hola, y gracias por apoyar a Coro. Esperamos de verdad que disfrutes haciendo y leyendo libros tanto como nosotros.",
+    ja: "こんにちは。Coro を おうえんしてくださり、ありがとうございます。わたしたちと おなじくらい、本を つくるのも よむのも たのしんでいただけたら うれしいです。",
+    ar: "مرحبًا، وشكرًا لدعمك Coro. نتمنى حقًا أن تحب صناعة الكتب وقراءتها بقدر ما نحبها.",
   },
   "We’re dedicated to transparency and honesty around every process, so you can choose what’s best for you.": {
     de: "Wir legen bei jedem Schritt Wert auf Transparenz und Ehrlichkeit, damit du selbst wählen kannst, was für dich das Beste ist.",
@@ -61,12 +61,11 @@ export default {
     ar: "Coro يدور حول الكتب التي تصنعونها معًا، لذا ستكون أهم الكتب في مكتبتك هي كتبك أنت.",
   },
   "With love,": { de: "Alles Liebe,", fr: "Avec amour,", es: "Con cariño,", ja: "あいを こめて", ar: "مع الحب،" },
-  "Hi {name}. Thank you for supporting Coro. We so hope you love making books as much as we do.": {
-    de: "Hallo {name}. Danke, dass du Coro unterstützt. Wir hoffen so sehr, dass du das Büchermachen genauso liebst wie wir.",
-    fr: "Bonjour {name}. Merci de soutenir Coro. Nous espérons vraiment que tu aimeras créer des livres autant que nous.",
-    es: "Hola, {name}. Gracias por apoyar a Coro. Esperamos de verdad que disfrutes haciendo libros tanto como nosotros.",
-    ja: "{name}さん、こんにちは。Coro を おうえんしてくださり、ありがとうございます。わたしたちと おなじくらい、本づくりを たのしんでいただけたら うれしいです。",
-    ar: "مرحبًا يا {name}. شكرًا لدعمك Coro. نتمنى حقًا أن تحب صناعة الكتب بقدر ما نحبها.",
+  "Hi {name}. Thank you for supporting Coro. We so hope you love making and reading books as much as we do.": {
+    de: "Hallo {name}. Danke, dass du Coro unterstützt. Wir hoffen so sehr, dass du das Büchermachen und das Lesen genauso liebst wie wir.",
+    fr: "Bonjour {name}. Merci de soutenir Coro. Nous espérons vraiment que tu aimeras créer et lire des livres autant que nous.",
+    es: "Hola, {name}. Gracias por apoyar a Coro. Esperamos de verdad que disfrutes haciendo y leyendo libros tanto como nosotros.",
+    ja: "{name}さん、こんにちは。Coro を おうえんしてくださり、ありがとうございます。わたしたちと おなじくらい、本を つくるのも よむのも たのしんでいただけたら うれしいです。",
+    ar: "مرحبًا يا {name}. شكرًا لدعمك Coro. نتمنى حقًا أن تحب صناعة الكتب وقراءتها بقدر ما نحبها.",
   },
-  "We hope you love making and reading books as much as we do.": { de: "Wir hoffen, dass du Bücher genauso gern machst und liest wie wir.", fr: "Nous espérons que tu aimeras créer et lire des livres autant que nous.", es: "Esperamos que te encante hacer y leer libros tanto como a nosotros.", ja: "あなたも わたしたちと おなじくらい、本を つくるのも よむのも すきに なって くれたら うれしいです。", ar: "نأمل أن تحب صنع الكتب وقراءتها بقدر ما نحبها نحن." },
 };
