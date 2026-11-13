@@ -25,6 +25,7 @@ const PARAS = [
   'Some books are made entirely by hand, while others can be made with the help of AI tools. Regardless, the exact process is documented and shared in the Book Store listings.',
   'Every book is translated with the help of AI. A person then reads each translation and approves it before anyone hears it. The read-aloud voices are made with ElevenLabs, a voice tool. They are not recordings of real people reading.',
   'Books from artists in the store are made without AI, except for their translations.',
+  'We hope you love making and reading books as much as we do.', // the last words before Coro signs (Jörg, 13 Nov 2026)
 ];
 
 // The reader's name, kept up to date when the profile changes

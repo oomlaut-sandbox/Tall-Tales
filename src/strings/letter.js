@@ -68,4 +68,5 @@ export default {
     ja: "{name}さん、こんにちは。Coro を おうえんしてくださり、ありがとうございます。わたしたちと おなじくらい、本づくりを たのしんでいただけたら うれしいです。",
     ar: "مرحبًا يا {name}. شكرًا لدعمك Coro. نتمنى حقًا أن تحب صناعة الكتب بقدر ما نحبها.",
   },
+  "We hope you love making and reading books as much as we do.": { de: "Wir hoffen, dass du Bücher genauso gern machst und liest wie wir.", fr: "Nous espérons que tu aimeras créer et lire des livres autant que nous.", es: "Esperamos que te encante hacer y leer libros tanto como a nosotros.", ja: "あなたも わたしたちと おなじくらい、本を つくるのも よむのも すきに なって くれたら うれしいです。", ar: "نأمل أن تحب صنع الكتب وقراءتها بقدر ما نحبها نحن." },
 };
