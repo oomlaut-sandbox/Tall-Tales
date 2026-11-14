@@ -38,6 +38,8 @@ import { playSound } from '../sound';
 const COLS = (w) => (w >= 900 ? 4 : w >= 600 ? 3 : 2);
 const TILE = { 2: 47, 3: 31, 4: 22.5 };
 const tileWidth = (w) => `${TILE[COLS(w)]}%`;
+// two books and the gap between them (Reading Options on an iPad: Jörg, 13 Nov 2026)
+const readingWidth = (w) => { const n = COLS(w); return `${2 * TILE[n] + (100 - n * TILE[n]) / (n - 1)}%`; };
 const gridGap = (w) => { const n = COLS(w); return `${(100 - n * TILE[n]) / (n - 1)}%`; };
 
 import Folder from '../components/Folder';
@@ -321,7 +323,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
   if (typeof window !== 'undefined' && window.location && /garden/.test(window.location.hash || '')) window.__openGarden = onGarden; // (web preview screenshots)
   const controls = useControls(); // parental controls: My Notes, Make a book and Select may be hidden
   const { width: winW, height: winH } = useWindowDimensions();
-  const readingW = (() => { const n = COLS(winW); return `${2 * TILE[n] + (100 - n * TILE[n]) / (n - 1)}%`; })(); // two books and the gap between them (iPad)
+  const readingW = readingWidth(winW);
   const folderY = useRef(0), lastY = useRef(0); // where the page was when Things to share opened
   const [folderOpen, setFolderOpen] = useState(() => mode === 'workspace' && !!takeOpen('folder')); // Things to share, opened (the sheets; Help's link opens it)
   const [selecting, setSelecting] = useState(false);
@@ -726,7 +728,11 @@ export function Store({ u, openStory, openMenu, toast, onReadingOptions }) {
           </View>
         ))}
         {/* Reading Options under the books, in black glass (as in My Library) */}
-        {onReadingOptions ? <ReadingOptionsSection {...onReadingOptions} style={{ marginHorizontal: 20, marginTop: 10 }} /> : null}
+        {onReadingOptions ? (
+          <View style={{ paddingHorizontal: 20 }}>{/* (iPad: two books wide, at the left, as in My Library: Jörg, 13 Nov 2026) */}
+            <ReadingOptionsSection {...onReadingOptions} style={{ width: IS_TABLET ? readingWidth(winW) : '100%', marginTop: 10 }} />
+          </View>
+        ) : null}
         {/* Restore Purchases: books bought before (or on another device) come back here too, not only from the membership screen (31 Oct 2026) */}
         {purchasesReady ? (
           <Pressable onPress={restore} disabled={restoring} hitSlop={10} accessibilityRole="button" style={{ alignSelf: 'center', paddingVertical: 8 }}>
