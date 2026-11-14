@@ -321,6 +321,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
   if (typeof window !== 'undefined' && window.location && /garden/.test(window.location.hash || '')) window.__openGarden = onGarden; // (web preview screenshots)
   const controls = useControls(); // parental controls: My Notes, Make a book and Select may be hidden
   const { width: winW, height: winH } = useWindowDimensions();
+  const readingW = (() => { const n = COLS(winW); return `${2 * TILE[n] + (100 - n * TILE[n]) / (n - 1)}%`; })(); // two books and the gap between them (iPad)
   const folderY = useRef(0), lastY = useRef(0); // where the page was when Things to share opened
   const [folderOpen, setFolderOpen] = useState(() => mode === 'workspace' && !!takeOpen('folder')); // Things to share, opened (the sheets; Help's link opens it)
   const [selecting, setSelecting] = useState(false);
@@ -421,7 +422,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
         {/* Playlists, at the end of My Books: three little felt books stacked */}
         {/* Make a Book Playlist: a grey button under the books (Jörg, 5 Nov 2026) */}
         {!selecting && !ws && onMakePlaylist ? (
-          <View style={{ width: '100%', alignItems: 'center', marginTop: 18 }}>
+          <View style={{ width: '100%', alignItems: IS_TABLET ? 'flex-start' : 'center', marginTop: 18 }}>{/* (iPad: at the left, under the first book: Jörg, 13 Nov 2026) */}
             <Pressable onPress={onMakePlaylist} accessibilityRole="button" style={({ pressed }) => [styles.playlistBtn, pressed && { opacity: 0.85 }]}>
               <Text style={styles.playlistPlus}>+</Text>
               <Text style={styles.playlistBtnText}>{t('Make a Book Playlist')}</Text>
@@ -430,7 +431,7 @@ export function Library({ mode = 'library', onPrompt, toBooks, toWip, onReadingO
         ) : null}
         {/* (a much bigger space after My Books: Jörg, 25 Oct 2026) */}
         {/* Reading Options under the books, in black glass (Jörg, 26 Oct 2026) */}
-        {!selecting && !ws && onReadingOptions ? <ReadingOptionsSection {...onReadingOptions} style={{ width: '100%', marginTop: 26 }} /* a little apart from the books (Jörg, 29 Oct 2026) */ /> : null}
+        {!selecting && !ws && onReadingOptions ? <ReadingOptionsSection {...onReadingOptions} style={{ width: IS_TABLET ? readingW : '100%', marginTop: 26 }} /* a little apart from the books (Jörg, 29 Oct 2026); on an iPad two books wide (Jörg, 13 Nov 2026) */ /> : null}
         {!selecting && !ws ? <View style={{ width: '100%', height: onReadingOptions ? 48 : 70 }} /> : null}
         {/* Work in Progress: the books being made (saved with Save and Exit, not yet published); a tap carries on in
             the book maker. 'Finish my book' moves a book up into My Book Collection (Jörg, 28 Oct 2026) */}
